@@ -1,0 +1,30 @@
+{
+ "baseline_value": 0.12476736,
+ "family": "chirp",
+ "generator_id": "DEVELOPMENT-chirp-white-g1",
+ "generator_role": "DEVELOPMENT",
+ "improvement": 0.72336154,
+ "kind": "screen",
+ "manifest_sha256": "e0f6f667121559bcc643f30dd7a41f31c7ea0f4155a46bce10e1315fb11c0d7a",
+ "metric_heldout": 0.03451545,
+ "model_seed": 0,
+ "no_learning_improvement": -0.3153507,
+ "noise_coord": "white",
+ "noise_or_NOT_APPLICABLE": "white",
+ "numerically_invalid": false,
+ "optimizer_budget": {
+  "identical_to_intervention": true,
+  "learning_rate": 0.05,
+  "minibatch": 16,
+  "updates": 2000
+ },
+ "random_init_band": [
+  -1.30773813,
+  -0.06748081,
+  -1.56557066
+ ],
+ "record_sha256": "e2567f908d029fe0c51564d2e2fee8855be627c0c7802164dae8571e9816cbf1",
+ "unit_id": "screen::chirp::white::w32::g1",
+ "unit_role": "treatment",
+ "width": 32
+}

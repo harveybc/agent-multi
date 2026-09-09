@@ -1,0 +1,30 @@
+{
+ "baseline_value": 0.21334785,
+ "family": "chirp",
+ "generator_id": "DEVELOPMENT-chirp-heteroscedastic-g1",
+ "generator_role": "DEVELOPMENT",
+ "improvement": 0.48535754,
+ "kind": "screen",
+ "manifest_sha256": "a3cdf7d443696d4cf5b5f73d75f00cd174b7c497c810370cb8d06afa48e3eca1",
+ "metric_heldout": 0.10979786,
+ "model_seed": 0,
+ "no_learning_improvement": 0.17124131,
+ "noise_coord": "heteroscedastic",
+ "noise_or_NOT_APPLICABLE": "heteroscedastic",
+ "numerically_invalid": false,
+ "optimizer_budget": {
+  "identical_to_intervention": true,
+  "learning_rate": 0.05,
+  "minibatch": 16,
+  "updates": 2000
+ },
+ "random_init_band": [
+  -0.5306339,
+  -3.24360548,
+  -3.04910798
+ ],
+ "record_sha256": "314c9ce10be8961f51a6289ce26411621c874d45d6c41a9be3c05bc51de94fb6",
+ "unit_id": "screen::chirp::heteroscedastic::w32::g1",
+ "unit_role": "treatment",
+ "width": 32
+}

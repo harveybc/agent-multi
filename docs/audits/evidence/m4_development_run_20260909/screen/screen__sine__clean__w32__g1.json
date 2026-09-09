@@ -1,0 +1,30 @@
+{
+ "baseline_value": 0.04768651,
+ "family": "sine",
+ "generator_id": "DEVELOPMENT-sine-clean-g1",
+ "generator_role": "DEVELOPMENT",
+ "improvement": 0.99817738,
+ "kind": "screen",
+ "manifest_sha256": "c1d7343ff2f70afec540858045978f8df4075b390b954cf13208492c7dbae8d9",
+ "metric_heldout": 8.691e-05,
+ "model_seed": 0,
+ "no_learning_improvement": -19.93055691,
+ "noise_coord": "clean",
+ "noise_or_NOT_APPLICABLE": "clean",
+ "numerically_invalid": false,
+ "optimizer_budget": {
+  "identical_to_intervention": true,
+  "learning_rate": 0.05,
+  "minibatch": 16,
+  "updates": 2000
+ },
+ "random_init_band": [
+  -83.46309535,
+  -4.63134246,
+  -8.50568793
+ ],
+ "record_sha256": "0f8fffe180ae5e66a73e2dce04a4b8eb4cf8bafe20c2c9a19338fc3c81748efa",
+ "unit_id": "screen::sine::clean::w32::g1",
+ "unit_role": "treatment",
+ "width": 32
+}

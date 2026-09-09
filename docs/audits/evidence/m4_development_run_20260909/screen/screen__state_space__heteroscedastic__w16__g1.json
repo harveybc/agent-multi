@@ -1,0 +1,30 @@
+{
+ "baseline_value": 0.3196486,
+ "family": "state_space",
+ "generator_id": "DEVELOPMENT-state_space-heteroscedastic-g1",
+ "generator_role": "DEVELOPMENT",
+ "improvement": 0.45869561,
+ "kind": "screen",
+ "manifest_sha256": "87b2a58c4a2984eb6de58716dc3cd27d80e4b119d824c09ff68a8f4817dd9a5d",
+ "metric_heldout": 0.17302719,
+ "model_seed": 0,
+ "no_learning_improvement": -2.59252325,
+ "noise_coord": "heteroscedastic",
+ "noise_or_NOT_APPLICABLE": "heteroscedastic",
+ "numerically_invalid": false,
+ "optimizer_budget": {
+  "identical_to_intervention": true,
+  "learning_rate": 0.05,
+  "minibatch": 16,
+  "updates": 2000
+ },
+ "random_init_band": [
+  -2.36784689,
+  -2.60908128,
+  -0.97587348
+ ],
+ "record_sha256": "d7255ed9a00d33f6eff26975486fc3d6e6be761390b348beba60143ee1f9b08e",
+ "unit_id": "screen::state_space::heteroscedastic::w16::g1",
+ "unit_role": "treatment",
+ "width": 16
+}

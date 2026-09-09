@@ -1,0 +1,30 @@
+{
+ "baseline_value": 0.52083333,
+ "family": "identity",
+ "generator_id": "DEVELOPMENT-identity-clean-g1",
+ "generator_role": "DEVELOPMENT",
+ "improvement": 0.47916667,
+ "kind": "screen",
+ "manifest_sha256": "17dbef4639f2eeada1b9cef7b0b8b44ef6be77426d89b900157ee2603811e784",
+ "metric_heldout": 1.0,
+ "model_seed": 0,
+ "no_learning_improvement": -0.11458333,
+ "noise_coord": "clean",
+ "noise_or_NOT_APPLICABLE": "NOT_APPLICABLE",
+ "numerically_invalid": false,
+ "optimizer_budget": {
+  "identical_to_intervention": true,
+  "learning_rate": 0.05,
+  "minibatch": 16,
+  "updates": 2000
+ },
+ "random_init_band": [
+  -0.05208333,
+  -0.23958333,
+  -0.25520833
+ ],
+ "record_sha256": "6a5fea8a2ca10f2e7359621d86af2daff1b00abf2707934be9d3348e9ae4fc84",
+ "unit_id": "screen::identity::clean::w32::g1",
+ "unit_role": "treatment",
+ "width": 32
+}

@@ -893,6 +893,41 @@
    "mutability": "mutating",
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
+  },
+  "m4_generator_bank.py": {
+   "purpose": "M4 C19 (order 2026-09-09): deterministic generator bank \u2014 Boolean/temporal/control families, temporal noise regimes, disjoint DEVELOPMENT/CALIBRATION/CONFIRMATION identities by seed construction, train-only scale fitting, latent/disturbance separation, manifests with consumer-recomputed digests, nonsensical-product refusals.",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "design_author",
+   "owner": "General Satoshi III"
+  },
+  "m4_intervention_design.py": {
+   "purpose": "M4 C17/C18/C21 (order 2026-09-09): the sealed v4 intervention-foundation design \u2014 exact candidate population and unit/update census, frozen estimands and censoring analysis, learnability-gate rule, frozen 16-contrast confirmatory family with multiplicity, a-priori precision Monte Carlo, deterministic reduction and four-unit rules; scientific_outcome NONE; supersession verified field-by-field against sealed v3.",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "design_author",
+   "owner": "General Satoshi III"
+  },
+  "m4_intervention_runner.py": {
+   "purpose": "M4 C20/C22 (order 2026-09-09): the ONE config-driven CPU runner \u2014 DEVELOPMENT-only learnability screen + four sealed development mechanics units; pre-result ledger, deterministic scheduling, write-once artifacts, replay-verified resume, executable limits, exact cost accounting, and a fresh verifier that reconstructs everything from raw evidence (producer fields never control verdicts). Grants no confirmation/GPU/DOIN/production authority.",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "authority_class": "diagnostic",
+   "owner": "General Satoshi III"
+  },
+  "m3_cover_calibration.py": {
+   "purpose": "M3 (orders 2026-09-08, CLOSED/ACCEPTED): Cover/MacKay finite-N capacity calibration \u2014 sealed adaptive grid, HiGHS LP primary + independent min-slack, exact-global-population regenerating verifier (any (K,ratio) outside the sealed grid refuses pre-replay); v1-v3 designs and runs byte-immutable; verdict COVER_CALIBRATION_REPRODUCED_AFTER_DISCLOSED_PRECISION_AMENDMENT.",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "authority_class": "verifier",
+   "owner": "General Satoshi III"
+  },
+  "m4_residual_capacity.py": {
+   "purpose": "M4 mechanics (orders 2026-09-08/09, v3 ACCEPTED): cumulative-endpoint residual-capacity mechanics \u2014 50/50 rehearsal, two-consecutive retention, fresh-process restart, matched 16-example diagnostic, write-once preflight artifacts and the independent replay verify_preflight; sealed design chain v1-v3 with field-by-field supersession verification.",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

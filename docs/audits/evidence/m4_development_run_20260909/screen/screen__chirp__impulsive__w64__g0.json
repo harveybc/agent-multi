@@ -1,0 +1,30 @@
+{
+ "baseline_value": 0.14028385,
+ "family": "chirp",
+ "generator_id": "DEVELOPMENT-chirp-impulsive-g0",
+ "generator_role": "DEVELOPMENT",
+ "improvement": 0.63148139,
+ "kind": "screen",
+ "manifest_sha256": "95f26f8e211a76f271474d54920d64e424f31d669f5165ca3212915524e34f0f",
+ "metric_heldout": 0.05169721,
+ "model_seed": 0,
+ "no_learning_improvement": -45.05896624,
+ "noise_coord": "impulsive",
+ "noise_or_NOT_APPLICABLE": "impulsive",
+ "numerically_invalid": false,
+ "optimizer_budget": {
+  "identical_to_intervention": true,
+  "learning_rate": 0.05,
+  "minibatch": 16,
+  "updates": 2000
+ },
+ "random_init_band": [
+  0.35105139,
+  -26.40852468,
+  -0.71159571
+ ],
+ "record_sha256": "bdf5a672d6f4e97cf9a634414838529ab70d0b014a0c8053bd5883696bb4fdd0",
+ "unit_id": "screen::chirp::impulsive::w64::g0",
+ "unit_role": "treatment",
+ "width": 64
+}

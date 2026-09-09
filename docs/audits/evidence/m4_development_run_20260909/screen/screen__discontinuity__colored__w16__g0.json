@@ -1,0 +1,30 @@
+{
+ "baseline_value": 0.05252355,
+ "family": "discontinuity",
+ "generator_id": "DEVELOPMENT-discontinuity-colored-g0",
+ "generator_role": "DEVELOPMENT",
+ "improvement": -3.9352901,
+ "kind": "screen",
+ "manifest_sha256": "47655fb24eff7e3d366d46b74fe3fd392b68f0a3f36560ca4f5ba6a6f4f5b464",
+ "metric_heldout": 0.25921894,
+ "model_seed": 0,
+ "no_learning_improvement": -18.51406517,
+ "noise_coord": "colored",
+ "noise_or_NOT_APPLICABLE": "colored",
+ "numerically_invalid": false,
+ "optimizer_budget": {
+  "identical_to_intervention": true,
+  "learning_rate": 0.05,
+  "minibatch": 16,
+  "updates": 2000
+ },
+ "random_init_band": [
+  -4.00793533,
+  -4.72200776,
+  -58.5984442
+ ],
+ "record_sha256": "f9a1c7b5e2ca22be7c364500be50cbb90142c853b1ba70e5eb3a654b23d49659",
+ "unit_id": "screen::discontinuity::colored::w16::g0",
+ "unit_role": "treatment",
+ "width": 16
+}

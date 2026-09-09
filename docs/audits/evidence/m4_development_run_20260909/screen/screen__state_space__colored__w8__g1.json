@@ -1,0 +1,30 @@
+{
+ "baseline_value": 0.2776035,
+ "family": "state_space",
+ "generator_id": "DEVELOPMENT-state_space-colored-g1",
+ "generator_role": "DEVELOPMENT",
+ "improvement": 0.61745685,
+ "kind": "screen",
+ "manifest_sha256": "ac7fd1432344864418e154558568ea697a5e8d8da21f2b6cb047308824b725dd",
+ "metric_heldout": 0.10619532,
+ "model_seed": 0,
+ "no_learning_improvement": -1.4156736,
+ "noise_coord": "colored",
+ "noise_or_NOT_APPLICABLE": "colored",
+ "numerically_invalid": false,
+ "optimizer_budget": {
+  "identical_to_intervention": true,
+  "learning_rate": 0.05,
+  "minibatch": 16,
+  "updates": 2000
+ },
+ "random_init_band": [
+  -4.06439642,
+  -2.67940942,
+  -2.26692196
+ ],
+ "record_sha256": "ba7a6ddcd507a73a5bff0f9f6e1c7df32d7d576f7da68ca6b5192dea54d1d31e",
+ "unit_id": "screen::state_space::colored::w8::g1",
+ "unit_role": "treatment",
+ "width": 8
+}

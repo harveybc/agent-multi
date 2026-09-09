@@ -1,0 +1,30 @@
+{
+ "baseline_value": 0.63649814,
+ "family": "am",
+ "generator_id": "DEVELOPMENT-am-impulsive-g1",
+ "generator_role": "DEVELOPMENT",
+ "improvement": 0.97296663,
+ "kind": "screen",
+ "manifest_sha256": "d1c8e29d23624e87110b9e41ff768b48a4fa239448d6ad693a5245b710f8f0e5",
+ "metric_heldout": 0.01720669,
+ "model_seed": 0,
+ "no_learning_improvement": -0.11030493,
+ "noise_coord": "impulsive",
+ "noise_or_NOT_APPLICABLE": "impulsive",
+ "numerically_invalid": false,
+ "optimizer_budget": {
+  "identical_to_intervention": true,
+  "learning_rate": 0.05,
+  "minibatch": 16,
+  "updates": 2000
+ },
+ "random_init_band": [
+  -6.71024544,
+  -7.94238269,
+  0.45901476
+ ],
+ "record_sha256": "5ef8efdcc9b34c633cd01039d5d78bf87890eff7279c010299853b4e8a9382ed",
+ "unit_id": "screen::am::impulsive::w64::g1",
+ "unit_role": "treatment",
+ "width": 64
+}

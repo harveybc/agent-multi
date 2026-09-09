@@ -1,0 +1,51 @@
+{
+ "arms": {
+  "control": {
+   "arm_wall_seconds": 0.092,
+   "censored": false,
+   "descriptors": {
+    "compressed_len_zlib9": 655,
+    "descriptor_seconds": 0.000198,
+    "prune_fraction_1e3": 0.02484472,
+    "spectral_rank_W1_1e3": 8
+   },
+   "endpoint_last_passing": 8,
+   "stopping_cause": "ACQUISITION_ENDPOINT",
+   "updates_done": 800
+  },
+  "treatment": {
+   "arm_wall_seconds": 0.28,
+   "censored": false,
+   "descriptors": {
+    "compressed_len_zlib9": 655,
+    "descriptor_seconds": 0.000217,
+    "prune_fraction_1e3": 0.0,
+    "spectral_rank_W1_1e3": 8
+   },
+   "endpoint_last_passing": 8,
+   "stopping_cause": "RETENTION_ENDPOINT",
+   "updates_done": 800
+  }
+ },
+ "diagnostic_examples_per_update": 16,
+ "diagnostic_outcome": "ACCEPTED",
+ "family": "sine",
+ "generator_id": "DEVELOPMENT-sine-white-g0",
+ "generator_index": 0,
+ "generator_role": "DEVELOPMENT",
+ "kind": "intervention",
+ "manifest_sha256": "e59590c53234da8f06dc10435e6a1ba4bdeca1307b221b7b7974b031aa1f8e02",
+ "model_seed": 0,
+ "noise": "white",
+ "optimizer_budget": {
+  "identical_to_intervention": true,
+  "learning_rate": 0.05,
+  "minibatch": 16,
+  "updates": 2000
+ },
+ "paired_difference_endpoint": 0,
+ "record_sha256": "c89bf1bb3dda94e2b0d811cae86452cd2977782b20c748d07dceb2063fc0b7fc",
+ "unit_id": "intervention::sine::white::w16::g0::s0",
+ "unit_role": "development_mechanics",
+ "width": 16
+}

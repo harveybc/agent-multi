@@ -1,0 +1,30 @@
+{
+ "baseline_value": 0.17318142,
+ "family": "am",
+ "generator_id": "DEVELOPMENT-am-heteroscedastic-g0",
+ "generator_role": "DEVELOPMENT",
+ "improvement": 0.93066861,
+ "kind": "screen",
+ "manifest_sha256": "5b282c21d73646f9ea3a773897655801f7ba92ce8ee241787f0f49f42682f543",
+ "metric_heldout": 0.01200691,
+ "model_seed": 0,
+ "no_learning_improvement": -0.84885909,
+ "noise_coord": "heteroscedastic",
+ "noise_or_NOT_APPLICABLE": "heteroscedastic",
+ "numerically_invalid": false,
+ "optimizer_budget": {
+  "identical_to_intervention": true,
+  "learning_rate": 0.05,
+  "minibatch": 16,
+  "updates": 2000
+ },
+ "random_init_band": [
+  0.09572014,
+  -1.25810644,
+  -9.89443665
+ ],
+ "record_sha256": "4e590a98fdb90ff0a272471117bc73dc633b439f0bcdcdf806dc8a40722fba85",
+ "unit_id": "screen::am::heteroscedastic::w32::g0",
+ "unit_role": "treatment",
+ "width": 32
+}

@@ -1,0 +1,30 @@
+{
+ "baseline_value": 0.20765704,
+ "family": "state_space",
+ "generator_id": "DEVELOPMENT-state_space-impulsive-g1",
+ "generator_role": "DEVELOPMENT",
+ "improvement": -0.17478266,
+ "kind": "screen",
+ "manifest_sha256": "53e2a2a760878ef6c4959fc0677cd54ace151d8a0d1475f8093f3c289b1b2b8d",
+ "metric_heldout": 0.24395188,
+ "model_seed": 0,
+ "no_learning_improvement": -3.73178135,
+ "noise_coord": "impulsive",
+ "noise_or_NOT_APPLICABLE": "impulsive",
+ "numerically_invalid": false,
+ "optimizer_budget": {
+  "identical_to_intervention": true,
+  "learning_rate": 0.05,
+  "minibatch": 16,
+  "updates": 2000
+ },
+ "random_init_band": [
+  -3.21963874,
+  -3.73046008,
+  -4.03385407
+ ],
+ "record_sha256": "36a70dce3612872b4fced5dbfc9bb8b05ff82fbfd98a572830b0ed0e6f0e730e",
+ "unit_id": "screen::state_space::impulsive::w8::g1",
+ "unit_role": "treatment",
+ "width": 8
+}

@@ -1,0 +1,12 @@
+corrected: {"adversary": "metric_forge", "result": "REFUSED", "reason": "REFUSED: screen unit screen::identity::clean::w16::g0 does not replay (fields: ['metric_heldout', 'record_sha256'])"}
+corrected: {"adversary": "relabel", "result": "REFUSED", "reason": "REFUSED: learnability table does not re-derive from the raw records under the frozen rule"}
+corrected: {"adversary": "censor_forge", "result": "REFUSED", "reason": "REFUSED: intervention::identity::clean::w16::g0::s0/control: endpoint/censoring facts do not equal the replayed derivation"}
+corrected: {"adversary": "foreign_role", "result": "REFUSED", "reason": "REFUSED: pre-result ledger does not enumerate the sealed population exactly \u2014 every unit row (role, generator identity, coordinate"}
+corrected: random_label licensing -> OPTIMIZATION_LIMITED margin 0.4
+mutant A_screen_replay_off: {"adversary": "metric_forge", "result": "VERIFIED", "verified": true}
+mutant B_table_rederive_off: {"adversary": "relabel", "result": "VERIFIED", "verified": true}
+mutant C_arm_facts_off: {"adversary": "censor_forge", "result": "VERIFIED", "verified": true}
+mutant D_ledger_rows_off: {"adversary": "foreign_role", "result": "VERIFIED", "verified": true}
+mutant E_bank_future_leak: {"adversary": "bank_leak", "result": "LEAKED", "observed": 1.85045, "train_only_expected": 0.0}
+
+POST CONFIRMED: population/ledger, screen replay, table re-derivation, censoring facts and train-only scaling all refuse their adversaries on the corrected code, and each guard alone is load-bearing under mutation

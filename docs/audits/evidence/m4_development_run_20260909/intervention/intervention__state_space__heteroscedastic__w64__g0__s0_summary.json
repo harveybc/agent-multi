@@ -1,0 +1,51 @@
+{
+ "arms": {
+  "control": {
+   "arm_wall_seconds": 0.163,
+   "censored": false,
+   "descriptors": {
+    "compressed_len_zlib9": 2433,
+    "descriptor_seconds": 0.000266,
+    "prune_fraction_1e3": 0.00780031,
+    "spectral_rank_W1_1e3": 8
+   },
+   "endpoint_last_passing": 16,
+   "stopping_cause": "ACQUISITION_ENDPOINT",
+   "updates_done": 1200
+  },
+  "treatment": {
+   "arm_wall_seconds": 0.38,
+   "censored": false,
+   "descriptors": {
+    "compressed_len_zlib9": 2427,
+    "descriptor_seconds": 0.00027,
+    "prune_fraction_1e3": 0.00156006,
+    "spectral_rank_W1_1e3": 8
+   },
+   "endpoint_last_passing": 16,
+   "stopping_cause": "ACQUISITION_ENDPOINT",
+   "updates_done": 1200
+  }
+ },
+ "diagnostic_examples_per_update": 16,
+ "diagnostic_outcome": "ACCEPTED",
+ "family": "state_space",
+ "generator_id": "DEVELOPMENT-state_space-heteroscedastic-g0",
+ "generator_index": 0,
+ "generator_role": "DEVELOPMENT",
+ "kind": "intervention",
+ "manifest_sha256": "8f0794329cb430d77b26dbb7693a547d92692213dfa77c3d210b6dd5a5d0e1c1",
+ "model_seed": 0,
+ "noise": "heteroscedastic",
+ "optimizer_budget": {
+  "identical_to_intervention": true,
+  "learning_rate": 0.05,
+  "minibatch": 16,
+  "updates": 2000
+ },
+ "paired_difference_endpoint": 0,
+ "record_sha256": "5cc2d36a6c3711022d683935a0e2c0d9975f569b48c385daae4b4229de1dde8a",
+ "unit_id": "intervention::state_space::heteroscedastic::w64::g0::s0",
+ "unit_role": "development_mechanics",
+ "width": 64
+}

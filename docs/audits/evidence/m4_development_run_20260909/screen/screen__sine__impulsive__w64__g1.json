@@ -1,0 +1,30 @@
+{
+ "baseline_value": 0.05459619,
+ "family": "sine",
+ "generator_id": "DEVELOPMENT-sine-impulsive-g1",
+ "generator_role": "DEVELOPMENT",
+ "improvement": 0.83748432,
+ "kind": "screen",
+ "manifest_sha256": "676be6fecb0af5604cafd68a037f6f7ad7b0205b06ae22266c91a481481a45a7",
+ "metric_heldout": 0.00887274,
+ "model_seed": 0,
+ "no_learning_improvement": -45.08114189,
+ "noise_coord": "impulsive",
+ "noise_or_NOT_APPLICABLE": "impulsive",
+ "numerically_invalid": false,
+ "optimizer_budget": {
+  "identical_to_intervention": true,
+  "learning_rate": 0.05,
+  "minibatch": 16,
+  "updates": 2000
+ },
+ "random_init_band": [
+  -38.41432181,
+  -80.68204067,
+  -37.39698457
+ ],
+ "record_sha256": "dd0baa2d975e1d54e6fc54c9f0f83d8cc3a135fc7995b99691817e0879158ca5",
+ "unit_id": "screen::sine::impulsive::w64::g1",
+ "unit_role": "treatment",
+ "width": 64
+}

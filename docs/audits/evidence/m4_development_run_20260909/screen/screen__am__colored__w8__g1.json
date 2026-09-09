@@ -1,0 +1,30 @@
+{
+ "baseline_value": 0.24019579,
+ "family": "am",
+ "generator_id": "DEVELOPMENT-am-colored-g1",
+ "generator_role": "DEVELOPMENT",
+ "improvement": 0.97223121,
+ "kind": "screen",
+ "manifest_sha256": "a8eaeab659a352e294dfcf8848c61c7a5c08685e979e388800d0e69c36061ddc",
+ "metric_heldout": 0.00666995,
+ "model_seed": 0,
+ "no_learning_improvement": -0.2239597,
+ "noise_coord": "colored",
+ "noise_or_NOT_APPLICABLE": "colored",
+ "numerically_invalid": false,
+ "optimizer_budget": {
+  "identical_to_intervention": true,
+  "learning_rate": 0.05,
+  "minibatch": 16,
+  "updates": 2000
+ },
+ "random_init_band": [
+  -0.7676849,
+  -0.67137303,
+  -3.25880068
+ ],
+ "record_sha256": "6ad3efa8198538f6e584f52b0b4b0a8fe274021659cb7092c5e44c9b5d7d21ad",
+ "unit_id": "screen::am::colored::w8::g1",
+ "unit_role": "treatment",
+ "width": 8
+}

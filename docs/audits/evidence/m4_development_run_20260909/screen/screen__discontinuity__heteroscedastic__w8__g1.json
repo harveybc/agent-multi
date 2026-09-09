@@ -1,0 +1,30 @@
+{
+ "baseline_value": 0.05615917,
+ "family": "discontinuity",
+ "generator_id": "DEVELOPMENT-discontinuity-heteroscedastic-g1",
+ "generator_role": "DEVELOPMENT",
+ "improvement": 0.19763523,
+ "kind": "screen",
+ "manifest_sha256": "98f7f998a88dd38f2450e833da27fd6bed2e9aedec067ecb16bd6b72dcaaab24",
+ "metric_heldout": 0.04506014,
+ "model_seed": 0,
+ "no_learning_improvement": -11.76581538,
+ "noise_coord": "heteroscedastic",
+ "noise_or_NOT_APPLICABLE": "heteroscedastic",
+ "numerically_invalid": false,
+ "optimizer_budget": {
+  "identical_to_intervention": true,
+  "learning_rate": 0.05,
+  "minibatch": 16,
+  "updates": 2000
+ },
+ "random_init_band": [
+  -15.90181276,
+  -8.74527979,
+  0.32089318
+ ],
+ "record_sha256": "35ace0fad996a55f3fb3afb7c7a836f65d26cf500e2c0cae3625b9f358d826e6",
+ "unit_id": "screen::discontinuity::heteroscedastic::w8::g1",
+ "unit_role": "treatment",
+ "width": 8
+}

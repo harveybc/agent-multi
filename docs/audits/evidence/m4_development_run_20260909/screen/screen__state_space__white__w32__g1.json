@@ -1,0 +1,30 @@
+{
+ "baseline_value": 0.46280819,
+ "family": "state_space",
+ "generator_id": "DEVELOPMENT-state_space-white-g1",
+ "generator_role": "DEVELOPMENT",
+ "improvement": 0.52785472,
+ "kind": "screen",
+ "manifest_sha256": "8e8122e64f895a3769e98588f3bb637bf66de3eeb9d47f4268f7c82d15f815af",
+ "metric_heldout": 0.2185127,
+ "model_seed": 0,
+ "no_learning_improvement": -3.49482829,
+ "noise_coord": "white",
+ "noise_or_NOT_APPLICABLE": "white",
+ "numerically_invalid": false,
+ "optimizer_budget": {
+  "identical_to_intervention": true,
+  "learning_rate": 0.05,
+  "minibatch": 16,
+  "updates": 2000
+ },
+ "random_init_band": [
+  -1.57351098,
+  -1.47909265,
+  -1.76525626
+ ],
+ "record_sha256": "24b3e5e5f3e8b540733583f1a75297a4f4464cdcbc8087010059f3141e090619",
+ "unit_id": "screen::state_space::white::w32::g1",
+ "unit_role": "treatment",
+ "width": 32
+}
