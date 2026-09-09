@@ -69,6 +69,90 @@ def _canon_sha(v, what):
     return v
 
 
+class FrozenEvidence:
+    """C83/C84: ONE descriptor-bound read of an evidence file —
+    the bytes are read once from an O_NOFOLLOW regular-file
+    descriptor, hashed, and strict-parsed from that same stream;
+    the parsed doc, full file SHA-256, internal self identity,
+    owner/mode facts and logical schema travel together. The
+    gate returns these objects and the executor consumes ONLY
+    them — no later path reopen may supply execution data."""
+    __slots__ = ("name", "bytes_sha256", "self_sha256", "doc",
+                 "owner_uid", "mode", "logical_schema")
+
+    def __init__(self, name, bytes_sha256, self_sha256, doc,
+                 owner_uid, mode, logical_schema):
+        self.name = name
+        self.bytes_sha256 = bytes_sha256
+        self.self_sha256 = self_sha256
+        self.doc = doc
+        self.owner_uid = owner_uid
+        self.mode = mode
+        self.logical_schema = logical_schema
+
+
+def freeze_evidence_file(path: Path, what: str,
+                         self_sha_key: str = None
+                         ) -> FrozenEvidence:
+    import stat as _stat
+    try:
+        fd = os.open(str(path), os.O_RDONLY
+                     | getattr(os, "O_NOFOLLOW", 0))
+    except FileNotFoundError:
+        raise ConfirmatoryRefusal(f"{what} does not exist")
+    except OSError as exc:
+        raise ConfirmatoryRefusal(
+            f"{what} unopenable without following links "
+            f"(errno {exc.errno})")
+    try:
+        st = os.fstat(fd)
+        if not _stat.S_ISREG(st.st_mode):
+            raise ConfirmatoryRefusal(
+                f"{what} is not a regular file")
+        if st.st_uid != os.getuid():
+            raise ConfirmatoryRefusal(
+                f"{what} has a foreign owner")
+        chunks = []
+        while True:
+            b = os.read(fd, 1 << 20)
+            if not b:
+                break
+            chunks.append(b)
+    finally:
+        os.close(fd)
+    raw = b"".join(chunks)
+    def _no_dupes(pairs):
+        keys = [k for k, _ in pairs]
+        if len(keys) != len(set(keys)):
+            raise ConfirmatoryRefusal(
+                f"duplicate JSON key in {what}")
+        return dict(pairs)
+    try:
+        doc = json.loads(
+            raw.decode("utf-8"), object_pairs_hook=_no_dupes,
+            parse_constant=lambda c: (_ for _ in ()).throw(
+                ConfirmatoryRefusal(
+                    f"non-finite constant in {what}")))
+    except json.JSONDecodeError as exc:
+        raise ConfirmatoryRefusal(
+            f"{what} is not well-formed JSON ({exc.msg})")
+    self_sha = None
+    if self_sha_key and isinstance(doc, dict):
+        body = {k: doc[k] for k in sorted(doc)
+                if k != self_sha_key}
+        self_sha = hashlib.sha256(json.dumps(
+            body, sort_keys=True).encode()).hexdigest()
+    import stat as _st2
+    return FrozenEvidence(
+        name=Path(path).name,
+        bytes_sha256=hashlib.sha256(raw).hexdigest(),
+        self_sha256=self_sha, doc=doc,
+        owner_uid=st.st_uid,
+        mode=_st2.S_IMODE(st.st_mode),
+        logical_schema=doc.get("schema")
+        if isinstance(doc, dict) else None)
+
+
 def strict_json_load(path: Path, where: str) -> dict:
     """C10: duplicate keys and non-finite constants refuse."""
     def _no_dupes(pairs):
@@ -922,14 +1006,19 @@ def verify_confirmatory_gates(manifest_path: Path,
     cannot be candidate-written; and NOTHING durable is created
     here — no ledger, no directory, no lock. Effects belong to the
     executor's --execute step, strictly after these gates."""
+    # C83/C84: each evidence file is read EXACTLY ONCE, from one
+    # O_NOFOLLOW regular-file descriptor; every downstream check
+    # and the returned facts consume that same frozen stream. A
+    # pathname swapped after these reads can influence NOTHING.
     mp = Path(manifest_path)
     if not mp.is_file():
         raise ConfirmatoryRefusal(
             "PUBLIC_DATA_REQUIRED: no public-data manifest exists "
             "yet — acquire and census the bank first")
-    manifest = strict_json_load(mp, "public-data manifest")
+    manifest_fz = freeze_evidence_file(mp, "public-data manifest")
+    manifest = manifest_fz.doc
     validate_public_manifest(manifest, raw_root=raw_root)
-    manifest_sha = _sha_file(mp)
+    manifest_sha = manifest_fz.bytes_sha256
     if census_path is None:
         census_path = (Path.home() / ".local/share/agent-multi/"
                        "t2_bank_census_20260906.json")
@@ -937,13 +1026,16 @@ def verify_confirmatory_gates(manifest_path: Path,
     if not cp.is_file():
         raise ConfirmatoryRefusal(
             "CENSUS_REQUIRED: the bank census does not exist")
-    census_sha = _sha_file(cp)
+    census_fz = freeze_evidence_file(cp, "bank census")
+    census_sha = census_fz.bytes_sha256
     dp = Path(design_path)
     if not dp.is_file():
         raise ConfirmatoryRefusal(
             "DESIGN_REQUIRED: no immutable confirmatory design is "
             "sealed over the acquired bank")
-    design = strict_json_load(dp, "confirmatory design")
+    design_fz = freeze_evidence_file(dp, "confirmatory design",
+                                     self_sha_key="design_sha256")
+    design = design_fz.doc
     validate_confirmatory_design(design, manifest_sha)
     # C39 (T2): draft schemas can be validated for review but can
     # NEVER enter scoring — only the sealed v6 identity proceeds
@@ -965,9 +1057,8 @@ def verify_confirmatory_gates(manifest_path: Path,
     # digests and EVERY unit_map field rebuilt from physical
     # bytes. Its output is a precondition, never an authority.
     import t2_fresh_verifier as _fv
-    census = strict_json_load(cp, "bank census")
-    _fv.fresh_verify(manifest, census, design, raw_root=raw_root,
-                     manifest_sha=manifest_sha)
+    _fv.fresh_verify(manifest, census_fz.doc, design,
+                     raw_root=raw_root, manifest_sha=manifest_sha)
     # C9: the external review — verified in full, BEFORE any
     # ledger artifact can exist.
     review = verify_design_review_record(design, manifest_sha,
@@ -998,15 +1089,25 @@ def verify_confirmatory_gates(manifest_path: Path,
     # census, the physical executor code identity and the FULL
     # executing checkout.
     exec_rec = verify_execution_record(
-        design, _sha_file(dp), review["_record_sha256"],
+        design, design_fz.bytes_sha256, review["_record_sha256"],
         manifest_sha, census_sha, repo_root=repo_root)
+    # C83: ONE typed immutable evidence snapshot leaves the gate —
+    # the executor consumes design/manifest/census ONLY from here
+    # and never resolves or parses the pathnames again.
     return {"gates": "ALL_OPEN",
             "execution_record_sha256": exec_rec["_record_sha256"],
             "review_record_sha256": review["_record_sha256"],
-            "design_file_sha256": _sha_file(dp),
+            "design_file_sha256": design_fz.bytes_sha256,
+            "design_self_sha256": design_fz.self_sha256,
+            "design_schema": design_fz.logical_schema,
+            "design_owner_uid": design_fz.owner_uid,
+            "design_mode": design_fz.mode,
             "manifest_sha256": manifest_sha,
             "census_sha256": census_sha,
             "pinned_commit": exec_rec["pinned_commit"],
+            "design": design_fz,
+            "manifest": manifest_fz,
+            "census": census_fz,
             "note": "gates only — durable effects (out_root, "
                     "lock, ledger, claims) are created by the "
                     "executor's --execute step alone"}
@@ -1031,6 +1132,11 @@ def run_confirmatory(manifest_path: Path, design_path: Path,
 
 T2_EXECUTION_RECORD_PATH = (
     AUTHORITY_ROOT / "MUSASHI_T2_V6_EXECUTION_RECORD.json")
+# C85: the resource successor uses its OWN fixed external
+# pathname and schema; the v6 pathname is never reused.
+T2_SUCCESSOR_EXECUTION_RECORD_PATH = (
+    AUTHORITY_ROOT
+    / "MUSASHI_T2_SUCCESSOR_EXECUTION_RECORD.json")
 # C48: the exact code surface the execution record pins — every
 # module the confirmatory executor imports to fit, score or verify.
 T2_EXECUTOR_CODE_SURFACE = (
@@ -1052,6 +1158,13 @@ _EXEC_KEYS = {"schema", "reviewed_at_date", "reviewer",
               "design_review_record_sha256", "manifest_sha256",
               "census_sha256", "executor_code_identity",
               "pinned_commit", "pinned_tree"}
+_SUCC_EXEC_KEYS = {"schema", "reviewed_at_date", "reviewer",
+                   "decision", "successor_design_file_sha256",
+                   "successor_design_self_sha256",
+                   "design_review_record_sha256",
+                   "manifest_sha256", "census_sha256",
+                   "executor_code_identity", "pinned_commit",
+                   "pinned_tree"}
 
 
 def executor_code_identity(repo_root: Path = REPO) -> dict:
@@ -1147,15 +1260,33 @@ def verify_execution_record(design: dict,
     review record, manifest, census, the physical code identity of
     the executor surface, and the FULL checkout (existing commit ==
     executing HEAD, exact tree, clean worktree, no shadowing
-    sources). Custody facts and exact bytes only."""
-    fd = _open_private_authority_file(
-        T2_EXECUTION_RECORD_PATH,
-        missing_msg=(
+    sources). Custody facts and exact bytes only.
+
+    C85: when the active design is the RESOURCE SUCCESSOR, the
+    required record is the successor-specific one — its OWN fixed
+    pathname and schema, pinning the SUCCESSOR's physical and self
+    digests. The v6 pathname/schema are never reused, so a stale
+    v6 record can never open successor execution and a successor
+    record can never open v6 execution."""
+    is_successor = design.get("schema") == T2_SUCCESSOR_SCHEMA
+    if is_successor:
+        rec_path = T2_SUCCESSOR_EXECUTION_RECORD_PATH
+        missing = (
+            "T2_SUCCESSOR_EXECUTION_RECORD_REQUIRED: successor "
+            "scoring stays STRUCTURALLY CLOSED — the external "
+            "Musashi SUCCESSOR execution record does not exist "
+            "under the private reviewer-authority root; a v6 "
+            "execution record never authorizes the successor")
+    else:
+        rec_path = T2_EXECUTION_RECORD_PATH
+        missing = (
             "T2_EXECUTION_RECORD_REQUIRED: confirmatory scoring "
             "stays STRUCTURALLY CLOSED — the external Musashi "
             "execution record does not exist under the private "
             "reviewer-authority root; the sealed design alone "
-            "never scores"))
+            "never scores")
+    fd = _open_private_authority_file(rec_path,
+                                      missing_msg=missing)
     try:
         chunks = []
         while True:
@@ -1180,16 +1311,22 @@ def verify_execution_record(design: dict,
         raise ConfirmatoryRefusal(
             f"execution record is not well-formed JSON "
             f"({exc.msg})")
-    if set(rec) != _EXEC_KEYS:
+    want_keys = _SUCC_EXEC_KEYS if is_successor else _EXEC_KEYS
+    if set(rec) != want_keys:
         raise ConfirmatoryRefusal(
-            "execution record keys are not the exact v2 schema")
-    for k in _EXEC_KEYS - {"executor_code_identity"}:
+            "execution record keys are not the exact "
+            + ("successor v1" if is_successor else "v2")
+            + " schema")
+    for k in want_keys - {"executor_code_identity"}:
         if type(rec[k]) is not str or not rec[k]:
             raise ConfirmatoryRefusal(
                 f"execution record field {k!r} must be a "
                 "nonempty string")
-    if rec["schema"] != \
-            "agent_multi.musashi_t2_execution_record.v2":
+    want_schema = (
+        "agent_multi.musashi_t2_successor_execution_record.v1"
+        if is_successor
+        else "agent_multi.musashi_t2_execution_record.v2")
+    if rec["schema"] != want_schema:
         raise ConfirmatoryRefusal(
             "execution record carries a foreign schema")
     import datetime as _dt
@@ -1206,24 +1343,28 @@ def verify_execution_record(design: dict,
         raise ConfirmatoryRefusal(
             "execution record author field is not the external "
             "reviewer role")
-    if rec["decision"] != "OPEN_T2_CONFIRMATORY_EXECUTION":
+    want_decision = ("OPEN_T2_SUCCESSOR_EXECUTION" if is_successor
+                     else "OPEN_T2_CONFIRMATORY_EXECUTION")
+    if rec["decision"] != want_decision:
         raise ConfirmatoryRefusal(
             "execution record decision does not open scoring")
+    self_key = ("successor_design_self_sha256" if is_successor
+                else "sealed_design_self_sha256")
+    file_key = ("successor_design_file_sha256" if is_successor
+                else "sealed_design_file_sha256")
     body = {k: design[k] for k in sorted(design)
             if k != "design_sha256"}
     self_sha = hashlib.sha256(json.dumps(
         body, sort_keys=True).encode()).hexdigest()
-    if rec["sealed_design_self_sha256"] != self_sha or \
-            rec["sealed_design_self_sha256"] != \
-            design.get("design_sha256"):
+    if rec[self_key] != self_sha or \
+            rec[self_key] != design.get("design_sha256"):
         raise ConfirmatoryRefusal(
-            "execution record does not pin THIS sealed design's "
+            "execution record does not pin THIS active design's "
             "self identity")
-    _canon_sha(rec["sealed_design_file_sha256"],
-               "execution sealed file digest")
-    if rec["sealed_design_file_sha256"] != design_file_sha:
+    _canon_sha(rec[file_key], "execution active file digest")
+    if rec[file_key] != design_file_sha:
         raise ConfirmatoryRefusal(
-            "execution record does not pin THIS sealed design's "
+            "execution record does not pin THIS active design's "
             "physical bytes")
     # C48.5: the record binds the verified review record, the exact
     # manifest and census, and the PHYSICAL executor code identity.

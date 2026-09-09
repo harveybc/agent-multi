@@ -1346,10 +1346,16 @@ def _binding_for(design: dict, unit: dict, mode: str) -> dict:
 
 
 def physical_authority(design: dict, mode: str,
-                       repo_root: Path = None) -> dict:
+                       repo_root: Path = None,
+                       design_file_sha: str = None) -> dict:
+    """C83: live paths (rehearsal, dispositions) pass the digest
+    of the ONE frozen stream they consumed, so the authority names
+    the exact consumed bytes; only DEFERRED re-verification, which
+    deliberately checks the current pathname's bytes, omits it."""
     if mode not in MODES:
         raise ExecutorRefusal(f"unknown execution mode {mode!r}")
-    sealed_file_sha = _sha_file(active_design_path())
+    sealed_file_sha = (design_file_sha if design_file_sha
+                       else _sha_file(active_design_path()))
     self_sha = _self_sha(design, "design_sha256")
     if self_sha != design.get("design_sha256"):
         raise ExecutorRefusal(
@@ -2189,16 +2195,18 @@ def declare_attempt_failed(out_root: Path, uid: str,
     if mode not in MODES:
         raise ExecutorRefusal(f"unknown execution mode {mode!r}")
     rr = ResultsRoot(out_root, create=False)
-    design = conf.strict_json_load(active_design_path(),
-                                   "active design")
+    # C83: the active design is resolved ONCE; every consumer
+    # below uses the frozen snapshot — no post-gate reread.
     if mode == "confirmatory":
         facts = conf.verify_confirmatory_gates(
             MANIFEST_PATH, active_design_path(),
             census_path=CENSUS_PATH)
+        design = facts["design"].doc
         authority = {
             "sealed_design_file_sha256":
                 facts["design_file_sha256"],
-            "sealed_design_self_sha256": design["design_sha256"],
+            "sealed_design_self_sha256":
+                facts["design_self_sha256"],
             "design_review_record_sha256":
                 facts["review_record_sha256"],
             "execution_record_sha256":
@@ -2206,7 +2214,12 @@ def declare_attempt_failed(out_root: Path, uid: str,
             "manifest_sha256": facts["manifest_sha256"],
             "census_sha256": facts["census_sha256"]}
     else:
-        authority = physical_authority(design, mode)
+        design_fz = conf.freeze_evidence_file(
+            active_design_path(), "active design",
+            self_sha_key="design_sha256")
+        design = design_fz.doc
+        authority = physical_authority(
+            design, mode, design_file_sha=design_fz.bytes_sha256)
     st, why = adjudicate_unit_shallow(rr, uid)
     if not (st == "UNCERTAIN" and "claim without" in why):
         raise ExecutorRefusal(
@@ -2388,15 +2401,26 @@ def main(argv=None) -> int:
             "--mechanical-rehearsal (dev units only)")
     out_root = args.out_root or (
         STATE / "t2_confirmatory_results_v6")
+    # C83/C84: the pathnames are resolved ONCE, here; the gate
+    # reads each evidence file from a single O_NOFOLLOW stream and
+    # returns the frozen snapshot. From this point on, NOTHING in
+    # the campaign calls active_design_path() or reparses the
+    # design/manifest/census — planning, census of work, the task
+    # list, unit reconstruction, limits, claims and the final
+    # adjudication all consume the same frozen object.
     facts = conf.verify_confirmatory_gates(
         MANIFEST_PATH, active_design_path(),
         census_path=CENSUS_PATH)
-    design = conf.strict_json_load(active_design_path(),
-                                   "active design")
-    manifest = conf.strict_json_load(MANIFEST_PATH, "manifest")
+    design = facts["design"].doc
+    manifest = facts["manifest"].doc
+    # C86: the executable v6-to-successor diff re-runs at the
+    # FINAL point of use, on the frozen bytes the campaign will
+    # consume — not only at the gate's earlier read.
+    if design.get("schema") == conf.T2_SUCCESSOR_SCHEMA:
+        conf.verify_resource_successor(design)
     authority = {
         "sealed_design_file_sha256": facts["design_file_sha256"],
-        "sealed_design_self_sha256": design["design_sha256"],
+        "sealed_design_self_sha256": facts["design_self_sha256"],
         "design_review_record_sha256":
             facts["review_record_sha256"],
         "execution_record_sha256":
@@ -2537,10 +2561,16 @@ def rehearse(out_root: Path = None) -> int:
                 "refusing to clear a rehearsal root outside the "
                 "cache area")
         shutil.rmtree(out_root)
-    design = conf.strict_json_load(active_design_path(),
-                                   "active design")
+    # C83: one frozen read; the rehearsal authority names the
+    # digest of the exact stream it consumed.
+    design_fz = conf.freeze_evidence_file(
+        active_design_path(), "active design",
+        self_sha_key="design_sha256")
+    design = design_fz.doc
     sealed_ids = set(design["task_population"]["series_ids"])
-    authority = physical_authority(design, "mechanical_rehearsal")
+    authority = physical_authority(
+        design, "mechanical_rehearsal",
+        design_file_sha=design_fz.bytes_sha256)
     pins = _git_head_tree()
     limits = {"max_wall_seconds":
               design["resource_contract"]["max_wall_seconds"],

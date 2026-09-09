@@ -1,0 +1,7 @@
+phase1_corrected_swap: {"rc": 0, "refused": null, "plan_units": 242, "authority_names_A": true}
+phase1_corrected_tamper: {"rc": "refused", "refused": "REFUSED: successor carries a SCIENTIFIC delta at practical_margin_mase \u2014 a resource-only s", "plan_units": null, "authority_names_A": null}
+phase2a_mutantA_reread_alone: {"rc": "refused", "refused": "REFUSED: successor hard campaign ceiling must be exactly 216000 seconds", "plan_units": null, "authority_names_A": null}
+phase2b_mutantA2_pre_reopens: {"rc": 0, "refused": null, "plan_units": 3, "authority_names_A": true}
+phase3_mutantB_no_final_diff: {"rc": 0, "refused": null, "plan_units": 242, "authority_names_A": true}
+
+POST CONFIRMED: the frozen snapshot kills the post-gate swap (242/A vs the PRE's 3/B), the C86 final-use diff kills the tampered snapshot, and BOTH protections bite under mutation

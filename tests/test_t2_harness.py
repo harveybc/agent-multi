@@ -165,7 +165,8 @@ def test_confirmatory_gate_refuses_public_data_required(tmp_path):
                 "SEALED_DESIGN_REQUIRED",
                 "DESIGN_REVIEW_REQUIRED",
                 "T2_DESIGN_HARD_LIMIT",
-                "T2_EXECUTION_RECORD_REQUIRED"))
+                "T2_EXECUTION_RECORD_REQUIRED",
+                "T2_SUCCESSOR_EXECUTION_RECORD_REQUIRED"))
     assert not (tmp_path / "out.json").exists()
 
 
@@ -2034,12 +2035,29 @@ def _git_head_tree():
 def _v2_exec_record(conf, sealed, design, **over):
     S = Path.home() / ".local/share/agent-multi"
     head, tree = _git_head_tree()
-    rec = {"schema": "agent_multi.musashi_t2_execution_record.v2",
-           "reviewed_at_date": "2026-09-07",
-           "reviewer": "General Musashi",
-           "decision": "OPEN_T2_CONFIRMATORY_EXECUTION",
-           "sealed_design_file_sha256": conf._sha_file(sealed),
-           "sealed_design_self_sha256": design["design_sha256"],
+    # C85: the fixture authors the layout the ROUTED record path
+    # demands — successor designs use the successor-specific
+    # schema/decision/pin keys, never the v6 ones.
+    if design.get("schema") == conf.T2_SUCCESSOR_SCHEMA:
+        rec = {"schema": "agent_multi.musashi_t2_successor_"
+                         "execution_record.v1",
+               "reviewed_at_date": "2026-09-07",
+               "reviewer": "General Musashi",
+               "decision": "OPEN_T2_SUCCESSOR_EXECUTION",
+               "successor_design_file_sha256":
+                   conf._sha_file(sealed),
+               "successor_design_self_sha256":
+                   design["design_sha256"]}
+    else:
+        rec = {"schema":
+                   "agent_multi.musashi_t2_execution_record.v2",
+               "reviewed_at_date": "2026-09-07",
+               "reviewer": "General Musashi",
+               "decision": "OPEN_T2_CONFIRMATORY_EXECUTION",
+               "sealed_design_file_sha256": conf._sha_file(sealed),
+               "sealed_design_self_sha256":
+                   design["design_sha256"]}
+    rec.update({
            "design_review_record_sha256":
                conf._sha_file(conf.T2_REVIEW_RECORD_PATH),
            "manifest_sha256": conf._sha_file(
@@ -2048,7 +2066,7 @@ def _v2_exec_record(conf, sealed, design, **over):
                S / "t2_bank_census_20260906.json"),
            "executor_code_identity":
                conf.executor_code_identity(),
-           "pinned_commit": head, "pinned_tree": tree}
+           "pinned_commit": head, "pinned_tree": tree})
     rec.update(over)
     return rec
 
@@ -2065,17 +2083,23 @@ def test_c48_1_execution_gate_v2_per_field(tmp_path, monkeypatch):
         pytest.skip("sealed design absent on this host")
     mp = S / "t2_public_data_manifest_20260906.json"
     lp = tmp_path / "ledger.json"
+    # C85: BOTH record pathnames are stubbed missing — the active
+    # successor must demand ITS OWN record, never the v6 one.
     monkeypatch.setattr(conf, "T2_EXECUTION_RECORD_PATH",
                         tmp_path / "missing.json")
-    with pytest.raises(SystemExit,
-                       match="T2_EXECUTION_RECORD_REQUIRED"):
+    monkeypatch.setattr(conf, "T2_SUCCESSOR_EXECUTION_RECORD_PATH",
+                        tmp_path / "missing_successor.json")
+    with pytest.raises(
+            SystemExit,
+            match="T2_SUCCESSOR_EXECUTION_RECORD_REQUIRED"):
         conf.run_confirmatory(
             mp, sealed, lp,
             census_path=S / "t2_bank_census_20260906.json")
     assert not lp.exists()
     ra = _t2_private_chain(tmp_path / "auth")
-    er = ra / "MUSASHI_T2_V6_EXECUTION_RECORD.json"
-    monkeypatch.setattr(conf, "T2_EXECUTION_RECORD_PATH", er)
+    er = ra / "MUSASHI_T2_SUCCESSOR_EXECUTION_RECORD.json"
+    monkeypatch.setattr(conf, "T2_SUCCESSOR_EXECUTION_RECORD_PATH",
+                        er)
     d = json.loads(sealed.read_text())
     args = (d, conf._sha_file(sealed),
             conf._sha_file(conf.T2_REVIEW_RECORD_PATH),
@@ -2091,12 +2115,26 @@ def test_c48_1_execution_gate_v2_per_field(tmp_path, monkeypatch):
     # a v1-shaped record is a foreign schema now
     v1 = {k: good[k] for k in
           ("schema", "reviewed_at_date", "reviewer", "decision",
-           "sealed_design_file_sha256",
-           "sealed_design_self_sha256")}
+           "successor_design_file_sha256",
+           "successor_design_self_sha256")}
     v1["schema"] = "agent_multi.musashi_t2_execution_record.v1"
     v1["candidate_commit"] = "attacker-controlled-nonempty-string"
     _priv_write(er, v1)
-    with pytest.raises(SystemExit, match="exact v2 schema"):
+    with pytest.raises(SystemExit, match="exact successor v1"):
+        conf.verify_execution_record(*args)
+    # C85 kill: a V6-LAYOUT record installed at the successor
+    # pathname never authorizes the successor
+    v6shape = {**{k: good[k] for k in good
+                  if not k.startswith("successor_")},
+               "schema":
+                   "agent_multi.musashi_t2_execution_record.v2",
+               "decision": "OPEN_T2_CONFIRMATORY_EXECUTION",
+               "sealed_design_file_sha256":
+                   good["successor_design_file_sha256"],
+               "sealed_design_self_sha256":
+                   good["successor_design_self_sha256"]}
+    _priv_write(er, v6shape)
+    with pytest.raises(SystemExit, match="exact successor v1"):
         conf.verify_execution_record(*args)
     # per-field forgeries (checkout verifier stubbed so field
     # semantics are what refuses, not this dev tree's dirt)
@@ -2108,9 +2146,9 @@ def test_c48_1_execution_gate_v2_per_field(tmp_path, monkeypatch):
             ("decision", "SOMETHING_ELSE", "does not open"),
             ("reviewer", "candidate", "external reviewer role"),
             ("reviewed_at_date", "7/9/2026", "canonical"),
-            ("sealed_design_file_sha256", "e" * 64,
+            ("successor_design_file_sha256", "e" * 64,
              "physical bytes"),
-            ("sealed_design_self_sha256", "e" * 64,
+            ("successor_design_self_sha256", "e" * 64,
              "self identity"),
             ("design_review_record_sha256", "0" * 64,
              "verified external design review record"),
@@ -2126,10 +2164,10 @@ def test_c48_1_execution_gate_v2_per_field(tmp_path, monkeypatch):
     less = dict(good)
     less.pop("pinned_tree")
     _priv_write(er, less)
-    with pytest.raises(SystemExit, match="exact v2 schema"):
+    with pytest.raises(SystemExit, match="exact successor v1"):
         conf.verify_execution_record(*args)
     _priv_write(er, {**good, "extra": "x"})
-    with pytest.raises(SystemExit, match="exact v2 schema"):
+    with pytest.raises(SystemExit, match="exact successor v1"):
         conf.verify_execution_record(*args)
     # the VALID v2 record verifies (checkout stub records the pin)
     _priv_write(er, good)
@@ -2731,24 +2769,40 @@ def test_c53_1_plan_is_pure_and_gates_precede_effects(tmp_path,
         pytest.skip("sealed design absent on this host")
     monkeypatch.setattr(conf, "T2_EXECUTION_RECORD_PATH",
                         tmp_path / "missing.json")
+    monkeypatch.setattr(conf, "T2_SUCCESSOR_EXECUTION_RECORD_PATH",
+                        tmp_path / "missing_successor.json")
     t = tmp_path / "planroot"
     before = sorted(p.name for p in tmp_path.iterdir())
-    with pytest.raises(SystemExit,
-                       match="T2_EXECUTION_RECORD_REQUIRED"):
+    with pytest.raises(
+            SystemExit,
+            match="T2_(SUCCESSOR_)?EXECUTION_RECORD_REQUIRED"):
         ex.main(["--plan", "--out-root", str(t)])
     assert not t.exists()
-    with pytest.raises(SystemExit,
-                       match="T2_EXECUTION_RECORD_REQUIRED"):
+    with pytest.raises(
+            SystemExit,
+            match="T2_(SUCCESSOR_)?EXECUTION_RECORD_REQUIRED"):
         ex.main(["--execute", "--out-root", str(t)])
     assert not t.exists()
     assert sorted(p.name for p in tmp_path.iterdir()) == before
+    # C83: main() consumes design/manifest ONLY from the gate's
+    # frozen snapshot — the fake facts must carry them.
+    design_fz = conf.freeze_evidence_file(
+        conf.t2_active_design_path(), "active design",
+        self_sha_key="design_sha256")
+    manifest_fz = conf.freeze_evidence_file(
+        Path.home() / ".local/share/agent-multi/"
+        "t2_public_data_manifest_20260906.json", "manifest")
     fake_facts = {"gates": "ALL_OPEN",
                   "execution_record_sha256": "e" * 64,
                   "review_record_sha256": "r" * 64,
                   "design_file_sha256": "d" * 64,
+                  "design_self_sha256":
+                      design_fz.doc["design_sha256"],
                   "manifest_sha256": "m" * 64,
                   "census_sha256": "c" * 64,
-                  "pinned_commit": "0" * 40}
+                  "pinned_commit": "0" * 40,
+                  "design": design_fz,
+                  "manifest": manifest_fz}
     monkeypatch.setattr(conf, "verify_confirmatory_gates",
                         lambda *a, **k: fake_facts)
     rc = ex.main(["--plan", "--out-root", str(t)])
@@ -4297,3 +4351,213 @@ def test_c79_mutations_bite(trusted_tmp, monkeypatch):
         # with the projection muted, nothing refuses the 4h cap
         assert not (tmp_path / "absent.json").exists()  # bites:
         # the gate would silently accept the infeasible design
+
+
+# ========== C82-C88: frozen single-stream evidence consumption ==========
+
+def _frozen_world(tmp_path, monkeypatch):
+    """C87 world: tmp copies of the real successor/manifest/census
+    (byte-identical, so the installed review record's pins hold), a
+    successor-record fixture at a stubbed successor pathname, and
+    the checkout verifier stubbed. Nothing under the real STATE is
+    written."""
+    import t2_confirmatory as conf
+    ex = _exec_mod()
+    S = Path.home() / ".local/share/agent-multi"
+    real_succ = S / "t2_screen_design_RESOURCE_SUCCESSOR_V1.json"
+    if not real_succ.exists():
+        pytest.skip("successor design absent on this host")
+    succ = tmp_path / "successor.json"
+    man = tmp_path / "manifest.json"
+    cen = tmp_path / "census.json"
+    succ.write_bytes(real_succ.read_bytes())
+    man.write_bytes(
+        (S / "t2_public_data_manifest_20260906.json").read_bytes())
+    cen.write_bytes(
+        (S / "t2_bank_census_20260906.json").read_bytes())
+    for f in (succ, man, cen):
+        os.chmod(f, 0o600)
+    monkeypatch.setattr(ex, "SUCCESSOR_PATH", succ)
+    monkeypatch.setattr(ex, "MANIFEST_PATH", man)
+    monkeypatch.setattr(ex, "CENSUS_PATH", cen)
+    ra = _t2_private_chain(tmp_path / "auth")
+    er = ra / "MUSASHI_T2_SUCCESSOR_EXECUTION_RECORD.json"
+    d = json.loads(succ.read_text())
+    _priv_write(er, _v2_exec_record(conf, succ, d))
+    monkeypatch.setattr(conf,
+                        "T2_SUCCESSOR_EXECUTION_RECORD_PATH", er)
+    monkeypatch.setattr(conf, "verify_executor_checkout",
+                        lambda c, t, repo_root=None: None)
+    return conf, ex, succ, man, cen
+
+
+def _design_b_text(succ_text):
+    """The PRE's visibly different science: population cut to 3
+    units, altered wall, repaired self digest."""
+    b = json.loads(succ_text)
+    keep = b["task_population"]["series_ids"][:3]
+    b["task_population"]["series_ids"] = keep
+    b["task_population"]["unit_map"] = {
+        k: b["task_population"]["unit_map"][k] for k in keep}
+    b["resource_contract"]["max_wall_seconds"] = 999999
+    body = {k: b[k] for k in sorted(b) if k != "design_sha256"}
+    b["design_sha256"] = hashlib.sha256(json.dumps(
+        body, sort_keys=True).encode()).hexdigest()
+    return json.dumps(b, indent=1)
+
+
+def test_c87_1_design_swap_after_gate_is_dead(tmp_path,
+                                              monkeypatch,
+                                              capsys):
+    """C82/C83 kill #1/#2: the PRE adversary — design B lands at
+    the active pathname right after the gate (and again via
+    replace-then-restore on a different inode) — now consumes
+    NOTHING: the campaign uses the frozen snapshot of A."""
+    conf, ex, succ, man, cen = _frozen_world(tmp_path, monkeypatch)
+    a_bytes = succ.read_bytes()
+    a_sha = hashlib.sha256(a_bytes).hexdigest()
+    bt = _design_b_text(succ.read_text())
+    real = conf.verify_confirmatory_gates
+
+    def swap(*a, **k):
+        facts = real(*a, **k)
+        succ.unlink()
+        succ.write_text(bt)          # kill #1: B at the pathname
+        os.chmod(succ, 0o600)
+        return facts
+    with monkeypatch.context() as mp:
+        mp.setattr(conf, "verify_confirmatory_gates", swap)
+        rc = ex.main(["--plan",
+                      "--out-root", str(tmp_path / "planroot")])
+    plan = json.loads(capsys.readouterr().out)
+    assert rc == 0
+    assert plan["plan"]["units"] == 242            # A, never B(3)
+    assert plan["authority"]["sealed_design_file_sha256"] == \
+        a_sha[:16]
+    assert not (tmp_path / "planroot").exists()    # kill #10
+    succ.unlink()
+    succ.write_bytes(a_bytes)        # A back for the second kill
+    os.chmod(succ, 0o600)
+
+    def swap_restore(*a, **k):
+        facts = real(*a, **k)
+        succ.unlink()
+        succ.write_text(bt)
+        succ.unlink()
+        succ.write_bytes(a_bytes)    # kill #2: same bytes, new
+        os.chmod(succ, 0o600)        # inode mid-window
+        return facts
+    with monkeypatch.context() as mp:
+        mp.setattr(conf, "verify_confirmatory_gates",
+                   swap_restore)
+        rc = ex.main(["--plan",
+                      "--out-root", str(tmp_path / "planroot")])
+    plan = json.loads(capsys.readouterr().out)
+    assert rc == 0 and plan["plan"]["units"] == 242
+    assert plan["authority"]["sealed_design_file_sha256"] == \
+        a_sha[:16]
+
+
+def test_c87_2_manifest_census_swap_after_gate_is_dead(
+        tmp_path, monkeypatch, capsys):
+    """C84 kills #3/#4: manifest or census replaced after the gate
+    — the authority and the campaign keep naming the frozen
+    streams; the swapped bytes reach nothing."""
+    conf, ex, succ, man, cen = _frozen_world(tmp_path, monkeypatch)
+    man_sha = hashlib.sha256(man.read_bytes()).hexdigest()
+    cen_sha = hashlib.sha256(cen.read_bytes()).hexdigest()
+    real = conf.verify_confirmatory_gates
+
+    def swap(*a, **k):
+        facts = real(*a, **k)
+        for f in (man, cen):
+            f.unlink()
+            f.write_text('{"forged": true}')
+            os.chmod(f, 0o600)
+        return facts
+    with monkeypatch.context() as mp:
+        mp.setattr(conf, "verify_confirmatory_gates", swap)
+        rc = ex.main(["--plan",
+                      "--out-root", str(tmp_path / "planroot")])
+    plan = json.loads(capsys.readouterr().out)
+    assert rc == 0
+    assert plan["authority"]["manifest_sha256"] == man_sha[:16]
+    assert plan["authority"]["census_sha256"] == cen_sha[:16]
+    assert not (tmp_path / "planroot").exists()
+
+
+def test_c87_3_no_post_gate_resolution_source_facts():
+    """C83 kill #5: after each entry point's single gate/freeze
+    call, the source contains ZERO further active_design_path()
+    resolutions and ZERO strict_json_load reparses of
+    design/manifest/census; the frozen snapshot is the sole
+    source."""
+    esrc = (REPO / "tools/t2_confirmatory_executor.py").read_text()
+    mseg = esrc[esrc.index("def main"):esrc.index("def rehearse")]
+    post = mseg[mseg.index("verify_confirmatory_gates"):]
+    assert post.count("active_design_path()") == 1  # gate arg only
+    assert "strict_json_load" not in post
+    assert 'facts["design"].doc' in mseg
+    assert 'facts["manifest"].doc' in mseg
+    dseg = esrc[esrc.index("def declare_attempt_failed"):
+                esrc.index("def main")]
+    assert "strict_json_load" not in dseg
+    assert dseg.count("active_design_path()") == 2  # one per mode
+    assert 'facts["design"].doc' in dseg
+    rseg = esrc[esrc.index("def rehearse"):]
+    assert "strict_json_load(active_design_path()" not in rseg
+    assert rseg.count("freeze_evidence_file") == 1
+    # the gate itself reads each stream exactly once
+    csrc = (REPO / "tools/t2_confirmatory.py").read_text()
+    gseg = csrc[csrc.index("def verify_confirmatory_gates"):
+                csrc.index("def run_confirmatory")]
+    assert gseg.count("freeze_evidence_file") == 3
+    assert "strict_json_load(mp" not in gseg
+    assert "strict_json_load(cp" not in gseg
+    assert "strict_json_load(dp" not in gseg
+    assert "_sha_file(dp)" not in gseg
+
+
+def test_c87_4_tampered_snapshot_dies_at_final_use(tmp_path,
+                                                   monkeypatch):
+    """C86 kills #7/#10: a snapshot whose doc acquired one
+    scientific delta after the gate dies at the FINAL point of
+    use — the re-run executable diff — before any durable
+    write."""
+    conf, ex, succ, man, cen = _frozen_world(tmp_path, monkeypatch)
+    real = conf.verify_confirmatory_gates
+
+    def tamper(*a, **k):
+        facts = real(*a, **k)
+        doc = facts["design"].doc
+        doc["practical_margin_mase"] = 0.001
+        body = {k2: doc[k2] for k2 in sorted(doc)
+                if k2 != "design_sha256"}
+        doc["design_sha256"] = hashlib.sha256(json.dumps(
+            body, sort_keys=True).encode()).hexdigest()
+        return facts
+    with monkeypatch.context() as mp:
+        mp.setattr(conf, "verify_confirmatory_gates", tamper)
+        with pytest.raises(SystemExit, match="SCIENTIFIC delta"):
+            ex.main(["--plan",
+                     "--out-root", str(tmp_path / "planroot")])
+    assert not (tmp_path / "planroot").exists()
+
+
+def test_c87_5_old_4h_design_cannot_reenter(tmp_path,
+                                            monkeypatch):
+    """C87 kill #8: with the successor absent the old sealed 4h
+    v6 becomes the active design and the committed feasibility
+    projection refuses it before any execution authority."""
+    import t2_confirmatory as conf
+    ex = _exec_mod()
+    if not ex.SEALED_PATH.exists():
+        pytest.skip("sealed design absent on this host")
+    monkeypatch.setattr(ex, "SUCCESSOR_PATH",
+                        tmp_path / "absent_successor.json")
+    with pytest.raises(SystemExit,
+                       match="T2_DESIGN_HARD_LIMIT_BELOW_"
+                             "COMMITTED_FEASIBILITY_ESTIMATE"):
+        ex.main(["--plan",
+                 "--out-root", str(tmp_path / "planroot")])
+    assert not (tmp_path / "planroot").exists()

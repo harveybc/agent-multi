@@ -1,0 +1,23 @@
+{
+ "_template_note": "NON-AUTHORIZING TEMPLATE (C85). This file never verifies: the extra `_template_note` key fails the exact-schema check and every placeholder fails its form check. Only General Musashi may author the real record, at ~/.config/agent-multi/reviewer_authority/MUSASHI_T2_SUCCESSOR_EXECUTION_RECORD.json, mode 0600, after his own review. Satoshi never authors, installs, chmods or simulates it. The v6 execution-record pathname and schema are NOT reused: this record authorizes ONLY the resource successor, and a v6 record never authorizes the successor.",
+ "schema": "agent_multi.musashi_t2_successor_execution_record.v1",
+ "reviewed_at_date": "<YYYY-MM-DD, canonical ISO date of the actual review>",
+ "reviewer": "General Musashi",
+ "decision": "OPEN_T2_SUCCESSOR_EXECUTION",
+ "successor_design_file_sha256": "<64-hex SHA-256 of the successor design FILE bytes at ~/.local/share/agent-multi/t2_screen_design_RESOURCE_SUCCESSOR_V1.json, computed by the reviewer>",
+ "successor_design_self_sha256": "<64-hex internal design_sha256 of the successor (0542ed05... expected; reviewer re-derives, never copies)>",
+ "design_review_record_sha256": "<64-hex SHA-256 of the EXISTING installed MUSASHI_T2_V6_DESIGN_REVIEW_RECORD.json bytes>",
+ "manifest_sha256": "<64-hex SHA-256 of t2_public_data_manifest_20260906.json>",
+ "census_sha256": "<64-hex SHA-256 of t2_bank_census_20260906.json>",
+ "executor_code_identity": {
+  "tools/t2_confirmatory.py": "<64-hex per-file SHA-256 of the reviewed checkout — one entry per file of T2_EXECUTOR_CODE_SURFACE, reviewer-computed via conf.executor_code_identity()>",
+  "tools/t2_confirmatory_executor.py": "<64-hex>",
+  "tools/t2_assay_harness.py": "<64-hex>",
+  "tools/t2_bank.py": "<64-hex>",
+  "tools/t2_bank_census.py": "<64-hex>",
+  "tools/t2_fresh_verifier.py": "<64-hex>",
+  "tools/t2_public_data_census.py": "<64-hex>"
+ },
+ "pinned_commit": "<40-hex commit the reviewer audited; must equal the executing HEAD>",
+ "pinned_tree": "<40-hex tree of that commit; worktree must be clean and unshadowed>"
+}
