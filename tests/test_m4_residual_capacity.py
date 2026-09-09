@@ -174,3 +174,284 @@ def test_c8_bounded_and_grants_nothing():
     assert "conditional empirical intervention result" in \
         d["endpoint_semantics"]
     assert d["supersedes_design_sha256"]
+
+
+# ============ C15: the 12-kill adversarial battery ============
+
+import shutil  # noqa: E402
+
+
+@pytest.fixture(scope="module")
+def pristine(tmp_path_factory):
+    out = tmp_path_factory.mktemp("m4kills") / "pf"
+    m4.mechanics_preflight(out)
+    assert m4.verify_preflight(out)["verified"]
+    return out
+
+
+@pytest.fixture()
+def world(pristine, tmp_path):
+    out = tmp_path / "pf"
+    shutil.copytree(pristine, out)
+    return out
+
+
+def _repair(out, *names):
+    rep_p = out / "M4_PREFLIGHT_REPORT.json"
+    rep = json.loads(rep_p.read_text())
+    for n in names:
+        rep["artifacts_sha256"][n] = m4._sha_file(out / n)
+    rep["report_sha256"] = m4._self_sha(rep, "report_sha256")
+    rep_p.write_text(json.dumps(rep, indent=1))
+    return rep
+
+
+def _edit_rec(out, name, i, mutate, repair_sha=True):
+    p = out / name
+    lines = p.read_text().splitlines()
+    r = json.loads(lines[i])
+    r = mutate(r) or r
+    if repair_sha:
+        r["record_sha256"] = m4._self_sha(r, "record_sha256")
+    lines[i] = json.dumps(r, sort_keys=True)
+    p.write_text("\n".join(lines) + "\n")
+    _repair(out, name)
+
+
+def _lift_report(out, mutate):
+    rep_p = out / "M4_PREFLIGHT_REPORT.json"
+    rep = json.loads(rep_p.read_text())
+    mutate(rep)
+    rep["report_sha256"] = m4._self_sha(rep, "report_sha256")
+    rep_p.write_text(json.dumps(rep, indent=1))
+
+
+def test_kill_1_forged_outcome_refuses(world):
+    """C9/C11 kill 1: the PRE's forged first-batch outcome (all
+    checksums repaired, unit fact lifted) dies on the REPLAY."""
+    def forge(r):
+        assert r["outcome"] == "ACQUISITION_ENDPOINT"
+        r["outcome"] = "ACCEPTED"
+    _edit_rec(world, "u0_batches.jsonl", 0, forge)
+    _lift_report(world, lambda rep: rep["units"][0].__setitem__(
+        "accepted_batches_mechanics_only", 1))
+    with pytest.raises(SystemExit,
+                       match="does not replay from its "
+                             "predecessor"):
+        m4.verify_preflight(world)
+
+
+def test_kill_2_arbitrary_bytes_refuse_typed(world):
+    """C11 kill 2: arbitrary bytes under a repaired digest refuse
+    TYPED before any verdict."""
+    (world / "u0_stop.npz").write_bytes(b"NOT-AN-NPZ-BYTES")
+    _repair(world, "u0_stop.npz")
+    with pytest.raises(SystemExit,
+                       match="not a loadable NPZ state"):
+        m4.verify_preflight(world)
+
+
+def test_kill_3_duplicate_key_refuses(world):
+    """C10 kill 3: a duplicate JSON key in a batch line refuses."""
+    p = world / "u0_batches.jsonl"
+    lines = p.read_text().splitlines()
+    lines[0] = lines[0].replace('{"batch":',
+                                '{"batch": 0, "batch":', 1)
+    p.write_text("\n".join(lines) + "\n")
+    _repair(world, "u0_batches.jsonl")
+    with pytest.raises(SystemExit, match="duplicate JSON key"):
+        m4.verify_preflight(world)
+
+
+def test_kill_4_nonfinite_refuses(world):
+    """C10 kill 4: NaN in a batch record refuses."""
+    p = world / "u0_batches.jsonl"
+    lines = p.read_text().splitlines()
+    r = json.loads(lines[0])
+    lines[0] = json.dumps(r, sort_keys=True).replace(
+        json.dumps(r["ret_loss"]), "NaN", 1)
+    p.write_text("\n".join(lines) + "\n")
+    _repair(world, "u0_batches.jsonl")
+    with pytest.raises(SystemExit, match="non-finite constant"):
+        m4.verify_preflight(world)
+
+
+def test_kill_5_bool_as_number_refuses(world):
+    """C10 kill 5: a boolean smuggled into an integer counter
+    refuses."""
+    _edit_rec(world, "u0_batches.jsonl", 0,
+              lambda r: r.__setitem__("retention_streak", True))
+    with pytest.raises(SystemExit,
+                       match="must be an exact integer"):
+        m4.verify_preflight(world)
+
+
+def test_kill_6_missing_and_extra_keys_refuse(world, tmp_path):
+    """C10 kill 6: a missing field and an extra field both
+    refuse."""
+    _edit_rec(world, "u0_batches.jsonl", 0,
+              lambda r: r.pop("cumulative_ok"))
+    with pytest.raises(SystemExit,
+                       match="keys are not the exact schema"):
+        m4.verify_preflight(world)
+
+
+def test_kill_7_noncanonical_digest_refuses(world):
+    """C10 kill 7: an uppercase self-digest refuses on FORM."""
+    _edit_rec(world, "u0_batches.jsonl", 0,
+              lambda r: r.__setitem__(
+                  "record_sha256",
+                  m4._self_sha({k: r[k] for k in r
+                                if k != "record_sha256"},
+                               "record_sha256").upper()),
+              repair_sha=False)
+    with pytest.raises(SystemExit, match="canonical 64-lowercase"):
+        m4.verify_preflight(world)
+
+
+def test_kill_8_impossible_counters_refuse(world):
+    """C10 kill 8: acquired > cumulative inventory refuses
+    cheaply, before any replay."""
+    _edit_rec(world, "u0_batches.jsonl", 0,
+              lambda r: r.__setitem__("cumulative_acquired", 99))
+    with pytest.raises(SystemExit, match="counters are impossible"):
+        m4.verify_preflight(world)
+
+
+def test_kill_9_replaced_checkpoint_refuses(world):
+    """C11 kill 9: a VALID state from another lineage substituted
+    for a checkpoint (digests repaired) dies on the exact replayed
+    state comparison."""
+    for ext in ("", ".meta.json"):
+        shutil.copyfile(str(world / "u0_diag.npz") + ext,
+                        str(world / "u0_after1.npz") + ext)
+    _repair(world, "u0_after1.npz", "u0_after1.npz.meta.json")
+    with pytest.raises(SystemExit,
+                       match="does not equal the REPLAYED state"):
+        m4.verify_preflight(world)
+
+
+def test_kill_10_forged_restart_facts_refuse(world):
+    """C12 kill 10: forged restart digests/boolean die on the
+    verifier's OWN fresh-process causal replay."""
+    def forge(rep):
+        u = rep["units"][0]
+        u["restart_fresh_process_digest"] = "a" * 64
+        u["uninterrupted_digest"] = "a" * 64
+        u["restart_continuation_identical"] = True
+    _lift_report(world, forge)
+    with pytest.raises(SystemExit,
+                       match="does not verify CAUSALLY"):
+        m4.verify_preflight(world)
+
+
+def test_kill_11_heartbeat_double_book_refuses(world):
+    """C13 kill 11: the heartbeat can be classified mutable OR
+    digest-bound, never both — and never unclassified."""
+    _lift_report(world, lambda rep: rep["artifacts_sha256"]
+                 .__setitem__("M4_HEARTBEAT.json", m4._sha_file(
+                     world / "M4_HEARTBEAT.json")))
+    with pytest.raises(SystemExit,
+                       match="both digest-bound and unchecked"):
+        m4.verify_preflight(world)
+    # and an emptied classification refuses
+    w2 = world
+    _lift_report(w2, lambda rep: (
+        rep["artifacts_sha256"].pop("M4_HEARTBEAT.json"),
+        rep.__setitem__("telemetry_mutable", [])))
+    with pytest.raises(SystemExit,
+                       match="not the exact mutable set"):
+        m4.verify_preflight(w2)
+
+
+def test_kill_12_half_example_diagnostic_refuses(world):
+    """C14 kill 12: a diagnostic produced by the OLD half-example
+    sampler (8 vs 16) — state, record and checkpoint all
+    internally consistent — dies on the matched-minibatch
+    replay; and a lying examples_per_update dies on its own."""
+    Xtr, ytr, Xev, yev = m4._gen_unit("sine")
+    st = m4._load_state(world / "u0_stop.npz")
+    half = int(m4.MINIBATCH * m4.REHEARSAL_FRACTION)
+    b = st["batch_index"]
+    Xa, ya = m4._batch_assoc("sine", b)
+    st["assoc_X"] = np.vstack([st["assoc_X"], Xa]) \
+        if len(st["assoc_X"]) else Xa
+    st["assoc_y"] = np.concatenate([st["assoc_y"], ya]) \
+        if len(st["assoc_y"]) else ya
+    for u in range(m4.UPDATES_PER_BATCH):
+        rng = np.random.default_rng(m4._seed("mb", "sine", b, u))
+        rng.integers(0, len(ytr), size=half)
+        ia = rng.integers(0, len(st["assoc_y"]),
+                          size=m4.MINIBATCH - half)   # OLD: 8
+        m4._sgd_step(st["params"], st["assoc_X"][ia],
+                     st["assoc_y"][ia], m4.LEARNING_RATE)
+        st["updates_done"] += 1
+    ret_loss = m4._loss(st["params"], Xev, yev)
+    if ret_loss > st["retention_margin"]:
+        st["retention_streak"] += 1
+    else:
+        st["retention_streak"] = 0
+    out2 = m4._forward(st["params"], st["assoc_X"])[1]
+    ok = np.abs(out2 - st["assoc_y"]) < m4.ACQ_TOL
+    rec = {"batch": b, "ret_loss": round(ret_loss, 6),
+           "retention_streak": st["retention_streak"],
+           "cumulative_associations": int(len(st["assoc_y"])),
+           "cumulative_acquired": int(ok.sum()),
+           "cumulative_ok": bool(ok.all()),
+           "examples_per_update": m4.MINIBATCH}  # the LIE
+    st["batch_index"] += 1
+    if st["retention_streak"] >= m4.RETENTION_CONSECUTIVE:
+        rec["outcome"] = "RETENTION_ENDPOINT"
+    elif not rec["cumulative_ok"]:
+        rec["outcome"] = "ACQUISITION_ENDPOINT"
+    else:
+        st["accepted_batches"] += 1
+        rec["outcome"] = "ACCEPTED"
+    rec["record_sha256"] = m4._self_sha(rec, "record_sha256")
+    (world / "u0_diag.jsonl").write_text(
+        json.dumps(rec, sort_keys=True) + "\n")
+    for ext in ("", ".meta.json"):
+        os.unlink(str(world / "u0_diag.npz") + ext)
+    m4._save_state(world / "u0_diag.npz", st)
+    _repair(world, "u0_diag.jsonl", "u0_diag.npz",
+            "u0_diag.npz.meta.json")
+    _lift_report(world, lambda rep: rep["units"][0].__setitem__(
+        "diagnostic_outcome", rec["outcome"]))
+    with pytest.raises(SystemExit,
+                       match="does not replay from the persisted "
+                             "pre-treatment state|does not equal "
+                             "the REPLAYED diagnostic state"):
+        m4.verify_preflight(world)
+    # the honest declaration of the same forgery dies on FORM
+    r2 = dict(rec)
+    r2["examples_per_update"] = 8
+    r2["record_sha256"] = m4._self_sha(r2, "record_sha256")
+    (world / "u0_diag.jsonl").write_text(
+        json.dumps(r2, sort_keys=True) + "\n")
+    _repair(world, "u0_diag.jsonl")
+    with pytest.raises(SystemExit,
+                       match="example count per update"):
+        m4.verify_preflight(world)
+
+
+def test_kill_design_chain(world, tmp_path, monkeypatch):
+    """C10 supersession kills: a v3 with one scientific delta and
+    a foreign (unreviewed) v2 both refuse at load."""
+    v3 = json.loads(Path(m4.DESIGN_PATH_V3).read_text())
+    v3["cumulative_endpoint"][
+        "acquisition_criterion_per_association"] = \
+        "|model_output - label| < 0.9"
+    v3["design_sha256"] = m4._self_sha(v3, "design_sha256")
+    bad = tmp_path / "v3_bad.json"
+    bad.write_text(json.dumps(v3, indent=1))
+    with pytest.raises(SystemExit,
+                       match="outside the frozen surface"):
+        m4.load_design(bad)
+    v2 = json.loads(Path(m4.DESIGN_PATH).read_text())
+    v2["question"] = "a different question"
+    v2["design_sha256"] = m4._self_sha(v2, "design_sha256")
+    bad2 = tmp_path / "v2_foreign.json"
+    bad2.write_text(json.dumps(v2, indent=1))
+    with pytest.raises(SystemExit,
+                       match="not the REVIEWED identity"):
+        m4.load_design(bad2)

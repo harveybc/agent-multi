@@ -1,0 +1,2 @@
+{"batch": 0, "cumulative_acquired": 8, "cumulative_associations": 8, "cumulative_ok": true, "outcome": "ACCEPTED", "record_sha256": "d1669e53a8ebe1b9e3295a3f357666475af2d524ea89d00cc32e48a901086bec", "ret_loss": 0.091281, "retention_streak": 1}
+{"batch": 1, "cumulative_acquired": 12, "cumulative_associations": 16, "cumulative_ok": false, "outcome": "RETENTION_ENDPOINT", "record_sha256": "b2daa83ce4b2a56b1a488a41217a0b12b43518e8270a3c55a44fd341ca6cede6", "ret_loss": 0.167925, "retention_streak": 2}

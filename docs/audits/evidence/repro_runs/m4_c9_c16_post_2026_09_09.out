@@ -1,0 +1,12 @@
+corrected: {"adversary": "forge_outcome", "result": "REFUSED", "reason": "REFUSED: u0 batch 0 does not replay from its predecessor (fields: ['outcome']) \u2014 stored outcomes are not reproductions"}
+corrected: {"adversary": "arbitrary_bytes", "result": "REFUSED", "reason": "REFUSED: state artifact 'u0_stop.npz' is not a loadable NPZ state (ValueError) \u2014 arbitrary bytes never verify"}
+corrected: {"adversary": "retloss", "result": "REFUSED", "reason": "REFUSED: u1 batch 0 does not replay from its predecessor (fields: ['ret_loss']) \u2014 stored outcomes are not reproductions"}
+corrected: {"adversary": "after2swap", "result": "REFUSED", "reason": "REFUSED: checkpoint 'u1_after2.npz' does not equal the REPLAYED state \u2014 stored states are not reproductions"}
+corrected: {"adversary": "hbdouble", "result": "REFUSED", "reason": "REFUSED: mutable telemetry appears in the immutable artifact map \u2014 it cannot be both digest-bound and unchecked"}
+corrected: {"adversary": "diag8", "result": "REFUSED", "reason": "REFUSED: diagnostic record does not replay from the persisted pre-treatment state under the matched-minibatch rule"}
+mutant A_replay_off: {"adversary": "retloss", "result": "VERIFIED", "verified": true}
+mutant B_ck_compare_off: {"adversary": "after2swap", "result": "VERIFIED", "verified": true}
+mutant C_double_book_off: {"adversary": "hbdouble", "result": "VERIFIED", "verified": true}
+mutant D_diag_guards_off: {"adversary": "diag8", "result": "VERIFIED", "verified": true}
+
+POST CONFIRMED: the forgery and every guard-specific adversary REFUSE under the corrected replay verifier, and each guard surface BITES — disabling it alone re-admits its adversary
