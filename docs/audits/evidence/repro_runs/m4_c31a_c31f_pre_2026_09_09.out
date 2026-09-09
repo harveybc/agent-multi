@@ -1,0 +1,18 @@
+{
+ "r2_overflow_cast_passes_guard": true,
+ "r3_svd_failure_untyped": true,
+ "r4_nonfinite_singular_valid_rank": true,
+ "r8_no_complete_pair_check_in_dispersion": true,
+ "r9_partial_seeds_averaged": true,
+ "r10_no_attrition_gate": true,
+ "r12_no_planned_complete_incomplete_counts": true,
+ "r11_no_descriptor_validity_filter_in_ladder": true,
+ "r1_corrected_3f432a0b": true,
+ "r5_corrected_3f432a0b": true,
+ "r67_corrected_3f432a0b": true,
+ "attempt1_preserved": true,
+ "attempt2_preserved": true,
+ "confessed_adjudication_pushed_from_attempt2": true
+}
+
+PRE CONFIRMED at a420f858: eight incident routes are OPEN on the current code (descriptor f32-range, untyped SVD, nonfinite-singular rank, anomalous-arm dispersion, partial-seed averaging, missing attrition gate, invalid descriptors in M2, missing complete/incomplete accounting); routes 1/5/6/7 verified corrected at 3f432a0b; both attempt roots preserved; and the pushed attempt-2 adjudication is CONFESSED and retired as non-governing
