@@ -128,7 +128,7 @@ def c35_calibration_adjudication(design, cal_root) -> dict:
                 d = pv.dispersion_from_paired(per_gen)
                 dispersion[key] = d
                 elig = eligibility.get(
-                    f"{fam}::{nz}::{w}",
+                    f"{fam}::{nz}::w{w}",
                     {"eligible_under_proposed_rule": False})
                 if elig["eligible_under_proposed_rule"] and \
                         not d["supported"]:
@@ -166,8 +166,7 @@ def c35_calibration_adjudication(design, cal_root) -> dict:
     for fam, nz in rn._conf_cells(design):
         for w in rn.CONF_WIDTHS:
             key = f"{fam}::{nz}::w{w}"
-            ek = f"{fam}::{nz}::{w}"
-            elig = eligibility.get(ek, {
+            elig = eligibility.get(key, {
                 "eligible_under_proposed_rule": False})
             slots.append({
                 "cell": key,

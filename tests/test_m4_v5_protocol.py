@@ -444,3 +444,22 @@ def test_ladder_handles_batch_zero_failures():
     assert r["status"] == "EXECUTED"
     w = pv.fit_hazard(rows, 0)
     assert np.isfinite(w).all()
+
+
+def test_adjudication_eligibility_key_join():
+    """Regression (confessed): the eligibility map keys carried
+    the w-prefixed width while slot/dispersion lookups used the
+    bare integer, so EVERY confirmation slot typed INELIGIBLE and
+    the UCB precision gate never applied to an eligible cell.
+    The three key builders must produce the identical string."""
+    src = (REPO / "tools/m4_v5_adjudicate.py").read_text()
+    # the two integer-width consumers (dispersion gate + slot
+    # typing) must build the SAME w-prefixed key the eligibility
+    # map publishes
+    assert src.count('f"{fam}::{nz}::w{w}"') >= 2
+    uid = "screen::CALIBRATION::identity::clean::w16::g0"
+    _, _, fam, nz, w, _g = uid.split("::")
+    assert f"{fam}::{nz}::{w}" == "identity::clean::w16"
+    for wi in (16, 64):
+        assert f"{fam}::{nz}::w{wi}".startswith(
+            "identity::clean::w")
