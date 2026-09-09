@@ -1,0 +1,11 @@
+{
+ "gate_authority_names_design_A": true,
+ "plan_census_units": 3,
+ "design_A_units": 242,
+ "design_B_units": 3,
+ "executor_consumed_design_B": true
+}
+
+source: active_design_path() calls AFTER the gate call site: 2 | strict_json_load reparses: 2
+
+PRE CONFIRMED at e900e0d2: the gate attests design A while the executor's second read consumes design B — the authority facts and the consumed bytes are split; manifest and census are reread the same way
