@@ -928,6 +928,20 @@
    "mutability": "mixed",
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
+  },
+  "m4_v5_protocol.py": {
+   "purpose": "M4 C25-C31 (order 2026-09-09): the v5 protocol \u2014 arm-free paired association tapes, one genesis per unit, sigmoid/BCE Boolean + linear/MSE temporal contracts with evaluation-evaluated baselines, TRAIN/STOP/EVALUATION checkpoint lineages, restricted endpoint (cap typed, resource stops incomplete), CALIBRATION dispersion + UCB gate, executable discrete-time survival M0/M1/M2 ladder, and the sealed v5 design builder (v4 classified exploratory-with-defects).",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "design_author",
+   "owner": "General Satoshi III"
+  },
+  "m4_v5_runner.py": {
+   "purpose": "M4 C32 (order 2026-09-09): the ONE v5 runner \u2014 DEV/CAL enumeration with RESERVED CONFIRMATION slots (structurally closed), O_EXCL 0600 logs, per-batch durable resume from verified predecessor states, canonical single report with lookalike refusal, idempotent re-invocation, execute-implies-fresh-verification, pre-outcome commit/push boundary guard, and a reconstructive verifier (tapes/geneses/lineages/arms/tables/accounting).",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "authority_class": "diagnostic",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

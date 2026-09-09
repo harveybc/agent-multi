@@ -1,0 +1,478 @@
+{
+ "schema": "agent_multi.m4_intervention_design.v5",
+ "sealed_at_date": "2026-09-09",
+ "supersedes_design_sha256": "30a86f0924fd7d31abcacf6691f084ea3b68821b1fb9735a82458879cac37e52",
+ "supersession_classification": "PROTOCOL_CORRECTION_SUPERSESSION_BEFORE_ANY_CALIBRATION_OUTCOME",
+ "stage": "C2_C3_residual_capacity_intervention",
+ "question": "after a one-hidden-layer MLP learns a structured task, how many additional BLINDED random associations can it fit before crossing a FROZEN original-task retention margin, conditional on the checkpoint \u2014 and is that endpoint predictable from parameter count or compressed length alone (H2 of the M3-M6 draft)",
+ "endpoint_semantics": "the count of random associations that remain JOINTLY acquired under the frozen retention margin \u2014 a conditional empirical intervention result under this exact protocol; NEVER 'unused bits', 'remaining intelligence' or exact Kolmogorov complexity; sequential acquisition throughput is NOT the endpoint",
+ "cumulative_endpoint": {
+  "evaluation": "after adding batch b, evaluate the UNION of batches 0..b; the endpoint advances only when EVERY cumulative association meets the frozen per-association acquisition criterion AND the original-task retention criterion holds; once an earlier association is forgotten the endpoint cannot increase",
+  "acquisition_criterion_per_association": "|model_output - label| < 0.4"
+ },
+ "rehearsal_rule": {
+  "primary": "balanced minibatches: 50% original-task examples and 50% uniformly sampled (with replacement) cumulative associations",
+  "rehearsal_fraction": 0.5,
+  "minibatch_size": 16,
+  "updates_per_batch": 400,
+  "learning_rate": 0.05,
+  "evaluation_cadence": "once per batch: retention AND full cumulative acquisition",
+  "no_rehearsal_arm": {
+   "role": "frozen DIAGNOSTIC only",
+   "multiplicity": "descriptive; never part of the confirmatory family; frozen now \u2014 the better policy is never chosen after seeing intervention outcomes",
+   "matched_minibatch": "the no-rehearsal diagnostic processes the SAME frozen minibatch size AND the SAME number of examples per update as the primary arm (16 associations per update, no original-task examples); frozen before any intervention outcome"
+  }
+ },
+ "retention": {
+  "metric": "original-task evaluation loss on held-out rows of the training generator",
+  "margin_rule": "frozen at intervention start: retention violated when loss exceeds (1 + 0.10) * checkpoint loss on two consecutive evaluations",
+  "violation_rule": "2 CONSECUTIVE failing evaluations at the frozen cadence; the streak resets to zero after a passing evaluation; raw losses and the streak are both published",
+  "frozen_before_outcomes": true
+ },
+ "task_families": {
+  "boolean": [
+   "identity",
+   "majority",
+   "dnf3",
+   "parity4",
+   "random_label_null"
+  ],
+  "temporal": [
+   "sine",
+   "chirp",
+   "am",
+   "discontinuity",
+   "state_space"
+  ],
+  "noise_regimes": [
+   "white",
+   "colored",
+   "impulsive",
+   "heteroscedastic"
+  ],
+  "generator_identity_rule": "generator id = sha256(master|family|regime|role|instance); DEVELOPMENT, CALIBRATION and CONFIRMATION roles use DISJOINT instance ranges (0-15, 16-23, 24-31) and never share a generator id",
+  "generator_id_rule": "readable `ROLE-family-noise-gN`; the ROLE enters the seed derivation; index namespaces are role-separated (byte-disjointness proven executable); the inherited sha-id/numeric-range text is superseded"
+ },
+ "architectures": {
+  "family": "one-hidden-layer MLP only",
+  "hidden_units_grid": [
+   8,
+   16,
+   32,
+   64
+  ],
+  "precision": "float64",
+  "activation": "tanh",
+  "output": "linear regression head / sigmoid for boolean tasks",
+  "boolean_head": "sigmoid output + binary cross-entropy, EXECUTED",
+  "temporal_head": "linear output + mean-squared error, EXECUTED"
+ },
+ "optimizer_capability_controls": {
+  "rule": "before any capacity claim, the SAME optimizer budget must first learn each structured family to its frozen learnability criterion on a clean development instance; a family that fails is typed OPTIMIZATION_LIMITED and its cells never become capacity evidence",
+  "learnability_criterion": "task metric within the family's frozen threshold on held-out rows of the SAME generator"
+ },
+ "checkpoints": [
+  "initialization",
+  "pre_stop",
+  "calibration_stop",
+  "post_stop_bounded"
+ ],
+ "association_batches": {
+  "blinding": "random input/label associations drawn from the sealed seed stream; batch contents never inspected before commitment",
+  "batch_size": 8,
+  "max_batches": 64,
+  "typed_outcomes": [
+   "RETENTION_ENDPOINT",
+   "ACQUISITION_ENDPOINT",
+   "MAX_BATCHES",
+   "WALL_STOP",
+   "RSS_STOP",
+   "STOP_REQUESTED",
+   "NUMERICAL_ANOMALY",
+   "OPTIMIZATION_LIMITED_ACQUISITION"
+  ]
+ },
+ "controls": {
+  "random_initialization": "an untrained matched-architecture model runs the identical intervention with matched compute",
+  "matched_compute": "the control EXECUTES the identical batch/update sequence; its update-count difference is derived from both ledgers and must be within 1%"
+ },
+ "statistics": {
+  "unit": "the task GENERATOR (never a checkpoint, seed or adjacent temporal sample)",
+  "nested_seeds": "3 model seeds nested per generator; reported as nested repetitions",
+  "multiplicity": "Bonferroni over the frozen confirmatory contrast family; family list frozen before any confirmation outcome",
+  "missing_runs": "typed states remain in the denominator; never silently dropped"
+ },
+ "measurements": {
+  "trajectory": [
+   "train/calibration loss curves",
+   "gradient norm summaries",
+   "exception-memorization probes"
+  ],
+  "description": [
+   "8-bit sparse description length",
+   "prune-at-threshold parameter count",
+   "spectral rank profile"
+  ],
+  "cost_rule": "every measurement's CPU cost is recorded per checkpoint and stays in the cost denominator"
+ },
+ "resources": {
+  "cpu_only": true,
+  "cuda_hidden": true,
+  "logical_workers": 1,
+  "max_wall_seconds": 172800,
+  "max_rss_bytes": 8589934592,
+  "nice": 15,
+  "heartbeat": "M4_HEARTBEAT.json",
+  "stop_file": "M4_STOP in the runs directory",
+  "single_limit_note": "ONE executable hard wall \u2014 the reduction-rule ceiling and the enforced runner limit are the same 172800 s"
+ },
+ "seeds": {
+  "master_phrase": "m4_residual_capacity_2026_09_08",
+  "derivation": "sha256(master|kind|generator|index)[:8] -> numpy default_rng"
+ },
+ "grants_nothing": [
+  "DOIN gene",
+  "production gate",
+  "scalar intelligence measure",
+  "exact complexity claim"
+ ],
+ "scientific_outcome": "NONE",
+ "question_v4": "Conditional on a learned structured task, architecture and checkpoint, how many blinded random associations remain jointly acquired before the frozen retention rule fails, and do training measurements improve prediction of that endpoint beyond parameter count and checkpoint loss? The endpoint is an empirical intervention result under this protocol \u2014 never unused intelligence, free bits, exact information content or exact Kolmogorov complexity.",
+ "candidate_population": {
+  "structured_boolean_families": [
+   "identity",
+   "majority",
+   "dnf3",
+   "parity4"
+  ],
+  "temporal_families": [
+   "sine",
+   "chirp",
+   "am",
+   "discontinuity",
+   "state_space"
+  ],
+  "negative_control": "random_label (never a learnable structured family)",
+  "positive_control": "easy_constant (deliberately easy)",
+  "noise_regimes_temporal": [
+   "clean",
+   "white",
+   "colored",
+   "impulsive",
+   "heteroscedastic"
+  ],
+  "hidden_widths": [
+   8,
+   16,
+   32,
+   64
+  ],
+  "checkpoint_taxonomy": [
+   "initialization",
+   "pre_stop",
+   "calibration_stop",
+   "post_stop_bounded"
+  ],
+  "generator_roles": {
+   "DEVELOPMENT": "screen + mechanics; thresholds estimated here",
+   "CALIBRATION": "threshold freeze; outcomes not inspected in this order",
+   "CONFIRMATION": "untouched until the confirmatory order"
+  },
+  "unit_definition": "the task GENERATOR is the independent unit; model seeds and checkpoints are nested repetitions",
+  "cell_record_fields": [
+   "family",
+   "noise_or_NOT_APPLICABLE",
+   "width",
+   "checkpoint",
+   "generator_role",
+   "generator_id",
+   "model_seed",
+   "optimizer_budget",
+   "unit_role"
+  ]
+ },
+ "population_census": {
+  "structured_family_noise_cells": 29,
+  "meaningful_products_rule": "Boolean and control families admit only `clean`; the five noise regimes apply to the five temporal observation processes \u2014 4 + 5x5 = 29 structured cells; nonsensical products REFUSE in the generator bank",
+  "widths": [
+   8,
+   16,
+   32,
+   64
+  ],
+  "checkpoints": [
+   "initialization",
+   "pre_stop",
+   "calibration_stop",
+   "post_stop_bounded"
+  ],
+  "model_seeds_nested": 3,
+  "development_generators_per_cell": 2,
+  "calibration_generators_per_cell": 2,
+  "learnability_screen_units": 248,
+  "learnability_screen_fits_structured": 232,
+  "learnability_screen_fits_controls": 16,
+  "learnability_screen_updates": 496000,
+  "intervention_updates_per_run": 27600,
+  "confirmatory_cells_after_reduction": 14,
+  "confirmatory_runs_upper_bound_per_generator": 168,
+  "confirmatory_updates_upper_bound_per_generator": 4636800,
+  "note": "the full Cartesian product is NOT assumed affordable; the reduction rule above is frozen before outcomes and preserves every primary family, both informative widths and the primary checkpoint pair"
+ },
+ "estimands": {
+  "primary_endpoint": "RESTRICTED acquired count min(cumulative associations at last passing evaluation, 512) over 64 batches; a cap hit is the observed restricted value WITH CAP_REACHED published; WALL_STOP/RSS_STOP/STOP_REQUESTED/numerical failure/interruption are INCOMPLETE scientific units \u2014 in the denominator, never survival censoring; no unrestricted secondary analysis is retained in v5 and the undefined Gehan fallback is removed",
+  "analysis_1_intervention_effect": "within-generator paired difference between the calibration_stop checkpoint and a matched random initialization under identical association batches and compute",
+  "analysis_2_checkpoint_effect": "paired contrasts among the four checkpoints within (generator, width, model seed); checkpoints are NEVER treated as independent",
+  "analysis_3_incremental_prediction": "out-of-generator prediction of log1p(endpoint): (M0) parameter count; (M1) M0 + checkpoint loss + elapsed updates; (M2) M1 + frozen trajectory and description measurements \u2014 M2 advances only if it improves unseen-generator error AND calibration after its measurement cost is included",
+  "descriptor_status": "compressed length, pruning and spectral rank are candidate DESCRIPTORS, not ground truth; repeated weights do not imply remaining capacity",
+  "m3_status": "prior evidence only \u2014 never a training sample for M4"
+ },
+ "learnability_gate": {
+  "scope": "DEVELOPMENT-only in this order",
+  "optimizer": {
+   "updates": 2000,
+   "minibatch": 16,
+   "learning_rate": 0.05,
+   "identical_to_intervention": true
+  },
+  "criterion": {
+   "boolean": "held-out accuracy",
+   "temporal": "held-out MSE skill vs frozen baseline"
+  },
+  "baselines": {
+   "boolean": "train majority class",
+   "temporal": "persistence (last window value)"
+  },
+  "threshold_rule": "margin = max(0.05, p95 of the random_label control's improvement-over-baseline across widths and DEVELOPMENT generators); estimated on DEVELOPMENT, to be FROZEN on CALIBRATION before any confirmation outcome",
+  "outcomes": [
+   "LEARNABLE_UNDER_FROZEN_BUDGET",
+   "OPTIMIZATION_LIMITED",
+   "NUMERICALLY_INVALID"
+  ],
+  "controls": [
+   "random_label negative control",
+   "no_learning (zero-update evaluation)",
+   "random_initialization band (3 extra inits evaluated without updates)",
+   "easy_constant positive control"
+  ],
+  "gate_rule": "only LEARNABLE_UNDER_FROZEN_BUDGET enters the capacity intervention; missing/failed cells stay in the denominator; a primary family failing at every width is reported as a limitation and never reinterpreted; budgets are never increased after seeing confirmation behavior"
+ },
+ "confirmatory_contrast_family": {
+  "contrasts": [
+   "intervention_effect::identity::clean",
+   "intervention_effect::majority::clean",
+   "intervention_effect::dnf3::clean",
+   "intervention_effect::parity4::clean",
+   "intervention_effect::sine::clean",
+   "intervention_effect::sine::white",
+   "intervention_effect::chirp::clean",
+   "intervention_effect::chirp::white",
+   "intervention_effect::am::clean",
+   "intervention_effect::am::white",
+   "intervention_effect::discontinuity::clean",
+   "intervention_effect::discontinuity::white",
+   "intervention_effect::state_space::clean",
+   "intervention_effect::state_space::white",
+   "checkpoint_effect::primary_pair",
+   "incremental_prediction::M2_vs_M1"
+  ],
+  "count": 16,
+  "multiplicity": "Bonferroni-bounded design basis; Holm step-down at analysis time",
+  "heterogeneity_rule": "family-specific effects reported ALWAYS; pooling only if the family-effect interquartile range is below half the smallest effect of interest"
+ },
+ "precision": {
+  "method": "paired one-sample t on generator-level differences, Bonferroni-adjusted alpha, Monte Carlo with Lentz incomplete-beta p-values",
+  "assumptions": {
+   "smallest_effect_associations": 4.0,
+   "between_generator_sd_grid": [
+    2.0,
+    4.0,
+    6.0,
+    8.0
+   ],
+   "alpha": 0.05,
+   "contrast_family_size": 16,
+   "attrition_allowance": 0.2,
+   "power_target": 0.8,
+   "n_sims": 4000
+  },
+  "power_table": {
+   "sd2_n4": 0.0365,
+   "sd2_n6": 0.122,
+   "sd2_n8": 0.481,
+   "sd2_n10": 0.813,
+   "sd2_n12": 0.9147,
+   "sd2_n16": 0.9935,
+   "sd2_n20": 1.0,
+   "sd2_n24": 1.0,
+   "sd2_n32": 1.0,
+   "sd2_n40": 1.0,
+   "sd2_n48": 1.0,
+   "sd4_n4": 0.0105,
+   "sd4_n6": 0.0227,
+   "sd4_n8": 0.0767,
+   "sd4_n10": 0.1703,
+   "sd4_n12": 0.2442,
+   "sd4_n16": 0.4318,
+   "sd4_n20": 0.672,
+   "sd4_n24": 0.8015,
+   "sd4_n32": 0.9453,
+   "sd4_n40": 0.9908,
+   "sd4_n48": 0.9978,
+   "sd6_n4": 0.0057,
+   "sd6_n6": 0.0145,
+   "sd6_n8": 0.0312,
+   "sd6_n10": 0.051,
+   "sd6_n12": 0.0747,
+   "sd6_n16": 0.1415,
+   "sd6_n20": 0.2567,
+   "sd6_n24": 0.3513,
+   "sd6_n32": 0.5305,
+   "sd6_n40": 0.7045,
+   "sd6_n48": 0.8305,
+   "sd8_n4": 0.0053,
+   "sd8_n6": 0.0095,
+   "sd8_n8": 0.0173,
+   "sd8_n10": 0.031,
+   "sd8_n12": 0.038,
+   "sd8_n16": 0.0648,
+   "sd8_n20": 0.1128,
+   "sd8_n24": 0.1618,
+   "sd8_n32": 0.2467,
+   "sd8_n40": 0.3735,
+   "sd8_n48": 0.4878
+  },
+  "minimum_confirmation_generators_by_sd": {
+   "sd2": 10,
+   "sd4": 24,
+   "sd6": 48,
+   "sd8": null
+  }
+ },
+ "reduction_rule": {
+  "rule": "confirmatory grid = every primary family x widths {16, 64} x temporal noise {clean, white} x checkpoint pair (initialization, calibration_stop) x 3 nested seeds; frozen BEFORE developmental outcomes",
+  "cells_after_reduction": 14,
+  "runs_per_generator": 168,
+  "updates_per_run": 27600,
+  "cpu_resource_ceiling_hours": 48.0,
+  "affordability_check": "runtime per run is MEASURED by the four development units of this order; N* generators from the precision table times measured runtime must fit the declared ceiling or the return is M4_CONFIRMATORY_POPULATION_INSUFFICIENT"
+ },
+ "four_unit_rule": {
+  "rule": "exactly four end-to-end DEVELOPMENT intervention units, chosen pre-outcome for family/width/noise diversity; runtime and mechanics only \u2014 endpoints never tune the protocol",
+  "units": [
+   {
+    "family": "identity",
+    "noise": "clean",
+    "width": 16,
+    "generator_index": 0,
+    "model_seed": 0
+   },
+   {
+    "family": "parity4",
+    "noise": "clean",
+    "width": 64,
+    "generator_index": 0,
+    "model_seed": 0
+   },
+   {
+    "family": "sine",
+    "noise": "white",
+    "width": 16,
+    "generator_index": 0,
+    "model_seed": 0
+   },
+   {
+    "family": "state_space",
+    "noise": "heteroscedastic",
+    "width": 64,
+    "generator_index": 0,
+    "model_seed": 0
+   }
+  ],
+  "checkpoint": "calibration_stop vs initialization control + one matched diagnostic batch"
+ },
+ "grants_nothing_v4": [
+  "confirmation outcomes",
+  "DOIN genes",
+  "production gates",
+  "GPU use",
+  "financial data",
+  "venue access",
+  "B4/T2 alteration",
+  "exact capacity in bits"
+ ],
+ "v4_disposition": "EXPLORATORY_DEVELOPMENT_EVIDENCE_WITH_PROTOCOL_DEFECTS",
+ "v4_to_v5_field_map": {
+  "task_families": "canonical spelling `discontinuity`; one readable role-namespaced id rule replaces the inherited sha/numeric-range text (F-additional-1)",
+  "architectures": "Boolean head is EXECUTED sigmoid+BCE (was declared sigmoid, ran linear/MSE \u2014 F3)",
+  "resources": "ONE executable hard wall 172800 s (48 h) replaces the contradictory 21600 s (F-additional-10)",
+  "association_tape": "arm/checkpoint-free identity, family-compatible marginals, blinded pairing (F1/F4)",
+  "genesis": "one genesis per (generator,width,seed); initialization IS that object (F2)",
+  "data_roles": "TRAIN/STOP/EVALUATION byte-disjoint (F5)",
+  "checkpoints": "four real materialized lineages with frozen stopping rule (F2)",
+  "baselines": "train-selected majority CLASS evaluated on EVALUATION rows (F3)",
+  "endpoint": "restricted min(count, 64 batches) primary; CAP_REACHED typed; resource stops are INCOMPLETE units, never censoring; the undefined Gehan fallback is REMOVED and no unrestricted secondary analysis is retained (C31)",
+  "populations": "DEV 2 / CAL 16 / CONF 48 reserved per cell; role inside seed derivation (C29)",
+  "ladder": "executable discrete-time survival M0/M1/M2, frozen ridge lambda 1.0, generator-grouped splits, integrated Brier + horizon calibration (C30)"
+ },
+ "data_roles": {
+  "TRAIN": "optimizer updates only (192 rows)",
+  "STOP": "early-stopping decisions only (64 rows)",
+  "EVALUATION": "learnability, retention and scientific endpoints only (64 rows)",
+  "binding": "all six arrays digest-bound in the generator manifest; no EVALUATION value may select a checkpoint, threshold, width, seed or budget"
+ },
+ "checkpoint_rules": {
+  "genesis": "one _mlp_init per (generator,width,model_seed); arm and checkpoint names never enter the derivation",
+  "initialization": "the genesis object itself, zero updates",
+  "calibration_stop": {
+   "cadence_updates": 50,
+   "patience_points": 8,
+   "min_delta": 1e-05,
+   "max_updates": 4000,
+   "rule": "best STOP-slice loss under frozen cadence/patience/min-delta"
+  },
+  "pre_stop": "the snapshot at half the selected stopping update, floored to the cadence (min one cadence point)",
+  "post_stop_bounded": "exactly 500 additional TRAIN-only updates from calibration_stop",
+  "lineage": "parameter digests, update counts, STOP-trajectory digest and parent digests persisted; the verifier replays each lineage"
+ },
+ "association_tape": {
+  "identity": "tape::<design16>::<generator_id>::wW::sS \u2014 arm and checkpoint names excluded",
+  "inputs": "Boolean: fresh \u00b11 draws of the same input process; temporal: disjoint windows of the same observation process",
+  "targets": "independent blinded draw from the family's TRAIN target distribution",
+  "acquisition_tolerance": {
+   "boolean_absolute": 0.4,
+   "temporal_sd_multiple": 0.4,
+   "fitting": "temporal tolerance = multiple x TRAIN target SD (train-fitted, frozen in the tape)"
+  },
+  "digest": "persisted and re-derived; one byte of difference between arms refuses before optimization"
+ },
+ "populations_v5": {
+  "DEVELOPMENT_per_cell": 2,
+  "CALIBRATION_per_cell": 16,
+  "CONFIRMATION_reserved_per_cell": 48,
+  "confirmation_boundary": "48 fixed BEFORE calibration; CONFIRMATION arrays and outcomes are never generated, loaded or scored in this order \u2014 structurally enforced",
+  "dispersion_rule": "per confirmatory cell: paired restricted-endpoint difference (calibration_stop minus initialization) averaged over the 3 nested model seeds per generator; SD across the 16 CALIBRATION generators; 95% chi-square upper confidence bound; UCB > 6.0 associations returns M4_CONFIRMATORY_PRECISION_NOT_SUPPORTED"
+ },
+ "prediction_ladder": {
+  "form": "discrete-time survival over the 64 acquisition batches (logistic hazard, quadratic batch basis)",
+  "M0": "family/noise nuisance + parameter count",
+  "M1": "M0 + checkpoint loss + elapsed task updates",
+  "M2": "M1 + frozen trajectory (STOP-loss slope) and description (compressed length, spectral rank, prune fraction) measurements",
+  "regularization": {
+   "family": "ridge",
+   "lambda_frozen": 1.0,
+   "rule": "FROZEN pre-outcome \u2014 no data-driven search"
+  },
+  "splits": "generator-grouped leave-one-group-out only",
+  "primary_loss": "integrated Brier score",
+  "calibration_horizons": [
+   8,
+   16,
+   32,
+   64
+  ],
+  "decision": "M2 advances only on paired unseen-generator integrated-Brier improvement after Holm within the frozen family AND calibration non-inferiority; measurement time and CPU cost reported separately",
+  "insufficiency": "fewer than 4 generator groups returns a typed insufficiency instead of a fit"
+ },
+ "design_sha256": "d7280a92047d98898418fb7cd750b22c506a621eb381d9847e0fe926b7df69b9"
+}

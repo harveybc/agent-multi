@@ -35,7 +35,8 @@ NOISE_REGIMES = ("clean", "white", "colored", "impulsive",
                  "heteroscedastic")
 N_IN = 8            # boolean input bits / temporal window length
 N_TRAIN = 192
-N_HELD = 64
+N_STOP = 64         # C27: early-stopping decisions ONLY
+N_HELD = 64         # EVALUATION: learnability/retention/endpoints
 FS_HZ = 1.0         # temporal sampling rate (declared, verified)
 
 
@@ -184,32 +185,47 @@ def _windows(series, w):
     return X, series[w:]
 
 
-def generate(role, family, noise, idx) -> dict:
+def generate(role, family, noise, idx,
+             allow_confirmation=False) -> dict:
     """The ONE canonical entry: arrays + manifest, deterministic
-    for the same id, disjoint across roles by seed construction."""
+    for the same id, disjoint across roles by seed construction.
+
+    C27: three BYTE-DISJOINT data roles per generator — TRAIN
+    (optimizer updates only), STOP (early-stopping decisions
+    only) and EVALUATION (learnability, retention and scientific
+    endpoints only).
+
+    C33 kill 17: CONFIRMATION generators are never constructed in
+    the scientific flow of this order — only the explicit
+    role-disjointness proof may pass allow_confirmation=True."""
+    if role == "CONFIRMATION" and not allow_confirmation:
+        raise GeneratorRefusal(
+            "CONFIRMATION generators are RESERVED — construction "
+            "is closed in this order (only the explicit "
+            "disjointness proof may build role bytes, never a "
+            "scientific consumer)")
     gid = generator_id(role, family, noise, idx)
     rng = np.random.default_rng(
         _seed(role, family, noise, idx))
+    n_all = N_TRAIN + N_STOP + N_HELD
     if family in BOOL_FAMILIES:
-        n = N_TRAIN + N_HELD
-        X = _bool_inputs(rng, n)
+        X = _bool_inputs(rng, n_all)
         y = _bool_target(family, X, rng)
         latent = None
         dist = None
     elif family == "random_label":
-        n = N_TRAIN + N_HELD
-        X = rng.standard_normal((n, N_IN))
-        y = rng.choice([0.0, 1.0], size=n)
+        X = rng.standard_normal((n_all, N_IN))
+        y = rng.choice([0.0, 1.0], size=n_all)
         latent = None
         dist = None
     elif family == "easy_constant":
-        n = N_TRAIN + N_HELD
-        X = rng.standard_normal((n, N_IN))
-        y = np.full(n, 0.8) + rng.standard_normal(n) * 0.01
+        X = rng.standard_normal((n_all, N_IN))
+        y = np.full(n_all, 0.8) + \
+            rng.standard_normal(n_all) * 0.01
         latent = None
         dist = None
     else:
-        total = N_TRAIN + N_HELD + N_IN
+        total = n_all + N_IN
         lat = _latent_series(family, rng, total)
         train_slice = slice(0, N_TRAIN + N_IN)
         d = _disturbance(noise, rng, lat, train_slice)
@@ -222,21 +238,22 @@ def generate(role, family, noise, idx) -> dict:
         if not np.isfinite(np.asarray(a, dtype=np.float64)).all():
             raise GeneratorRefusal(
                 f"generator {gid} produced non-finite {name}")
+    s0, s1, s2 = N_TRAIN, N_TRAIN + N_STOP, n_all
     out = {
         "generator_id": gid,
         "role": role, "family": family,
         "noise": noise if family in TEMPORAL_FAMILIES
         else "NOT_APPLICABLE",
         "index": idx,
-        "X_train": X[:N_TRAIN], "y_train": y[:N_TRAIN],
-        "X_held": X[N_TRAIN:N_TRAIN + N_HELD],
-        "y_held": y[N_TRAIN:N_TRAIN + N_HELD],
+        "X_train": X[:s0], "y_train": y[:s0],
+        "X_stop": X[s0:s1], "y_stop": y[s0:s1],
+        "X_held": X[s1:s2], "y_held": y[s1:s2],
     }
     if latent is not None:
-        out["latent_train"] = latent[:N_TRAIN]
-        out["latent_held"] = latent[N_TRAIN:N_TRAIN + N_HELD]
-        out["disturbance_train"] = dist[:N_TRAIN]
-        out["disturbance_held"] = dist[N_TRAIN:N_TRAIN + N_HELD]
+        out["latent_train"] = latent[:s0]
+        out["latent_held"] = latent[s1:s2]
+        out["disturbance_train"] = dist[:s0]
+        out["disturbance_held"] = dist[s1:s2]
     out["manifest"] = build_manifest(out)
     return out
 
@@ -249,7 +266,8 @@ def build_manifest(g) -> dict:
         "role": g["role"], "family": g["family"],
         "noise": g["noise"], "index": g["index"],
         "dtype": "float64",
-        "n_in": N_IN, "n_train": N_TRAIN, "n_held": N_HELD,
+        "n_in": N_IN, "n_train": N_TRAIN, "n_stop": N_STOP,
+        "n_held": N_HELD,
         "sampling_rate_hz": FS_HZ if is_temporal else None,
         "target_rule": (
             "next-step regression on the observed series over an "
@@ -260,6 +278,8 @@ def build_manifest(g) -> dict:
         "train_only_fitting": True,
         "X_train_sha256": _arr_sha(g["X_train"]),
         "y_train_sha256": _arr_sha(g["y_train"]),
+        "X_stop_sha256": _arr_sha(g["X_stop"]),
+        "y_stop_sha256": _arr_sha(g["y_stop"]),
         "X_held_sha256": _arr_sha(g["X_held"]),
         "y_held_sha256": _arr_sha(g["y_held"]),
         "latent_train_sha256":
@@ -290,7 +310,8 @@ def consumer_verify(g) -> dict:
                       ).hexdigest() != man["manifest_sha256"]:
         raise GeneratorRefusal(
             "manifest self-digest does not re-derive")
-    for key in ("X_train", "y_train", "X_held", "y_held"):
+    for key in ("X_train", "y_train", "X_stop", "y_stop",
+                "X_held", "y_held"):
         if _arr_sha(g[key]) != man[f"{key}_sha256"]:
             raise GeneratorRefusal(
                 f"declared digest for {key} does not match the "
@@ -306,7 +327,8 @@ def consumer_verify(g) -> dict:
                 "observed training target")
     fresh = generate(g["role"], g["family"],
                      g["noise"] if g["noise"] != "NOT_APPLICABLE"
-                     else "clean", g["index"])
+                     else "clean", g["index"],
+                     allow_confirmation=True)
     if fresh["manifest"]["manifest_sha256"] != \
             man["manifest_sha256"]:
         raise GeneratorRefusal(
@@ -321,7 +343,8 @@ def assert_role_disjointness(family="sine", noise="white",
     different bytes for otherwise identical coordinates."""
     shas = {}
     for role in ROLES:
-        g = generate(role, family, noise, idx)
+        g = generate(role, family, noise, idx,
+                     allow_confirmation=True)
         shas[role] = g["manifest"]["y_train_sha256"]
     if len(set(shas.values())) != len(ROLES):
         raise GeneratorRefusal(
