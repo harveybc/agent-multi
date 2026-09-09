@@ -191,6 +191,13 @@ def _descriptors(p, acct):
     t0 = time.monotonic()
     w = np.concatenate([np.ascontiguousarray(p[k]).ravel()
                         for k in sorted(p)])
+    if not np.isfinite(w).all():
+        acct["descriptor_evals"] += 1
+        return {"numerically_invalid": True,
+                "compressed_len_zlib9": None,
+                "spectral_rank_W1_1e3": None,
+                "prune_fraction_1e3": None,
+                "descriptor_seconds": 0.0}
     comp = len(zlib.compress(
         np.round(w, 6).astype(np.float32).tobytes(), 9))
     s = np.linalg.svd(p["W1"], compute_uv=False)
@@ -211,6 +218,20 @@ def _run_screen_unit_v5(design, u, acct):
     gb.consumer_verify(g)
     kind = pv.task_kind(u["family"])
     ck = pv.build_checkpoints(g, u["width"], u["model_seed"])
+    if ck["numerically_invalid"]:
+        # C31: numerical failure is a TYPED incomplete unit —
+        # it stays in the denominator and never crashes.
+        rec = {**{k: v for k, v in u.items()},
+               "manifest_sha256":
+                   g["manifest"]["manifest_sha256"],
+               "task_kind": kind,
+               "selected_stop_update": None,
+               "stop_trajectory_digest": None,
+               "metric_heldout": None,
+               "baseline_value": None,
+               "improvement": None,
+               "numerically_invalid": True}
+        return _self(rec)
     acct["optimization_updates"] += \
         ck["checkpoints"]["post_stop_bounded"]["updates"]
     p = ck["checkpoints"]["calibration_stop"]["params"]
@@ -403,6 +424,16 @@ def _run_intervention_unit_v5(design, u, out, acct):
     tape = pv.association_tape(design["design_sha256"], g,
                                u["width"], u["model_seed"])
     ck = pv.build_checkpoints(g, u["width"], u["model_seed"])
+    if ck["numerically_invalid"]:
+        rec = {**u, "manifest_sha256":
+               g["manifest"]["manifest_sha256"],
+               "task_kind": kind,
+               "tape_id": tape["tape_id"],
+               "tape_digest": tape["digest"],
+               "unit_status":
+                   "NUMERICALLY_INVALID_TASK_TRAINING",
+               "invalid_at_update": ck["invalid_at_update"]}
+        return _self(rec)
     acct["optimization_updates"] += \
         ck["checkpoints"]["post_stop_bounded"]["updates"]
     arms = {}
@@ -744,6 +775,20 @@ def verify_run_v5(design, out_root: Path, roles) -> dict:
                 "re-derive — arms cannot share an unverified "
                 "tape")
         ck = pv.build_checkpoints(g, u["width"], u["model_seed"])
+        if ck["numerically_invalid"]:
+            if r.get("unit_status") != \
+                    "NUMERICALLY_INVALID_TASK_TRAINING" or \
+                    r.get("invalid_at_update") != \
+                    ck["invalid_at_update"] or \
+                    r.get("tape_digest") != tape["digest"]:
+                raise RunnerV5Refusal(
+                    f"{u['unit_id']}: numerically-invalid unit "
+                    "does not replay to the same typed state")
+            continue
+        if r.get("unit_status") is not None:
+            raise RunnerV5Refusal(
+                f"{u['unit_id']}: claims an invalid status the "
+                "replay does not derive")
         acct["optimization_updates"] += \
             ck["checkpoints"]["post_stop_bounded"]["updates"]
         if r["genesis_digest"] != \

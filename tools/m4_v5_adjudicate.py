@@ -96,9 +96,14 @@ def c35_calibration_adjudication(design, cal_root) -> dict:
     # ---- dispersion per confirmatory cell x width ----
     sums = m4._strict_json_file  # alias for brevity below
     summaries = {}
+    incomplete_units = []
     for p in sorted((cal_root / "intervention").glob(
             "*_summary.json")):
         r = sums(p, p.name)
+        if r.get("unit_status") == \
+                "NUMERICALLY_INVALID_TASK_TRAINING":
+            incomplete_units.append(r["unit_id"])
+            continue
         summaries[r["unit_id"]] = r
     dispersion = {}
     supported_all = True
@@ -138,6 +143,8 @@ def c35_calibration_adjudication(design, cal_root) -> dict:
         nuis = [1.0 if r["task_kind"] == "temporal" else 0.0,
                 1.0 if r["noise_coord"] == "white" else 0.0]
         for arm, a in r["arms"].items():
+            if a["stopping_cause"] == "NUMERICAL_ANOMALY":
+                continue        # incomplete arm, never survival
             rows.append({
                 "param_count": 10 * r["width"] + 1,
                 "nuisance": nuis,
@@ -185,6 +192,7 @@ def c35_calibration_adjudication(design, cal_root) -> dict:
            "precision_supported_on_eligible_cells":
                bool(supported_all),
            "ladder": ladder,
+           "incomplete_units_in_denominator": incomplete_units,
            "confirmation_slots": slots}
     doc["record_sha256"] = m4._self_sha(doc, "record_sha256")
     return doc

@@ -207,7 +207,24 @@ def build_checkpoints(g, width, model_seed) -> dict:
                       g["y_train"][i], m4.LEARNING_RATE)
         u += 1
         if u % STOP_CADENCE == 0:
+            if not all(np.isfinite(v).all()
+                       for v in p.values()):
+                return {"numerically_invalid": True,
+                        "invalid_at_update": u,
+                        "checkpoints": None,
+                        "stop_trajectory": stop_traj,
+                        "stop_trajectory_digest": None,
+                        "selected_stop_update": None,
+                        "task_loss_stop": None}
             sl = loss_task(kind, p, g["X_stop"], g["y_stop"])
+            if not np.isfinite(sl):
+                return {"numerically_invalid": True,
+                        "invalid_at_update": u,
+                        "checkpoints": None,
+                        "stop_trajectory": stop_traj,
+                        "stop_trajectory_digest": None,
+                        "selected_stop_update": None,
+                        "task_loss_stop": None}
             stop_traj.append(round(sl, 10))
             snapshots[u] = {k: v.copy() for k, v in p.items()}
             if sl < best[0] - STOP_MIN_DELTA:
@@ -241,6 +258,16 @@ def build_checkpoints(g, width, model_seed) -> dict:
                       g["y_train"][i], m4.LEARNING_RATE)
     traj_digest = hashlib.sha256(json.dumps(
         stop_traj).encode()).hexdigest()
+    for name, obj in (("calibration_stop", calib),
+                      ("pre_stop", pre), ("post_stop", post)):
+        if not all(np.isfinite(v).all() for v in obj.values()):
+            return {"numerically_invalid": True,
+                    "invalid_at_update": stop_u,
+                    "checkpoints": None,
+                    "stop_trajectory": stop_traj,
+                    "stop_trajectory_digest": None,
+                    "selected_stop_update": None,
+                    "task_loss_stop": None}
     cks["pre_stop"] = {
         "params": pre, "updates": pre_u,
         "parent": init_digest,
@@ -253,7 +280,8 @@ def build_checkpoints(g, width, model_seed) -> dict:
         "params": post, "updates": stop_u + POST_STOP_EXTRA,
         "parent": cks["calibration_stop"]["params_digest"],
         "params_digest": m4._params_digest(post)}
-    return {"checkpoints": cks,
+    return {"numerically_invalid": False,
+            "checkpoints": cks,
             "stop_trajectory": stop_traj,
             "stop_trajectory_digest": traj_digest,
             "selected_stop_update": stop_u,
@@ -309,6 +337,20 @@ def run_intervention(g, tape, ck, kind, on_batch=None,
             sgd_step_task(kind, p, Xmb, ymb, m4.LEARNING_RATE)
             st["updates"] += 1
         ret_loss = loss_task(kind, p, g["X_held"], g["y_held"])
+        if not (np.isfinite(ret_loss)
+                and all(np.isfinite(v).all()
+                        for v in p.values())):
+            rec = {"batch": b, "ret_loss": None,
+                   "retention_streak": st["streak"],
+                   "cumulative_associations": st["assoc_n"],
+                   "cumulative_acquired": 0,
+                   "cumulative_ok": False,
+                   "outcome": "NUMERICAL_ANOMALY"}
+            records.append(rec)
+            if on_batch is not None:
+                on_batch(rec, p, st, margin, endpoint)
+            cause = "NUMERICAL_ANOMALY"
+            break
         st["streak"] = st["streak"] + 1 \
             if ret_loss > margin else 0
         _, out = forward_task(kind, p, Xc)
