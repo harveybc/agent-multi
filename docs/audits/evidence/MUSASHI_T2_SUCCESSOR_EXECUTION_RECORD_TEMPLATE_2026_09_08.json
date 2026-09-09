@@ -4,7 +4,7 @@
  "reviewed_at_date": "<YYYY-MM-DD, canonical ISO date of the actual review>",
  "reviewer": "General Musashi",
  "decision": "OPEN_T2_SUCCESSOR_EXECUTION",
- "successor_design_file_sha256": "<64-hex SHA-256 of the successor design FILE bytes at ~/.local/share/agent-multi/t2_screen_design_RESOURCE_SUCCESSOR_V1.json, computed by the reviewer>",
+ "successor_design_file_sha256": "<64-hex SHA-256 of the successor design FILE bytes at <state_root>/t2_screen_design_RESOURCE_SUCCESSOR_V1.json, computed by the reviewer>",
  "successor_design_self_sha256": "<64-hex internal design_sha256 of the successor (0542ed05... expected; reviewer re-derives, never copies)>",
  "design_review_record_sha256": "<64-hex SHA-256 of the EXISTING installed MUSASHI_T2_V6_DESIGN_REVIEW_RECORD.json bytes>",
  "manifest_sha256": "<64-hex SHA-256 of t2_public_data_manifest_20260906.json>",
