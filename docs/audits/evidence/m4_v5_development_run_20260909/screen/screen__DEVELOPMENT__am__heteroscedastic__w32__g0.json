@@ -1,0 +1,21 @@
+{
+ "baseline_value": 0.6699042,
+ "family": "am",
+ "generator_id": "DEVELOPMENT-am-heteroscedastic-g0",
+ "generator_index": 0,
+ "improvement": 0.96205371,
+ "kind": "screen",
+ "manifest_sha256": "388720795964b13ccd47f2e3bf27e0a554e7f6e6a66d43270c97be93edafa46f",
+ "metric_heldout": 0.02542038,
+ "model_seed": 0,
+ "noise_coord": "heteroscedastic",
+ "numerically_invalid": false,
+ "record_sha256": "c58ac6be1d7de517cedc31e85cc104bfd5efa650220b3df89e134eb3eb88287f",
+ "role": "DEVELOPMENT",
+ "selected_stop_update": 2200,
+ "stop_trajectory_digest": "7674fcdd5bff114b8d3b85c181281fb2b73481de8dcb7ce4b71e5d7bcd235004",
+ "task_kind": "temporal",
+ "unit_id": "screen::DEVELOPMENT::am::heteroscedastic::w32::g0",
+ "unit_role": "treatment",
+ "width": 32
+}

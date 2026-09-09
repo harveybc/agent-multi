@@ -1,0 +1,21 @@
+{
+ "baseline_value": 0.16726406,
+ "family": "chirp",
+ "generator_id": "DEVELOPMENT-chirp-colored-g1",
+ "generator_index": 1,
+ "improvement": 0.48561649,
+ "kind": "screen",
+ "manifest_sha256": "c21ccf1c53b0abe1936c8023aff466fc53bfdb6012a8de945227ea2e897f3d7f",
+ "metric_heldout": 0.08603787,
+ "model_seed": 0,
+ "noise_coord": "colored",
+ "numerically_invalid": false,
+ "record_sha256": "183937df87487244fd0603b036958bb9e55e5789c6365136824ae5c17d9eb304",
+ "role": "DEVELOPMENT",
+ "selected_stop_update": 2900,
+ "stop_trajectory_digest": "70b86dedf274332ae510e72cb930ef67a3808503fcffbc49dcd4bcc6fa78b0c6",
+ "task_kind": "temporal",
+ "unit_id": "screen::DEVELOPMENT::chirp::colored::w16::g1",
+ "unit_role": "treatment",
+ "width": 16
+}

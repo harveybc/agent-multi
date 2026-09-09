@@ -1,0 +1,21 @@
+{
+ "baseline_value": 0.53125,
+ "family": "parity4",
+ "generator_id": "DEVELOPMENT-parity4-clean-g1",
+ "generator_index": 1,
+ "improvement": -0.140625,
+ "kind": "screen",
+ "manifest_sha256": "b98986901e998fc2f952481c4dd6307d38b0d834317afe15e00439e141140549",
+ "metric_heldout": 0.390625,
+ "model_seed": 0,
+ "noise_coord": "clean",
+ "numerically_invalid": false,
+ "record_sha256": "c0157b7a731e3157d64d9b0bc9217fc7c57b93be3852b7adda4238b08838cccf",
+ "role": "DEVELOPMENT",
+ "selected_stop_update": 50,
+ "stop_trajectory_digest": "530c6264761a10fd2cc1a93a6913a61dc5f27713917e168a8436f90c441dfc9a",
+ "task_kind": "boolean",
+ "unit_id": "screen::DEVELOPMENT::parity4::clean::w16::g1",
+ "unit_role": "treatment",
+ "width": 16
+}

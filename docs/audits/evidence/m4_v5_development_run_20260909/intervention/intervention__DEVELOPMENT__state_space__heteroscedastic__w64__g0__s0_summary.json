@@ -1,0 +1,111 @@
+{
+ "arms": {
+  "calibration_stop": {
+   "cap_reached": false,
+   "checkpoint_loss_stop": 0.13678373,
+   "descriptors": {
+    "compressed_len_zlib9": 2448,
+    "descriptor_seconds": 0.000284,
+    "prune_fraction_1e3": 0.0124805,
+    "spectral_rank_W1_1e3": 8
+   },
+   "fail_batch": 0,
+   "final_params_digest": "36400d7a7e1c22264336dfe9265022ac3971a76c9445042ced8150f736ae7ca8",
+   "restricted_endpoint": 0,
+   "retention_margin": 0.2462056019,
+   "stopping_cause": "ACQUISITION_ENDPOINT",
+   "updates_done": 400
+  },
+  "initialization": {
+   "cap_reached": false,
+   "checkpoint_loss_stop": 1.68436164,
+   "descriptors": {
+    "compressed_len_zlib9": 2198,
+    "descriptor_seconds": 0.000273,
+    "prune_fraction_1e3": 0.10296412,
+    "spectral_rank_W1_1e3": 8
+   },
+   "fail_batch": 0,
+   "final_params_digest": "b968ed768ea5a16d3c944e39284fb4dfaf7e94b305316fb911bc9338bdfb0104",
+   "restricted_endpoint": 0,
+   "retention_margin": 1.9632242755,
+   "stopping_cause": "ACQUISITION_ENDPOINT",
+   "updates_done": 400
+  },
+  "post_stop_bounded": {
+   "cap_reached": false,
+   "checkpoint_loss_stop": 0.14649222,
+   "descriptors": {
+    "compressed_len_zlib9": 2441,
+    "descriptor_seconds": 0.000286,
+    "prune_fraction_1e3": 0.01092044,
+    "spectral_rank_W1_1e3": 8
+   },
+   "fail_batch": 0,
+   "final_params_digest": "d9cfca0c24ebef62ef87f18cbc83aae92763010c35258297743ade75bc2da9fd",
+   "restricted_endpoint": 0,
+   "retention_margin": 0.241543134,
+   "stopping_cause": "ACQUISITION_ENDPOINT",
+   "updates_done": 400
+  },
+  "pre_stop": {
+   "cap_reached": false,
+   "checkpoint_loss_stop": 0.14404079,
+   "descriptors": {
+    "compressed_len_zlib9": 2448,
+    "descriptor_seconds": 0.000293,
+    "prune_fraction_1e3": 0.01560062,
+    "spectral_rank_W1_1e3": 8
+   },
+   "fail_batch": 0,
+   "final_params_digest": "76f4f2d3e85c18ae4a854adeda223cb293089cdd6af5caded07e5004e2fae9a7",
+   "restricted_endpoint": 0,
+   "retention_margin": 0.2511417035,
+   "stopping_cause": "ACQUISITION_ENDPOINT",
+   "updates_done": 400
+  }
+ },
+ "checkpoint_lineage": {
+  "calibration_stop": {
+   "params_digest": "a955d05d223f7e1a308ac8f58fd3bc81f00eea15b08a5d37b5835aa6a1adaf39",
+   "parent": "f95e2ca6d019d4ee0fd1e2eec5be42220a178cb16972c22150f499a547929d3e",
+   "updates": 500
+  },
+  "initialization": {
+   "params_digest": "f95e2ca6d019d4ee0fd1e2eec5be42220a178cb16972c22150f499a547929d3e",
+   "parent": null,
+   "updates": 0
+  },
+  "post_stop_bounded": {
+   "params_digest": "961c5a09b0ff053574d18552cdde2cf788a6afa321277edd4995b69a88e40955",
+   "parent": "a955d05d223f7e1a308ac8f58fd3bc81f00eea15b08a5d37b5835aa6a1adaf39",
+   "updates": 1000
+  },
+  "pre_stop": {
+   "params_digest": "3e84bc47c41522d665609c3503abcc9efacb373651f115dd9767a166bea6c45b",
+   "parent": "f95e2ca6d019d4ee0fd1e2eec5be42220a178cb16972c22150f499a547929d3e",
+   "updates": 250
+  }
+ },
+ "family": "state_space",
+ "generator_id": "DEVELOPMENT-state_space-heteroscedastic-g0",
+ "generator_index": 0,
+ "genesis_digest": "f95e2ca6d019d4ee0fd1e2eec5be42220a178cb16972c22150f499a547929d3e",
+ "kind": "intervention",
+ "manifest_sha256": "7222c91c4ec5a79252bac9129768277fb03d0de228dbc4ea2dade1d9384c2e5c",
+ "model_seed": 0,
+ "noise_coord": "heteroscedastic",
+ "paired_primary_difference": 0,
+ "record_sha256": "ad11667fb9ee4ef97a111106365fde8d8b7f5be49209f0f59d492f8abb2292c9",
+ "role": "DEVELOPMENT",
+ "selected_stop_update": 500,
+ "stop_trajectory_digest": "b291192bf5d1a32d14fd31fa539d655bd2be1778785b1c35f91f7289020294a6",
+ "stop_trajectory_slope": -0.00030453,
+ "tape_digest": "8a917d7be07bbd75b9e4cdc27c988df5fa70732d899354953503d2ca64191bee",
+ "tape_id": "tape::d7280a92047d9889::DEVELOPMENT-state_space-heteroscedastic-g0::w64::s0",
+ "tape_tol": 0.25744340546869265,
+ "task_kind": "temporal",
+ "unit_id": "intervention::DEVELOPMENT::state_space::heteroscedastic::w64::g0::s0",
+ "unit_role": "paired_checkpoint_intervention",
+ "width": 64
+}

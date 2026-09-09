@@ -1,0 +1,21 @@
+{
+ "baseline_value": 0.52156733,
+ "family": "am",
+ "generator_id": "DEVELOPMENT-am-clean-g0",
+ "generator_index": 0,
+ "improvement": 0.99848921,
+ "kind": "screen",
+ "manifest_sha256": "07a91bb640ff56bf53a8f48015e8a9649d9ec513d0cc267c026ea4539553c8d1",
+ "metric_heldout": 0.00078798,
+ "model_seed": 0,
+ "noise_coord": "clean",
+ "numerically_invalid": false,
+ "record_sha256": "26ae2542a20235ad77a73717044556153e4e1cab39f9ade56b76eed1cab7074f",
+ "role": "DEVELOPMENT",
+ "selected_stop_update": 3900,
+ "stop_trajectory_digest": "6d58326d3cd6e8616c0be5df1b09c9d196f55fac24bca6f8daa9dbb62289f07f",
+ "task_kind": "temporal",
+ "unit_id": "screen::DEVELOPMENT::am::clean::w8::g0",
+ "unit_role": "treatment",
+ "width": 8
+}

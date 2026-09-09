@@ -1,0 +1,14 @@
+phase1: {
+ "tapes_identical_across_arms": true,
+ "arm_absent_from_tape_id": true,
+ "one_genesis": true,
+ "boolean_baseline_mismatches_now": 0,
+ "bool_tape_family_support": true
+}
+mutant A_tape_arm: {"adversary": "tape_arm", "result": "DIVERGED"}
+mutant B_genesis_arm: {"adversary": "genesis_arm", "result": "DIVERGED"}
+mutant C_baseline_proportion: {"adversary": "baseline", "mismatches": 7}
+mutant D_boundary_off: {"adversary": "boundary_off", "result": "SCORED_UNPUSHED"}
+mutant E_orphan_resume: {"adversary": "orphan_resume", "result": "SILENT_RESUME"}
+
+POST CONFIRMED: the paired-tape, one-genesis, corrected-baseline, pre-outcome-boundary and durable-resume guards each refuse their adversary on the corrected code and each BITES alone under mutation

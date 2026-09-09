@@ -1,0 +1,21 @@
+{
+ "baseline_value": 0.515625,
+ "family": "identity",
+ "generator_id": "DEVELOPMENT-identity-clean-g1",
+ "generator_index": 1,
+ "improvement": 0.484375,
+ "kind": "screen",
+ "manifest_sha256": "846598575def252d4a31230f7ac47d1a68cc457110ac1dff070e544750995736",
+ "metric_heldout": 1.0,
+ "model_seed": 0,
+ "noise_coord": "clean",
+ "numerically_invalid": false,
+ "record_sha256": "0ff96a0e73c524504987da2a60d93e3e8525fb52f28731046e22a187723e556a",
+ "role": "DEVELOPMENT",
+ "selected_stop_update": 4000,
+ "stop_trajectory_digest": "f1b8f27f1916c2dd2622dad6c98af591f552b852219a0d028e830116de341770",
+ "task_kind": "boolean",
+ "unit_id": "screen::DEVELOPMENT::identity::clean::w8::g1",
+ "unit_role": "treatment",
+ "width": 8
+}

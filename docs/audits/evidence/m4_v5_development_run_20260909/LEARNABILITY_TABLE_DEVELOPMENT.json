@@ -1,0 +1,1168 @@
+{
+ "cells": {
+  "screen::DEVELOPMENT::am::clean::w16::g0": {
+   "improvement": 0.99813647,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::clean::w16::g1": {
+   "improvement": 0.9986737,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::clean::w32::g0": {
+   "improvement": 0.99887847,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::clean::w32::g1": {
+   "improvement": 0.99915372,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::clean::w64::g0": {
+   "improvement": 0.99931646,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::clean::w64::g1": {
+   "improvement": 0.99905275,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::clean::w8::g0": {
+   "improvement": 0.99848921,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::clean::w8::g1": {
+   "improvement": 0.99839991,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::colored::w16::g0": {
+   "improvement": 0.9783709,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::colored::w16::g1": {
+   "improvement": 0.94839363,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::colored::w32::g0": {
+   "improvement": 0.98509838,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::colored::w32::g1": {
+   "improvement": 0.95062834,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::colored::w64::g0": {
+   "improvement": 0.98775073,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::colored::w64::g1": {
+   "improvement": 0.93306536,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::colored::w8::g0": {
+   "improvement": 0.98345822,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::colored::w8::g1": {
+   "improvement": 0.9542979,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::heteroscedastic::w16::g0": {
+   "improvement": 0.95681539,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::heteroscedastic::w16::g1": {
+   "improvement": 0.88545271,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::heteroscedastic::w32::g0": {
+   "improvement": 0.96205371,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::heteroscedastic::w32::g1": {
+   "improvement": 0.88133005,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::heteroscedastic::w64::g0": {
+   "improvement": 0.95603741,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::heteroscedastic::w64::g1": {
+   "improvement": 0.87802801,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::heteroscedastic::w8::g0": {
+   "improvement": 0.96250364,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::heteroscedastic::w8::g1": {
+   "improvement": 0.89161386,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::impulsive::w16::g0": {
+   "improvement": 0.9262088,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::impulsive::w16::g1": {
+   "improvement": 0.9311912,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::impulsive::w32::g0": {
+   "improvement": 0.90912525,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::impulsive::w32::g1": {
+   "improvement": 0.94471855,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::impulsive::w64::g0": {
+   "improvement": 0.91247975,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::impulsive::w64::g1": {
+   "improvement": 0.93060903,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::impulsive::w8::g0": {
+   "improvement": 0.91912069,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::impulsive::w8::g1": {
+   "improvement": 0.9189713,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::white::w16::g0": {
+   "improvement": 0.95333621,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::white::w16::g1": {
+   "improvement": 0.92642565,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::white::w32::g0": {
+   "improvement": 0.95588854,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::white::w32::g1": {
+   "improvement": 0.92607375,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::white::w64::g0": {
+   "improvement": 0.9565147,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::white::w64::g1": {
+   "improvement": 0.92796548,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::white::w8::g0": {
+   "improvement": 0.95820972,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::am::white::w8::g1": {
+   "improvement": 0.92400236,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::clean::w16::g0": {
+   "improvement": 0.86429986,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::clean::w16::g1": {
+   "improvement": 0.77556959,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::clean::w32::g0": {
+   "improvement": 0.44648626,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::clean::w32::g1": {
+   "improvement": 0.39759241,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::clean::w64::g0": {
+   "improvement": 0.50834972,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::clean::w64::g1": {
+   "improvement": 0.71853784,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::clean::w8::g0": {
+   "improvement": 0.85659772,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::clean::w8::g1": {
+   "improvement": 0.75164673,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::colored::w16::g0": {
+   "improvement": 0.40882886,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::colored::w16::g1": {
+   "improvement": 0.48561649,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::colored::w32::g0": {
+   "improvement": 0.7294072,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::colored::w32::g1": {
+   "improvement": 0.85585801,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::colored::w64::g0": {
+   "improvement": 0.52714892,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::colored::w64::g1": {
+   "improvement": 0.79349675,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::colored::w8::g0": {
+   "improvement": 0.43753084,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::colored::w8::g1": {
+   "improvement": 0.45860102,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::heteroscedastic::w16::g0": {
+   "improvement": 0.35646096,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::heteroscedastic::w16::g1": {
+   "improvement": 0.0793349,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::chirp::heteroscedastic::w32::g0": {
+   "improvement": 0.40860795,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::heteroscedastic::w32::g1": {
+   "improvement": 0.39774848,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::heteroscedastic::w64::g0": {
+   "improvement": 0.42180083,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::heteroscedastic::w64::g1": {
+   "improvement": 0.48852745,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::heteroscedastic::w8::g0": {
+   "improvement": 0.3663445,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::heteroscedastic::w8::g1": {
+   "improvement": 0.48922655,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::impulsive::w16::g0": {
+   "improvement": 0.19981863,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::impulsive::w16::g1": {
+   "improvement": 0.2371129,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::impulsive::w32::g0": {
+   "improvement": 0.20643095,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::impulsive::w32::g1": {
+   "improvement": 0.42663844,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::impulsive::w64::g0": {
+   "improvement": 0.41014394,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::impulsive::w64::g1": {
+   "improvement": 0.4984963,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::impulsive::w8::g0": {
+   "improvement": 0.02874466,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::chirp::impulsive::w8::g1": {
+   "improvement": 0.24069198,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::white::w16::g0": {
+   "improvement": 0.14158443,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::chirp::white::w16::g1": {
+   "improvement": 0.59350902,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::white::w32::g0": {
+   "improvement": -0.15125493,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::chirp::white::w32::g1": {
+   "improvement": 0.74245599,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::white::w64::g0": {
+   "improvement": 0.34845519,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::white::w64::g1": {
+   "improvement": 0.67081591,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::chirp::white::w8::g0": {
+   "improvement": -0.47677707,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::chirp::white::w8::g1": {
+   "improvement": 0.45612922,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::discontinuity::clean::w16::g0": {
+   "improvement": -3423498334.3541317,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::clean::w16::g1": {
+   "improvement": -0.19176083,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::clean::w32::g0": {
+   "improvement": -3476687565.70364,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::clean::w32::g1": {
+   "improvement": -2.07402854,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::clean::w64::g0": {
+   "improvement": -477422752.9287636,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::clean::w64::g1": {
+   "improvement": -0.22597076,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::clean::w8::g0": {
+   "improvement": -4093697156.8294797,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::clean::w8::g1": {
+   "improvement": -0.69258566,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::colored::w16::g0": {
+   "improvement": -5.3451044,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::colored::w16::g1": {
+   "improvement": -0.00262753,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::colored::w32::g0": {
+   "improvement": -3.83498956,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::colored::w32::g1": {
+   "improvement": -0.11511059,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::colored::w64::g0": {
+   "improvement": -9.65270312,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::colored::w64::g1": {
+   "improvement": -0.13069334,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::colored::w8::g0": {
+   "improvement": -3.44111138,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::colored::w8::g1": {
+   "improvement": -0.15401962,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::heteroscedastic::w16::g0": {
+   "improvement": -662.81280791,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::heteroscedastic::w16::g1": {
+   "improvement": -12.2639783,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::heteroscedastic::w32::g0": {
+   "improvement": -1736.80518566,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::heteroscedastic::w32::g1": {
+   "improvement": -3.21009681,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::heteroscedastic::w64::g0": {
+   "improvement": -38.53858459,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::heteroscedastic::w64::g1": {
+   "improvement": -2.02024437,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::heteroscedastic::w8::g0": {
+   "improvement": -228.30731804,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::heteroscedastic::w8::g1": {
+   "improvement": -17.73310524,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::impulsive::w16::g0": {
+   "improvement": -0.33769708,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::impulsive::w16::g1": {
+   "improvement": -0.65923569,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::impulsive::w32::g0": {
+   "improvement": -0.87947432,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::impulsive::w32::g1": {
+   "improvement": -0.67977377,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::impulsive::w64::g0": {
+   "improvement": -0.71561043,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::impulsive::w64::g1": {
+   "improvement": -2.96601325,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::impulsive::w8::g0": {
+   "improvement": -0.36258028,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::impulsive::w8::g1": {
+   "improvement": -2.86983859,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::white::w16::g0": {
+   "improvement": -1.51159293,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::white::w16::g1": {
+   "improvement": 0.02251117,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::white::w32::g0": {
+   "improvement": -2.62251298,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::white::w32::g1": {
+   "improvement": -0.04013827,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::white::w64::g0": {
+   "improvement": -0.89841075,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::white::w64::g1": {
+   "improvement": 0.12052719,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::white::w8::g0": {
+   "improvement": -2.2636352,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::discontinuity::white::w8::g1": {
+   "improvement": -1.6150999,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::dnf3::clean::w16::g0": {
+   "improvement": 0.359375,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::dnf3::clean::w16::g1": {
+   "improvement": 0.296875,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::dnf3::clean::w32::g0": {
+   "improvement": 0.359375,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::dnf3::clean::w32::g1": {
+   "improvement": 0.296875,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::dnf3::clean::w64::g0": {
+   "improvement": 0.359375,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::dnf3::clean::w64::g1": {
+   "improvement": 0.28125,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::dnf3::clean::w8::g0": {
+   "improvement": 0.375,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::dnf3::clean::w8::g1": {
+   "improvement": 0.296875,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::identity::clean::w16::g0": {
+   "improvement": 0.578125,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::identity::clean::w16::g1": {
+   "improvement": 0.484375,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::identity::clean::w32::g0": {
+   "improvement": 0.578125,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::identity::clean::w32::g1": {
+   "improvement": 0.484375,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::identity::clean::w64::g0": {
+   "improvement": 0.578125,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::identity::clean::w64::g1": {
+   "improvement": 0.484375,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::identity::clean::w8::g0": {
+   "improvement": 0.578125,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::identity::clean::w8::g1": {
+   "improvement": 0.484375,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::majority::clean::w16::g0": {
+   "improvement": 0.484375,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::majority::clean::w16::g1": {
+   "improvement": 0.484375,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::majority::clean::w32::g0": {
+   "improvement": 0.484375,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::majority::clean::w32::g1": {
+   "improvement": 0.484375,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::majority::clean::w64::g0": {
+   "improvement": 0.484375,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::majority::clean::w64::g1": {
+   "improvement": 0.484375,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::majority::clean::w8::g0": {
+   "improvement": 0.484375,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::majority::clean::w8::g1": {
+   "improvement": 0.484375,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::parity4::clean::w16::g0": {
+   "improvement": -0.0625,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::parity4::clean::w16::g1": {
+   "improvement": -0.140625,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::parity4::clean::w32::g0": {
+   "improvement": -0.03125,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::parity4::clean::w32::g1": {
+   "improvement": -0.140625,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::parity4::clean::w64::g0": {
+   "improvement": -0.015625,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::parity4::clean::w64::g1": {
+   "improvement": 0.453125,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::parity4::clean::w8::g0": {
+   "improvement": -0.0625,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::parity4::clean::w8::g1": {
+   "improvement": -0.0625,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::sine::clean::w16::g0": {
+   "improvement": 0.99982513,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::clean::w16::g1": {
+   "improvement": 0.99832275,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::clean::w32::g0": {
+   "improvement": 0.99979593,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::clean::w32::g1": {
+   "improvement": 0.99926142,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::clean::w64::g0": {
+   "improvement": 0.99954066,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::clean::w64::g1": {
+   "improvement": 0.99975787,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::clean::w8::g0": {
+   "improvement": 0.99972649,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::clean::w8::g1": {
+   "improvement": 0.99785458,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::colored::w16::g0": {
+   "improvement": 0.96017118,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::colored::w16::g1": {
+   "improvement": 0.96627848,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::colored::w32::g0": {
+   "improvement": 0.95296661,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::colored::w32::g1": {
+   "improvement": 0.95803545,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::colored::w64::g0": {
+   "improvement": 0.95816737,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::colored::w64::g1": {
+   "improvement": 0.96321898,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::colored::w8::g0": {
+   "improvement": 0.959074,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::colored::w8::g1": {
+   "improvement": 0.95194716,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::heteroscedastic::w16::g0": {
+   "improvement": 0.85806666,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::heteroscedastic::w16::g1": {
+   "improvement": 0.64347516,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::heteroscedastic::w32::g0": {
+   "improvement": 0.85694612,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::heteroscedastic::w32::g1": {
+   "improvement": 0.6066717,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::heteroscedastic::w64::g0": {
+   "improvement": 0.8348343,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::heteroscedastic::w64::g1": {
+   "improvement": 0.63191973,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::heteroscedastic::w8::g0": {
+   "improvement": 0.85721086,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::heteroscedastic::w8::g1": {
+   "improvement": 0.65844517,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::impulsive::w16::g0": {
+   "improvement": 0.77799898,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::impulsive::w16::g1": {
+   "improvement": 0.84177185,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::impulsive::w32::g0": {
+   "improvement": 0.77251812,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::impulsive::w32::g1": {
+   "improvement": 0.83169325,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::impulsive::w64::g0": {
+   "improvement": 0.76825475,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::impulsive::w64::g1": {
+   "improvement": 0.81890534,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::impulsive::w8::g0": {
+   "improvement": 0.77207515,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::impulsive::w8::g1": {
+   "improvement": 0.8155602,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::white::w16::g0": {
+   "improvement": 0.95749091,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::white::w16::g1": {
+   "improvement": 0.74087867,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::white::w32::g0": {
+   "improvement": 0.9547462,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::white::w32::g1": {
+   "improvement": 0.76907047,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::white::w64::g0": {
+   "improvement": 0.94706842,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::white::w64::g1": {
+   "improvement": 0.76144055,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::white::w8::g0": {
+   "improvement": 0.94943688,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::sine::white::w8::g1": {
+   "improvement": 0.70562736,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::state_space::clean::w16::g0": {
+   "improvement": 0.51685578,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::state_space::clean::w16::g1": {
+   "improvement": 0.45250731,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::state_space::clean::w32::g0": {
+   "improvement": 0.49778495,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::state_space::clean::w32::g1": {
+   "improvement": 0.49684764,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::state_space::clean::w64::g0": {
+   "improvement": 0.511773,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::state_space::clean::w64::g1": {
+   "improvement": 0.33700298,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::state_space::clean::w8::g0": {
+   "improvement": 0.50913405,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::state_space::clean::w8::g1": {
+   "improvement": 0.37585573,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::state_space::colored::w16::g0": {
+   "improvement": -0.06070144,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::state_space::colored::w16::g1": {
+   "improvement": 0.44205996,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::state_space::colored::w32::g0": {
+   "improvement": 0.06375731,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::state_space::colored::w32::g1": {
+   "improvement": 0.44245051,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::state_space::colored::w64::g0": {
+   "improvement": -0.0531886,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::state_space::colored::w64::g1": {
+   "improvement": 0.35490688,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::state_space::colored::w8::g0": {
+   "improvement": 0.10473749,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::state_space::colored::w8::g1": {
+   "improvement": 0.4319395,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::state_space::heteroscedastic::w16::g0": {
+   "improvement": 0.23143955,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::state_space::heteroscedastic::w16::g1": {
+   "improvement": 0.33150449,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::state_space::heteroscedastic::w32::g0": {
+   "improvement": 0.09279691,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::state_space::heteroscedastic::w32::g1": {
+   "improvement": 0.28816297,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::state_space::heteroscedastic::w64::g0": {
+   "improvement": 0.07170153,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::state_space::heteroscedastic::w64::g1": {
+   "improvement": 0.30767009,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::state_space::heteroscedastic::w8::g0": {
+   "improvement": 0.25679481,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::state_space::heteroscedastic::w8::g1": {
+   "improvement": 0.33688008,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::state_space::impulsive::w16::g0": {
+   "improvement": 0.53734243,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::state_space::impulsive::w16::g1": {
+   "improvement": -0.17955908,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::state_space::impulsive::w32::g0": {
+   "improvement": 0.48554962,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::state_space::impulsive::w32::g1": {
+   "improvement": -0.00036536,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::state_space::impulsive::w64::g0": {
+   "improvement": 0.53133341,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::state_space::impulsive::w64::g1": {
+   "improvement": -0.02789274,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::state_space::impulsive::w8::g0": {
+   "improvement": 0.53971184,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::state_space::impulsive::w8::g1": {
+   "improvement": -0.25877241,
+   "margin": 0.16484375,
+   "outcome": "OPTIMIZATION_LIMITED"
+  },
+  "screen::DEVELOPMENT::state_space::white::w16::g0": {
+   "improvement": 0.21438954,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::state_space::white::w16::g1": {
+   "improvement": 0.56245038,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::state_space::white::w32::g0": {
+   "improvement": 0.22734769,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::state_space::white::w32::g1": {
+   "improvement": 0.5773362,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::state_space::white::w64::g0": {
+   "improvement": 0.17718994,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::state_space::white::w64::g1": {
+   "improvement": 0.46204243,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::state_space::white::w8::g0": {
+   "improvement": 0.20011998,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  },
+  "screen::DEVELOPMENT::state_space::white::w8::g1": {
+   "improvement": 0.59298856,
+   "margin": 0.16484375,
+   "outcome": "LEARNABLE_UNDER_FROZEN_BUDGET"
+  }
+ },
+ "easy_positive_control_passes": true,
+ "margin": 0.16484375,
+ "record_sha256": "3cd60980609566651c5a7ace33eb2d879b285171aa85b4f3e2d3dd0650382c19",
+ "schema": "agent_multi.m4_learnability_table.v2"
+}

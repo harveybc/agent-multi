@@ -1,0 +1,21 @@
+{
+ "baseline_value": 0.19443359,
+ "family": "state_space",
+ "generator_id": "DEVELOPMENT-state_space-impulsive-g1",
+ "generator_index": 1,
+ "improvement": -0.25877241,
+ "kind": "screen",
+ "manifest_sha256": "718ac780f02160a1daacff35d7f459dd87f7bb434d4effeb137e63c61681d436",
+ "metric_heldout": 0.24474764,
+ "model_seed": 0,
+ "noise_coord": "impulsive",
+ "numerically_invalid": false,
+ "record_sha256": "5fe8c6bd75bc17f8fffaa1f43e07dd385426eccf9ff812980d4e2fb7c82ba694",
+ "role": "DEVELOPMENT",
+ "selected_stop_update": 1050,
+ "stop_trajectory_digest": "16b7ce77cc57b00e31b1c9811a34e7a82de32f76847a8e1de35c93e671540b2e",
+ "task_kind": "temporal",
+ "unit_id": "screen::DEVELOPMENT::state_space::impulsive::w8::g1",
+ "unit_role": "treatment",
+ "width": 8
+}

@@ -1,0 +1,21 @@
+{
+ "baseline_value": 0.02814168,
+ "family": "discontinuity",
+ "generator_id": "DEVELOPMENT-discontinuity-clean-g1",
+ "generator_index": 1,
+ "improvement": -2.07402854,
+ "kind": "screen",
+ "manifest_sha256": "cfc8e9b2c1bc782cb3efc5c85e50d7a90ab2be75f4020121ee9af015b56d9d24",
+ "metric_heldout": 0.08650832,
+ "model_seed": 0,
+ "noise_coord": "clean",
+ "numerically_invalid": false,
+ "record_sha256": "fd252fa2ad92ac5535f0e36f2762ff9192b68cc7af5620dccf444610885f45fa",
+ "role": "DEVELOPMENT",
+ "selected_stop_update": 100,
+ "stop_trajectory_digest": "22fea2ac07e05e4f6df6432cbd48c606c7e0b15e21207582e6e3e0a1b6b35146",
+ "task_kind": "temporal",
+ "unit_id": "screen::DEVELOPMENT::discontinuity::clean::w32::g1",
+ "unit_role": "treatment",
+ "width": 32
+}

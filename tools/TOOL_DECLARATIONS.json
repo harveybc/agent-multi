@@ -942,6 +942,13 @@
    "mutability": "mixed",
    "authority_class": "diagnostic",
    "owner": "General Satoshi III"
+  },
+  "m4_v5_adjudicate.py": {
+   "purpose": "M4 C34/C35 (order 2026-09-09): development-gate adjudication (fresh verification, easy-positive, random-label non-licensing, exact tapes/geneses) and the CANDIDATE calibration adjudication (margins, PROPOSED eligibility rule labeled for Musashi review, per-cell dispersion + UCB95 gate, executable ladder disposition, typed CONFIRMATION slot list). Grants no confirmation authority.",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "authority_class": "verifier",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

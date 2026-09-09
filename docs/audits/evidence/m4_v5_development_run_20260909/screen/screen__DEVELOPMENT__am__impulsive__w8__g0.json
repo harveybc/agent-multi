@@ -1,0 +1,21 @@
+{
+ "baseline_value": 0.37658389,
+ "family": "am",
+ "generator_id": "DEVELOPMENT-am-impulsive-g0",
+ "generator_index": 0,
+ "improvement": 0.91912069,
+ "kind": "screen",
+ "manifest_sha256": "b8675735c2605ede373fd4c0affe5c42bf93f4b6b85a6bb177e4e238ae9150d4",
+ "metric_heldout": 0.03045785,
+ "model_seed": 0,
+ "noise_coord": "impulsive",
+ "numerically_invalid": false,
+ "record_sha256": "cfcf025baf6ce8357d4318f915f8e2b5ffeb609fb45670fecf627338cf016c41",
+ "role": "DEVELOPMENT",
+ "selected_stop_update": 1950,
+ "stop_trajectory_digest": "873f9150ad8dea9b0d330b1ca1592000ceb971bcd9e895d50e2aeff4c09677ca",
+ "task_kind": "temporal",
+ "unit_id": "screen::DEVELOPMENT::am::impulsive::w8::g0",
+ "unit_role": "treatment",
+ "width": 8
+}

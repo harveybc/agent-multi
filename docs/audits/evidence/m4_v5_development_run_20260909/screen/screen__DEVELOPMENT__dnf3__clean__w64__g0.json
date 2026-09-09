@@ -1,0 +1,21 @@
+{
+ "baseline_value": 0.609375,
+ "family": "dnf3",
+ "generator_id": "DEVELOPMENT-dnf3-clean-g0",
+ "generator_index": 0,
+ "improvement": 0.359375,
+ "kind": "screen",
+ "manifest_sha256": "5585d7c68bae5946cee9992ce656941c871cbe6205d24e6f26fc3575235117b8",
+ "metric_heldout": 0.96875,
+ "model_seed": 0,
+ "noise_coord": "clean",
+ "numerically_invalid": false,
+ "record_sha256": "116f214bbe1cab782b6ff630d24d824da8daadd856fca03efb596bb5b83d9569",
+ "role": "DEVELOPMENT",
+ "selected_stop_update": 2650,
+ "stop_trajectory_digest": "c62780c19f08937c66c628e90f8a7fc5fecbb0d6b96a9f80aea8b70a3d6d3ea8",
+ "task_kind": "boolean",
+ "unit_id": "screen::DEVELOPMENT::dnf3::clean::w64::g0",
+ "unit_role": "treatment",
+ "width": 64
+}

@@ -1,0 +1,21 @@
+{
+ "baseline_value": 0.17266595,
+ "family": "chirp",
+ "generator_id": "DEVELOPMENT-chirp-impulsive-g0",
+ "generator_index": 0,
+ "improvement": 0.02874466,
+ "kind": "screen",
+ "manifest_sha256": "9f8b2004746b300e5317bf2add88f8fd5ac2632eeb6bb042fb402dde463b1302",
+ "metric_heldout": 0.16770273,
+ "model_seed": 0,
+ "noise_coord": "impulsive",
+ "numerically_invalid": false,
+ "record_sha256": "4022343e84f829c9b54f1900ba71bdd8fe94849970ef8c13af5dc1cb89dcaea5",
+ "role": "DEVELOPMENT",
+ "selected_stop_update": 800,
+ "stop_trajectory_digest": "accc5288843bb8ef23c2146243c2633245d1268762f6c11623db19b1eaae2753",
+ "task_kind": "temporal",
+ "unit_id": "screen::DEVELOPMENT::chirp::impulsive::w8::g0",
+ "unit_role": "treatment",
+ "width": 8
+}

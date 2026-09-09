@@ -1,0 +1,21 @@
+{
+ "baseline_value": 0.08471352,
+ "family": "sine",
+ "generator_id": "DEVELOPMENT-sine-heteroscedastic-g0",
+ "generator_index": 0,
+ "improvement": 0.85806666,
+ "kind": "screen",
+ "manifest_sha256": "e071c864a0e9508e1311a0325ac2337f5e5436c112f72747f4691503b937145f",
+ "metric_heldout": 0.01202367,
+ "model_seed": 0,
+ "noise_coord": "heteroscedastic",
+ "numerically_invalid": false,
+ "record_sha256": "c30eee68a5e499445e76e6e23ccf5367ee7f8b5f8eaf38e474cd2a4c01894574",
+ "role": "DEVELOPMENT",
+ "selected_stop_update": 3300,
+ "stop_trajectory_digest": "a9acf93a80dcd5a947e2612d435d87d7a91e15552c3c2fa2e0ca139fa5f88292",
+ "task_kind": "temporal",
+ "unit_id": "screen::DEVELOPMENT::sine::heteroscedastic::w16::g0",
+ "unit_role": "treatment",
+ "width": 16
+}

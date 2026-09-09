@@ -1,0 +1,21 @@
+{
+ "baseline_value": 0.12399903,
+ "family": "sine",
+ "generator_id": "DEVELOPMENT-sine-white-g0",
+ "generator_index": 0,
+ "improvement": 0.9547462,
+ "kind": "screen",
+ "manifest_sha256": "84a2debe68e9a897869d8f6738ec1af07d1fb0c16285d9088fb497a4f7abce5b",
+ "metric_heldout": 0.00561143,
+ "model_seed": 0,
+ "noise_coord": "white",
+ "numerically_invalid": false,
+ "record_sha256": "0de5c452dfc14db0e021d4e5254362f7ecb338fbba13665d52e5445489a5882c",
+ "role": "DEVELOPMENT",
+ "selected_stop_update": 2300,
+ "stop_trajectory_digest": "d9fa0738521060e848159c1dc7881f1e23e8d60279524f5eed974e9a20324afc",
+ "task_kind": "temporal",
+ "unit_id": "screen::DEVELOPMENT::sine::white::w32::g0",
+ "unit_role": "treatment",
+ "width": 32
+}

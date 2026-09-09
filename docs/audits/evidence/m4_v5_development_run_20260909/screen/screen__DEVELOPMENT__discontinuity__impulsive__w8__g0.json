@@ -1,0 +1,21 @@
+{
+ "baseline_value": 0.08238525,
+ "family": "discontinuity",
+ "generator_id": "DEVELOPMENT-discontinuity-impulsive-g0",
+ "generator_index": 0,
+ "improvement": -0.36258028,
+ "kind": "screen",
+ "manifest_sha256": "060306de171826b2e1caab002c7acc5a2d682b5bc136800e992a54134acccfdb",
+ "metric_heldout": 0.11225651,
+ "model_seed": 0,
+ "noise_coord": "impulsive",
+ "numerically_invalid": false,
+ "record_sha256": "066ed4c2b4d6876c68819aed5ab216c59a0cc32d36b3bca8c6612cd292f33858",
+ "role": "DEVELOPMENT",
+ "selected_stop_update": 4000,
+ "stop_trajectory_digest": "242a7e3db6a98f84652d0ca31c1ae2a1ed13e0178cb03d989cc3a09ccd6894dd",
+ "task_kind": "temporal",
+ "unit_id": "screen::DEVELOPMENT::discontinuity::impulsive::w8::g0",
+ "unit_role": "treatment",
+ "width": 8
+}

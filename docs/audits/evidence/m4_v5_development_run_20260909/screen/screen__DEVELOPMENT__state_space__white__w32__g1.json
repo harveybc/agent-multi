@@ -1,0 +1,21 @@
+{
+ "baseline_value": 0.35938234,
+ "family": "state_space",
+ "generator_id": "DEVELOPMENT-state_space-white-g1",
+ "generator_index": 1,
+ "improvement": 0.5773362,
+ "kind": "screen",
+ "manifest_sha256": "f7c062cbe0f402927a7fa0fae4f058aaa8f9541b07bb64a7ddec561b03945f27",
+ "metric_heldout": 0.15189791,
+ "model_seed": 0,
+ "noise_coord": "white",
+ "numerically_invalid": false,
+ "record_sha256": "226aabd9d39cec8c986c4a63ac2e4ac16f49a787ddae678c41156f79f45968fe",
+ "role": "DEVELOPMENT",
+ "selected_stop_update": 1150,
+ "stop_trajectory_digest": "d2c855f1714394856ea71bf37a9611997e13d7e486fe3d84c86a62f89643d0be",
+ "task_kind": "temporal",
+ "unit_id": "screen::DEVELOPMENT::state_space::white::w32::g1",
+ "unit_role": "treatment",
+ "width": 32
+}

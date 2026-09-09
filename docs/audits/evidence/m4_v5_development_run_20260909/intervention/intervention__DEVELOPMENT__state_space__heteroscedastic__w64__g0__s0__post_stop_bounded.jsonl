@@ -1,0 +1,1 @@
+{"batch": 0, "cumulative_acquired": 5, "cumulative_associations": 8, "cumulative_ok": false, "outcome": "ACQUISITION_ENDPOINT", "record_sha256": "94af7dbcdefb85d942edbbde32a24527801fd80e10ed00871dce950be9ef0511", "ret_loss": 0.304025, "retention_streak": 1, "tape_digest": "8a917d7be07bbd75b9e4cdc27c988df5fa70732d899354953503d2ca64191bee"}

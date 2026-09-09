@@ -1,0 +1,21 @@
+{
+ "baseline_value": 1.17873652,
+ "family": "easy_constant",
+ "generator_id": "DEVELOPMENT-easy_constant-clean-g0",
+ "generator_index": 0,
+ "improvement": 0.99986335,
+ "kind": "screen",
+ "manifest_sha256": "5595ca8179a15862806e06c6cd3d716e783cd940bf74bc184b91a53a5bf60a37",
+ "metric_heldout": 0.00016107,
+ "model_seed": 0,
+ "noise_coord": "clean",
+ "numerically_invalid": false,
+ "record_sha256": "071909ab0e15e7ac8d3fbf36e03b940ac137eeed00e201f92a35966792523a07",
+ "role": "DEVELOPMENT",
+ "selected_stop_update": 4000,
+ "stop_trajectory_digest": "4d376f9f982bfd8c069ddbfa8dcbe1ed1e8feb8d4548a8a25dcd067de18ece11",
+ "task_kind": "temporal",
+ "unit_id": "screen::DEVELOPMENT::easy_constant::clean::w8::g0",
+ "unit_role": "positive_control",
+ "width": 8
+}

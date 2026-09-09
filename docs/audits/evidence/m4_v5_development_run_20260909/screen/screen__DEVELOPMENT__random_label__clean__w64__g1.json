@@ -1,0 +1,21 @@
+{
+ "baseline_value": 0.375,
+ "family": "random_label",
+ "generator_id": "DEVELOPMENT-random_label-clean-g1",
+ "generator_index": 1,
+ "improvement": 0.046875,
+ "kind": "screen",
+ "manifest_sha256": "7768a358bcf00afadd41077dff29db4600a4f0183481bc492894d340b9d3641d",
+ "metric_heldout": 0.421875,
+ "model_seed": 0,
+ "noise_coord": "clean",
+ "numerically_invalid": false,
+ "record_sha256": "e4e853a5f0153684d197fd734ab9c403e3ed6104a0bbb49a6d2022ac40d4b10e",
+ "role": "DEVELOPMENT",
+ "selected_stop_update": 50,
+ "stop_trajectory_digest": "bf0d2490f880d9dcbb56c30a12c0ea6e3eb050cdb4086d72b46e2168d38b09e8",
+ "task_kind": "boolean",
+ "unit_id": "screen::DEVELOPMENT::random_label::clean::w64::g1",
+ "unit_role": "negative_control",
+ "width": 64
+}
