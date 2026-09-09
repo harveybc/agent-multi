@@ -1,0 +1,24 @@
+{
+ "design_schema": "agent_multi.m4_residual_capacity_design.v3",
+ "population_keys_absent": true,
+ "temporal_families_declared": true,
+ "noise_regimes_declared": true,
+ "width_grid_declared": true,
+ "bonferroni_sentence_declared": true,
+ "generator_roles_absent_in_code": true,
+ "generator_roles_absent_in_design_keys": true,
+ "gen_single_namespace": true,
+ "no_latent_disturbance_split": true,
+ "code_implements_two_families_one_width": true,
+ "no_noise_regime_implementation": true,
+ "random_label_train_acc": 1.0,
+ "random_label_heldout_acc": 0.492,
+ "memorization_visible_no_gate_exists": true,
+ "no_learnability_gate_in_code": true,
+ "no_censoring_analysis": true,
+ "no_precision_or_power_calc": true,
+ "bonferroni_family_never_frozen": true,
+ "runner_absent": true
+}
+
+PRE CONFIRMED at 318cfdb8: no candidate population, one undifferentiated generator namespace with no role custody, a random-label task memorized to train acc 1.000 with held-out 0.492 and NOTHING that types or refuses it, no frozen estimands/censoring/precision/multiplicity, and no scientific runner — the intervention foundation does not exist yet
