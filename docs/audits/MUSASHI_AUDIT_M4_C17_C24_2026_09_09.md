@@ -178,9 +178,17 @@ Completed before this disposition:
   all eight Boolean-baseline mismatches and the non-sigmoid output range; and
 - artifact-mode inspection showing intervention JSONL files at `0664`.
 
-The repository-wide suite launched by Satoshi was still running when this
-audit was authored. Its final count belongs in the return packet, not in this
-independent disposition.
+The repository-wide suite completed after the scientific review:
+
+- **3,195 passed, 3 failed, 5 skipped, 1 error** in 2,989.37 seconds;
+- the two D1-anchor failures reproduced as the inherited missing/mismatched
+  operator evidence;
+- the weekly-promotion error passed in an isolated rerun; and
+- the B4 claim-race failure reproduced both at `f0e25dec` and at the pristine
+  parent `318cfdb8`, so it is pre-existing and unrelated to M4.
+
+No new M4 test failed. The candidate return packet still contained placeholders
+after the suite ended and must record these exact facts before its final commit.
 
 ## 6. Next order
 
