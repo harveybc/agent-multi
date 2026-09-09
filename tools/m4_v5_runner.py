@@ -730,6 +730,7 @@ def verify_run_v5(design, out_root: Path, roles) -> dict:
     acct = {"optimization_updates": 0, "evaluations": 0,
             "descriptor_seconds": 0.0, "descriptor_evals": 0,
             "t0": time.monotonic()}
+    valid_iv_units = 0
     recs = []
     for u in all_su:
         p = out / "screen" / f"{_safe(u['unit_id'])}.json"
@@ -789,6 +790,7 @@ def verify_run_v5(design, out_root: Path, roles) -> dict:
             raise RunnerV5Refusal(
                 f"{u['unit_id']}: claims an invalid status the "
                 "replay does not derive")
+        valid_iv_units += 1
         acct["optimization_updates"] += \
             ck["checkpoints"]["post_stop_bounded"]["updates"]
         if r["genesis_digest"] != \
@@ -867,10 +869,11 @@ def verify_run_v5(design, out_root: Path, roles) -> dict:
                 "reported optimization accounting does not "
                 "equal the replayed derivation")
         if ra["descriptor_evals"] != \
-                len(pv.CHECKPOINTS) * len(all_iu):
+                len(pv.CHECKPOINTS) * valid_iv_units:
             raise RunnerV5Refusal(
                 "descriptor accounting does not equal the "
-                "replayed derivation")
+                "replayed derivation (typed-invalid units "
+                "compute no descriptors)")
     return {"verified": True,
             "screen_units": len(all_su),
             "intervention_units": len(all_iu)}
