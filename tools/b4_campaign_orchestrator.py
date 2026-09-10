@@ -994,31 +994,63 @@ def run_campaign(mat_root: Path, ledger_path: Path,
             lease = issue_lease(results_root, cid, claim,
                                 executor.CAMPAIGN_AUTH_SHA,
                                 mat_root)
-            try:
-                executor.execute_cell(
-                    cid, mat_root, results_root, device,
-                    lease_path=lease,
-                    global_wall_remaining_seconds=remaining)
-            except BaseException as exc:
-                # C44: a deterministic failure whose typed
-                # terminal exists for THIS attempt is SEALED under
-                # the same lock BEFORE anything propagates —
-                # claim, lease, terminal, authority and digest
-                # revalidated; it then adjudicates
-                # TERMINAL_<TYPE>, never UNCERTAIN. An absent or
-                # partial terminal stays UNCERTAIN and blocks.
+            # C51: the campaign owner process NEVER executes
+            # model.learn in-process — one supervised child per
+            # attempt, with an external monotonic deadline,
+            # liveness contract, bounded escalation and reap.
+            import b4_cell_supervisor as sup
+            auth_sha = (_sha_file(executor.CAMPAIGN_AUTH_PATH)
+                        if executor.CAMPAIGN_AUTH_PATH.is_file()
+                        else "0" * 64)
+            sup_res = sup.run_cell_supervised(
+                cid, results_root, Path(results_root) / cid,
+                claim["attempt_id"],
+                child_cmd=[
+                    sys.executable,
+                    str(REPO / "tools/b4_cell_child.py"),
+                    "--cell", cid,
+                    "--mat-root", str(mat_root),
+                    "--out-root", str(results_root),
+                    "--device", device,
+                    "--lease", str(lease)],
+                device=device,
+                generation=getattr(
+                    b4a, "CAMPAIGN_GENERATION", ""),
+                mat_root=str(mat_root),
+                auth_sha=auth_sha,
+                wall_s=min(sup.CELL_WALL_S, remaining),
+                global_remaining_s=remaining)
+            outcome_state = sup_res["outcome"]
+            if outcome_state.startswith("QUARANTINED"):
+                raise OrchestratorRefusal(
+                    f"REFUSED: {cid} attempt "
+                    f"{claim['attempt_id']} is "
+                    f"{outcome_state} "
+                    f"(stop reason {sup_res['stop_reason']}) — "
+                    "blocked for operator disposition; the "
+                    "campaign schedules NO next cell")
+            # the supervisor only states terminal FACTS; sealing
+            # and adjudication stay with the orchestrator
+            term_doc = json.loads(
+                (Path(results_root) / cid /
+                 "B4_CELL_TERMINAL.json").read_text())
+            if term_doc.get("terminal") != "COMPLETED" or \
+                    outcome_state == \
+                    "TERMINAL_PRESENT_GRACEFUL_ACK":
                 sealed_state = _seal_failed_attempt(
                     results_root, cid, claim, lease, mat_root,
                     executor)
                 raise OrchestratorRefusal(
                     f"REFUSED: {cid} terminated "
-                    f"{sealed_state} "
-                    f"({type(exc).__name__}: {str(exc)[:120]}) — "
-                    "the campaign does NOT continue to another "
-                    "cell by default; collecting the remaining "
-                    "cells requires an explicit separate "
-                    "decision")
+                    f"{sealed_state} under supervision — "
+                    "collecting the remaining cells requires an "
+                    "explicit separate decision")
             seal_attempt(results_root, cid, claim["attempt_id"])
+            if adjudicate_cell_state(results_root, cid) != \
+                    "COMPLETED_VERIFIED":
+                raise OrchestratorRefusal(
+                    f"REFUSED: {cid} sealed but does not "
+                    "adjudicate COMPLETED_VERIFIED")
             outcome["completed"].append(cid)
     # C20: scientific completion REQUIRES the strongest verifier —
     # comparator evidence derived from the reviewed materialization,

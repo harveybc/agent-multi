@@ -1,0 +1,12 @@
+{
+ "_template_note": "NON-AUTHORIZING TEMPLATE (C54/C56). This file never verifies: the extra `_template_note` key fails the exact-schema check and every placeholder fails its form check. Only General Musashi may author the real acta at ~/.config/agent-multi/reviewer_authority/MUSASHI_B4_V8_RECOVERY_AUDIT_RECORD.json (0600) after his own review, and it must bind the SEPARATE owner dispatch-scope record. Satoshi never authors, installs or simulates either record.",
+ "schema": "agent_multi.musashi_b4_v8_recovery_acta.v1",
+ "reviewed_at_date": "<YYYY-MM-DD>",
+ "reviewer": "General Musashi",
+ "decision": "OPEN_B4_V8_SUPERVISED_RECOVERY",
+ "campaign_generation": "b4_campaign_generation_v8_20260910",
+ "latest_amendment_sha256": "<64-hex SHA-256 of B4_SUPERSEDING_DESIGN_V2_AMENDMENT_16_2026_09_10.json, reviewer-computed>",
+ "pinned_commit": "<40-hex reviewed commit; must equal the executing HEAD with a clean tree>",
+ "pinned_tree": "<40-hex tree of that commit>",
+ "owner_dispatch_record_sha256": "<64-hex SHA-256 of the owner's OWNER_B4_V8_DISPATCH_SCOPE_RECORD.json bytes>"
+}

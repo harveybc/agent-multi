@@ -128,7 +128,7 @@ RESOURCE_CONTRACT_V2_SHA = "516bd7d70e46353c2e4fec00761d4322511127c222d9432928cc
 # attempt are preserved byte-exact and never reused. Generation v7
 # carries the IDENTICAL scientific identity (scientific_change:
 # NONE) and differs only in the runtime corrections.
-CAMPAIGN_GENERATION = "b4_campaign_generation_v7_20260907"
+CAMPAIGN_GENERATION = "b4_campaign_generation_v8_20260910"
 V6_GENERATION = "b4_campaign_generation_v6_20260907"
 AUTHORIZED_CAMPAIGN_GENERATION = "b4_campaign_generation_v5_20260906"
 SUPERSEDED_GENERATIONS = ("b4_campaign_generation_v5_20260906",
@@ -189,6 +189,18 @@ AMENDMENT_14_SHA = ("2b40913cef6b334080214f27180e58f33937c225fe"
 AMENDMENT_15_PATH = (EVIDENCE /
                      "B4_SUPERSEDING_DESIGN_V2_AMENDMENT_15_"
                      "2026_09_07.json")
+# C54: amendment 15's bytes are HISTORY — pinned like a9-a14.
+AMENDMENT_15_SHA = ("84c06459acc0e5985cd2c58d04d56953117ef7a2dff651f020"
+                    "eb47a28d78eeb2")
+AMENDMENT_16_PATH = (EVIDENCE /
+                     "B4_SUPERSEDING_DESIGN_V2_AMENDMENT_16_"
+                     "2026_09_10.json")
+V8_GENERATION = "b4_campaign_generation_v8_20260910"
+V8_RESULTS_ROOT_LOGICAL = "b4_campaign_results_v8_20260910"
+V8_ACTA_PATH = (
+    AUTHORITY_ROOT / "MUSASHI_B4_V8_RECOVERY_AUDIT_RECORD.json")
+V8_OWNER_DISPATCH_PATH = (
+    AUTHORITY_ROOT / "OWNER_B4_V8_DISPATCH_SCOPE_RECORD.json")
 # Executable/shadow-capable suffixes and metadata names that an
 # untracked or ignored file must never contribute to the checkout.
 _SHADOW_SUFFIXES = (".py", ".so", ".pyd", ".pth")
@@ -1468,7 +1480,8 @@ def verify_amendment_chain() -> dict:
         raise B4AuthorityRefusal(
             "REFUSED: amendment 15 must declare NO scientific "
             "change")
-    if a15["campaign_generation_v7"] != CAMPAIGN_GENERATION or \
+    if a15["campaign_generation_v7"] != \
+            "b4_campaign_generation_v7_20260907" or \
             a15["supersedes_generation"] != V6_GENERATION or \
             a15["supersedes_results_root_logical"] != \
             V6_RESULTS_ROOT_LOGICAL or \
@@ -1476,7 +1489,34 @@ def verify_amendment_chain() -> dict:
             V7_RESULTS_ROOT_LOGICAL:
         raise B4AuthorityRefusal(
             "REFUSED: amendment 15 generation/root lineage "
+            "differs from its sealed v7 history")
+    # C54: the LIVE generation link is amendment 16 -> v8
+    if not AMENDMENT_16_PATH.is_file():
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 16 absent — the supervised "
+            "recovery chain is incomplete")
+    a16 = _strict_json_bytes(AMENDMENT_16_PATH.read_bytes(),
+                             "amendment 16")
+    if a16.get("amends_amendment_15_sha256") != \
+            AMENDMENT_15_SHA or \
+            _sha_file(AMENDMENT_15_PATH) != AMENDMENT_15_SHA:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 16 does not name amendment "
+            "15's exact reviewed bytes")
+    if a16.get("campaign_generation_v8") != \
+            CAMPAIGN_GENERATION or \
+            a16.get("v8_results_root_logical") != \
+            V8_RESULTS_ROOT_LOGICAL or \
+            a16.get("supersedes_generation") != \
+            "b4_campaign_generation_v7_20260907":
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 16 generation/root lineage "
             "differs from the live constants")
+    if not str(a16.get("scientific_change", "")).startswith(
+            "NONE"):
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 16 must declare NO scientific "
+            "change")
     if a15["prior_generations_gpu_seconds_charged"] != \
             PRIOR_GENERATIONS_GPU_SECONDS:
         raise B4AuthorityRefusal(
@@ -1488,7 +1528,15 @@ def verify_amendment_chain() -> dict:
             raise B4AuthorityRefusal(
                 "REFUSED: amendment 15 does not pin the complete "
                 "corrected surface")
-    pins.update(a15_pins)
+    # C54: the FINAL pins are amendment 16's — the supervised
+    # surface (a15 pins remain history inside its own bytes)
+    a16_pins = a16.get("final_code_pins", {})
+    for req in _PINNED_SURFACE:
+        if req not in a16_pins:
+            raise B4AuthorityRefusal(
+                "REFUSED: amendment 16 does not pin the complete "
+                "supervised surface")
+    pins.update(a16_pins)
     for rel, want in pins.items():
         live = _sha_file(REPO / rel)
         if live != want:
@@ -1786,11 +1834,130 @@ def read_recovery_acta() -> dict:
             "campaign_generation": CAMPAIGN_GENERATION}
 
 
+def read_v8_recovery_acta() -> dict:
+    """C54: the v8 supervised-recovery gate needs TWO separate
+    external records — the Musashi recovery-audit acta AND the
+    owner dispatch-scope record. Templates grant nothing; the
+    candidate never authors either."""
+    # missing/dir/symlink/mode custody violations refuse inside
+    # the descriptor walk with their historical typed messages;
+    # the v8 gate adds no weaker pre-check.
+    fd = _open_private_authority_file(V8_ACTA_PATH)
+    try:
+        chunks = []
+        while True:
+            b = os.read(fd, 1 << 20)
+            if not b:
+                break
+            chunks.append(b)
+    finally:
+        os.close(fd)
+    raw = b"".join(chunks)
+    acta_sha = hashlib.sha256(raw).hexdigest()
+    rec = _strict_json_bytes(raw, "v8 recovery acta")
+    _V8_KEYS = {"schema", "reviewed_at_date", "reviewer",
+                "decision", "campaign_generation",
+                "latest_amendment_sha256", "pinned_commit",
+                "pinned_tree",
+                "owner_dispatch_record_sha256"}
+    if set(rec) != _V8_KEYS:
+        raise B4AuthorityRefusal(
+            "REFUSED: v8 acta keys are not the exact schema")
+    if rec["schema"] != \
+            "agent_multi.musashi_b4_v8_recovery_acta.v1":
+        raise B4AuthorityRefusal(
+            "REFUSED: v8 acta carries a foreign schema")
+    if rec["reviewer"] != "General Musashi":
+        raise B4AuthorityRefusal(
+            "REFUSED: v8 acta author is not the external "
+            "reviewer role")
+    if rec["decision"] != "OPEN_B4_V8_SUPERVISED_RECOVERY":
+        raise B4AuthorityRefusal(
+            "REFUSED: v8 acta decision does not open the "
+            "supervised recovery")
+    if rec["campaign_generation"] != V8_GENERATION:
+        raise B4AuthorityRefusal(
+            "REFUSED: v8 acta does not name the v8 generation")
+    import datetime as _dt
+    for fld in ("pinned_commit", "pinned_tree"):
+        v = rec.get(fld)
+        if type(v) is not str or len(v) != 40 or any(
+                c not in "0123456789abcdef" for c in v):
+            raise B4AuthorityRefusal(
+                f"REFUSED: v8 acta {fld} is not 40 lowercase "
+                "hex")
+    try:
+        d_ = _dt.date.fromisoformat(rec["reviewed_at_date"])
+        if d_.isoformat() != rec["reviewed_at_date"]:
+            raise ValueError
+    except (ValueError, TypeError):
+        raise B4AuthorityRefusal(
+            "REFUSED: v8 acta reviewed_at_date is not a "
+            "canonical ISO date")
+    if type(rec.get("owner_dispatch_record_sha256")) is not \
+            str or len(rec["owner_dispatch_record_sha256"]) \
+            != 64:
+        raise B4AuthorityRefusal(
+            "REFUSED: v8 acta owner-record digest is not "
+            "64 hex")
+    if not AMENDMENT_16_PATH.is_file():
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 16 absent — the supervised "
+            "recovery chain is incomplete")
+    a16_sha = _sha_file(AMENDMENT_16_PATH)
+    if rec["latest_amendment_sha256"] != a16_sha:
+        raise B4AuthorityRefusal(
+            "REFUSED: the v8 acta does not name the LATEST "
+            "amendment's exact bytes")
+    fd = _open_private_authority_file(V8_OWNER_DISPATCH_PATH)
+    try:
+        chunks = []
+        while True:
+            b = os.read(fd, 1 << 20)
+            if not b:
+                break
+            chunks.append(b)
+    finally:
+        os.close(fd)
+    raw_own = b"".join(chunks)
+    own_sha = hashlib.sha256(raw_own).hexdigest()
+    if rec["owner_dispatch_record_sha256"] != own_sha:
+        raise B4AuthorityRefusal(
+            "REFUSED: the v8 acta does not bind the owner "
+            "dispatch-scope record's exact bytes")
+    own = _strict_json_bytes(raw_own, "owner dispatch record")
+    if own.get("decision") != "AUTHORIZE_B4_V8_DISPATCH_SCOPE" \
+            or own.get("campaign_generation") != V8_GENERATION:
+        raise B4AuthorityRefusal(
+            "REFUSED: the owner record does not authorize the "
+            "v8 dispatch scope")
+    pin = rec["pinned_commit"]
+    import subprocess as _sp
+    if _sp.run(["git", "-C", str(REPO), "cat-file", "-e",
+                f"{pin}^{{commit}}"],
+               capture_output=True).returncode != 0:
+        raise B4AuthorityRefusal(
+            "REFUSED: v8 acta pinned_commit does not name an "
+            "existing git commit")
+    checkout = verify_checkout_identity(pin)
+    if rec["pinned_tree"] != checkout["tree"]:
+        raise B4AuthorityRefusal(
+            "REFUSED: v8 acta tree differs from the clean "
+            "checkout at the pinned commit")
+    return {"schema": "agent_multi.b4_v8_recovery_witness.v1",
+            "acta_sha256": acta_sha,
+            "owner_dispatch_sha256": own_sha,
+            "pinned_commit": pin,
+            "checkout_tree_sha": checkout["tree"],
+            "latest_amendment_sha256": a16_sha,
+            "campaign_generation": V8_GENERATION}
+
+
 def require_v6_launch_open() -> dict:
-    """C33/C35/C36: the ONE launch gate — re-derives the typed
-    recovery witness from the reviewed object at the point of use;
-    a caller-supplied witness is never sufficient."""
-    return read_recovery_acta()
+    """The ONE launch gate. Since the v7 quarantine, it delegates
+    to the v8 supervised-recovery gate: BOTH new external records
+    are required and the historical v7 acta opens nothing."""
+    return read_v8_recovery_acta()
 
 
 def verify_campaign_materialization(mat_root: Path) -> dict:

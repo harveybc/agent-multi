@@ -1,0 +1,8 @@
+{
+ "_template_note": "NON-AUTHORIZING TEMPLATE. Only the owner authorizes the v8 dispatch scope, at ~/.config/agent-multi/reviewer_authority/OWNER_B4_V8_DISPATCH_SCOPE_RECORD.json (0600). Satoshi never authors or installs it.",
+ "schema": "agent_multi.owner_b4_v8_dispatch_scope.v1",
+ "decision": "AUTHORIZE_B4_V8_DISPATCH_SCOPE",
+ "campaign_generation": "b4_campaign_generation_v8_20260910",
+ "authorized_scope": "<the owner's exact dispatch scope statement, e.g. which cells and how many>",
+ "date": "<YYYY-MM-DD>"
+}

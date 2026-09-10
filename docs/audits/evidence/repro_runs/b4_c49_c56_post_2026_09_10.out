@@ -1,0 +1,21 @@
+phase1: {
+ "outcome": "QUARANTINED_RUNTIME_STALL",
+ "stop_reason": "TELEMETRY_STALL",
+ "escalation": [
+  "stop_request_durable",
+  "sigterm_group",
+  "reaped_group_empty"
+ ],
+ "group_empty": true,
+ "incidents": 2,
+ "gpu_close_records": 1
+}
+launch gate: REFUSED: B4_V7_RUNTIME_READY_FOR_EXTERNAL_MUSASHI_ACTA — the v7 launch
+mutant A_deadline_off: {"adversary": "deadline_off", "result": "CHILD_IMMORTAL"}
+mutant B_liveness_off: {"adversary": "liveness_off", "result": "CHILD_IMMORTAL"}
+mutant C_late_rule_off: {"adversary": "late_off", "result": "TERMINAL_PRESENT_ON_TIME"}
+mutant D_reap_off: {"adversary": "reap_off", "result": "CHILD_SURVIVED"}
+mutant E_close_off: {"adversary": "close_off", "result": "REFUSED", "reason": "REFUSED: o2099_seed1: an open interval has no durable close and no ext"}
+mutant F_no_next_cell_off: source branch removable -> the refusal disappears (bite)
+
+POST CONFIRMED: the starved child is terminated, escalated, reaped and quarantined with closed accounting; the launch gate is closed; and the deadline, liveness, late-terminal, reap, accounting-close and no-next-cell guards each bite alone under mutation

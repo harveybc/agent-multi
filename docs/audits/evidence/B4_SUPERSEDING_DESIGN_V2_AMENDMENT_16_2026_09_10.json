@@ -1,0 +1,56 @@
+{
+ "schema": "agent_multi.b4_superseding_design_amendment.v14_supervised_recovery",
+ "amends_amendment_15_sha256": "84c06459acc0e5985cd2c58d04d56953117ef7a2dff651f020eb47a28d78eeb2",
+ "v7_quarantine_audit_sha256": "9e9aaaeed9c7e48a4215a17dc708f454985ac8846a5d44beb3f5ce2f6ae70c71",
+ "order": "C49-C56 (runtime-stall recovery order 2026-09-09): the third v7 cell stalled ~29 h outside callback control (epoch 111, 2,231,000 steps, CUDA busy, zero durable writes) and was operator-stopped and quarantined. This amendment records the append-only v8 SUPERVISED recovery.",
+ "change_disclosure": "runtime supervision, liveness and accounting identity ONLY: (C51) every cell attempt runs in ONE supervised child process under a capability bound to generation/cell/attempt/materialization/authorization/parent identity/wall/budget; the parent deadline is monotonic and independent of callbacks, the GIL, model code, CUDA progress and child telemetry; (C52) ordered bounded escalation persisted step-by-step: durable stop -> graceful 60 s -> SIGTERM -> 30 s -> SIGKILL -> mandatory reap with empty-process-group proof -> CUDA inventory -> no next cell; supervisor incident records only, never fabricated scientific terminals; late/partial terminals stay QUARANTINED_RUNTIME_STALL/QUARANTINED_EXTERNAL_STOP; (C53) parent-observed durable-progress liveness (status.json beats once per epoch \u2014 measured median 171 s / p90 184 s on the completed cells; checkpoint files are sparse, up to 12,528 s apart, and are NOT the signal) with LIVENESS_MAX_SILENCE_S = 1800 s (~10x the per-epoch p90; the audited stall was silent ~29 h); a busy CPU/GPU is not progress; GPU accounting closes at the externally observed reap time in an append-only supervisor record and ALL charges re-derive from durable intervals only. No population, config, data, genesis, comparator, budget, seed, observation-contract, model-recipe or decision-rule change.",
+ "scientific_change": "NONE \u2014 external supervision/liveness/accounting only",
+ "campaign_generation_v8": "b4_campaign_generation_v8_20260910",
+ "supersedes_generation": "b4_campaign_generation_v7_20260907",
+ "supersedes_results_root_logical": "b4_campaign_results_v7_20260907",
+ "v8_results_root_logical": "b4_campaign_results_v8_20260910",
+ "v7_root_disposition": "read-only historical evidence; both stop signals preserved; the quarantined third attempt (attempt_b459e72dc47a4d72) contributes NOTHING to v8 \u2014 no model, replay, RNG or checkpoint reuse; its cell reruns from its ORIGINAL zero-update genesis",
+ "population_identity": "the same twelve cells, order, data, costs, comparators, seeds, observation contract, model recipe and decision rule as v7 \u2014 bound through the unchanged amendment-6 population identities and the v5 materialization digests",
+ "imported_completed_cells": {
+  "o2022_seed101": {
+   "adjudication": "COMPLETED_VERIFIED",
+   "terminal_sha256": "3a836df218702adfa8eb8d436b81064e3f517e59f16ab9a750b58304a8c921d5",
+   "seal_sha256": "aea56c68cfbe12d1ed10e5c9dbb6751ec6ffddb4d6c1d677aae69c9b65b6624e"
+  },
+  "o2022_seed202": {
+   "adjudication": "COMPLETED_VERIFIED",
+   "terminal_sha256": "cd3e61e7e33772663e808745a1135a1d4cebf6ddd7c4b67f54c134f0c3c5fd7c",
+   "seal_sha256": "ec763fd82b9958cf1e4789e2c9d178b8fc9f174c669e25172027f742c7118526"
+  },
+  "import_condition": "imported ONLY because the productive adjudicator re-derived COMPLETED_VERIFIED and these digests equal the quarantine audit bytes at authoring time; the v8 final campaign verifier re-proves full bindings and exact bytes again before any scientific use \u2014 otherwise rerun decisions are external"
+ },
+ "gpu_accounting_identity": {
+  "source": "durable intervals only; the rounded 44.69/51.30 dry-run summary is NEVER an input",
+  "v7_charges_seconds": {
+   "o2022_seed101": 17773.5,
+   "o2022_seed202": 17909.2,
+   "o2022_seed303_quarantined_closed_at_operator_stop": 125074.2
+  },
+  "prior_generations_seconds": 39.1,
+  "total_charged_seconds": 160795.9,
+  "global_ceiling_seconds": 345600.0,
+  "remaining_seconds": 184804.1,
+  "quarantined_time_counts_against_ceiling": true
+ },
+ "final_code_pins": {
+  "tools/b4_authority.py": "86873fc9b7c90bef62900cf1fe50f43219561d6fff29b7ff18a9fb3e77d31ca0",
+  "tools/b4_run_cell.py": "e033aae594ee9104b43ad4d46982c2392d4ad018bbee3f012e6a2845109bd96c",
+  "tools/b4_campaign_executor.py": "06aa20dd1b1404bbb077f632213e766dbc695b8100c71ae2ba929bd932f66d39",
+  "tools/b4_campaign_ledger.py": "2d12fe8c26e22bfaf1e4e5cf0e62d74abce95e3c176b21e6cb39d1599ce027b0",
+  "tools/b4_campaign_orchestrator.py": "1e5b3ab632451940e7c0899fddbb100f4839f95723a33995a2aabe4976d5da41",
+  "tools/b4_cell_supervisor.py": "b28e9169dfaccd088248e2ae0f51bf48738468b31aa26a83ff426c6e0cd81280",
+  "tools/b4_cell_child.py": "e410e6e7228a74095ee51a5b71e7fa479a6bfeffc19cb850e6d5f13dab69f8f6",
+  "tools/b4_adjudicator.py": "7ce51057d5b278887bc2641d302267b70cf53f32aa95de07d514ac7b3804f1d4",
+  "tools/materialize_b4_causal_sac.py": "3a1e19b7266113dcb5d9f038fe6ded90bd12cf32d33888c14bb3ed9eb54b289e",
+  "pipeline_plugins/rl_pipeline_with_validation.py": "4bd4000fd7ab1d3dca98ea074fdab18a64a2e293db5d770378b60f1cda5d7d6e",
+  "tests/test_b4_materializer_authority.py": "e8c4b63a0ba964ac05363c9021e787ee7bd53f303b86d2340b273abcce3f90b8"
+ },
+ "launch_boundary": "the v8 launch is CLOSED: require_v6_launch_open() now delegates to the v8 gate, which demands BOTH the external Musashi v8 recovery acta AND the separate owner dispatch-scope record; the historical v7 acta opens nothing; only non-authorizing templates ship",
+ "chronology_truth": "authored AFTER the C49-C56 PRE freeze and after the supervisor, child, orchestrator call-site and accounting code were finalized and hashed from disk; amendments 1-15 untouched",
+ "amendment_sha256": "7df58c4c432736eb55f4ff5e9e926c73ef278836195a0ea5d70c06edb1bb4534"
+}

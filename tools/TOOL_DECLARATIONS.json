@@ -781,6 +781,27 @@
    "mutability": "mutating",
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
+  },
+  "b4_cell_supervisor.py": {
+   "purpose": "B4 C51-C53 (order 2026-09-09): the external per-cell watchdog \u2014 capability-bound supervised child, parent-side monotonic deadline independent of callbacks/GIL/CUDA, durable-progress liveness (1800s justified from measured per-epoch cadence), ordered persisted escalation stop->TERM->KILL->reap with empty-group proof + CUDA inventory, append-only incident/close records (never fabricated terminals), and durable-interval GPU charge recomputation.",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "authority_class": "campaign_operation",
+   "owner": "General Satoshi III"
+  },
+  "b4_cell_child.py": {
+   "purpose": "B4 C51: the production cell child \u2014 validates the supervisor capability (parent-bound; transplants refuse), starts the liveness heartbeat thread and runs the accepted execute_cell unchanged inside its own process group.",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "authority_class": "campaign_operation",
+   "owner": "General Satoshi III"
+  },
+  "b4_gen_amendment_16.py": {
+   "purpose": "B4 C54: authors append-only amendment 16 \u2014 the v8 SUPERVISED recovery generation (scientific_change NONE; supervision/liveness/accounting only; v7 quarantined third attempt contributes nothing; completed v7 cells imported only under re-proven digests; launch CLOSED behind the two-record v8 gate). Published amendments can never be regenerated.",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "design_author",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {
