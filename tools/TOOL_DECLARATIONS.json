@@ -893,6 +893,13 @@
    "mutability": "mutating",
    "authority_class": "design_author",
    "owner": "General Satoshi III"
+  },
+  "t2_completion_reconstruction.py": {
+   "purpose": "C89/C91: fresh-process completion reconstruction of the COMPLETED successor campaign — runs the frozen-evidence gate chain, deep re-adjudicates all 242 units from physical arrays/records through the productive final_adjudication (metric recomputation, exact inventory, O_NOFOLLOW custody), replays the hash-chained wall ledger through its grammar, proves the release sequence, enforces per-unit cost-coherence against the unit wall, and hands ONLY freshly verified inner assay records to the sealed screen adjudicator; --pinned-checkout executes the pinned reviewed worktree's modules so the execution record's single executor identity holds; writes one O_EXCL self-digested candidate adjudication JSON and NEVER writes into the campaign root",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

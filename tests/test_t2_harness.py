@@ -157,7 +157,10 @@ def test_confirmatory_gate_refuses_public_data_required(tmp_path):
     assert rc.returncode != 0
     # the gate is CLOSED at whichever stage the world is in:
     # no manifest -> PUBLIC_DATA_REQUIRED; manifest acquired ->
-    # DESIGN_REQUIRED; draft sealed later -> DESIGN_REVIEW_REQUIRED.
+    # DESIGN_REQUIRED; draft sealed later -> DESIGN_REVIEW_REQUIRED;
+    # campaign completed and the executor corrected past the sealed
+    # execution record -> the surface comparison refuses (only the
+    # PINNED reviewed checkout may execute; the live tip may not).
     # In every stage: typed refusal, zero scores, no output file.
     out = rc.stderr + rc.stdout
     assert any(tok in out for tok in
@@ -166,7 +169,9 @@ def test_confirmatory_gate_refuses_public_data_required(tmp_path):
                 "DESIGN_REVIEW_REQUIRED",
                 "T2_DESIGN_HARD_LIMIT",
                 "T2_EXECUTION_RECORD_REQUIRED",
-                "T2_SUCCESSOR_EXECUTION_RECORD_REQUIRED"))
+                "T2_SUCCESSOR_EXECUTION_RECORD_REQUIRED",
+                "executor_code_identity does not match the "
+                "physical checkout surface"))
     assert not (tmp_path / "out.json").exists()
 
 
