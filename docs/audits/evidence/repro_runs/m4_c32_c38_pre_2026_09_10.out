@@ -1,0 +1,20 @@
+A1 reviewed tip: HEAD == 5e7a8fd430c8 (order-exact)
+A2 design self: declared==recomputed==d7280a92047d (order-exact)
+A3 amendment self: declared==recomputed==43e0804e1e6e, amends the pinned design
+A4 governing adjudication self: declared==recomputed==b35b6fd969aa, binds the pinned design
+B1 slots: 21/28 eligible, 7 typed ineligible (order-exact 21/28)
+B2 incomplete generators: exactly 2 (['state_space::clean::w64::g0', 'state_space::clean::w64::g6']), 6 seed-units kept in the denominator
+B3 calibration-incomplete cells: ZERO (every cell meets min_complete_required=13 under the 20% attrition allowance)
+B4 M2 gain: -0.41982887 (order-exact) — M2 does not advance from CALIBRATION
+B5 complete generators per cell: min 14 / max 16 of 16 planned
+C absent as commanded: confirmation successor
+C absent as commanded: confirmation runner tool
+C absent as commanded: C36 musashi template
+C absent as commanded: C36 owner template
+C absent as commanded: C37 battery
+C no CONFIRMATION array/score/ledger exists in the state root (m4 confirmation glob empty)
+C reserved-only: 1008 CONFIRMATION generators (48 x 21) exist as RESERVATIONS in the adjudication record, no bytes
+D zero writes: docs/ byte inventory equal (2121 files)
+
+PRE CONFIRMED: the accepted calibration evidence is byte-exact and re-derives every order fact; the CONFIRMATION protocol (successor, 16-contrast executable, runner/verifier, external templates, battery) does not exist; no CONFIRMATION data exists anywhere.
+exit=0
