@@ -1,0 +1,21 @@
+phase1: {
+ "counts": {
+  "COMPLETED_VERIFIED": 242,
+  "TERMINAL_FAILED": 0
+ },
+ "wall_records": 50339,
+ "release_epoch": 1,
+ "verdict": "DOES_NOT_ADVANCE",
+ "reason": "electricity_weekly: effect -0.0365 beyond the non-inferiority margin",
+ "estimand": -0.001048443391358884
+}
+corrected cost_off_corrected: REFUSED (REFUSED: electricity_weekly::T111: per-phase cost sum 133.85)
+corrected release_off_corrected: REFUSED (REFUSED: final release done witness absent — the release seq)
+corrected deep_off_corrected: REFUSED (REFUSED: final adjudication found typed uncertainty — electr)
+mutant A_cost_anchor_off: {"adversary": "cost_off", "result": "ADJUDICATED", "verdict": "DOES_NOT_ADVANCE", "estimand": -0.001048443391358884}
+mutant C_release_check_off: {"adversary": "release_off", "result": "ADJUDICATED", "verdict": "DOES_NOT_ADVANCE", "estimand": -0.001048443391358884}
+mutant D_deep_verify_off: {"adversary": "deep_off", "result": "ADJUDICATED", "verdict": "DOES_NOT_ADVANCE", "estimand": -0.0002719084515856155}
+mutant B_seed_guard: removing the typed refusal restores the raw KeyError escape (source-frozen; the battery exercises the typed path live)
+
+POST CONFIRMED: the reconstruction verifies the real campaign end to end with verdict DOES_NOT_ADVANCE, and the cost-anchor, release-sequence and deep-verification guards each bite alone under mutation (a forged prediction reaches and shifts the screen only when deep verification is disabled)
+exit=0

@@ -1,0 +1,107 @@
+{
+ "schema": "agent_multi.t2_completion_reconstruction_and_screen_adjudication.candidate.v1",
+ "authority": "CANDIDATE_FOR_MUSASHI_REVIEW \u2014 no T4/T5, no PUBLICLY_ELIGIBLE claim",
+ "campaign_root_logical": "t2_confirmatory_results_resource_successor_v1_20260909",
+ "gate_facts": {
+  "design_file_sha256": "0e0317e2de947fd49efec10e4849909e25f619174533863520301c473a81a97f",
+  "design_self_sha256": "0542ed0536c38e92707454f0e55134246dddecbfbad4a63db1817c1ba1ce4e27",
+  "review_record_sha256": "13310ef88720f6a50d7f4a106c1490eac5cf65d5fb3659397c03bec1251d86fb",
+  "execution_record_sha256": "4761df4a8b324442a83a0554cc53d3005025500d9e8d0c3b2272a729c9714752",
+  "manifest_sha256": "43c48f6bb513be37d4a591f67694880e9f768391ab0db710902c3aadd55b76ff",
+  "census_sha256": "dc1bf8c770b297c506b1e30195753d7b25f82c51cbdd62b27667f58e7964674f"
+ },
+ "final_adjudication_counts": {
+  "COMPLETED_VERIFIED": 242,
+  "TERMINAL_FAILED": 0
+ },
+ "wall_ledger": {
+  "replayed": true,
+  "raw_sha256": "8ac5210cb9e021759c02ed88fd6a8dd4394e6c9d725a797f40cddba005e1df42",
+  "records": 50339,
+  "charged_state": 32760.294596000072
+ },
+ "release_sequence": {
+  "final_epoch": 1,
+  "release_intent_sha256": "1dc858747f7e3315cfb8b4eb3c20be3d70b8f0cec6ed28945488c4698dbf422f",
+  "release_done_sha256": "51a1a97af6197c710f7b6952a2cca9b3bdc6f13d194e3a16dd970576dfe2181e",
+  "epochs": [
+   1
+  ]
+ },
+ "screen_adjudication": {
+  "panels": {
+   "electricity_weekly": {
+    "n_series": 40,
+    "effect": -0.03653270572268994,
+    "attribution": 0.039135682444549666,
+    "extreme_state": "EVALUATED",
+    "extreme_ratio": 0.9828915272592487,
+    "coverage_drop": 0.013661067193675885,
+    "width_ratio": 1.0504135969101642
+   },
+   "hospital": {
+    "n_series": 40,
+    "effect": 0.005847919489857028,
+    "attribution": 0.18497388022103448,
+    "extreme_state": "EVALUATED",
+    "extreme_ratio": 0.9610300256688726,
+    "coverage_drop": -0.00625,
+    "width_ratio": 1.0068241386949417
+   },
+   "pedestrian_counts": {
+    "n_series": 40,
+    "effect": -0.013905695034009338,
+    "attribution": -0.011918168706612137,
+    "extreme_state": "EVALUATED",
+    "extreme_ratio": 0.9965038128061028,
+    "coverage_drop": 0.01437078404556794,
+    "width_ratio": 0.9976329114946457
+   },
+   "solar_10_minutes": {
+    "n_series": 40,
+    "effect": -0.010932434510063264,
+    "attribution": -0.01086299398413646,
+    "extreme_state": "EVALUATED",
+    "extreme_ratio": 1.0484147857623103,
+    "coverage_drop": 9.164048367133609e-05,
+    "width_ratio": 1.0264944064967054
+   },
+   "tourism_monthly": {
+    "n_series": 40,
+    "effect": 0.04513398726885428,
+    "attribution": 0.1047102746383913,
+    "extreme_state": "EVALUATED",
+    "extreme_ratio": 0.9312186561758292,
+    "coverage_drop": 0.015270291408452518,
+    "width_ratio": 0.9653981018808494
+   },
+   "weather": {
+    "n_series": 40,
+    "effect": 0.004098268159897935,
+    "attribution": 0.006413810197179554,
+    "extreme_state": "EVALUATED",
+    "extreme_ratio": 0.9861846218367782,
+    "coverage_drop": -0.0009297109972341011,
+    "width_ratio": 0.994230756294154
+   }
+  },
+  "primary_estimand_unweighted_mean_of_panel_effects": -0.001048443391358884,
+  "t_ci_low_df5": -0.029707838780035883,
+  "signs_positive": 3,
+  "sign_test_exact_p_two_sided": 1.3125,
+  "leave_one_panel_out_means": [
+   0.006048409074907328,
+   -0.0024277159676020657,
+   0.0015230069371712086,
+   0.0009283548323819927,
+   -0.010284929523401517,
+   -0.0020777857016102477
+  ],
+  "panel_effect_definition": "mase_improvement_X_minus_D = MASE(X) - MASE(D); positive = D reduces error",
+  "scope": "ONLY these six public panels and their admitted series \u2014 no family-level or public-eligibility claim",
+  "verdict": "DOES_NOT_ADVANCE",
+  "reason": "electricity_weekly: effect -0.0365 beyond the non-inferiority margin"
+ },
+ "wall_seconds_reconstruction": 796.16,
+ "record_sha256": "6e92b02dd76a92a6d87dfa84b29d3d7d44f54cd8e06aa087c76c0e3241191b9f"
+}
