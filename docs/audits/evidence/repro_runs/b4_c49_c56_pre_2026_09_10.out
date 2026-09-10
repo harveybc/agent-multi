@@ -1,0 +1,36 @@
+{
+ "audit_sha256": "9e9aaaeed9c7e48a4215a17dc708f454985ac8846a5d44beb3f5ce2f6ae70c71",
+ "adjudication": {
+  "o2022_seed101": "COMPLETED_VERIFIED",
+  "o2022_seed202": "COMPLETED_VERIFIED",
+  "o2022_seed303": "AMBIGUOUS_CLAIM",
+  "pending_count": 9
+ },
+ "third_cell_claim_lease_no_terminal_no_seal": true,
+ "completed_digest_pairs_match_audit": true,
+ "stale": {
+  "epoch": 111,
+  "status_mtime": "2026-09-08T08:56:11.177487-05:00",
+  "claim_time_in_audit": true,
+  "progress_steps_2231000_in_audit": true,
+  "cell_ceiling_43200_in_audit": true,
+  "operator_stop_in_audit": true
+ },
+ "campaign_stop_present": true,
+ "cell_stop_present": true,
+ "c50_source": {
+  "guards_ride_f9_callback": true,
+  "executor_has_no_monotonic_parent_deadline": true,
+  "orchestrator_runs_cell_in_process": true
+ },
+ "c50_child": {
+  "observable_progress": true,
+  "stop_written_and_wall_expired": true,
+  "child_STILL_ALIVE": true,
+  "terminated_only_by_external_supervisor": true,
+  "lifetime_s": 3.05
+ },
+ "v7_root_untouched": true
+}
+
+PRE CONFIRMED at 282c5771: the third cell adjudicates AMBIGUOUS_CLAIM with claim+lease and no terminal/seal, both completed digest pairs equal the audit bytes, the stale facts and stop signals are frozen, the v7 root received zero writes — and a child that stops invoking the F9 callback after observable progress survives an expired wall AND a written stop file until an EXTERNAL supervisor kills it; the executor has no parent-side monotonic deadline and the orchestrator runs cells in-process
