@@ -79,6 +79,11 @@ def load_gate(config: dict | None = None):
 
 PURPOSE_KEY = "execution_purpose"
 PURPOSE_ARCHIVAL = "ARCHIVAL_REPLAY_NON_AUTHORITATIVE"
+# C17: a new experiment is two phases. Phase one derives and
+# persists a submission and exits; phase two re-derives, proves
+# it matches, and consumes the external record.
+PURPOSE_SUBMIT = "SUBMIT_ONLY"
+PURPOSE_EXECUTE = "EXECUTE_REVIEWED"
 
 
 def gate_run(config: dict, *, consumer: str, repo_root=None,
@@ -109,7 +114,14 @@ def gate_operator(config: dict, *, consumer: str,
                                consumer=consumer)
 
 
+STATUS_SUBMITTED = "ELIGIBILITY_SUBMITTED_AWAITING_REVIEW"
+
+
 def describe(stamp: dict) -> str:
+    if stamp.get("eligibility_status") == STATUS_SUBMITTED:
+        return (f"eligibility: SUBMITTED "
+                f"{stamp.get('submission_sha256', '?')[:12]} — "
+                "nothing executed; hand it to the reviewer")
     if stamp.get("eligibility_status") == STATUS_GATED:
         return (f"eligibility: GATED by review "
                 f"{stamp.get('review_record_sha256', '?')[:12]} "
