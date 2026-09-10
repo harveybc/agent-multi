@@ -1,0 +1,32 @@
+{
+ "unit_objects": {
+  "claims": 242,
+  "records": 242,
+  "arrays": 242,
+  "terminals": 0,
+  "total": 726
+ },
+ "ledgers_present": {
+  "attempt_ledger": true,
+  "wall_ledger": true,
+  "locks_dir": true,
+  "release_done": true
+ },
+ "shallow_adjudication": {
+  "COMPLETED": 242
+ },
+ "successor_file_sha256": "0e0317e2de947fd49efec10e4849909e25f619174533863520301c473a81a97f",
+ "absences": {
+  "no_completion_reconstruction_committed": true,
+  "no_screen_adjudication_committed": true,
+  "no_c90_battery": true
+ },
+ "service_claims_in_order": {
+  "242_completed": true,
+  "zero_failed": true,
+  "wall_32547_3": true
+ },
+ "root_untouched": true
+}
+
+PRE CONFIRMED at 7bcd3f0d: 242x(claim+record+arrays), zero terminals, ledgers and release chain present, every unit shallow-COMPLETED, the successor identity in force, the service numbers are order-recorded claims — and NO fresh reconstruction, screen adjudication or completion battery exists yet; the campaign root received zero writes
