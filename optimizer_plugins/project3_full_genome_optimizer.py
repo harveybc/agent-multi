@@ -313,6 +313,51 @@ class Plugin(DefaultOptimizer):
                 raise ValueError("mixed genome disabled every feature group")
             decoded[f"feature_group__{required}"] = True
             columns = [str(value) for value in members]
+        # Eligibility gate (work-plan P3): the variable universe is
+        # formed HERE, so it is filtered here. A filter can only
+        # remove; if the reviewed manifest leaves nothing, the run
+        # refuses rather than falling back to a wider universe —
+        # an empty group never reactivates variables.
+        from app.eligibility_adapter import gate_subjects
+        from app.eligibility_adapter import load_gate
+
+        if config.get("eligibility_manifest"):
+            gate_mod, _ = load_gate(config)
+            manifest = gate_mod.load_manifest(
+                config["eligibility_manifest"],
+                expected_sha256=config.get(
+                    "eligibility_manifest_sha256"),
+                max_age_days=config.get(
+                    "eligibility_max_age_days"))
+            scope = config.get("eligibility_scope")
+            if not scope:
+                raise ValueError(
+                    "an eligibility manifest is configured but no "
+                    "eligibility_scope was declared — eligibility "
+                    "is never global")
+            kept = gate_mod.filter_to_eligible(
+                manifest, columns, scope=scope,
+                subject_kind="variable")
+            if not kept:
+                raise ValueError(
+                    "the reviewed eligibility manifest admits none "
+                    "of the genome's feature columns for scope "
+                    f"{scope!r} — refusing rather than widening "
+                    "the universe")
+            columns = kept
+            run_config["eligibility_stamp"] = {
+                "eligibility_status": "ELIGIBILITY_GATED",
+                "consumer": "agent_multi.full_genome_optimizer",
+                "scope": scope,
+                "manifest_sha256":
+                    gate_mod.manifest_fingerprint(manifest),
+                "columns_after_gate": len(kept),
+            }
+        else:
+            run_config["eligibility_stamp"] = gate_subjects(
+                config,
+                consumer="agent_multi.full_genome_optimizer")
+
         run_config["feature_columns"] = columns
         run_config["feature_list"] = columns
 
