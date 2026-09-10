@@ -949,6 +949,20 @@
    "mutability": "mixed",
    "authority_class": "verifier",
    "owner": "General Satoshi III"
+  },
+  "m4_confirmation_protocol.py": {
+   "purpose": "M4 C32-C34+C36: CONFIRMATION protocol authority \u2014 binds the accepted calibration evidence by exact bytes (order-pinned design d7280a92 / amendment 43e0804e / governing adjudication b35b6fd9, facts re-derived from structures: 21/28 slots, 2 incomplete generators, 0 calibration-incomplete cells, M2 gain -0.41982887); builds/verifies the append-only CALIBRATION_DERIVED_AND_REVIEWED confirmation successor (SCIENTIFIC_ANALYSIS_FREEZE, 12/16 rule, 21+7 slots, 48/slot, attrition 0.2 floor 39, M2 DOES_NOT_ADVANCE_FROM_CALIBRATION, Holm-over-16 declared superseding the design-v5 Bonferroni line per order C34.7); executable 16-contrast analysis (equal width averaging, single-width naming, NOT_EVALUABLE p=1, placeholders inside Holm); strict consuming APIs for the two external records \u2014 a published successor is never regenerated (a9/a15 lesson) and templates grant nothing",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "design_author",
+   "owner": "General Satoshi III"
+  },
+  "m4_confirmation_runner.py": {
+   "purpose": "M4 C35: CONFIRMATION runner + independent verifier \u2014 structurally unable to consume DEVELOPMENT/CALIBRATION outcomes as confirmation observations (role-derived generator identity, foreign-role records refused, byte-level disjointness against the prior-role digest census); before execution: two-record gate (Musashi review + owner execution, chained, refuses BEFORE any CONFIRMATION array or ledger), clean-checkout identity, exact 3024-unit census (21x48x3, 4 checkpoints, frozen update bounds), complete O_EXCL pre-result ledger, sealed v5 CPU limits; plan reports counts with no authority; development-probe runs the real unit machinery on DEVELOPMENT units proving zero CONFIRMATION artifacts; the verifier reconstructs paired effects, attrition (floor CONFIRMATION_INCOMPLETE never favorable), costs and all 16 contrasts from raw records \u2014 producer aggregates never determine a verdict",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

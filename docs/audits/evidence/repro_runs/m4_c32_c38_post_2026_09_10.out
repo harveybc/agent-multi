@@ -1,0 +1,12 @@
+C32 bind: 4 identities verified; 21 eligible / 7 ineligible slots; 2 incomplete generators
+C33 successor verified: self 6a50d97ddfb3 | floor 39 | contrasts 16
+C35 plan: 3024 units = 21 slots x 48 gen x 3 seeds; records present: False False
+execute: REFUSED at the two-record gate before any artifact
+DEVELOPMENT probe: 2 real units through the real machinery, 0 CONFIRMATION artifacts
+state root: zero CONFIRMATION artifacts
+mutant A_gate_off: {"adversary": "gate_off", "result": "EXECUTED", "ledger_exists": true, "units": 3024}
+mutant B_diverge_off: {"adversary": "diverge_off", "result": "VERIFIED", "threshold": 11}
+successor bytes restored and re-verified after mutants
+
+POST CONFIRMED: the protocol binds and verifies on corrected code, execution is closed by the two-record gate alone (mutant A executes to census+ledger without records), scientific mutation is rejected by the live re-derivation alone (mutant B verifies a changed threshold), and no CONFIRMATION artifact exists anywhere.
+exit=0

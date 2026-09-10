@@ -1,0 +1,408 @@
+{
+ "schema": "m4_confirmation_successor.v1",
+ "created_date": "2026-09-10",
+ "supersedes_design_sha256": "d7280a92047d98898418fb7cd750b22c506a621eb381d9847e0fe926b7df69b9",
+ "binds_numeric_amendment_sha256": "43e0804e1e6e583b10ddbe46b7d4cd752838b0473ccbc6496f0e458c49aedd4b",
+ "binds_governing_adjudication_sha256": "b35b6fd969aa162047bdfb55b8f9fcce01aa76864c388d29a1c36642ab051ade",
+ "binds_reviewed_tip": "5e7a8fd430c8231a049baf03f00e720ba24ec994",
+ "selection_rule_label": "CALIBRATION_DERIVED_AND_REVIEWED",
+ "selection_rule_provenance": "derived from the accepted CALIBRATION adjudication after external audit \u2014 NEVER predeclared; this successor records a calibration decision made before any CONFIRMATION data exists",
+ "classification": "SCIENTIFIC_ANALYSIS_FREEZE",
+ "classification_note": "this successor freezes the confirmatory analysis derived from calibration; it is NOT 'scientific_change: NONE' \u2014 the eligibility rule, slot population, M2 exclusion and Holm multiplicity are scientific analysis decisions frozen here",
+ "eligibility_rule": {
+  "min_learnable_under_frozen_budget": 12,
+  "of_calibration_generators": 16,
+  "max_numerically_invalid": 0,
+  "statement": "a slot is eligible iff at least 12 of its 16 CALIBRATION generators are LEARNABLE_UNDER_FROZEN_BUDGET and none is NUMERICALLY_INVALID"
+ },
+ "eligible_slots": [
+  {
+   "cell": "identity::clean::w16",
+   "confirmation_generators": 48,
+   "calibration_dispersion": {
+    "planned_generators": 16,
+    "complete_generators": 16,
+    "incomplete_generators": [],
+    "attrition_allowance": 0.2,
+    "min_complete_required": 13,
+    "n_generators": 16,
+    "sd": 2.523959,
+    "sd_ucb95": 3.629063,
+    "supported": true
+   }
+  },
+  {
+   "cell": "identity::clean::w64",
+   "confirmation_generators": 48,
+   "calibration_dispersion": {
+    "planned_generators": 16,
+    "complete_generators": 16,
+    "incomplete_generators": [],
+    "attrition_allowance": 0.2,
+    "min_complete_required": 13,
+    "n_generators": 16,
+    "sd": 2.360163,
+    "sd_ucb95": 3.393549,
+    "supported": true
+   }
+  },
+  {
+   "cell": "majority::clean::w16",
+   "confirmation_generators": 48,
+   "calibration_dispersion": {
+    "planned_generators": 16,
+    "complete_generators": 16,
+    "incomplete_generators": [],
+    "attrition_allowance": 0.2,
+    "min_complete_required": 13,
+    "n_generators": 16,
+    "sd": 2.328567,
+    "sd_ucb95": 3.348118,
+    "supported": true
+   }
+  },
+  {
+   "cell": "majority::clean::w64",
+   "confirmation_generators": 48,
+   "calibration_dispersion": {
+    "planned_generators": 16,
+    "complete_generators": 16,
+    "incomplete_generators": [],
+    "attrition_allowance": 0.2,
+    "min_complete_required": 13,
+    "n_generators": 16,
+    "sd": 2.916111,
+    "sd_ucb95": 4.192916,
+    "supported": true
+   }
+  },
+  {
+   "cell": "dnf3::clean::w16",
+   "confirmation_generators": 48,
+   "calibration_dispersion": {
+    "planned_generators": 16,
+    "complete_generators": 16,
+    "incomplete_generators": [],
+    "attrition_allowance": 0.2,
+    "min_complete_required": 13,
+    "n_generators": 16,
+    "sd": 3.079201,
+    "sd_ucb95": 4.427415,
+    "supported": true
+   }
+  },
+  {
+   "cell": "dnf3::clean::w64",
+   "confirmation_generators": 48,
+   "calibration_dispersion": {
+    "planned_generators": 16,
+    "complete_generators": 16,
+    "incomplete_generators": [],
+    "attrition_allowance": 0.2,
+    "min_complete_required": 13,
+    "n_generators": 16,
+    "sd": 3.297586,
+    "sd_ucb95": 4.741418,
+    "supported": true
+   }
+  },
+  {
+   "cell": "sine::clean::w16",
+   "confirmation_generators": 48,
+   "calibration_dispersion": {
+    "planned_generators": 16,
+    "complete_generators": 16,
+    "incomplete_generators": [],
+    "attrition_allowance": 0.2,
+    "min_complete_required": 13,
+    "n_generators": 16,
+    "sd": 0.0,
+    "sd_ucb95": 0.0,
+    "supported": true
+   }
+  },
+  {
+   "cell": "sine::clean::w64",
+   "confirmation_generators": 48,
+   "calibration_dispersion": {
+    "planned_generators": 16,
+    "complete_generators": 16,
+    "incomplete_generators": [],
+    "attrition_allowance": 0.2,
+    "min_complete_required": 13,
+    "n_generators": 16,
+    "sd": 0.0,
+    "sd_ucb95": 0.0,
+    "supported": true
+   }
+  },
+  {
+   "cell": "sine::white::w16",
+   "confirmation_generators": 48,
+   "calibration_dispersion": {
+    "planned_generators": 16,
+    "complete_generators": 16,
+    "incomplete_generators": [],
+    "attrition_allowance": 0.2,
+    "min_complete_required": 13,
+    "n_generators": 16,
+    "sd": 0.0,
+    "sd_ucb95": 0.0,
+    "supported": true
+   }
+  },
+  {
+   "cell": "sine::white::w64",
+   "confirmation_generators": 48,
+   "calibration_dispersion": {
+    "planned_generators": 16,
+    "complete_generators": 16,
+    "incomplete_generators": [],
+    "attrition_allowance": 0.2,
+    "min_complete_required": 13,
+    "n_generators": 16,
+    "sd": 0.0,
+    "sd_ucb95": 0.0,
+    "supported": true
+   }
+  },
+  {
+   "cell": "chirp::clean::w16",
+   "confirmation_generators": 48,
+   "calibration_dispersion": {
+    "planned_generators": 16,
+    "complete_generators": 16,
+    "incomplete_generators": [],
+    "attrition_allowance": 0.2,
+    "min_complete_required": 13,
+    "n_generators": 16,
+    "sd": 0.0,
+    "sd_ucb95": 0.0,
+    "supported": true
+   }
+  },
+  {
+   "cell": "chirp::clean::w64",
+   "confirmation_generators": 48,
+   "calibration_dispersion": {
+    "planned_generators": 16,
+    "complete_generators": 16,
+    "incomplete_generators": [],
+    "attrition_allowance": 0.2,
+    "min_complete_required": 13,
+    "n_generators": 16,
+    "sd": 0.0,
+    "sd_ucb95": 0.0,
+    "supported": true
+   }
+  },
+  {
+   "cell": "chirp::white::w16",
+   "confirmation_generators": 48,
+   "calibration_dispersion": {
+    "planned_generators": 16,
+    "complete_generators": 16,
+    "incomplete_generators": [],
+    "attrition_allowance": 0.2,
+    "min_complete_required": 13,
+    "n_generators": 16,
+    "sd": 0.0,
+    "sd_ucb95": 0.0,
+    "supported": true
+   }
+  },
+  {
+   "cell": "chirp::white::w64",
+   "confirmation_generators": 48,
+   "calibration_dispersion": {
+    "planned_generators": 16,
+    "complete_generators": 16,
+    "incomplete_generators": [],
+    "attrition_allowance": 0.2,
+    "min_complete_required": 13,
+    "n_generators": 16,
+    "sd": 0.0,
+    "sd_ucb95": 0.0,
+    "supported": true
+   }
+  },
+  {
+   "cell": "am::clean::w16",
+   "confirmation_generators": 48,
+   "calibration_dispersion": {
+    "planned_generators": 16,
+    "complete_generators": 16,
+    "incomplete_generators": [],
+    "attrition_allowance": 0.2,
+    "min_complete_required": 13,
+    "n_generators": 16,
+    "sd": 0.0,
+    "sd_ucb95": 0.0,
+    "supported": true
+   }
+  },
+  {
+   "cell": "am::clean::w64",
+   "confirmation_generators": 48,
+   "calibration_dispersion": {
+    "planned_generators": 16,
+    "complete_generators": 16,
+    "incomplete_generators": [],
+    "attrition_allowance": 0.2,
+    "min_complete_required": 13,
+    "n_generators": 16,
+    "sd": 0.0,
+    "sd_ucb95": 0.0,
+    "supported": true
+   }
+  },
+  {
+   "cell": "am::white::w16",
+   "confirmation_generators": 48,
+   "calibration_dispersion": {
+    "planned_generators": 16,
+    "complete_generators": 16,
+    "incomplete_generators": [],
+    "attrition_allowance": 0.2,
+    "min_complete_required": 13,
+    "n_generators": 16,
+    "sd": 0.973729,
+    "sd_ucb95": 1.400072,
+    "supported": true
+   }
+  },
+  {
+   "cell": "am::white::w64",
+   "confirmation_generators": 48,
+   "calibration_dispersion": {
+    "planned_generators": 16,
+    "complete_generators": 16,
+    "incomplete_generators": [],
+    "attrition_allowance": 0.2,
+    "min_complete_required": 13,
+    "n_generators": 16,
+    "sd": 0.666667,
+    "sd_ucb95": 0.958563,
+    "supported": true
+   }
+  },
+  {
+   "cell": "state_space::clean::w16",
+   "confirmation_generators": 48,
+   "calibration_dispersion": {
+    "planned_generators": 16,
+    "complete_generators": 16,
+    "incomplete_generators": [],
+    "attrition_allowance": 0.2,
+    "min_complete_required": 13,
+    "n_generators": 16,
+    "sd": 0.973729,
+    "sd_ucb95": 1.400072,
+    "supported": true
+   }
+  },
+  {
+   "cell": "state_space::white::w16",
+   "confirmation_generators": 48,
+   "calibration_dispersion": {
+    "planned_generators": 16,
+    "complete_generators": 16,
+    "incomplete_generators": [],
+    "attrition_allowance": 0.2,
+    "min_complete_required": 13,
+    "n_generators": 16,
+    "sd": 0.0,
+    "sd_ucb95": 0.0,
+    "supported": true
+   }
+  },
+  {
+   "cell": "state_space::white::w64",
+   "confirmation_generators": 48,
+   "calibration_dispersion": {
+    "planned_generators": 16,
+    "complete_generators": 16,
+    "incomplete_generators": [],
+    "attrition_allowance": 0.2,
+    "min_complete_required": 13,
+    "n_generators": 16,
+    "sd": 0.973729,
+    "sd_ucb95": 1.400072,
+    "supported": true
+   }
+  }
+ ],
+ "ineligible_slots": [
+  {
+   "cell": "parity4::clean::w16",
+   "typed_status": "INELIGIBLE_UNDER_PROPOSED_RULE"
+  },
+  {
+   "cell": "parity4::clean::w64",
+   "typed_status": "INELIGIBLE_UNDER_PROPOSED_RULE"
+  },
+  {
+   "cell": "discontinuity::clean::w16",
+   "typed_status": "INELIGIBLE_UNDER_PROPOSED_RULE"
+  },
+  {
+   "cell": "discontinuity::clean::w64",
+   "typed_status": "INELIGIBLE_UNDER_PROPOSED_RULE"
+  },
+  {
+   "cell": "discontinuity::white::w16",
+   "typed_status": "INELIGIBLE_UNDER_PROPOSED_RULE"
+  },
+  {
+   "cell": "discontinuity::white::w64",
+   "typed_status": "INELIGIBLE_UNDER_PROPOSED_RULE"
+  },
+  {
+   "cell": "state_space::clean::w64",
+   "typed_status": "INELIGIBLE_UNDER_PROPOSED_RULE"
+  }
+ ],
+ "confirmation_generators_per_eligible_slot": 48,
+ "nested_seeds_per_generator": 3,
+ "attrition": {
+  "allowance": 0.2,
+  "planned_generators_per_slot": 48,
+  "min_complete_required": 39,
+  "rule": "max(3, ceil(planned*(1-allowance))) \u2014 the existing calibration formula applied to the 48-generator confirmation population; below the floor the slot is CONFIRMATION_INCOMPLETE, never favorable"
+ },
+ "m2_status": {
+  "status": "DOES_NOT_ADVANCE_FROM_CALIBRATION",
+  "calibration_gain": -0.41982887,
+  "consequence": "incremental_prediction::M2_vs_M1 is carried as a non-rejecting p=1 placeholder; M2 is never fitted or scored on CONFIRMATION"
+ },
+ "contrast_family_16": [
+  "intervention_effect::identity::clean",
+  "intervention_effect::majority::clean",
+  "intervention_effect::dnf3::clean",
+  "intervention_effect::parity4::clean",
+  "intervention_effect::sine::clean",
+  "intervention_effect::sine::white",
+  "intervention_effect::chirp::clean",
+  "intervention_effect::chirp::white",
+  "intervention_effect::am::clean",
+  "intervention_effect::am::white",
+  "intervention_effect::discontinuity::clean",
+  "intervention_effect::discontinuity::white",
+  "intervention_effect::state_space::clean",
+  "intervention_effect::state_space::white",
+  "checkpoint_effect::primary_pair",
+  "incremental_prediction::M2_vs_M1"
+ ],
+ "analysis_freeze": {
+  "unit": "the task GENERATOR; seeds and widths are nested or paired repetitions, never independent observations",
+  "per_contrast_effect": "generator-level paired restricted-endpoint difference (calibration_stop minus matched initialization), mean over the exactly-3 nested seeds, averaged EQUALLY across widths frozen eligible by this successor",
+  "single_width_rule": "if exactly one width is eligible for a contrast, it is used and that fact is named in the result",
+  "no_width_rule": "if no width is eligible, the contrast is NOT_EVALUABLE with a non-rejecting p=1",
+  "per_contrast_test": "two-sided one-sample t on the generator-level effects, df = n_complete_generators - 1; fewer than 2 complete generators => NOT_EVALUABLE p=1",
+  "multiplicity": "Holm step-down over ALL 16 slots including placeholders, alpha 0.05",
+  "multiplicity_supersession": "the sealed design v5 line 'Bonferroni over the frozen confirmatory contrast family' is SUPERSEDED by Holm per order @889320ee C34.7; both control FWER at alpha; Holm is uniformly at least as powerful; frozen here BEFORE any CONFIRMATION outcome and named for external review",
+  "width_heterogeneity": "width-specific effects and attrition are published as SECONDARY heterogeneity results, never as additional primary hypotheses"
+ },
+ "grants_nothing": "this successor authorizes NO execution; CONFIRMATION arrays, scores and ledgers require the two external records (Musashi design review + owner execution) consumed by m4_confirmation_runner",
+ "successor_sha256": "6a50d97ddfb3a8e8dd1b5fbc83ebd95e60e1c087b3fc5e01697c2d783a50608c"
+}

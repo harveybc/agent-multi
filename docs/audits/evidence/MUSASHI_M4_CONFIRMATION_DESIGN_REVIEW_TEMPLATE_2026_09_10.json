@@ -1,0 +1,12 @@
+{
+ "_template_note": "NON-AUTHORIZING TEMPLATE. Musashi fills every <field> and installs the result HIMSELF at <state_root>/m4_confirmation_authority/MUSASHI_M4_CONFIRMATION_DESIGN_REVIEW_RECORD.json. Candidate code never creates or installs a real record; this file carries an extra key (_template_note) and placeholder values, both of which the consuming API refuses.",
+ "schema": "musashi_m4_confirmation_design_review.v1",
+ "author": "<musashi-signature-name>",
+ "role": "EXTERNAL_AUDITOR",
+ "date": "<YYYY-MM-DD>",
+ "reviewed_successor_sha256": "<64-hex self identity of M4_CONFIRMATION_SUCCESSOR_2026_09_10.json>",
+ "reviewed_tip": "5e7a8fd430c8231a049baf03f00e720ba24ec994",
+ "reviewed_analysis_statement": "<one sentence naming the reviewed 16-slot family, the Holm supersession of the design-v5 Bonferroni line, and the 21-slot population>",
+ "decision": "M4_CONFIRMATION_DESIGN_APPROVED_FOR_EXECUTION",
+ "record_sha256": "<64-hex sha256 of the canonical body excluding this field>"
+}

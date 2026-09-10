@@ -1,0 +1,13 @@
+{
+ "_template_note": "NON-AUTHORIZING TEMPLATE. The owner fills every <field> and installs the result HIMSELF at <state_root>/m4_confirmation_authority/OWNER_M4_CONFIRMATION_EXECUTION_RECORD.json, AFTER Musashi's design-review record exists (this record must chain to it by digest). Candidate code never creates or installs a real record; the extra key (_template_note) and placeholders are both refused by the consuming API.",
+ "schema": "owner_m4_confirmation_execution.v1",
+ "author": "<owner-signature-name>",
+ "role": "OWNER",
+ "date": "<YYYY-MM-DD>",
+ "authorized_successor_sha256": "<64-hex self identity of M4_CONFIRMATION_SUCCESSOR_2026_09_10.json>",
+ "authorized_review_record_sha256": "<64-hex record_sha256 of Musashi's installed design-review record>",
+ "authorized_population_statement": "<one sentence naming the 21 eligible slots, 48 generators per slot, 3 nested seeds (3024 units)>",
+ "cpu_limits_statement": "<one sentence naming the sealed CPU wall, RSS, nice, heartbeat and stop-file limits that govern the run>",
+ "decision": "M4_CONFIRMATION_EXECUTION_AUTHORIZED_CPU_ONLY",
+ "record_sha256": "<64-hex sha256 of the canonical body excluding this field>"
+}
