@@ -77,34 +77,29 @@ def load_gate(config: dict | None = None):
         f"config['eligibility_gate_path'] or ${ENV_VAR}")
 
 
-def gate_subjects(config: dict, *, consumer: str,
-                  subject_ids=None, scope: str | None = None,
-                  subject_kind: str = "variable") -> dict:
-    """Ask the gate for this run, exactly as `predictor` does."""
-    if not (config or {}).get("eligibility_manifest"):
-        return {"eligibility_status": STATUS_LEGACY,
-                "consumer": consumer,
-                "reason": "no reviewed eligibility manifest was "
-                          "configured for this run; results are "
-                          "not gated evidence"}
+PURPOSE_KEY = "execution_purpose"
+PURPOSE_ARCHIVAL = "ARCHIVAL_REPLAY_NON_AUTHORITATIVE"
+
+
+def gate_run(config: dict, *, consumer: str, repo_root=None,
+             scope: str | None = None) -> dict:
+    """Ask the gate for this run, exactly as `predictor` does.
+
+    There is no consumer-side shortcut: the subjects are derived
+    from the files the run will consume, the decision comes from
+    an external review record, and omitting a manifest is a
+    refusal unless the run expressly declares an archival replay.
+    """
     _, integ = load_gate(config)
-    return integ.gate_subjects(config, scope=scope,
-                               subject_ids=subject_ids,
-                               subject_kind=subject_kind,
-                               consumer=consumer)
+    root = repo_root or Path(__file__).resolve().parents[1]
+    return integ.gate_run(config, repo_root=root, scope=scope,
+                          consumer=consumer)
 
 
 def gate_operator(config: dict, *, consumer: str,
                   operator_id: str, version: str,
                   code_digest: str, scope: str | None = None,
                   plugin_name: str | None = None) -> dict:
-    if not (config or {}).get("eligibility_manifest"):
-        return {"eligibility_status": STATUS_LEGACY,
-                "consumer": consumer,
-                "operator_id": operator_id,
-                "reason": "no reviewed eligibility manifest was "
-                          "configured; this transformation is "
-                          "experimental, not licensed"}
     _, integ = load_gate(config)
     return integ.gate_operator(config, operator_id=operator_id,
                                version=version,
@@ -116,8 +111,10 @@ def gate_operator(config: dict, *, consumer: str,
 
 def describe(stamp: dict) -> str:
     if stamp.get("eligibility_status") == STATUS_GATED:
-        return (f"eligibility: GATED by "
-                f"{stamp.get('manifest_sha256', '?')[:12]} "
-                f"scope={stamp.get('scope')}")
-    return ("eligibility: LEGACY_NON_AUTHORITATIVE (no reviewed "
-            "manifest configured)")
+        return (f"eligibility: GATED by review "
+                f"{stamp.get('review_record_sha256', '?')[:12]} "
+                f"scope={stamp.get('scope')} "
+                f"subjects={stamp.get('subjects_reviewed')}")
+    return (f"eligibility: {stamp.get('eligibility_status')} "
+            f"({stamp.get(PURPOSE_KEY)}) — "
+            f"{stamp.get('reason', '')}")

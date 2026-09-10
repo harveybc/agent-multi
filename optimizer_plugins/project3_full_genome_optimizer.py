@@ -318,7 +318,6 @@ class Plugin(DefaultOptimizer):
         # remove; if the reviewed manifest leaves nothing, the run
         # refuses rather than falling back to a wider universe —
         # an empty group never reactivates variables.
-        from app.eligibility_adapter import gate_subjects
         from app.eligibility_adapter import load_gate
 
         if config.get("eligibility_manifest"):
@@ -353,10 +352,25 @@ class Plugin(DefaultOptimizer):
                     gate_mod.manifest_fingerprint(manifest),
                 "columns_after_gate": len(kept),
             }
+        elif config.get("execution_purpose") == \
+                "ARCHIVAL_REPLAY_NON_AUTHORITATIVE":
+            run_config["eligibility_stamp"] = {
+                "eligibility_status": "LEGACY_NON_AUTHORITATIVE",
+                "execution_purpose":
+                    "ARCHIVAL_REPLAY_NON_AUTHORITATIVE",
+                "consumer": "agent_multi.full_genome_optimizer",
+                "reason": "archival replay; the universe is "
+                          "reproduced, not licensed",
+                "columns_declared": len(columns),
+            }
         else:
-            run_config["eligibility_stamp"] = gate_subjects(
-                config,
-                consumer="agent_multi.full_genome_optimizer")
+            raise ValueError(
+                "a new experiment must supply a reviewed "
+                "eligibility manifest, or declare "
+                "execution_purpose="
+                "ARCHIVAL_REPLAY_NON_AUTHORITATIVE to reproduce "
+                "historical work — an omitted manifest is no "
+                "longer an implicit legacy run")
 
         run_config["feature_columns"] = columns
         run_config["feature_list"] = columns
