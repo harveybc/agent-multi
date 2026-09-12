@@ -400,3 +400,62 @@ def test_the_legacy_modes_never_install_the_replacement():
     users = [n.name for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)
              and "scoped_readjudication_identity(" in ast.get_source_segment(src, n)]
     assert users == ["run_reproducer"], users
+
+
+# ------------------------------------------------ R20 submission v3
+def _closure_stub(kind="ISOLATED_FIXTURE_NOT_AN_EXTERNAL_RECORD", equal=True):
+    screen = {"verdict": "DOES_NOT_ADVANCE",
+              "primary_estimand_unweighted_mean_of_panel_effects": -0.001048,
+              "panels": {"a": {"effect": 0.1}, "b": {"effect": -0.2}}}
+    return {
+        "campaign_root_logical": "t2_successor",
+        "screen_adjudication": screen,
+        "final_adjudication_counts": {"COMPLETED_VERIFIED": 242,
+                                      "TERMINAL_FAILED": 0},
+        "sign_test_supersession": {"corrected_value": 1.0},
+        "inventory": {"exact": True},
+        "measurement": {"custody_reads": 726,
+                        "leaf_binding": {"reads_total": 726,
+                                         "reads_bound": 726}},
+        "readjudication_identity": {
+            "historical_pinned_commit": "1" * 40,
+            "historical_pinned_tree": "2" * 40,
+            "historical_execution_record_sha256": "3" * 64,
+            "reproducer": {"commit": "4" * 40, "tree": "5" * 40},
+            "surface_sha256": "6" * 64, "record_kind": kind,
+            "record_sha256": "7" * 64,
+            "candidate_adjudication_sha256": "8" * 64,
+            "scientific_adjudication_sha256": "8" * 64 if equal else "9" * 64,
+            "executor_checkout_gate": "REPLACED...",
+            "executor_claim_identity": "REPLACED..."},
+    }
+
+
+def test_the_v3_submission_separates_historical_from_readjudication():
+    import t2_campaign_closure as T
+    c = _closure_stub()
+    sub = T.build_readjudication_submission_v3(
+        c, template={"x": 1}, evidence_rel="docs/e.json",
+        evidence_sha256="e" * 64,
+        historical_screen=c["screen_adjudication"],
+        publication_commit="a" * 40)
+    assert sub["schema"].endswith(".v3")
+    assert sub["historical_result"]["identity"].endswith("2" * 40)
+    assert sub["readjudication"]["identity"].count("4" * 40) == 1
+    assert sub["readjudication"]["equal_to_candidate"] is True
+    assert all(sub["readjudication"]["panel_effects_equal_to_historical"].values())
+    assert sub["requires"] == "EXTERNAL_READJUDICATION_REVIEW_RECORD"
+    assert sub["grants_promotion"] is False
+    blob = json.dumps(sub)
+    assert "/home/" not in blob and "ISOLATED_FIXTURE" in blob
+
+
+def test_the_v3_submission_digest_covers_the_publication_commit():
+    import t2_campaign_closure as T
+    c = _closure_stub()
+    kw = dict(template={}, evidence_rel="e", evidence_sha256="e" * 64,
+              historical_screen=c["screen_adjudication"])
+    a = T.build_readjudication_submission_v3(c, publication_commit="a" * 40, **kw)
+    b = T.build_readjudication_submission_v3(c, publication_commit="b" * 40, **kw)
+    assert a["publication"]["commit_a"] != b["publication"]["commit_a"]
+    assert a["submission_sha256"] != b["submission_sha256"]
