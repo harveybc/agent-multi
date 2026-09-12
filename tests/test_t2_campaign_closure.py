@@ -530,3 +530,84 @@ def test_the_submission_digest_covers_the_publication_block():
     d1 = T.sha_obj(doc)
     doc["publication"]["commit_a"] = "bbb"
     assert T.sha_obj(doc) != d1
+
+
+# ------------------------------------ T2-R17: the late NPZ read is bound
+def _npz(value: float) -> bytes:
+    import io
+    import numpy as np
+    buf = io.BytesIO()
+    np.savez(buf, y=np.full(8, value, dtype=np.float64))
+    return buf.getvalue()
+
+
+def _units_root(tmp_path):
+    import os
+    root = tmp_path / "results"
+    (root / "units").mkdir(parents=True)
+    os.chmod(root, 0o700)
+    os.chmod(root / "units", 0o700)
+    (root / "units" / "RECORD_u.json").write_text('{"wall_seconds": 1.0}')
+    (root / "units" / "ARRAYS_u.npz").write_bytes(_npz(1.0))
+    for p in (root / "units").iterdir():
+        os.chmod(p, 0o600)
+    return root
+
+
+def test_an_npz_substituted_before_its_late_read_refuses(tmp_path):
+    """The adapter reads JSON at construction and each NPZ only when the
+    verifier asks. Between the two, a substitute with the same name,
+    mode, length and mtime used to be consumed."""
+    import os
+    root = _units_root(tmp_path)
+    custody = T.Custody(root)
+    units = custody.walk_to("units")
+    cls = T.make_snapshot_class(type("ResultsRoot", (), {}))
+    snap = cls(units, units.files)
+    arr = root / "units" / "ARRAYS_u.npz"
+    st0 = os.stat(arr)
+    os.rename(arr, root / "units" / "ARRAYS_u.orig")
+    arr.write_bytes(_npz(999.0))
+    os.chmod(arr, 0o600)
+    os.utime(arr, ns=(st0.st_atime_ns, st0.st_mtime_ns))
+    assert os.stat(arr).st_size == st0.st_size
+    with pytest.raises(DC.LeafIdentityRefusal) as e:
+        snap.read_private(cls.units_fd, "ARRAYS_u.npz", "arrays")
+    custody.close()
+    assert "inode" in e.value.diverged
+    assert "ARRAYS_u.npz" not in snap.digests()
+
+
+def test_an_npz_mutated_in_place_before_its_late_read_refuses(tmp_path):
+    import os
+    root = _units_root(tmp_path)
+    custody = T.Custody(root)
+    units = custody.walk_to("units")
+    cls = T.make_snapshot_class(type("ResultsRoot", (), {}))
+    snap = cls(units, units.files)
+    arr = root / "units" / "ARRAYS_u.npz"
+    st0 = os.stat(arr)
+    sub = _npz(999.0)
+    with open(arr, "r+b") as fh:
+        fh.write(sub)
+    os.utime(arr, ns=(st0.st_atime_ns, st0.st_mtime_ns))
+    with pytest.raises(DC.LeafIdentityRefusal) as e:
+        snap.read_private(cls.units_fd, "ARRAYS_u.npz", "arrays")
+    custody.close()
+    assert e.value.diverged.keys() >= {"ctime_ns"}
+
+
+def test_an_untouched_npz_is_served_with_its_binding(tmp_path):
+    import io
+    import numpy as np
+    root = _units_root(tmp_path)
+    custody = T.Custody(root)
+    units = custody.walk_to("units")
+    cls = T.make_snapshot_class(type("ResultsRoot", (), {}))
+    snap = cls(units, units.files)
+    got = np.load(io.BytesIO(
+        snap.read_private(cls.units_fd, "ARRAYS_u.npz", "arrays")))["y"][0]
+    reads = custody.reads()
+    custody.close()
+    assert float(got) == 1.0
+    assert all(r["leaf_binding"] != "UNBOUND" for r in reads)
