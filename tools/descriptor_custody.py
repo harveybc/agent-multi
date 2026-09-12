@@ -82,8 +82,10 @@ WORLD_WRITE = _stat.S_IWOTH
 GROUP_WRITE = _stat.S_IWGRP
 
 #: The contract every copy of this module implements. predictor, B4 and
-#: T2 carry byte-identical copies and one shared fixture file.
-CONTRACT = "agent_multi.descriptor_custody.leaf_binding.v1"
+#: T2 carry byte-identical copies and shared fixture files.
+#: v2 (C88): directories are bound like leaves, every enumeration is
+#: bracketed by two fstats, and JSON is parsed strictly.
+CONTRACT = "agent_multi.descriptor_custody.component_binding.v2"
 
 #: What the inventory remembers about a leaf, and what both `fstat`
 #: comparisons require to be equal.
@@ -98,6 +100,28 @@ READ_BLOCK = 1 << 20
 class CustodyRefusal(SystemExit):
     def __init__(self, msg: str) -> None:
         super().__init__(f"REFUSED: {msg}")
+
+
+class DirectoryIdentityRefusal(CustodyRefusal):
+    """A directory that was opened, or a directory while it was being
+    listed, is not the directory the parent's inventory photographed."""
+
+    def __init__(self, rel: str, stage: str, diverged: dict) -> None:
+        self.rel = rel
+        self.stage = stage
+        self.diverged = diverged
+        super().__init__(
+            f"{rel or '.'}: directory identity diverged at {stage} on "
+            f"{sorted(diverged)}; the snapshot is refused whole")
+
+
+class StrictJsonRefusal(CustodyRefusal):
+    """JSON that a lenient parser would silently accept."""
+
+    def __init__(self, rel: str, reason: str) -> None:
+        self.rel = rel
+        self.reason = reason
+        super().__init__(f"{rel}: strict JSON refused — {reason}")
 
 
 class LeafIdentityRefusal(CustodyRefusal):
@@ -138,6 +162,59 @@ def check_after_read_against_open(rel: str, opened: dict,
     diff = _diverged(opened, after)
     if diff:
         raise LeafIdentityRefusal(rel, "AFTER_READ_VS_OPEN", diff)
+
+
+def check_directory_open_against_inventory(rel: str, inventoried: dict,
+                                           opened: dict) -> None:
+    """C88: a child directory must be the one its parent listed."""
+    diff = _diverged(inventoried, opened)
+    if diff:
+        raise DirectoryIdentityRefusal(rel, "OPEN_VS_INVENTORY", diff)
+
+
+def check_enumeration_stable(rel: str, before: dict, after: dict) -> None:
+    """C88: nothing may change a directory while it is being listed."""
+    diff = _diverged(before, after)
+    if diff:
+        raise DirectoryIdentityRefusal(rel, "ENUMERATION_UNSTABLE", diff)
+
+
+#: which enumeration fstats are taken. A battery removes one at a time to
+#: show each is load-bearing: a missing one falls back to the other, so
+#: nothing is compared.
+ENUMERATION_FSTATS = ("before", "after")
+
+#: C88: a second listing after enumeration must name exactly the same
+#: entries. Timestamps alone are not enough — a file created inside the
+#: same timestamp tick leaves mtime and ctime unchanged — so the listing
+#: itself is compared. A battery switches this off to show it is
+#: load-bearing.
+RELIST_ENUMERATION = True
+
+
+def strict_json_loads(raw: bytes, rel: str):
+    """Duplicate keys and non-finite constants refuse before any object
+    is handed out."""
+    def pairs(items):
+        keys = [k for k, _ in items]
+        if len(keys) != len(set(keys)):
+            dup = sorted({k for k in keys if keys.count(k) > 1})
+            raise StrictJsonRefusal(rel, f"duplicate keys {dup}")
+        return dict(items)
+
+    def constant(name):
+        raise StrictJsonRefusal(rel, f"non-finite constant {name}")
+
+    try:
+        text = raw.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise CustodyRefusal(f"{rel}: not UTF-8 ({exc.reason})")
+    try:
+        return json.loads(text, object_pairs_hook=pairs,
+                          parse_constant=constant)
+    except ValueError as exc:
+        raise CustodyRefusal(f"{rel}: not parseable as JSON "
+                             f"({type(exc).__name__})")
 
 
 def _weakness(mode: int) -> str:
@@ -182,12 +259,7 @@ class Artifact:
 
     def json(self) -> dict:
         if self._json is None:
-            try:
-                self._json = json.loads(self._bytes.decode("utf-8"))
-            except (UnicodeDecodeError, ValueError) as exc:
-                raise CustodyRefusal(
-                    f"{self.rel}: not parseable as JSON "
-                    f"({type(exc).__name__})")
+            self._json = strict_json_loads(self._bytes, self.rel)
             if not isinstance(self._json, dict):
                 raise CustodyRefusal(
                     f"{self.rel}: JSON root is not an object")
@@ -241,10 +313,10 @@ class DirSnapshot:
 
     __slots__ = ("rel", "files", "dirs", "others", "device", "inode",
                  "uid", "mode", "custody_weakness", "_fd", "_owner",
-                 "_children", "_closed", "_leaf")
+                 "_children", "_closed", "_entries", "_binding")
 
     def __init__(self, rel: str, fd: int, st: os.stat_result,
-                 owner) -> None:
+                 owner, inventoried: dict | None = None) -> None:
         self.rel = rel
         self._fd = fd
         self._owner = owner
@@ -256,23 +328,51 @@ class DirSnapshot:
         self.mode = _stat.S_IMODE(st.st_mode)
         self.custody_weakness = _weakness(self.mode)
         files, dirs, others = [], [], []
-        self._leaf: dict[str, dict] = {}
-        for name in sorted(os.listdir(fd)):
+        self._entries: dict[str, dict] = {}
+        opened = leaf_facts(st)
+        fst = {}
+        if "before" in ENUMERATION_FSTATS:
+            fst["before"] = leaf_facts(os.fstat(fd))
+        listed = sorted(os.listdir(fd))
+        for name in listed:
             try:
                 est = os.stat(name, dir_fd=fd, follow_symlinks=False)
             except OSError:
                 others.append(name)
+                self._entries[name] = {"type": "VANISHED_DURING_LISTING"}
                 continue
+            self._entries[name] = leaf_facts(est)
             if _stat.S_ISREG(est.st_mode):
                 files.append(name)
-                self._leaf[name] = leaf_facts(est)
             elif _stat.S_ISDIR(est.st_mode):
                 dirs.append(name)
             else:
                 others.append(name)
+        if RELIST_ENUMERATION:
+            again = sorted(os.listdir(fd))
+            if again != listed:
+                raise DirectoryIdentityRefusal(
+                    rel, "ENUMERATION_UNSTABLE",
+                    {"entries": {"added": sorted(set(again) - set(listed)),
+                                 "removed": sorted(set(listed) - set(again))}})
+        if "after" in ENUMERATION_FSTATS:
+            fst["after"] = leaf_facts(os.fstat(fd))
+        before = fst.get("before", fst.get("after"))
+        after = fst.get("after", fst.get("before"))
+        if before is not None:
+            check_enumeration_stable(rel, before, after)
         self.files = tuple(files)
         self.dirs = tuple(dirs)
         self.others = tuple(others)
+        self._binding = {
+            "contract": CONTRACT,
+            "inventoried_by_parent": (dict(inventoried) if inventoried
+                                      is not None else "ROOT"),
+            "fstat_open": opened,
+            "fstat_enumeration_before": before,
+            "fstat_enumeration_after": after,
+            "entries_sha256": hashlib.sha256(json.dumps(
+                self._entries, sort_keys=True).encode()).hexdigest()}
 
     # ------------------------------------------------------- reading
     def _check_open(self) -> None:
@@ -308,7 +408,7 @@ class DirSnapshot:
         try:
             st = os.fstat(fd)
             opened = leaf_facts(st)
-            check_open_against_inventory(rel, self._leaf[name], opened)
+            check_open_against_inventory(rel, self._entries[name], opened)
             if not _stat.S_ISREG(st.st_mode):
                 raise CustodyRefusal(
                     f"{self.rel}/{name}: not a regular file")
@@ -346,7 +446,7 @@ class DirSnapshot:
         art = Artifact(rel, payload, st, dir_device=self.device,
                        dir_inode=self.inode,
                        leaf_binding={"contract": CONTRACT,
-                                     "inventoried": dict(self._leaf[name]),
+                                     "inventoried": dict(self._entries[name]),
                                      "fstat_open": opened,
                                      "fstat_after_read": after})
         self._owner._record(art)
@@ -364,7 +464,8 @@ class DirSnapshot:
                 "taken from this directory instance")
         child = self._owner._open_dir(self._fd,
                                       f"{self.rel}/{name}" if self.rel
-                                      else name, name)
+                                      else name, name,
+                                      inventoried=self._entries[name])
         self._children.append(child)
         return child
 
@@ -385,7 +486,7 @@ class DirSnapshot:
 
     def leaf_inventory(self, name: str) -> dict:
         """The facts photographed for `name` at inventory time."""
-        return dict(self._leaf[name])
+        return dict(self._entries[name])
 
     def facts(self) -> dict:
         return {"rel": self.rel or ".",
@@ -396,7 +497,9 @@ class DirSnapshot:
                 # replacement that keeps the name is visible.
                 "device": self.device, "inode": self.inode,
                 "uid": self.uid, "mode": oct(self.mode),
-                "custody_weakness": self.custody_weakness}
+                "custody_weakness": self.custody_weakness,
+                # C88: the facts this instance was accepted under.
+                "directory_binding": self._binding}
 
     # --------------------------------------------------------- close
     def close(self) -> None:
@@ -446,12 +549,16 @@ class Custody:
             os.close(fd)
             raise CustodyRefusal(
                 f"{self.root}: the evidence root is world-writable")
-        self._root = DirSnapshot("", fd, st, self)
+        try:
+            self._root = DirSnapshot("", fd, st, self)
+        except BaseException:
+            os.close(fd)
+            raise
         self._snapshots.append(self._root)
 
     # ---------------------------------------------------- directories
     def _open_dir(self, parent_fd: int, rel: str,
-                  name: str) -> DirSnapshot:
+                  name: str, inventoried: dict | None = None) -> DirSnapshot:
         try:
             fd = os.open(name, os.O_RDONLY | O_DIRECTORY | O_NOFOLLOW,
                          dir_fd=parent_fd)
@@ -465,6 +572,9 @@ class Custody:
                 f"{rel}: directory unopenable (errno {exc.errno})")
         try:
             st = os.fstat(fd)
+            if inventoried is not None:
+                check_directory_open_against_inventory(
+                    rel, inventoried, leaf_facts(st))
             if not _stat.S_ISDIR(st.st_mode):
                 raise CustodyRefusal(f"{rel}: not a directory")
             if self.require_owner and st.st_uid != self.expected_uid:
@@ -481,10 +591,10 @@ class Custody:
                 raise CustodyRefusal(
                     f"{rel}: directory mode {oct(mode)} is "
                     "group-writable and strict custody was requested")
+            snap = DirSnapshot(rel, fd, st, self, inventoried=inventoried)
         except BaseException:
             os.close(fd)
             raise
-        snap = DirSnapshot(rel, fd, st, self)
         self._snapshots.append(snap)
         return snap
 
