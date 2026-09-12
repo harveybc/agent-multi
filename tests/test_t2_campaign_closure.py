@@ -469,3 +469,64 @@ def test_the_entry_point_is_defined_after_everything_it_calls():
     assert guards, "the module has no __main__ guard"
     assert guards[-1].lineno > max(defs), (
         "the entry point must come after every definition it can reach")
+
+
+# ------------------------------------------- R15 two-phase publication
+def _closure_stub():
+    return {
+        "campaign_root_logical": "t2_test_root",
+        "inventory": {"exact": True, "sealed_units": 242},
+        "final_adjudication_counts": {"COMPLETED_VERIFIED": 242,
+                                      "TERMINAL_FAILED": 0},
+        "screen_adjudication": {"verdict": "DOES_NOT_ADVANCE",
+                                "primary_estimand_unweighted_mean_of_"
+                                "panel_effects": -0.001048},
+        "sign_test_supersession": {"state": "SUPERSEDED"},
+        "unit_snapshot": {"artifacts": 726},
+        "single_instance": "one read each",
+        "adjudication_sha256": "a" * 64,
+    }
+
+
+def test_the_submission_publishes_no_physical_path(tmp_path,
+                                                   monkeypatch):
+    secret = tmp_path / "home" / "operator" / "private_root"
+    secret.mkdir(parents=True)
+    monkeypatch.setattr(T, "closure_code_identity",
+                        lambda c: {"files": {}})
+    doc = T.build_readjudication_submission(
+        _closure_stub(), reviewed_checkout=tmp_path,
+        read_root=secret, preserved_root=secret)
+    blob = json.dumps(doc)
+    assert str(secret) not in blob
+    assert "private_root" not in blob.replace(
+        doc["root_actually_read_logical"], "")
+    assert doc["physical_paths"].startswith("WITHHELD")
+    assert doc["schema"].endswith(".v2")
+
+
+def test_the_logical_id_is_stable_and_does_not_locate(tmp_path):
+    a = T.logical_id(tmp_path / "root")
+    b = T.logical_id(tmp_path / "root")
+    c = T.logical_id(tmp_path / "other")
+    assert a == b and a != c
+    assert str(tmp_path) not in a
+
+
+def test_reading_a_root_that_is_not_the_preserved_one_is_declared(
+        tmp_path, monkeypatch):
+    monkeypatch.setattr(T, "closure_code_identity",
+                        lambda c: {"files": {}})
+    doc = T.build_readjudication_submission(
+        _closure_stub(), reviewed_checkout=tmp_path,
+        read_root=tmp_path / "copy", preserved_root=tmp_path / "orig")
+    assert doc["read_the_preserved_root"] is False
+    assert doc["root_actually_read_logical"] != \
+        doc["preserved_root_logical"]
+
+
+def test_the_submission_digest_covers_the_publication_block():
+    doc = {"schema": "x", "publication": {"commit_a": "aaa"}}
+    d1 = T.sha_obj(doc)
+    doc["publication"]["commit_a"] = "bbb"
+    assert T.sha_obj(doc) != d1
