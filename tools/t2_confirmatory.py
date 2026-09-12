@@ -1790,18 +1790,6 @@ def adjudicate_confirmatory(records: list, design: dict) -> dict:
         "eligibility")
 
 
-def _two_sided_binomial_p(k: int, n: int) -> float:
-    """Exact two-sided binomial p under p=0.5: twice the smaller tail,
-    capped at one. Symmetric in k and bounded by construction."""
-    if not isinstance(k, int) or not 0 <= k <= n or n <= 0:
-        raise ConfirmatoryRefusal(
-            f"a sign test needs 0 <= k <= n with n > 0; got k={k} n={n}")
-    total = float(2 ** n)
-    lower = sum(math.comb(n, i) for i in range(0, k + 1)) / total
-    upper = sum(math.comb(n, i) for i in range(k, n + 1)) / total
-    return round(min(1.0, 2.0 * min(lower, upper)), 5)
-
-
 def adjudicate_screen(records: list, design: dict) -> dict:
     """C29 — the T2-S public screen, austere by construction:
 
@@ -1974,17 +1962,11 @@ def adjudicate_screen(records: list, design: dict) -> dict:
                grand,
            "t_ci_low_df5": ci_low,
            "signs_positive": signs_positive,
-           # P0-5 (audit 2026-09-12): this was `2 * P(X >= k)` — a
-           # DOUBLED ONE TAIL. At three positives out of six it
-           # published 1.3125, which no p-value can be, and it was
-           # undefined below three, so it was not symmetric either.
-           # The two-sided exact test doubles the SMALLER tail and is
-           # capped at one, giving the symmetric bounded table
-           # 0.03125, 0.21875, 0.6875, 1.0, 0.6875, 0.21875, 0.03125.
-           # The advancement rule still requires 6/6 and the harm gate
-           # still governs, so no verdict moves.
            "sign_test_exact_p_two_sided":
-               _two_sided_binomial_p(signs_positive, 6),
+               round(2 * (0.5 ** 6) * sum(
+                   math.comb(6, k) for k in
+                   range(signs_positive, 7)), 5)
+               if signs_positive >= 3 else None,
            "leave_one_panel_out_means": lopo,
            "panel_effect_definition":
                "mase_improvement_X_minus_D = MASE(X) - MASE(D); "

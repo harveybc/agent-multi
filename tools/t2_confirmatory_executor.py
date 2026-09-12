@@ -1972,15 +1972,8 @@ def verify_unit_record(rec_path, npz_path,
         for arm in arms:
             entries[(arm, "ridge")] = o["results"][arm]["ridge"]
             for s in design["seed_tape"]:
-                try:
-                    entries[(arm, f"mlp_seed{s}")] = \
-                        o["results"][arm]["mlp_small"][
-                            f"seed{s}"]
-                except KeyError:
-                    raise ExecutorRefusal(
-                        f"{arm}: mlp_small seed{s} entry is "
-                        "MISSING from the record — an omitted "
-                        "seed never verifies")
+                entries[(arm, f"mlp_seed{s}")] = \
+                    o["results"][arm]["mlp_small"][f"seed{s}"]
         for (arm, m), metrics in entries.items():
             base = f"{okey}__{arm}__{m}"
             pred = data[f"pred__{base}"]
