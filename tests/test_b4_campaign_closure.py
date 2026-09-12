@@ -251,7 +251,9 @@ def test_a_partial_carrying_a_seal_refuses(tmp_path):
 def test_a_partial_without_both_stop_signals_refuses(tmp_path):
     root, mat = build_root(tmp_path, cells=3, completed=1, partial=1)
     (root / "CAMPAIGN_STOP").unlink()
-    with pytest.raises(SystemExit, match="BOTH durable stop signals"):
+    # R12: the two stop signals are now checked from two different
+    # snapshots, so each has its own refusal rather than one message.
+    with pytest.raises(SystemExit, match="CAMPAIGN stop signal"):
         C.build_closure(root, mat)
 
 

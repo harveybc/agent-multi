@@ -24,6 +24,24 @@ bytes:
   * costs are re-derived from durable intervals, not copied from the
     amendment that charged them.
 
+R11-R12 (order 2026-09-12) — EVERY ARTIFACT IS READ ONCE.
+
+The first version verified and consumed through SEPARATE path opens:
+it parsed the terminal and hashed it from a second open, re-opened the
+per-bar ledger to count rows, and re-read `status.json` after
+inventorying it. The PRE shows what that costs — a terminal reading
+999999 on disk adjudicated as 123.4 with every descriptor reporting
+`verified`, and a per-bar ledger whose rows were counted from bytes
+that were never hashed.
+
+Now a retained root descriptor resolves each path component by
+component with O_NOFOLLOW, `fstat` establishes regular-file, owner and
+mode on that same descriptor, the bytes are read once, and the digest,
+the parse, the row count and every rule are computed from THOSE bytes.
+Classification reads a directory SNAPSHOT taken once; no `exists`,
+`is_file` or `glob` runs at decision time. A file that appears after
+the snapshot cannot change the run that used it.
+
 Boundaries it holds:
 
   * it NEVER completes a cell by label. Nine cells without a terminal
@@ -45,6 +63,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import subprocess
 import sys
 import time
 from datetime import datetime, timezone
@@ -52,6 +71,9 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "tools"))
+
+from descriptor_custody import (Artifact, Custody,  # noqa: E402
+                                CustodyRefusal, DirSnapshot)
 
 CLOSURE_SCHEMA = "agent_multi.b4_campaign_closure.v1"
 CLOSURE_LOG = "B4_CAMPAIGN_CLOSURE.jsonl"
@@ -126,20 +148,18 @@ def inventory(root: Path, *, exclude: tuple[str, ...] = ()) -> dict:
 
 
 # ------------------------------------------------------------ COMPLETED
-def verify_completed_cell(results_root: Path, cell: str,
-                          ledger_cell: dict) -> dict:
+def verify_completed_cell(custody: Custody, snap: DirSnapshot,
+                          cell: str, ledger_cell: dict) -> dict:
     """Descriptor verification of a sealed cell.
+
+    Every object below is read ONCE through `custody`; the digest, the
+    parse and the counts all come from those same bytes. Nothing here
+    takes a path.
 
     Deliberately does NOT consult the launch gate. A closure is not a
     launch: requiring an open launch to READ finished evidence would
     make a campaign unclosable exactly when it most needs closing.
     """
-    cell_dir = results_root / cell
-    term_p = cell_dir / "B4_CELL_TERMINAL.json"
-    if not term_p.is_file():
-        raise ClosureRefusal(f"{cell}: no terminal to verify")
-    term = json.loads(term_p.read_text())
-
     checks: list[dict] = []
 
     def check(name: str, ok: bool, detail: str) -> None:
@@ -147,6 +167,13 @@ def verify_completed_cell(results_root: Path, cell: str,
                        "detail": detail})
         if not ok:
             raise ClosureRefusal(f"{cell}: {name} — {detail}")
+
+    check("terminal_present_in_snapshot",
+          snap.has_file("B4_CELL_TERMINAL.json"),
+          "listed once from the cell's own directory descriptor")
+    terminal = custody.read(f"{cell}/B4_CELL_TERMINAL.json")
+    term = terminal.json()
+    terminal_digest = terminal.sha256          # SAME bytes as `term`
 
     check("terminal_schema_exact", set(term) == TERMINAL_KEYS,
           f"unexpected={sorted(set(term) - TERMINAL_KEYS)} "
@@ -162,26 +189,29 @@ def verify_completed_cell(results_root: Path, cell: str,
     check("sealed_2025_absence_proved", term["sealed_2025_used"] is False,
           repr(term["sealed_2025_used"]))
 
-    per_bar = Path(term["per_bar_csv"])
-    if not per_bar.is_absolute():
-        per_bar = cell_dir / per_bar.name
-    check("per_bar_present", per_bar.is_file(), str(per_bar.name))
-    check("per_bar_digest", sha_file(per_bar) == term["per_bar_sha256"],
+    per_bar_name = Path(term["per_bar_csv"]).name
+    check("per_bar_present_in_snapshot", snap.has_file(per_bar_name),
+          per_bar_name)
+    per_bar = custody.read(f"{cell}/{per_bar_name}")
+    check("per_bar_digest", per_bar.sha256 == term["per_bar_sha256"],
           term["per_bar_sha256"])
-    rows = sum(1 for _ in per_bar.open()) - 1
-    check("per_bar_rows_match_scored_bars", rows == term["scored_bars"],
-          f"rows={rows} scored_bars={term['scored_bars']}")
+    # R11: the rows are counted in the bytes that were just hashed.
+    check("per_bar_rows_match_scored_bars",
+          per_bar.data_rows() == term["scored_bars"],
+          f"rows={per_bar.data_rows()} scored_bars={term['scored_bars']}")
 
-    ckpt = Path(term["checkpoint_path"])
-    if not ckpt.is_absolute():
-        ckpt = cell_dir / ckpt.name
-    check("checkpoint_present", ckpt.is_file(), ckpt.name)
-    check("checkpoint_digest", sha_file(ckpt) == term["checkpoint_sha256"],
+    ckpt_name = Path(term["checkpoint_path"]).name
+    check("checkpoint_present_in_snapshot", snap.has_file(ckpt_name),
+          ckpt_name)
+    checkpoint = custody.read(f"{cell}/{ckpt_name}")
+    check("checkpoint_digest",
+          checkpoint.sha256 == term["checkpoint_sha256"],
           term["checkpoint_sha256"])
 
-    claim_p = next(cell_dir.glob("CLAIM_*.json"), None)
-    check("claim_present", claim_p is not None, str(claim_p))
-    claim = json.loads(claim_p.read_text())
+    claim_names = snap.matching(prefix="CLAIM_", suffix=".json")
+    check("exactly_one_claim", len(claim_names) == 1, str(claim_names))
+    claim_art = custody.read(f"{cell}/{claim_names[0]}")
+    claim = claim_art.json()
     check("claim_binds_this_attempt",
           claim.get("attempt_id") == term["attempt_id"],
           f"{claim.get('attempt_id')} vs {term['attempt_id']}")
@@ -190,31 +220,33 @@ def verify_completed_cell(results_root: Path, cell: str,
 
     # The terminal is bound by the TWO-PHASE SEAL, not by the claim.
     # A claim is written when the attempt starts, so its
-    # terminal_sha256 is null by construction; the intent names the
-    # terminal it is about to seal and the completion binds that
-    # intent. Checking the claim for the terminal digest would refuse
-    # every correctly sealed cell — as it did here before I read the
-    # records instead of assuming their shape.
-    terminal_digest = sha_file(term_p)
-    intent = cell_dir / f"SEAL_INTENT_{term['attempt_id']}.json"
-    seal = cell_dir / f"SEAL_COMPLETE_{term['attempt_id']}.json"
-    check("seal_intent_present", intent.is_file(), intent.name)
-    check("seal_complete_present", seal.is_file(), seal.name)
-    intent_doc = json.loads(intent.read_text())
-    seal_doc = json.loads(seal.read_text())
+    # terminal_sha256 is null by construction; checking the claim for
+    # the terminal digest would refuse every correctly sealed cell.
+    attempt = term["attempt_id"]
+    intent_name = f"SEAL_INTENT_{attempt}.json"
+    seal_name = f"SEAL_COMPLETE_{attempt}.json"
+    check("seal_intent_present_in_snapshot", snap.has_file(intent_name),
+          intent_name)
+    check("seal_complete_present_in_snapshot", snap.has_file(seal_name),
+          seal_name)
+    intent = custody.read(f"{cell}/{intent_name}")
+    seal = custody.read(f"{cell}/{seal_name}")
+    intent_doc, seal_doc = intent.json(), seal.json()
     check("seal_intent_binds_terminal_digest",
           intent_doc.get("terminal_sha256") == terminal_digest,
           str(intent_doc.get("terminal_sha256")))
     check("seal_intent_binds_this_cell", intent_doc.get("cell") == cell,
           str(intent_doc.get("cell")))
+    # R11: the intent's digest comes from the SAME read that was
+    # parsed above, not from a second open.
     check("seal_complete_binds_the_intent",
-          seal_doc.get("intent_sha256") == sha_file(intent),
+          seal_doc.get("intent_sha256") == intent.sha256,
           str(seal_doc.get("intent_sha256")))
     check("seal_complete_binds_the_same_terminal",
           seal_doc.get("terminal_sha256") == terminal_digest,
           str(seal_doc.get("terminal_sha256")))
     check("seal_complete_binds_this_attempt",
-          seal_doc.get("attempt_id") == term["attempt_id"],
+          seal_doc.get("attempt_id") == attempt,
           str(seal_doc.get("attempt_id")))
 
     wall = term["wall_seconds"]
@@ -234,16 +266,23 @@ def verify_completed_cell(results_root: Path, cell: str,
     return {
         "cell": cell,
         "classification": COMPLETED,
-        "attempt_id": term["attempt_id"],
+        "attempt_id": attempt,
         "terminal_sha256": terminal_digest,
-        "seal_intent_sha256": sha_file(intent),
-        "seal_sha256": sha_file(seal),
-        "per_bar_sha256": term["per_bar_sha256"],
+        "seal_intent_sha256": intent.sha256,
+        "seal_sha256": seal.sha256,
+        "per_bar_sha256": per_bar.sha256,
+        "checkpoint_sha256": checkpoint.sha256,
         "scored_bars": term["scored_bars"],
         "wall_seconds_declared": wall,
         "g1_eligible": term["g1_eligible"],
         "checkpoint_promotable": term["checkpoint_promotable"],
         "descriptors_verified": checks,
+        "custody": {
+            "reads": 6,
+            "artifacts": [a.facts() for a in
+                          (terminal, per_bar, checkpoint, claim_art,
+                           intent, seal)],
+        },
         "enters_comparisons": False,
         "enters_comparisons_reason": (
             "the campaign population is incomplete; a partial "
@@ -252,12 +291,37 @@ def verify_completed_cell(results_root: Path, cell: str,
 
 
 # -------------------------------------------------------------- PARTIAL
-def inventory_partial_cell(results_root: Path, cell: str,
-                           ledger_cell: dict) -> dict:
-    """Inventory EVERY artifact of the stopped cell, then classify."""
-    cell_dir = results_root / cell
+def inventory_partial_cell(custody: Custody, root_snap: DirSnapshot,
+                           cell: str, ledger_cell: dict) -> dict:
+    """Inventory EVERY artifact of the stopped cell, then classify.
+
+    R12: the tree is walked through directory SNAPSHOTS and each file
+    is read once; the classification and the per-file digests come from
+    those same reads. The previous version combined `rglob`, `is_file`,
+    `stat` and a path hash, and then re-opened `status.json` — so the
+    progress it adjudicated was not the progress it inventoried.
+    """
     started = time.perf_counter()
-    files = inventory(cell_dir)
+    files: dict[str, dict] = {}
+    artifacts: dict[str, Artifact] = {}
+    pending = [cell]
+    while pending:
+        rel = pending.pop()
+        snap = custody.snapshot(rel)
+        if snap.others:
+            raise ClosureRefusal(
+                f"{cell}: {rel} contains entries that are neither "
+                f"regular files nor directories: {sorted(snap.others)} "
+                "— a link or a device in an evidence tree is not "
+                "evidence")
+        for name in snap.dirs:
+            pending.append(f"{rel}/{name}")
+        for name in snap.files:
+            art = custody.read(f"{rel}/{name}")
+            key = str(Path(f"{rel}/{name}").relative_to(cell))
+            files[key] = {"bytes": art.size, "sha256": art.sha256,
+                          "custody_weakness": art.custody_weakness}
+            artifacts[key] = art
     MEASUREMENT["inventory_seconds"][cell] = round(
         time.perf_counter() - started, 3)
 
@@ -272,33 +336,36 @@ def inventory_partial_cell(results_root: Path, cell: str,
     if seals:
         raise ClosureRefusal(f"{cell}: carries seals {seals}")
 
-    claim_name = next((f for f in present if f.startswith("CLAIM_")), None)
-    lease_name = next((f for f in present if f.startswith("LEASE_")), None)
-    if claim_name is None or lease_name is None:
+    claim_key = next((f for f in present if f.startswith("CLAIM_")), None)
+    lease_key = next((f for f in present if f.startswith("LEASE_")), None)
+    if claim_key is None or lease_key is None:
         raise ClosureRefusal(
             f"{cell}: a stopped attempt must carry both a claim and a "
-            f"lease; claim={claim_name} lease={lease_name}")
-    claim = json.loads((cell_dir / claim_name).read_text())
-    lease = json.loads((cell_dir / lease_name).read_text())
+            f"lease; claim={claim_key} lease={lease_key}")
+    claim = artifacts[claim_key].json()
+    lease = artifacts[lease_key].json()
     if claim["attempt_id"] != lease["attempt_id"]:
         raise ClosureRefusal(
             f"{cell}: claim and lease name different attempts")
-    # A claim's terminal_sha256 is null by construction at start, so
-    # its emptiness proves nothing. The evidence that nothing was
-    # sealed is the ABSENCE of the seal pair, checked above.
     if claim.get("cell") != cell or lease.get("cell") != cell:
         raise ClosureRefusal(f"{cell}: claim/lease name another cell")
+    # A claim's terminal_sha256 is null by construction at start, so
+    # its emptiness proves nothing. The evidence that nothing was
+    # sealed is the ABSENCE of the seal pair, checked above from the
+    # inventory itself.
 
-    stop_local = cell_dir / "STOP"
-    stop_campaign = results_root / "CAMPAIGN_STOP"
-    if not stop_local.exists() or not stop_campaign.exists():
+    if "STOP" not in present:
         raise ClosureRefusal(
-            f"{cell}: quarantine requires BOTH durable stop signals; "
-            f"cell STOP={stop_local.exists()} "
-            f"campaign STOP={stop_campaign.exists()}")
+            f"{cell}: quarantine requires the cell's own durable STOP "
+            "signal and it is not in the inventory")
+    if not root_snap.has_file("CAMPAIGN_STOP"):
+        raise ClosureRefusal(
+            f"{cell}: quarantine requires the CAMPAIGN stop signal and "
+            "the campaign root snapshot does not list it")
 
-    status_p = cell_dir / "cell_runtime/status.json"
-    status = json.loads(status_p.read_text()) if status_p.is_file() else {}
+    status_key = "cell_runtime/status.json"
+    status = (artifacts[status_key].json()
+              if status_key in artifacts else {})
 
     return {
         "cell": cell,
@@ -316,7 +383,11 @@ def inventory_partial_cell(results_root: Path, cell: str,
             "stop_reason": status.get("stop_reason", "UNAVAILABLE"),
             "last_durable_artifact": status.get("last_durable_artifact",
                                                 "UNAVAILABLE"),
+            "read_from": ("the same inventory read, never a second open"
+                          if status_key in artifacts else "ABSENT"),
         },
+        "claim_wall": float(claim["claimed_wall"]),
+        "stop_mtime_ns": artifacts["STOP"].mtime_ns,
         "enters_comparisons": False,
         "enters_comparisons_reason": (
             "no terminal, no per-bar evidence and no seal: there is "
@@ -328,22 +399,49 @@ def inventory_partial_cell(results_root: Path, cell: str,
 
 
 # ---------------------------------------------------------- NOT_STARTED
-def record_not_started(results_root: Path, cell: str) -> dict:
-    cell_dir = results_root / cell
-    if cell_dir.exists():
+def published_root_facts(root_snap: DirSnapshot) -> dict:
+    """The campaign root as EVIDENCE, with this closure's own record
+    excluded.
+
+    The append-only log lives in the root it describes, so including it
+    would make the first closure change the snapshot every later
+    closure publishes — the record would alter the thing it is about.
+    The exclusion is named in the facts, never silent.
+    """
+    facts = root_snap.facts()
+    facts["files"] = [f for f in facts["files"] if f != CLOSURE_LOG]
+    facts["excluded"] = [CLOSURE_LOG]
+    facts["excluded_reason"] = (
+        "this closure's own append-only record; including it would "
+        "make the closure change the snapshot it publishes")
+    return facts
+
+
+def record_not_started(root_snap: DirSnapshot, cell: str) -> dict:
+    """R12: absence is read from the ROOT SNAPSHOT taken once.
+
+    The previous version asked the filesystem at classification time,
+    so a cell that appeared afterwards kept the label NOT_STARTED while
+    its directory — and even a terminal — existed on disk.
+    """
+    if cell in root_snap.dirs or cell in root_snap.files:
         raise ClosureRefusal(
-            f"{cell}: a directory exists, so absence is not the evidence")
+            f"{cell}: the root snapshot lists it, so absence is not the "
+            "evidence")
     return {
         "cell": cell,
         "classification": NOT_STARTED,
-        "evidence": "no cell directory exists under the campaign root",
+        "evidence": ("the campaign root directory, listed once from its "
+                     "own descriptor, contains no entry for this cell"),
+        "root_snapshot_sha256": sha_obj(
+            published_root_facts(root_snap)),
         "enters_comparisons": False,
         "enters_comparisons_reason": "the cell was never executed",
     }
 
 
 # --------------------------------------------------------------- costs
-def rederive_costs(results_root: Path, completed: list[dict],
+def rederive_costs(completed: list[dict],
                    partial: list[dict]) -> dict:
     """Costs from durable bytes only.
 
@@ -360,11 +458,12 @@ def rederive_costs(results_root: Path, completed: list[dict],
 
     partial_costs: dict[str, dict] = {}
     for entry in partial:
-        cell_dir = results_root / entry["cell"]
-        claim_p = next(cell_dir.glob("CLAIM_*.json"))
-        claim = json.loads(claim_p.read_text())
-        start = float(claim["claimed_wall"])
-        stop_at = (cell_dir / "STOP").stat().st_mtime
+        # R11: both numbers were already established by the single
+        # inventory read — the claim's own bytes and the fstat taken on
+        # the STOP file's descriptor. Re-opening either here would
+        # reintroduce the window this rewrite exists to close.
+        start = float(entry["claim_wall"])
+        stop_at = entry["stop_mtime_ns"] / 1e9
         derived = round(stop_at - start, 1)
         if derived <= 0:
             raise ClosureRefusal(
@@ -453,28 +552,55 @@ def prove_relaunch_refuses() -> dict:
 
 # ---------------------------------------------------------------- main
 def build_closure(results_root: Path, mat_root: Path) -> dict:
-    ledger_p = results_root / "CAMPAIGN_LEDGER.json"
-    ledger = json.loads(ledger_p.read_text())
-    if ledger.get("materialization_sha256") != \
-            sha_file(mat_root / "B4_MATERIALIZATION.json"):
-        raise ClosureRefusal(
-            "the ledger does not bind this materialization root")
+    """One retained root descriptor; one snapshot per directory; one
+    read per artifact."""
+    custody = Custody(results_root)
+    mat_custody = Custody(mat_root)
+    try:
+        ledger_art = custody.read("CAMPAIGN_LEDGER.json")
+        ledger = ledger_art.json()
+        mat_art = mat_custody.read("B4_MATERIALIZATION.json")
+        if ledger.get("materialization_sha256") != mat_art.sha256:
+            raise ClosureRefusal(
+                "the ledger does not bind this materialization root")
 
-    classified: list[dict] = []
-    for cell in sorted(ledger["cells"]):
-        entry = ledger["cells"][cell]
-        cell_dir = results_root / cell
-        if (cell_dir / "B4_CELL_TERMINAL.json").is_file():
-            classified.append(verify_completed_cell(results_root, cell,
-                                                    entry))
-        elif cell_dir.is_dir():
-            classified.append(inventory_partial_cell(results_root, cell,
-                                                     entry))
-        else:
-            classified.append(record_not_started(results_root, cell))
+        # R12: ONE listing of the campaign root decides which cells
+        # have a directory at all. Every classification below reads
+        # this snapshot, never the filesystem.
+        root_snap = custody.snapshot()
 
-    completed = [c for c in classified if c["classification"] == COMPLETED]
-    partial = [c for c in classified if c["classification"] == PARTIAL]
+        classified: list[dict] = []
+        for cell in sorted(ledger["cells"]):
+            entry = ledger["cells"][cell]
+            if cell not in root_snap.dirs:
+                classified.append(record_not_started(root_snap, cell))
+                continue
+            cell_snap = custody.snapshot(cell)
+            if cell_snap.has_file("B4_CELL_TERMINAL.json"):
+                classified.append(verify_completed_cell(
+                    custody, cell_snap, cell, entry))
+            else:
+                classified.append(inventory_partial_cell(
+                    custody, root_snap, cell, entry))
+
+        completed = [c for c in classified
+                     if c["classification"] == COMPLETED]
+        partial = [c for c in classified
+                   if c["classification"] == PARTIAL]
+        ledger_digest = ledger_art.sha256
+        custody_reads = len(custody.reads())
+        # The closure's OWN append-only log lives in this root, so it
+        # appears in the snapshot the moment the first closure is
+        # emitted. Publishing it would make every re-closure a new
+        # adjudication of the same evidence — the record would change
+        # the thing it describes. It is excluded and the exclusion is
+        # named; it is not campaign evidence.
+        root_facts = published_root_facts(root_snap)
+        weaknesses = sorted({a["custody_weakness"]
+                             for a in custody.reads()})
+    finally:
+        custody.close()
+        mat_custody.close()
 
     closure = {
         "schema": CLOSURE_SCHEMA,
@@ -484,7 +610,15 @@ def build_closure(results_root: Path, mat_root: Path) -> dict:
         "results_root_logical": results_root.name,
         "materialization_sha256": ledger["materialization_sha256"],
         "population_sha256": ledger["population_sha256"],
-        "campaign_ledger_sha256": sha_file(ledger_p),
+        "campaign_ledger_sha256": ledger_digest,
+        "custody": {
+            "discipline": "one path resolution -> one descriptor -> "
+                          "one read -> all facts; classification reads "
+                          "directory snapshots taken once",
+            "artifact_reads": custody_reads,
+            "root_snapshot": root_facts,
+            "observed_weaknesses": weaknesses,
+        },
         "owner_authorization": {
             "consumed": True,
             "source": ("the owner's prior authorization to stop and "
@@ -493,7 +627,7 @@ def build_closure(results_root: Path, mat_root: Path) -> dict:
             "requested_again": False,
         },
         "cells": classified,
-        "costs": rederive_costs(results_root, completed, partial),
+        "costs": rederive_costs(completed, partial),
         "adjudication": adjudicate(classified, ledger),
         "relaunch": prove_relaunch_refuses(),
         "measurement": dict(MEASUREMENT),
@@ -510,6 +644,89 @@ def build_closure(results_root: Path, mat_root: Path) -> dict:
     return closure
 
 
+#: R13: the closure's own executable surface. Every module the
+#: adjudication can reach, so a mutation anywhere in it changes the
+#: identity a reviewer is asked to accept.
+CLOSURE_CODE = (
+    "tools/b4_campaign_closure.py",
+    "tools/descriptor_custody.py",
+    "tools/b4_authority.py",
+)
+
+
+def closure_code_identity(repo: Path = REPO) -> dict:
+    """Bind this closure's code, its commit and a clean worktree.
+
+    A re-adjudication is only as trustworthy as the program that
+    produced it, so the program is named file by file. A dirty tree is
+    recorded rather than hidden: a reviewer must be able to see that
+    the bytes reviewed are the bytes that ran.
+    """
+    repo = Path(repo)
+    files = {}
+    for rel in sorted(CLOSURE_CODE):
+        f = repo / rel
+        if not f.is_file():
+            raise ClosureRefusal(
+                f"the closure surface names {rel}, which is absent — "
+                "an identity that skips a missing file is not one")
+        files[rel] = hashlib.sha256(f.read_bytes()).hexdigest()
+    commit = subprocess.run(("git", "-C", str(repo), "rev-parse", "HEAD"),
+                            capture_output=True, text=True).stdout.strip()
+    dirty = subprocess.run(("git", "-C", str(repo), "status",
+                            "--porcelain"),
+                           capture_output=True, text=True).stdout.strip()
+    dirty_files = sorted(ln[3:] for ln in dirty.splitlines() if ln)
+    return {
+        "files": files,
+        "surface_sha256": sha_obj(files),
+        "commit": commit or "UNAVAILABLE",
+        "worktree_clean": not dirty_files,
+        "dirty_paths": dirty_files[:20],
+        "interpreter": sys.version.split()[0],
+    }
+
+
+def build_submission(closure: dict, *, results_root: Path,
+                     read_root: Path, repo: Path = REPO) -> dict:
+    """R14: a re-adjudication SUBMISSION. It authorizes nothing.
+
+    It states which root was read, whether that root was the preserved
+    original or a copy, what the adjudication found, and exactly which
+    code produced it — and asks for review. The preserved B4 root is
+    not opened for writing by this tool at any point.
+    """
+    doc = {
+        "schema": "agent_multi.b4_readjudication_submission.v1",
+        "submitted_at": utc_now(),
+        "campaign_generation": closure["campaign_generation"],
+        "results_root_logical": closure["results_root_logical"],
+        "root_actually_read": str(read_root),
+        "read_the_preserved_root": Path(read_root).resolve()
+        == Path(results_root).resolve(),
+        "adjudication": closure["adjudication"],
+        "adjudication_sha256": closure["adjudication_sha256"],
+        "campaign_ledger_sha256": closure["campaign_ledger_sha256"],
+        "custody": closure["custody"],
+        "cell_digests": {
+            c["cell"]: {k: c[k] for k in
+                        ("classification", "terminal_sha256",
+                         "per_bar_sha256", "artifact_inventory_sha256")
+                        if k in c}
+            for c in closure["cells"]},
+        "costs": closure["costs"],
+        "code_identity": closure_code_identity(repo),
+        "grants_nothing":
+            "a submission states what was re-adjudicated and asks for a "
+            "decision. It opens no campaign, promotes no cell, and does "
+            "not authorize reading or writing the preserved root",
+        "requires": "EXTERNAL_REVIEW",
+    }
+    doc["submission_sha256"] = sha_obj(
+        {k: doc[k] for k in sorted(doc)})
+    return doc
+
+
 def last_closure(results_root: Path) -> dict | None:
     log = results_root / CLOSURE_LOG
     if not log.is_file():
@@ -524,6 +741,12 @@ def main(argv=None) -> int:
     ap.add_argument("--materialization-root", type=Path, required=True)
     ap.add_argument("--emit", action="store_true",
                     help="append the record to the campaign root")
+    ap.add_argument("--submission", type=Path, default=None,
+                    help="write a NON-AUTHORIZING re-adjudication "
+                         "submission for external review")
+    ap.add_argument("--preserved-root", type=Path, default=None,
+                    help="the root this submission is ABOUT, when the "
+                         "reading happened on a copy of it")
     args = ap.parse_args(argv)
 
     results_root = args.results_root.expanduser()
@@ -557,6 +780,16 @@ def main(argv=None) -> int:
             "tree_sha256_after": sha_obj(after),
             "unchanged": True,
         }
+
+    if args.submission:
+        sub = build_submission(
+            closure, results_root=(args.preserved_root or results_root)
+            .expanduser(), read_root=results_root)
+        args.submission.parent.mkdir(parents=True, exist_ok=True)
+        args.submission.write_text(
+            json.dumps(sub, indent=1, sort_keys=True) + "\n")
+        closure["submission_file"] = str(args.submission.name)
+        closure["submission_sha256"] = sub["submission_sha256"]
 
     print(json.dumps(closure, indent=1, sort_keys=True))
     return 0
