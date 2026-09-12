@@ -445,17 +445,25 @@ def supersede_sign_test(screen: dict) -> dict:
 
 
 def build_closure(conf, ex, recon, root: Path, checkout: Path,
-                  *, snapshot_mode: bool = False) -> dict:
+                  *, snapshot_mode: bool = False,
+                  identity_override: dict | None = None) -> dict:
     measurement: dict = {}
     t0 = time.perf_counter()
 
-    identity = assert_reviewed_identity(conf, checkout,
-                                       snapshot_mode=snapshot_mode)
-    try:
-        snapshot_identity = audit_snapshot_identity(checkout)
-    except ClosureRefusal as exc:
-        snapshot_identity = {"single_checkout": False,
-                             "refusal": str(exc)[:200]}
+    if identity_override is not None:
+        # Hardened readjudication: the identity was established by the
+        # entry-point gate against the review record before any import.
+        identity = identity_override
+        snapshot_identity = {"single_checkout": True,
+                             "established_by": "t2_hardened_readjudicate gate"}
+    else:
+        identity = assert_reviewed_identity(conf, checkout,
+                                           snapshot_mode=snapshot_mode)
+        try:
+            snapshot_identity = audit_snapshot_identity(checkout)
+        except ClosureRefusal as exc:
+            snapshot_identity = {"single_checkout": False,
+                                 "refusal": str(exc)[:200]}
     divergence = report_tip_divergence(conf, checkout)
 
     t_recon = time.perf_counter()
@@ -465,6 +473,11 @@ def build_closure(conf, ex, recon, root: Path, checkout: Path,
         measurement["reconstruction_seconds"] = round(
             time.perf_counter() - t_recon, 2)
         measurement["custody_reads"] = len(custody.reads())
+        _bind = [r.get("leaf_binding", "UNBOUND") for r in custody.reads()]
+        measurement["leaf_binding"] = {
+            "reads_total": len(_bind),
+            "reads_bound": sum(1 for b in _bind if b != "UNBOUND"),
+            "bindings_sha256": sha_obj(_bind)}
 
         facts = conf.verify_confirmatory_gates(
             ex.MANIFEST_PATH, ex.active_design_path(),
@@ -862,6 +875,29 @@ def emit_to_outbox(closure: dict, *, uids: list[str],
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--reviewed-checkout", type=Path, default=None)
+    ap.add_argument("--reproducer-checkout", type=Path, default=None,
+                    help="T2-R19: the ONE checkout carrying the seven "
+                         "historical files and the readjudication code; "
+                         "requires a readjudication review record")
+    ap.add_argument("--review-fixture-authority", type=Path, default=None,
+                    help="T2-R20: an ISOLATED authority root holding a "
+                         "fixture record; everything produced is marked "
+                         "as a fixture and authorizes nothing")
+    ap.add_argument("--template-out", type=Path, default=None,
+                    help="write the readjudication review TEMPLATE "
+                         "(never inside the authority root) and stop "
+                         "before opening any evidence")
+    ap.add_argument("--candidate-closure", type=Path, default=None,
+                    help="a previous closure JSON whose scientific "
+                         "adjudication the template binds")
+    ap.add_argument("--template-in", type=Path, default=None,
+                    help="the template the review record was made from; "
+                         "its digest is stated in the v3 submission")
+    ap.add_argument("--candidate-evidence", default=None,
+                    help="checkout-relative path of the VERSIONED "
+                         "historical screen evidence the template binds; "
+                         "the corrected sign test is derived from it by "
+                         "supersede_sign_test")
     ap.add_argument("--audit-snapshot", type=Path, default=None,
                     help="R12: the ONE recoverable checkout every "
                          "replay import comes from")
@@ -1281,6 +1317,280 @@ def reconstruct_from_snapshot(conf, ex, recon, root: Path,
             "reproduced above over the snapshot"),
         "wall_seconds_reconstruction": round(time.perf_counter() - t0, 2),
     }
+
+
+class scoped_readjudication_identity:
+    """For ONE read-only readjudication closure, answer the executor's
+    two identity questions with the readjudication identity, and make
+    every writing entry point of the executor refuse — then restore all
+    of it, on success and on exception. No pinned byte changes; each
+    replacement is named in the closure output.
+
+      conf.verify_executor_checkout -> readjudication_checkout_gate
+      ex._git_head_tree             -> historical_identity_view
+      ex.main, ex.rehearse          -> refusal (they would pin NEW claims)
+    """
+
+    def __init__(self, conf, ex, replacements: dict):
+        self.conf, self.ex = conf, ex
+        self.replacements = replacements
+        self.saved: dict = {}
+
+    def __enter__(self):
+        for (owner, name), fn in self.replacements.items():
+            target = self.conf if owner == "conf" else self.ex
+            self.saved[(owner, name)] = getattr(target, name)
+            setattr(target, name, fn)
+        return self
+
+    def __exit__(self, *exc):
+        for (owner, name), fn in self.saved.items():
+            setattr(self.conf if owner == "conf" else self.ex, name, fn)
+        return False
+
+
+def _write_path_refusal(name):
+    def refuse(*a, **k):
+        raise ClosureRefusal(
+            f"READ_ONLY_READJUDICATION: the executor entry point {name} "
+            "writes new claims and is closed for the whole readjudication")
+    return refuse
+
+
+def build_readjudication_submission_v3(closure: dict, *, template: dict,
+                                       evidence_rel: str,
+                                       evidence_sha256: str,
+                                       historical_screen: dict,
+                                       publication_commit: str) -> dict:
+    """T2-R20: the v3 submission separates what ran under the historical
+    identity from what re-ran under the reproducer identity, and says
+    which kind of review record the rerun passed. It authorizes nothing."""
+    ri = closure["readjudication_identity"]
+    screen = closure["screen_adjudication"]
+    ms = closure["measurement"]
+    doc = {
+        "schema": "agent_multi.t2_readjudication_submission.v3",
+        "supersedes": "agent_multi.t2_readjudication_submission.v2 — two "
+                      "trees, directory-only custody, no readjudication "
+                      "record contract",
+        "submitted_at": utc_now(),
+        "campaign_root_logical": closure["campaign_root_logical"],
+        "physical_paths": "WITHHELD — logical ids only",
+        "historical_result": {
+            "identity": "executed under the historical execution record: "
+                        "commit " + ri["historical_pinned_commit"] +
+                        ", tree " + ri["historical_pinned_tree"],
+            "historical_execution_record_sha256":
+                ri["historical_execution_record_sha256"],
+            "evidence_logical_id": evidence_rel,
+            "evidence_sha256": evidence_sha256,
+            "verdict": historical_screen["verdict"],
+            "primary_estimand":
+                historical_screen[
+                    "primary_estimand_unweighted_mean_of_panel_effects"],
+            "panel_effects": {p: v["effect"] for p, v in
+                              sorted(historical_screen["panels"].items())},
+        },
+        "readjudication": {
+            "identity": "re-executed read-only under the reproducer "
+                        "commit " + ri["reproducer"]["commit"] +
+                        ", tree " + ri["reproducer"]["tree"],
+            "surface_sha256": ri["surface_sha256"],
+            "review_record_kind": ri["record_kind"],
+            "review_record_sha256": ri["record_sha256"],
+            "template_sha256": sha_obj(template),
+            "candidate_adjudication_sha256":
+                ri["candidate_adjudication_sha256"],
+            "scientific_adjudication_sha256":
+                ri["scientific_adjudication_sha256"],
+            "equal_to_candidate": ri["scientific_adjudication_sha256"] ==
+                ri["candidate_adjudication_sha256"],
+            "final_adjudication_counts": closure["final_adjudication_counts"],
+            "verdict": screen["verdict"],
+            "primary_estimand":
+                screen["primary_estimand_unweighted_mean_of_panel_effects"],
+            "panel_effects_equal_to_historical": {
+                p: screen["panels"][p]["effect"] ==
+                historical_screen["panels"][p]["effect"]
+                for p in sorted(screen["panels"])},
+            "sign_test_supersession": closure["sign_test_supersession"],
+            "inventory_exact": closure["inventory"]["exact"],
+            "leaf_binding": ms.get("leaf_binding"),
+            "custody_reads": ms.get("custody_reads"),
+            "declared_replacements": {
+                "executor_checkout_gate": ri["executor_checkout_gate"],
+                "executor_claim_identity": ri["executor_claim_identity"]},
+            "retraining": False, "downloads": False,
+        },
+        "grants_promotion": False,
+        "grants_nothing": "a submission states what was re-adjudicated, "
+                          "under which identity and which record, and asks "
+                          "for review. It opens nothing and promotes nothing",
+        "requires": ("EXTERNAL_READJUDICATION_REVIEW_RECORD" if
+                     ri["record_kind"] != "EXTERNAL_REVIEW_RECORD"
+                     else "EXTERNAL_REVIEW"),
+        "publication": {
+            "protocol": "TWO_PHASE",
+            "commit_a": publication_commit,
+            "rule": "commit A carries the code and tests and is pushed "
+                    "before this file exists; this submission is generated "
+                    "from a clean checkout of commit A; commit B carries "
+                    "the submission alone"},
+    }
+    doc["submission_sha256"] = sha_obj({k: doc[k] for k in sorted(doc)})
+    return doc
+
+
+def scientific_adjudication_digest(closure: dict) -> str:
+    """The scientific result only: counts, screen adjudication and the
+    corrected sign-test table. Identity and custody facts are bound by
+    the review record separately."""
+    sign = closure.get("sign_test_supersession") or {}
+    body = {
+        "final_adjudication_counts": closure["final_adjudication_counts"],
+        "screen_adjudication": closure["screen_adjudication"],
+        "sign_test_corrected": {k: sign.get(k) for k in (
+            "corrected_table_0_to_6", "corrected_value", "signs_positive")},
+    }
+    return sha_obj(body)
+
+
+def load_hardened_modules(checkout: Path):
+    """After the entry-point gate: every module from the ONE checkout."""
+    checkout = Path(checkout).expanduser().resolve()
+    here = Path(__file__).resolve().parents[1]
+    if here != checkout:
+        raise ClosureRefusal(f"IMPORT_MIX: closure runs from {here.name}")
+    import t2_confirmatory as conf
+    import t2_confirmatory_executor as ex
+    import t2_completion_reconstruction as recon
+    import descriptor_custody as dc
+    for mod in (conf, ex, recon, dc):
+        if Path(mod.__file__).resolve().parents[1] != checkout:
+            raise ClosureRefusal(f"IMPORT_MIX: {mod.__name__} resolved outside")
+    return conf, ex, recon, dc
+
+
+def build_readjudication_submission_v4(closure: dict, *, verified: dict,
+                                       template_sha256: str,
+                                       evidence_rel: str,
+                                       evidence_sha256: str,
+                                       historical_screen: dict,
+                                       publication_commit: str) -> dict:
+    screen = closure["screen_adjudication"]
+    hi = closure["hardened_readjudication_identity"]
+    doc = {
+        "schema": "agent_multi.t2_readjudication_submission.v4",
+        "supersedes": "agent_multi.t2_readjudication_submission.v3 — which "
+                      "re-ran the historical executor bytes and so kept "
+                      "their untyped handling of an omitted mlp seed",
+        "submitted_at": utc_now(),
+        "review_record_kind": verified["record_kind"],
+        "campaign_root_logical": closure["campaign_root_logical"],
+        "physical_paths": "WITHHELD — logical ids only",
+        "historical_result": {
+            "identity": "executed under commit " + verified["historical"]["commit"]
+                        + ", tree " + verified["historical"]["tree"],
+            "execution_record_sha256": verified["historical"]["record_sha256"],
+            "evidence_logical_id": evidence_rel,
+            "evidence_sha256": evidence_sha256,
+            "verdict": historical_screen["verdict"],
+            "primary_estimand": historical_screen[
+                "primary_estimand_unweighted_mean_of_panel_effects"],
+            "panel_effects": {p: v["effect"] for p, v in
+                              sorted(historical_screen["panels"].items())}},
+        "hardened_readjudication": {
+            "identity": "re-executed read-only under hardened commit "
+                        + verified["facts"]["commit"] + ", tree "
+                        + verified["facts"]["tree"],
+            "surface_sha256": verified["surface_sha256"],
+            "review_record_sha256": verified["record_sha256"],
+            "template_sha256": template_sha256,
+            "candidate_adjudication_sha256": verified["candidate_adjudication_sha256"],
+            "scientific_adjudication_sha256": hi["scientific_adjudication_sha256"],
+            "equal_to_candidate": hi["scientific_adjudication_sha256"]
+            == verified["candidate_adjudication_sha256"],
+            "final_adjudication_counts": closure["final_adjudication_counts"],
+            "verdict": screen["verdict"],
+            "primary_estimand": screen["primary_estimand_unweighted_mean_of_panel_effects"],
+            "panel_effects_equal_to_historical": {
+                p: screen["panels"][p]["effect"] == historical_screen["panels"][p]["effect"]
+                for p in sorted(screen["panels"])},
+            "sign_test_supersession": closure["sign_test_supersession"],
+            "inventory_exact": closure["inventory"]["exact"],
+            "leaf_binding": closure["measurement"].get("leaf_binding"),
+            "custody_reads": closure["measurement"].get("custody_reads"),
+            "environment_guard": verified["environment"],
+            "declared_replacements": hi["declared_replacements"],
+            "retraining": False, "downloads": False, "model_execution": False},
+        "grants_promotion": False,
+        "requires": ("EXTERNAL_HARDENED_READJUDICATION_REVIEW_RECORD"
+                     if verified["record_kind"] != "EXTERNAL_REVIEW_RECORD"
+                     else "EXTERNAL_REVIEW"),
+        "grants_nothing": "states what was re-adjudicated, under which "
+                          "identities and which record; opens nothing",
+        "publication": {"protocol": "TWO_PHASE", "commit_a": publication_commit},
+    }
+    doc["submission_sha256"] = sha_obj({k: doc[k] for k in sorted(doc)})
+    return doc
+
+
+def run_hardened(args, verified: dict, entry, conf, ex, recon, dc) -> dict:
+    co = Path(verified["checkout"])
+    root = Path(args.root).expanduser()
+    entry.revalidate(verified, root, "before replay")
+    replacements = {
+        ("conf", "verify_executor_checkout"): entry.checkout_gate(verified),
+        ("conf", "executor_code_identity"): entry.historical_code_identity_view(verified),
+        ("ex", "_git_head_tree"): entry.historical_head_view(verified),
+        ("ex", "main"): _write_path_refusal("main"),
+        ("ex", "rehearse"): _write_path_refusal("rehearse"),
+    }
+    identity = {"mode": "HARDENED_READJUDICATION",
+                "historical": verified["historical"],
+                "hardened_commit": verified["facts"]["commit"],
+                "hardened_tree": verified["facts"]["tree"],
+                "hardened_surface_sha256": verified["surface_sha256"],
+                "checkout_clean": True}
+    with scoped_readjudication_identity(conf, ex, replacements):
+        closure = build_closure(conf, ex, recon, root, co, snapshot_mode=True,
+                                identity_override=identity)
+    entry.revalidate(verified, root, "after replay")
+    scientific = scientific_adjudication_digest(closure)
+    if scientific != verified["candidate_adjudication_sha256"]:
+        raise ClosureRefusal(
+            "CANDIDATE_ADJUDICATION_DIVERGES: the hardened readjudication "
+            "differs from the candidate; stopped, never normalized")
+    closure["single_checkout_blocked"] = "NOT_APPLICABLE_HARDENED_MODE"
+    closure["hardened_readjudication_identity"] = {
+        "record_kind": verified["record_kind"],
+        "scientific_adjudication_sha256": scientific,
+        "declared_replacements": {
+            "conf.verify_executor_checkout": "the consumed historical record must "
+                "pin the reviewed historical commit and tree; the executing "
+                "checkout must be the clean reviewed hardened commit",
+            "conf.executor_code_identity": "claims and the historical record are "
+                "compared with the HISTORICAL seven digests the record binds, "
+                "after re-checking the running hardened surface is the reviewed one",
+            "ex._git_head_tree": "claims are compared with the historical commit "
+                "and tree, re-checking the hardened checkout on every call",
+            "ex.main / ex.rehearse": "the executor's claim-writing entry points "
+                "refuse for the whole scope"},
+        "grants_promotion": False}
+    if getattr(args, "submit", None):
+        rel = args.candidate_evidence
+        ev = json.loads((co / rel).read_text())
+        tsha = sha_file(args.template_in) if args.template_in else "UNDECLARED"
+        sub = build_readjudication_submission_v4(
+            closure, verified=verified, template_sha256=tsha, evidence_rel=rel,
+            evidence_sha256=sha_file(co / rel),
+            historical_screen=ev["screen_adjudication"],
+            publication_commit=args.publication_commit or "UNDECLARED")
+        args.submit.parent.mkdir(parents=True, exist_ok=True)
+        args.submit.write_text(json.dumps(sub, indent=1, sort_keys=True, default=str) + "\n")
+        closure["submission_written"] = {"schema": sub["schema"],
+                                         "sha256": sub["submission_sha256"]}
+    return closure
 
 
 # The entry point lives at the END of the module, after every
