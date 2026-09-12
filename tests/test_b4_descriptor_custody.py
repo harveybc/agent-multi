@@ -643,3 +643,18 @@ def test_a_strict_read_bundle_is_built_without_touching_the_original(
     assert "group-writable" in doc["provenance"]
     with DC.Custody(tmp_path / "bundle", strict_mode=True) as c:
         c.walk_to("cell").read("terminal.json")
+
+
+def test_the_v3_submission_publishes_that_every_read_leaf_was_bound(world,
+                                                                    tmp_path):
+    """B4-R21: the submission says how many reads were leaf-bound, and
+    it must be all of them."""
+    results_root, mat_root = world
+    closure = C.build_closure(results_root, mat_root)
+    lb = closure["custody"]["leaf_binding"]
+    assert lb["contract"] == DC.CONTRACT
+    assert lb["reads_total"] > 0 and lb["reads_bound"] == lb["reads_total"]
+    sub = C.build_submission(closure, results_root=results_root,
+                             read_root=results_root)
+    assert sub["schema"] == "agent_multi.b4_readjudication_submission.v3"
+    assert sub["custody"]["leaf_binding"] == lb

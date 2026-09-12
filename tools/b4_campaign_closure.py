@@ -74,6 +74,7 @@ sys.path.insert(0, str(REPO / "tools"))
 
 from descriptor_custody import (Artifact, Custody,  # noqa: E402
                                 CustodyRefusal, DirSnapshot)
+from descriptor_custody import CONTRACT as DC_CONTRACT  # noqa: E402
 
 CLOSURE_SCHEMA = "agent_multi.b4_campaign_closure.v1"
 CLOSURE_LOG = "B4_CAMPAIGN_CLOSURE.jsonl"
@@ -608,6 +609,19 @@ def build_closure(results_root: Path, mat_root: Path) -> dict:
         # named; it is not campaign evidence.
         root_facts = published_root_facts(root_snap)
         open_fds = custody.open_descriptors()
+        # R20-R21: every artifact read now carries its leaf binding; the
+        # closure publishes how many reads were bound and a digest of
+        # the bindings, so a reviewer can check that none was unbound.
+        _bindings = [a.get("leaf_binding", "UNBOUND")
+                     for a in custody.reads()]
+        leaf_binding = {
+            "contract": DC_CONTRACT,
+            "reads_total": len(_bindings),
+            "reads_bound": sum(1 for b in _bindings if b != "UNBOUND"),
+            "bindings_sha256": sha_obj(_bindings),
+            "rule": "each read's fstat at open equals the inventory on "
+                    "type, device, inode, uid, mode, size, mtime_ns and "
+                    "ctime_ns, and does not move before the last byte"}
         weaknesses = sorted({a["custody_weakness"]
                              for a in custody.reads()})
     finally:
@@ -633,6 +647,7 @@ def build_closure(results_root: Path, mat_root: Path) -> dict:
             "retained_descriptors_during_the_run": open_fds,
             "root_snapshot": root_facts,
             "observed_weaknesses": weaknesses,
+            "leaf_binding": leaf_binding,
         },
         "owner_authorization": {
             "consumed": True,
@@ -735,7 +750,10 @@ def build_submission(closure: dict, *, results_root: Path,
     same_root = (Path(read_root).resolve()
                  == Path(results_root).resolve())
     doc = {
-        "schema": "agent_multi.b4_readjudication_submission.v2",
+        "schema": "agent_multi.b4_readjudication_submission.v3",
+        "supersedes": "agent_multi.b4_readjudication_submission.v2 — which "
+                      "retained directories but did not bind the leaves "
+                      "read out of them",
         "submitted_at": utc_now(),
         "campaign_generation": closure["campaign_generation"],
         "results_root_logical": closure["results_root_logical"],
@@ -757,7 +775,8 @@ def build_submission(closure: dict, *, results_root: Path,
             for c in closure["cells"]},
         "costs": closure["costs"],
         "code_identity": closure_code_identity(
-            repo, ignore=("B4_READJUDICATION_SUBMISSION_2026_09_12.json",)),
+            repo, ignore=("B4_READJUDICATION_SUBMISSION_2026_09_12.json",
+                          "B4_READJUDICATION_SUBMISSION_V3_2026_09_12.json")),
         "grants_nothing":
             "a submission states what was re-adjudicated and asks for a "
             "decision. It opens no campaign, promotes no cell, and does "
