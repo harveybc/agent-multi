@@ -148,8 +148,8 @@ def inventory(root: Path, *, exclude: tuple[str, ...] = ()) -> dict:
 
 
 # ------------------------------------------------------------ COMPLETED
-def verify_completed_cell(custody: Custody, snap: DirSnapshot,
-                          cell: str, ledger_cell: dict) -> dict:
+def verify_completed_cell(snap: DirSnapshot, cell: str,
+                          ledger_cell: dict) -> dict:
     """Descriptor verification of a sealed cell.
 
     Every object below is read ONCE through `custody`; the digest, the
@@ -171,7 +171,7 @@ def verify_completed_cell(custody: Custody, snap: DirSnapshot,
     check("terminal_present_in_snapshot",
           snap.has_file("B4_CELL_TERMINAL.json"),
           "listed once from the cell's own directory descriptor")
-    terminal = custody.read(f"{cell}/B4_CELL_TERMINAL.json")
+    terminal = snap.read("B4_CELL_TERMINAL.json")
     term = terminal.json()
     terminal_digest = terminal.sha256          # SAME bytes as `term`
 
@@ -192,7 +192,7 @@ def verify_completed_cell(custody: Custody, snap: DirSnapshot,
     per_bar_name = Path(term["per_bar_csv"]).name
     check("per_bar_present_in_snapshot", snap.has_file(per_bar_name),
           per_bar_name)
-    per_bar = custody.read(f"{cell}/{per_bar_name}")
+    per_bar = snap.read(per_bar_name)
     check("per_bar_digest", per_bar.sha256 == term["per_bar_sha256"],
           term["per_bar_sha256"])
     # R11: the rows are counted in the bytes that were just hashed.
@@ -203,14 +203,14 @@ def verify_completed_cell(custody: Custody, snap: DirSnapshot,
     ckpt_name = Path(term["checkpoint_path"]).name
     check("checkpoint_present_in_snapshot", snap.has_file(ckpt_name),
           ckpt_name)
-    checkpoint = custody.read(f"{cell}/{ckpt_name}")
+    checkpoint = snap.read(ckpt_name)
     check("checkpoint_digest",
           checkpoint.sha256 == term["checkpoint_sha256"],
           term["checkpoint_sha256"])
 
     claim_names = snap.matching(prefix="CLAIM_", suffix=".json")
     check("exactly_one_claim", len(claim_names) == 1, str(claim_names))
-    claim_art = custody.read(f"{cell}/{claim_names[0]}")
+    claim_art = snap.read(claim_names[0])
     claim = claim_art.json()
     check("claim_binds_this_attempt",
           claim.get("attempt_id") == term["attempt_id"],
@@ -229,8 +229,8 @@ def verify_completed_cell(custody: Custody, snap: DirSnapshot,
           intent_name)
     check("seal_complete_present_in_snapshot", snap.has_file(seal_name),
           seal_name)
-    intent = custody.read(f"{cell}/{intent_name}")
-    seal = custody.read(f"{cell}/{seal_name}")
+    intent = snap.read(intent_name)
+    seal = snap.read(seal_name)
     intent_doc, seal_doc = intent.json(), seal.json()
     check("seal_intent_binds_terminal_digest",
           intent_doc.get("terminal_sha256") == terminal_digest,
@@ -279,6 +279,9 @@ def verify_completed_cell(custody: Custody, snap: DirSnapshot,
         "descriptors_verified": checks,
         "custody": {
             "reads": 6,
+            "directory_instance": {"device": snap.device,
+                                   "inode": snap.inode,
+                                   "mode": oct(snap.mode)},
             "artifacts": [a.facts() for a in
                           (terminal, per_bar, checkpoint, claim_art,
                            intent, seal)],
@@ -291,8 +294,9 @@ def verify_completed_cell(custody: Custody, snap: DirSnapshot,
 
 
 # -------------------------------------------------------------- PARTIAL
-def inventory_partial_cell(custody: Custody, root_snap: DirSnapshot,
-                           cell: str, ledger_cell: dict) -> dict:
+def inventory_partial_cell(cell_snap: DirSnapshot,
+                           root_snap: DirSnapshot, cell: str,
+                           ledger_cell: dict) -> dict:
     """Inventory EVERY artifact of the stopped cell, then classify.
 
     R12: the tree is walked through directory SNAPSHOTS and each file
@@ -304,23 +308,29 @@ def inventory_partial_cell(custody: Custody, root_snap: DirSnapshot,
     started = time.perf_counter()
     files: dict[str, dict] = {}
     artifacts: dict[str, Artifact] = {}
-    pending = [cell]
+    instances: list[dict] = []
+    # R16: descend through RETAINED child descriptors. The previous
+    # version re-photographed each subdirectory by path, so the tree it
+    # inventoried and the tree it read were related only by name.
+    pending = [(cell_snap, "")]
     while pending:
-        rel = pending.pop()
-        snap = custody.snapshot(rel)
+        snap, prefix = pending.pop()
+        instances.append({**snap.facts(), "rel": prefix or "."})
         if snap.others:
             raise ClosureRefusal(
-                f"{cell}: {rel} contains entries that are neither "
-                f"regular files nor directories: {sorted(snap.others)} "
-                "— a link or a device in an evidence tree is not "
-                "evidence")
+                f"{cell}: {prefix or '.'} contains entries that are "
+                f"neither regular files nor directories: "
+                f"{sorted(snap.others)} — a link or a device in an "
+                "evidence tree is not evidence")
         for name in snap.dirs:
-            pending.append(f"{rel}/{name}")
+            pending.append((snap.subdir(name),
+                            f"{prefix}/{name}" if prefix else name))
         for name in snap.files:
-            art = custody.read(f"{rel}/{name}")
-            key = str(Path(f"{rel}/{name}").relative_to(cell))
+            art = snap.read(name)
+            key = f"{prefix}/{name}" if prefix else name
             files[key] = {"bytes": art.size, "sha256": art.sha256,
-                          "custody_weakness": art.custody_weakness}
+                          "custody_weakness": art.custody_weakness,
+                          "dir_inode": art.dir_inode}
             artifacts[key] = art
     MEASUREMENT["inventory_seconds"][cell] = round(
         time.perf_counter() - started, 3)
@@ -358,7 +368,7 @@ def inventory_partial_cell(custody: Custody, root_snap: DirSnapshot,
         raise ClosureRefusal(
             f"{cell}: quarantine requires the cell's own durable STOP "
             "signal and it is not in the inventory")
-    if not root_snap.has_file("CAMPAIGN_STOP"):
+    if not root_snap.contains("CAMPAIGN_STOP"):
         raise ClosureRefusal(
             f"{cell}: quarantine requires the CAMPAIGN stop signal and "
             "the campaign root snapshot does not list it")
@@ -375,6 +385,7 @@ def inventory_partial_cell(custody: Custody, root_snap: DirSnapshot,
         "artifact_count": len(files),
         "artifact_bytes": sum(f["bytes"] for f in files.values()),
         "artifact_inventory_sha256": sha_obj(files),
+        "directory_instances": instances,
         "completion_artifacts_present": completion_present,
         "stop_signals": {"cell": True, "campaign": True},
         "last_durable_progress": {
@@ -557,17 +568,17 @@ def build_closure(results_root: Path, mat_root: Path) -> dict:
     custody = Custody(results_root)
     mat_custody = Custody(mat_root)
     try:
-        ledger_art = custody.read("CAMPAIGN_LEDGER.json")
+        # R16: ONE listing of the campaign root, with its descriptor
+        # RETAINED. Every cell below is opened relative to it, so a
+        # directory swapped after the photograph cannot be consumed.
+        root_snap = custody.root_snapshot()
+        ledger_art = root_snap.read("CAMPAIGN_LEDGER.json")
         ledger = ledger_art.json()
-        mat_art = mat_custody.read("B4_MATERIALIZATION.json")
+        mat_art = mat_custody.root_snapshot().read(
+            "B4_MATERIALIZATION.json")
         if ledger.get("materialization_sha256") != mat_art.sha256:
             raise ClosureRefusal(
                 "the ledger does not bind this materialization root")
-
-        # R12: ONE listing of the campaign root decides which cells
-        # have a directory at all. Every classification below reads
-        # this snapshot, never the filesystem.
-        root_snap = custody.snapshot()
 
         classified: list[dict] = []
         for cell in sorted(ledger["cells"]):
@@ -575,13 +586,13 @@ def build_closure(results_root: Path, mat_root: Path) -> dict:
             if cell not in root_snap.dirs:
                 classified.append(record_not_started(root_snap, cell))
                 continue
-            cell_snap = custody.snapshot(cell)
+            cell_snap = root_snap.subdir(cell)
             if cell_snap.has_file("B4_CELL_TERMINAL.json"):
                 classified.append(verify_completed_cell(
-                    custody, cell_snap, cell, entry))
+                    cell_snap, cell, entry))
             else:
                 classified.append(inventory_partial_cell(
-                    custody, root_snap, cell, entry))
+                    cell_snap, root_snap, cell, entry))
 
         completed = [c for c in classified
                      if c["classification"] == COMPLETED]
@@ -596,6 +607,7 @@ def build_closure(results_root: Path, mat_root: Path) -> dict:
         # the thing it describes. It is excluded and the exclusion is
         # named; it is not campaign evidence.
         root_facts = published_root_facts(root_snap)
+        open_fds = custody.open_descriptors()
         weaknesses = sorted({a["custody_weakness"]
                              for a in custody.reads()})
     finally:
@@ -612,10 +624,13 @@ def build_closure(results_root: Path, mat_root: Path) -> dict:
         "population_sha256": ledger["population_sha256"],
         "campaign_ledger_sha256": ledger_digest,
         "custody": {
-            "discipline": "one path resolution -> one descriptor -> "
-                          "one read -> all facts; classification reads "
-                          "directory snapshots taken once",
+            "discipline": "one path resolution -> one RETAINED "
+                          "descriptor -> one read -> all facts. After "
+                          "a directory is photographed nothing is "
+                          "resolved by name again, so a replaced "
+                          "directory cannot be consumed",
             "artifact_reads": custody_reads,
+            "retained_descriptors_during_the_run": open_fds,
             "root_snapshot": root_facts,
             "observed_weaknesses": weaknesses,
         },
@@ -712,14 +727,24 @@ def build_submission(closure: dict, *, results_root: Path,
     code produced it — and asks for review. The preserved B4 root is
     not opened for writing by this tool at any point.
     """
+    # R17.4: a LOGICAL id, never a filesystem path. Git is public and
+    # the topology of this host is not evidence — the full path belongs
+    # in the operator's private register, not in a versioned artifact.
+    read_logical = Path(read_root).name
+    preserved_logical = Path(results_root).name
+    same_root = (Path(read_root).resolve()
+                 == Path(results_root).resolve())
     doc = {
-        "schema": "agent_multi.b4_readjudication_submission.v1",
+        "schema": "agent_multi.b4_readjudication_submission.v2",
         "submitted_at": utc_now(),
         "campaign_generation": closure["campaign_generation"],
         "results_root_logical": closure["results_root_logical"],
-        "root_actually_read": str(read_root),
-        "read_the_preserved_root": Path(read_root).resolve()
-        == Path(results_root).resolve(),
+        "root_actually_read_logical": read_logical,
+        "preserved_root_logical": preserved_logical,
+        "physical_paths": "WITHHELD — logical ids identify these roots; "
+                          "the absolute paths live only in the "
+                          "operator's private register",
+        "read_the_preserved_root": same_root,
         "adjudication": closure["adjudication"],
         "adjudication_sha256": closure["adjudication_sha256"],
         "campaign_ledger_sha256": closure["campaign_ledger_sha256"],
