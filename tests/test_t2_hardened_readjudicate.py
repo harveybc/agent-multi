@@ -246,3 +246,15 @@ def test_the_entry_point_imports_only_the_standard_library():
 def test_the_hardened_executor_types_an_omitted_seed():
     src = (REPO / "tools/t2_confirmatory_executor.py").read_text()
     assert "an omitted " in src and "seed never verifies" in src
+
+
+def test_field_differences_names_every_changed_leaf():
+    sys.path.insert(0, str(REPO / "tools"))
+    import t2_campaign_closure as T
+    a = {"screen_adjudication": {"sign_test_exact_p_two_sided": 1.3125, "verdict": "X",
+                                 "panels": {"p": {"effect": 0.1}}}, "k": [1, 2]}
+    b = {"screen_adjudication": {"sign_test_exact_p_two_sided": 1.0, "verdict": "X",
+                                 "panels": {"p": {"effect": 0.1}}}, "k": [1, 3]}
+    diffs = T.field_differences(a, b)
+    assert {d["path"] for d in diffs} == {"screen_adjudication.sign_test_exact_p_two_sided", "k[1]"}
+    assert T.field_differences(a, a) == []

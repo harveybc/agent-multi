@@ -430,6 +430,9 @@ def main(argv=None) -> int:
     ap.add_argument("--template-in", type=Path)
     ap.add_argument("--submit", type=Path)
     ap.add_argument("--publication-commit")
+    ap.add_argument("--divergence-out", type=Path,
+                    help="where a CANDIDATE_ADJUDICATION_DIVERGES stop writes "
+                         "its field-level report; no submission is written")
     a = ap.parse_args(argv)
     co = a.checkout.expanduser().resolve()
     root = a.root.expanduser()

@@ -1441,6 +1441,36 @@ def build_readjudication_submission_v3(closure: dict, *, template: dict,
     return doc
 
 
+def scientific_body(closure: dict) -> dict:
+    sign = closure.get("sign_test_supersession") or {}
+    return {
+        "final_adjudication_counts": closure["final_adjudication_counts"],
+        "screen_adjudication": closure["screen_adjudication"],
+        "sign_test_corrected": {k: sign.get(k) for k in (
+            "corrected_table_0_to_6", "corrected_value", "signs_positive")},
+    }
+
+
+def field_differences(a, b, path: str = "") -> list[dict]:
+    """Every leaf where two JSON-like bodies differ, with both values."""
+    if isinstance(a, dict) and isinstance(b, dict):
+        out = []
+        for k in sorted(set(a) | set(b)):
+            p = f"{path}.{k}" if path else k
+            if k not in a or k not in b:
+                out.append({"path": p, "candidate": a.get(k, "<ABSENT>"),
+                            "recomputed": b.get(k, "<ABSENT>")})
+            else:
+                out.extend(field_differences(a[k], b[k], p))
+        return out
+    if isinstance(a, list) and isinstance(b, list) and len(a) == len(b):
+        out = []
+        for i, (x, y) in enumerate(zip(a, b)):
+            out.extend(field_differences(x, y, f"{path}[{i}]"))
+        return out
+    return [] if a == b else [{"path": path, "candidate": a, "recomputed": b}]
+
+
 def scientific_adjudication_digest(closure: dict) -> str:
     """The scientific result only: counts, screen adjudication and the
     corrected sign-test table. Identity and custody facts are bound by
@@ -1558,9 +1588,34 @@ def run_hardened(args, verified: dict, entry, conf, ex, recon, dc) -> dict:
     entry.revalidate(verified, root, "after replay")
     scientific = scientific_adjudication_digest(closure)
     if scientific != verified["candidate_adjudication_sha256"]:
+        # A stop must explain itself. The candidate body is rebuilt from
+        # the versioned evidence exactly as the template built it, and the
+        # field-level differences are written BEFORE refusing. No
+        # submission is written.
+        report = None
+        if getattr(args, "candidate_evidence", None):
+            ev = json.loads((co / args.candidate_evidence).read_text())
+            candidate_body = scientific_body({
+                "final_adjudication_counts": ev["final_adjudication_counts"],
+                "screen_adjudication": ev["screen_adjudication"],
+                "sign_test_supersession": supersede_sign_test(ev["screen_adjudication"])})
+            report = {
+                "schema": "agent_multi.t2_hardened_readjudication_divergence.v1",
+                "candidate_adjudication_sha256": verified["candidate_adjudication_sha256"],
+                "candidate_rebuilt_sha256": sha_obj(candidate_body),
+                "recomputed_adjudication_sha256": scientific,
+                "differences": field_differences(candidate_body,
+                                                 scientific_body(closure)),
+                "publication": "STOPPED — a difference is an audit result",
+            }
+        if getattr(args, "divergence_out", None) and report is not None:
+            args.divergence_out.write_text(json.dumps(report, indent=1,
+                                                      sort_keys=True) + "\n")
         raise ClosureRefusal(
             "CANDIDATE_ADJUDICATION_DIVERGES: the hardened readjudication "
-            "differs from the candidate; stopped, never normalized")
+            "differs from the candidate; stopped, never normalized"
+            + (f" ({len(report['differences'])} field differences)"
+               if report is not None else ""))
     closure["single_checkout_blocked"] = "NOT_APPLICABLE_HARDENED_MODE"
     closure["hardened_readjudication_identity"] = {
         "record_kind": verified["record_kind"],
