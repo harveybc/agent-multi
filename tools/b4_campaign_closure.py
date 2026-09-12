@@ -654,7 +654,8 @@ CLOSURE_CODE = (
 )
 
 
-def closure_code_identity(repo: Path = REPO) -> dict:
+def closure_code_identity(repo: Path = REPO,
+                          ignore: tuple[str, ...] = ()) -> dict:
     """Bind this closure's code, its commit and a clean worktree.
 
     A re-adjudication is only as trustworthy as the program that
@@ -676,13 +677,28 @@ def closure_code_identity(repo: Path = REPO) -> dict:
     dirty = subprocess.run(("git", "-C", str(repo), "status",
                             "--porcelain"),
                            capture_output=True, text=True).stdout.strip()
-    dirty_files = sorted(ln[3:] for ln in dirty.splitlines() if ln)
+    # An artifact cannot be required to be absent from the tree it
+    # describes: writing the submission dirties the worktree the
+    # submission reports on. The exclusion is named, never silent.
+    # `git status --porcelain` is XY<space>PATH, but a rename carries
+    # an arrow and a staged line pads differently; splitting on
+    # whitespace is the only parse that does not silently eat the
+    # first character of a path — which it did.
+    dirty_files = sorted(ln.split(maxsplit=1)[-1]
+                         for ln in dirty.splitlines() if ln.strip())
+    excluded = sorted(f for f in dirty_files
+                      if any(f.endswith(i) for i in ignore))
+    dirty_files = [f for f in dirty_files if f not in excluded]
     return {
         "files": files,
         "surface_sha256": sha_obj(files),
         "commit": commit or "UNAVAILABLE",
         "worktree_clean": not dirty_files,
         "dirty_paths": dirty_files[:20],
+        "excluded_from_cleanliness": excluded,
+        "excluded_reason": ("this submission's own file; an artifact "
+                            "cannot be required to be absent from the "
+                            "tree it describes"),
         "interpreter": sys.version.split()[0],
     }
 
@@ -715,7 +731,8 @@ def build_submission(closure: dict, *, results_root: Path,
                         if k in c}
             for c in closure["cells"]},
         "costs": closure["costs"],
-        "code_identity": closure_code_identity(repo),
+        "code_identity": closure_code_identity(
+            repo, ignore=("B4_READJUDICATION_SUBMISSION_2026_09_12.json",)),
         "grants_nothing":
             "a submission states what was re-adjudicated and asks for a "
             "decision. It opens no campaign, promotes no cell, and does "

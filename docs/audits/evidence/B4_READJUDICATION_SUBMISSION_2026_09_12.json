@@ -1,0 +1,131 @@
+{
+ "adjudication": {
+  "contract": "the pre-existing contract is the complete-population gate: the campaign verifier re-derives ALL declared cells before any comparison. With 2/12 cells sealed the population is incomplete, so no effect, ranking or promotion may be read from it",
+  "counts": {
+   "COMPLETED_VERIFIED": 2,
+   "NOT_STARTED": 9,
+   "QUARANTINED_PARTIAL": 1
+  },
+  "declared_cells": 12,
+  "explicitly_not_done": [
+   "no cell was completed by label",
+   "no partial artifact was promoted to a result",
+   "no comparison, effect or ranking was computed",
+   "no completed cell became promotable by this act",
+   "no campaign was relaunched, resumed or rescheduled"
+  ],
+  "verdict": "SCIENTIFICALLY_INSUFFICIENT_NO_VERDICT"
+ },
+ "adjudication_sha256": "90ac40e6b315ea9f7ef89e5c66b50771b1ef1f35110c965b64463d8888bea90e",
+ "campaign_generation": "b4_campaign_generation_v7_20260907",
+ "campaign_ledger_sha256": "a7b245aa5706462324286ea66c03476e21ccd62033890e5b64abae13f3ef2280",
+ "cell_digests": {
+  "o2022_seed101": {
+   "classification": "COMPLETED_VERIFIED",
+   "per_bar_sha256": "baca8f9a0c90e2162cc5e437ecccf916d0d4e5ce74a938a7a3b9ab042bbf5844",
+   "terminal_sha256": "3a836df218702adfa8eb8d436b81064e3f517e59f16ab9a750b58304a8c921d5"
+  },
+  "o2022_seed202": {
+   "classification": "COMPLETED_VERIFIED",
+   "per_bar_sha256": "da687731ef806dad2f1a3bd1403e0755c2ef74e5b7c599cf99c6ce7119e99cb6",
+   "terminal_sha256": "cd3e61e7e33772663e808745a1135a1d4cebf6ddd7c4b67f54c134f0c3c5fd7c"
+  },
+  "o2022_seed303": {
+   "artifact_inventory_sha256": "359584ee479704648c88d9a59f61bf707df2aa1cca45c16d7e90759a324fcc2f",
+   "classification": "QUARANTINED_PARTIAL"
+  },
+  "o2022_seed404": {
+   "classification": "NOT_STARTED"
+  },
+  "o2023_seed101": {
+   "classification": "NOT_STARTED"
+  },
+  "o2023_seed202": {
+   "classification": "NOT_STARTED"
+  },
+  "o2023_seed303": {
+   "classification": "NOT_STARTED"
+  },
+  "o2023_seed404": {
+   "classification": "NOT_STARTED"
+  },
+  "o2024_seed101": {
+   "classification": "NOT_STARTED"
+  },
+  "o2024_seed202": {
+   "classification": "NOT_STARTED"
+  },
+  "o2024_seed303": {
+   "classification": "NOT_STARTED"
+  },
+  "o2024_seed404": {
+   "classification": "NOT_STARTED"
+  }
+ },
+ "code_identity": {
+  "commit": "ac788210de33e39c57d339c1982326e0a55663ec",
+  "dirty_paths": [],
+  "excluded_from_cleanliness": [
+   "docs/audits/evidence/B4_READJUDICATION_SUBMISSION_2026_09_12.json"
+  ],
+  "excluded_reason": "this submission's own file; an artifact cannot be required to be absent from the tree it describes",
+  "files": {
+   "tools/b4_authority.py": "86873fc9b7c90bef62900cf1fe50f43219561d6fff29b7ff18a9fb3e77d31ca0",
+   "tools/b4_campaign_closure.py": "5dbf53aaf55b8c1a0e30ef16fccbdc2d00c46d16c6a3d30355163f473188f0b8",
+   "tools/descriptor_custody.py": "8b3df1011029c6bbd9bf8093b8b04970a22abd0e9ce8580dd4a83f775f9043d3"
+  },
+  "interpreter": "3.12.13",
+  "surface_sha256": "2d6f4e4e4786f534f11be268d0a053ba4e5fc9fd5f5131fe03f059c92a316ed7",
+  "worktree_clean": true
+ },
+ "costs": {
+  "completed_wall_seconds": {
+   "o2022_seed101": 17773.3,
+   "o2022_seed202": 17909.1
+  },
+  "completed_wall_seconds_total": 35682.4,
+  "cost_units": "wall_seconds",
+  "device": "gpu_attached_cell_wall",
+  "quarantined_partial": {
+   "o2022_seed303": {
+    "bound": "LOWER_BOUND",
+    "claim_to_stop_signal_seconds": 124993.6,
+    "why": "the STOP file records when the stop was SIGNALLED. The charge closes at the externally observed reap, which is later by the escalation window and has no durable v7 record; this closure therefore does not lower any charge already made"
+   }
+  }
+ },
+ "custody": {
+  "artifact_reads": 40,
+  "discipline": "one path resolution -> one descriptor -> one read -> all facts; classification reads directory snapshots taken once",
+  "observed_weaknesses": [
+   "GROUP_WRITABLE",
+   "NONE"
+  ],
+  "root_snapshot": {
+   "dirs": [
+    "o2022_seed101",
+    "o2022_seed202",
+    "o2022_seed303"
+   ],
+   "excluded": [
+    "B4_CAMPAIGN_CLOSURE.jsonl"
+   ],
+   "excluded_reason": "this closure's own append-only record; including it would make the closure change the snapshot it publishes",
+   "files": [
+    "CAMPAIGN_LEDGER.json",
+    "CAMPAIGN_STOP",
+    "LOCK_EPOCH_1.json"
+   ],
+   "other_entries": [],
+   "rel": ""
+  }
+ },
+ "grants_nothing": "a submission states what was re-adjudicated and asks for a decision. It opens no campaign, promotes no cell, and does not authorize reading or writing the preserved root",
+ "read_the_preserved_root": false,
+ "requires": "EXTERNAL_REVIEW",
+ "results_root_logical": "b4_v7",
+ "root_actually_read": "/home/harveybc/.local/state/crispdm-pre-copies/b4_v7",
+ "schema": "agent_multi.b4_readjudication_submission.v1",
+ "submission_sha256": "d2de094cb601c92dbd68c9130b183dcfe154512cd5a2ffe662507fd47b80a80f",
+ "submitted_at": "2026-09-12T08:19:28Z"
+}
