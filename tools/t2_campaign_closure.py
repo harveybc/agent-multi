@@ -76,6 +76,36 @@ def utc_now() -> str:
 
 
 # --------------------------------------------------- reviewed identity
+def load_audit_snapshot_modules(snapshot: Path):
+    """R12: EVERY replay import comes from the one recoverable
+    checkout.
+
+    The previous loader put the reviewed checkout first and the branch
+    tip second, so the reconstruction driver and the closure came from
+    a different tree than the verifier. One snapshot means one tree.
+    """
+    snapshot = Path(snapshot).expanduser().resolve()
+    tools = str(snapshot / "tools")
+    for entry in (str(TIP_REPO / "tools"), tools):
+        while entry in sys.path:
+            sys.path.remove(entry)
+    for mod in ("t2_confirmatory", "t2_confirmatory_executor",
+                "t2_completion_reconstruction", "descriptor_custody"):
+        sys.modules.pop(mod, None)
+    sys.path.insert(0, tools)
+    import t2_confirmatory as conf
+    import t2_confirmatory_executor as ex
+    import t2_completion_reconstruction as recon
+    for mod in (conf, ex, recon):
+        got = Path(mod.__file__).resolve().parents[1]
+        if got != snapshot:
+            raise ClosureRefusal(
+                f"{mod.__name__} resolved to {got.name}, not to the "
+                f"audit snapshot {snapshot.name} — a replay whose "
+                "imports come from two trees has no single identity")
+    return conf, ex, recon
+
+
 def load_reviewed_modules(checkout: Path):
     """Put the REVIEWED checkout's tools first on sys.path.
 
@@ -332,6 +362,11 @@ def build_closure(conf, ex, recon, root: Path, checkout: Path) -> dict:
     t0 = time.perf_counter()
 
     identity = assert_reviewed_identity(conf, checkout)
+    try:
+        snapshot_identity = audit_snapshot_identity(checkout)
+    except ClosureRefusal as exc:
+        snapshot_identity = {"single_checkout": False,
+                             "refusal": str(exc)[:200]}
     divergence = report_tip_divergence(conf, checkout)
 
     t_recon = time.perf_counter()
@@ -374,6 +409,7 @@ def build_closure(conf, ex, recon, root: Path, checkout: Path) -> dict:
         "closed_at": utc_now(),
         "campaign_root_logical": root.name,
         "reviewed_identity": identity,
+        "audit_snapshot_identity": snapshot_identity,
         "branch_tip_divergence": divergence,
         "inventory": inventory,
         "final_adjudication_counts": counts,
@@ -719,7 +755,10 @@ def emit_to_outbox(closure: dict, *, uids: list[str],
 # ---------------------------------------------------------------- main
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--reviewed-checkout", type=Path, required=True)
+    ap.add_argument("--reviewed-checkout", type=Path, default=None)
+    ap.add_argument("--audit-snapshot", type=Path, default=None,
+                    help="R12: the ONE recoverable checkout every "
+                         "replay import comes from")
     ap.add_argument("--root", type=Path, default=None)
     ap.add_argument("--emit", action="store_true")
     ap.add_argument("--emit-outbox", action="store_true")
@@ -735,7 +774,15 @@ def main(argv=None) -> int:
     except OSError:
         pass
 
-    conf, ex, recon = load_reviewed_modules(args.reviewed_checkout)
+    if args.audit_snapshot:
+        conf, ex, recon = load_audit_snapshot_modules(args.audit_snapshot)
+        checkout = args.audit_snapshot
+    elif args.reviewed_checkout:
+        conf, ex, recon = load_reviewed_modules(args.reviewed_checkout)
+        checkout = args.reviewed_checkout
+    else:
+        raise ClosureRefusal(
+            "one of --audit-snapshot or --reviewed-checkout is required")
     root = (args.root or recon.DEFAULT_ROOT).expanduser()
 
     if args.outbox_only:
@@ -754,7 +801,7 @@ def main(argv=None) -> int:
                          default=str))
         return 0
 
-    closure = build_closure(conf, ex, recon, root, args.reviewed_checkout)
+    closure = build_closure(conf, ex, recon, root, checkout)
 
     if args.emit:
         previous = last_closure(root)
