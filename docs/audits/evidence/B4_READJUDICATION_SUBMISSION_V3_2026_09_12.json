@@ -1,0 +1,145 @@
+{
+ "adjudication": {
+  "contract": "the pre-existing contract is the complete-population gate: the campaign verifier re-derives ALL declared cells before any comparison. With 2/12 cells sealed the population is incomplete, so no effect, ranking or promotion may be read from it",
+  "counts": {
+   "COMPLETED_VERIFIED": 2,
+   "NOT_STARTED": 9,
+   "QUARANTINED_PARTIAL": 1
+  },
+  "declared_cells": 12,
+  "explicitly_not_done": [
+   "no cell was completed by label",
+   "no partial artifact was promoted to a result",
+   "no comparison, effect or ranking was computed",
+   "no completed cell became promotable by this act",
+   "no campaign was relaunched, resumed or rescheduled"
+  ],
+  "verdict": "SCIENTIFICALLY_INSUFFICIENT_NO_VERDICT"
+ },
+ "adjudication_sha256": "1ffb4cf7fb7bce6f359bc8d8df80d25f8873841989b693bfcaaa0c243768308e",
+ "campaign_generation": "b4_campaign_generation_v7_20260907",
+ "campaign_ledger_sha256": "a7b245aa5706462324286ea66c03476e21ccd62033890e5b64abae13f3ef2280",
+ "cell_digests": {
+  "o2022_seed101": {
+   "classification": "COMPLETED_VERIFIED",
+   "per_bar_sha256": "baca8f9a0c90e2162cc5e437ecccf916d0d4e5ce74a938a7a3b9ab042bbf5844",
+   "terminal_sha256": "3a836df218702adfa8eb8d436b81064e3f517e59f16ab9a750b58304a8c921d5"
+  },
+  "o2022_seed202": {
+   "classification": "COMPLETED_VERIFIED",
+   "per_bar_sha256": "da687731ef806dad2f1a3bd1403e0755c2ef74e5b7c599cf99c6ce7119e99cb6",
+   "terminal_sha256": "cd3e61e7e33772663e808745a1135a1d4cebf6ddd7c4b67f54c134f0c3c5fd7c"
+  },
+  "o2022_seed303": {
+   "artifact_inventory_sha256": "25bc279129d9de827f98d92fc71df6cee03232dba605fba7095d71a565dfae76",
+   "classification": "QUARANTINED_PARTIAL"
+  },
+  "o2022_seed404": {
+   "classification": "NOT_STARTED"
+  },
+  "o2023_seed101": {
+   "classification": "NOT_STARTED"
+  },
+  "o2023_seed202": {
+   "classification": "NOT_STARTED"
+  },
+  "o2023_seed303": {
+   "classification": "NOT_STARTED"
+  },
+  "o2023_seed404": {
+   "classification": "NOT_STARTED"
+  },
+  "o2024_seed101": {
+   "classification": "NOT_STARTED"
+  },
+  "o2024_seed202": {
+   "classification": "NOT_STARTED"
+  },
+  "o2024_seed303": {
+   "classification": "NOT_STARTED"
+  },
+  "o2024_seed404": {
+   "classification": "NOT_STARTED"
+  }
+ },
+ "code_identity": {
+  "commit": "cc4b6ada040165331e37c2ab3b4c8504048dae6d",
+  "dirty_paths": [],
+  "excluded_from_cleanliness": [],
+  "excluded_reason": "this submission's own file; an artifact cannot be required to be absent from the tree it describes",
+  "files": {
+   "tools/b4_authority.py": "86873fc9b7c90bef62900cf1fe50f43219561d6fff29b7ff18a9fb3e77d31ca0",
+   "tools/b4_campaign_closure.py": "d43e07a596e0e82e954b4636f7d80cc9157e790b87cbef855f01e706e0a8ce59",
+   "tools/descriptor_custody.py": "93e0fd89f72b2cd042faef7c546a6484a5433295a39f3a55bdc43d5387871c60"
+  },
+  "interpreter": "3.12.13",
+  "surface_sha256": "2083434d4bbb66ec30850bae5fa8d100ba3f1d05d8bc16e9a46984c4bd859494",
+  "worktree_clean": true
+ },
+ "costs": {
+  "completed_wall_seconds": {
+   "o2022_seed101": 17773.3,
+   "o2022_seed202": 17909.1
+  },
+  "completed_wall_seconds_total": 35682.4,
+  "cost_units": "wall_seconds",
+  "device": "gpu_attached_cell_wall",
+  "quarantined_partial": {
+   "o2022_seed303": {
+    "bound": "LOWER_BOUND",
+    "claim_to_stop_signal_seconds": 124993.6,
+    "why": "the STOP file records when the stop was SIGNALLED. The charge closes at the externally observed reap, which is later by the escalation window and has no durable v7 record; this closure therefore does not lower any charge already made"
+   }
+  }
+ },
+ "custody": {
+  "artifact_reads": 40,
+  "discipline": "one path resolution -> one RETAINED descriptor -> one read -> all facts. After a directory is photographed nothing is resolved by name again, so a replaced directory cannot be consumed",
+  "leaf_binding": {
+   "bindings_sha256": "35b4ffe05460703a5d776a0b1de850fd00e6099aa3de7f8947fa5d007811a498",
+   "contract": "agent_multi.descriptor_custody.leaf_binding.v1",
+   "reads_bound": 40,
+   "reads_total": 40,
+   "rule": "each read's fstat at open equals the inventory on type, device, inode, uid, mode, size, mtime_ns and ctime_ns, and does not move before the last byte"
+  },
+  "observed_weaknesses": [
+   "GROUP_WRITABLE",
+   "NONE"
+  ],
+  "retained_descriptors_during_the_run": 8,
+  "root_snapshot": {
+   "custody_weakness": "NONE",
+   "device": 66309,
+   "dirs": [
+    "o2022_seed101",
+    "o2022_seed202",
+    "o2022_seed303"
+   ],
+   "excluded": [
+    "B4_CAMPAIGN_CLOSURE.jsonl"
+   ],
+   "excluded_reason": "this closure's own append-only record; including it would make the closure change the snapshot it publishes",
+   "files": [
+    "CAMPAIGN_LEDGER.json",
+    "CAMPAIGN_STOP",
+    "LOCK_EPOCH_1.json"
+   ],
+   "inode": 20457361,
+   "mode": "0o700",
+   "other_entries": [],
+   "rel": ".",
+   "uid": 1000
+  }
+ },
+ "grants_nothing": "a submission states what was re-adjudicated and asks for a decision. It opens no campaign, promotes no cell, and does not authorize reading or writing the preserved root",
+ "physical_paths": "WITHHELD \u2014 logical ids identify these roots; the absolute paths live only in the operator's private register",
+ "preserved_root_logical": "b4_campaign_results_v7_20260907",
+ "read_the_preserved_root": false,
+ "requires": "EXTERNAL_REVIEW",
+ "results_root_logical": "b4_v7",
+ "root_actually_read_logical": "b4_v7",
+ "schema": "agent_multi.b4_readjudication_submission.v3",
+ "submission_sha256": "4aac24d99e1438912dc7811520405b1a1a71d9cc1f5303434b8557715f479a86",
+ "submitted_at": "2026-09-12T19:26:11Z",
+ "supersedes": "agent_multi.b4_readjudication_submission.v2 \u2014 which retained directories but did not bind the leaves read out of them"
+}
