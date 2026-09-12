@@ -75,7 +75,71 @@ def utc_now() -> str:
             .isoformat().replace("+00:00", "Z"))
 
 
+def sha_str(text: str) -> str:
+    return hashlib.sha256(text.encode()).hexdigest()
+
+
+def logical_id(path) -> str:
+    """A stable, non-locating name for a root: its basename bound to a
+    digest of its absolute path. Two runs of the same root agree; the
+    path itself never leaves the machine."""
+    p = Path(path).expanduser().resolve()
+    return f"{p.name}-{sha_str(str(p))[:16]}"
+
+
 # --------------------------------------------------- reviewed identity
+#: R12 — the conflict, stated once and carried into every artifact.
+SINGLE_CHECKOUT_BLOCKED = (
+    "R12 asks for ONE recoverable checkout carrying the seven pinned "
+    "files and the replay code, with every import coming from it. The "
+    "PINNED gate forbids exactly that: "
+    "`t2_confirmatory.verify_executor_checkout` requires the executing "
+    "HEAD to BE the pinned commit 7bcd3f0d, and a tree that also "
+    "carries the replay code is necessarily a different commit. The "
+    "audit snapshot exists and is recoverable, and its seven files "
+    "match the record byte for byte — but the reviewed executor will "
+    "not run from it. Pointing the gate's `repo_root` at a pristine "
+    "7bcd3f0d checkout while running code from elsewhere would satisfy "
+    "the check without satisfying its meaning, so it is not done. "
+    "Resolving this needs the execution record re-pinned to the audit "
+    "snapshot commit, or digest equality declared sufficient — both of "
+    "which are Musashi's to decide. No external record is created here.")
+
+
+def load_two_tree_modules(pinned_checkout: Path, replay_checkout: Path):
+    """The only arrangement the pinned gate permits, declared as such.
+
+    The seven pinned executor files come from the checkout the record
+    authorizes; the reconstruction driver, the closure and the custody
+    layer come from the RECOVERABLE audit snapshot rather than from a
+    working tip, so both trees can be fetched by a reviewer. This is
+    still two trees, and the closure says so in every artifact it
+    emits.
+    """
+    pinned = Path(pinned_checkout).expanduser().resolve()
+    replay = Path(replay_checkout).expanduser().resolve()
+    for entry in (str(TIP_REPO / "tools"), str(pinned / "tools"),
+                  str(replay / "tools")):
+        while entry in sys.path:
+            sys.path.remove(entry)
+    for mod in ("t2_confirmatory", "t2_confirmatory_executor",
+                "t2_completion_reconstruction", "descriptor_custody"):
+        sys.modules.pop(mod, None)
+    sys.path.insert(0, str(replay / "tools"))
+    sys.path.insert(0, str(pinned / "tools"))
+    import t2_confirmatory as conf
+    import t2_confirmatory_executor as ex
+    sys.path.remove(str(pinned / "tools"))
+    import t2_completion_reconstruction as recon
+    for mod, want in ((conf, pinned), (ex, pinned), (recon, replay)):
+        got = Path(mod.__file__).resolve().parents[1]
+        if got != want:
+            raise ClosureRefusal(
+                f"{mod.__name__} resolved to {got.name}, not to "
+                f"{want.name}")
+    return conf, ex, recon
+
+
 def load_audit_snapshot_modules(snapshot: Path):
     """R12: EVERY replay import comes from the one recoverable
     checkout.
@@ -435,6 +499,7 @@ def build_closure(conf, ex, recon, root: Path, checkout: Path,
         "campaign_root_logical": root.name,
         "reviewed_identity": identity,
         "audit_snapshot_identity": snapshot_identity,
+        "single_checkout_blocked": SINGLE_CHECKOUT_BLOCKED,
         "branch_tip_divergence": divergence,
         "inventory": inventory,
         "final_adjudication_counts": counts,
@@ -655,13 +720,29 @@ def build_readjudication_submission(closure: dict, *,
     asks for review. It opens nothing, authorizes nothing and does not
     supersede the previous envelope — that happens after review.
     """
+    # R15 — a submission is a PUBLIC record, and a public record never
+    # carries a filesystem path. The v1 submission printed
+    # `root_actually_read` verbatim, which published the operator's
+    # home directory to anyone who read the packet. The fact the
+    # reviewer needs is not WHERE the root is but WHETHER it is the
+    # preserved one, and that is a boolean.
     doc = {
-        "schema": "agent_multi.t2_readjudication_submission.v1",
+        "schema": "agent_multi.t2_readjudication_submission.v2",
+        "supersedes": "agent_multi.t2_readjudication_submission.v1 — "
+                      "which published a physical path",
         "submitted_at": utc_now(),
         "campaign_root_logical": closure["campaign_root_logical"],
-        "root_actually_read": str(read_root),
+        "root_actually_read_logical": logical_id(read_root),
+        "preserved_root_logical": logical_id(preserved_root),
+        "physical_paths": "WITHHELD — a physical path is private "
+                          "evidence, never a public record",
         "read_the_preserved_root": Path(read_root).resolve()
         == Path(preserved_root).resolve(),
+        "audit_snapshot_identity": closure.get("audit_snapshot_identity"),
+        "single_checkout_blocked": closure.get("single_checkout_blocked"),
+        "branch_tip_divergence": closure.get("branch_tip_divergence"),
+        "reviewed_identity": closure.get("reviewed_identity"),
+        "measurement": closure.get("measurement"),
         "inventory": closure["inventory"],
         "final_adjudication_counts": closure["final_adjudication_counts"],
         "screen_verdict": closure["screen_adjudication"].get("verdict"),
@@ -784,8 +865,24 @@ def main(argv=None) -> int:
     ap.add_argument("--audit-snapshot", type=Path, default=None,
                     help="R12: the ONE recoverable checkout every "
                          "replay import comes from")
+    ap.add_argument("--replay-from", type=Path, default=None,
+                    help="the RECOVERABLE checkout the reconstruction "
+                         "driver and closure come from, when the "
+                         "pinned gate forbids a single tree")
     ap.add_argument("--root", type=Path, default=None)
     ap.add_argument("--emit", action="store_true")
+    ap.add_argument("--submit", type=Path, default=None,
+                    help="write the v2 re-adjudication submission "
+                         "here. Two-phase publication: the code and "
+                         "its tests are committed and PUSHED first, "
+                         "the submission is generated from a clean "
+                         "checkout of that commit, and the submission "
+                         "alone is the second commit")
+    ap.add_argument("--preserved-root", type=Path, default=None)
+    ap.add_argument("--publication-commit", default=None,
+                    help="the commit A this submission was generated "
+                         "from; recorded so a reviewer can fetch the "
+                         "exact code")
     ap.add_argument("--emit-outbox", action="store_true")
     ap.add_argument("--outbox-only", action="store_true",
                     help="emit the LAST durable closure to the outbox "
@@ -799,7 +896,11 @@ def main(argv=None) -> int:
     except OSError:
         pass
 
-    if args.audit_snapshot:
+    if args.reviewed_checkout and args.replay_from:
+        conf, ex, recon = load_two_tree_modules(args.reviewed_checkout,
+                                                args.replay_from)
+        checkout = args.reviewed_checkout
+    elif args.audit_snapshot:
         conf, ex, recon = load_audit_snapshot_modules(args.audit_snapshot)
         checkout = args.audit_snapshot
     elif args.reviewed_checkout:
@@ -848,6 +949,28 @@ def main(argv=None) -> int:
         closure["outbox"] = emit_to_outbox(
             closure,
             uids=facts["design"].doc["task_population"]["series_ids"])
+
+    if args.submit:
+        sub = build_readjudication_submission(
+            closure, reviewed_checkout=checkout, read_root=root,
+            preserved_root=(args.preserved_root or root))
+        sub["publication"] = {
+            "protocol": "TWO_PHASE",
+            "commit_a": args.publication_commit or "UNDECLARED",
+            "rule": "commit A carries the code and its tests and is "
+                    "pushed before this file exists; this submission "
+                    "is generated from a CLEAN checkout of commit A; "
+                    "commit B carries the submission alone",
+        }
+        sub["submission_sha256"] = sha_obj(
+            {k: sub[k] for k in sorted(sub) if k != "submission_sha256"})
+        args.submit.parent.mkdir(parents=True, exist_ok=True)
+        args.submit.write_text(
+            json.dumps(sub, indent=1, sort_keys=True, default=str)
+            + "\n")
+        closure["submission_written"] = {
+            "sha256": sub["submission_sha256"],
+            "schema": sub["schema"]}
 
     print(json.dumps(closure, indent=1, sort_keys=True, default=str))
     return 0
