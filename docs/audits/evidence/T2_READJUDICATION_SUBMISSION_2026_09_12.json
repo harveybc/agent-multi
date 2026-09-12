@@ -1,0 +1,165 @@
+{
+ "adjudication_sha256": "5944320613cc953141a53cf995e4eba9065ef2e6b0531b4b5a6d1da61e3dcee3",
+ "boundary": {
+  "preserved_root_opened": false,
+  "previous_result_is": "A REPRODUCED CANDIDATE, not final authority",
+  "quoted_from": "a copy of the campaign root taken before this order began",
+  "what_happens_after_review": "the same 242 records are re-derived under the identity above, the previous envelope is superseded ADDITIVELY, and whether DOES_NOT_ADVANCE stands is checked. Zero retraining, zero download"
+ },
+ "campaign_root_logical": "t2_confirmatory_results_resource_successor_v1_20260909",
+ "code_identity": {
+  "branch_tip": {
+   "clean": false,
+   "commit": "b8a1720e094bcbd5bfcc93464238dcf47b649fd3",
+   "dirty_paths": [
+    "ools/t2_campaign_closure.py",
+    "tests/test_t2_campaign_closure.py",
+    "tools/descriptor_custody.py",
+    "tools/t2_confirmatory.py"
+   ]
+  },
+  "files": {
+   "tools/descriptor_custody.py": {
+    "loaded_from": "BRANCH_TIP",
+    "matches_record": "NOT_PINNED",
+    "pinned_by_execution_record": false,
+    "sha256": "8b3df1011029c6bbd9bf8093b8b04970a22abd0e9ce8580dd4a83f775f9043d3"
+   },
+   "tools/t2_assay_harness.py": {
+    "loaded_from": "REVIEWED_CHECKOUT",
+    "matches_record": true,
+    "pinned_by_execution_record": true,
+    "sha256": "4c43ed82602268dda8116a51968bead4d80bc416058de28b441bef0e9393e9f3"
+   },
+   "tools/t2_bank.py": {
+    "loaded_from": "REVIEWED_CHECKOUT",
+    "matches_record": true,
+    "pinned_by_execution_record": true,
+    "sha256": "24598975bf32c9f36396c5e9f6fbb9648f75000c11cc85f41aed38c30035ee95"
+   },
+   "tools/t2_bank_census.py": {
+    "loaded_from": "REVIEWED_CHECKOUT",
+    "matches_record": true,
+    "pinned_by_execution_record": true,
+    "sha256": "5a554fea5e2fbb3c2abc4ebac0d3bd92b404396c09254daf4c9cbdb8b801aeb6"
+   },
+   "tools/t2_campaign_closure.py": {
+    "loaded_from": "BRANCH_TIP",
+    "matches_record": "NOT_PINNED",
+    "pinned_by_execution_record": false,
+    "sha256": "ced895206d211ab21792f07f3c853bdcc057d104ec928dfe1007175dfe1df596"
+   },
+   "tools/t2_completion_reconstruction.py": {
+    "loaded_from": "BRANCH_TIP",
+    "matches_record": "NOT_PINNED",
+    "pinned_by_execution_record": false,
+    "sha256": "08d3a7fa3b29e70054b86231ae9a352f03233669cc8f342d19cb93e4e1c3a8a6"
+   },
+   "tools/t2_confirmatory.py": {
+    "loaded_from": "REVIEWED_CHECKOUT",
+    "matches_record": true,
+    "pinned_by_execution_record": true,
+    "sha256": "e00ab31937401e6f1d1129cd93da6969008a13f14038e37e7561d7cbaf1e9909"
+   },
+   "tools/t2_confirmatory_executor.py": {
+    "loaded_from": "REVIEWED_CHECKOUT",
+    "matches_record": true,
+    "pinned_by_execution_record": true,
+    "sha256": "ff3f8a07be480d235c2d3feaf42ea88657fa63fc99cf3b055bccfb353f4133a9"
+   },
+   "tools/t2_fresh_verifier.py": {
+    "loaded_from": "REVIEWED_CHECKOUT",
+    "matches_record": true,
+    "pinned_by_execution_record": true,
+    "sha256": "226631b0a3795a29255d4b0b4afd6d3a070332f045960a3360aa1c0346b58eb8"
+   },
+   "tools/t2_public_data_census.py": {
+    "loaded_from": "REVIEWED_CHECKOUT",
+    "matches_record": true,
+    "pinned_by_execution_record": true,
+    "sha256": "b914a85d0767792cce5c0fb51af9dda0d4fac9fb4a08b33e38b9a834a4856f7c"
+   }
+  },
+  "honesty": "this is NOT called a reviewed identity. Seven files come from the checkout the external record pins; the reconstruction driver, this closure and the custody layer come from the branch tip because the record predates them. Both origins are named per file",
+  "interpreter": "3.12.13",
+  "numeric_dependencies": {
+   "numpy": {
+    "binding": "NAME_VERSION_LOCATION_ONLY",
+    "location": "/home/harveybc/anaconda3/envs/trading-stack/lib/python3.12/site-packages",
+    "version": "2.5.1"
+   },
+   "scipy": {
+    "binding": "NAME_VERSION_LOCATION_ONLY",
+    "location": "/home/harveybc/anaconda3/envs/trading-stack/lib/python3.12/site-packages",
+    "version": "1.18.0"
+   }
+  },
+  "pinned_files_diverging_at_tip": {
+   "tools/t2_confirmatory.py": {
+    "branch_tip": "d845b0b00198b522463edae6aa622a917ae4e2408f4fcc6a42f581d3aa7a14cf",
+    "reviewed": "e00ab31937401e6f1d1129cd93da6969008a13f14038e37e7561d7cbaf1e9909"
+   },
+   "tools/t2_confirmatory_executor.py": {
+    "branch_tip": "dac73bb1ebc8da4bfe1558231753c39b99cf375b46653dc13b3b69615cdd5acf",
+    "reviewed": "ff3f8a07be480d235c2d3feaf42ea88657fa63fc99cf3b055bccfb353f4133a9"
+   }
+  },
+  "reviewed_checkout": {
+   "clean": true,
+   "commit": "7bcd3f0d6a95b30ce105df3b1e7e13614b7fe6b3"
+  },
+  "surface_sha256": "93797a67b9961097d4a20b3f30d59179ebe878d88eb6861410bd2adcff754191"
+ },
+ "final_adjudication_counts": {
+  "COMPLETED_VERIFIED": 242,
+  "TERMINAL_FAILED": 0
+ },
+ "grants_nothing": "a submission states what was re-adjudicated and under which code, and asks for a decision. It supersedes no envelope, promotes nothing, and does not authorize re-deriving against the preserved root",
+ "inventory": {
+  "artifacts_per_kind": {
+   "ARRAYS": 242,
+   "CLAIM": 242,
+   "RECORD": 242
+  },
+  "duplicates": [],
+  "exact": true,
+  "extra": [],
+  "missing": [],
+  "sealed_units": 242,
+  "total_artifacts": 726
+ },
+ "primary_estimand": -0.001048443391358884,
+ "read_the_preserved_root": false,
+ "requires": "EXTERNAL_REVIEW",
+ "root_actually_read": "/home/harveybc/.local/state/crispdm-pre-copies/t2_successor",
+ "schema": "agent_multi.t2_readjudication_submission.v1",
+ "screen_verdict": "DOES_NOT_ADVANCE",
+ "sign_test_supersession": {
+  "changes_estimand": false,
+  "changes_panel_effects": false,
+  "changes_verdict": false,
+  "corrected_table_0_to_6": [
+   0.03125,
+   0.21875,
+   0.6875,
+   1.0,
+   0.6875,
+   0.21875,
+   0.03125
+  ],
+  "corrected_value": 1.0,
+  "historical_envelope": "NOT REWRITTEN",
+  "published_value": 1.3125,
+  "published_value_valid": false,
+  "signs_positive": 3,
+  "state": "SUPERSEDED",
+  "why_the_verdict_stands": "advancement required 6/6 positive signs and the harm gate already determined the negative result; correcting an inference that could never have been read as favourable cannot turn it favourable"
+ },
+ "single_instance": "the corrected closure reads each unit once through a retained descriptor and hands that same instance to the pinned verifier and to the screen",
+ "submission_sha256": "bb28c1e639872774c2a721295a7a7f6778a25b039743be7605512be744069a27",
+ "submitted_at": "2026-09-12T07:59:54Z",
+ "unit_snapshot": {
+  "state": "NOT_BUILT",
+  "why": "R10 stops before reopening the preserved root; the snapshot is built when the re-derivation is authorized"
+ }
+}

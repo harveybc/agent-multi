@@ -34,6 +34,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import os
 import subprocess
 import sys
@@ -42,6 +43,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 TIP_REPO = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(TIP_REPO / "tools"))
+
+from descriptor_custody import Custody  # noqa: E402
 
 CLOSURE_SCHEMA = "agent_multi.t2_campaign_closure.v1"
 CLOSURE_LOG = "T2_CAMPAIGN_CLOSURE.jsonl"
@@ -103,6 +107,12 @@ def assert_reviewed_identity(conf, checkout: Path) -> dict:
     record = json.loads(
         conf.T2_SUCCESSOR_EXECUTION_RECORD_PATH.read_text())
     declared = record["executor_code_identity"]
+    absent = sorted(rel for rel in declared
+                    if not (checkout / rel).is_file())
+    if absent:
+        raise ClosureRefusal(
+            f"the checkout at {checkout.name} is not the reviewed "
+            f"identity; these pinned files are absent: {absent}")
     physical = {rel: sha_file(checkout / rel) for rel in declared}
     diff = sorted(k for k in declared if declared[k] != physical[k])
     if diff:
@@ -163,6 +173,33 @@ def report_tip_divergence(conf, checkout: Path) -> dict:
 
 
 # ------------------------------------------------------------ inventory
+def exact_inventory_from_snapshot(ex, snap_facts: dict, custody,
+                                  uids: list[str]) -> dict:
+    """The inventory, derived from the SAME listing the snapshot used."""
+    names = custody.snapshot("units").files
+    expected: dict[str, str] = {}
+    for uid in uids:
+        safe = ex._safe_name(uid)
+        expected[f"CLAIM_{safe}.json"] = uid
+        expected[f"ARRAYS_{safe}.npz"] = uid
+        expected[f"RECORD_{safe}.json"] = uid
+    missing = sorted(set(expected) - set(names))
+    extra = sorted(set(names) - set(expected))
+    per_kind = {k: sum(1 for n in names if n.startswith(k + "_"))
+                for k in UNIT_KINDS}
+    if missing or extra:
+        raise ClosureRefusal(
+            f"the unit inventory is not exact: missing={missing[:5]} "
+            f"extra={extra[:5]}")
+    if set(per_kind.values()) != {len(uids)}:
+        raise ClosureRefusal(
+            f"per-kind counts {per_kind} do not all equal {len(uids)}")
+    return {"sealed_units": len(uids), "artifacts_per_kind": per_kind,
+            "missing": missing, "extra": extra, "duplicates": [],
+            "total_artifacts": len(names), "exact": True,
+            "snapshot_inventory_sha256": snap_facts["inventory_sha256"]}
+
+
 def exact_inventory(ex, root: Path, uids: list[str]) -> dict:
     """One claim, one array, one record per unit. Nothing else."""
     units_dir = root / "units"
@@ -236,6 +273,60 @@ def reconcile_heartbeat(root: Path, ex, uids: list[str],
 
 
 # ----------------------------------------------------------- the closure
+def exact_two_sided_binomial_p(k: int, n: int) -> float:
+    """P0-5 / R9.9: a two-sided exact binomial p under p=0.5.
+
+    The sealed screen published `2 * P(X >= k)`, which is a DOUBLED ONE
+    TAIL. At three positives out of six that is 1.3125 — a number no
+    p-value can take — and it is undefined below three, so it is not
+    symmetric either. The correct statistic doubles the SMALLER tail
+    and is capped at one, giving the symmetric bounded table
+
+        0.03125, 0.21875, 0.6875, 1.0, 0.6875, 0.21875, 0.03125
+
+    This supersedes the field. It does not change the estimand, the
+    per-panel effects or the harm-gate verdict, and the historical
+    envelope carrying 1.3125 is not rewritten.
+    """
+    if not (isinstance(k, int) and isinstance(n, int)) or n <= 0 \
+            or not 0 <= k <= n:
+        raise ClosureRefusal(
+            f"a sign test needs 0 <= k <= n with n > 0; got k={k} n={n}")
+    total = float(2 ** n)
+    lower = sum(math.comb(n, i) for i in range(0, k + 1)) / total
+    upper = sum(math.comb(n, i) for i in range(k, n + 1)) / total
+    return round(min(1.0, 2.0 * min(lower, upper)), 5)
+
+
+def supersede_sign_test(screen: dict) -> dict:
+    """Recompute the sign test beside the sealed one, never over it."""
+    k = screen.get("signs_positive")
+    published = screen.get("sign_test_exact_p_two_sided")
+    if not isinstance(k, int):
+        return {"state": "UNAVAILABLE",
+                "reason": "the screen declares no sign count"}
+    corrected = exact_two_sided_binomial_p(k, 6)
+    return {
+        "state": "SUPERSEDED",
+        "signs_positive": k,
+        "published_value": published,
+        "published_value_valid": (isinstance(published, (int, float))
+                                  and 0.0 <= float(published) <= 1.0),
+        "corrected_value": corrected,
+        "corrected_table_0_to_6": [exact_two_sided_binomial_p(i, 6)
+                                   for i in range(7)],
+        "changes_estimand": False,
+        "changes_panel_effects": False,
+        "changes_verdict": False,
+        "why_the_verdict_stands": (
+            "advancement required 6/6 positive signs and the harm gate "
+            "already determined the negative result; correcting an "
+            "inference that could never have been read as favourable "
+            "cannot turn it favourable"),
+        "historical_envelope": "NOT REWRITTEN",
+    }
+
+
 def build_closure(conf, ex, recon, root: Path, checkout: Path) -> dict:
     measurement: dict = {}
     t0 = time.perf_counter()
@@ -244,16 +335,21 @@ def build_closure(conf, ex, recon, root: Path, checkout: Path) -> dict:
     divergence = report_tip_divergence(conf, checkout)
 
     t_recon = time.perf_counter()
-    doc = recon.reconstruct(root)
-    measurement["reconstruction_seconds"] = round(
-        time.perf_counter() - t_recon, 2)
+    custody = Custody(root)
+    try:
+        doc = reconstruct_from_snapshot(conf, ex, recon, root, custody)
+        measurement["reconstruction_seconds"] = round(
+            time.perf_counter() - t_recon, 2)
+        measurement["custody_reads"] = len(custody.reads())
 
-    facts = conf.verify_confirmatory_gates(
-        ex.MANIFEST_PATH, ex.active_design_path(),
-        census_path=ex.CENSUS_PATH)
-    uids = facts["design"].doc["task_population"]["series_ids"]
-
-    inventory = exact_inventory(ex, root, uids)
+        facts = conf.verify_confirmatory_gates(
+            ex.MANIFEST_PATH, ex.active_design_path(),
+            census_path=ex.CENSUS_PATH)
+        uids = facts["design"].doc["task_population"]["series_ids"]
+        inventory = exact_inventory_from_snapshot(
+            ex, doc["unit_snapshot"], custody, uids)
+    finally:
+        custody.close()
     counts = doc["final_adjudication_counts"]
     reconciliation = reconcile_heartbeat(root, ex, uids, counts)
 
@@ -270,6 +366,11 @@ def build_closure(conf, ex, recon, root: Path, checkout: Path) -> dict:
 
     closure = {
         "schema": CLOSURE_SCHEMA,
+        "sign_test_supersession": supersede_sign_test(screen),
+        "unit_snapshot": doc["unit_snapshot"],
+        "single_instance": doc["single_instance"],
+        "final_adjudication_not_called":
+            doc["final_adjudication_not_called"],
         "closed_at": utc_now(),
         "campaign_root_logical": root.name,
         "reviewed_identity": identity,
@@ -292,6 +393,150 @@ def build_closure(conf, ex, recon, root: Path, checkout: Path) -> dict:
     closure["adjudication_sha256"] = sha_obj(
         {k: v for k, v in body.items() if k not in VOLATILE_FOR_IDENTITY})
     return closure
+
+
+#: R8: everything the re-adjudication can execute. The seven files the
+#: external record pins, plus the reconstruction driver and this
+#: closure — which the record does NOT pin, because they were written
+#: after it — plus the custody layer both now depend on.
+CLOSURE_SURFACE = (
+    "tools/t2_confirmatory.py",
+    "tools/t2_confirmatory_executor.py",
+    "tools/t2_assay_harness.py",
+    "tools/t2_bank.py",
+    "tools/t2_bank_census.py",
+    "tools/t2_fresh_verifier.py",
+    "tools/t2_public_data_census.py",
+    "tools/t2_completion_reconstruction.py",
+    "tools/t2_campaign_closure.py",
+    "tools/descriptor_custody.py",
+)
+
+#: libraries whose numerics decide the reconstructed metrics. Recorded
+#: by name, version and location: hashing one wrapper would be a false
+#: claim about a whole distribution.
+NUMERIC_DEPENDENCIES = ("numpy", "scipy")
+
+
+def closure_code_identity(reviewed_checkout: Path,
+                          tip: Path = TIP_REPO) -> dict:
+    """Every file the closure can execute, and where each came from.
+
+    R8: the previous version called its output a "reviewed identity"
+    while the reconstruction driver and the closure itself came from
+    the branch tip. A mixture is not an identity. Each file is now
+    listed with the checkout it was loaded from and its digest, the
+    record's pins are compared file by file, and the divergences are
+    named rather than averaged away.
+    """
+    reviewed = Path(reviewed_checkout)
+    record = json.loads(
+        (Path.home() / ".config/agent-multi/reviewer_authority"
+         / "MUSASHI_T2_SUCCESSOR_EXECUTION_RECORD.json").read_text())
+    pinned = record["executor_code_identity"]
+
+    files = {}
+    for rel in CLOSURE_SURFACE:
+        source = reviewed if rel in pinned else tip
+        f = source / rel
+        if not f.is_file():
+            raise ClosureRefusal(
+                f"the closure surface names {rel}, absent from "
+                f"{source.name}")
+        digest = sha_file(f)
+        files[rel] = {
+            "sha256": digest,
+            "loaded_from": ("REVIEWED_CHECKOUT" if rel in pinned
+                            else "BRANCH_TIP"),
+            "pinned_by_execution_record": rel in pinned,
+            "matches_record": (pinned.get(rel) == digest
+                               if rel in pinned else "NOT_PINNED"),
+        }
+    tip_divergence = {
+        rel: {"reviewed": pinned[rel], "branch_tip": sha_file(tip / rel)}
+        for rel in pinned
+        if (tip / rel).is_file() and sha_file(tip / rel) != pinned[rel]}
+
+    deps = {}
+    for name in NUMERIC_DEPENDENCIES:
+        try:
+            from importlib import metadata
+            dist = metadata.distribution(name)
+            deps[name] = {"version": dist.version,
+                          "location": str(dist.locate_file("")),
+                          "binding": "NAME_VERSION_LOCATION_ONLY"}
+        except Exception:                                 # noqa: BLE001
+            deps[name] = {"version": "NOT_INSTALLED",
+                          "location": "UNAVAILABLE",
+                          "binding": "NAME_VERSION_LOCATION_ONLY"}
+
+    def _git(repo, *args):
+        return subprocess.run(("git", "-C", str(repo), *args),
+                              capture_output=True,
+                              text=True).stdout.strip()
+
+    return {
+        "files": files,
+        "surface_sha256": sha_obj(files),
+        "reviewed_checkout": {
+            "commit": _git(reviewed, "rev-parse", "HEAD"),
+            "clean": not _git(reviewed, "status", "--porcelain"),
+        },
+        "branch_tip": {
+            "commit": _git(tip, "rev-parse", "HEAD"),
+            "clean": not _git(tip, "status", "--porcelain"),
+            "dirty_paths": sorted(
+                ln[3:] for ln in
+                _git(tip, "status", "--porcelain").splitlines() if ln)[:20],
+        },
+        "pinned_files_diverging_at_tip": tip_divergence,
+        "numeric_dependencies": deps,
+        "honesty": (
+            "this is NOT called a reviewed identity. Seven files come "
+            "from the checkout the external record pins; the "
+            "reconstruction driver, this closure and the custody layer "
+            "come from the branch tip because the record predates "
+            "them. Both origins are named per file"),
+        "interpreter": sys.version.split()[0],
+    }
+
+
+def build_readjudication_submission(closure: dict, *,
+                                    reviewed_checkout: Path,
+                                    read_root: Path,
+                                    preserved_root: Path) -> dict:
+    """R10: a submission, and a stop.
+
+    It states what would be re-derived, under exactly which code, and
+    asks for review. It opens nothing, authorizes nothing and does not
+    supersede the previous envelope — that happens after review.
+    """
+    doc = {
+        "schema": "agent_multi.t2_readjudication_submission.v1",
+        "submitted_at": utc_now(),
+        "campaign_root_logical": closure["campaign_root_logical"],
+        "root_actually_read": str(read_root),
+        "read_the_preserved_root": Path(read_root).resolve()
+        == Path(preserved_root).resolve(),
+        "inventory": closure["inventory"],
+        "final_adjudication_counts": closure["final_adjudication_counts"],
+        "screen_verdict": closure["screen_adjudication"].get("verdict"),
+        "primary_estimand": closure["screen_adjudication"].get(
+            "primary_estimand_unweighted_mean_of_panel_effects"),
+        "sign_test_supersession": closure["sign_test_supersession"],
+        "unit_snapshot": closure["unit_snapshot"],
+        "single_instance": closure["single_instance"],
+        "adjudication_sha256": closure["adjudication_sha256"],
+        "code_identity": closure_code_identity(reviewed_checkout),
+        "grants_nothing":
+            "a submission states what was re-adjudicated and under "
+            "which code, and asks for a decision. It supersedes no "
+            "envelope, promotes nothing, and does not authorize "
+            "re-deriving against the preserved root",
+        "requires": "EXTERNAL_REVIEW",
+    }
+    doc["submission_sha256"] = sha_obj({k: doc[k] for k in sorted(doc)})
+    return doc
 
 
 def last_closure(root: Path) -> dict | None:
@@ -454,3 +699,261 @@ def main(argv=None) -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+
+
+# =====================================================================
+# R7 (order 2026-09-12): ONE verified snapshot per unit.
+# =====================================================================
+#
+# The audit found the hole precisely: `final_adjudication()` verifies
+# every unit through the results root's held descriptors, and then
+# `reconstruct()` RE-OPENS every `RECORD_*.json` by path to build the
+# list handed to `adjudicate_screen()`. A replacement between those two
+# steps lets one set of bytes be verified and another be scored.
+#
+# The pinned verifier cannot hand its bytes back — `verify_unit_record`
+# returns a summary, not the wrapper it parsed — so the order's second
+# option applies: read each unit ONCE here, and make BOTH the pinned
+# verification and the screen consume that same instance.
+#
+# The pinned code reaches evidence through a small surface —
+# `read_private(dfd, name, what)`, `exists(dfd, name)`, `listdir(dfd)`
+# and a `units_fd` token. `UnitSnapshotRoot` implements exactly that
+# surface over bytes already read, so the verifier runs unmodified and
+# consumes the snapshot. Nothing in the pinned identity changes.
+
+def make_snapshot_class(results_root_cls):
+    """Build the snapshot adapter as a SUBCLASS of the pinned
+    `ResultsRoot`.
+
+    The pinned `_unit_srcs()` routes reads through the held descriptors
+    only when `isinstance(root, ResultsRoot)`. Subclassing — without
+    calling the parent's `__init__`, so nothing is opened — makes that
+    test true while every read is answered from the snapshot. Not one
+    byte of the pinned code changes.
+    """
+
+    class UnitSnapshotRoot(results_root_cls):
+        """The units directory, read once, served to everyone.
+
+        JSON artifacts are small and are held for the whole run, because
+        the screen needs every record at the end. The `.npz` arrays are the
+        bulk (hundreds of megabytes) and are consumed only by verification,
+        so each is read once and released as soon as its unit is
+        adjudicated — still exactly one read per artifact.
+        """
+
+        #: the token the pinned code passes back to `read_private`.
+        units_fd = "UNITS_SNAPSHOT"
+
+        def __init__(self, custody, names: tuple[str, ...],
+                     path=None) -> None:
+            # The parent's __init__ is deliberately NOT called: it
+            # would open the very descriptors this snapshot replaces.
+            self.path = path
+            self._custody = custody
+            self._names = tuple(sorted(names))
+            self._json: dict[str, bytes] = {}
+            self._arrays: dict[str, bytes] = {}
+            self._digests: dict[str, str] = {}
+            self._reads = 0
+            for name in self._names:
+                if name.endswith(".json"):
+                    art = custody.read(f"units/{name}")
+                    self._json[name] = art.raw()
+                    self._digests[name] = art.sha256
+                    self._reads += 1
+
+        # ---------------- the surface the pinned verifier expects -------
+        def read_private(self, dfd, name, what) -> bytes:
+            if dfd is not self.units_fd:
+                raise ClosureRefusal(
+                    f"{what}: a read was attempted through a descriptor "
+                    "this snapshot does not own")
+            if name in self._json:
+                return self._json[name]
+            if name in self._arrays:
+                return self._arrays[name]
+            if name in self._names and name.endswith(".npz"):
+                art = self._custody.read(f"units/{name}")
+                self._arrays[name] = art.raw()
+                self._digests[name] = art.sha256
+                self._reads += 1
+                return self._arrays[name]
+            raise ClosureRefusal(f"{what}: {name} is not in the snapshot")
+
+        def exists(self, dfd, name) -> bool:
+            return name in self._names
+
+        def listdir(self, dfd) -> list[str]:
+            return list(self._names)
+
+        def revalidate(self) -> None:
+            """The snapshot cannot drift: it is bytes, not a path."""
+
+        def close(self) -> None:
+            self._arrays.clear()
+
+        # ------------------------------------------------------- facts --
+        def release_arrays(self, uid_safe: str) -> None:
+            self._arrays.pop(f"ARRAYS_{uid_safe}.npz", None)
+
+        def record(self, uid_safe: str) -> dict:
+            """The parsed record — from the SAME bytes the verifier saw."""
+            name = f"RECORD_{uid_safe}.json"
+            if name not in self._json:
+                raise ClosureRefusal(f"{name} is not in the snapshot")
+            return json.loads(self._json[name].decode("utf-8"))
+
+        def digests(self) -> dict:
+            return dict(self._digests)
+
+        def reads(self) -> int:
+            return self._reads
+
+        def facts(self) -> dict:
+            return {"artifacts": len(self._names),
+                    "json_held": len(self._json),
+                    "reads": self._reads,
+                    "inventory_sha256": sha_obj(self._digests)}
+
+    return UnitSnapshotRoot
+
+
+def reconstruct_from_snapshot(conf, ex, recon, root: Path,
+                              custody) -> dict:
+    """R7: verify and score ONE instance of every unit.
+
+    This replaces the record-collection half of
+    `t2_completion_reconstruction.reconstruct()`. It is declared, not
+    hidden: the pinned `final_adjudication()` is NOT called, because it
+    re-resolves the results root (`ResultsRoot(rr.path)`) and would
+    reopen the evidence this snapshot exists to pin. Its three
+    guarantees are reproduced here over the snapshot instead —
+
+      * the control directory carries EXACTLY the expected objects;
+      * EVERY unit re-adjudicates deeply under current authority,
+        through the pinned verifier, consuming the snapshot's bytes;
+      * zero UNCERTAIN, and the counts close the sealed population.
+
+    The wall replay and the release sequence still come from the
+    reconstruction module's own helpers, which read the campaign's
+    ledger and lock files rather than unit evidence.
+    """
+    import numpy as np
+
+    t0 = time.perf_counter()
+    facts = conf.verify_confirmatory_gates(
+        ex.MANIFEST_PATH, ex.active_design_path(),
+        census_path=ex.CENSUS_PATH)
+    design = facts["design"].doc
+    manifest = facts["manifest"].doc
+    if design.get("schema") == conf.T2_SUCCESSOR_SCHEMA:
+        conf.verify_resource_successor(design)
+    authority = {
+        "sealed_design_file_sha256": facts["design_file_sha256"],
+        "sealed_design_self_sha256": facts["design_self_sha256"],
+        "design_review_record_sha256": facts["review_record_sha256"],
+        "execution_record_sha256": facts["execution_record_sha256"],
+        "manifest_sha256": facts["manifest_sha256"],
+        "census_sha256": facts["census_sha256"]}
+    uids = design["task_population"]["series_ids"]
+
+    units_snap = custody.snapshot("units")
+    if units_snap.others or units_snap.dirs:
+        raise ClosureRefusal(
+            f"the units directory contains non-file entries: "
+            f"{sorted(units_snap.others) + sorted(units_snap.dirs)}")
+    snapshot_cls = make_snapshot_class(ex.ResultsRoot)
+    snap = snapshot_cls(custody, units_snap.files, path=root)
+
+    expected = set()
+    for uid in uids:
+        safe = ex._safe_name(uid)
+        expected.update({f"CLAIM_{safe}.json", f"RECORD_{safe}.json",
+                         f"ARRAYS_{safe}.npz"})
+    actual = set(units_snap.files)
+    foreign = sorted(actual - expected - {f"TERMINAL_{ex._safe_name(u)}.json"
+                                          for u in uids})
+    missing = sorted(expected - actual)
+    if foreign or missing:
+        raise ClosureRefusal(
+            f"the control directory is not exact: foreign={foreign[:5]} "
+            f"missing={missing[:5]}")
+
+    raw_root = ex.STATE / "t2_public_raw"
+
+    def _rebuild(uid):
+        return np.asarray(
+            ex.load_bank_unit(design, uid, manifest, raw_root)["y"],
+            dtype=np.float64)
+
+    counts = {"COMPLETED_VERIFIED": 0, "TERMINAL_FAILED": 0}
+    records, cost_total = [], 0.0
+    for uid in uids:
+        safe = ex._safe_name(uid)
+        st, why = ex.adjudicate_unit_shallow(snap, uid)
+        y = _rebuild(uid) if st == "COMPLETED" else None
+        st, why = ex.adjudicate_unit_deep(snap, uid, design, authority,
+                                          "confirmatory", unit_y=y)
+        if st == "UNCERTAIN":
+            raise ClosureRefusal(
+                f"final adjudication found typed uncertainty — {why}")
+        if st == "PENDING":
+            raise ClosureRefusal(
+                f"{uid} is still PENDING; the counts do not close the "
+                "sealed population")
+        counts[st] += 1
+        # The SAME bytes the verifier just consumed become the record
+        # that is scored. There is no second open.
+        rec = snap.record(safe)
+        ar = rec["assay_record"]
+
+        def _numsum(node):
+            if isinstance(node, (int, float)):
+                return float(node)
+            if isinstance(node, dict):
+                return sum(_numsum(v) for v in node.values())
+            return 0.0
+
+        phase_sum = _numsum(ar.get("costs_by_phase", {}))
+        wall_u = float(rec.get("wall_seconds", 0.0))
+        if wall_u <= 0 or phase_sum > wall_u * 1.10 + 2.0:
+            raise ClosureRefusal(
+                f"{uid}: per-phase cost sum {phase_sum:.2f}s is "
+                f"incoherent with the unit wall {wall_u:.2f}s")
+        cost_total += phase_sum
+        records.append(ar)
+        snap.release_arrays(safe)
+
+    if counts["COMPLETED_VERIFIED"] + counts["TERMINAL_FAILED"] \
+            != len(uids):
+        raise ClosureRefusal(
+            "adjudication counts do not equal the sealed population")
+
+    wall = recon.replay_wall_ledger(root, design)
+    release = recon.verify_release_sequence(root)
+    screen = conf.adjudicate_screen(records, design)
+    return {
+        "gate_facts": {k: facts[k] for k in
+                       ("design_file_sha256", "design_self_sha256",
+                        "review_record_sha256", "execution_record_sha256",
+                        "manifest_sha256", "census_sha256")},
+        "final_adjudication_counts": counts,
+        "wall_ledger": wall,
+        "release_sequence": release,
+        "screen_adjudication": screen,
+        "unit_snapshot": snap.facts(),
+        "train_seconds_from_records": round(cost_total, 3),
+        "single_instance": (
+            "every unit was read once through a retained descriptor; "
+            "the pinned verifier and the screen consumed that same "
+            "instance, and no RECORD, ARRAYS, manifest, census or "
+            "design was re-opened by path between them"),
+        "final_adjudication_not_called": (
+            "the pinned final_adjudication() re-resolves the results "
+            "root and would reopen the evidence; its exact-inventory, "
+            "deep-adjudication and population-closure guarantees are "
+            "reproduced above over the snapshot"),
+        "wall_seconds_reconstruction": round(time.perf_counter() - t0, 2),
+    }
