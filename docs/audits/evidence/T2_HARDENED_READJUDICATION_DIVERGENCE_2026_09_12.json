@@ -1,0 +1,14 @@
+{
+ "candidate_adjudication_sha256": "a989d02d3673c04c8eaa7976050ddc0b7b3e7dec3e0e6a175f04a7ef02b004ca",
+ "candidate_rebuilt_sha256": "a989d02d3673c04c8eaa7976050ddc0b7b3e7dec3e0e6a175f04a7ef02b004ca",
+ "differences": [
+  {
+   "candidate": 1.3125,
+   "path": "screen_adjudication.sign_test_exact_p_two_sided",
+   "recomputed": 1.0
+  }
+ ],
+ "publication": "STOPPED \u2014 a difference is an audit result",
+ "recomputed_adjudication_sha256": "1be80a0ab6d091794f7ce3ec97c2dbf88920911037c0415c383043bd95ca3a6d",
+ "schema": "agent_multi.t2_hardened_readjudication_divergence.v1"
+}
