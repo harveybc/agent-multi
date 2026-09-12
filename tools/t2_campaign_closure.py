@@ -133,7 +133,21 @@ def load_reviewed_modules(checkout: Path):
     return conf, ex, recon
 
 
-def assert_reviewed_identity(conf, checkout: Path) -> dict:
+def assert_reviewed_identity(conf, checkout: Path, *,
+                             snapshot_mode: bool = False) -> dict:
+    """Verify a checkout against the external execution record.
+
+    R12 note on the COMMIT. The record pins both a commit and seven
+    file digests. An audit snapshot reproduces the seven digests EXACTLY
+    and necessarily sits at a different commit, because the same tree
+    must also carry the reconstruction, closure and custody code the
+    replay executes — code that post-dates the record. Demanding commit
+    equality there would make a single recoverable checkout impossible,
+    and quietly dropping the check would hide which commit the seven
+    files came from. So in snapshot mode the file digests ARE the
+    identity claim and the pinned commit is recorded as the provenance
+    of those bytes, with the difference stated.
+    """
     record = json.loads(
         conf.T2_SUCCESSOR_EXECUTION_RECORD_PATH.read_text())
     declared = record["executor_code_identity"]
@@ -152,10 +166,17 @@ def assert_reviewed_identity(conf, checkout: Path) -> dict:
             f"{diff}")
     head = subprocess.run(("git", "-C", str(checkout), "rev-parse", "HEAD"),
                           capture_output=True, text=True).stdout.strip()
+    commit_note = "EQUAL_TO_PINNED_COMMIT"
     if head != record["pinned_commit"]:
-        raise ClosureRefusal(
-            f"the checkout is at {head[:12]}, the record pins "
-            f"{record['pinned_commit'][:12]}")
+        if not snapshot_mode:
+            raise ClosureRefusal(
+                f"the checkout is at {head[:12]}, the record pins "
+                f"{record['pinned_commit'][:12]}")
+        commit_note = (
+            f"the seven pinned files match the record byte for byte; "
+            f"this snapshot sits at {head[:12]} rather than the pinned "
+            f"{record['pinned_commit'][:12]} because the same tree also "
+            "carries the replay code, which post-dates the record")
     dirty = subprocess.run(("git", "-C", str(checkout), "status",
                             "--porcelain"),
                            capture_output=True, text=True).stdout.strip()
@@ -163,6 +184,8 @@ def assert_reviewed_identity(conf, checkout: Path) -> dict:
         raise ClosureRefusal("the reviewed checkout is not clean")
     return {
         "pinned_commit": record["pinned_commit"],
+        "checkout_commit": head,
+        "commit_relation": commit_note,
         "execution_record_sha256": sha_obj(
             {k: record[k] for k in sorted(record)}),
         "pinned_files": {k: declared[k] for k in sorted(declared)},
@@ -357,11 +380,13 @@ def supersede_sign_test(screen: dict) -> dict:
     }
 
 
-def build_closure(conf, ex, recon, root: Path, checkout: Path) -> dict:
+def build_closure(conf, ex, recon, root: Path, checkout: Path,
+                  *, snapshot_mode: bool = False) -> dict:
     measurement: dict = {}
     t0 = time.perf_counter()
 
-    identity = assert_reviewed_identity(conf, checkout)
+    identity = assert_reviewed_identity(conf, checkout,
+                                       snapshot_mode=snapshot_mode)
     try:
         snapshot_identity = audit_snapshot_identity(checkout)
     except ClosureRefusal as exc:
@@ -801,7 +826,8 @@ def main(argv=None) -> int:
                          default=str))
         return 0
 
-    closure = build_closure(conf, ex, recon, root, checkout)
+    closure = build_closure(conf, ex, recon, root, checkout,
+                            snapshot_mode=bool(args.audit_snapshot))
 
     if args.emit:
         previous = last_closure(root)
