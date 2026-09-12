@@ -1,0 +1,90 @@
+{
+ "campaign_root_logical": "t2_successor",
+ "grants_nothing": "a submission states what was re-adjudicated, under which identity and which record, and asks for review. It opens nothing and promotes nothing",
+ "grants_promotion": false,
+ "historical_result": {
+  "evidence_logical_id": "docs/audits/evidence/T2_COMPLETION_RECONSTRUCTION_AND_SCREEN_ADJUDICATION_2026_09_10.json",
+  "evidence_sha256": "181c0796d015710b97e605c4fc3c9125271b94e4228dab397722e1e3eb75e0d7",
+  "historical_execution_record_sha256": "4761df4a8b324442a83a0554cc53d3005025500d9e8d0c3b2272a729c9714752",
+  "identity": "executed under the historical execution record: commit 7bcd3f0d6a95b30ce105df3b1e7e13614b7fe6b3, tree 6c2942a24ef4523447801a179cf5f15c9da5617b",
+  "panel_effects": {
+   "electricity_weekly": -0.03653270572268994,
+   "hospital": 0.005847919489857028,
+   "pedestrian_counts": -0.013905695034009338,
+   "solar_10_minutes": -0.010932434510063264,
+   "tourism_monthly": 0.04513398726885428,
+   "weather": 0.004098268159897935
+  },
+  "primary_estimand": -0.001048443391358884,
+  "verdict": "DOES_NOT_ADVANCE"
+ },
+ "physical_paths": "WITHHELD \u2014 logical ids only",
+ "publication": {
+  "commit_a": "bfbad73c5ddf78bbbbf5e75cfaf6c4e4fb4418dc",
+  "protocol": "TWO_PHASE",
+  "rule": "commit A carries the code and tests and is pushed before this file exists; this submission is generated from a clean checkout of commit A; commit B carries the submission alone"
+ },
+ "readjudication": {
+  "candidate_adjudication_sha256": "8b93541369af0de387aa821c307f88c6e4c38ed2e5fc96bce696249f129e8b41",
+  "custody_reads": 726,
+  "declared_replacements": {
+   "executor_checkout_gate": "REPLACED_FOR_THIS_READ_ONLY_READJUDICATION: the pinned verify_executor_checkout demands HEAD == the historical commit, which no reproducer can be. For this run only it was replaced by readjudication_checkout_gate, which demands the historical record still pin the reviewed commit and tree and the executing checkout be the clean reproducer commit, tree and surface the readjudication record reviewed; the original was restored when the closure finished",
+   "executor_claim_identity": "REPLACED_FOR_THIS_READ_ONLY_READJUDICATION: each unit claim pins the commit and tree of the executor that wrote it, and the pinned verifier compared that pin with the executing HEAD. For this run _git_head_tree returned the historical commit and tree the readjudication record reviewed, after re-checking on every call that the executing checkout was still the clean reviewed reproducer; the claims' code identity was still compared with the physical seven historical digests, unchanged. The executor's writing entry points main and rehearse refused for the whole scope"
+  },
+  "downloads": false,
+  "equal_to_candidate": true,
+  "final_adjudication_counts": {
+   "COMPLETED_VERIFIED": 242,
+   "TERMINAL_FAILED": 0
+  },
+  "identity": "re-executed read-only under the reproducer commit bfbad73c5ddf78bbbbf5e75cfaf6c4e4fb4418dc, tree 6d3ef39576a501dbb77bce666a29310474cd8f87",
+  "inventory_exact": true,
+  "leaf_binding": {
+   "bindings_sha256": "9413db4662ef90c6531d7dc61e26803aff729b0752f0e7cd445b75790ea1a403",
+   "reads_bound": 726,
+   "reads_total": 726
+  },
+  "panel_effects_equal_to_historical": {
+   "electricity_weekly": true,
+   "hospital": true,
+   "pedestrian_counts": true,
+   "solar_10_minutes": true,
+   "tourism_monthly": true,
+   "weather": true
+  },
+  "primary_estimand": -0.001048443391358884,
+  "retraining": false,
+  "review_record_kind": "ISOLATED_FIXTURE_NOT_AN_EXTERNAL_RECORD",
+  "review_record_sha256": "b2b6f58928c76e5cf4d1ee76b4e5d59461115220b83aed628985e61b3ff2c298",
+  "scientific_adjudication_sha256": "8b93541369af0de387aa821c307f88c6e4c38ed2e5fc96bce696249f129e8b41",
+  "sign_test_supersession": {
+   "changes_estimand": false,
+   "changes_panel_effects": false,
+   "changes_verdict": false,
+   "corrected_table_0_to_6": [
+    0.03125,
+    0.21875,
+    0.6875,
+    1.0,
+    0.6875,
+    0.21875,
+    0.03125
+   ],
+   "corrected_value": 1.0,
+   "historical_envelope": "NOT REWRITTEN",
+   "published_value": 1.3125,
+   "published_value_valid": false,
+   "signs_positive": 3,
+   "state": "SUPERSEDED",
+   "why_the_verdict_stands": "advancement required 6/6 positive signs and the harm gate already determined the negative result; correcting an inference that could never have been read as favourable cannot turn it favourable"
+  },
+  "surface_sha256": "599e7f63abd0bdcc6ca61e32615ada93da331785abf5d0af7da7b60d2ffc5ead",
+  "template_sha256": "a37979aac3c35a3d2447bbc1a08fe9b5b9d2cbd49cffda54433e9eb6350307d1",
+  "verdict": "DOES_NOT_ADVANCE"
+ },
+ "requires": "EXTERNAL_READJUDICATION_REVIEW_RECORD",
+ "schema": "agent_multi.t2_readjudication_submission.v3",
+ "submission_sha256": "2a655c559e2e667366aabd6d3730fba6891a979d74cf2c212b56f04f4df918b1",
+ "submitted_at": "2026-09-12T19:58:57Z",
+ "supersedes": "agent_multi.t2_readjudication_submission.v2 \u2014 two trees, directory-only custody, no readjudication record contract"
+}
