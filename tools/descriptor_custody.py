@@ -30,6 +30,32 @@ was inventoried.
 
 Descriptors are closed deterministically, children before parents, on
 success and on exception alike.
+
+R19-R20 (2026-09-12) closes the LEAF. Retaining the directory kept its
+entries' names honest and nothing else: `read()` opened the name again
+relative to the retained descriptor and compared nothing it had seen at
+inventory time. So a leaf renamed away inside that same directory and
+replaced by a file with the same name, mode, length and mtime was
+consumed, and so was an equal-length in-place write that put the mtime
+back:
+
+    inventory  terminal.json   wall_seconds = 1.0
+    mv terminal.json terminal.orig; write terminal.json (9.0);
+    touch -d <same mtime> terminal.json
+    cell.read("terminal.json")  ->  9.0
+
+The inventory now keeps, per name, the file's type, device, inode, uid,
+mode, size, mtime_ns and ctime_ns. A read is accepted only if
+
+  * the `fstat` of the descriptor it opened equals the inventory on
+    every one of those fields, and
+  * a second `fstat` taken after the last byte equals the first.
+
+ctime is the field an unprivileged writer cannot put back, which is why
+it is compared at both points. Any divergence raises
+`LeafIdentityRefusal` naming the stage and the fields, and no byte of
+that read leaves this module. The artifact publishes all three fact
+sets, so the binding is checkable rather than asserted.
 """
 from __future__ import annotations
 
@@ -55,10 +81,63 @@ WORLD_WRITE = _stat.S_IWOTH
 #: option; a retroactive `chmod` on the originals would be worse.
 GROUP_WRITE = _stat.S_IWGRP
 
+#: The contract every copy of this module implements. predictor, B4 and
+#: T2 carry byte-identical copies and one shared fixture file.
+CONTRACT = "agent_multi.descriptor_custody.leaf_binding.v1"
+
+#: What the inventory remembers about a leaf, and what both `fstat`
+#: comparisons require to be equal.
+LEAF_IDENTITY_FIELDS = ("type", "device", "inode", "uid", "mode", "size",
+                        "mtime_ns", "ctime_ns")
+
+#: Block size for reading; a module attribute so a battery can mutate a
+#: file between blocks.
+READ_BLOCK = 1 << 20
+
 
 class CustodyRefusal(SystemExit):
     def __init__(self, msg: str) -> None:
         super().__init__(f"REFUSED: {msg}")
+
+
+class LeafIdentityRefusal(CustodyRefusal):
+    """The file that was opened, or the file after it was read, is not
+    the file the inventory photographed."""
+
+    def __init__(self, rel: str, stage: str, diverged: dict) -> None:
+        self.rel = rel
+        self.stage = stage
+        self.diverged = diverged
+        super().__init__(
+            f"{rel}: leaf identity diverged at {stage} on "
+            f"{sorted(diverged)}; no value derived from these bytes is "
+            "returned")
+
+
+def leaf_facts(st: os.stat_result) -> dict:
+    return {"type": _stat.S_IFMT(st.st_mode), "device": st.st_dev,
+            "inode": st.st_ino, "uid": st.st_uid,
+            "mode": _stat.S_IMODE(st.st_mode), "size": st.st_size,
+            "mtime_ns": st.st_mtime_ns, "ctime_ns": st.st_ctime_ns}
+
+
+def _diverged(expected: dict, actual: dict) -> dict:
+    return {f: {"expected": expected[f], "actual": actual[f]}
+            for f in LEAF_IDENTITY_FIELDS if expected[f] != actual[f]}
+
+
+def check_open_against_inventory(rel: str, inventoried: dict,
+                                 opened: dict) -> None:
+    diff = _diverged(inventoried, opened)
+    if diff:
+        raise LeafIdentityRefusal(rel, "OPEN_VS_INVENTORY", diff)
+
+
+def check_after_read_against_open(rel: str, opened: dict,
+                                  after: dict) -> None:
+    diff = _diverged(opened, after)
+    if diff:
+        raise LeafIdentityRefusal(rel, "AFTER_READ_VS_OPEN", diff)
 
 
 def _weakness(mode: int) -> str:
@@ -71,11 +150,13 @@ class Artifact:
 
     __slots__ = ("rel", "_bytes", "sha256", "size", "uid", "mode",
                  "inode", "device", "mtime_ns", "_json",
-                 "custody_weakness", "dir_inode", "dir_device")
+                 "custody_weakness", "dir_inode", "dir_device",
+                 "leaf_binding")
 
     def __init__(self, rel: str, payload: bytes, st: os.stat_result,
                  dir_device: int | None = None,
-                 dir_inode: int | None = None):
+                 dir_inode: int | None = None,
+                 leaf_binding: dict | None = None):
         self.rel = rel
         self._bytes = payload
         self.sha256 = hashlib.sha256(payload).hexdigest()
@@ -94,6 +175,10 @@ class Artifact:
         self.dir_inode = dir_inode
         self._json = None
         self.custody_weakness = _weakness(self.mode)
+        # R20: the inventoried facts and both fstats this read was
+        # accepted under. None only for artifacts built outside a
+        # DirSnapshot, which publish that they are unbound.
+        self.leaf_binding = leaf_binding
 
     def json(self) -> dict:
         if self._json is None:
@@ -141,7 +226,9 @@ class Artifact:
                 "device": self.device, "mtime_ns": self.mtime_ns,
                 "dir_device": self.dir_device,
                 "dir_inode": self.dir_inode,
-                "custody_weakness": self.custody_weakness}
+                "custody_weakness": self.custody_weakness,
+                "leaf_binding": (self.leaf_binding if self.leaf_binding
+                                 is not None else "UNBOUND")}
 
 
 class DirSnapshot:
@@ -154,7 +241,7 @@ class DirSnapshot:
 
     __slots__ = ("rel", "files", "dirs", "others", "device", "inode",
                  "uid", "mode", "custody_weakness", "_fd", "_owner",
-                 "_children", "_closed")
+                 "_children", "_closed", "_leaf")
 
     def __init__(self, rel: str, fd: int, st: os.stat_result,
                  owner) -> None:
@@ -169,6 +256,7 @@ class DirSnapshot:
         self.mode = _stat.S_IMODE(st.st_mode)
         self.custody_weakness = _weakness(self.mode)
         files, dirs, others = [], [], []
+        self._leaf: dict[str, dict] = {}
         for name in sorted(os.listdir(fd)):
             try:
                 est = os.stat(name, dir_fd=fd, follow_symlinks=False)
@@ -177,6 +265,7 @@ class DirSnapshot:
                 continue
             if _stat.S_ISREG(est.st_mode):
                 files.append(name)
+                self._leaf[name] = leaf_facts(est)
             elif _stat.S_ISDIR(est.st_mode):
                 dirs.append(name)
             else:
@@ -215,8 +304,11 @@ class DirSnapshot:
                     "gone from the retained directory")
             raise CustodyRefusal(
                 f"{self.rel}/{name}: unopenable (errno {exc.errno})")
+        rel = f"{self.rel}/{name}" if self.rel else name
         try:
             st = os.fstat(fd)
+            opened = leaf_facts(st)
+            check_open_against_inventory(rel, self._leaf[name], opened)
             if not _stat.S_ISREG(st.st_mode):
                 raise CustodyRefusal(
                     f"{self.rel}/{name}: not a regular file")
@@ -237,11 +329,13 @@ class DirSnapshot:
                     "group-writable and strict custody was requested")
             chunks = []
             while True:
-                block = os.read(fd, 1 << 20)
+                block = os.read(fd, READ_BLOCK)
                 if not block:
                     break
                 chunks.append(block)
             payload = b"".join(chunks)
+            after = leaf_facts(os.fstat(fd))
+            check_after_read_against_open(rel, opened, after)
             if st.st_size != len(payload):
                 raise CustodyRefusal(
                     f"{self.rel}/{name}: fstat said {st.st_size} bytes "
@@ -249,9 +343,12 @@ class DirSnapshot:
                     "while it was being read")
         finally:
             os.close(fd)
-        rel = f"{self.rel}/{name}" if self.rel else name
         art = Artifact(rel, payload, st, dir_device=self.device,
-                       dir_inode=self.inode)
+                       dir_inode=self.inode,
+                       leaf_binding={"contract": CONTRACT,
+                                     "inventoried": dict(self._leaf[name]),
+                                     "fstat_open": opened,
+                                     "fstat_after_read": after})
         self._owner._record(art)
         return art
 
@@ -285,6 +382,10 @@ class DirSnapshot:
         that appears afterwards keeps NOT_STARTED."""
         return (name in self.files or name in self.dirs
                 or name in self.others)
+
+    def leaf_inventory(self, name: str) -> dict:
+        """The facts photographed for `name` at inventory time."""
+        return dict(self._leaf[name])
 
     def facts(self) -> dict:
         return {"rel": self.rel or ".",
