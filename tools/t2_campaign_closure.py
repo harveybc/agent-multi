@@ -140,6 +140,44 @@ def load_two_tree_modules(pinned_checkout: Path, replay_checkout: Path):
     return conf, ex, recon
 
 
+def load_single_checkout_modules(checkout: Path):
+    """T2-R19: every reproducer import from ONE checkout — including
+    this closure module itself, the custody layer and the gate.
+
+    A closure executed from one tree while importing the executor from
+    another is refused as IMPORT_MIX, whatever the digests say.
+    """
+    checkout = Path(checkout).expanduser().resolve()
+    here = Path(__file__).resolve().parents[1]
+    if here != checkout:
+        raise ClosureRefusal(
+            f"IMPORT_MIX: this closure runs from {here.name}, not from "
+            f"the reproducer checkout {checkout.name}")
+    tools = str(checkout / "tools")
+    for entry in list(sys.path):
+        if entry.endswith("/tools") and entry != tools:
+            sys.path.remove(entry)
+    while tools in sys.path:
+        sys.path.remove(tools)
+    for mod in ("t2_confirmatory", "t2_confirmatory_executor",
+                "t2_completion_reconstruction", "descriptor_custody",
+                "t2_readjudication_gate"):
+        sys.modules.pop(mod, None)
+    sys.path.insert(0, tools)
+    import t2_confirmatory as conf
+    import t2_confirmatory_executor as ex
+    import t2_completion_reconstruction as recon
+    import descriptor_custody as dc
+    import t2_readjudication_gate as gate
+    for mod in (conf, ex, recon, dc, gate):
+        got = Path(mod.__file__).resolve().parents[1]
+        if got != checkout:
+            raise ClosureRefusal(
+                f"IMPORT_MIX: {mod.__name__} resolved to {got.name}, not "
+                f"to the reproducer checkout {checkout.name}")
+    return conf, ex, recon, dc, gate
+
+
 def load_audit_snapshot_modules(snapshot: Path):
     """R12: EVERY replay import comes from the one recoverable
     checkout.
@@ -862,6 +900,21 @@ def emit_to_outbox(closure: dict, *, uids: list[str],
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--reviewed-checkout", type=Path, default=None)
+    ap.add_argument("--reproducer-checkout", type=Path, default=None,
+                    help="T2-R19: the ONE checkout carrying the seven "
+                         "historical files and the readjudication code; "
+                         "requires a readjudication review record")
+    ap.add_argument("--review-fixture-authority", type=Path, default=None,
+                    help="T2-R20: an ISOLATED authority root holding a "
+                         "fixture record; everything produced is marked "
+                         "as a fixture and authorizes nothing")
+    ap.add_argument("--template-out", type=Path, default=None,
+                    help="write the readjudication review TEMPLATE "
+                         "(never inside the authority root) and stop "
+                         "before opening any evidence")
+    ap.add_argument("--candidate-closure", type=Path, default=None,
+                    help="a previous closure JSON whose scientific "
+                         "adjudication the template binds")
     ap.add_argument("--audit-snapshot", type=Path, default=None,
                     help="R12: the ONE recoverable checkout every "
                          "replay import comes from")
@@ -896,6 +949,8 @@ def main(argv=None) -> int:
     except OSError:
         pass
 
+    if args.reproducer_checkout:
+        return run_reproducer(args)
     if args.reviewed_checkout and args.replay_from:
         conf, ex, recon = load_two_tree_modules(args.reviewed_checkout,
                                                 args.replay_from)
@@ -1281,6 +1336,57 @@ def reconstruct_from_snapshot(conf, ex, recon, root: Path,
             "reproduced above over the snapshot"),
         "wall_seconds_reconstruction": round(time.perf_counter() - t0, 2),
     }
+
+
+def run_reproducer(args) -> int:
+    """T2-R18..R20: template, or gate-then-readjudicate. Never both."""
+    co = args.reproducer_checkout.expanduser().resolve()
+    conf, ex, recon, dc, gate = load_single_checkout_modules(co)
+    root = (args.root or recon.DEFAULT_ROOT).expanduser()
+    if args.template_out:
+        if not args.candidate_closure:
+            raise ClosureRefusal("a template binds a candidate "
+                                 "adjudication: --candidate-closure")
+        candidate = json.loads(args.candidate_closure.read_text())
+        hist_raw = gate._read_private(
+            conf, conf.T2_SUCCESSOR_EXECUTION_RECORD_PATH,
+            "T2_SUCCESSOR_EXECUTION_RECORD_REQUIRED")
+        template = gate.build_template(
+            historical_record_raw=hist_raw, checkout=co,
+            preserved=gate.preserved_root_identity(dc, root),
+            candidate_adjudication_sha256=
+                gate.scientific_adjudication_digest(candidate))
+        gate.write_template(args.template_out, template, conf.AUTHORITY_ROOT)
+        print(json.dumps({"template_written": True,
+                          "evidence_opened": False,
+                          "candidate_adjudication_sha256":
+                              template["candidate_adjudication_sha256"]},
+                         indent=1))
+        return 0
+    fixture = args.review_fixture_authority is not None
+    authority = (args.review_fixture_authority.expanduser()
+                 if fixture else conf.AUTHORITY_ROOT)
+    gate.require_record(conf, authority_root=authority)
+    verified = gate.verify_record(
+        conf, checkout=co, preserved=gate.preserved_root_identity(dc, root),
+        authority_root=authority, fixture=fixture)
+    closure = build_closure(conf, ex, recon, root, co, snapshot_mode=True)
+    scientific = gate.scientific_adjudication_digest(closure)
+    gate.assert_candidate_matches(verified, scientific)
+    closure["readjudication_identity"] = dict(
+        verified, scientific_adjudication_sha256=scientific,
+        historical_result="executed under the historical identity: "
+                          "the seven pinned files at commit "
+                          + closure["reviewed_identity"]["pinned_commit"],
+        readjudication="executed under the reproducer identity bound "
+                       "by the readjudication review record",
+        grants_promotion=False)
+    closure["single_checkout_blocked"] = (
+        "RESOLVED_WITHOUT_REPINNING: one reproducer checkout, the seven "
+        "historical digests verified byte for byte, the reproducer "
+        "commit and surface bound by a separate readjudication record")
+    print(json.dumps(closure, indent=1, sort_keys=True, default=str))
+    return 0
 
 
 # The entry point lives at the END of the module, after every
