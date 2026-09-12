@@ -550,10 +550,21 @@ def test_decision_unit_always_runs_decision_mode_and_never_screen():
     # the screen gate is PINNED and passed to the runner
     assert "Environment=P1LR_SCREEN_GATE=" in text
     assert "--screen-gate ${P1LR_SCREEN_GATE}" in exec_start
-    # …and VERIFIED before the runner starts
-    assert "ExecStartPre=" in text
+    # …and VERIFIED before the runner starts, as an ExecCondition.
+    #
+    # R3 (order 2026-09-11): this used to assert ExecStartPre, which is
+    # exactly the defect. RestartPreventExitStatus is compared against
+    # the MAIN process; when ExecStartPre refuses, the main process
+    # never runs, ExecMainStatus stays 0, and Restart=on-failure
+    # retries a configuration refusal — 11 times on the live seat
+    # before the start limit froze it. ExecCondition means "this unit
+    # must not run now": skipped, not failed, no restart scheduled.
+    assert "ExecCondition=" in text
+    assert "ExecStartPre=" not in text, (
+        "a non-empty ExecStartPre reintroduces the restart loop")
     assert "p1lr_decision_gate_check.sh ${P1LR_SCREEN_GATE}" in text
-    # a configuration refusal (exit 4) is never retried
+    # a configuration refusal in the MAIN process (exit 4) is never
+    # retried either; the gate's own refusal is ExecCondition's job
     assert "RestartPreventExitStatus=4" in text
     assert "Restart=on-failure" in text
     assert "SuccessExitStatus=3" in text
