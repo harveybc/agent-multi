@@ -421,6 +421,11 @@ def published_root_facts(root_snap: DirSnapshot) -> dict:
     The exclusion is named in the facts, never silent.
     """
     facts = root_snap.facts()
+    # C88: the root's directory binding carries its fstat timestamps and
+    # an entries digest, both of which move when this closure creates its
+    # own log. It is custody evidence, not scientific identity, so it is
+    # published under the volatile measurement block instead.
+    facts.pop("directory_binding", None)
     facts["files"] = [f for f in facts["files"] if f != CLOSURE_LOG]
     facts["excluded"] = [CLOSURE_LOG]
     facts["excluded_reason"] = (
@@ -608,12 +613,26 @@ def build_closure(results_root: Path, mat_root: Path) -> dict:
         # the thing it describes. It is excluded and the exclusion is
         # named; it is not campaign evidence.
         root_facts = published_root_facts(root_snap)
+        root_binding = root_snap.facts()["directory_binding"]
         open_fds = custody.open_descriptors()
         # R20-R21: every artifact read now carries its leaf binding; the
         # closure publishes how many reads were bound and a digest of
         # the bindings, so a reviewer can check that none was unbound.
         _bindings = [a.get("leaf_binding", "UNBOUND")
                      for a in custody.reads()]
+        # C88: every non-root directory the closure descended into was
+        # bound to its parent's inventory and listed stably; the root's
+        # own binding is volatile (this closure writes its log there) and
+        # is published under measurement instead.
+        _dirs = [snap.facts()["directory_binding"]
+                 for snap in custody._snapshots if snap.rel]
+        directory_binding = {
+            "contract": DC_CONTRACT,
+            "directories_bound": len(_dirs),
+            "bindings_sha256": sha_obj(_dirs),
+            "rule": "each child directory's fstat at open equals its "
+                    "parent's inventory, and each listing is bracketed "
+                    "by fstats and a second identical listing"}
         leaf_binding = {
             "contract": DC_CONTRACT,
             "reads_total": len(_bindings),
@@ -648,6 +667,7 @@ def build_closure(results_root: Path, mat_root: Path) -> dict:
             "root_snapshot": root_facts,
             "observed_weaknesses": weaknesses,
             "leaf_binding": leaf_binding,
+            "directory_binding": directory_binding,
         },
         "owner_authorization": {
             "consumed": True,
@@ -660,7 +680,8 @@ def build_closure(results_root: Path, mat_root: Path) -> dict:
         "costs": rederive_costs(completed, partial),
         "adjudication": adjudicate(classified, ledger),
         "relaunch": prove_relaunch_refuses(),
-        "measurement": dict(MEASUREMENT),
+        "measurement": dict(MEASUREMENT,
+                            root_directory_binding=root_binding),
     }
     body = {k: closure[k] for k in sorted(closure)}
     closure["closure_sha256"] = sha_obj(body)
@@ -750,10 +771,10 @@ def build_submission(closure: dict, *, results_root: Path,
     same_root = (Path(read_root).resolve()
                  == Path(results_root).resolve())
     doc = {
-        "schema": "agent_multi.b4_readjudication_submission.v3",
-        "supersedes": "agent_multi.b4_readjudication_submission.v2 — which "
-                      "retained directories but did not bind the leaves "
-                      "read out of them",
+        "schema": "agent_multi.b4_readjudication_submission.v4",
+        "supersedes": "agent_multi.b4_readjudication_submission.v3 — which "
+                      "bound leaves but still opened child directories by "
+                      "name without comparing them to the inventory",
         "submitted_at": utc_now(),
         "campaign_generation": closure["campaign_generation"],
         "results_root_logical": closure["results_root_logical"],
@@ -776,7 +797,8 @@ def build_submission(closure: dict, *, results_root: Path,
         "costs": closure["costs"],
         "code_identity": closure_code_identity(
             repo, ignore=("B4_READJUDICATION_SUBMISSION_2026_09_12.json",
-                          "B4_READJUDICATION_SUBMISSION_V3_2026_09_12.json")),
+                          "B4_READJUDICATION_SUBMISSION_V3_2026_09_12.json",
+                          "B4_READJUDICATION_SUBMISSION_V4_2026_09_12.json")),
         "grants_nothing":
             "a submission states what was re-adjudicated and asks for a "
             "decision. It opens no campaign, promotes no cell, and does "

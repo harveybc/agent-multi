@@ -656,5 +656,9 @@ def test_the_v3_submission_publishes_that_every_read_leaf_was_bound(world,
     assert lb["reads_total"] > 0 and lb["reads_bound"] == lb["reads_total"]
     sub = C.build_submission(closure, results_root=results_root,
                              read_root=results_root)
-    assert sub["schema"] == "agent_multi.b4_readjudication_submission.v3"
+    assert sub["schema"] == "agent_multi.b4_readjudication_submission.v4"
     assert sub["custody"]["leaf_binding"] == lb
+    db = closure["custody"]["directory_binding"]
+    assert db["contract"] == DC.CONTRACT and db["directories_bound"] > 0
+    assert sub["custody"]["directory_binding"] == db
+    assert "root_directory_binding" in closure["measurement"]
