@@ -239,8 +239,13 @@ def test_a_file_that_grows_while_read_refuses(tmp_path, monkeypatch):
     with DC.Custody(root) as c:
         snap = c.root_snapshot()
         monkeypatch.setattr(os, "fstat", lying_fstat)
+        # R20: the lying fstat is now caught one step earlier, at the
+        # comparison against the inventory, which is stricter than the
+        # size-versus-bytes check this test was written for. Either
+        # refusal returns no value.
         with pytest.raises(SystemExit, match="changed while it was "
-                                             "being read"):
+                                             "being read|leaf identity "
+                                             "diverged"):
             snap.read("evidence.json")
 
 
