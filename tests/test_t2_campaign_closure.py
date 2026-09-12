@@ -28,34 +28,60 @@ REVIEWED = (Path.home() / "Documents/GitHub/.runtime"
 
 
 # --------------------------------------------------------------- helpers
-class FakeCustody:
-    """A custody that serves prepared bytes and COUNTS its reads."""
+class FakeDirSnapshot:
+    """A RETAINED directory that serves prepared bytes and counts its
+    reads. It stands in for the real snapshot so the adapter can be
+    driven without a filesystem."""
+
+    device = 7
+    inode = 11
+    mode = 0o750
+    rel = "units"
 
     def __init__(self, files: dict[str, bytes]):
-        self.root = Path("/fake")
         self._files = dict(files)
         self.read_log: list[str] = []
 
-    def read(self, rel: str):
-        self.read_log.append(rel)
-        name = rel.split("/")[-1]
+    @property
+    def files(self):
+        return tuple(sorted(self._files))
+
+    dirs = ()
+    others = ()
+
+    def read(self, name: str):
+        self.read_log.append(name)
         if name not in self._files:
-            raise DC.CustodyRefusal(f"{rel}: does not exist")
-        payload = self._files[name]
+            raise DC.CustodyRefusal(f"units/{name}: does not exist")
 
         class _St:
             st_uid = 0
             st_mode = 0o100644
             st_ino = 1
-            st_dev = 1
+            st_dev = 7
             st_mtime_ns = 0
-        return DC.Artifact(rel, payload, _St())
-
-    def snapshot(self, rel: str = ""):
-        return DC.DirSnapshot(rel, tuple(sorted(self._files)), (), ())
+        return DC.Artifact(f"units/{name}", self._files[name], _St(),
+                           dir_device=self.device, dir_inode=self.inode)
 
     def replace(self, name: str, payload: bytes):
+        """Simulate the directory being swapped under the snapshot: the
+        RETAINED instance must not see it."""
         self._files[name] = payload
+
+    def facts(self):
+        return {"rel": self.rel, "files": sorted(self.files),
+                "device": self.device, "inode": self.inode}
+
+
+class FakeCustody:
+    """Serves one retained units snapshot."""
+
+    def __init__(self, files: dict[str, bytes]):
+        self.root = Path("/fake")
+        self.units = FakeDirSnapshot(files)
+
+    def walk_to(self, rel: str):
+        return self.units
 
     def close(self):
         pass
@@ -67,9 +93,9 @@ class FakeResultsRoot:
 
 def snapshot_over(files: dict[str, bytes]):
     cls = T.make_snapshot_class(FakeResultsRoot)
-    custody = FakeCustody(files)
-    snap = cls(custody, tuple(sorted(files)), path=Path("/fake"))
-    return custody, snap
+    units = FakeDirSnapshot(files)
+    snap = cls(units, tuple(sorted(files)), path=Path("/fake"))
+    return units, snap
 
 
 def a_record(uid_safe: str, value: float) -> bytes:
@@ -91,7 +117,7 @@ def test_a_record_swapped_after_verification_is_not_scored():
     assert json.loads(verified.decode())["assay_record"]["effect"] == 0.5
     assert scored["assay_record"]["effect"] == 0.5, (
         "the screen must consume the instance that was verified")
-    assert custody.read_log.count("units/RECORD_a.json") == 1, (
+    assert custody.read_log.count("RECORD_a.json") == 1, (
         "one artifact, one read")
 
 
@@ -104,7 +130,7 @@ def test_arrays_swapped_after_verification_are_not_re_read():
     custody.replace("ARRAYS_a.npz", b"arrays-FORGED")
     second = snap.read_private(snap.units_fd, "ARRAYS_a.npz", "arrays")
     assert first == second == b"arrays-a"
-    assert custody.read_log.count("units/ARRAYS_a.npz") == 1
+    assert custody.read_log.count("ARRAYS_a.npz") == 1
 
 
 def test_an_unknown_artifact_is_refused_not_fetched():
@@ -124,7 +150,7 @@ def test_released_arrays_are_not_silently_re_read():
     custody.replace("ARRAYS_a.npz", b"arrays-FORGED")
     again = snap.read_private(snap.units_fd, "ARRAYS_a.npz", "arrays")
     assert again == b"arrays-FORGED"
-    assert custody.read_log.count("units/ARRAYS_a.npz") == 2, (
+    assert custody.read_log.count("ARRAYS_a.npz") == 2, (
         "a released array is honestly re-read and the read is counted; "
         "it is never served stale under the pretence of one read")
 
@@ -293,3 +319,139 @@ def test_the_pinned_screen_no_longer_publishes_an_impossible_value():
                    0.03125]
     src = (REPO / "tools/t2_confirmatory.py").read_text()
     assert "2 * (0.5 ** 6) * sum(" not in src
+
+
+# =====================================================================
+# R11: the units directory is retained, not re-resolved by name
+# =====================================================================
+
+def a_units_root(tmp: Path, effect: float = 1.0) -> Path:
+    root = tmp / "root"
+    (root / "units").mkdir(parents=True)
+    (root / "units/RECORD_a.json").write_text(
+        json.dumps({"assay_record": {"effect": effect}}))
+    (root / "units/ARRAYS_a.npz").write_bytes(b"arrays-original")
+    return root
+
+
+def test_swapping_the_whole_units_directory_changes_nothing(tmp_path):
+    root = a_units_root(tmp_path, 1.0)
+    with DC.Custody(root) as c:
+        units = c.walk_to("units")
+        (root / "units").rename(root / "units_old")
+        (root / "units").mkdir()
+        (root / "units/RECORD_a.json").write_text(
+            json.dumps({"assay_record": {"effect": -99.0}}))
+        got = units.read("RECORD_a.json").json()
+    assert got["assay_record"]["effect"] == 1.0, (
+        "the retained descriptor still points at the inventoried "
+        "instance of units")
+
+
+def test_restoring_the_units_name_over_a_new_inode_is_visible(tmp_path):
+    root = a_units_root(tmp_path)
+    with DC.Custody(root) as c:
+        units = c.walk_to("units")
+        facts = units.facts()
+        (root / "units").rename(root / "units_away")
+        (root / "units").mkdir()
+        (root / "units/RECORD_a.json").write_text("{}")
+        after = (root / "units").stat().st_ino
+        got = units.read("RECORD_a.json").json()
+    assert facts["inode"] != after
+    assert got["assay_record"]["effect"] == 1.0
+
+
+def test_the_adapter_reads_out_of_the_retained_units_instance():
+    files = {"RECORD_a.json": a_record("a", 0.5),
+             "ARRAYS_a.npz": b"arrays-a"}
+    units, snap = snapshot_over(files)
+    first = snap.read_private(snap.units_fd, "RECORD_a.json", "rec")
+    units.replace("RECORD_a.json", a_record("a", -99.0))
+    assert snap.record("a")["assay_record"]["effect"] == 0.5
+    assert units.read_log.count("RECORD_a.json") == 1
+
+
+# =====================================================================
+# R13: the adapter fails closed on anything it does not implement
+# =====================================================================
+
+def test_the_adapter_covers_the_whole_parent_surface():
+    """Not just the calls one run happened to make."""
+    cls = T.make_snapshot_class(FakeResultsRoot)
+    public = {n for n in dir(FakeResultsRoot)
+              if not n.startswith("_")
+              and callable(getattr(FakeResultsRoot, n, None))}
+    assert public <= (cls.implemented_surface
+                      | {n for n in dir(cls) if not n.startswith("_")})
+
+
+def test_an_unimplemented_parent_call_fails_closed():
+    class Parent:
+        def excl_write(self, *a, **k):
+            raise AssertionError("the real writer must never run")
+
+        def some_new_call(self, *a, **k):
+            raise AssertionError("the real implementation must not run")
+
+    cls = T.make_snapshot_class(Parent)
+    snap = cls(FakeDirSnapshot({"RECORD_a.json": a_record("a", 1.0)}),
+               ("RECORD_a.json",))
+    for call in ("excl_write", "some_new_call"):
+        with pytest.raises(SystemExit, match="does not implement"):
+            getattr(snap, call)("x")
+
+
+def test_the_adapter_never_writes():
+    """`excl_write` is the pinned root's only writer. A replay that
+    could reach it could rewrite the evidence it is reading."""
+    class Writer:
+        def excl_write(self, *a, **k):
+            raise AssertionError("the real writer must never run")
+
+    cls = T.make_snapshot_class(Writer)
+    snap = cls(FakeDirSnapshot({"RECORD_a.json": a_record("a", 1.0)}),
+               ("RECORD_a.json",))
+    with pytest.raises(SystemExit, match="does not implement"):
+        snap.excl_write("fd", "name", b"bytes")
+
+
+def test_no_constructor_invariant_is_needed(monkeypatch):
+    """The parent's __init__ is never called, so it must not be needed
+    by anything the replay reaches."""
+    calls = []
+
+    class Parent:
+        def __init__(self, *a, **k):
+            calls.append("init")
+            raise AssertionError("the parent constructor must not run")
+
+        def close(self):
+            calls.append("close")
+
+        def revalidate(self):
+            calls.append("revalidate")
+
+    cls = T.make_snapshot_class(Parent)
+    snap = cls(FakeDirSnapshot({"RECORD_a.json": a_record("a", 1.0)}),
+               ("RECORD_a.json",))
+    snap.revalidate()
+    snap.record("a")
+    snap.close()
+    assert calls == [], (
+        "the replay must reach nothing that depends on the parent's "
+        "constructor")
+
+
+def test_each_array_is_read_exactly_once_per_unit():
+    files = {f"RECORD_{u}.json": a_record(u, 1.0) for u in "abc"}
+    files.update({f"ARRAYS_{u}.npz": f"arrays-{u}".encode()
+                  for u in "abc"})
+    units, snap = snapshot_over(files)
+    for u in "abc":
+        snap.read_private(snap.units_fd, f"ARRAYS_{u}.npz", "arrays")
+        snap.record(u)
+        snap.release_arrays(u)
+    for u in "abc":
+        assert units.read_log.count(f"ARRAYS_{u}.npz") == 1
+        assert units.read_log.count(f"RECORD_{u}.json") == 1

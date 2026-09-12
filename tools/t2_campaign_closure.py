@@ -176,7 +176,7 @@ def report_tip_divergence(conf, checkout: Path) -> dict:
 def exact_inventory_from_snapshot(ex, snap_facts: dict, custody,
                                   uids: list[str]) -> dict:
     """The inventory, derived from the SAME listing the snapshot used."""
-    names = custody.snapshot("units").files
+    names = custody.walk_to("units").files
     expected: dict[str, str] = {}
     for uid in uids:
         safe = ex._safe_name(uid)
@@ -418,6 +418,84 @@ CLOSURE_SURFACE = (
 NUMERIC_DEPENDENCIES = ("numpy", "scipy")
 
 
+def audit_snapshot_identity(snapshot_checkout: Path) -> dict:
+    """R12: ONE recoverable checkout, and the proof that it is one.
+
+    The previous submission combined seven files from the reviewed
+    checkout with three from a dirty branch tip and said so honestly —
+    but an honest mixture is still not an identity a reviewer can
+    obtain. This reads every file of the executable surface from a
+    SINGLE checkout, proves that checkout's seven pinned files match
+    the external execution record byte for byte, and records its commit
+    so it can be fetched.
+    """
+    snap = Path(snapshot_checkout)
+    record = json.loads(
+        (Path.home() / ".config/agent-multi/reviewer_authority"
+         / "MUSASHI_T2_SUCCESSOR_EXECUTION_RECORD.json").read_text())
+    pinned = record["executor_code_identity"]
+
+    files, mismatched, absent = {}, [], []
+    for rel in CLOSURE_SURFACE:
+        f = snap / rel
+        if not f.is_file():
+            absent.append(rel)
+            continue
+        digest = sha_file(f)
+        entry = {"sha256": digest,
+                 "pinned_by_execution_record": rel in pinned}
+        if rel in pinned:
+            entry["matches_record"] = pinned[rel] == digest
+            if not entry["matches_record"]:
+                mismatched.append(rel)
+        files[rel] = entry
+    if absent:
+        raise ClosureRefusal(
+            f"the audit snapshot is missing {absent} — an identity "
+            "that skips a file is not one")
+    if mismatched:
+        raise ClosureRefusal(
+            f"the audit snapshot does not carry the pinned bytes for "
+            f"{mismatched}; it is not the reviewed executor")
+
+    def _git(*args):
+        return subprocess.run(("git", "-C", str(snap), *args),
+                              capture_output=True,
+                              text=True).stdout.strip()
+
+    dirty = _git("status", "--porcelain")
+    deps = {}
+    for name in NUMERIC_DEPENDENCIES:
+        try:
+            from importlib import metadata
+            deps[name] = {"version": metadata.distribution(name).version,
+                          "binding": "NAME_AND_VERSION_ONLY"}
+        except Exception:                                 # noqa: BLE001
+            deps[name] = {"version": "NOT_INSTALLED",
+                          "binding": "NAME_AND_VERSION_ONLY"}
+    return {
+        "single_checkout": True,
+        "commit": _git("rev-parse", "HEAD"),
+        "clean": not dirty,
+        "dirty_paths": sorted(ln.split(maxsplit=1)[-1]
+                              for ln in dirty.splitlines()
+                              if ln.strip())[:20],
+        "files": files,
+        "surface_sha256": sha_obj(files),
+        "pinned_files_verified": sorted(r for r in files
+                                        if files[r].get("matches_record")),
+        "files_not_pinned_by_the_record": sorted(
+            r for r in files if not files[r]["pinned_by_execution_record"]),
+        "numeric_dependencies": deps,
+        "honesty": ("every file of the executable surface comes from "
+                    "ONE checkout whose commit is recorded above. The "
+                    "seven files the external record pins are verified "
+                    "byte for byte; the rest post-date the record and "
+                    "are named, not hidden"),
+        "interpreter": sys.version.split()[0],
+    }
+
+
 def closure_code_identity(reviewed_checkout: Path,
                           tip: Path = TIP_REPO) -> dict:
     """Every file the closure can execute, and where each came from.
@@ -462,13 +540,18 @@ def closure_code_identity(reviewed_checkout: Path,
         try:
             from importlib import metadata
             dist = metadata.distribution(name)
+            # R12.4: version only. The previous record published a
+            # site-packages path, which is this host's topology and
+            # not evidence; it does not travel in Git.
             deps[name] = {"version": dist.version,
-                          "location": str(dist.locate_file("")),
-                          "binding": "NAME_VERSION_LOCATION_ONLY"}
+                          "binding": "NAME_AND_VERSION_ONLY",
+                          "location": "WITHHELD — local topology is "
+                                      "not evidence"}
         except Exception:                                 # noqa: BLE001
             deps[name] = {"version": "NOT_INSTALLED",
-                          "location": "UNAVAILABLE",
-                          "binding": "NAME_VERSION_LOCATION_ONLY"}
+                          "binding": "NAME_AND_VERSION_ONLY",
+                          "location": "WITHHELD — local topology is "
+                                      "not evidence"}
 
     def _git(repo, *args):
         return subprocess.run(("git", "-C", str(repo), *args),
@@ -746,12 +829,16 @@ def make_snapshot_class(results_root_cls):
         #: the token the pinned code passes back to `read_private`.
         units_fd = "UNITS_SNAPSHOT"
 
-        def __init__(self, custody, names: tuple[str, ...],
+        def __init__(self, units_snap, names: tuple[str, ...],
                      path=None) -> None:
             # The parent's __init__ is deliberately NOT called: it
             # would open the very descriptors this snapshot replaces.
+            # R11: `units_snap` is a RETAINED directory descriptor, so
+            # every read below comes out of the instance that was
+            # inventoried — not out of whatever now answers to the
+            # name `units`.
             self.path = path
-            self._custody = custody
+            self._units = units_snap
             self._names = tuple(sorted(names))
             self._json: dict[str, bytes] = {}
             self._arrays: dict[str, bytes] = {}
@@ -759,7 +846,7 @@ def make_snapshot_class(results_root_cls):
             self._reads = 0
             for name in self._names:
                 if name.endswith(".json"):
-                    art = custody.read(f"units/{name}")
+                    art = units_snap.read(name)
                     self._json[name] = art.raw()
                     self._digests[name] = art.sha256
                     self._reads += 1
@@ -775,7 +862,7 @@ def make_snapshot_class(results_root_cls):
             if name in self._arrays:
                 return self._arrays[name]
             if name in self._names and name.endswith(".npz"):
-                art = self._custody.read(f"units/{name}")
+                art = self._units.read(name)
                 self._arrays[name] = art.raw()
                 self._digests[name] = art.sha256
                 self._reads += 1
@@ -817,6 +904,40 @@ def make_snapshot_class(results_root_cls):
                     "reads": self._reads,
                     "inventory_sha256": sha_obj(self._digests)}
 
+    # R13: FAIL CLOSED on anything this adapter does not implement.
+    #
+    # Subclassing inherits the parent's methods, so a call the adapter
+    # does not override would silently run the pinned implementation
+    # against attributes the adapter never created — and the failure
+    # would be an AttributeError somewhere deep, not a refusal. Worse,
+    # if the pinned verifier ever grows a new public call, the adapter
+    # would quietly answer it with real filesystem behaviour.
+    #
+    # Every public callable of the parent that this adapter does not
+    # deliberately implement is therefore replaced by a typed refusal.
+    # Adding a call to the pinned verifier now stops the replay instead
+    # of changing what it consumes.
+    IMPLEMENTED = {"read_private", "exists", "listdir", "revalidate",
+                   "close", "release_arrays", "record", "digests",
+                   "reads", "facts"}
+
+    def _refuse(name):
+        def _stub(self, *a, **k):
+            raise ClosureRefusal(
+                f"the unit snapshot does not implement {name!r}. The "
+                "pinned verifier reached for it, so this replay would "
+                "have fallen through to real filesystem behaviour "
+                "outside the retained descriptor — it fails closed "
+                "instead")
+        _stub.__name__ = name
+        return _stub
+
+    for _name in dir(results_root_cls):
+        if _name.startswith("_") or _name in IMPLEMENTED:
+            continue
+        if callable(getattr(results_root_cls, _name, None)):
+            setattr(UnitSnapshotRoot, _name, _refuse(_name))
+    UnitSnapshotRoot.implemented_surface = frozenset(IMPLEMENTED)
     return UnitSnapshotRoot
 
 
@@ -859,13 +980,18 @@ def reconstruct_from_snapshot(conf, ex, recon, root: Path,
         "census_sha256": facts["census_sha256"]}
     uids = design["task_population"]["series_ids"]
 
-    units_snap = custody.snapshot("units")
+    # R11: the units directory is photographed ONCE and its
+    # descriptor is retained until the last verification. The audit
+    # showed the previous version re-resolved `units` by name for every
+    # RECORD and every ARRAYS, so the whole directory could be
+    # exchanged between the inventory and the reads.
+    units_snap = custody.walk_to("units")
     if units_snap.others or units_snap.dirs:
         raise ClosureRefusal(
             f"the units directory contains non-file entries: "
             f"{sorted(units_snap.others) + sorted(units_snap.dirs)}")
     snapshot_cls = make_snapshot_class(ex.ResultsRoot)
-    snap = snapshot_cls(custody, units_snap.files, path=root)
+    snap = snapshot_cls(units_snap, units_snap.files, path=root)
 
     expected = set()
     for uid in uids:
@@ -943,7 +1069,11 @@ def reconstruct_from_snapshot(conf, ex, recon, root: Path,
         "wall_ledger": wall,
         "release_sequence": release,
         "screen_adjudication": screen,
-        "unit_snapshot": snap.facts(),
+        "unit_snapshot": {**snap.facts(),
+                          "directory_instance": {
+                              "device": units_snap.device,
+                              "inode": units_snap.inode,
+                              "mode": oct(units_snap.mode)}},
         "train_seconds_from_records": round(cost_total, 3),
         "single_instance": (
             "every unit was read once through a retained descriptor; "
