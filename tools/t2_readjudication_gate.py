@@ -414,6 +414,31 @@ def readjudication_checkout_gate(verified: dict):
     return gate
 
 
+def historical_identity_view(verified: dict, repo_root: Path):
+    """T2-R19: the identity a unit CLAIM is checked against in a
+    read-only readjudication.
+
+    Each claim pins the commit and tree of the executor that WROTE it.
+    The executor's verifier compares that pin with the executing HEAD,
+    which a reproducer can never be. In a readjudication the question
+    is whether the claim was written under the historical identity the
+    readjudication record reviewed — so this returns that historical
+    commit and tree, and on every call first re-checks that the
+    executing checkout is still the clean, reviewed reproducer."""
+    def view() -> tuple:
+        facts = checkout_facts(repo_root)
+        if not facts["clean"] or (facts["commit"], facts["tree"]) != (
+                verified["reproducer"]["commit"],
+                verified["reproducer"]["tree"]):
+            raise ReadjudicationRefusal(
+                "REPRODUCER_CHECKOUT_MISMATCH",
+                "the reproducer moved while claims were being verified")
+        return (verified["historical_pinned_commit"],
+                verified["historical_pinned_tree"])
+    view.readjudication_scope = SCOPE
+    return view
+
+
 def assert_candidate_matches(verified: dict, adjudication_sha256: str) -> None:
     if adjudication_sha256 != verified["candidate_adjudication_sha256"]:
         raise ReadjudicationRefusal(

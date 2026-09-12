@@ -354,16 +354,43 @@ def test_the_readjudication_checkout_gate_refuses_a_dirty_reproducer(world):
     assert code(e) == "REPRODUCER_CHECKOUT_MISMATCH"
 
 
-def test_the_scoped_gate_is_restored_even_on_exception():
+def test_the_scoped_identity_restores_everything_even_on_exception():
     import t2_campaign_closure as T
-    original = object()
-    conf = types.SimpleNamespace(verify_executor_checkout=original)
-    replacement = lambda *a, **k: None
+    conf = types.SimpleNamespace(verify_executor_checkout="orig_gate")
+    ex = types.SimpleNamespace(_git_head_tree="orig_head", main="orig_main",
+                               rehearse="orig_rehearse")
+    repl = {("conf", "verify_executor_checkout"): "g",
+            ("ex", "_git_head_tree"): "h",
+            ("ex", "main"): T._write_path_refusal("main"),
+            ("ex", "rehearse"): T._write_path_refusal("rehearse")}
     with pytest.raises(RuntimeError):
-        with T.scoped_checkout_gate(conf, replacement):
-            assert conf.verify_executor_checkout is replacement
+        with T.scoped_readjudication_identity(conf, ex, repl):
+            assert ex._git_head_tree == "h"
+            with pytest.raises(SystemExit) as e:
+                ex.main()
+            assert "READ_ONLY_READJUDICATION" in str(e.value)
+            with pytest.raises(SystemExit):
+                ex.rehearse()
             raise RuntimeError("boom")
-    assert conf.verify_executor_checkout is original
+    assert (conf.verify_executor_checkout, ex._git_head_tree, ex.main,
+            ex.rehearse) == ("orig_gate", "orig_head", "orig_main",
+                             "orig_rehearse")
+
+
+def test_the_historical_identity_view_returns_the_reviewed_pins(world):
+    v = _verified(world)
+    view = G.historical_identity_view(v, world.co)
+    assert view() == (v["historical_pinned_commit"],
+                      v["historical_pinned_tree"])
+
+
+def test_the_historical_identity_view_refuses_a_moved_reproducer(world):
+    v = _verified(world)
+    view = G.historical_identity_view(v, world.co)
+    (world.co / "tools" / "stray.py").write_text("x = 1\n")
+    with pytest.raises(G.ReadjudicationRefusal) as e:
+        view()
+    assert code(e) == "REPRODUCER_CHECKOUT_MISMATCH"
 
 
 def test_the_legacy_modes_never_install_the_replacement():
@@ -371,5 +398,5 @@ def test_the_legacy_modes_never_install_the_replacement():
     src = (REPO / "tools/t2_campaign_closure.py").read_text()
     tree = ast.parse(src)
     users = [n.name for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)
-             and "scoped_checkout_gate(" in ast.get_source_segment(src, n)]
+             and "scoped_readjudication_identity(" in ast.get_source_segment(src, n)]
     assert users == ["run_reproducer"], users

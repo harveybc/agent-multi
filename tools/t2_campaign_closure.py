@@ -1343,25 +1343,42 @@ def reconstruct_from_snapshot(conf, ex, recon, root: Path,
     }
 
 
-class scoped_checkout_gate:
-    """Install a replacement for the pinned executor checkout check for
-    the duration of ONE read-only readjudication, and always restore the
-    original — on success and on exception. No pinned byte changes; the
-    replacement is named in the closure output."""
+class scoped_readjudication_identity:
+    """For ONE read-only readjudication closure, answer the executor's
+    two identity questions with the readjudication identity, and make
+    every writing entry point of the executor refuse — then restore all
+    of it, on success and on exception. No pinned byte changes; each
+    replacement is named in the closure output.
 
-    def __init__(self, conf, replacement):
-        self.conf = conf
-        self.replacement = replacement
-        self.original = None
+      conf.verify_executor_checkout -> readjudication_checkout_gate
+      ex._git_head_tree             -> historical_identity_view
+      ex.main, ex.rehearse          -> refusal (they would pin NEW claims)
+    """
+
+    def __init__(self, conf, ex, replacements: dict):
+        self.conf, self.ex = conf, ex
+        self.replacements = replacements
+        self.saved: dict = {}
 
     def __enter__(self):
-        self.original = self.conf.verify_executor_checkout
-        self.conf.verify_executor_checkout = self.replacement
+        for (owner, name), fn in self.replacements.items():
+            target = self.conf if owner == "conf" else self.ex
+            self.saved[(owner, name)] = getattr(target, name)
+            setattr(target, name, fn)
         return self
 
     def __exit__(self, *exc):
-        self.conf.verify_executor_checkout = self.original
+        for (owner, name), fn in self.saved.items():
+            setattr(self.conf if owner == "conf" else self.ex, name, fn)
         return False
+
+
+def _write_path_refusal(name):
+    def refuse(*a, **k):
+        raise ClosureRefusal(
+            f"READ_ONLY_READJUDICATION: the executor entry point {name} "
+            "writes new claims and is closed for the whole readjudication")
+    return refuse
 
 
 def run_reproducer(args) -> int:
@@ -1417,7 +1434,14 @@ def run_reproducer(args) -> int:
     verified = gate.verify_record(
         conf, checkout=co, preserved=gate.preserved_root_identity(dc, root),
         authority_root=authority, fixture=fixture)
-    with scoped_checkout_gate(conf, gate.readjudication_checkout_gate(verified)):
+    replacements = {
+        ("conf", "verify_executor_checkout"):
+            gate.readjudication_checkout_gate(verified),
+        ("ex", "_git_head_tree"): gate.historical_identity_view(verified, co),
+        ("ex", "main"): _write_path_refusal("main"),
+        ("ex", "rehearse"): _write_path_refusal("rehearse"),
+    }
+    with scoped_readjudication_identity(conf, ex, replacements):
         closure = build_closure(conf, ex, recon, root, co, snapshot_mode=True)
     scientific = gate.scientific_adjudication_digest(closure)
     gate.assert_candidate_matches(verified, scientific)
@@ -1437,7 +1461,18 @@ def run_reproducer(args) -> int:
             "historical record still pin the reviewed commit and tree and "
             "the executing checkout be the clean reproducer commit, tree "
             "and surface the readjudication record reviewed; the original "
-            "was restored when the closure finished"))
+            "was restored when the closure finished"),
+        executor_claim_identity=(
+            "REPLACED_FOR_THIS_READ_ONLY_READJUDICATION: each unit claim "
+            "pins the commit and tree of the executor that wrote it, and "
+            "the pinned verifier compared that pin with the executing "
+            "HEAD. For this run _git_head_tree returned the historical "
+            "commit and tree the readjudication record reviewed, after "
+            "re-checking on every call that the executing checkout was "
+            "still the clean reviewed reproducer; the claims' code "
+            "identity was still compared with the physical seven "
+            "historical digests, unchanged. The executor's writing entry "
+            "points main and rehearse refused for the whole scope"))
     closure["single_checkout_blocked"] = (
         "RESOLVED_WITHOUT_REPINNING: one reproducer checkout, the seven "
         "historical digests verified byte for byte, the reproducer "
