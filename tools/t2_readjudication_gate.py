@@ -366,7 +366,9 @@ def verify_record(conf, *, checkout: Path, preserved: dict,
         raise ReadjudicationRefusal(
             "PRESERVED_ROOT_MISMATCH",
             "the root about to be read is not the one the record reviewed")
-    return {"record_sha256": sha_bytes(raw),
+    return {"historical_pinned_commit": rec["historical_pinned_commit"],
+            "historical_pinned_tree": rec["historical_pinned_tree"],
+            "record_sha256": sha_bytes(raw),
             "record_kind": ("ISOLATED_FIXTURE_NOT_AN_EXTERNAL_RECORD"
                             if fixture else "EXTERNAL_REVIEW_RECORD"),
             "candidate_adjudication_sha256":
@@ -375,6 +377,41 @@ def verify_record(conf, *, checkout: Path, preserved: dict,
             "historical_execution_record_sha256":
                 rec["historical_execution_record_sha256"],
             "scope": SCOPE}
+
+
+def readjudication_checkout_gate(verified: dict):
+    """T2-R19: the checkout check a READ-ONLY readjudication runs in
+    place of the executor's.
+
+    The executor's gate demands that the executing HEAD be the
+    historical commit, which a reproducer carrying readjudication code
+    can never be. This gate demands what the order asks for instead:
+    the historical record still pins the commit and tree the
+    readjudication record reviewed, and the executing checkout is clean
+    at exactly the reproducer commit and tree that record reviewed,
+    with the same readjudication surface. It is never a no-op."""
+    def gate(pinned_commit, pinned_tree, repo_root=None):
+        if (pinned_commit, pinned_tree) != (
+                verified["historical_pinned_commit"],
+                verified["historical_pinned_tree"]):
+            raise ReadjudicationRefusal(
+                "HISTORICAL_RECORD_MISMATCH",
+                "the execution record consumed by the gates is not the "
+                "one the readjudication record reviewed")
+        facts = checkout_facts(repo_root)
+        if not facts["clean"] or (facts["commit"], facts["tree"]) != (
+                verified["reproducer"]["commit"],
+                verified["reproducer"]["tree"]):
+            raise ReadjudicationRefusal(
+                "REPRODUCER_CHECKOUT_MISMATCH",
+                "the checkout the gates run from is not the reviewed, "
+                "clean reproducer")
+        if readjudication_surface(repo_root)["surface_sha256"] != \
+                verified["surface_sha256"]:
+            raise ReadjudicationRefusal("SURFACE_MISMATCH",
+                                        "the surface moved during the run")
+    gate.readjudication_scope = SCOPE
+    return gate
 
 
 def assert_candidate_matches(verified: dict, adjudication_sha256: str) -> None:

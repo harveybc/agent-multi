@@ -323,3 +323,53 @@ def test_the_scientific_digest_does_not_depend_on_the_inventory_block():
     with_inv = dict(base, inventory={"exact": True, "total_artifacts": 726})
     assert G.scientific_adjudication_digest(base) == \
         G.scientific_adjudication_digest(with_inv)
+
+
+# ------------------------------------------ R19 scoped checkout gate
+def _verified(world):
+    install(world.auth, reviewed(world.template))
+    return verify(world)
+
+
+def test_the_readjudication_checkout_gate_accepts_the_reviewed_reproducer(world):
+    v = _verified(world)
+    gate = G.readjudication_checkout_gate(v)
+    gate(v["historical_pinned_commit"], v["historical_pinned_tree"], world.co)
+
+
+def test_the_readjudication_checkout_gate_refuses_another_historical_pin(world):
+    v = _verified(world)
+    gate = G.readjudication_checkout_gate(v)
+    with pytest.raises(G.ReadjudicationRefusal) as e:
+        gate("9" * 40, v["historical_pinned_tree"], world.co)
+    assert code(e) == "HISTORICAL_RECORD_MISMATCH"
+
+
+def test_the_readjudication_checkout_gate_refuses_a_dirty_reproducer(world):
+    v = _verified(world)
+    gate = G.readjudication_checkout_gate(v)
+    (world.co / "tools" / "stray.py").write_text("x = 1\n")
+    with pytest.raises(G.ReadjudicationRefusal) as e:
+        gate(v["historical_pinned_commit"], v["historical_pinned_tree"], world.co)
+    assert code(e) == "REPRODUCER_CHECKOUT_MISMATCH"
+
+
+def test_the_scoped_gate_is_restored_even_on_exception():
+    import t2_campaign_closure as T
+    original = object()
+    conf = types.SimpleNamespace(verify_executor_checkout=original)
+    replacement = lambda *a, **k: None
+    with pytest.raises(RuntimeError):
+        with T.scoped_checkout_gate(conf, replacement):
+            assert conf.verify_executor_checkout is replacement
+            raise RuntimeError("boom")
+    assert conf.verify_executor_checkout is original
+
+
+def test_the_legacy_modes_never_install_the_replacement():
+    import ast
+    src = (REPO / "tools/t2_campaign_closure.py").read_text()
+    tree = ast.parse(src)
+    users = [n.name for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)
+             and "scoped_checkout_gate(" in ast.get_source_segment(src, n)]
+    assert users == ["run_reproducer"], users

@@ -1343,6 +1343,27 @@ def reconstruct_from_snapshot(conf, ex, recon, root: Path,
     }
 
 
+class scoped_checkout_gate:
+    """Install a replacement for the pinned executor checkout check for
+    the duration of ONE read-only readjudication, and always restore the
+    original — on success and on exception. No pinned byte changes; the
+    replacement is named in the closure output."""
+
+    def __init__(self, conf, replacement):
+        self.conf = conf
+        self.replacement = replacement
+        self.original = None
+
+    def __enter__(self):
+        self.original = self.conf.verify_executor_checkout
+        self.conf.verify_executor_checkout = self.replacement
+        return self
+
+    def __exit__(self, *exc):
+        self.conf.verify_executor_checkout = self.original
+        return False
+
+
 def run_reproducer(args) -> int:
     """T2-R18..R20: template, or gate-then-readjudicate. Never both."""
     co = args.reproducer_checkout.expanduser().resolve()
@@ -1396,7 +1417,8 @@ def run_reproducer(args) -> int:
     verified = gate.verify_record(
         conf, checkout=co, preserved=gate.preserved_root_identity(dc, root),
         authority_root=authority, fixture=fixture)
-    closure = build_closure(conf, ex, recon, root, co, snapshot_mode=True)
+    with scoped_checkout_gate(conf, gate.readjudication_checkout_gate(verified)):
+        closure = build_closure(conf, ex, recon, root, co, snapshot_mode=True)
     scientific = gate.scientific_adjudication_digest(closure)
     gate.assert_candidate_matches(verified, scientific)
     closure["readjudication_identity"] = dict(
@@ -1406,7 +1428,16 @@ def run_reproducer(args) -> int:
                           + closure["reviewed_identity"]["pinned_commit"],
         readjudication="executed under the reproducer identity bound "
                        "by the readjudication review record",
-        grants_promotion=False)
+        grants_promotion=False,
+        executor_checkout_gate=(
+            "REPLACED_FOR_THIS_READ_ONLY_READJUDICATION: the pinned "
+            "verify_executor_checkout demands HEAD == the historical "
+            "commit, which no reproducer can be. For this run only it was "
+            "replaced by readjudication_checkout_gate, which demands the "
+            "historical record still pin the reviewed commit and tree and "
+            "the executing checkout be the clean reproducer commit, tree "
+            "and surface the readjudication record reviewed; the original "
+            "was restored when the closure finished"))
     closure["single_checkout_blocked"] = (
         "RESOLVED_WITHOUT_REPINNING: one reproducer checkout, the seven "
         "historical digests verified byte for byte, the reproducer "
