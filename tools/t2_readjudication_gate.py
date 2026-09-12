@@ -164,16 +164,17 @@ def preserved_root_identity(custody_module, root: Path) -> dict:
 
 
 def scientific_adjudication_digest(closure: dict) -> str:
+    # The inventory is a custody fact the closure already refuses when it
+    # is not exact; it is not part of the scientific result, and keeping
+    # it here made the candidate impossible to derive from the versioned
+    # historical evidence, which predates the inventory block.
     screen = closure["screen_adjudication"]
     sign = closure.get("sign_test_supersession") or {}
-    inv = closure["inventory"]
     body = {
         "final_adjudication_counts": closure["final_adjudication_counts"],
         "screen_adjudication": screen,
         "sign_test_corrected": {k: sign.get(k) for k in (
             "corrected_table_0_to_6", "corrected_value", "signs_positive")},
-        "inventory": {k: inv.get(k) for k in ("exact", "sealed_units",
-                                              "total_artifacts")},
     }
     return sha_obj(body)
 

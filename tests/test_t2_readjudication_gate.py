@@ -312,3 +312,14 @@ def test_a_closure_run_from_another_tree_is_an_import_mix(tmp_path):
     with pytest.raises(SystemExit) as e:
         T.load_single_checkout_modules(other)
     assert "IMPORT_MIX" in str(e.value)
+
+
+def test_the_scientific_digest_does_not_depend_on_the_inventory_block():
+    base = {"final_adjudication_counts": {"COMPLETED_VERIFIED": 242},
+            "screen_adjudication": {"verdict": "DOES_NOT_ADVANCE"},
+            "sign_test_supersession": {"corrected_value": 1.0,
+                                       "corrected_table_0_to_6": [1],
+                                       "signs_positive": 3}}
+    with_inv = dict(base, inventory={"exact": True, "total_artifacts": 726})
+    assert G.scientific_adjudication_digest(base) == \
+        G.scientific_adjudication_digest(with_inv)

@@ -915,6 +915,11 @@ def main(argv=None) -> int:
     ap.add_argument("--candidate-closure", type=Path, default=None,
                     help="a previous closure JSON whose scientific "
                          "adjudication the template binds")
+    ap.add_argument("--candidate-evidence", default=None,
+                    help="checkout-relative path of the VERSIONED "
+                         "historical screen evidence the template binds; "
+                         "the corrected sign test is derived from it by "
+                         "supersede_sign_test")
     ap.add_argument("--audit-snapshot", type=Path, default=None,
                     help="R12: the ONE recoverable checkout every "
                          "replay import comes from")
@@ -1344,10 +1349,31 @@ def run_reproducer(args) -> int:
     conf, ex, recon, dc, gate = load_single_checkout_modules(co)
     root = (args.root or recon.DEFAULT_ROOT).expanduser()
     if args.template_out:
-        if not args.candidate_closure:
+        if args.candidate_evidence:
+            rel = args.candidate_evidence
+            if rel.startswith("/") or ".." in rel.split("/"):
+                raise ClosureRefusal("candidate evidence must be a "
+                                     "checkout-relative path")
+            tracked = subprocess.run(
+                ("git", "-C", str(co), "ls-files", "--error-unmatch", rel),
+                capture_output=True, text=True).returncode == 0
+            if not tracked:
+                raise ClosureRefusal("candidate evidence is not a tracked, "
+                                     "versioned file of the reproducer")
+            ev = json.loads((co / rel).read_text())
+            candidate = {
+                "final_adjudication_counts": ev["final_adjudication_counts"],
+                "screen_adjudication": ev["screen_adjudication"],
+                "sign_test_supersession":
+                    supersede_sign_test(ev["screen_adjudication"])}
+            print(json.dumps({"candidate_source": rel,
+                              "candidate_source_sha256":
+                                  sha_file(co / rel)}), file=sys.stderr)
+        elif args.candidate_closure:
+            candidate = json.loads(args.candidate_closure.read_text())
+        else:
             raise ClosureRefusal("a template binds a candidate "
-                                 "adjudication: --candidate-closure")
-        candidate = json.loads(args.candidate_closure.read_text())
+                                 "adjudication: --candidate-evidence")
         hist_raw = gate._read_private(
             conf, conf.T2_SUCCESSOR_EXECUTION_RECORD_PATH,
             "T2_SUCCESSOR_EXECUTION_RECORD_REQUIRED")
