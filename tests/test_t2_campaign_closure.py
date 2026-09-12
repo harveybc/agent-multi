@@ -455,3 +455,17 @@ def test_each_array_is_read_exactly_once_per_unit():
     for u in "abc":
         assert units.read_log.count(f"ARRAYS_{u}.npz") == 1
         assert units.read_log.count(f"RECORD_{u}.json") == 1
+
+
+def test_the_entry_point_is_defined_after_everything_it_calls():
+    """Running the module as a script must not call a function that
+    does not exist yet. The guard once sat above a function appended
+    below it, and only a real invocation could show that."""
+    import ast as _ast
+    tree = _ast.parse((REPO / "tools/t2_campaign_closure.py").read_text())
+    guards = [n for n in tree.body if isinstance(n, _ast.If)]
+    defs = [n.lineno for n in tree.body
+            if isinstance(n, _ast.FunctionDef)]
+    assert guards, "the module has no __main__ guard"
+    assert guards[-1].lineno > max(defs), (
+        "the entry point must come after every definition it can reach")

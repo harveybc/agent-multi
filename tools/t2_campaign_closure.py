@@ -853,8 +853,6 @@ def main(argv=None) -> int:
     return 0
 
 
-if __name__ == "__main__":
-    sys.exit(main())
 
 
 # =====================================================================
@@ -1160,3 +1158,12 @@ def reconstruct_from_snapshot(conf, ex, recon, root: Path,
             "reproduced above over the snapshot"),
         "wall_seconds_reconstruction": round(time.perf_counter() - t0, 2),
     }
+
+
+# The entry point lives at the END of the module, after every
+# definition. It used to sit in the middle: `reconstruct_from_snapshot`
+# was appended below it, so running this file as a script called main()
+# before that function existed and died with a NameError. The tests
+# never saw it because importing a module defines everything first.
+if __name__ == "__main__":
+    sys.exit(main())
