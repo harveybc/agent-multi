@@ -1,0 +1,151 @@
+{
+ "adjudication": {
+  "contract": "the pre-existing contract is the complete-population gate: the campaign verifier re-derives ALL declared cells before any comparison. With 2/12 cells sealed the population is incomplete, so no effect, ranking or promotion may be read from it",
+  "counts": {
+   "COMPLETED_VERIFIED": 2,
+   "NOT_STARTED": 9,
+   "QUARANTINED_PARTIAL": 1
+  },
+  "declared_cells": 12,
+  "explicitly_not_done": [
+   "no cell was completed by label",
+   "no partial artifact was promoted to a result",
+   "no comparison, effect or ranking was computed",
+   "no completed cell became promotable by this act",
+   "no campaign was relaunched, resumed or rescheduled"
+  ],
+  "verdict": "SCIENTIFICALLY_INSUFFICIENT_NO_VERDICT"
+ },
+ "adjudication_sha256": "56932ef7461dfca30d85f31a16e2889ae0a4ab79fd6a97a6faadca1d3bb39df5",
+ "campaign_generation": "b4_campaign_generation_v7_20260907",
+ "campaign_ledger_sha256": "a7b245aa5706462324286ea66c03476e21ccd62033890e5b64abae13f3ef2280",
+ "cell_digests": {
+  "o2022_seed101": {
+   "classification": "COMPLETED_VERIFIED",
+   "per_bar_sha256": "baca8f9a0c90e2162cc5e437ecccf916d0d4e5ce74a938a7a3b9ab042bbf5844",
+   "terminal_sha256": "3a836df218702adfa8eb8d436b81064e3f517e59f16ab9a750b58304a8c921d5"
+  },
+  "o2022_seed202": {
+   "classification": "COMPLETED_VERIFIED",
+   "per_bar_sha256": "da687731ef806dad2f1a3bd1403e0755c2ef74e5b7c599cf99c6ce7119e99cb6",
+   "terminal_sha256": "cd3e61e7e33772663e808745a1135a1d4cebf6ddd7c4b67f54c134f0c3c5fd7c"
+  },
+  "o2022_seed303": {
+   "artifact_inventory_sha256": "13af9ed72188e43f21597db3558fbff1218723397ff920eac1f7dffcfef6fc85",
+   "classification": "QUARANTINED_PARTIAL"
+  },
+  "o2022_seed404": {
+   "classification": "NOT_STARTED"
+  },
+  "o2023_seed101": {
+   "classification": "NOT_STARTED"
+  },
+  "o2023_seed202": {
+   "classification": "NOT_STARTED"
+  },
+  "o2023_seed303": {
+   "classification": "NOT_STARTED"
+  },
+  "o2023_seed404": {
+   "classification": "NOT_STARTED"
+  },
+  "o2024_seed101": {
+   "classification": "NOT_STARTED"
+  },
+  "o2024_seed202": {
+   "classification": "NOT_STARTED"
+  },
+  "o2024_seed303": {
+   "classification": "NOT_STARTED"
+  },
+  "o2024_seed404": {
+   "classification": "NOT_STARTED"
+  }
+ },
+ "code_identity": {
+  "commit": "4c842dd10da9f4956eea4ffc9435492fcd36243e",
+  "dirty_paths": [],
+  "excluded_from_cleanliness": [],
+  "excluded_reason": "this submission's own file; an artifact cannot be required to be absent from the tree it describes",
+  "files": {
+   "tools/b4_authority.py": "86873fc9b7c90bef62900cf1fe50f43219561d6fff29b7ff18a9fb3e77d31ca0",
+   "tools/b4_campaign_closure.py": "50652b779a1540ecc759f62b34dab4e061310f340f576bd9b1b31657579d4c98",
+   "tools/descriptor_custody.py": "a299cf78ba9e5b64a5c4f6c639c1a0588816a14c5b34c9dec3b00f6d74142dff"
+  },
+  "interpreter": "3.12.13",
+  "surface_sha256": "d125c3484c07a041c3aa90279dcbaf29c421d8ed04216ae101f864b22d0a7162",
+  "worktree_clean": true
+ },
+ "costs": {
+  "completed_wall_seconds": {
+   "o2022_seed101": 17773.3,
+   "o2022_seed202": 17909.1
+  },
+  "completed_wall_seconds_total": 35682.4,
+  "cost_units": "wall_seconds",
+  "device": "gpu_attached_cell_wall",
+  "quarantined_partial": {
+   "o2022_seed303": {
+    "bound": "LOWER_BOUND",
+    "claim_to_stop_signal_seconds": 124993.6,
+    "why": "the STOP file records when the stop was SIGNALLED. The charge closes at the externally observed reap, which is later by the escalation window and has no durable v7 record; this closure therefore does not lower any charge already made"
+   }
+  }
+ },
+ "custody": {
+  "artifact_reads": 40,
+  "directory_binding": {
+   "bindings_sha256": "b8ed0af6ee5cc96d16c8ac697eba813908decd3303c6fe48eadf610416464f89",
+   "contract": "agent_multi.descriptor_custody.component_binding.v2",
+   "directories_bound": 7,
+   "rule": "each child directory's fstat at open equals its parent's inventory, and each listing is bracketed by fstats and a second identical listing"
+  },
+  "discipline": "one path resolution -> one RETAINED descriptor -> one read -> all facts. After a directory is photographed nothing is resolved by name again, so a replaced directory cannot be consumed",
+  "leaf_binding": {
+   "bindings_sha256": "14c19abd1e2d2d6cc0643b902349bab4fa32710181a57296784dc51f8bd801da",
+   "contract": "agent_multi.descriptor_custody.component_binding.v2",
+   "reads_bound": 40,
+   "reads_total": 40,
+   "rule": "each read's fstat at open equals the inventory on type, device, inode, uid, mode, size, mtime_ns and ctime_ns, and does not move before the last byte"
+  },
+  "observed_weaknesses": [
+   "GROUP_WRITABLE",
+   "NONE"
+  ],
+  "retained_descriptors_during_the_run": 8,
+  "root_snapshot": {
+   "custody_weakness": "NONE",
+   "device": 66309,
+   "dirs": [
+    "o2022_seed101",
+    "o2022_seed202",
+    "o2022_seed303"
+   ],
+   "excluded": [
+    "B4_CAMPAIGN_CLOSURE.jsonl"
+   ],
+   "excluded_reason": "this closure's own append-only record; including it would make the closure change the snapshot it publishes",
+   "files": [
+    "CAMPAIGN_LEDGER.json",
+    "CAMPAIGN_STOP",
+    "LOCK_EPOCH_1.json"
+   ],
+   "inode": 20469162,
+   "mode": "0o700",
+   "other_entries": [],
+   "rel": ".",
+   "uid": 1000
+  }
+ },
+ "grants_nothing": "a submission states what was re-adjudicated and asks for a decision. It opens no campaign, promotes no cell, and does not authorize reading or writing the preserved root",
+ "physical_paths": "WITHHELD \u2014 logical ids identify these roots; the absolute paths live only in the operator's private register",
+ "preserved_root_logical": "b4_campaign_results_v7_20260907",
+ "read_the_preserved_root": false,
+ "requires": "EXTERNAL_REVIEW",
+ "results_root_logical": "b4_v7_fresh_c88_20260912",
+ "root_actually_read_logical": "b4_v7_fresh_c88_20260912",
+ "schema": "agent_multi.b4_readjudication_submission.v4",
+ "submission_sha256": "9e7047ea077a3dfebc24999654d57c87a623a7345557ad308bfb8202e23a109b",
+ "submitted_at": "2026-09-12T23:14:55Z",
+ "supersedes": "agent_multi.b4_readjudication_submission.v3 \u2014 which bound leaves but still opened child directories by name without comparing them to the inventory"
+}
