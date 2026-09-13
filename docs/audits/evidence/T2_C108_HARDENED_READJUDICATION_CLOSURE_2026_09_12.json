@@ -1,0 +1,233 @@
+{
+ "adjudication_sha256": "3cb38405ec873ab3e2947946628ca34a21f43baa936047ae0de1518e9cb08df5",
+ "audit_snapshot_identity": {
+  "established_by": "t2_hardened_readjudicate gate",
+  "single_checkout": true
+ },
+ "branch_tip_divergence": {
+  "branch_tip_can_run_the_gate": false,
+  "consequence": "the branch tip refuses its own confirmatory gate, so the recomputation MUST run from the reviewed checkout. The corrections made after the record was authored (a typed refusal for omitted mlp seeds at both executor sites) are NOT part of the identity this closure recomputes under, and are declared here rather than silently included",
+  "diverged_files": {
+   "tools/t2_confirmatory.py": {
+    "branch_tip": "d845b0b00198b522463edae6aa622a917ae4e2408f4fcc6a42f581d3aa7a14cf",
+    "reviewed": "e00ab31937401e6f1d1129cd93da6969008a13f14038e37e7561d7cbaf1e9909"
+   },
+   "tools/t2_confirmatory_executor.py": {
+    "branch_tip": "dac73bb1ebc8da4bfe1558231753c39b99cf375b46653dc13b3b69615cdd5acf",
+    "reviewed": "ff3f8a07be480d235c2d3feaf42ea88657fa63fc99cf3b055bccfb353f4133a9"
+   }
+  }
+ },
+ "campaign_root_logical": "t2_confirmatory_results_resource_successor_v1_20260909",
+ "closed_at": "2026-09-13T00:51:20Z",
+ "closure_sha256": "449b418b2e3fc8a2b6289d33c8fea88c2b9b8fd25e182439d8aa0da2240d35ef",
+ "downloads": "NONE",
+ "final_adjudication_counts": {
+  "COMPLETED_VERIFIED": 242,
+  "TERMINAL_FAILED": 0
+ },
+ "final_adjudication_not_called": "the pinned final_adjudication() re-resolves the results root and would reopen the evidence; its exact-inventory, deep-adjudication and population-closure guarantees are reproduced above over the snapshot",
+ "gate_facts": {
+  "census_sha256": "dc1bf8c770b297c506b1e30195753d7b25f82c51cbdd62b27667f58e7964674f",
+  "design_file_sha256": "0e0317e2de947fd49efec10e4849909e25f619174533863520301c473a81a97f",
+  "design_self_sha256": "0542ed0536c38e92707454f0e55134246dddecbfbad4a63db1817c1ba1ce4e27",
+  "execution_record_sha256": "4761df4a8b324442a83a0554cc53d3005025500d9e8d0c3b2272a729c9714752",
+  "manifest_sha256": "43c48f6bb513be37d4a591f67694880e9f768391ab0db710902c3aadd55b76ff",
+  "review_record_sha256": "13310ef88720f6a50d7f4a106c1490eac5cf65d5fb3659397c03bec1251d86fb"
+ },
+ "hardened_readjudication_identity": {
+  "declared_replacements": {
+   "conf.executor_code_identity": "claims and the historical record are compared with the HISTORICAL seven digests the record binds, after re-checking the running hardened surface is the reviewed one",
+   "conf.verify_executor_checkout": "the consumed historical record must pin the reviewed historical commit and tree; the executing checkout must be the clean reviewed hardened commit",
+   "ex._git_head_tree": "claims are compared with the historical commit and tree, re-checking the hardened checkout on every call",
+   "ex.main / ex.rehearse": "the executor's claim-writing entry points refuse for the whole scope"
+  },
+  "grants_promotion": false,
+  "record_kind": "EXTERNAL_REVIEW_RECORD",
+  "scientific_adjudication_sha256": "1be80a0ab6d091794f7ce3ec97c2dbf88920911037c0415c383043bd95ca3a6d"
+ },
+ "heartbeat_reconciliation": {
+  "authority": "RECORDS_GOVERN_TELEMETRY_DOES_NOT",
+  "current_unit_record_sealed": true,
+  "discrepancy": 1,
+  "explanation": "the heartbeat is written at the START of a unit: it names the unit being worked on and counts the units finished BEFORE it. When the executor sealed the last unit (weather::T961) it did not write a further heartbeat, because there was no next unit to announce. So done=241 and current_unit=<the 242nd> together describe 242 units, and the 242nd unit's record is physically present. No unit is missing and none was inferred: the count comes from the records, and the heartbeat is telemetry with no terminal authority.",
+  "heartbeat_current_unit": "weather::T961",
+  "heartbeat_done": 241,
+  "records_on_disk": 242,
+  "units_adjudicated": 242
+ },
+ "inventory": {
+  "artifacts_per_kind": {
+   "ARRAYS": 242,
+   "CLAIM": 242,
+   "RECORD": 242
+  },
+  "duplicates": [],
+  "exact": true,
+  "extra": [],
+  "missing": [],
+  "sealed_units": 242,
+  "snapshot_inventory_sha256": "0cad931719f50a341a916bf4d9b89c5984e876fbeb6759b5a9deb916bc356f4b",
+  "total_artifacts": 726
+ },
+ "measurement": {
+  "closure_seconds": 822.21,
+  "custody_reads": 726,
+  "leaf_binding": {
+   "bindings_sha256": "4098da66750bb2b7510951a73ac3749e3e59270fc7ea894862b067ce38b2a041",
+   "reads_bound": 726,
+   "reads_total": 726
+  },
+  "reconstruction_seconds": 802.83
+ },
+ "release_sequence": {
+  "epochs": [
+   1
+  ],
+  "final_epoch": 1,
+  "release_done_sha256": "51a1a97af6197c710f7b6952a2cca9b3bdc6f13d194e3a16dd970576dfe2181e",
+  "release_intent_sha256": "1dc858747f7e3315cfb8b4eb3c20be3d70b8f0cec6ed28945488c4698dbf422f"
+ },
+ "retraining": "NONE \u2014 every number re-derives from the arrays and records already on disk",
+ "reviewed_identity": {
+  "checkout_clean": true,
+  "hardened_commit": "4bf38b6f4ba2a2e3e97f331f52619757d33be538",
+  "hardened_surface_sha256": "3d43325b8c17afdccc7da78586c6c7097d96f5e2bf62e48c99d426978a8077da",
+  "hardened_tree": "0254f346c7d97ba0335fd9a5365502bce6f02270",
+  "historical": {
+   "code_identity": {
+    "tools/t2_assay_harness.py": "4c43ed82602268dda8116a51968bead4d80bc416058de28b441bef0e9393e9f3",
+    "tools/t2_bank.py": "24598975bf32c9f36396c5e9f6fbb9648f75000c11cc85f41aed38c30035ee95",
+    "tools/t2_bank_census.py": "5a554fea5e2fbb3c2abc4ebac0d3bd92b404396c09254daf4c9cbdb8b801aeb6",
+    "tools/t2_confirmatory.py": "e00ab31937401e6f1d1129cd93da6969008a13f14038e37e7561d7cbaf1e9909",
+    "tools/t2_confirmatory_executor.py": "ff3f8a07be480d235c2d3feaf42ea88657fa63fc99cf3b055bccfb353f4133a9",
+    "tools/t2_fresh_verifier.py": "226631b0a3795a29255d4b0b4afd6d3a070332f045960a3360aa1c0346b58eb8",
+    "tools/t2_public_data_census.py": "b914a85d0767792cce5c0fb51af9dda0d4fac9fb4a08b33e38b9a834a4856f7c"
+   },
+   "commit": "7bcd3f0d6a95b30ce105df3b1e7e13614b7fe6b3",
+   "record_sha256": "4761df4a8b324442a83a0554cc53d3005025500d9e8d0c3b2272a729c9714752",
+   "tree": "6c2942a24ef4523447801a179cf5f15c9da5617b"
+  },
+  "mode": "HARDENED_READJUDICATION"
+ },
+ "schema": "agent_multi.t2_campaign_closure.v1",
+ "screen_adjudication": {
+  "leave_one_panel_out_means": [
+   0.006048409074907328,
+   -0.0024277159676020657,
+   0.0015230069371712086,
+   0.0009283548323819927,
+   -0.010284929523401517,
+   -0.0020777857016102477
+  ],
+  "panel_effect_definition": "mase_improvement_X_minus_D = MASE(X) - MASE(D); positive = D reduces error",
+  "panels": {
+   "electricity_weekly": {
+    "attribution": 0.039135682444549666,
+    "coverage_drop": 0.013661067193675885,
+    "effect": -0.03653270572268994,
+    "extreme_ratio": 0.9828915272592487,
+    "extreme_state": "EVALUATED",
+    "n_series": 40,
+    "width_ratio": 1.0504135969101642
+   },
+   "hospital": {
+    "attribution": 0.18497388022103448,
+    "coverage_drop": -0.00625,
+    "effect": 0.005847919489857028,
+    "extreme_ratio": 0.9610300256688726,
+    "extreme_state": "EVALUATED",
+    "n_series": 40,
+    "width_ratio": 1.0068241386949417
+   },
+   "pedestrian_counts": {
+    "attribution": -0.011918168706612137,
+    "coverage_drop": 0.01437078404556794,
+    "effect": -0.013905695034009338,
+    "extreme_ratio": 0.9965038128061028,
+    "extreme_state": "EVALUATED",
+    "n_series": 40,
+    "width_ratio": 0.9976329114946457
+   },
+   "solar_10_minutes": {
+    "attribution": -0.01086299398413646,
+    "coverage_drop": 9.164048367133609e-05,
+    "effect": -0.010932434510063264,
+    "extreme_ratio": 1.0484147857623103,
+    "extreme_state": "EVALUATED",
+    "n_series": 40,
+    "width_ratio": 1.0264944064967054
+   },
+   "tourism_monthly": {
+    "attribution": 0.1047102746383913,
+    "coverage_drop": 0.015270291408452518,
+    "effect": 0.04513398726885428,
+    "extreme_ratio": 0.9312186561758292,
+    "extreme_state": "EVALUATED",
+    "n_series": 40,
+    "width_ratio": 0.9653981018808494
+   },
+   "weather": {
+    "attribution": 0.006413810197179554,
+    "coverage_drop": -0.0009297109972341011,
+    "effect": 0.004098268159897935,
+    "extreme_ratio": 0.9861846218367782,
+    "extreme_state": "EVALUATED",
+    "n_series": 40,
+    "width_ratio": 0.994230756294154
+   }
+  },
+  "primary_estimand_unweighted_mean_of_panel_effects": -0.001048443391358884,
+  "reason": "electricity_weekly: effect -0.0365 beyond the non-inferiority margin",
+  "scope": "ONLY these six public panels and their admitted series \u2014 no family-level or public-eligibility claim",
+  "sign_test_exact_p_two_sided": 1.0,
+  "signs_positive": 3,
+  "t_ci_low_df5": -0.029707838780035883,
+  "verdict": "DOES_NOT_ADVANCE"
+ },
+ "sign_test_supersession": {
+  "changes_estimand": false,
+  "changes_panel_effects": false,
+  "changes_verdict": false,
+  "corrected_table_0_to_6": [
+   0.03125,
+   0.21875,
+   0.6875,
+   1.0,
+   0.6875,
+   0.21875,
+   0.03125
+  ],
+  "corrected_value": 1.0,
+  "historical_envelope": "NOT REWRITTEN",
+  "published_value": 1.0,
+  "published_value_valid": true,
+  "signs_positive": 3,
+  "state": "SUPERSEDED",
+  "why_the_verdict_stands": "advancement required 6/6 positive signs and the harm gate already determined the negative result; correcting an inference that could never have been read as favourable cannot turn it favourable"
+ },
+ "single_checkout_blocked": "NOT_APPLICABLE_HARDENED_MODE",
+ "single_instance": "every unit was read once through a retained descriptor; the pinned verifier and the screen consumed that same instance, and no RECORD, ARRAYS, manifest, census or design was re-opened by path between them",
+ "submission_written": {
+  "schema": "agent_multi.t2_readjudication_submission.v4",
+  "sha256": "1cf89d93d0d5fd4fd8a1a73c88159ef9e5c5ac37db58e9be29d57954aa93ba6f"
+ },
+ "terminal_state": "COMPLETE",
+ "unit_snapshot": {
+  "artifacts": 726,
+  "directory_instance": {
+   "device": 66309,
+   "inode": 19949975,
+   "mode": "0o700"
+  },
+  "inventory_sha256": "0cad931719f50a341a916bf4d9b89c5984e876fbeb6759b5a9deb916bc356f4b",
+  "json_held": 484,
+  "reads": 726
+ },
+ "wall_ledger": {
+  "charged_state": 32760.294596000072,
+  "raw_sha256": "8ac5210cb9e021759c02ed88fd6a8dd4394e6c9d725a797f40cddba005e1df42",
+  "records": 50339,
+  "replayed": true
+ }
+}

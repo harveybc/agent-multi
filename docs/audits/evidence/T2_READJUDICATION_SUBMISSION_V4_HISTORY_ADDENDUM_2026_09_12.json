@@ -1,0 +1,76 @@
+{
+ "binds": {
+  "closure_output_file_sha256": "9924a4b32822150160d62c1ddca8d9cc7c809d77b587b80f87b704ce9703acc3",
+  "hardened_commit": "4bf38b6f4ba2a2e3e97f331f52619757d33be538",
+  "historical_evidence_file_sha256": "181c0796d015710b97e605c4fc3c9125271b94e4228dab397722e1e3eb75e0d7",
+  "historical_evidence_logical": "T2_COMPLETION_RECONSTRUCTION_AND_SCREEN_ADJUDICATION_2026_09_10.json",
+  "review_record_sha256": "c75d8d6ef4f1a1af67768d8c53507b231c316d9373b9d8dc52c22a0bdfdff1ff",
+  "scientific_adjudication_sha256": "1be80a0ab6d091794f7ce3ec97c2dbf88920911037c0415c383043bd95ca3a6d",
+  "submission_file_sha256": "b3bab71dbfc31fbe13fc24d682355ebc5d78bc48fa14b0c7129fb4f745bbfc02",
+  "submission_self_sha256": "1cf89d93d0d5fd4fd8a1a73c88159ef9e5c5ac37db58e9be29d57954aa93ba6f"
+ },
+ "c109_declarations": {
+  "final_adjudication_counts": {
+   "COMPLETED_VERIFIED": 242,
+   "TERMINAL_FAILED": 0
+  },
+  "grants_nothing": "states what was re-adjudicated, under which identities and which record; opens nothing",
+  "grants_promotion": false,
+  "panel_effects": {
+   "electricity_weekly": -0.03653270572268994,
+   "hospital": 0.005847919489857028,
+   "pedestrian_counts": -0.013905695034009338,
+   "solar_10_minutes": -0.010932434510063264,
+   "tourism_monthly": 0.04513398726885428,
+   "weather": 0.004098268159897935
+  },
+  "panel_effects_equal_to_historical": {
+   "electricity_weekly": true,
+   "hospital": true,
+   "pedestrian_counts": true,
+   "solar_10_minutes": true,
+   "tourism_monthly": true,
+   "weather": true
+  },
+  "primary_estimand": -0.001048443391358884,
+  "scientific_digest_equals_record": true,
+  "sign_test_exact_p_two_sided": 1.0,
+  "signs_positive": 3,
+  "verdict": "DOES_NOT_ADVANCE"
+ },
+ "checks": {
+  "closure_is_this_submission": true,
+  "counts_242_0": true,
+  "digest_equals_record": true,
+  "estimand": true,
+  "historical_1_3125": true,
+  "no_promotion": true,
+  "p_1_0": true,
+  "record": true,
+  "signs_positive_3": true,
+  "six_effects_equal": true,
+  "verdict": true
+ },
+ "does_not_modify_submission": true,
+ "gap_confessed": "The submission written by the reviewed builder at 4bf38b6f applies supersede_sign_test to the RECOMPUTED screen, so its sign_test_supersession reads published_value 1.0 and published_value_valid true: the submission itself does not show the historical 1.3125 as an invalid superseded value, as C109 requires. The code may not change under the record and C108 allows one attempt, so the history is bound here, beside the unedited submission, derived mechanically from the preserved evidence.",
+ "order_item": "C109",
+ "schema": "agent_multi.t2_readjudication_submission_v4_history_addendum.v1",
+ "sign_test_history": {
+  "corrected_table_0_to_6": [
+   0.03125,
+   0.21875,
+   0.6875,
+   1.0,
+   0.6875,
+   0.21875,
+   0.03125
+  ],
+  "historical_evidence": "PRESERVED_BYTE_FOR_BYTE",
+  "historical_value": 1.3125,
+  "historical_value_valid": false,
+  "rule": "min(1, 2 * min(P(X <= k), P(X >= k))), X ~ Binomial(6, 0.5); committed in 5fb2849e before the replay",
+  "signs_positive": 3,
+  "state": "INVALID_SUPERSEDED_NOT_EDITED",
+  "superseded_by": 1.0
+ }
+}

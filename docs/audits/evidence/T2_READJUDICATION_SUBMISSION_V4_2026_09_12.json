@@ -1,0 +1,98 @@
+{
+ "campaign_root_logical": "t2_confirmatory_results_resource_successor_v1_20260909",
+ "grants_nothing": "states what was re-adjudicated, under which identities and which record; opens nothing",
+ "grants_promotion": false,
+ "hardened_readjudication": {
+  "candidate_adjudication_sha256": "1be80a0ab6d091794f7ce3ec97c2dbf88920911037c0415c383043bd95ca3a6d",
+  "custody_reads": 726,
+  "declared_replacements": {
+   "conf.executor_code_identity": "claims and the historical record are compared with the HISTORICAL seven digests the record binds, after re-checking the running hardened surface is the reviewed one",
+   "conf.verify_executor_checkout": "the consumed historical record must pin the reviewed historical commit and tree; the executing checkout must be the clean reviewed hardened commit",
+   "ex._git_head_tree": "claims are compared with the historical commit and tree, re-checking the hardened checkout on every call",
+   "ex.main / ex.rehearse": "the executor's claim-writing entry points refuse for the whole scope"
+  },
+  "downloads": false,
+  "environment_guard": {
+   "bytecode": "NONE",
+   "pythonpath": null,
+   "shadowing": "NONE",
+   "sys_modules_clean": true
+  },
+  "equal_to_candidate": true,
+  "final_adjudication_counts": {
+   "COMPLETED_VERIFIED": 242,
+   "TERMINAL_FAILED": 0
+  },
+  "identity": "re-executed read-only under hardened commit 4bf38b6f4ba2a2e3e97f331f52619757d33be538, tree 0254f346c7d97ba0335fd9a5365502bce6f02270",
+  "inventory_exact": true,
+  "leaf_binding": {
+   "bindings_sha256": "4098da66750bb2b7510951a73ac3749e3e59270fc7ea894862b067ce38b2a041",
+   "reads_bound": 726,
+   "reads_total": 726
+  },
+  "model_execution": false,
+  "panel_effects_equal_to_historical": {
+   "electricity_weekly": true,
+   "hospital": true,
+   "pedestrian_counts": true,
+   "solar_10_minutes": true,
+   "tourism_monthly": true,
+   "weather": true
+  },
+  "primary_estimand": -0.001048443391358884,
+  "retraining": false,
+  "review_record_sha256": "c75d8d6ef4f1a1af67768d8c53507b231c316d9373b9d8dc52c22a0bdfdff1ff",
+  "scientific_adjudication_sha256": "1be80a0ab6d091794f7ce3ec97c2dbf88920911037c0415c383043bd95ca3a6d",
+  "sign_test_supersession": {
+   "changes_estimand": false,
+   "changes_panel_effects": false,
+   "changes_verdict": false,
+   "corrected_table_0_to_6": [
+    0.03125,
+    0.21875,
+    0.6875,
+    1.0,
+    0.6875,
+    0.21875,
+    0.03125
+   ],
+   "corrected_value": 1.0,
+   "historical_envelope": "NOT REWRITTEN",
+   "published_value": 1.0,
+   "published_value_valid": true,
+   "signs_positive": 3,
+   "state": "SUPERSEDED",
+   "why_the_verdict_stands": "advancement required 6/6 positive signs and the harm gate already determined the negative result; correcting an inference that could never have been read as favourable cannot turn it favourable"
+  },
+  "surface_sha256": "3d43325b8c17afdccc7da78586c6c7097d96f5e2bf62e48c99d426978a8077da",
+  "template_sha256": "UNDECLARED",
+  "verdict": "DOES_NOT_ADVANCE"
+ },
+ "historical_result": {
+  "evidence_logical_id": "docs/audits/evidence/T2_COMPLETION_RECONSTRUCTION_AND_SCREEN_ADJUDICATION_2026_09_10.json",
+  "evidence_sha256": "181c0796d015710b97e605c4fc3c9125271b94e4228dab397722e1e3eb75e0d7",
+  "execution_record_sha256": "4761df4a8b324442a83a0554cc53d3005025500d9e8d0c3b2272a729c9714752",
+  "identity": "executed under commit 7bcd3f0d6a95b30ce105df3b1e7e13614b7fe6b3, tree 6c2942a24ef4523447801a179cf5f15c9da5617b",
+  "panel_effects": {
+   "electricity_weekly": -0.03653270572268994,
+   "hospital": 0.005847919489857028,
+   "pedestrian_counts": -0.013905695034009338,
+   "solar_10_minutes": -0.010932434510063264,
+   "tourism_monthly": 0.04513398726885428,
+   "weather": 0.004098268159897935
+  },
+  "primary_estimand": -0.001048443391358884,
+  "verdict": "DOES_NOT_ADVANCE"
+ },
+ "physical_paths": "WITHHELD \u2014 logical ids only",
+ "publication": {
+  "commit_a": "4bf38b6f4ba2a2e3e97f331f52619757d33be538",
+  "protocol": "TWO_PHASE"
+ },
+ "requires": "EXTERNAL_REVIEW",
+ "review_record_kind": "EXTERNAL_REVIEW_RECORD",
+ "schema": "agent_multi.t2_readjudication_submission.v4",
+ "submission_sha256": "1cf89d93d0d5fd4fd8a1a73c88159ef9e5c5ac37db58e9be29d57954aa93ba6f",
+ "submitted_at": "2026-09-13T00:51:20Z",
+ "supersedes": "agent_multi.t2_readjudication_submission.v3 \u2014 which re-ran the historical executor bytes and so kept their untyped handling of an omitted mlp seed"
+}
