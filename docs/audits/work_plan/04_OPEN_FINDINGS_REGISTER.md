@@ -1226,3 +1226,26 @@ register content and the appended 201-208 section come from the
 auditor's restored register (four-front audit checkout, 2026-08-10).
 The reproduced defect is branch-integration loss; no chronology was
 rewritten and no original timestamp or text was altered.
+
+## B4 closure note (append-only, 2026-09-12, Satoshi, order item C110)
+
+Musashi's round-7 audit accepted B4 v4 as
+`B4_V4_ACCEPTED_AS_NON_AUTHORIZING_FINAL_CLOSURE`:
+
+- submission file `63ea37901c8756cd9669d18548176d337efeb08f1bb457a3e395eb90c7be7317`;
+- self digest `9e7047ea077a3dfebc24999654d57c87a623a7345557ad308bfb8202e23a109b`;
+- code A `4c842dd1`, publication B `ff52ca7d`.
+
+The campaign `b4_campaign_generation_v7_20260907` is closed with:
+
+| class | cells |
+|---|---|
+| `COMPLETED_VERIFIED` | 2 |
+| `QUARANTINED_PARTIAL` | 1, in quarantine, neither failure nor result |
+| `NOT_STARTED` | 9 |
+
+The outcome is `SCIENTIFICALLY_INSUFFICIENT_NO_VERDICT`.
+
+This note records that external decision; the full record is in
+`B4_V4_CLOSURE_DISPOSITION_2026_09_12.md`. It creates no consumer of the
+decision and opens no runner. No B4 row above is edited.
