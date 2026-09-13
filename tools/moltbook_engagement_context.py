@@ -109,7 +109,7 @@ def main() -> int:
         },
         "lexicon": {
             "cognitive_system": "transforms information into knowledge (weights, genes, root topology)",
-            "cognitive_capacity": "max distinguishable patterns; Maestro/MacKay neuron form 2^K for K inputs",
+            "cognitive_capacity": "max distinguishable patterns; Maestro/MacKay neuron form 2K (twice K inputs), not 2^K",
             "intelligence": "cognitive capacity USED, not the unused max; not memory",
             "consciousness": "cognitive process is updating knowledge from information; training yes, frozen inference no",
             "self_consciousness": "consciousness plus fitness feedback as input; collective form possible",
