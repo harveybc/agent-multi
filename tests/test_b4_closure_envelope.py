@@ -71,3 +71,53 @@ def test_emitting_twice_writes_once(tmp_path):
     assert first["written"] is True and second["written"] is False
     assert first["outbox_entry"] == second["outbox_entry"]
     assert len(list((tmp_path / "pending").glob("envelope-*.json"))) == 1
+
+
+# ------------------------------------------------ THROWAWAY database only
+def _dsn(db):
+    import os
+    return "postgresql+psycopg2://{u}:{p}@{h}:{P}/{d}".format(
+        u=os.environ["PGUSER"], p=os.environ["PGPASSWORD"],
+        h=os.environ.get("PGHOST", "localhost"), P=os.environ.get("PGPORT", "5432"), d=db)
+
+
+@pytest.fixture()
+def throwaway_engine():
+    import os
+    import uuid
+    if "PGUSER" not in os.environ or "PGPASSWORD" not in os.environ:
+        pytest.skip("no PG credentials")
+    sa = pytest.importorskip("sqlalchemy")
+    name = "c111_throwaway_" + uuid.uuid4().hex[:12]
+    admin = sa.create_engine(_dsn("postgres"), isolation_level="AUTOCOMMIT")
+    with admin.connect() as c:
+        c.execute(sa.text(f'CREATE DATABASE "{name}"'))
+    admin.dispose()
+    engine = sa.create_engine(_dsn(name))
+    try:
+        yield engine
+    finally:
+        engine.dispose()
+        admin = sa.create_engine(_dsn("postgres"), isolation_level="AUTOCOMMIT")
+        with admin.connect() as c:
+            c.execute(sa.text(f'DROP DATABASE IF EXISTS "{name}" WITH (FORCE)'))
+        admin.dispose()
+
+
+def test_throwaway_database_load_is_additive_and_idempotent(throwaway_engine):
+    from sqlalchemy import text
+    ce, _ = E._olap()
+    doc = E.build()
+    first = ce.load_envelope(throwaway_engine, doc)
+    second = ce.load_envelope(throwaway_engine, doc)
+    assert first["units"] == 5 and second["units"] == 0
+    with throwaway_engine.connect() as c:
+        runs = c.execute(text(
+            "SELECT result_class, terminal_state, adjudication FROM public.dim_campaign_run "
+            "WHERE campaign_key = :k"), {"k": E.CAMPAIGN_KEY}).mappings().all()
+        units = c.execute(text("SELECT * FROM public.fact_campaign_unit WHERE envelope_sha256 = :e"),
+                          {"e": doc["envelope_sha256"]}).mappings().all()
+    assert [dict(r) for r in runs] == [{"result_class": "DEVELOPMENT", "terminal_state": "CLOSED",
+                                        "adjudication": "SCIENTIFICALLY_INSUFFICIENT_NO_VERDICT"}]
+    assert len(units) == 5
+    assert not any("FAIL" in str(v).upper() for u in units for v in dict(u).values())
