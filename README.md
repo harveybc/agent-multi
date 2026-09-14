@@ -33,6 +33,16 @@ corpus are in daily use.
 > real-capital trades; live or demo execution belongs to separate downstream
 > systems. Nothing in the examples is financial advice.
 
+## Use with a coding agent
+
+> Read this README and inspect the selected config and plugin entry points.
+> Use CLI help and bounded CPU fixtures first. Keep real data, checkpoints,
+> output directories and running jobs unchanged. Report observation/target
+> definitions, temporal boundaries, effective cost model and exact outcomes.
+> Never equate a completed training call with positive trading evidence.
+> Use the reviewed governance integration for scientific runs; do not launch
+> GPU sweeps or connect to a broker as part of repository evaluation.
+
 ## Role and non-responsibilities
 
 **Role:** own the RL experiment lifecycle — configs, training pipelines,
