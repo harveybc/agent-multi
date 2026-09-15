@@ -29,8 +29,12 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 #: Numbers the replay writes; a run whose log lacks them reports no metric rather than
 #: inventing one.
-METRIC_KEYS = ["wall_seconds", "best_fitness", "champion_fitness", "final_reward",
-               "total_timesteps", "candidates_evaluated", "generations"]
+#: `requested_timesteps` is the budget the configuration asked for and `observed_timesteps`
+#: is what the runtime reported doing. They are reported under different names on purpose: the
+#: audit found the budget being presented as completed work (R3).
+METRIC_KEYS = ["wall_seconds", "requested_timesteps", "observed_timesteps",
+               "observed_updates", "best_fitness", "champion_fitness", "final_reward",
+               "candidates_evaluated", "generations"]
 
 
 def _governed_exec():
