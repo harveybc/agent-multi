@@ -32,9 +32,23 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 #: `requested_timesteps` is the budget the configuration asked for and `observed_timesteps`
 #: is what the runtime reported doing. They are reported under different names on purpose: the
 #: audit found the budget being presented as completed work (R3).
+#: S1 adds the compute contract: each quantity under the name of what it actually is, so a
+#: terminal can be read without knowing which library produced it. `compute_optimizer_step_calls`
+#: is measured by instrumenting the real optimizer and is NOT `_n_updates`, which counts
+#: optimization epochs on PPO.
 METRIC_KEYS = ["wall_seconds", "requested_timesteps", "observed_timesteps",
                "observed_updates", "best_fitness", "champion_fitness", "final_reward",
-               "candidates_evaluated", "generations"]
+               "candidates_evaluated", "generations",
+               "compute_requested_training_transitions", "compute_training_transition_cap",
+               "compute_training_transitions_observed", "compute_collected_rollouts",
+               "compute_optimization_epochs_completed", "compute_gradient_updates",
+               "compute_optimizer_step_calls", "compute_environment_count",
+               "compute_rollout_steps_per_environment", "compute_batch_size",
+               "compute_optimization_epochs_configured",
+               "compute_minimum_training_transitions", "compute_evaluation_transitions",
+               "compute_evaluation_transition_cap", "compute_cap_respected",
+               "compute_evaluation_cap_respected", "compute_partial_rollout",
+               "compute_timestep_counter_was_reset"]
 
 
 def _governed_exec():

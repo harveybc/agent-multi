@@ -51,7 +51,50 @@ def merged_config(flat: dict, template: Path, output_dir: Path) -> dict:
     config["total_timesteps"] = budget
     environment = config.setdefault("environment", {})
     environment["max_rows"] = int(flat.get("max_rows", environment.get("max_rows", 384)))
+    # S1: the compute contract is DECLARED by the caller and travels to the top level, where
+    # both the agent plugin and the meter read it. The same alias defect that stranded the
+    # budget under "training" would strand a ceiling, and a ceiling nobody reads is not one.
+    for key in COMPUTE_CONTRACT_KEYS:
+        if flat.get(key) is not None:
+            config[key] = flat[key]
     return config
+
+
+#: Declarations that decide what the run may spend, and what shape it spends it in. They are
+#: copied verbatim: this runner never invents a limit and never widens one to fit the settings.
+COMPUTE_CONTRACT_KEYS = ("training_transition_cap", "evaluation_transition_cap",
+                         "agent_plugin", "n_steps", "batch_size", "n_epochs")
+
+#: Counters published as terminal metrics, each under the name of what it actually is.
+COMPUTE_METRIC_KEYS = ("requested_training_transitions", "training_transition_cap",
+                       "training_transitions_observed", "collected_rollouts",
+                       "optimization_epochs_completed", "gradient_updates",
+                       "optimizer_step_calls", "environment_count",
+                       "rollout_steps_per_environment", "batch_size",
+                       "optimization_epochs_configured", "minimum_training_transitions",
+                       "evaluation_transitions", "evaluation_transition_cap")
+
+
+def compute_metrics(summary: dict) -> dict:
+    """The compute contract, flattened for a collector that reads flat names.
+
+    Only measurements survive here: a counter the runtime could not produce is absent, never
+    zero, and no quantity is renamed into another. `compute_optimizer_step_calls` comes from
+    instrumenting the real optimizer, NOT from `_n_updates`, which on PPO counts epochs.
+    """
+    contract = summary.get("compute_contract")
+    if not isinstance(contract, dict):
+        return {}
+    out = {}
+    for key in COMPUTE_METRIC_KEYS:
+        value = contract.get(key)
+        if isinstance(value, (int, float)) and not isinstance(value, bool):
+            out[f"compute_{key}"] = float(value)
+    for flag in ("cap_respected", "evaluation_cap_respected", "partial_rollout",
+                 "timestep_counter_was_reset"):
+        if isinstance(contract.get(flag), bool):
+            out[f"compute_{flag}"] = float(contract[flag])
+    return out
 
 
 #: What the run ASKED for. Never reported as work done: R3 of Musashi's order —
@@ -130,6 +173,7 @@ def main(argv=None) -> int:
     requested = {name: float(merged.get("training", {}).get(key, 0) or 0)
                  for key, name in REQUESTED_KEYS.items()}
     measured = metrics_of(summary, wall, requested)
+    measured.update(compute_metrics(summary))
     # the collector reads flattened names: keeping the numbers at the top level is what makes
     # the measured cost land in the terminal instead of being reported as "no metric"
     body = {"schema": "agent_multi_offline_replay.v2", "exit_code": code,
@@ -143,6 +187,9 @@ def main(argv=None) -> int:
                 "input_data_sha256": digest_of(Path(flat["input_data_file"])),
                 "summary_origin": summary_origin,
             },
+            # the full contract, kept whole beside the flattened metrics: the meanings and the
+            # list of what could NOT be measured do not survive flattening into floats
+            "compute_contract": summary.get("compute_contract"),
             "experiment_config_sha256": hashlib.sha256(
                 merged_path.read_bytes()).hexdigest(), **measured,
             "offline": True, "network": "none", "device": "cpu",
