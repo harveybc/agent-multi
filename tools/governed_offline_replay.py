@@ -42,7 +42,13 @@ def merged_config(flat: dict, template: Path, output_dir: Path) -> dict:
     experiment["name"] = flat.get("experiment_name", experiment.get("name", "governed-offline"))
     # bounded by construction: this is a mechanical replay, not a training campaign
     training = config.setdefault("training", {})
-    training["total_timesteps"] = int(flat.get("total_timesteps", training.get("total_timesteps", 64)))
+    budget = int(flat.get("total_timesteps", training.get("total_timesteps", 64)))
+    training["total_timesteps"] = budget
+    # the agent plugin resolves its parameters from the TOP LEVEL of the configuration
+    # (`_resolve` reads config[k] for each of its own params), so a budget written only under
+    # "training" never reached it and the agent used its own default. Measured on
+    # doin-offline-replay-prod-12: 64 requested, 10,240 observed steps and 400 updates.
+    config["total_timesteps"] = budget
     environment = config.setdefault("environment", {})
     environment["max_rows"] = int(flat.get("max_rows", environment.get("max_rows", 384)))
     return config
