@@ -32,6 +32,9 @@ def merged_config(flat: dict, template: Path, output_dir: Path) -> dict:
     config = json.loads(template.read_text(encoding="utf-8"))
     data = config.setdefault("data", {})
     data["input_data_file"] = flat["input_data_file"]
+    # the application reads the flat key (app/config.py), so the delivered path has to land
+    # there too: writing it only under "data" left the run opening the sample file instead
+    config["input_data_file"] = flat["input_data_file"]
     experiment = config.setdefault("experiment", {})
     experiment["name"] = flat.get("experiment_name", experiment.get("name", "governed-offline"))
     # bounded by construction: this is a mechanical replay, not a training campaign
