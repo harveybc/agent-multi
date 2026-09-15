@@ -35,6 +35,9 @@ def merged_config(flat: dict, template: Path, output_dir: Path) -> dict:
     # the application reads the flat key (app/config.py), so the delivered path has to land
     # there too: writing it only under "data" left the run opening the sample file instead
     config["input_data_file"] = flat["input_data_file"]
+    # the application writes its summary to `results_file`; pointing that at the run's own
+    # directory is what lets the runner read THIS run's observed counters instead of guessing
+    config["results_file"] = str(output_dir / "summary.json")
     experiment = config.setdefault("experiment", {})
     experiment["name"] = flat.get("experiment_name", experiment.get("name", "governed-offline"))
     # bounded by construction: this is a mechanical replay, not a training campaign

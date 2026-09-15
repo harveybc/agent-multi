@@ -92,6 +92,7 @@ class PipelinePlugin:
 
             summary = self._evaluate(env, agent_plugin, model, config)
             summary["mode"] = mode
+            summary.update(_observed_work(model, mode))
             return summary
         finally:
             # make_env owns env creation; env_plugin.close() tears down cleanly.
@@ -429,3 +430,23 @@ def _write_eval_progress_if_needed(
     tmp = path.with_suffix(path.suffix + ".tmp")
     tmp.write_text(json.dumps(payload, indent=2, sort_keys=True, default=str) + "\n", encoding="utf-8")
     tmp.replace(path)
+
+
+def _observed_work(model, mode: str) -> dict:
+    """What the runtime says it actually did, asked of the model rather than the config.
+
+    R3: a configured budget is not a measured step count. Stable-Baselines3 keeps the real
+    counters on the model — `num_timesteps` advances once per environment step and `_n_updates`
+    once per gradient update — so they are read from there. A model that does not carry them
+    reports NOTHING: an absent observation stays absent instead of being filled with the budget.
+    """
+    observed = {}
+    steps = getattr(model, "num_timesteps", None)
+    if isinstance(steps, (int, float)) and not isinstance(steps, bool):
+        observed["observed_timesteps"] = int(steps)
+    updates = getattr(model, "_n_updates", None)
+    if isinstance(updates, (int, float)) and not isinstance(updates, bool):
+        observed["observed_updates"] = int(updates)
+    if mode != "train":
+        observed.pop("observed_updates", None)
+    return observed
