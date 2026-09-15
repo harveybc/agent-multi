@@ -32,6 +32,8 @@ from pipeline_plugins._compute_contract import (  # noqa: E402
 )
 
 torch.set_num_threads(1)
+# CPU only, one BLAS thread: `PPO.load` defaults to device="auto" and would
+# otherwise reach for a GPU that may be running real training.
 
 
 @pytest.fixture
@@ -190,7 +192,7 @@ def test_a_resumed_model_does_not_report_a_zero_delta_for_real_work(cartpole, tm
     saved = tmp_path / "resumed.zip"
     first.save(saved)
 
-    resumed = PPO.load(saved, env=env)
+    resumed = PPO.load(saved, env=env, device="cpu")
     record = measured(resumed, {"total_timesteps": 64}).record()
 
     assert record["model_timesteps_before"] == 64
@@ -209,7 +211,7 @@ def test_a_continued_model_reports_only_this_calls_work(cartpole, tmp_path):
     saved = tmp_path / "continued.zip"
     first.save(saved)
 
-    resumed = PPO.load(saved, env=env)
+    resumed = PPO.load(saved, env=env, device="cpu")
     record = measured(resumed, {"total_timesteps": 64},
                       learn_kwargs={"reset_num_timesteps": False}).record()
 
