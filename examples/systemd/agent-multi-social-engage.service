@@ -1,0 +1,23 @@
+[Unit]
+Description=Post Moltbook comments: every owed answer, plus at most 2 new ones
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=-%h/.config/agent-multi/moltbook.env
+WorkingDirectory=%h/Documents/GitHub/agent-multi
+ExecStart=%h/anaconda3/envs/trading-stack/bin/python %h/Documents/GitHub/agent-multi/tools/moltbook_engage_comments.py
+Nice=15
+IOSchedulingClass=idle
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=%h/.local/state/agent-multi
+MemoryMax=512M
+CPUQuota=50%
+# Owed replies + 22s gap; 180s was aborting mid-batch.
+TimeoutStartSec=1200
+StandardOutput=append:%h/.local/state/agent-multi/social-engage.log
+StandardError=append:%h/.local/state/agent-multi/social-engage.log
