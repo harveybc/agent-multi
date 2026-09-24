@@ -398,16 +398,42 @@ class PolicyProvider:
                                 "state": state_ref_for(manifest)}}]
         readiness = self.market_data_readiness()
         if readiness.get("supported"):
-            # Deliberately not a pasteable vector: the example a person can act on is the one that says what FILE to
-            # attach, since the market-data path exists precisely because nobody can type the other one.
-            examples.append({
-                "title": (f"DEVELOPMENT: market data in, proposed action out "
-                          f"({readiness['required_rows']} rows of "
-                          f"{readiness['feature_count']} fitted columns)"),
-                "prompt": "What action does this fitted policy propose for these bars?",
-                "data": (f"attach a CSV whose last {readiness['required_rows']} rows end at the bar you are asking "
-                         f"about, carrying the {readiness['feature_count']} feature columns this policy was fitted on "
-                         f"plus {readiness['price_column']}. Fewer rows is refused, not padded"),
-                "config": {"input": "csv", "provider": NAME, "family": FAMILY, "output_kind": OUTPUT_KIND,
-                           "state": state_ref_for(manifest)}})
+            # An example is something a person clicks and runs. Describing what to attach is documentation, and shipping
+            # it AS the example means the first thing anyone tries is refused -- for the very reason the example exists.
+            # So this one carries real bars when the operator's sample is reachable, and is simply absent when it is not.
+            bars = self._example_bars(readiness)
+            if bars:
+                examples.append({
+                    "title": (f"DEVELOPMENT: market data in, proposed action out "
+                              f"({readiness['required_rows']} rows of {readiness['feature_count']} fitted columns)"),
+                    "prompt": "What action does this fitted policy propose for these bars?",
+                    "data": bars,
+                    "config": {"input": "csv", "provider": NAME, "family": FAMILY, "output_kind": OUTPUT_KIND,
+                               "state": state_ref_for(manifest)}})
         return examples
+
+    def _example_bars(self, readiness):
+        """The tail of the operator's declared sample, as CSV text, or nothing.
+
+        `M5PHET_POLICY_SAMPLE` names a file of bars carrying the fitted columns. It is the operator's declaration, never
+        a path from a request, and its absence removes the example rather than producing one that cannot run."""
+        import csv
+        import io
+        import os
+
+        sample = os.environ.get("M5PHET_POLICY_SAMPLE")
+        if not sample or not Path(sample).is_file():
+            return None
+        needed = int(readiness["required_rows"])
+        try:
+            with Path(sample).open(encoding="utf-8-sig", newline="") as handle:
+                rows = list(csv.reader(handle))
+        except OSError:
+            return None
+        if len(rows) < needed + 1:
+            return None
+        buffer = io.StringIO()
+        writer = csv.writer(buffer, lineterminator="\n")
+        writer.writerow(rows[0])
+        writer.writerows(rows[-needed:])
+        return buffer.getvalue()

@@ -318,8 +318,9 @@ def test_what_it_declares_about_market_data_is_what_it_then_requires(bundle):
     assert readiness["observation_length"] == OBS
     assert readiness["feature_count"] == len(FEATURES)
     assert readiness["built_by"] == "gym_fx.observation_builder"
-    example = [item for item in provider(bundle).chat_examples() if item["config"]["input"] == "csv"]
-    assert example and str(SCALING_WINDOW) in example[0]["data"]
+    # The example now carries bars rather than instructions, so what it declares is checked where the sample exists;
+    # here, with no sample declared, the honest outcome is that the example is simply not offered.
+    assert not [item for item in provider(bundle).chat_examples() if item["config"]["input"] == "csv"]
 
 
 # --- the retained ETH checkpoint, when the operator has one -------------------------------------------------------------
@@ -334,3 +335,36 @@ def test_the_real_bundle_builds_the_length_its_manifest_declares():
     if not readiness["supported"]:
         pytest.skip(f"the operator's bundle cannot build market data here: {readiness['why']}")
     assert readiness["observation_length"] == made.manifest["observation_size"]
+
+
+# --- an example is something a person clicks and runs --------------------------------------------------------------------
+
+def test_the_market_data_example_carries_bars_when_a_sample_is_declared(tmp_path, monkeypatch, bundle):
+    """Shipping the instructions AS the example means the first thing anyone clicks is refused, for the very reason the
+    example exists. It carries real bars, or it is absent."""
+    import csv
+
+    made = provider(bundle)
+    readiness = made.market_data_readiness()
+    if not readiness.get("supported"):
+        pytest.skip("gym-fx is not importable in this environment")
+    columns = ["DATE_TIME", readiness["price_column"], *FEATURES]
+    sample = tmp_path / "bars.csv"
+    with sample.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.writer(handle, lineterminator="\n")
+        writer.writerow(columns)
+        for index in range(readiness["required_rows"] + 40):
+            writer.writerow([f"2026-01-01T{index:02d}:00:00"] + [str(1.0 + index * 0.001)] * (len(columns) - 1))
+    monkeypatch.setenv("M5PHET_POLICY_SAMPLE", str(sample))
+    example = [e for e in made.chat_examples() if "market data" in e["title"]]
+    assert example, "the example must be offered once a sample is declared"
+    rows = list(csv.reader(example[0]["data"].splitlines()))
+    assert rows[0] == columns
+    assert len(rows) == readiness["required_rows"] + 1, "the header plus exactly the rows this policy needs"
+
+
+def test_without_a_declared_sample_the_example_is_absent_rather_than_unrunnable(monkeypatch, bundle):
+    monkeypatch.delenv("M5PHET_POLICY_SAMPLE", raising=False)
+    made = provider(bundle)
+    assert not [e for e in made.chat_examples() if "market data" in e["title"]]
+    assert [e for e in made.chat_examples() if "one observation" in e["title"]], "the vector example remains"
