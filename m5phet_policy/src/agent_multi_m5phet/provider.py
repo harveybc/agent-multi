@@ -20,6 +20,13 @@ A caller may supply either the observation vector itself, or the market data it 
 actually has, and the first is what nobody can type. The vector path is unchanged and needs nothing installed; the market
 data path builds the observation through gym-fx, which owns the environment the policy was fitted in, and refuses plainly
 when gym-fx is not reachable rather than falling back to a construction guessed here. See `observation.py`.
+
+Under the unified question envelope (`m5phet.questions`) this provider is the `rl` area and answers two question types
+from the same fitted checkpoint, through the same path: `next_action`, the actor's action for the observation in the
+state, and `value_estimation`, the twin critics' estimate of discounted return at that action. Neither carries a number
+the checkpoint does not hold. The actor's Gaussian is reported as the actor's distribution, not as a probability of being
+right; the critic's value is reported as the critic's estimate under the training reward, not as a realised profit; and
+where the engine returns neither, the field is absent with its reason, or the question is refused as NOT_ESTIMABLE.
 """
 
 import copy
@@ -33,6 +40,11 @@ import sys
 from . import observation as market
 from .refusal import PolicyRefusal
 
+try:                                                                   # the envelope is optional for the older paths
+    from m5phet import questions as envelope
+except ImportError:                                                    # pragma: no cover - exercised only without m5phet
+    envelope = None
+
 NAME = "trading_policy"
 FAMILY = "policy"
 OUTPUT_KIND = "policy_action"
@@ -42,6 +54,23 @@ SUPPORTED = ({"operation": "infer", "family": FAMILY, "output_kind": OUTPUT_KIND
 UNCERTAINTY = "NONE_DETERMINISTIC_POLICY"
 
 DEFAULT_TIMEOUT_SECONDS = 120
+
+#: the question types this provider answers under `m5phet.questions`, and what the worker must evaluate for each
+AREA = "rl"
+QUESTION_TYPES = {"next_action": {"required": [], "optional": []},
+                  "value_estimation": {"required": [], "optional": []}}
+_EVALUATIONS_FOR = {"next_action": ("actor_distribution",), "value_estimation": ("critic",)}
+
+CONFIDENCE_ABSENT = ("not emitted: a SAC actor returns one action and a Gaussian over its pre-squash value. The Gaussian's "
+                     "spread is reported under action_distribution; it describes the actor, and no number here says how "
+                     "likely the action is to be right")
+DISTRIBUTION_READING = ("the actor's own distribution for this observation: a Gaussian over the pre-squash action, with "
+                        "the reported action at tanh(mean). It is the policy's stochastic spread, NOT a probability of "
+                        "the action being right and NOT a distribution over outcomes")
+VALUE_READING = ("the critic's estimate of discounted return under the training reward, not a realised profit. "
+                 "expected_return is the minimum of the twin Q critics at the actor's action, as SAC itself uses it; "
+                 "uncertainty_bounds are the two critics' minimum and maximum, which is their disagreement and nothing "
+                 "more")
 
 
 def _digest_file(path):
@@ -210,8 +239,12 @@ class PolicyProvider:
             problem = "OBSERVATION_MUST_BE_FINITE_NUMBERS: a policy observation is numeric, and a boolean is not a number"
         if problem is not None:
             return {"outputs": {name: {"status": "INVALID_INPUT", "why": problem} for name in (requested or ["action"])}}
-        answer = self._runner({"checkpoint": manifest["checkpoint"], "observation": [float(v) for v in observation],
-                               "deterministic": True})
+        evaluate = [name for name in (inputs.get("evaluate") or []) if isinstance(name, str)]
+        call = {"checkpoint": manifest["checkpoint"], "observation": [float(v) for v in observation],
+                "deterministic": True}
+        if evaluate:
+            call["evaluate"] = evaluate
+        answer = self._runner(call)
         self.last_call = {"seconds": answer.get("seconds"), "policy_id": manifest["policy_id"]}
         action = answer.get("action")
         if not isinstance(action, list) or len(action) != manifest["action_size"]:
@@ -233,6 +266,11 @@ class PolicyProvider:
                    "observation_build": copy.deepcopy(build) if isinstance(build, dict) else None,
                    "reading": ("the action this fitted policy returns for this observation. It is a proposal from a model, "
                                "not advice, not a position size and not an order")}
+        # What was asked of the engine beyond the action travels back only if the engine returned it. A missing reading
+        # is reported as missing by whoever asked for it; nothing is synthesised from the action to fill the gap.
+        for name in evaluate:
+            if isinstance(answer.get(name), dict):
+                payload[name] = copy.deepcopy(answer[name])
         return {"outputs": {name: {"status": "OK", "uncertainty": UNCERTAINTY, "payload": copy.deepcopy(payload)}
                             for name in requested},
                 "population": {"observations": 1, "observation_sha256": digest(observation)}}
@@ -385,6 +423,90 @@ class PolicyProvider:
                     f"{len(declared)} this policy was fitted on, the first being {missing[:5]}")
         return ("OBSERVATION_REQUIRED: this looks like a table of market data, and this provider cannot build an "
                 "observation from market data here: " + readiness["why"])
+
+    # --- the question envelope: `m5phet.questions`, area "rl" --------------------------------------------------------
+    area = AREA
+
+    def question_types(self):
+        return {name: {"required": list(spec["required"]), "optional": list(spec["optional"])}
+                for name, spec in QUESTION_TYPES.items()}
+
+    def answer_questions(self, state, questions, data, as_of):
+        """Answer named questions about one state, each on its own, from the same engine call.
+
+        The state carries `current_observation` -- a raw vector, a table of the fitted columns, or CSV text -- and may
+        name `policy_id`. Both go down `chat_request` exactly as a chat does: a policy named that is not this bundle's is
+        refused by name, and an observation of the wrong length is refused rather than padded. One subprocess call then
+        evaluates what the questions need, and each answer takes only its own part of what came back."""
+        if envelope is None:
+            raise PolicyRefusal("QUESTION_ENVELOPE_UNAVAILABLE: m5phet.questions is not importable here")
+        state = state if isinstance(state, dict) else {}
+        observation = state.get("current_observation", data)
+        parameters = {"policy_id": state["policy_id"]} if state.get("policy_id") is not None else None
+        instructions = next((q.get("instructions") for q in questions.values()
+                             if isinstance(q.get("instructions"), str)), "") or ""
+        try:
+            if observation is None:
+                raise PolicyRefusal("OBSERVATION_REQUIRED: the state names no current_observation; supply the vector "
+                                    "this policy was fitted on, or a table of the fitted columns ending at the bar "
+                                    "being asked about")
+            request = self.chat_request(instructions, observation, {"as_of": as_of, "state": ""}, parameters)
+            fitted = self.load(request["fitted_state_ref"])
+        except PolicyRefusal as refusal:
+            return {name: envelope.refusal(envelope.STATE_REQUIRED, str(refusal), q["type"])
+                    for name, q in questions.items()}
+        wanted = sorted({e for q in questions.values() for e in _EVALUATIONS_FOR.get(q["type"], ())})
+        request["inputs"]["evaluate"] = wanted
+        try:
+            result = self.infer(request, fitted)
+        except PolicyRefusal as refusal:
+            return {name: envelope.refusal(envelope.PROVIDER_ERROR, str(refusal), q["type"])
+                    for name, q in questions.items()}
+        output = result["outputs"]["action"]
+        if output.get("status") != "OK":
+            kind = envelope.STATE_REQUIRED if output.get("status") == "INVALID_INPUT" else envelope.PROVIDER_ERROR
+            return {name: envelope.refusal(kind, output.get("why", output.get("status")), q["type"])
+                    for name, q in questions.items()}
+        payload = output["payload"]
+        out = {"__state_ref__": fitted["state_ref"]}
+        for name, question in questions.items():
+            out[name] = self._answer_one(question["type"], payload)
+        return out
+
+    def _identity(self, payload):
+        return {"policy_id": payload["policy_id"], "execution_authorized": False,
+                "observation_source": payload["observation_source"],
+                "observation_build": copy.deepcopy(payload["observation_build"])}
+
+    def _answer_one(self, kind, payload):
+        if kind == "next_action":
+            answer = {"type": kind, "action": list(payload["action"]), "unit": payload["unit"],
+                      "action_space": payload["action_space"], "deterministic": True,
+                      "out_of_declared_range": list(payload["out_of_declared_range"]),
+                      "confidence": None, "confidence_absent_because": CONFIDENCE_ABSENT,
+                      "reading": payload["reading"], **self._identity(payload)}
+            distribution = payload.get("actor_distribution")
+            if isinstance(distribution, dict):
+                answer["action_distribution"] = {**copy.deepcopy(distribution), "reading": DISTRIBUTION_READING}
+            else:
+                answer["action_distribution"] = None
+                answer["action_distribution_absent_because"] = ("the engine returned the action and no actor "
+                                                                "distribution; none is derived from one action")
+            return answer
+        if kind == "value_estimation":
+            critic = payload.get("critic")
+            values = critic.get("q_values") if isinstance(critic, dict) else None
+            if not isinstance(values, list) or not values or \
+                    any(isinstance(v, bool) or not isinstance(v, (int, float)) for v in values):
+                return envelope.refusal(envelope.NOT_ESTIMABLE,
+                                        "the engine returned no critic evaluation for this observation; a return is "
+                                        "estimated from the checkpoint's Q critics or not at all", kind)
+            values = [float(v) for v in values]
+            return {"type": kind, "expected_return": min(values), "uncertainty_bounds": [min(values), max(values)],
+                    "critic_values": values, "n_critics": critic.get("n_critics", len(values)),
+                    "evaluated_at_action": list(payload["action"]), "discount_gamma": critic.get("gamma"),
+                    "estimator": "min_of_twin_q_critics", "reading": VALUE_READING, **self._identity(payload)}
+        return envelope.refusal(envelope.UNSUPPORTED_QUESTION_TYPE, f"this provider does not answer {kind!r}", kind)
 
     def chat_examples(self):
         manifest = self.manifest
