@@ -15,6 +15,11 @@ Configuration, all from the operator's environment and never from a request:
 
 A bundle names a checkpoint by absolute path and records its sha256. The digest is verified before the policy is loaded, so
 a checkpoint that changed on disk is refused rather than silently served under the identity of the one that was reviewed.
+
+A caller may supply either the observation vector itself, or the market data it is built from. The second is what a person
+actually has, and the first is what nobody can type. The vector path is unchanged and needs nothing installed; the market
+data path builds the observation through gym-fx, which owns the environment the policy was fitted in, and refuses plainly
+when gym-fx is not reachable rather than falling back to a construction guessed here. See `observation.py`.
 """
 
 import copy
@@ -25,6 +30,9 @@ from pathlib import Path
 import subprocess
 import sys
 
+from . import observation as market
+from .refusal import PolicyRefusal
+
 NAME = "trading_policy"
 FAMILY = "policy"
 OUTPUT_KIND = "policy_action"
@@ -34,10 +42,6 @@ SUPPORTED = ({"operation": "infer", "family": FAMILY, "output_kind": OUTPUT_KIND
 UNCERTAINTY = "NONE_DETERMINISTIC_POLICY"
 
 DEFAULT_TIMEOUT_SECONDS = 120
-
-
-class PolicyRefusal(ValueError):
-    """A refusal that names itself. Nothing here substitutes a default action for a refusal."""
 
 
 def _digest_file(path):
@@ -86,6 +90,11 @@ class PolicyProvider:
         self.worker_python = env.get("M5PHET_POLICY_PYTHON")
         self.timeout = int(env.get("M5PHET_POLICY_TIMEOUT", DEFAULT_TIMEOUT_SECONDS))
         self.manifest = read_manifest(self.bundle)
+        # The bundle's observation contract is what makes market data usable. It is read here, but
+        # nothing is imported from gym-fx until a request actually needs it: a provider that has
+        # only ever been asked for a raw vector must not depend on an install it never uses.
+        self.observation_contract = market.read_observation_contract(self.bundle)
+        self.gym_fx_root = market.gym_fx_root(env)
         self._runner = runner or self._subprocess
         self.last_call = None
 
@@ -104,8 +113,45 @@ class PolicyProvider:
                 "observation_size": manifest["observation_size"] if manifest else None,
                 "action_space": manifest["action_space"] if manifest else None,
                 "provenance": manifest["provenance"] if manifest else None,
+                "market_data": self.market_data_readiness(),
                 "reading": ("this provider proposes the action an ALREADY FITTED policy returns for one observation. It is "
                             "not a recommendation, not a position size and not an order; nothing here can authorize one")}
+
+    def market_data_readiness(self):
+        """Whether market data can be turned into this policy's observation, and if not, why not.
+
+        Declared rather than discovered at request time, so a person can see before they attach a file that this policy
+        needs, say, 256 rows of 83 named columns -- and so the answer to "why did it refuse my CSV" is not a surprise."""
+        manifest = self.manifest
+        if manifest is None:
+            return {"supported": False, "why": "no operator-declared bundle is configured"}
+        declared = self.observation_contract
+        if declared is None:
+            return {"supported": False,
+                    "why": (f"this bundle declares an observation SIZE and not an observation CONTRACT; add "
+                            f"{market.CONTRACT_FILENAME} naming the feature columns, their order, the window and the "
+                            "normalization this policy was fitted with. A length alone cannot say what the numbers mean"),
+                    "expected_file": str(Path(self.bundle) / market.CONTRACT_FILENAME)}
+        try:
+            builder = market.load_builder(self.gym_fx_root)
+            contract = market.contract_of(declared, builder)
+            market.check_against_manifest(contract, manifest)
+        except PolicyRefusal as refusal:
+            return {"supported": False, "why": str(refusal)}
+        return {"supported": True,
+                "required_rows": contract.required_rows,
+                "observation_length": contract.expected_length,
+                "window_size": contract.window_size,
+                "feature_count": len(contract.feature_columns),
+                "price_column": contract.price_column,
+                "feature_scaling": contract.feature_scaling,
+                "contract_sha256": contract.digest,
+                "asset": declared.get("asset"),
+                "timeframe": declared.get("timeframe"),
+                "built_by": "gym_fx.observation_builder",
+                "reading": ("attach a CSV, or a JSON list of row objects, whose columns are the ones this policy was "
+                            "fitted on, ending at the bar you are asking about. The observation is built by the "
+                            "environment's own code; it is never padded, trimmed or zero-filled to fit")}
 
     def known_states(self):
         return self.capabilities()["known_states"]
@@ -173,6 +219,9 @@ class PolicyProvider:
                                        "why": "the policy returned an action of the wrong shape"} for name in requested}}
         low, high = manifest["action_low"], manifest["action_high"]
         clipped = [v for v in action if not low - 1e-9 <= v <= high + 1e-9]
+        # If the observation was built from market data, the build travels with the action. A vector of 2724 floats is
+        # unfalsifiable on its own: it looks the same whether it came from the right 256 rows or from a zero-fill.
+        build = inputs.get("observation_build")
         payload = {"action": [float(v) for v in action],
                    "unit": manifest["unit"],
                    "action_space": manifest["action_space"],
@@ -180,6 +229,8 @@ class PolicyProvider:
                    "deterministic": True,
                    "out_of_declared_range": clipped,
                    "execution_authorized": False,
+                   "observation_source": "BUILT_FROM_MARKET_DATA" if isinstance(build, dict) else "SUPPLIED_AS_A_VECTOR",
+                   "observation_build": copy.deepcopy(build) if isinstance(build, dict) else None,
                    "reading": ("the action this fitted policy returns for this observation. It is a proposal from a model, "
                                "not advice, not a position size and not an order")}
         return {"outputs": {name: {"status": "OK", "uncertainty": UNCERTAINTY, "payload": copy.deepcopy(payload)}
@@ -227,26 +278,11 @@ class PolicyProvider:
                 raise PolicyRefusal(
                     f"UNKNOWN_POLICY: {named!r} is not this bundle's fitted policy, which is "
                     f"{manifest['policy_id']!r}; the one policy available is not a substitute for the one named")
-        observation = data
-        if isinstance(data, dict):
-            observation = data.get("observation")
-        elif isinstance(data, list) and data and isinstance(data[0], dict):
-            row = data[0]
-            try:
-                observation = (json.loads(next(iter(row.values()))) if len(row) == 1
-                               else [float(v) for v in row.values()])
-            except (TypeError, ValueError):
-                observation = None
-        if isinstance(observation, str):
-            try:
-                observation = json.loads(observation)
-            except ValueError:
-                # prose is not an observation, and guessing numbers out of it would invent the input
-                observation = None
-        if not isinstance(observation, list):
-            raise PolicyRefusal("OBSERVATION_REQUIRED: attach a JSON list of numbers, or a CSV row of numbers, as the "
-                                "observation this policy was fitted on")
+        observation, build = self._observation_from(data)
         state = config.get("state") or state_ref_for(manifest)
+        inputs = {"observation": observation, "question": prompt}
+        if build is not None:
+            inputs["observation_build"] = build
         return {"schema_version": "m5phet.task.draft2",
                 "request_id": "chat:" + digest([prompt, observation])[:32],
                 "task_id": manifest["policy_id"],
@@ -255,16 +291,123 @@ class PolicyProvider:
                 "provider_ref": NAME,
                 "fitted_state_ref": state,
                 "output_schema": {"targets": ["action"]},
-                "inputs": {"observation": observation, "question": prompt},
+                "inputs": inputs,
                 "execution_constraints": {"partial_results": False}}
+
+    def _observation_from(self, data):
+        """Resolve what was attached into (observation, how it was built).
+
+        Two inputs are accepted and they are told apart by SHAPE, never by the prompt. A list of numbers is the
+        observation itself and takes the path it has always taken -- nothing about it changed, and it works with no
+        gym-fx installed. A table of named rows, which is what an attached CSV becomes once the workbench has parsed
+        it, is market data and is built into an observation by the environment's own code.
+
+        Routing on shape matters for the refusals. A table sent down the vector path would come back as "not a list of
+        numbers", and the person would go looking for a formatting mistake instead of reading that their file is 40
+        rows short of the window the policy needs."""
+        market_data = None
+        supplied_state = None
+        observation = data
+
+        if isinstance(data, dict):
+            if "observation" in data:
+                observation = data.get("observation")
+            elif "rows" in data:
+                market_data, supplied_state = data.get("rows"), data.get("agent_state")
+                observation = None
+            else:
+                observation = None
+        elif market.looks_like_rows(data):
+            if self._rows_carry_the_fitted_columns(data):
+                market_data = data
+                observation = None
+            elif len(data) == 1:
+                # Not this policy's market data. A SINGLE row may still be a carrier for a vector, which is how a
+                # one-line CSV of numbers arrives, so that reading is kept. It stops at one row: reading the first row
+                # of a many-row table as the whole observation is the helpful guess this provider exists to avoid, and
+                # a table with many rows is market data by every reading except that one.
+                row = data[0]
+                try:
+                    observation = (json.loads(next(iter(row.values()))) if len(row) == 1
+                                   else [float(v) for v in row.values()])
+                except (TypeError, ValueError):
+                    observation = None
+                if not isinstance(observation, list):
+                    raise PolicyRefusal(self._unusable_table_refusal(data))
+            else:
+                raise PolicyRefusal(self._unusable_table_refusal(data))
+        elif isinstance(data, str):
+            try:
+                observation = json.loads(data)
+            except ValueError:
+                # prose is not an observation, and guessing numbers out of it would invent the input
+                observation = None
+            if market.looks_like_rows(observation):
+                market_data, observation = observation, None
+            elif observation is None and market.looks_like_csv_text(data):
+                market_data = data
+
+        if market_data is not None:
+            payload = ({"rows": market_data, "agent_state": supplied_state}
+                       if supplied_state is not None else market_data)
+            return market.build_from_rows(payload, self._required_contract(), self.manifest, self.gym_fx_root)
+
+        if not isinstance(observation, list):
+            raise PolicyRefusal("OBSERVATION_REQUIRED: attach a JSON list of numbers, or a CSV row of numbers, as the "
+                                "observation this policy was fitted on -- or a table of market data with the columns "
+                                "this policy was fitted on, and it will be built for you")
+        return observation, None
+
+    def _required_contract(self):
+        declared = self.observation_contract
+        if declared is None:
+            readiness = self.market_data_readiness()
+            raise PolicyRefusal("OBSERVATION_CONTRACT_UNAVAILABLE: " + readiness["why"])
+        return declared
+
+    def _rows_carry_the_fitted_columns(self, rows):
+        """True when the table's columns are the ones this policy was fitted on.
+
+        Read from the contract alone, with nothing imported: the question is whether this looks like an attempt to
+        supply market data, and that has to be answerable before deciding which refusal the caller deserves."""
+        declared = self.observation_contract
+        if declared is None:
+            return False
+        wanted = set(declared["environment"].get("feature_columns") or ())
+        return bool(wanted) and wanted.issubset(set(rows[0]))
+
+    def _unusable_table_refusal(self, rows):
+        readiness = self.market_data_readiness()
+        if readiness.get("supported"):
+            declared = self.observation_contract["environment"].get("feature_columns") or []
+            missing = [name for name in declared if name not in set(rows[0])]
+            return (f"MISSING_COLUMNS: this table has {len(rows[0])} columns and is missing {len(missing)} of the "
+                    f"{len(declared)} this policy was fitted on, the first being {missing[:5]}")
+        return ("OBSERVATION_REQUIRED: this looks like a table of market data, and this provider cannot build an "
+                "observation from market data here: " + readiness["why"])
 
     def chat_examples(self):
         manifest = self.manifest
         if manifest is None:
             return []
         size = manifest["observation_size"]
-        return [{"title": "DEVELOPMENT: fitted policy, one observation, proposed action",
-                 "prompt": "What action does this fitted policy propose for this observation?",
-                 "data": json.dumps([0.0] * size),
-                 "config": {"input": "json", "provider": NAME, "family": FAMILY, "output_kind": OUTPUT_KIND,
-                            "state": state_ref_for(manifest)}}]
+        examples = [{"title": "DEVELOPMENT: fitted policy, one observation, proposed action",
+                     "prompt": "What action does this fitted policy propose for this observation?",
+                     "data": json.dumps([0.0] * size),
+                     "config": {"input": "json", "provider": NAME, "family": FAMILY, "output_kind": OUTPUT_KIND,
+                                "state": state_ref_for(manifest)}}]
+        readiness = self.market_data_readiness()
+        if readiness.get("supported"):
+            # Deliberately not a pasteable vector: the example a person can act on is the one that says what FILE to
+            # attach, since the market-data path exists precisely because nobody can type the other one.
+            examples.append({
+                "title": (f"DEVELOPMENT: market data in, proposed action out "
+                          f"({readiness['required_rows']} rows of "
+                          f"{readiness['feature_count']} fitted columns)"),
+                "prompt": "What action does this fitted policy propose for these bars?",
+                "data": (f"attach a CSV whose last {readiness['required_rows']} rows end at the bar you are asking "
+                         f"about, carrying the {readiness['feature_count']} feature columns this policy was fitted on "
+                         f"plus {readiness['price_column']}. Fewer rows is refused, not padded"),
+                "config": {"input": "csv", "provider": NAME, "family": FAMILY, "output_kind": OUTPUT_KIND,
+                           "state": state_ref_for(manifest)}})
+        return examples
