@@ -187,12 +187,46 @@ class PolicyProvider:
                 "population": {"observations": 1, "observation_sha256": digest(observation)}}
 
     # --- the chat adapter ----------------------------------------------------------------------------------------
-    def chat_request(self, prompt, data, config):
+    def chat_slots(self):
+        """The vocabulary a person's words may be resolved against: exactly what this bundle declares, and nothing more.
+
+        A bundle names one fitted policy, so `policy_id` is the only thing here with an enumerable set of values. The
+        observation is not a choice -- it is a vector of numbers supplied with the question -- and determinism is not
+        offered as an option, so neither is declared. An open slot cannot be validated against anything, so declaring one
+        would hand the interpreter a field it could fill with a name this provider has never heard of; a bundle-less
+        provider therefore declares nothing at all."""
+        manifest = self.manifest
+        if manifest is None:
+            return []
+        policy_id = manifest["policy_id"]
+        spoken = " ".join(part for part in policy_id.replace("-", "_").split("_") if part)
+        aliases = ["policy", "model", "agent", "politica", "pol\u00edtica", "modelo"]
+        if spoken and spoken != policy_id:
+            aliases.append(spoken)
+        return [{"name": "policy_id", "type": "string", "allowed": [policy_id],
+                 "aliases": {policy_id: aliases}, "number_hints": []}]
+
+    def chat_request(self, prompt, data, config, parameters=None):
         """A question plus one observation becomes a typed request. The prompt selects nothing it could get wrong: this
-        provider has exactly one supported question, so a prose instruction cannot widen what it does."""
+        provider has exactly one supported question, so a prose instruction cannot widen what it does.
+
+        `parameters` carries what the workbench resolved from the person's words. A policy named there that is not this
+        bundle's is refused BY NAME: serving the only policy available under a name nobody asked for would answer a
+        different question, and the person would have no way to tell."""
         manifest = self.manifest
         if manifest is None:
             raise PolicyRefusal("POLICY_BUNDLE_UNAVAILABLE: no operator-declared bundle is configured")
+        if parameters is not None:
+            if not isinstance(parameters, dict):
+                raise PolicyRefusal("PARAMETERS_MUST_BE_A_MAPPING: resolved parameters arrive as a name/value mapping")
+            unknown = sorted(set(parameters) - {"policy_id"})
+            if unknown:
+                raise PolicyRefusal(f"UNDECLARED_PARAMETER: this provider declares policy_id and was given {unknown}")
+            named = parameters.get("policy_id")
+            if named is not None and named != manifest["policy_id"]:
+                raise PolicyRefusal(
+                    f"UNKNOWN_POLICY: {named!r} is not this bundle's fitted policy, which is "
+                    f"{manifest['policy_id']!r}; the one policy available is not a substitute for the one named")
         observation = data
         if isinstance(data, dict):
             observation = data.get("observation")
