@@ -11,6 +11,19 @@ and execution-policy plugins loaded from entry points.
 
 ## Status
 
+**Publication scope (2026-09-14):** this default branch contains the platform
+described below. Subsequent campaign execution, data-readiness and accounting
+work is available in a [versioned research snapshot](https://github.com/harveybc/agent-multi/tree/909db61596b788b4cd78932babaa5d161ef843e1).
+That work is not all integrated into `master`; use the snapshot's own contracts
+and instructions when examining a particular experiment.
+
+The current research direction is data-centric: input characterization,
+causal preprocessing and representation comparisons precede larger model
+searches. See the [repository map](https://github.com/harveybc/predictor/blob/master/docs/RESEARCH_STACK.md)
+and [doctoral proposal](https://github.com/harveybc/predictor/blob/master/docs/propuesta_doctoral_representaciones_temporales_modulares.pdf).
+A runnable agent or a positive training curve is not evidence of trading
+profitability. Examples are for offline research, not broker deployment.
+
 **Lifecycle: ACTIVE-CORE.** This is the experiment platform behind the owner's
 current trading-research campaigns; its pipelines, evidence tooling and audit
 corpus are in daily use.
@@ -20,7 +33,7 @@ corpus are in daily use.
 > real-capital trades; live or demo execution belongs to separate downstream
 > systems. Nothing in the examples is financial advice.
 
-## Run this with an AI agent
+## Use with a coding agent
 
 Paste this into Claude Code, Cursor, Codex, GitHub Copilot or any coding agent
 with shell access:
@@ -32,7 +45,15 @@ with shell access:
 
 `AGENTS.md` is the [agents.md](https://agents.md) convention, read natively by
 most coding agents. Its quickstart uses only non-GPU, non-training commands —
-launching a real experiment is deliberately excluded.
+launching a real experiment is deliberately excluded. The standing rules for
+any agent reading this repository:
+
+> Use CLI help and bounded CPU fixtures first. Keep real data, checkpoints,
+> output directories and running jobs unchanged. Report observation/target
+> definitions, temporal boundaries, effective cost model and exact outcomes.
+> Never equate a completed training call with positive trading evidence.
+> Use the reviewed governance integration for scientific runs; do not launch
+> GPU sweeps or connect to a broker as part of repository evaluation.
 
 ## Role and non-responsibilities
 
