@@ -1,0 +1,212 @@
+{
+  "areas": [
+    {
+      "area": "policy",
+      "bound_by_seal": [],
+      "orientation": "score",
+      "reference_stage": null,
+      "refusal_reason": "a proposed action is not a realised return: no order was placed, no fill, slippage, financing or timing exists, and the market did not respond to it. What can be reported is the action statistics; profit belongs to an execution record from the system that actually traded",
+      "refused_metric": "policy_profitability",
+      "rows": [
+        {
+          "area": "policy",
+          "comparability": "NO_NEW_MEASUREMENT",
+          "conditions": {
+            "corpus_seal": "f6b715d022b907d42067c3df14a22a457a9cefb584b778ea1cd9f9284b778efc",
+            "flags": [
+              "UNDERPOWERED:policy:256/500",
+              "UNDERPOWERED:environment_return:256/500"
+            ],
+            "label_provenance": "INDEPENDENT_SYSTEM",
+            "label_source": "sample_256.csv sha256 33475f68bc3918088442dc8fed95943fd62e8255112a377894b018fb84f75000; decision timestamps from decisions.jsonl sha256 09219b02d10d5587891448dc97fb2f7d5ff5eca55be8cf3ddf95c77d69280a07",
+            "minimum_rows": 500,
+            "protocol_digest": "65013b74c2a57f6f10586eb7104ad9a31c1ae10505c60d9fdf104d63efee8844",
+            "report_file": "report_fitted_sac.json",
+            "report_generated_at": "2026-09-25T11:13:41Z",
+            "scored_rows": 256,
+            "sealed_at": "2026-09-25T11:13:41Z",
+            "sealed_row_count": 256
+          },
+          "horizon": "one bar (4h)",
+          "literature": {
+            "metric": "NOT_CARRIED",
+            "scale": "NOT_CARRIED",
+            "source": "NOT_CARRIED",
+            "value": "NOT_CARRIED"
+          },
+          "metric": "policy_profitability (refused)",
+          "model_error": null,
+          "naive": {
+            "error": "NOT_CARRIED",
+            "name": "NOT_CARRIED",
+            "note": null,
+            "same_rows_as_model": false
+          },
+          "orientation": "score",
+          "rank": null,
+          "reason": "policy_profitability is refused by this package: a proposed action is not a realised return: no order was placed, no fill, slippage, financing or timing exists, and the market did not respond to it. What can be reported is the action statistics; profit belongs to an execution record from the system that actually traded. The report carries what this area can report; none of it is a quality claim.",
+          "refusal": {
+            "metric": "policy_profitability",
+            "reason": "a proposed action is not a realised return: no order was placed, no fill, slippage, financing or timing exists, and the market did not respond to it. What can be reported is the action statistics; profit belongs to an execution record from the system that actually traded"
+          },
+          "scale": "environment_return_training_reward_total",
+          "skill": null,
+          "skill_source": "NOT_DEFINED: policy_profitability is refused by name",
+          "source": "report_fitted_sac.json",
+          "stage": "fitted_sac",
+          "status": "NO_NEW_MEASUREMENT",
+          "target": "exposure chosen per bar, replayed in the fitted policy's own environment"
+        },
+        {
+          "area": "policy",
+          "comparability": "NO_NEW_MEASUREMENT",
+          "conditions": {
+            "corpus_seal": "f6b715d022b907d42067c3df14a22a457a9cefb584b778ea1cd9f9284b778efc",
+            "flags": [
+              "UNDERPOWERED:policy:256/500",
+              "UNDERPOWERED:environment_return:256/500"
+            ],
+            "label_provenance": "INDEPENDENT_SYSTEM",
+            "label_source": "sample_256.csv sha256 33475f68bc3918088442dc8fed95943fd62e8255112a377894b018fb84f75000; decision timestamps from decisions.jsonl sha256 09219b02d10d5587891448dc97fb2f7d5ff5eca55be8cf3ddf95c77d69280a07",
+            "minimum_rows": 500,
+            "protocol_digest": "65013b74c2a57f6f10586eb7104ad9a31c1ae10505c60d9fdf104d63efee8844",
+            "report_file": "report_flat.json",
+            "report_generated_at": "2026-09-25T11:13:41Z",
+            "scored_rows": 256,
+            "sealed_at": "2026-09-25T11:13:41Z",
+            "sealed_row_count": 256
+          },
+          "horizon": "one bar (4h)",
+          "literature": {
+            "metric": "NOT_CARRIED",
+            "scale": "NOT_CARRIED",
+            "source": "NOT_CARRIED",
+            "value": "NOT_CARRIED"
+          },
+          "metric": "policy_profitability (refused)",
+          "model_error": null,
+          "naive": {
+            "error": "NOT_CARRIED",
+            "name": "NOT_CARRIED",
+            "note": null,
+            "same_rows_as_model": false
+          },
+          "orientation": "score",
+          "rank": null,
+          "reason": "policy_profitability is refused by this package: a proposed action is not a realised return: no order was placed, no fill, slippage, financing or timing exists, and the market did not respond to it. What can be reported is the action statistics; profit belongs to an execution record from the system that actually traded. The report carries what this area can report; none of it is a quality claim.",
+          "refusal": {
+            "metric": "policy_profitability",
+            "reason": "a proposed action is not a realised return: no order was placed, no fill, slippage, financing or timing exists, and the market did not respond to it. What can be reported is the action statistics; profit belongs to an execution record from the system that actually traded"
+          },
+          "scale": "environment_return_training_reward_total",
+          "skill": null,
+          "skill_source": "NOT_DEFINED: policy_profitability is refused by name",
+          "source": "report_flat.json",
+          "stage": "flat",
+          "status": "NO_NEW_MEASUREMENT",
+          "target": "exposure chosen per bar, replayed in the fitted policy's own environment"
+        },
+        {
+          "area": "policy",
+          "comparability": "NO_NEW_MEASUREMENT",
+          "conditions": {
+            "corpus_seal": "f6b715d022b907d42067c3df14a22a457a9cefb584b778ea1cd9f9284b778efc",
+            "flags": [
+              "UNDERPOWERED:policy:256/500",
+              "UNDERPOWERED:environment_return:256/500"
+            ],
+            "label_provenance": "INDEPENDENT_SYSTEM",
+            "label_source": "sample_256.csv sha256 33475f68bc3918088442dc8fed95943fd62e8255112a377894b018fb84f75000; decision timestamps from decisions.jsonl sha256 09219b02d10d5587891448dc97fb2f7d5ff5eca55be8cf3ddf95c77d69280a07",
+            "minimum_rows": 500,
+            "protocol_digest": "65013b74c2a57f6f10586eb7104ad9a31c1ae10505c60d9fdf104d63efee8844",
+            "report_file": "report_laya_first_layer.json",
+            "report_generated_at": "2026-09-25T11:13:41Z",
+            "scored_rows": 256,
+            "sealed_at": "2026-09-25T11:13:41Z",
+            "sealed_row_count": 256
+          },
+          "horizon": "one bar (4h)",
+          "literature": {
+            "metric": "NOT_CARRIED",
+            "scale": "NOT_CARRIED",
+            "source": "NOT_CARRIED",
+            "value": "NOT_CARRIED"
+          },
+          "metric": "policy_profitability (refused)",
+          "model_error": null,
+          "naive": {
+            "error": "NOT_CARRIED",
+            "name": "NOT_CARRIED",
+            "note": null,
+            "same_rows_as_model": false
+          },
+          "orientation": "score",
+          "rank": null,
+          "reason": "policy_profitability is refused by this package: a proposed action is not a realised return: no order was placed, no fill, slippage, financing or timing exists, and the market did not respond to it. What can be reported is the action statistics; profit belongs to an execution record from the system that actually traded. The report carries what this area can report; none of it is a quality claim.",
+          "refusal": {
+            "metric": "policy_profitability",
+            "reason": "a proposed action is not a realised return: no order was placed, no fill, slippage, financing or timing exists, and the market did not respond to it. What can be reported is the action statistics; profit belongs to an execution record from the system that actually traded"
+          },
+          "scale": "environment_return_training_reward_total",
+          "skill": null,
+          "skill_source": "NOT_DEFINED: policy_profitability is refused by name",
+          "source": "report_laya_first_layer.json",
+          "stage": "laya_first_layer",
+          "status": "NO_NEW_MEASUREMENT",
+          "target": "exposure chosen per bar, replayed in the fitted policy's own environment"
+        }
+      ]
+    }
+  ],
+  "computed_here": [
+    "skill (only where the report carries none)",
+    "comparability verdicts",
+    "rank"
+  ],
+  "decimals": 6,
+  "inputs": [
+    {
+      "area": "policy",
+      "corpus_seal": "f6b715d022b907d42067c3df14a22a457a9cefb584b778ea1cd9f9284b778efc",
+      "protocol_digest": "65013b74c2a57f6f10586eb7104ad9a31c1ae10505c60d9fdf104d63efee8844",
+      "report_file": "report_fitted_sac.json",
+      "report_generated_at": "2026-09-25T11:13:41Z",
+      "stage": "fitted_sac"
+    },
+    {
+      "area": "policy",
+      "corpus_seal": "f6b715d022b907d42067c3df14a22a457a9cefb584b778ea1cd9f9284b778efc",
+      "protocol_digest": "65013b74c2a57f6f10586eb7104ad9a31c1ae10505c60d9fdf104d63efee8844",
+      "report_file": "report_flat.json",
+      "report_generated_at": "2026-09-25T11:13:41Z",
+      "stage": "flat"
+    },
+    {
+      "area": "policy",
+      "corpus_seal": "f6b715d022b907d42067c3df14a22a457a9cefb584b778ea1cd9f9284b778efc",
+      "protocol_digest": "65013b74c2a57f6f10586eb7104ad9a31c1ae10505c60d9fdf104d63efee8844",
+      "report_file": "report_laya_first_layer.json",
+      "report_generated_at": "2026-09-25T11:13:41Z",
+      "stage": "laya_first_layer"
+    }
+  ],
+  "not_measured": [],
+  "read_from_reports": [
+    "model error",
+    "metric",
+    "scale",
+    "target",
+    "horizon",
+    "naive reference and its error",
+    "skill where the scorer computed it",
+    "literature value and source",
+    "conditions"
+  ],
+  "report_version": "m5phet-evaluation-report/1",
+  "stages": [
+    "fitted_sac",
+    "flat",
+    "laya_first_layer"
+  ],
+  "version": "m5phet-evaluation-stage-comparison/1"
+}

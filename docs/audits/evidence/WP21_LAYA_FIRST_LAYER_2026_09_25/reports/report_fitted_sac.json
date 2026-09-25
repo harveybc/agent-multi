@@ -1,0 +1,84 @@
+{
+  "corpus_seal": "f6b715d022b907d42067c3df14a22a457a9cefb584b778ea1cd9f9284b778efc",
+  "family": "policy",
+  "flags": [
+    "UNDERPOWERED:policy:256/500",
+    "UNDERPOWERED:environment_return:256/500"
+  ],
+  "generated_at": "2026-09-25T11:13:41Z",
+  "horizon": "one bar (4h)",
+  "label_producer": "the ETHUSD 4h model-ready dataset export for the bars; the decision timestamps are this run's own decision points. Neither is a judgement about what action a bar deserved: this corpus has no ground truth, which is why policy quality stays refused",
+  "label_provenance": "INDEPENDENT_SYSTEM",
+  "label_source": "sample_256.csv sha256 33475f68bc3918088442dc8fed95943fd62e8255112a377894b018fb84f75000; decision timestamps from decisions.jsonl sha256 09219b02d10d5587891448dc97fb2f7d5ff5eca55be8cf3ddf95c77d69280a07",
+  "metric_sets": [
+    {
+      "baseline": null,
+      "counts": {
+        "declared_rows": 256,
+        "scored_rows": 256
+      },
+      "family": "policy",
+      "name": "policy",
+      "notes": [
+        "a proposed action is not a realised return: no order was placed, no fill, slippage, financing or timing exists, and the market did not respond to it. What can be reported is the action statistics; profit belongs to an execution record from the system that actually traded",
+        "Turnover assumes the declared population order is the decision order; in any other order it measures nothing."
+      ],
+      "rows_declared": 256,
+      "values": {
+        "action_dimension": 1,
+        "bound_violations": null,
+        "max_by_dimension": [
+          0.18251430988311768
+        ],
+        "mean_absolute_action": 0.0636235133279115,
+        "mean_by_dimension": [
+          0.060713357059285045
+        ],
+        "mean_turnover_in_population_order": 0.020421191290313122,
+        "min_by_dimension": [
+          -0.03693181276321411
+        ],
+        "nonzero_share": 1.0
+      }
+    },
+    {
+      "baseline": {
+        "environment_return_training_reward_total": 0.0,
+        "name": "flat",
+        "note": "the all-flat series replayed in the same environment configuration over the same sealed rows",
+        "rows": 256,
+        "same_rows_as_model": true
+      },
+      "counts": {
+        "declared_rows": 256,
+        "scored_rows": 256
+      },
+      "family": "policy",
+      "name": "environment_return",
+      "notes": [
+        "environment_return_training_reward_total is the gym-fx environment's own reward under its configured reward plugin, summed over the replayed steps. It is a training signal inside a simulation with the campaign's own commission, slippage and execution rules; it is not profit, not a backtest result and not evidence about any market",
+        "This arm is one series of actions in one simulation over one development sample. Nothing here is held out, nothing here is repeated, and a difference between two arms is not a measured effect."
+      ],
+      "rows_declared": 256,
+      "values": {
+        "environment_return_training_reward_mean_per_step": -1.5186962427974037e-05,
+        "environment_return_training_reward_total": -0.0038878623815613534,
+        "steps": 256
+      }
+    }
+  ],
+  "minimum_rows": 500,
+  "protocol_digest": "65013b74c2a57f6f10586eb7104ad9a31c1ae10505c60d9fdf104d63efee8844",
+  "scale": "environment_return_training_reward_total",
+  "sealed_at": "2026-09-25T11:13:41Z",
+  "sealed_row_count": 256,
+  "stage": "fitted_sac",
+  "statements": [
+    "UNDERPOWERED: policy rests on 256 scored rows against a declared minimum of 500. The numbers are reported because withholding weak results and publishing strong ones is selection, but they do not support a claim about quality.",
+    "UNDERPOWERED: environment_return rests on 256 scored rows against a declared minimum of 500. The numbers are reported because withholding weak results and publishing strong ones is selection, but they do not support a claim about quality.",
+    "Labels come from 'sample_256.csv sha256 33475f68bc3918088442dc8fed95943fd62e8255112a377894b018fb84f75000; decision timestamps from decisions.jsonl sha256 09219b02d10d5587891448dc97fb2f7d5ff5eca55be8cf3ddf95c77d69280a07', produced by \"the ETHUSD 4h model-ready dataset export for the bars; the decision timestamps are this run's own decision points. Neither is a judgement about what action a bar deserved: this corpus has no ground truth, which is why policy quality stays refused\", under provenance INDEPENDENT_SYSTEM.",
+    "Seal f6b715d022b907d42067c3df14a22a457a9cefb584b778ea1cd9f9284b778efc over 256 rows, sealed at 2026-09-25T11:13:41Z, under protocol 65013b74c2a57f6f10586eb7104ad9a31c1ae10505c60d9fdf104d63efee8844. A variant or prompt chosen after these scores were seen would carry this same seal, so the order is checkable."
+  ],
+  "target": "exposure chosen per bar, replayed in the fitted policy's own environment",
+  "version": "m5phet-evaluation-report/1"
+}
