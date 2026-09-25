@@ -12,8 +12,8 @@ This repository is public. Do not commit:
 - commercial datasets or third-party content that cannot be redistributed.
 
 Runtime authority belongs in ignored local environment files or an operator
-configuration directory outside the checkout. Addresses under `192.0.2.0/24`
-are documentation examples and do not describe the deployed fleet.
+configuration directory outside the checkout. Addresses shown in public
+examples are documentation-only values and do not describe the deployed fleet.
 
 Before publishing, run the repository sensitivity gate:
 

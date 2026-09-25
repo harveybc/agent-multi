@@ -8,13 +8,27 @@
 # a decision worker to a screen worker.
 #
 # The screen gate is PINNED here (P1LR_SCREEN_GATE) and VERIFIED at
-# start by ExecStartPre (examples/systemd/p1lr_decision_gate_check.sh):
+# start by ExecCondition (examples/systemd/p1lr_decision_gate_check.sh):
 # the file must exist, carry schema
 # agent_multi.p1_difficulty_lr_screen_verdict.v1, record outcome
 # SCREEN_VIABLE_REGION, carry gates.replica_terminal_loads == true and
 # bind THIS contract's sha256. Any other state exits 4 (REFUSED) before
-# a training process exists, and RestartPreventExitStatus=4 stops the
-# retry loop — a configuration refusal is not transient.
+# a training process exists.
+#
+# R3 (order 2026-09-11) — WHY ExecCondition AND NOT ExecStartPre. The
+# gate check used to run as ExecStartPre, and the comment claimed
+# RestartPreventExitStatus=4 stopped the retry loop. It does not.
+# RestartPreventExitStatus is compared against the exit status of the
+# MAIN process; when ExecStartPre refuses, the main process never runs,
+# ExecMainStatus stays 0, and Restart=on-failure retried the refusal
+# every RestartSec until the start limit froze the unit as `failed`.
+# The observed cost was 11 restarts of a decision worker whose pinned
+# gate does not exist. ExecCondition is the directive that means "this
+# unit must not run now": exit 1..254 skips the remaining commands, the
+# unit is NOT marked failed, and NO restart is scheduled. The refusal
+# stays typed — the check writes a durable record naming the refusal
+# class under P1LR_GATE_STATE_DIR — and exit 255 or a signal is still a
+# genuine harness failure, which ExecCondition does treat as one.
 #
 # Output root: the decision run writes under
 # decision_run.output_root (…/p1_difficulty_lr_factorial_20260811_v1_decision),
@@ -50,21 +64,27 @@ WorkingDirectory=%h/Documents/GitHub/agent-multi
 # The PINNED verified screen gate (order 2026-08-12; screen identity
 # cd823e2b5c753497, outcome SCREEN_VIABLE_REGION). Declared BEFORE the
 # environment files so a reviewed per-host override may repoint it —
-# ExecStartPre re-verifies whatever value is effective, so a repointed
+# ExecCondition re-verifies whatever value is effective, so a repointed
 # gate that is absent, foreign or non-viable still refuses.
 Environment=P1LR_SCREEN_GATE=%h/.local/share/agent-multi/p1lr_collection_cd823e2b_20260812/screen_verdict.json
+# Names the instance in the durable gate record, so a skipped unit
+# says WHICH seat refused and why.
+Environment=P1LR_GATE_INSTANCE=%i
 # The runner enforces the contract hostname + GPU-UUID assignment
 # itself (WP13) and runs the gpu_readiness_probe launch gate before
 # any framework import; the env file only materializes the binding.
 EnvironmentFile=%h/Documents/GitHub/agent-multi/examples/config/phase_3_eth_sac_dynamics/p1lr_env/seed%i.env
 EnvironmentFile=-%h/.config/agent-multi/p1lr-decision@%i.env
-ExecStartPre=%h/Documents/GitHub/agent-multi/examples/systemd/p1lr_decision_gate_check.sh ${P1LR_SCREEN_GATE}
+ExecCondition=%h/Documents/GitHub/agent-multi/examples/systemd/p1lr_decision_gate_check.sh ${P1LR_SCREEN_GATE}
 ExecStart=%h/anaconda3/envs/trading-stack/bin/python \
     tools/p1_difficulty_lr_factorial.py --seed %i \
     --mode decision --screen-gate ${P1LR_SCREEN_GATE}
 Restart=on-failure
 RestartSec=60
 SuccessExitStatus=3
+# Covers the MAIN process exiting 4 (the runner's own REFUSED_* class).
+# It does NOT and cannot cover a gate refusal — that is ExecCondition's
+# job above; see the R3 note in the header.
 RestartPreventExitStatus=4
 TimeoutStartSec=infinity
 # The reviewed decision profile caps the replay buffer at 40k transitions

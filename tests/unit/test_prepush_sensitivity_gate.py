@@ -151,6 +151,33 @@ def test_topology_beyond_allowlist_is_found(tmp_path):
     assert "sigma-new" not in dumped and "192.168.7.42" not in dumped
 
 
+def test_dynamic_hostname_expressions_and_prose_are_not_topology(tmp_path):
+    repo, base = _repo(tmp_path)
+    _commit(
+        repo,
+        "tools/runtime.py",
+        'facts = {"hostname": socket.gethostname()}\n'
+        '"host: the marker is durable"\n'
+        'hostname = discover_runtime_host()\n',
+    )
+    assert _scan(tmp_path, repo, base) == []
+
+
+def test_literal_hostname_forms_remain_blocked(tmp_path):
+    repo, base = _repo(tmp_path)
+    _commit(
+        repo,
+        "runtime.conf",
+        'hostname: sigma-new\n'
+        '{"hostname": "sigma-json"}\n'
+        'hostname = "sigma-code"\n',
+    )
+    findings = _scan(tmp_path, repo, base)
+    assert len(findings) == 3
+    assert {finding["rule"] for finding in findings} == {
+        "hostname_assignment"}
+
+
 def test_allowlisted_path_glob_exempts_only_named_class(tmp_path):
     repo, base = _repo(tmp_path)
     _commit(repo, "examples/config/contract.json",

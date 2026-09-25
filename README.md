@@ -20,6 +20,20 @@ corpus are in daily use.
 > real-capital trades; live or demo execution belongs to separate downstream
 > systems. Nothing in the examples is financial advice.
 
+## Run this with an AI agent
+
+Paste this into Claude Code, Cursor, Codex, GitHub Copilot or any coding agent
+with shell access:
+
+> Read `AGENTS.md` in this repository and follow the **Agent quickstart**
+> section end to end: set up the environment, run the smoke test, execute the
+> example non-GPU preflight, then tell me the exact URL or file paths where I
+> can see the results and one query I should try first.
+
+`AGENTS.md` is the [agents.md](https://agents.md) convention, read natively by
+most coding agents. Its quickstart uses only non-GPU, non-training commands —
+launching a real experiment is deliberately excluded.
+
 ## Role and non-responsibilities
 
 **Role:** own the RL experiment lifecycle — configs, training pipelines,
@@ -119,12 +133,33 @@ agent-multi --load_config examples/config/doin/trading_asset_solusdt_4h_sac_v1.j
 
 *Unverified for this README* (full SAC training is GPU-hours-scale). A cheap
 CPU smoke harness exists in [`run_smokes.py`](run_smokes.py), which caps
-configs at 1000 timesteps (also unverified here). What was verified:
+configs at 1000 timesteps (also unverified here).
+
+For something that runs in seconds, consumes no GPU and constructs no model,
+use the factorial runner's preflight:
+
+```bash
+python tools/p1_difficulty_lr_factorial.py --preflight
+```
+
+Verified: exit 0, schema `agent_multi.p1_difficulty_lr_preflight.v1`,
+`"outcome": "PREFLIGHT_PASS"`, `"training_used": false`, `"refusals": []`. It
+materialises the nested splits into a temporary directory, reports each role's
+row count and CSV sha256, and proves the sealed evaluation window was not
+materialised (`"sealed_test_state": "SEALED"`,
+`"sealed_test_csv_absent": true`). It writes nothing unless you pass
+`--output`. The equivalent on the L2 runner is
+`python tools/l2_curriculum_arms.py --preflight`, and `--dispatch-plan` prints
+the per-host launch commands without authorizing anything.
+
+Also verified:
 
 ```bash
 python -c "from pipeline_plugins.rl_pipeline_with_validation import PipelinePlugin; print('rl_pipeline_with_validation OK')"
 # observed: "rl_pipeline_with_validation OK"
 ```
+
+An agent-executable version of this recipe is in [`AGENTS.md`](AGENTS.md).
 
 ## Distributed / DOIN usage
 
@@ -176,9 +211,27 @@ Console scripts: `agent-multi` (experiment runner) and
 ## Tests
 
 ```bash
-python -m pytest tests --collect-only -q   # observed: "898 tests collected in 3.19s"
-python -m pytest tests                     # full run: unverified for this README
+python tools/bootstrap_test_fixtures.py --check-only   # verify fixtures; never writes
+python -m pytest tests --collect-only -q               # observed: 1579 collected in ~3 s
+python -m pytest tests                                 # full run: duration unverified
 ```
+
+Collection is clean (zero errors). There is no `pytest.ini` or pytest section
+in `pyproject.toml`; the suite runs on defaults, and the only marker in use is
+`@pytest.mark.parametrize`. `tests/conftest.py` installs a session-scoped
+guard that fails the suite if this checkout or the sibling `doin-node`
+checkout is left dirty, so do not edit files while it runs.
+
+Linting is a vendored, pinned ruff in [`tooling/`](tooling/):
+
+```bash
+tooling/venv/bin/ruff check --config tooling/ruff.toml .
+```
+
+Observed: ruff 0.13.1, `Found 2 errors`, exit code 1. That is the accepted
+state recorded in [`tooling/ruff_baseline.json`](tooling/ruff_baseline.json),
+not a regression. The config selects correctness rules only; `--fix` is
+forbidden in CI and evidence generation.
 
 Config linting: [`tools/config_doctor.py`](tools/config_doctor.py). Audit
 evidence collection: [`tools/audit_test_evidence.py`](tools/audit_test_evidence.py).
@@ -192,6 +245,14 @@ weekly metrics used as selection evidence. Campaign and audit artifacts are
 aggregated by the tools under [`tools/`](tools/) and documented in
 [`docs/audits/`](docs/audits/). Seeds are explicit in configs; deterministic
 seeding contracts for distributed runs are enforced by the DOIN layer.
+
+Those outputs land **outside the checkout**, at the roots each contract
+declares: run outputs and sealed collections under
+`~/.local/share/agent-multi/`, tool-owned durable state (watchdogs, incident
+ledger, transition queue, audit snapshots, preflight payloads) under
+`~/.local/state/agent-multi/`. Inside the repository, [`records/`](records/)
+holds only a fleet runtime manifest and [`knowledge/`](knowledge/) only a
+hashed concept bundle — neither is an evidence root.
 
 ## Safety and credentials
 

@@ -1,0 +1,340 @@
+{
+ "order": "agent-multi@ab5ce68d + label resolution agent-multi@2ab28bab (PLAN_42_PREVAILS)",
+ "subject_repository": "gym-fx",
+ "branch": "satoshi/trade-reconciliation-20260828",
+ "commit": "ad6fb51",
+ "executed": {
+  "materialization": {
+   "families": {
+    "W0": 2,
+    "W1": 16,
+    "W2": 45
+   },
+   "rejections_from_the_predeclared_grids": 0,
+   "persisted": "examples/wp4_weekly_flat/ \u2014 effective config + sha256 digest per cell BEFORE execution, plus manifest and rejection ledger",
+   "validator": "the ACCEPTED gym-fx validate_policy, unmodified; plus a mechanical timeframe rule (reopen gate and wind-down must fit the shortest open window) whose refusals are typed and ledgered",
+   "w2_status": "economic execution BLOCKED on every W2 cell: timing must be a W1 selection frozen from fit/calibration evidence under a predeclared rule, and none exists. Mechanics smokes used section-4 default timing stamped zero-economic-authority.",
+   "g2_baselines": "reopen baseline windows are not named by plan section 4; frozen openly at the accepted-suite value of 4 closed bars and declared in the manifest"
+  },
+  "driver_identity_checks": "the driver refuses when app/session_exposure.py or app/flatten_custody.py do not match the WP4.0 frozen sha256 digests, when a cell digest fails verification, or when a policy no longer revalidates identically",
+  "refusal_smokes": {
+   "infeasible_w1_pair": "wd=4h, ff=8h refused by the accepted validator (forced flatten must occur AFTER wind-down begins)",
+   "timeframe_infeasible_w2": "48h bars: the reopen gate needs up to 480h against a 104h open window \u2014 refused mechanically",
+   "wind_down_covering_open_window": "wd=120h refused",
+   "missing_calendar_evidence": "the accepted fail-closed contract asserted: every step declares session_evidence_failed_closed, state degrades to WIND_DOWN, zero signed exposure admitted",
+   "tampered_authority": "identity check refuses before any step"
+  },
+  "mechanics_smokes_and_benchmark": {
+   "w0_control_disabled": {
+    "cell_id": "w0_control_disabled",
+    "family": "W0",
+    "cell_digest": "b1868b591167ee29e44bf4599976795cf9c4b6ce545729a1783c68c34fed5d8d",
+    "identity_verified": {
+     "app/session_exposure.py": "0a33065805b3304372a3b58a018506214aecfc3879d5a556b029e30b827132e2",
+     "app/flatten_custody.py": "689a3e5c54692bf3273ea269fb94dd46f0bd7f5f9506e2d81e0d237bff5c7012"
+    },
+    "bars_in_window": 32,
+    "steps": 32,
+    "wall_seconds": 0.0222,
+    "steps_per_second": 1444.58,
+    "peak_rss_kb": 133312,
+    "terminated": true,
+    "session_state_counts": {},
+    "reopen_blocked_decisions": 0,
+    "forced_closes": 0,
+    "cancellation_decisions": 0,
+    "reward_sum": 0.0264009,
+    "pnl_sum": 264.00903983,
+    "no_bar_inside_closure": true,
+    "steps_per_second_best_of_3": 1625.09,
+    "wall_seconds_runs": [
+     0.0222,
+     0.0477,
+     0.0197
+    ]
+   },
+   "w0_overlay_enabled": {
+    "cell_id": "w0_overlay_enabled",
+    "family": "W0",
+    "cell_digest": "bd8392314be5270e95cc748fc3d4807fc17f645a7839a188125f8804724850ad",
+    "identity_verified": {
+     "app/session_exposure.py": "0a33065805b3304372a3b58a018506214aecfc3879d5a556b029e30b827132e2",
+     "app/flatten_custody.py": "689a3e5c54692bf3273ea269fb94dd46f0bd7f5f9506e2d81e0d237bff5c7012"
+    },
+    "bars_in_window": 32,
+    "steps": 32,
+    "wall_seconds": 0.0447,
+    "steps_per_second": 716.53,
+    "peak_rss_kb": 134720,
+    "terminated": true,
+    "session_state_counts": {
+     "NORMAL_TRADING": 19,
+     "WIND_DOWN": 8,
+     "FORCED_FLATTEN": 1,
+     "REOPEN_BLACKOUT": 4
+    },
+    "reopen_blocked_decisions": 2,
+    "forced_closes": 1,
+    "cancellation_decisions": 0,
+    "reward_sum": -0.00233016,
+    "pnl_sum": -23.30164128,
+    "no_bar_inside_closure": true,
+    "steps_per_second_best_of_3": 719.24,
+    "wall_seconds_runs": [
+     0.0447,
+     0.045,
+     0.0445
+    ]
+   },
+   "w1_wd12_ff1": {
+    "cell_id": "w1_wd12_ff1",
+    "family": "W1",
+    "cell_digest": "0dc6734fdd1f43211643274b5e7a1715909dffdba960c0c4f6ca60a42829844a",
+    "identity_verified": {
+     "app/session_exposure.py": "0a33065805b3304372a3b58a018506214aecfc3879d5a556b029e30b827132e2",
+     "app/flatten_custody.py": "689a3e5c54692bf3273ea269fb94dd46f0bd7f5f9506e2d81e0d237bff5c7012"
+    },
+    "bars_in_window": 26,
+    "steps": 26,
+    "wall_seconds": 0.0396,
+    "steps_per_second": 656.26,
+    "peak_rss_kb": 135104,
+    "terminated": true,
+    "session_state_counts": {
+     "NORMAL_TRADING": 19,
+     "WIND_DOWN": 3,
+     "REOPEN_BLACKOUT": 4
+    },
+    "reopen_blocked_decisions": 1,
+    "forced_closes": 0,
+    "cancellation_decisions": 0,
+    "reward_sum": 0.00264977,
+    "pnl_sum": 26.49769788,
+    "no_bar_inside_closure": true,
+    "steps_per_second_best_of_3": 672.72,
+    "wall_seconds_runs": [
+     0.0396,
+     0.0386,
+     0.0412
+    ]
+   },
+   "w1_wd48_ff8": {
+    "cell_id": "w1_wd48_ff8",
+    "family": "W1",
+    "cell_digest": "3537e7abe9583f38291adbaa36176db7d1467675ea84182424714a8294a15f43",
+    "identity_verified": {
+     "app/session_exposure.py": "0a33065805b3304372a3b58a018506214aecfc3879d5a556b029e30b827132e2",
+     "app/flatten_custody.py": "689a3e5c54692bf3273ea269fb94dd46f0bd7f5f9506e2d81e0d237bff5c7012"
+    },
+    "bars_in_window": 35,
+    "steps": 35,
+    "wall_seconds": 0.0472,
+    "steps_per_second": 741.15,
+    "peak_rss_kb": 135360,
+    "terminated": true,
+    "session_state_counts": {
+     "NORMAL_TRADING": 19,
+     "WIND_DOWN": 10,
+     "FORCED_FLATTEN": 2,
+     "REOPEN_BLACKOUT": 4
+    },
+    "reopen_blocked_decisions": 2,
+    "forced_closes": 2,
+    "cancellation_decisions": 0,
+    "reward_sum": 0.00306147,
+    "pnl_sum": 30.61467507,
+    "no_bar_inside_closure": true,
+    "steps_per_second_best_of_3": 767.68,
+    "wall_seconds_runs": [
+     0.0472,
+     0.0456,
+     0.0467
+    ]
+   },
+   "w1_wd36_ff4": {
+    "cell_id": "w1_wd36_ff4",
+    "family": "W1",
+    "cell_digest": "7cae40fcfdd72d8cc4292d7cef0c5835fb883fed3a7f1720592a2853bf4a326e",
+    "identity_verified": {
+     "app/session_exposure.py": "0a33065805b3304372a3b58a018506214aecfc3879d5a556b029e30b827132e2",
+     "app/flatten_custody.py": "689a3e5c54692bf3273ea269fb94dd46f0bd7f5f9506e2d81e0d237bff5c7012"
+    },
+    "bars_in_window": 32,
+    "steps": 32,
+    "wall_seconds": 0.0465,
+    "steps_per_second": 688.12,
+    "peak_rss_kb": 136000,
+    "terminated": true,
+    "session_state_counts": {
+     "NORMAL_TRADING": 19,
+     "WIND_DOWN": 8,
+     "FORCED_FLATTEN": 1,
+     "REOPEN_BLACKOUT": 4
+    },
+    "reopen_blocked_decisions": 2,
+    "forced_closes": 1,
+    "cancellation_decisions": 0,
+    "reward_sum": -0.01001469,
+    "pnl_sum": -100.14692726,
+    "no_bar_inside_closure": true,
+    "steps_per_second_best_of_3": 701.03,
+    "wall_seconds_runs": [
+     0.0465,
+     0.0462,
+     0.0456
+    ]
+   },
+   "w2_h1_b1_c1": {
+    "cell_id": "w2_h1_b1_c1",
+    "family": "W2",
+    "cell_digest": "e1c2e2317c61aec27cdc01748849f0532ddb6957925fab8cfed8f56dfa1a0f82",
+    "identity_verified": {
+     "app/session_exposure.py": "0a33065805b3304372a3b58a018506214aecfc3879d5a556b029e30b827132e2",
+     "app/flatten_custody.py": "689a3e5c54692bf3273ea269fb94dd46f0bd7f5f9506e2d81e0d237bff5c7012"
+    },
+    "bars_in_window": 30,
+    "steps": 30,
+    "wall_seconds": 0.0407,
+    "steps_per_second": 736.52,
+    "peak_rss_kb": 136256,
+    "terminated": true,
+    "session_state_counts": {
+     "NORMAL_TRADING": 19,
+     "WIND_DOWN": 8,
+     "FORCED_FLATTEN": 1,
+     "REOPEN_BLACKOUT": 2
+    },
+    "reopen_blocked_decisions": 3,
+    "forced_closes": 1,
+    "cancellation_decisions": 0,
+    "reward_sum": -0.00295986,
+    "pnl_sum": -29.598576,
+    "no_bar_inside_closure": true,
+    "steps_per_second_best_of_3": 777.34,
+    "wall_seconds_runs": [
+     0.0407,
+     0.0424,
+     0.0386
+    ]
+   },
+   "w2_h12_b3_c3": {
+    "cell_id": "w2_h12_b3_c3",
+    "family": "W2",
+    "cell_digest": "cb387730ec3f715634e155e17699c0776a7dc3327646f858413e163ea6c8b80a",
+    "identity_verified": {
+     "app/session_exposure.py": "0a33065805b3304372a3b58a018506214aecfc3879d5a556b029e30b827132e2",
+     "app/flatten_custody.py": "689a3e5c54692bf3273ea269fb94dd46f0bd7f5f9506e2d81e0d237bff5c7012"
+    },
+    "bars_in_window": 36,
+    "steps": 36,
+    "wall_seconds": 0.0618,
+    "steps_per_second": 582.6,
+    "peak_rss_kb": 136896,
+    "terminated": true,
+    "session_state_counts": {
+     "NORMAL_TRADING": 23,
+     "WIND_DOWN": 8,
+     "FORCED_FLATTEN": 1,
+     "REOPEN_BLACKOUT": 4
+    },
+    "reopen_blocked_decisions": 3,
+    "forced_closes": 1,
+    "cancellation_decisions": 0,
+    "reward_sum": -0.00591044,
+    "pnl_sum": -59.10442065,
+    "no_bar_inside_closure": true,
+    "steps_per_second_best_of_3": 589.5,
+    "wall_seconds_runs": [
+     0.0618,
+     0.0611,
+     0.0619
+    ]
+   },
+   "w2_h4_b1_c3": {
+    "cell_id": "w2_h4_b1_c3",
+    "family": "W2",
+    "cell_digest": "69f7da8dd7f4e2d276268c5c995a1f0884083621194bac0b2a3d93e32fd275e8",
+    "identity_verified": {
+     "app/session_exposure.py": "0a33065805b3304372a3b58a018506214aecfc3879d5a556b029e30b827132e2",
+     "app/flatten_custody.py": "689a3e5c54692bf3273ea269fb94dd46f0bd7f5f9506e2d81e0d237bff5c7012"
+    },
+    "bars_in_window": 32,
+    "steps": 32,
+    "wall_seconds": 0.0458,
+    "steps_per_second": 698.12,
+    "peak_rss_kb": 136896,
+    "terminated": true,
+    "session_state_counts": {
+     "NORMAL_TRADING": 19,
+     "WIND_DOWN": 8,
+     "FORCED_FLATTEN": 1,
+     "REOPEN_BLACKOUT": 4
+    },
+    "reopen_blocked_decisions": 3,
+    "forced_closes": 1,
+    "cancellation_decisions": 0,
+    "reward_sum": -0.00768479,
+    "pnl_sum": -76.84785361,
+    "no_bar_inside_closure": true,
+    "steps_per_second_best_of_3": 698.12,
+    "wall_seconds_runs": [
+     0.0458,
+     0.0466,
+     0.0503
+    ]
+   }
+  },
+  "benchmark_notes": "3 runs per representative, single CPU core, historical-gap windows (no rows inside closure, nothing synthesized, no reward suppression). All five session states visited on enabled arms; forced closes, cancellation decisions and reopen-blocked decisions counted; deterministic replay asserted across independent runs.",
+  "suites": {
+   "tests/test_wp4_materializer.py": 21,
+   "full gym-fx suite": 438
+  },
+  "mutation_check": "bypassing the timeframe rule, the frozen-identity check and the cell digest each broke exactly the test claiming it; green on revert"
+ },
+ "measured_runtime_and_staged_estimates": {
+  "measured_cpu_env_throughput": {
+   "overlay_enabled": "~590-780 env-steps/s",
+   "overlay_disabled": "~1600 env-steps/s",
+   "hardware": "single CPU core, CUDA_VISIBLE_DEVICES unset in-process (no GPU touched)"
+  },
+  "assumptions_declared": [
+   "ETH 4h history ~2190 bars/year; a 5-year pass ~11000 bars",
+   "training adds SAC gradient updates NOT measured here; the estimate is parametric in the env-step budget and update ratio",
+   "5 seeds per cell, predeclared below"
+  ],
+  "W0": {
+   "cells": 2,
+   "env_mechanics_per_full_pass": "~16 s CPU (overlay) / ~7 s (control) per 11k-bar pass",
+   "staged_estimate": "2 cells x 5 seeds x B env-steps: at B=300k, ~2.4 CPU-core-hours of env mechanics total; GPU update cost = 10 x B updates at the dispatch-measured rate"
+  },
+  "W1": {
+   "cells": 16,
+   "staged_estimate": "16 x 5 x B env-steps: at B=300k, ~19 CPU-core-hours env mechanics; GPU dominated by updates"
+  },
+  "W2": {
+   "cells": 45,
+   "status": "BLOCKED until a W1 timing freezes",
+   "staged_estimate_if_unblocked": "45 x 5 x B env-steps: at B=300k, ~53 CPU-core-hours env mechanics"
+  },
+  "note": "zero economic authority: these numbers select nothing and size compute only"
+ },
+ "predeclaration_before_any_gpu_dispatch": {
+  "trial_counts": "5 seeds per cell, the SAME seed set across all cells of a family (paired design)",
+  "endpoints_fit_calibration_only": {
+   "primary": "net return after execution costs per closure-week",
+   "secondary": [
+    "closure-compliance rate (enabled arms must be 100%: zero positions and zero pending entries at every governed closure)",
+    "forced-vs-voluntary close cost split",
+    "avoided gap PnL",
+    "forgone PnL",
+    "maximum drawdown"
+   ]
+  },
+  "W0_rule": "diagnostic only \u2014 NO selection; report paired per-seed differences overlay-vs-control",
+  "W1_selection_rule": "among cells with 100% closure compliance and zero unresolved incidents, select the maximum mean calibration primary endpoint; ties within one standard error resolve toward LARGER wind_down_hours, then LARGER forced_flatten_hours (both conservative). The selected timing freezes W2.",
+  "W2_rule": "gated on the frozen W1 timing; same endpoint; ties resolve toward the LONGER blackout (larger hours, then bars, then checks)",
+  "multiple_testing": "within each family, Holm-Bonferroni on paired per-seed differences versus the section-4 default cell, family alpha 0.05; W0 exempt (diagnostic, no selection)",
+  "no_post_result_additions": "grids, endpoints, rules and trial counts are fixed here, before any training exists"
+ },
+ "boundaries": "No training, no GPU, no complete economic W1/W2 grids, no deployment, no services, no venue connections, no commands, no position changes, no checkpoint promotion, no live activation. Any GPU campaign requires Musashi's separate dispatch over this predeclaration."
+}

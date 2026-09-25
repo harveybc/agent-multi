@@ -42,8 +42,14 @@ WorkingDirectory=$RUNTIME_DIR
 EnvironmentFile=
 EnvironmentFile=$RUNTIME_DIR/examples/config/phase_3_eth_sac_dynamics/p1lr_env/seed%i.env
 EnvironmentFile=-%h/.config/agent-multi/p1lr-decision@%i.env
+# R3: the gate check is an ExecCondition, never an ExecStartPre. The
+# empty ExecStartPre= clears any pre-R3 drop-in that still installs the
+# check as a start-pre command — one leftover line there is enough to
+# bring the restart loop back, because RestartPreventExitStatus cannot
+# see an ExecStartPre exit code.
 ExecStartPre=
-ExecStartPre=$RUNTIME_DIR/examples/systemd/p1lr_decision_gate_check.sh \${P1LR_SCREEN_GATE}
+ExecCondition=
+ExecCondition=$RUNTIME_DIR/examples/systemd/p1lr_decision_gate_check.sh \${P1LR_SCREEN_GATE}
 EOF
 
 systemctl --user daemon-reload

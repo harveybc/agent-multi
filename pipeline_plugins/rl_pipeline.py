@@ -25,6 +25,7 @@ from pathlib import Path
 from typing import Any, Dict
 
 from . import _return_trace as _trace_mod
+from ._compute_contract import ComputeMeter
 from ._observation_contract import validate_observation_contract
 
 
@@ -75,9 +76,19 @@ class PipelinePlugin:
         wrap_fn = getattr(agent_plugin, "wrap_env", None)
         env = wrap_fn(base_env, config) if callable(wrap_fn) else base_env
         try:
+            meter = None
             if mode == "train":
                 model = agent_plugin.build(env, config)
-                model = agent_plugin.train(model, config)
+                # The limits are checked against the settings the runtime RESOLVED, not the
+                # ones the config asked for, and before a single transition is collected:
+                # building a model does not step the environment.
+                meter = ComputeMeter(model, config)
+                meter.refuse_if_infeasible()
+                meter.start()
+                try:
+                    model = agent_plugin.train(model, config)
+                finally:
+                    meter.stop()
                 save_path = config.get("save_model")
                 if save_path:
                     Path(save_path).parent.mkdir(parents=True, exist_ok=True)
@@ -92,6 +103,10 @@ class PipelinePlugin:
 
             summary = self._evaluate(env, agent_plugin, model, config)
             summary["mode"] = mode
+            summary.update(_observed_work(model, mode))
+            if meter is not None:
+                summary["compute_contract"] = meter.record(
+                    evaluation_transitions=summary.get("episode_length"))
             return summary
         finally:
             # make_env owns env creation; env_plugin.close() tears down cleanly.
@@ -113,6 +128,7 @@ class PipelinePlugin:
         obs, _info = env.reset(seed=seed)
         total_reward = 0.0
         steps = 0
+        summary_truncated = False
         done = False
         trace_rows = []
         prev_equity = _safe_float(_info.get("equity"))
@@ -154,6 +170,13 @@ class PipelinePlugin:
                 force=steps == 1 or steps % int(config.get("progress_update_interval_steps") or 1000) == 0,
             )
             done = bool(terminated or truncated)
+            # A declared evaluation ceiling stops evaluation; it never becomes a training
+            # number and it is never silently raised.
+            eval_cap = config.get("evaluation_transition_cap")
+            if isinstance(eval_cap, (int, float)) and not isinstance(eval_cap, bool):
+                if steps >= int(eval_cap):
+                    summary_truncated = True
+                    break
             if steps > 1_000_000:  # hard safety
                 break
 
@@ -166,6 +189,7 @@ class PipelinePlugin:
             episode_reward=total_reward,
             episode_length=steps,
             eval_seed=seed,
+            evaluation_truncated_by_cap=summary_truncated,
         )
         summary.update(_action_summary_fields(action_stats, summary))
         min_trades = int(config.get("no_trade_min_trades") or 0)
@@ -429,3 +453,29 @@ def _write_eval_progress_if_needed(
     tmp = path.with_suffix(path.suffix + ".tmp")
     tmp.write_text(json.dumps(payload, indent=2, sort_keys=True, default=str) + "\n", encoding="utf-8")
     tmp.replace(path)
+
+
+def _observed_work(model, mode: str) -> dict:
+    """What the runtime says it actually did, asked of the model rather than the config.
+
+    R3: a configured budget is not a measured step count. Stable-Baselines3 keeps the real
+    counters on the model, so they are read from there. A model that does not carry them
+    reports NOTHING: an absent observation stays absent instead of being filled with the budget.
+
+    S1 correction: `_n_updates` does NOT mean "one gradient update" across algorithms. On the
+    installed SB3, `PPO.train` increments it once per optimization **epoch**, outside the
+    minibatch loop where the optimizer actually steps. These two keys are kept because the
+    collector and the historical receipts read these exact flat names, and `observed_updates`
+    keeps carrying the raw library counter; what it MEANS, and the separately measured
+    optimizer-call count, live in `compute_contract` (see `_compute_contract.py`).
+    """
+    observed = {}
+    steps = getattr(model, "num_timesteps", None)
+    if isinstance(steps, (int, float)) and not isinstance(steps, bool):
+        observed["observed_timesteps"] = int(steps)
+    updates = getattr(model, "_n_updates", None)
+    if isinstance(updates, (int, float)) and not isinstance(updates, bool):
+        observed["observed_updates"] = int(updates)
+    if mode != "train":
+        observed.pop("observed_updates", None)
+    return observed

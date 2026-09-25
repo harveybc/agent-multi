@@ -1,0 +1,50 @@
+{
+ "order": "owner-relayed 2026-08-31 \u2014 F9.2 real-SAC counter bound + C16 artifact discipline",
+ "repositories": {
+  "agent-multi F9 branch": {
+   "branch": "satoshi/f9-budget-guard-20260831",
+   "commit": "43797e3d"
+  },
+  "lts": {
+   "branch": "satoshi/wp3-live-adapters-20260830",
+   "commit": "872359e"
+  }
+ },
+ "F9_2_counter_never_exceeds": {
+  "mechanism": "the executing callback caps the remaining gradients immediately before EVERY training block (_on_rollout_end: model.gradient_steps = min(configured, budget - actual_counter)) and the guard stops at >= \u2014 reaching the bound stops, exceeding is impossible even with gradient_steps > 1. The CONFIGURED gradient_steps value is the identity: recorded, never written into config, restored on the model at training end. budget_max_updates now admits ZERO (no updates permitted); every other budget stays strictly positive.",
+  "real_sac_integration": {
+   "gradient_steps_4_budget_10": "lands EXACTLY on 10 (4+4+2 capped final block), typed stop 'reached'",
+   "budget_0": "zero updates ever",
+   "budget_1": "exactly one",
+   "start_one_under": "gains exactly one",
+   "resume_at_or_over": "gains ZERO (tested at ==10 and 15 over a bound of 10)",
+   "identity": "configured_gradient_steps recorded and restored == 4"
+  },
+  "tests": 25,
+  "mutations": {
+   "rollout_cap_removed": 3,
+   "ge_reverted_to_gt": 4,
+   "restored": "green"
+  }
+ },
+ "C16_artifact_discipline": {
+  "paths": "only NORMALIZED relative paths contained under a canonical non-symlink root; absolute, parent-escaping, denormalized and symlinked-root cases refuse typed BEFORE any open",
+  "descriptor_first": "artifacts open with O_NOFOLLOW; regular-file, owner-uid and not-group/other-writable verified from the fstat of the descriptor actually hashed; applied to backup artifacts, the review acta, the diff and the rollback script",
+  "review_acta": "a textual reference no longer authorizes: the review is a REAL SEALED ACTA on disk \u2014 declared file digest descriptor-verified, seal verified, reviewer identity required to equal the identity FIXED BY THE ORDER (required parameter), and the diff must hash to the EXACT digest the sealed acta names. Wrong reviewer, unsealed acta and diff mismatch each refuse with the failure named.",
+  "trade_allowed_decision": "DECIDED: NOT a collector requirement. The collector is read-only under least privilege \u2014 requiring trading permission for a component that must never trade demands more authority than the task needs. The judge ignores the field, the precondition text states the decision, and a heartbeat with trade_allowed=False passes P5 (tested).",
+  "tests": 27,
+  "mutations": {
+   "containment_dropped": 1,
+   "mode_check_dropped": 1,
+   "reviewer_pin_dropped": 1,
+   "restored": "green"
+  },
+  "self_reported_note": "the lts commit message says the containment mutation broke 4 tests; the measured value is 1. Second commit-message count error of this kind this window \u2014 both disclosed here, pushed history not rewritten, and the packet is the accurate record. Corrective habit adopted: counts verified against the terminal output before the message is written."
+ },
+ "activation_status": "COORDINATED_WINDOW_REQUIRED \u2014 unchanged; the judge now also refuses on path escapes, symlinks, loose modes, unsealed or misattributed actas",
+ "suites": {
+  "F9 branch battery": 25,
+  "lts full": 1187
+ },
+ "boundaries": "No training pipelines (only the tiny in-test SAC), no economic grids, no GPU, no deployment, no services, no venue connections, no commands, no position changes, no checkpoint promotion, no live activation."
+}

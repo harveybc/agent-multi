@@ -1,0 +1,80 @@
+{
+ "order": "agent-multi@e5abe694 — WP3-C10, final role and ordering correction",
+ "subject_repository": "lts",
+ "branch": "satoshi/wp3-live-adapters-20260830",
+ "pre_commit": "fd7c052",
+ "post_commit": "4b038d4",
+ "note": "PRE reproduced and frozen BEFORE any edit. Both gaps are mine.",
+
+ "PRE": {
+  "C10_A_same_side_protective_legs": {
+   "payload": "a buy_to_open bracket parent whose stop and take-profit legs both carry side buy",
+   "parsed": true,
+   "roles": ["entry", "protective_stop", "protective_take_profit"],
+   "sides": ["buy", "buy", "buy"],
+   "protective_orders": 2,
+   "verdict": "the leg side was validated only as buy|sell and never reconciled against the parent. A buy cannot close a long position, so the venue's own facts contradict the claimed protective role, and the order was accepted as protected anyway."
+  },
+  "C10_A_mixed_legs": {
+   "parsed": true,
+   "sides": ["buy", "buy", "sell"],
+   "verdict": "one contradictory leg was accepted alongside a valid one — a partially derived population."
+  },
+  "C10_B_effect_ordering": {
+   "command_0_hold": ["submit_decision", "cancel_pending_entries"],
+   "command_1_long": ["submit_decision", "cancel_pending_entries"],
+   "command_2_short": ["cancel_pending_entries"],
+   "command_3_close": ["submit_decision", "cancel_pending_entries"],
+   "commands_that_submit_before_cancelling": [0, 1, 3],
+   "directive_carries_a_precondition_field": false,
+   "verdict": "cancellation is a STATE prerequisite and must precede every model-derived effect. The tuple put submit_decision first for three of the four commands reachable during WIND_DOWN, and nothing in the contract stopped an executor acting on the decision before the pending-entry inventory was resolved."
+  }
+ },
+
+ "POST": {
+  "C10_A_leg_sides_are_reconciled": {
+   "same_side_legs": {"parsed": false, "message": "order[0].leg[0]: a protective leg on side 'buy' cannot close a parent opened on side 'buy' — the venue's facts contradict the claimed protective role"},
+   "mixed_legs": {"parsed": false, "note": "the WHOLE order population is refused; the valid half is never yielded"},
+   "long_parent": "requires sell protection; the honest payload still parses in full with three orders",
+   "short_parent": "a sell_to_open parent requires buy protection, and sell protection refuses",
+   "unavailable_side_facts": "None, '', 'long', 'BUY', True and 1 all refuse",
+   "both_protective_types": "stop, stop_limit and limit each reconciled, and each refuses on the same side as its parent"
+  },
+  "C10_B_cancellation_precedes_and_gates": {
+   "effect_ordering": {
+    "command_0_hold": ["cancel_pending_entries", "submit_decision"],
+    "command_1_long": ["cancel_pending_entries", "submit_decision"],
+    "command_2_short": ["cancel_pending_entries"],
+    "command_3_close": ["cancel_pending_entries", "submit_decision"],
+    "commands_that_submit_before_cancelling": []
+   },
+   "ordering_enforced_by_the_contract": "VenueDirective refuses at construction when a model-derived effect precedes the cancellation, when a cancellation effect names no identities, and when identities are named without an authorised cancellation effect.",
+   "precondition_beyond_ordering": {
+    "field": "decision_blocked_until_cancellation_confirmed",
+    "gate": "permits_dependent_effects(cancellation_outcomes)",
+    "released_only_by": "a terminal 'cancelled' verdict for EVERY named entry",
+    "blocked_by": ["rejected", "filled_before_cancel", "still_open", "gone_without_verdict", "refused_role_None", "no outcome at all"],
+    "partial_inventory": "still blocks, and names the unresolved identities",
+    "rationale": "ordering alone is a convention an executor could ignore; 'we do not know' is not 'it was cancelled'."
+   },
+   "execution_not_wired": "encoded as a required precondition in the directive; activation stays blocked until an executor honours it."
+  },
+  "only_the_true_entry_is_cancelled": "asserted for all four WIND_DOWN commands: parent-order-id only, with stop-leg-id, limit-leg-id and the recorded protective child all preserved.",
+  "mutation_check": "dropping the leg-side reconciliation, putting submit_decision back in front and making the gate permissive broke 107 tests together; green on revert."
+ },
+
+ "acceptance_boundary_respected": {
+  "c7_fixture_preserved": "examples/captures/wp3_alpaca_recorded/ unchanged",
+  "c8_and_c9_tests_preserved": "unchanged; the contract-and-custody suite still passes 72",
+  "recorded_no_write_dry_run": {"writes_performed": 0, "session_state": "WIND_DOWN", "overlay": "masked_risk_increase", "final_command": 0, "effects": ["none"], "cancel_order_identities": [], "decision_blocked_until_cancellation_confirmed": false, "preserve_protection": true}
+ },
+
+ "commands_and_counts": {
+  "pytest tests/unit/test_wp3_venue_direct_evidence.py -q": 125,
+  "pytest tests/unit/test_wp3_session_adapter.py -q": 102,
+  "pytest tests/unit/test_wp3_contract_and_custody.py -q": 72,
+  "pytest tests/unit -q": 967
+ },
+
+ "boundaries": "No deployment or service change. No venue write, order command or position change. No WP4 dispatch. C7 and WP3 are not claimed accepted: C10 awaits independent reproduction."
+}

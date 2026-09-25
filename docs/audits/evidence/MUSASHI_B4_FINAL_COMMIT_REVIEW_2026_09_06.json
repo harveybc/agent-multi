@@ -1,0 +1,56 @@
+{
+  "schema": "agent_multi.musashi_b4_final_commit_review.v1",
+  "reviewed_at_date": "2026-09-06",
+  "reviewer": "General Musashi",
+  "decision": "ACCEPT_EXACT_COMMIT_FOR_TWELVE_CELL_DISPATCH",
+  "reviewed_git_commit": "8dea7f2a65d45cacb4d88d3e0f84ea192ae3d4ab",
+  "reviewed_remote_ref": "refs/heads/satoshi/data-first-sota-20260826",
+  "remote_tip_at_review": "8dea7f2a65d45cacb4d88d3e0f84ea192ae3d4ab",
+  "bindings": {
+    "authorization_record_sha256": "c58008cc5285365b4c64e2827a9b9d1a329e3b64f7c72a37b62c1c6e702ae55d",
+    "owner_ratification_sha256": "540fb175f0203338aa08a21bc91bba1dddf942008e011ab7b34c6695af776c63",
+    "amendment_10_sha256": "c299d03ee1bab35c14094023ca88486e0cdee6e1b5313d8a405f6e3d569e3848",
+    "amendment_11_sha256": "449a138726b56c9af3a29d2bdb68f1ba846468bb7feae64d738c9554a7de8e89",
+    "resource_contract_sha256": "516bd7d70e46353c2e4fec00761d4322511127c222d9432928cc8f723bec0b20",
+    "campaign_generation": "b4_campaign_generation_v5_20260906",
+    "cell_population_sha256": "111dfed8acd281b269fc9916b8d6b5a39898d71b3a894f3f5dbb9b5f55792b05",
+    "materialization_sha256": "d9ecbd80481fa8e07ae5a442f75b003f786a3fbcc7b6521a20c35b489e07be2b",
+    "genesis_binding_sha256": "faa179091864733cbabfb01c399d3b82f090477195b5eda6d98bd71542b69d62"
+  },
+  "reviewed_limits": {
+    "cells": 12,
+    "max_concurrency": 1,
+    "global_gpu_hours_ceiling": 96.0,
+    "per_cell_wall_seconds_max": 43200.0,
+    "per_cell_environment_steps_max": 40020000,
+    "per_cell_real_updates_max": 40020000,
+    "host_rss_bytes_max": 8589934592,
+    "cuda_allocated_bytes_max": 6442450944,
+    "gpu_temperature_celsius_max": 87.0
+  },
+  "independent_verification": {
+    "remote_commit_identity": "PASS",
+    "amendment_chain_length": 11,
+    "final_code_pins_rederived": 10,
+    "authorization_and_ratification_rederived": "PASS",
+    "focused_test_file": "tests/test_b4_materializer_authority.py",
+    "focused_tests_passed": 155,
+    "focused_tests_failed": 0,
+    "focused_runtime_seconds": 192.62,
+    "audit_used_gpu": false,
+    "audit_modified_campaign_state": false
+  },
+  "scope": [
+    "one dispatch of the exact twelve-cell B4 population",
+    "execution from the exact reviewed Git commit",
+    "the already-ratified resource contract and authorization records"
+  ],
+  "does_not_authorize": [
+    "execution from a later branch tip or modified worktree",
+    "retry of an ambiguous or terminal attempt",
+    "changing cells, data roles, cost model, genesis or resource limits",
+    "reading sealed-2025 evaluation data",
+    "checkpoint promotion",
+    "venue, service or live-trading actions"
+  ]
+}

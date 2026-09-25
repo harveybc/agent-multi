@@ -1,0 +1,68 @@
+{
+ "order": "agent-multi@abe1d6bb — P1/P2/P3 raw evidence and parser identity",
+ "subject_repository": "gym-fx",
+ "pre_commit": "7d50ddb",
+ "interpreter": "python 3.12 (trading-stack)",
+ "note": "PRE was reproduced and frozen BEFORE any edit to app/direct_evidence.py or app/migration_custody.py. Each PRE entry is a defect that ACCEPTED a forged or substituted authority; the matching POST entry is the refusal that now replaces it.",
+
+ "PRE": {
+  "P2_executing_parser_substitution": {
+   "method": "replaced PARSERS[('mt5_demo','native_protection','v1')] with a function returning stop_loss_accepted=true, then parsed a payload that literally says sl_accepted=false",
+   "payload_says_sl": false,
+   "facts_say_sl": true,
+   "parser_digest_unchanged": "39bb86ae91be",
+   "verdict": "ACCEPTED — the cached digest field was never re-derived from the EXECUTING function, so a substituted parser forged protection facts under an unchanged identity. My own B3 test never exercised this: it mutated the digest FIELD, not the executing parser."
+  },
+  "P1_duplicate_json_authority_keys": {
+   "raw_bytes": "{\"positions_total\":7,\"positions_total\":0,\"orders_total\":0}",
+   "facts_positions": 0,
+   "is_flat": true,
+   "verdict": "ACCEPTED — json.loads collapsed the duplicate to the LAST value before authority was derived, so a payload declaring seven open positions certified a flat account."
+  },
+  "P3_policy_substitution_between_claim_and_finish": {
+   "method": "claim under max_age=120s and a single allowed source; finish under max_age=99999999s and an extended allowlist, presenting 30-day-old reconciliation",
+   "state": "completed",
+   "month_old_evidence_accepted": true,
+   "verdict": "ACCEPTED — the custody record bound the policy LABEL but not its TERMS, so a loosened policy of the same name completed the migration on stale evidence."
+  }
+ },
+
+ "POST": {
+  "1a_registry_immutable": {"refused": true, "error": "TypeError", "message": "'mappingproxy' object does not support item assignment"},
+  "1b_executing_parser_replaced": {"refused": true, "error": "EvidenceError", "message": "executing parser for ('mt5_demo', 'native_protection', 'v1') has identity 8479420da3d5… but the SEALED committed identity is 1731381345c0… — parser substitution or unreviewed code change refused"},
+  "2_same_name_changed_code": {
+   "identity_original": "8c2be53face3664e546647cf23115850",
+   "identity_impostor": "5024239a4c9357685b004fc528f8a106",
+   "differ": true,
+   "sealed_committed": "8c2be53face3664e546647cf23115850",
+   "original_matches_seal": true
+  },
+  "3_duplicate_authority_keys": {"refused": true, "error": "EvidenceError", "message": "duplicate authority key 'positions_total' in the raw payload — refused"},
+  "4a_nan": {"refused": true, "error": "EvidenceError", "message": "non-finite JSON constant 'NaN' refused"},
+  "4b_infinity": {"refused": true, "error": "EvidenceError", "message": "non-finite JSON constant 'Infinity' refused"},
+  "4c_truncated": {"refused": true, "error": "EvidenceError", "message": "invalid JSON bytes: Expecting property name enclosed in double quotes: line 1 column 22 (char 21)"},
+  "4d_bad_encoding": {"refused": true, "error": "EvidenceError", "message": "invalid encoding: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte"},
+  "4e_not_an_object": {"refused": true, "error": "EvidenceError", "message": "authority payload must be a JSON object"},
+  "5_pre_parsed_mapping": {"refused": true, "error": "EvidenceError", "message": "authority requires original JSON bytes, not a pre-parsed dict — duplicates would already be lost"},
+  "6_policy_substitution": {"refused": true, "error": "MigrationCustodyError", "message": "mig-1: evidence policy substitution refused — claim was bound to bce1cdaa4890… and finish presents 2257a3c4d101…"},
+  "6_state_after_refusal": "active",
+  "7_policy_digest_covers_terms": {
+   "baseline": "bce1cdaa4890e02f",
+   "max_age_121": "7c7c82fad8cc0a7b",
+   "extra_source": "2257a3c4d1014018",
+   "persisted_at_claim_matches": true
+  },
+  "8_honest_path_state": "completed"
+ },
+
+ "self_reported_defect": {
+  "what": "My first P2 implementation recomputed the parser identity from the EXECUTING function at both derivation and verification. That catches evidence derived under a DIFFERENT parser, but a substituted parser is self-consistent for NEW evidence — it signs its own forgery. The acceptance probe caught it: case 1b did not raise.",
+  "fix": "SEALED_PARSER_IDENTITIES — the expected identity of each allowlisted parser is a COMMITTED constant. resolve_parser refuses when the executing source does not hash to the sealed value, so both a substitution and an unreviewed legitimate edit are refused until the constant is deliberately updated in review. Same discipline as the executable allowlist of the dispatch driver.",
+  "disclosure": "Reported unprompted; the failing probe output is preserved in this file's provenance."
+ },
+
+ "suites": {
+  "focused": "tests/test_migration_custody.py — 40 passed (was 31)",
+  "full": "gym-fx tests — 231 passed, 48 warnings (was 222)"
+ }
+}

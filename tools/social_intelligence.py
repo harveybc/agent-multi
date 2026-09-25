@@ -13,6 +13,7 @@ import os
 import re
 import sqlite3
 import sys
+import time
 import unicodedata
 import urllib.error
 import urllib.parse
@@ -234,18 +235,40 @@ class MoltbookClient:
         if data is not None:
             headers["Content-Type"] = "application/json"
         request = urllib.request.Request(url, data=data, headers=headers, method=method)
-        try:
-            response = self.opener(request, timeout=self.timeout_seconds)
-            raw = response.read()
-        except urllib.error.HTTPError as exc:
-            detail = exc.read(400).decode("utf-8", errors="replace")
+        raw = b""
+        last_url_error: Exception | None = None
+        for attempt in range(3):
+            try:
+                response = self.opener(request, timeout=self.timeout_seconds)
+                raw = response.read()
+                last_url_error = None
+                break
+            except urllib.error.HTTPError as exc:
+                detail = exc.read(400).decode("utf-8", errors="replace")
+                raise SocialIntelligenceError(
+                    f"Moltbook HTTP {exc.code}: {detail[:240]}"
+                ) from exc
+            except urllib.error.URLError as exc:
+                last_url_error = exc
+                reason = getattr(exc, "reason", None)
+                reason_name = type(reason).__name__ if reason is not None else type(exc).__name__
+                # Transient DNS / connect blips (gaierror, TemporaryFailure, timeout).
+                if attempt < 2 and reason_name in {
+                    "gaierror",
+                    "timeout",
+                    "TimeoutError",
+                    "ConnectionResetError",
+                    "TemporaryFailure",
+                }:
+                    time.sleep(2 * (attempt + 1))
+                    continue
+                raise SocialIntelligenceError(
+                    f"Moltbook request failed: {reason_name}"
+                ) from exc
+        if last_url_error is not None:
             raise SocialIntelligenceError(
-                f"Moltbook HTTP {exc.code}: {detail[:240]}"
-            ) from exc
-        except urllib.error.URLError as exc:
-            raise SocialIntelligenceError(
-                f"Moltbook request failed: {type(exc.reason).__name__}"
-            ) from exc
+                f"Moltbook request failed: {type(getattr(last_url_error, 'reason', last_url_error)).__name__}"
+            ) from last_url_error
         try:
             payload = json.loads(raw)
         except ValueError as exc:
@@ -282,6 +305,28 @@ class MoltbookClient:
             "POST",
             "/posts",
             body={"submolt_name": submolt, "title": title, "content": content, "type": "text"},
+            require_auth=True,
+        )
+
+    def list_comments(self, post_id: str) -> list[Mapping[str, Any]]:
+        payload = self._request("GET", f"/posts/{post_id}/comments")
+        values = payload.get("comments") or []
+        return [item for item in values if isinstance(item, Mapping)]
+
+    def create_comment(
+        self,
+        *,
+        post_id: str,
+        content: str,
+        parent_id: str | None = None,
+    ) -> Mapping[str, Any]:
+        body: dict[str, Any] = {"content": content}
+        if parent_id:
+            body["parent_id"] = parent_id
+        return self._request(
+            "POST",
+            f"/posts/{post_id}/comments",
+            body=body,
             require_auth=True,
         )
 

@@ -1,0 +1,58 @@
+{
+ "order": "agent-multi@749b89fc — WP3 effect-executor correction E1-E5",
+ "subject_repository": "lts",
+ "branch": "satoshi/wp3-live-adapters-20260830",
+ "pre_commit": "26e856d",
+ "post_commit": "006a79e",
+ "note": "PRE reproduced and frozen BEFORE any edit. All five findings are mine.",
+
+ "PRE": {
+  "E1_absent_identity_reaches_the_port": {
+   "cancel_calls": ["ghost-order-id"],
+   "submit_calls": [0],
+   "verdict": "an identity absent from the fresh order book was returned as verified, submitted to cancel_order, and a forged outcome string released the gate. The check today required neither presence nor the evidence type."
+  },
+  "E2_outcomes_untyped": {
+   "annotation": "Callable[[], Mapping[str, str]]",
+   "verdict": "a bare dict of strings released the gate — no bytes, no source, no timestamp, no parser, no policy binding, no venue identity."
+  },
+  "E3_blind_reissue": {
+   "port_close_signature": "(self)",
+   "scenario": "crash mid-close; the position CHANGED (qty 10 -> 20) while the executor was down",
+   "close_calls_after_resume": 1,
+   "resume_state": "completed",
+   "verdict": "the unacknowledged close was re-issued with no position identity, no side/units, no reduce-only contract and no idempotency key, against a changed position — and the plan completed."
+  },
+  "E4_concurrent_resume_duplicates_the_close": {
+   "results": ["ran", "PlanAlreadyClaimed"],
+   "total_close_calls": 2,
+   "verdict": "two concurrent resumes both observed close_requested without close_acknowledged and BOTH called the port. The journal refused the second acknowledgement, but the venue had already received two closes — per-record O_EXCL does not lock the read/reconcile/effect transaction."
+  },
+  "E5_weak_bindings": {
+   "plan_tamper": {"tampered_effects_read_back": ["FORGED"], "has_schema": false, "has_digest": false},
+   "exception_text_matching": ["already claimed", "already terminal", "cannot go in flight", "flatten_in_flight"],
+   "constant_bar_index_zero": 2,
+   "requested_at_bar_zero": 1
+  }
+ },
+
+ "POST": {
+  "E1": "presence is REQUIRED for every named identity still awaiting acknowledgement, with role entry, in fresh open-order evidence of the RIGHT KIND; duplicates refuse; positions evidence cannot stand in for an order book. Presence gates only unacknowledged cancellations — an acknowledged one is absent precisely because it was cancelled, and the terminal evidence judges it, never absence. The ghost identity now stops before any port call.",
+  "E2": "terminal verdicts are a sealed evidence type, terminal_orders, parsed from original venue bytes for BOTH venues (Alpaca canceled/expired/filled/rejected/replaced/failed; MT5 ORDER_STATE_CANCELED/EXPIRED/FILLED/REJECTED). Only a venue-declared terminal status yields a verdict; absence never does; a non-terminal status refuses at the parser; a bare mapping raises ExecutorError; stale terminal evidence stops the plan; the gate journal carries the evidence provenance (type, raw_sha256, parser_digest, venue_direct).",
+  "E3": "the close binds the exact position — identity, side, units, reduce_only, and a durable idempotency key derived from the plan — persisted in the journal before the port is called. Resume reconciles FIRST: flat evidence confirms without reissue; a changed or multiplied position is never closed by replay; a port that does not declare same_key_idempotent_reduce_only never gets a reissue; the same position through a declaring port is retried with the SAME key, and the acknowledgement records reissued_with_same_key. More than one open position refuses — ambiguous exposure is never closed blind.",
+  "E4": "a per-plan run lock covers the whole reconcile-through-acknowledgement transaction. A held lock is a typed PlanLockHeld; a lock left by a dead process is an operator disposition, never an automatic takeover; the lock releases on success and on stop. Proven with threads AND two real processes at a file barrier for all three boundaries: the ambiguous submit issues NOTHING (0 effects), the cancel boundary issues exactly one cancel (plus the winner's single legitimate decision), the close boundary exactly one close; all effects come from ONE process and the lock refuses exactly one claimant.",
+  "E5": "the plan is a digest-verified envelope with schema lts.effect_executor.plan.v1; six tampered fields each refuse, and a self-consistent reforge still fails the live directive recheck. Custody idempotency reads the record through a typed exists() and verifies the complete binding; 'in str(exc)' no longer appears in the module, asserted structurally. Custody transitions carry a durable monotone executor event ordinal (the verified journal length); a test asserts requested_at_bar >= 1 and confirmed_at_bar > requested_at_bar."
+ },
+
+ "mutation_check": "disabling the absence check, the sameness guard, the port-contract guard, the lock's exclusivity and the plan digest together broke 11 tests; green on revert.",
+
+ "commands_and_counts": {
+  "pytest tests/unit/test_wp3_effect_executor.py -q": 56,
+  "pytest tests/unit/test_wp3_venue_direct_evidence.py -q": 125,
+  "pytest tests/unit/test_wp3_session_adapter.py -q": 102,
+  "pytest tests/unit/test_wp3_contract_and_custody.py -q": 72,
+  "pytest tests/unit -q": 1023
+ },
+
+ "boundaries": "Implementation and effect-free tests only. No service change, no venue connection, no order command, no position change. C7-C10 remain as accepted; WP4 and live activation remain blocked pending independent reproduction."
+}

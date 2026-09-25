@@ -1,0 +1,183 @@
+{
+ "order": "agent-multi@22218df1 \u2014 weekly-flat F8-F11 and collector activation",
+ "repositories": {
+  "gym-fx": {
+   "branch": "satoshi/trade-reconciliation-20260828",
+   "commit": "275350b"
+  },
+  "lts": {
+   "branch": "satoshi/wp3-live-adapters-20260830",
+   "commit": "a1a6c38"
+  },
+  "agent-multi F9 branch": {
+   "branch": "satoshi/f9-budget-guard-20260831",
+   "commit": "afe87e22",
+   "base": "45f4f8a4"
+  },
+  "plan42_amendment": "agent-multi@ea7533f8 (docs branch)"
+ },
+ "F8_live_flatten_budget": {
+  "live_contract": {
+   "close_retry_budget_bars": 1,
+   "safety_margin_hours": 1.0,
+   "latencies": "measured in bars",
+   "reconciliation": "before closure"
+  },
+  "rule_refactor": "slack form; every F4 verdict unchanged (asserted by regression)",
+  "h4_verdicts": {
+   "4h": "nothing",
+   "8h": "MECHANICS ONLY \u2014 no second executable fill before closure",
+   "12h": "smallest LIVE-SAFE value",
+   "16h": "one-bar headroom"
+  },
+  "domain_extension": "{12h, 16h} added mechanically; W1 = 10 cells labelled live_safe_flatten with typed reasons; enabled arms default 12h; 14 ledgered rejections incl. wd12 x extension",
+  "holiday_fail_closed": "closure_budget_fits refuses when the open stretch cannot contain the trigger bar \u2014 tested on the real 12h Christmas stretch",
+  "plan42_amended": "section 4 forced_flatten_hours 4 -> 12 with Amendment A1 inline; the plan no longer contradicts the manifests",
+  "manifest_digest": "ac75dd1ec03d8b52\u2026"
+ },
+ "F9_executing_budget_guard": {
+  "where": "pipeline_plugins/rl_pipeline_with_validation.py on satoshi/f9-budget-guard-20260831 @afe87e22 (from the hardened 45f4f8a4)",
+  "mechanism": "checked BEFORE AND AFTER every learn segment: cumulative env steps (refusing a segment that would cross), the ACTUAL SB3 _n_updates counter, wall time, external stop file; typed ExecutingBudgetExceeded lands in stop_reason; no epoch/patience/timestep configuration can override a present budget key (tested with every knob at 1e9)",
+  "labels": {
+   "first_strong_run": "PROTOCOL_DEVIATION_STOPPED_FAIL_CLOSED",
+   "bounded_rerun": "REPLACEMENT_RUN_AFTER_DISCLOSED_DEVIATION"
+  },
+  "tests": "7 adversarial + wiring assertion; disabling the guard fails 5; branch full suite: only the 2 known D1-anchor failures plus 4 sibling-path environmental failures reproduced IDENTICALLY at pristine 45f4f8a4 (not regressions)",
+  "no_rerun": "no further preflight was run \u2014 F9 authorizes none"
+ },
+ "F10_posthoc_binding": {
+  "schema": "agent_multi.f10_posthoc_binding.v1",
+  "status": "LINKAGE_UNAVAILABLE_ARTIFACT_DESTROYED",
+  "self_reported_defect": "the pipeline's terminal zip (the ONLY artifact the post-hoc introspection read) lived inside the ephemeral evaluation worktree, and I removed that worktree during cleanup after sealing the F4-F7 packet \u2014 BEFORE the F10 binding order arrived. The zip digest was never recorded at introspection time, so the counters, architecture inventory and gradient probe can no longer be re-verified against the artifact, and F9 forbids a preflight rerun.",
+  "run_identity_still_bound": {
+   "config_sha256": "127a30fbdafc32e855a8b8169a1daba72e16cf4d2186fb6c9379244fa9e872d6",
+   "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+   "materializer_sha256": "e11bd07457231ec160e5f24e1e12e2333f2d5877787d384c837d4c8a91519ee4",
+   "extractor_sha256": "76b8f638548fa039e2fa8e4dac7a3f7e0277aa4cdf576e17e7272d9cd0ac921c",
+   "sac_agent_sha256": "f0889d7a0be8d98243e44b101eb44ea422e9e9472e14019dc4331652030957af",
+   "tape_digest": "UNAVAILABLE",
+   "window_digest": "UNAVAILABLE",
+   "note": "persisted BEFORE execution; these identities remain verifiable"
+  },
+  "per_metric_status": {
+   "terminal_zip_sha256": "UNAVAILABLE \u2014 never recorded, artifact destroyed",
+   "optimizer_update_counter": {
+    "recorded_value": 1000,
+    "source": "SB3 model._n_updates read DIRECTLY from the loaded zip (never inferred from timesteps minus learning_starts)",
+    "status": "RECORDED_BUT_NO_LONGER_REVERIFIABLE"
+   },
+   "env_steps": {
+    "recorded_value": 2000,
+    "corroboration": "the pipeline stdout log independently shows num_timesteps=2000 in the typed INACTIVE TERMINAL RESULT line",
+    "status": "RECORDED_WITH_LOG_CORROBORATION"
+   },
+   "tensor_device_identity": {
+    "recorded_value": {
+     "devices": [
+      "cpu"
+     ],
+     "dtypes": [
+      "torch.float32"
+     ]
+    },
+    "status": "RECORDED_BUT_NO_LONGER_REVERIFIABLE"
+   },
+   "total_policy_params_and_per_branch": {
+    "recorded_value": {
+     "total": 796359,
+     "per_branch": {
+      "actor_head": {
+       "params": 91137,
+       "grad_norm": 0.0,
+       "tensors_with_grad": 0
+      },
+      "critic_head": {
+       "params": 182274,
+       "grad_norm": 28.735339,
+       "tensors_with_grad": 12
+      },
+      "critic_target": {
+       "params": 182274,
+       "grad_norm": 0.0,
+       "tensors_with_grad": 0
+      },
+      "cross_family_fusion": {
+       "params": 92736,
+       "grad_norm": 16.835801,
+       "tensors_with_grad": 23
+      },
+      "family_0_returns_momentum": {
+       "params": 76128,
+       "grad_norm": 3.343871,
+       "tensors_with_grad": 17
+      },
+      "family_1_trend_level": {
+       "params": 56370,
+       "grad_norm": 1.432442,
+       "tensors_with_grad": 34
+      },
+      "family_2_volatility_distribution": {
+       "params": 58560,
+       "grad_norm": 5.150715,
+       "tensors_with_grad": 8
+      },
+      "family_3_oscillators": {
+       "params": 13344,
+       "grad_norm": 5.212829,
+       "tensors_with_grad": 10
+      },
+      "family_4_volume_flow": {
+       "params": 41472,
+       "grad_norm": 1.251335,
+       "tensors_with_grad": 4
+      },
+      "state_branch": {
+       "params": 2064,
+       "grad_norm": 0.95907,
+       "tensors_with_grad": 4
+      }
+     },
+     "family_order": [
+      "returns_momentum",
+      "trend_level",
+      "volatility_distribution",
+      "oscillators",
+      "volume_flow",
+      "account_state"
+     ]
+    },
+    "status": "RECORDED_BUT_NO_LONGER_REVERIFIABLE"
+   },
+   "gradient_probe_no_mutation_proof": "UNAVAILABLE \u2014 the zip and optimizer-state hashes were not taken before/after the probe; the probe code zeroed gradients and never stepped an optimizer or saved, but that is my claim, not a bound proof"
+  },
+  "consequence": "these metrics are OBSERVATIONS with the stated caveats, NOT bound evidence; any claim requiring bound model evidence must await a separately authorized rerun under the F9 guard, which now exists exactly for that purpose"
+ },
+ "F11_status_labels": {
+  "flat_mlp_run": "SB3_MLP_PLUMBING_ONLY",
+  "strong_run": "STRONG_ARCHITECTURE_MECHANICS_AND_THROUGHPUT_ONLY",
+  "authority": "neither has economic authority, activity eligibility or promotion rights",
+  "throughput_publication": "CPU as measured only (strong: 2000 steps / 1000 updates in 393.5s training wall, observation with F10 caveats); NO GPU duration extrapolated \u2014 that awaits a separately authorized CUDA benchmark"
+ },
+ "collector_activation": {
+  "status": "COORDINATED_WINDOW_REQUIRED",
+  "why": "the running EA protects the open MT5 position; precondition 1 (fresh zero/zero evidence) cannot hold and nothing may restart or replace the EA",
+  "delivered": "lts@a1a6c38 tools/collector_activation_preflight.py \u2014 a mechanical judge over the six ordered preconditions (strict snapshot zero/zero + freshness + bound account + native protection; digest-bound backup manifest; reviewed differs-only-by-session-publication statement; tested no-order-effect rollback; structural no-write proof of the collector path). Answers GO_READ_ONLY_COLLECTOR_ONLY or COORDINATED_WINDOW_REQUIRED with every failure NAMED; an open position always returns the never-restart warning. 8 tests; the judge itself cannot act.",
+  "monitoring": "the operator can run the judge against any fresh bridge snapshot at any time; the first flat window that satisfies the kit yields GO for the read-only collector only"
+ },
+ "suites": {
+  "gym-fx wp4": 76,
+  "gym-fx full": 512,
+  "lts": 1168,
+  "F9 branch focused": 7
+ },
+ "mutations": {
+  "latency rule bypassed": 8,
+  "probation policy ignored": 7,
+  "F9 guard disabled": 5,
+  "restored": "green"
+ },
+ "self_reported_defects": [
+  "F10: I destroyed the strong preflight's terminal zip when cleaning the ephemeral worktree after sealing F4-F7 \u2014 before the binding order existed. The zip digest was never captured, so the post-hoc metrics are relabelled OBSERVATIONS with per-metric statuses (env_steps keeps independent log corroboration); the no-mutation probe proof is UNAVAILABLE; nothing was merged as bound evidence, and any bound claim awaits a separately authorized rerun under the new F9 guard."
+ ],
+ "boundaries": "No economic grids, GPU campaign, checkpoint promotion, weekly-flat live activation, discretionary order commands or position changes. Collector deployment awaits the flat coordinated window and the preflight's GO."
+}

@@ -1,0 +1,65 @@
+{
+ "order": "agent-multi@a6a278d0 — F1-F3, final fsync boundary and real races",
+ "subject_repository": "gym-fx",
+ "pre_commit": "1f55875",
+ "note": "PRE reproduced and frozen BEFORE any edit. Both findings confirmed, both mine.",
+
+ "PRE": {
+  "F1_final_fsync_leaves_an_acknowledged_transition": {
+   "method": "fail ONLY the third call to _fsync_dir during mark_in_flight",
+   "dir_fsync_calls": 3,
+   "raised": "OSError: simulated FINAL directory fsync failure",
+   "marker_still_present": false,
+   "fresh_instance_read": "flatten_in_flight",
+   "read_refused": false,
+   "removal_order": ["os.unlink(pending)", "_fsync_dir(path.parent)"],
+   "verdict": "the unacknowledged marker was unlinked BEFORE the last directory fsync, so when that fsync failed the marker was already gone and a fresh reader accepted the new content — the very partial acknowledgement the marker existed to prevent."
+  },
+  "F2_races_are_sequential": {
+   "uses_Popen": false,
+   "uses_barrier": false,
+   "run_helper": "subprocess.run(...) — BLOCKS until the child exits",
+   "verdict": "the first process was launched and awaited, and only then the second. Two distinct processes, but never simultaneous, so atomic election under real contention was unproven."
+  }
+ },
+
+ "POST": {
+  "F1_monotone_in_place_acknowledgement": {
+   "mechanism": "the removal-based marker is gone. A record is trustworthy only while its own acknowledgement file holds that record's digest. The acknowledgement is set to PENDING before the record changes and to the new digest only after the record is durable, and BOTH updates are IN-PLACE file writes: an in-place content update changes no directory entry, so its durability needs only a file fsync and there is no later step whose failure could leave it unacknowledged. There is no removal anywhere in the protocol, so every failure leaves the acknowledgement holding PENDING or the PREVIOUS digest, and read() refuses on both.",
+   "exact_reproducer": {
+    "dir_fsync_calls_made": 1,
+    "note": "a transition now makes exactly ONE directory fsync, so the third-call boundary the finding named no longer exists"
+   },
+   "failure_sweep": {
+    "dir_fsync_1": {"read": "FlattenIntegrityError", "refused": true, "ack": "PENDING"},
+    "file_fsync_1": {"read": "flatten_requested", "refused": false, "note": "fails on the LOCK's fsync, before any record change — nothing was written, so the record is correctly still valid"},
+    "file_fsync_2": {"read": "FlattenIntegrityError", "refused": true, "ack": "PENDING"},
+    "file_fsync_3": {"read": "FlattenIntegrityError", "refused": true, "ack": "PENDING"},
+    "file_fsync_4": {"read": "FlattenIntegrityError", "refused": true, "ack": "PENDING"},
+    "file_fsync_5": {"read": "FlattenIntegrityError", "refused": true, "ack": "PENDING"}
+   },
+   "last_resort": "if the final acknowledgement cannot be written, it is forced back to PENDING so every reader refuses; if even that fails, a typed error says the record must be treated as unresolved.",
+   "applies_to": "creation and every transition — one write path.",
+   "self_reported_defect": "my first version of this fix set the acknowledgement to PENDING before the exclusive identity claim, so a REFUSED duplicate open invalidated the acknowledgement of a perfectly good existing record and made it unreadable. A rejected write must never damage the record it lost to. The claim now precedes any acknowledgement change. The consequence is stated and tested: a creation that fails after the claim leaves a claimed but unacknowledged record which reads as unresolved and counts as outstanding, never as data."
+  },
+
+  "F2_barrier_synchronised_races": {
+   "mechanism": "both children are started with Popen, each writes a ready file and then spins on a common barrier file; the parent waits for both ready files and creates the barrier, releasing them together.",
+   "cases": {
+    "same-obligation creation": "exactly one winner",
+    "requested to in-flight": "exactly one winner",
+    "confirm versus fail": "exactly one winner",
+    "interrupt versus confirm": "exactly one winner"
+   },
+   "non_overwrite_property": "the loser may legitimately observe the PRE-transition state, because it reads while the winner still holds the lock. What is asserted is stronger and correct: the durable outcome is the winner's, it is never the state the loser was trying to write, and a FRESH store instance reads the same thing.",
+   "repeatability": "the confirm race is repeated three times over fresh roots and elects a single winner every time."
+  }
+ },
+
+ "suites": {
+  "flatten_custody": "tests/test_flatten_custody.py — 47 passed",
+  "full": "gym-fx tests — 417 passed, 68 warnings (was 414)"
+ },
+
+ "not_done": "No deployment. The live MT5 position was not touched. No training launched. D1 and the strategy were not reopened. WP3 remains blocked pending independent acceptance of F1-F2, and acceptance unblocks WP3 for IMPLEMENTATION only — live activation still requires direct venue evidence, never simulator_bar_local."
+}

@@ -53,6 +53,12 @@ DEFAULT_VALUES = {
 
     # agent training
     "total_timesteps": 10_000,
+    # S1 compute contract. A target is what the run ASKS for; a cap is what it may not
+    # exceed. Both default to absent so no run silently acquires a ceiling it never declared,
+    # and a declared ceiling is never widened to fit the settings (see
+    # pipeline_plugins/_compute_contract.py).
+    "training_transition_cap": None,
+    "evaluation_transition_cap": None,
     "eval_episodes": 1,
     "eval_seed": 0,
     "train_seed": 0,

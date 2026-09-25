@@ -27,6 +27,19 @@ decision run under ``decision_run.output_root`` is never guarded by
 reading the screen root — the defect that reported an idle 0/16 screen
 while four decision processes held four busy GPUs.
 
+TERMINAL COMPLETION (order 2026-08-15 §3): a completed seed used to
+render ``idle: false`` — the guard answered "not stalled" to a question
+nobody asked, while ``process_alive`` was false, no cell was pending and
+no next job was running. Completion is not health. Idleness is now
+CLASSIFIED by :func:`classify_seed_idleness`: a terminal seed is never
+``stalled`` (it needs a dispatch, not a restart), but it is ``idle``
+unless the durable transition queue proves the successor is dispatched
+or in flight. The proof comes only from
+``tools/experiment_transition_queue.py`` records — never from a
+heartbeat, a shell process, a chat message or operator memory — and the
+same module owns the ONE deduplicated undispatched-successor incident,
+through the same fleet ledger this guard already uses.
+
 Socket-free by construction for tests: process facts, GPU telemetry,
 unit existence, restart calls and ledger emissions are injected; the
 default wiring uses pgrep / nvidia-smi (tools.m0_l1_mechanism_ladder.
@@ -47,6 +60,7 @@ from typing import Any, Callable, Optional
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
+from tools import experiment_transition_queue as etq  # noqa: E402
 from tools.multifront_status import (  # noqa: E402  (path set above)
     P1LR_MODES,
     P1LR_UNIT_TEMPLATES,
@@ -72,6 +86,24 @@ DEFAULT_IDLE_AFTER_SECONDS = 900.0          # §7.8: 15 minutes
 DEFAULT_GPU_IDLE_UTILIZATION_PCT = 10       # below this the GPU reads idle
 DEFAULT_MAX_RESTARTS = 3                    # bounded recovery cap
 DEFAULT_RESTART_BACKOFF_SECONDS = 900.0     # doubles per attempt
+
+# Order 2026-08-15 §3: the durable transition queue is the ONLY authority
+# for "is a successor dispatched?". It lives outside every run root.
+DEFAULT_TRANSITION_QUEUE_DIR = etq.DEFAULT_QUEUE_DIR
+
+#: Typed idleness classes. ``idle`` is a CONSEQUENCE of the class, never
+#: a synonym for "stalled": a terminal experiment with no dispatched
+#: successor is idle without being stalled.
+IDLE_CLASSES = (
+    "busy_process_alive",
+    "pending_recent_progress",
+    "pending_gpu_busy",
+    "pending_gpu_utilization_unknown",
+    "stalled_pending_cells",
+    "completed_untransitioned",
+    "completed_transition_in_progress",
+    "completed_transitioned",
+)
 
 # The decision unit NEVER defaults to screen: its relaunch command
 # carries --mode decision through the shipped unit, whose ExecStartPre
@@ -288,6 +320,132 @@ def seed_facts(contract: dict, identity: str, seed: int,
 
 
 # ---------------------------------------------------------------------------
+# idleness classification (order 2026-08-15 §3 bullets 1 and 2)
+# ---------------------------------------------------------------------------
+
+def classify_seed_idleness(*, pending: bool, process_alive: bool,
+                           gpu_idle_now: bool,
+                           gpu_utilization_unknown: bool,
+                           observed_idle: float,
+                           idle_after_seconds: float,
+                           cells_total: int, records_landed: int,
+                           transition_state: Optional[str],
+                           ) -> dict[str, Any]:
+    """Type WHY a seed is or is not idle. Completion is never health.
+
+    Two facts that used to be conflated are now separate:
+
+    ``stalled``
+        the §7.8 condition — cells still PENDING, no runner process, an
+        idle assigned GPU and no progress for longer than the threshold.
+        This is the only condition that justifies a bounded restart.
+
+    ``idle``
+        the assigned GPU has no useful work. A terminal seed whose
+        successor is not proven dispatched is idle: ``process_alive:
+        false`` plus a complete 16/16 plus no next executable job is
+        FLEET IDLE TIME, and the owner's cardinal rule says it must
+        surface. It renders ``completed_untransitioned``, never
+        ``idle: false``.
+
+    ``transition_state`` is the durable queue's verdict
+    (``tools/experiment_transition_queue.transition_status``). ``None``
+    means no durable record exists, which is itself
+    ``completed_untransitioned`` — unproven is not dispatched.
+    """
+    terminal_complete = (not pending and cells_total > 0
+                         and records_landed >= cells_total)
+    if process_alive:
+        return {
+            "idle_class": "busy_process_alive", "idle": False,
+            "stalled": False, "terminal_complete": terminal_complete,
+            "idle_class_reason": ("a runner process for this seed is "
+                                  "alive on this host"),
+        }
+    if terminal_complete:
+        if transition_state == "transitioned":
+            return {
+                "idle_class": "completed_transitioned", "idle": False,
+                "stalled": False, "terminal_complete": True,
+                "idle_class_reason": (
+                    f"all {records_landed}/{cells_total} cell records "
+                    "landed and the durable transition queue proves the "
+                    "approved successor is DISPATCHED"),
+            }
+        if transition_state == "transition_dispatch_in_progress":
+            return {
+                "idle_class": "completed_transition_in_progress",
+                "idle": False, "stalled": False, "terminal_complete": True,
+                "idle_class_reason": (
+                    f"all {records_landed}/{cells_total} cell records "
+                    "landed and a LIVE dispatch lease is transitioning "
+                    "the fleet to the approved successor"),
+            }
+        return {
+            "idle_class": "completed_untransitioned", "idle": True,
+            "stalled": False, "terminal_complete": True,
+            "idle_class_reason": (
+                f"all {records_landed}/{cells_total} cell records landed, "
+                "no runner process is alive and NO successor is proven "
+                "dispatched by the durable transition queue: this is "
+                "fleet idle time after a terminal completion, not health "
+                "(a terminal seed is not a stalled seed — the remedy is "
+                "dispatch, never a restart)"),
+        }
+    if gpu_utilization_unknown:
+        return {
+            "idle_class": "pending_gpu_utilization_unknown", "idle": False,
+            "stalled": False, "terminal_complete": False,
+            "idle_class_reason": ("assigned-GPU utilization is unreadable; "
+                                  "the guard alerts on observed facts only"),
+        }
+    if not gpu_idle_now:
+        return {
+            "idle_class": "pending_gpu_busy", "idle": False,
+            "stalled": False, "terminal_complete": False,
+            "idle_class_reason": ("cells are pending and the assigned GPU "
+                                  "is busy: work is being done"),
+        }
+    if observed_idle > idle_after_seconds:
+        return {
+            "idle_class": "stalled_pending_cells", "idle": True,
+            "stalled": True, "terminal_complete": False,
+            "idle_class_reason": (
+                f"cells are pending, no runner process is alive, the "
+                f"assigned GPU is idle and progress stopped "
+                f"{observed_idle:.0f}s ago (> {idle_after_seconds:.0f}s)"),
+        }
+    return {
+        "idle_class": "pending_recent_progress", "idle": False,
+        "stalled": False, "terminal_complete": False,
+        "idle_class_reason": (
+            f"cells are pending and progress was observed {observed_idle:.0f}s "
+            f"ago, within the {idle_after_seconds:.0f}s threshold"),
+    }
+
+
+def _transition_view(queue_dir: Optional[Path], *, experiment: str,
+                     mode: str, identity: str, now: datetime,
+                     ) -> tuple[Optional[dict], dict[str, Any]]:
+    """(durable record or None, typed transition status).
+
+    Read-only towards the queue: the guard never invents a fleet-terminal
+    claim it cannot observe (it sees only its own host's seeds). The
+    fleet-level observer enrols the record; the guard consumes it.
+    """
+    if queue_dir is None:
+        return None, dict(etq.transition_status(None, now=now),
+                          queue_dir=None,
+                          basis="transition_queue_not_configured")
+    records, _unreadable = etq.load_records(queue_dir)
+    record = etq.find_record(records, experiment=experiment, mode=mode,
+                             identity=identity)
+    status = etq.transition_status(record, now=now)
+    status["queue_dir"] = str(Path(queue_dir).expanduser())
+    return record, status
+
+
+# ---------------------------------------------------------------------------
 # the poll: pure over injected facts
 # ---------------------------------------------------------------------------
 
@@ -304,6 +462,8 @@ def poll(*, contract: dict, identity: str, state: dict, now: datetime,
          max_restarts: int = DEFAULT_MAX_RESTARTS,
          restart_backoff_seconds: float = DEFAULT_RESTART_BACKOFF_SECONDS,
          mode: str = DEFAULT_MODE,
+         transition_queue_dir: Optional[Path] = None,
+         transition_emitter: Any = None,
          ) -> dict:
     """One guard cycle over the seeds ASSIGNED TO THIS HOST.
 
@@ -311,12 +471,24 @@ def poll(*, contract: dict, identity: str, state: dict, now: datetime,
     the per-seed cell total (finding 233): in decision mode every fact
     and the whole report come from ``decision_run.output_root``.
 
-    Returns {"schema", "mode", "output_root", "seeds": {seed:
-    facts+actions}, "emitted", "recovered", "restarts", "state"} where
-    ``state`` is the new dedup state to persist. The run root is only
-    read, never written.
+    ``transition_queue_dir`` binds the durable transition queue (order
+    2026-08-15 §3). It answers exactly one question — is a successor
+    proven dispatched? — and it answers it from records on disk, so the
+    verdict survives a reboot that erases every heartbeat and process.
+    When a locally-terminal seed's transition is stuck past its declared
+    budget, the queue module emits ONE deduplicated incident through the
+    same fleet ledger and closes that SAME event code on recovery.
+
+    Returns {"schema", "mode", "output_root", "transition", "seeds":
+    {seed: facts+actions}, "emitted", "recovered", "restarts", "state"}
+    where ``state`` is the new dedup state to persist. The run root is
+    only read, never written.
     """
     binding = p1lr_mode_binding(contract, mode)
+    experiment = str(contract.get("experiment") or "")
+    transition_record, transition = _transition_view(
+        transition_queue_dir, experiment=experiment, mode=binding["mode"],
+        identity=identity, now=now)
     facts_fn = seed_facts_fn or seed_facts
     assignments = contract.get("assignments") or {}
     seeds = [int(s) for s in (contract.get("seeds") or [])
@@ -328,6 +500,7 @@ def poll(*, contract: dict, identity: str, state: dict, now: datetime,
     recovered: list[dict] = []
     restarts: list[dict] = []
     report_seeds: dict[str, Any] = {}
+    terminal_seeds: list[int] = []
 
     for seed in seeds:
         assignment = assignments.get(str(seed)) or {}
@@ -368,9 +541,22 @@ def poll(*, contract: dict, identity: str, state: dict, now: datetime,
                           "observation")
 
         # Unknown utilization (nvidia-smi unreadable) NEVER reads as
-        # idle: the guard alerts on observed facts only.
-        idle = (pending and not process_alive and gpu_idle_now
-                and observed_idle > idle_after_seconds)
+        # idle: the guard alerts on observed facts only. Completion is
+        # never health: a terminal seed with no dispatched successor is
+        # idle, and it is classified, not silently dismissed (§3).
+        classification = classify_seed_idleness(
+            pending=pending, process_alive=process_alive,
+            gpu_idle_now=gpu_idle_now,
+            gpu_utilization_unknown=utilization is None,
+            observed_idle=observed_idle,
+            idle_after_seconds=idle_after_seconds,
+            cells_total=facts["cells_total"],
+            records_landed=facts["records_landed"],
+            transition_state=transition.get("value"))
+        idle = bool(classification["idle"])
+        stalled = bool(classification["stalled"])
+        if classification["terminal_complete"]:
+            terminal_seeds.append(seed)
 
         actions: list[str] = []
         entry: dict[str, Any] = {
@@ -391,10 +577,19 @@ def poll(*, contract: dict, identity: str, state: dict, now: datetime,
             "last_heartbeat_terminal_state":
                 facts.get("last_heartbeat_terminal_state"),
             "idle": idle,
+            "idle_class": classification["idle_class"],
+            "idle_class_reason": classification["idle_class_reason"],
+            "stalled": stalled,
+            "terminal_complete": classification["terminal_complete"],
             "actions": actions,
         }
+        if classification["terminal_complete"]:
+            entry["transition_state"] = transition.get("value")
+            entry["transition_id"] = transition.get("transition_id")
+            entry["next_job_id"] = transition.get("next_job_id")
+            entry["transition_blockers"] = transition.get("blockers")
 
-        if idle:
+        if stalled:
             unit_exists = bool(unit_exists_fn(unit))
             entry["unit_exists"] = unit_exists
             affected = f"{identity}/seed{seed}"
@@ -523,7 +718,46 @@ def poll(*, contract: dict, identity: str, state: dict, now: datetime,
             else:
                 actions.append("recovery_emission_failed_will_retry")
 
+        # §3 bullet 1: a terminal seed is NOT a stalled seed — it is
+        # never restarted here. Its idleness is a TRANSITION problem and
+        # the durable queue owns both the verdict and the incident.
+        if classification["idle_class"] == "completed_untransitioned":
+            actions.append("restart_withheld_terminal_complete")
+            actions.append("completed_untransitioned")
+
         report_seeds[str(seed)] = entry
+
+    # §3 bullet 6: ONE deduplicated incident for a stuck transition, with
+    # its dedup marker inside the DURABLE record (so a reboot or a second
+    # host cannot produce a second incident), closed on the same code.
+    transition_action: dict[str, Any] = {
+        "action": "none",
+        "reason": ("no locally terminal seed, or no durable transition "
+                   "record to evaluate"),
+    }
+    if terminal_seeds and transition_record is not None:
+        updated, transition_action = etq.evaluate_transition_incident(
+            transition_record, emitter=transition_emitter or emitter,
+            now=now)
+        if updated.get("incident") != transition_record.get("incident"):
+            etq.save_record(transition_queue_dir, updated, now=now)
+            transition = etq.transition_status(updated, now=now)
+            transition["queue_dir"] = str(
+                Path(transition_queue_dir).expanduser())
+        if transition_action["action"] == "incident_emitted":
+            emitted.append({"event_code": transition_action["event_code"],
+                            "transition_id": updated.get("transition_id")})
+        elif transition_action["action"] == "incident_recovered":
+            recovered.append({"event_code": transition_action["event_code"],
+                              "transition_id": updated.get("transition_id")})
+    elif terminal_seeds:
+        transition_action = {
+            "action": "no_durable_record",
+            "reason": ("seeds are terminal on this host but no durable "
+                       "transition record exists for this identity: the "
+                       "fleet-level observer must enrol it before a "
+                       "successor can be proven dispatched"),
+        }
 
     return {"schema": REPORT_SCHEMA,
             "generated_at": now.isoformat(),
@@ -537,6 +771,12 @@ def poll(*, contract: dict, identity: str, state: dict, now: datetime,
             "output_root": binding["output_root"],
             "unit_template": binding["unit_template"],
             "cells_total": binding["total_cells"],
+            # §3 bullets 1/4: the terminal-to-next-job transition, taken
+            # from durable records ONLY — never a heartbeat, a shell
+            # process, a chat message or operator memory.
+            "transition": transition,
+            "transition_action": transition_action,
+            "terminal_seeds_local": terminal_seeds,
             "seeds": report_seeds,
             "emitted": emitted,
             "recovered": recovered,
@@ -575,6 +815,18 @@ def main() -> int:
     parser.add_argument("--state-dir", type=Path, default=DEFAULT_STATE_DIR,
                         help="guard dedup/backoff state; NEVER inside the "
                              "run's output root")
+    parser.add_argument("--transition-queue-dir", type=Path,
+                        default=DEFAULT_TRANSITION_QUEUE_DIR,
+                        help="durable terminal-to-next-job queue (order "
+                             "2026-08-15 §3): the ONLY authority for "
+                             "whether a successor is dispatched, and the "
+                             "home of the deduplicated undispatched "
+                             "incident; NEVER inside a run's output root")
+    parser.add_argument("--no-transition-queue", action="store_true",
+                        help="do not consult the durable transition queue "
+                             "(a terminal seed then always renders "
+                             "completed_untransitioned, because nothing "
+                             "can prove a successor was dispatched)")
     parser.add_argument("--idle-after-seconds", type=float,
                         default=DEFAULT_IDLE_AFTER_SECONDS)
     parser.add_argument("--gpu-idle-utilization-pct", type=int,
@@ -633,11 +885,15 @@ def main() -> int:
                 return False
 
         emitter: Any = _NullEmitter()
+        transition_emitter: Any = emitter
         restart_fn: Callable[[str], dict] = lambda unit: {
             "ok": False, "returncode": None, "stderr": "dry-run"}
     else:
         sys.path.insert(0, str(Path(__file__).resolve().parent))
         emitter = LedgerEmitter(hostname)
+        # The SAME fleet ledger, under the transition queue's own source
+        # name — one alerting stack, two truthful producers.
+        transition_emitter = etq.LedgerEmitter(hostname)
         restart_fn = default_restart
 
     report = poll(
@@ -650,7 +906,10 @@ def main() -> int:
         gpu_idle_utilization_pct=args.gpu_idle_utilization_pct,
         max_restarts=args.max_restarts,
         restart_backoff_seconds=args.restart_backoff_seconds,
-        mode=args.mode)
+        mode=args.mode,
+        transition_queue_dir=(None if args.no_transition_queue
+                              else args.transition_queue_dir),
+        transition_emitter=transition_emitter)
     if not args.dry_run:
         save_state(state_path, report["state"])
     printable = {k: v for k, v in report.items() if k != "state"}

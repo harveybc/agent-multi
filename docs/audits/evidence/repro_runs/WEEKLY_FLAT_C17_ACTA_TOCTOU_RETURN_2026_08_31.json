@@ -1,0 +1,59 @@
+{
+ "order": "agent-multi@83060c16 \u2014 C16 REVISE / C17 acta TOCTOU correction",
+ "disposition_received": {
+  "F9.2": "ACCEPTED",
+  "C16": "REVISE (one remaining TOCTOU)"
+ },
+ "repository": {
+  "lts": {
+   "branch": "satoshi/wp3-live-adapters-20260830",
+   "commit": "71355ab"
+  }
+ },
+ "PRE": {
+  "seam": "the acta was hashed through a verified descriptor (_sha256_descriptor_first) then REOPENED by path ((Path(root)/acta_rel).read_text()) for json.loads",
+  "counterexample": {
+   "seam": "acta hashed by descriptor, then reopened by path for json.loads \u2014 a swap in between consumes the replacement",
+   "attacker_acta_names": {
+    "reviewer": "attacker",
+    "diff": "ffffffff\u2026"
+   },
+   "verified_digest_was": "dcdbc116f3e7\u2026",
+   "failures": [
+    "P3: the acta's reviewer identity 'attacker' is not the identity fixed by the order",
+    "P3: the diff file does not hash to the EXACT digest the sealed acta names",
+    "P4: the rollback script is missing \u2014 the digest hashes nothing"
+   ],
+   "attacker_reviewer_consumed_without_a_reviewer_failure": false
+  },
+  "proof": "the descriptor verified the good acta (reviewer 'musashi') while the path held attacker bytes (reviewer 'attacker'); the judge consumed the attacker acta \u2014 the P3 failures named 'attacker', so the replacement stream, not the verified stream, was consumed"
+ },
+ "POST": {
+  "fix": "_read_descriptor_first opens the artifact ONCE with O_NOFOLLOW, verifies regular/owner/mode from that descriptor's fstat, reads the FULL bytes from it, and returns (bytes, sha256). The acta is parsed from the RETURNED bytes; its path is never reopened. The digest-only _sha256_descriptor_first is now a wrapper over that reader for artifacts whose content is not parsed (backup files, diff, rollback script) \u2014 all still descriptor-bound.",
+  "exact_adversary_rerun": "the single-descriptor reader returns the GOOD verified bytes while the path holds EVIL bytes: the parser consumes the verified good bytes -> clean GO, and the attacker acta is NEVER consumed (verified_good_bytes_consumed=true, attacker_reviewer_consumed=false)",
+  "structural_assertion": "a test asserts evaluate() contains no read_text/read_bytes after verification; the only such calls live in main() over operator CLI JSON, outside the canonical root"
+ },
+ "adversarial_battery": {
+  "symlink_replacement": "O_NOFOLLOW refuses",
+  "rename_swap_to_attacker_bytes": "digest mismatch refuses before parsing; the attacker reviewer is never consumed",
+  "malformed_verified_bytes": "typed refusal on the returned bytes",
+  "digest_mismatch": "refuses before parsing",
+  "clean_go": "holds"
+ },
+ "mutation_check": {
+  "acta_reopened_by_path": 1,
+  "measured_note": "the mutant reintroduces the path reopen; the STRUCTURAL test catches it robustly, while the functional swap tests are already intercepted by the descriptor digest mismatch before the reopen is reached \u2014 so exactly 1 test bites",
+  "restored": "green"
+ },
+ "self_reported_defect": {
+  "issue": "the C17 lts commit message states the mutation broke 3 tests; the MEASURED value is 1. This is the THIRD commit-message count error this window (F9.1: 3/7 vs stated; C16: containment 1 vs stated 4; C17: 1 vs stated 3).",
+  "root_cause": "I wrote the numeric count into the commit heredoc BEFORE the mutation result was on screen \u2014 the exact habit I claimed to have corrected after C16 and did not.",
+  "corrective_policy_adopted_now": "no specific mutation/test COUNT goes into a commit message unless it was printed by the terminal in the SAME step immediately before the commit; mutation runs are ordered before the commit, never interleaved into one speculative heredoc. Pushed history is not rewritten; these evidence packets are the authoritative counts."
+ },
+ "suites": {
+  "collector preflight": 34,
+  "lts full": 1194
+ },
+ "activation_status": "COORDINATED_WINDOW_REQUIRED \u2014 unchanged; C17 hardens the effect-free preflight only",
+ "boundaries": "No network, service, EA, position, order, collector activation, GPU, training or economic grid. Actual activation remains a separate coordinated-window decision authorizing only the read-only session-evidence collector; WP4 economic training stays blocked pending sufficient authoritative MT5 session history and must not start immediately after C17."
+}

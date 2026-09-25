@@ -1,0 +1,125 @@
+{
+ "order": "agent-multi@696342b5 — WP3.1-WP3.6, live adapter IMPLEMENTATION AND EFFECT-FREE TESTS ONLY",
+ "subject_repository": "lts",
+ "branch": "satoshi/wp3-live-adapters-20260830",
+ "commit": "eb47ee0",
+ "authorization_respected": "No deployment, no service start/stop/restart, no command sent, no touch of the existing MT5 position, no training. Zero write calls in the whole package, asserted by a test that scans every module in it.",
+
+ "WP3_1_direct_venue_evidence": {
+  "module": "app/venue_direct_evidence.py",
+  "derived_from": "the payloads the executing paths actually produce — Alpaca GET /v2/account, /v2/clock, /v2/positions, /v2/orders?nested=true; MT5 the EA's heartbeat, snapshot positions/orders and the closed-bar plus tick evidence.",
+  "covered": {
+   "session_terminal_account_and_observed_timestamp": "account_session for both venues; MT5 also carries server fingerprint, environment and terminal build",
+   "positions_with_identity_side_quantity": "asset_id / ticket, side, signed quantity",
+   "open_orders_with_identity_and_verifiable_role": "see order_roles below",
+   "native_protection_accepted": "Alpaca: the bracket legs, typed; MT5: stop_loss/take_profit on the POSITION, with native_protection_present derived from both being set",
+   "last_bar_quote_and_calendar_bound_to_the_symbol": "market_clock binds symbol, timeframe, last CLOSED bar and the live tick"
+  },
+  "order_roles": {
+   "principle": "the role comes from facts the venue STATES, never from geometry",
+   "alpaca": "a bracket parent is the entry; each leg is protection typed by its own type (stop/stop_limit -> protective_stop, limit -> protective_take_profit). An order_class the venue does not state as a bracket has no establishable role and REFUSES.",
+   "mt5": "protection is carried on the POSITION, not as an order, so every resting MT5 order is a pending ENTRY. An order_type outside the pending-entry vocabulary REFUSES.",
+   "why_it_matters": "the two venues genuinely differ, and flattening that difference is how an independent reversal gets mistaken for protection."
+  },
+  "refusals": [
+   "a pre-parsed mapping instead of the original bytes",
+   "duplicate keys in the raw payload",
+   "NaN/Infinity, malformed JSON, invalid encoding",
+   "unknown fields and missing fields",
+   "a naive timestamp (it cannot be aged)",
+   "contradictory redundant facts (Alpaca qty vs side)",
+   "impossible bar geometry and crossed quotes",
+   "a payload asserting its own venue_direct",
+   "stale evidence, future-stamped evidence, a source outside the policy allowlist, a foreign account or symbol",
+   "a substituted parser, a same-named parser with different code, an unknown schema"
+  ],
+  "policy_owns_admission": "VenueEvidencePolicy fixes venue, account, symbol, allowed sources, max age, schema and calendar identity, and its digest covers all of them plus every sealed parser identity. The evidence never declares its own freshness.",
+  "simulator_provenance": "REFUSED BY NAME at three levels — the policy may not allowlist it, evidence may not carry it as a source, and require_venue_direct refuses any provenance that is simulator/replay/backtest/shadow or that admits venue_direct=false."
+ },
+
+ "WP3_2_decision_adapter": {
+  "module": "app/session_authority_adapter.py",
+  "principle": "the runners CONSUME the accepted pure authority and do not reimplement its states.",
+  "mechanism": "load_authority reads app/session_exposure.py and app/flatten_custody.py from an EXPLICIT configured checkout, computes a code identity over their source, and refuses when a reviewed identity is supplied and does not match. A missing authority refuses; there is deliberately NO local fallback implementation to take over.",
+  "no_second_authority": "a test asserts this module defines no session_state, overlay_action, classify_action or classify_discrete_command.",
+  "loaded_identity_observed": "25dec77ad836f632…",
+  "translation": {
+   "NORMAL_TRADING": "ordinary decision; effects=(submit_decision,)",
+   "WIND_DOWN": "entries blocked, final command HOLD, only registered ENTRY identities offered for cancellation, preserve_protection=True",
+   "FORCED_FLATTEN": "cancel pending entries, keep protection until the close completes, final command CLOSE, requires_direct_confirmation=True",
+   "EXPECTED_MARKET_CLOSED": "no actionable step; mapped_command and final_command are both None; effects=(none,)",
+   "REOPEN_BLACKOUT": "entries blocked until causal evidence suffices",
+   "RECOVERY": "adapter-level and takes precedence over every other state; every risk increase blocked until disposition or valid direct evidence"
+  },
+  "four_records": "raw_model_output, mapped_command, mapped_action, overlay and final_command are published separately, plus the effects and the identities that would be cancelled.",
+  "nothing_is_sent": "a VenueDirective describes what WOULD be sent. The module has no client."
+ },
+
+ "WP3_3_deployable_custody": {
+  "approach": "the ACCEPTED protocol is bound, not copied: load_authority also returns the accepted flatten_custody module, so the deployable custody uses the audited O_EXCL / 0600 / fsync / monotone-acknowledgement protocol and its episode-identity rule.",
+  "properties_inherited": "a restart restores the obligation; a different account or position cannot confirm it (the store refuses a foreign episode identity); several open obligations require an operator disposition.",
+  "note": "the venue-side custody root is per venue/account/symbol and is CONFIGURATION. No custody root is created, populated or written by this package."
+ },
+
+ "WP3_4_calendar_aware_watchdog": {
+  "module": "app/session_watchdog.py",
+  "classifications": ["healthy", "expected_market_closed", "stale_feed_during_open_window", "terminal_or_account_disconnected", "flatten_failed", "unexpected_exposure_during_closure", "recovery_active"],
+  "precedence_rule": "an expected closure suppresses the STALE-BAR alert and nothing else. The calendar appears in exactly one branch, and tests assert that a closed market never hides a disconnection, open exposure or open orders.",
+  "unavailable_is_not_healthy": "every input is validated; a missing, wrongly typed or non-venue-direct fact refuses, because 'we could not tell' and 'nothing is wrong' are different statements.",
+  "vocabulary": "the severity and category vocabulary of the existing paper execution watchdog is reused so these events join the same ledger instead of starting a second one."
+ },
+
+ "WP3_5_effect_free_testing": {
+  "counts": {"venue evidence": 37, "adapter, watchdog and dry run": 63, "WP3 total": 100, "existing unit suite": "768 passed, unchanged"},
+  "coverage": {
+   "both venues": "every state test is parametrized over alpaca_paper and mt5_demo",
+   "five states and their boundaries": "each state asserted separately plus a test that every state in the vocabulary is reached",
+   "long, short, flat, brackets, pending entry": "commands 0-3 over flat and held exposure, with an Alpaca bracket and an MT5 pending entry",
+   "core versus adapter equality": "for equivalent facts the adapter's overlay equals the one the accepted authority produces directly, across four states and four commands",
+   "cross-venue agreement": "for equivalent exposure both venues reach the same overlay and final command; the only permitted difference is the cancellation effect, because the venues rest different order books",
+   "zero write calls": "a test scans every module in the package for submit/cancel/close/OrderSend/post/delete/put/INSERT/UPDATE"
+  },
+  "dry_run": {
+   "tool": "tools/session_directive_dry_run.py",
+   "structural_inability_to_send": "no credential is read or accepted; the only venue-facing object is NoWriteVenueInterface, which has no client, no session and no host and raises on submit_order, cancel_order, close_position, replace_order, enqueue and order_send; the tool imports nothing network-capable, asserted by a test.",
+   "observed_output": {"dry_run": true, "writes_performed": 0, "interface": "NoWriteVenueInterface", "session_state": "FORCED_FLATTEN", "final_command": 3, "effects": ["cancel_pending_entries", "request_close"], "cancel_order_identities": ["200001"], "requires_direct_confirmation": true, "reason": "forced flatten: cancel pending entries, keep protection until the close completes, and confirm only on direct zero-position zero-order evidence"}
+  },
+  "captures": "examples/captures/wp3_session_dry_run/ — sanitized and synthetic. No account number, server name, host, path or credential appears in them.",
+  "mutation_check": "the suite was verified to BITE. Two deliberate mutations — a masked entry submitting the original command instead of HOLD, and the calendar suppressing a disconnection — were each caught by exactly the tests that claim those properties (7 failures), and the suite returned to green when reverted."
+ },
+
+ "WP3_6_return": {
+  "call_map": [
+   "raw venue bytes -> VenueDirectEvidence.parse [sealed allowlisted parser, original-bytes authority] -> .verify(policy, now) [POLICY-owned source allowlist and max age]",
+   "verified facts -> load_authority(root) [code identity checked] -> derive_directive [translates ONE authority verdict]",
+   "derive_directive -> require_venue_direct(provenance) [simulator provenance refused] -> classify_discrete_command + overlay_action FROM THE ACCEPTED AUTHORITY -> VenueDirective",
+   "VenueDirective + account facts -> session_watchdog.classify -> WatchdogVerdict [calendar suppresses only the stale bar]",
+   "everything -> tools/session_directive_dry_run.run -> a JSON report of what WOULD be sent. Nothing is sent."
+  ],
+  "runbook": "docs/runbooks/WP3_COORDINATED_WINDOW_RUNBOOK_PROPOSED.md — PROPOSED and NOT EXECUTED, and explicitly not self-authorising."
+ },
+
+ "declared_venue_limitations": {
+  "alpaca": [
+   "A role is only establishable for a BRACKET order. A simple or OCO order carries no structural role in the payload, so this parser refuses it rather than guessing — an Alpaca strategy that rests non-bracket orders is not covered and would need the venue to state the role another way.",
+   "The account fingerprint is derived from the account id; the parser does not accept account_number as a substitute identity even though the venue offers both, because two identity sources would let the same account present two fingerprints.",
+   "GET /v2/orders returns only OPEN orders, so an order that reached a terminal state between two observations is invisible to this evidence; a cancellation's terminal verdict must come from the order endpoint, which WP3 does not call."
+  ],
+  "mt5": [
+   "There is no MetaTrader5 python package in this deployment. The transport is an inverted push: an EA POSTs signed JSON and the python side reads SQLite. Every MT5 fact is therefore as fresh as the EA's last push and no fresher, which is exactly why the policy owns max age.",
+   "MT5 carries protection on the position, so 'protective orders' is structurally zero for this venue. A cross-venue comparison of order counts is meaningless and the tests permit that one difference explicitly.",
+   "Only demo is accepted: environment is constrained to 'demo' in the parser, so a live heartbeat refuses."
+  ]
+ },
+
+ "finding_reported": {
+  "id": "WP3-F1",
+  "claim": "The MT5 EA emits time_open_unix on every position (mt5/MQL5/Experts/LtsMt5ModelBridge.mq5), but PositionSnapshot in app/mt5_bridge_lab.py is a StrictModel with extra='forbid' and has no such field. A snapshot carrying it is rejected 422 at POST /v1/snapshot and NO snapshot is stored at all — while app/mt5_model_runner.py reads positions[0]['time_open_unix'] for the SAC holding-bars feature and returns 'waiting_for_position_open_time' when it is absent.",
+  "impact": "the two ends of the contract disagree, so either the snapshot never lands or the feature never resolves. No committed test sends the field.",
+  "scope": "PRE-EXISTING, outside the WP3 order's scope. NOT fixed here: it touches the live bridge contract, and this order authorises implementation and effect-free tests only.",
+  "handling_in_wp3": "the new MT5 position parser REQUIRES time_open_unix, matching what the EA actually emits, so the WP3 evidence layer is aligned with the wire rather than with the divergent server model.",
+  "status": "reported for disposition"
+ },
+
+ "not_done": "No deployment, no service touched, no command sent, no MT5 position touched, no training. WP4 and any live window remain blocked. Activation is not automatic and this package does not authorise it."
+}

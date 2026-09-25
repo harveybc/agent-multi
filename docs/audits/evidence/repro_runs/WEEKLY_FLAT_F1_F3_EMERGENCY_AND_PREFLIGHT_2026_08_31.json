@@ -1,0 +1,131 @@
+{
+ "order": "agent-multi@4ad4937b \u2014 weekly-flat F1-F3 emergency correction and CPU preflight (owner-approved immediate execution)",
+ "subject_repository": "gym-fx",
+ "branch": "satoshi/trade-reconciliation-20260828",
+ "pre_commit": "5dd0fad",
+ "post_commit": "02846d3",
+ "PRE": {
+  "F1_blackout_precedence": {
+   "holiday_cluster": "w1_wd48_ff8 on the Dec-2023 window: REOPEN_BLACKOUT persisted to the bar before the Dec-29 and Jan-5 closures with an open position and final_action=0 \u2014 no flatten attempt; 2 crossings (frozen rows in WEEKLY_FLAT_WP4_C9_C14_CORRECTION packet and run artifacts)",
+   "simple_weekend": "same cell on the plain Jan-2024 window: blackout held to the last bar, flatten fired only at 4h-to-close, close filled post-gap \u2014 1 crossing"
+  },
+  "F2_one_bar_entry_window": "rows 66-67 frozen: one NORMAL_TRADING bar between blackout re-entries admitted an entry (final=1) that then rode an indefinite blackout \u2014 reversals correctly masked, position carried across two closures",
+  "F3_double_winner": {
+   "pristine_gymfx_2c60b84": "9 double-winner failures / 25 repeats of the in_flight race",
+   "corrected_tree_pre_fix": "12 / 40",
+   "root_cause": "the transition lock was UNLINKED after use and the idempotent same-state early-return let the loser report success \u2014 plus a splice during an earlier edit had left a stale duplicate _transition shadowing part of the file (see self-reported defects)"
+  }
+ },
+ "F1_precedence_contract": {
+  "contract": "EXPECTED_MARKET_CLOSED > FORCED_FLATTEN > WIND_DOWN > REOPEN_BLACKOUT > NORMAL_TRADING; duties (cancel/close/flatten) can never be suppressed by an entry restriction; an overlapping blackout is published as reopen_blackout_also_active and entry masking is the union",
+  "counterexample_dead": "the exact cell (w1_wd48_ff8) on the exact holiday-cluster window is now fully ELIGIBLE with ZERO crossings; the simple-weekend case likewise",
+  "structural_fact_reported_not_weakened": "the section-4 default forced_flatten_hours=4 is ONE bar on H4 and this simulator fills at next-bar open, so the deadline close lands after the gap: the run raises the typed FORCED_FLATTEN_FAILED incident and conservation refuses with the crossing NAMED. Enabled arms therefore reach zero exposure at every governed closure OR terminate in the typed critical refusal, exactly as ordered.",
+  "cases_proven": "long, short, pending-entry (cancelled with terminal broker verdict), carried-position recovery, holiday adjacency"
+ },
+ "F2_release_latch": {
+  "semantics_predeclared": "exit requires the policy's declared consecutive stability count TIMES RELEASE_PROBATION_FACTOR=2 (qualification + probation), all consecutive fully-closed bars, reset to zero by any failing check, committed only at closed-bar boundaries; renewed instability blocks new risk immediately and never blocks reductions or the next closure's duties (F1 precedence)",
+  "not_tuned": "the factor is a declared constant; nothing was fitted to the reproduced blip",
+  "one_bar_window_dead": "a single transient pass can never authorize (2N >= 2); the frozen blip run no longer admits the entry",
+  "restart_determinism": "the env derives the streak causally from bar history on EVERY step \u2014 a restart replays to the identical latch and cannot mint an extra tradable bar (existing determinism/replay tests cover it)"
+ },
+ "F3_single_winner_custody": {
+  "mechanism": "records mint a generation at open; the complete read/verify/expected-state/write/ack transaction is serialized by ONE durable claim keyed by the sha of the exact record version (a never-unlinked CAS token binding the generation); the loser receives FlattenTransitionObserved carrying the winner, or the fail-closed crashed-claim integrity refusal; the legacy unlink-after-use lock is deleted",
+  "race_evidence_200_per_transition": {
+   "create": {
+    "repeats": 200,
+    "double_winners": 0,
+    "zero_winners": 0,
+    "loser_refusal_kinds": {
+     "FlattenObligationError": 200
+    }
+   },
+   "in_flight": {
+    "repeats": 200,
+    "double_winners": 0,
+    "zero_winners": 0,
+    "loser_refusal_kinds": {
+     "FlattenIntegrityError": 174,
+     "FlattenTransitionObserved": 26
+    }
+   },
+   "confirm_vs_fail": {
+    "repeats": 200,
+    "double_winners": 0,
+    "zero_winners": 0,
+    "loser_refusal_kinds": {
+     "FlattenIntegrityError": 173,
+     "FlattenObligationError": 16,
+     "FlattenTransitionObserved": 11
+    }
+   },
+   "interrupt_vs_confirm": {
+    "repeats": 200,
+    "double_winners": 0,
+    "zero_winners": 0,
+    "loser_refusal_kinds": {
+     "FlattenIntegrityError": 171,
+     "FlattenObligationError": 8,
+     "FlattenTransitionObserved": 21
+    }
+   }
+  },
+  "adversarial": "planted claim symlink refused; crashed claim blocks silent retry fail-closed; claim-boundary dirfsync failure leaves the record untouched and the version unresolved; wrong modes and symlinked roots preserved from the accepted battery; fresh-process recovery unchanged",
+  "self_reported_defect": "my first F3 splice repeated the E12 lesson a THIRD time \u2014 a stale duplicate _transition shadowed the fix and the race reproduced against my own correction until the absent claim files exposed the shadowing; the duplicate was removed and the distribution went to zero"
+ },
+ "eligibility_regenerated_post_f1_f3": {
+  "holiday_cluster_w1_wd48_ff8": "ELIGIBLE, zero failed invariants, zero crossings",
+  "plain_weekend_w1_wd48_ff8_seed5": "ELIGIBLE",
+  "w0_section4_default": "INELIGIBLE with no_exposure_across_closure NAMED plus the typed incident \u2014 the one-bar structural fact above",
+  "authority_digests": "REFROZEN in the driver for the three corrected files, superseding the WP4.0 freeze; materialization regenerated, manifest digest 09d9d891b8de55964ff27f00c1c979d74efe1c5cf8fe1b56baf98517f2c32aa7"
+ },
+ "sac_preflight_EXECUTED": {
+  "status": "COMPLETED",
+  "scope": "MECHANICS_AND_THROUGHPUT_ONLY \u2014 zero economic authority, no checkpoint promotion (no checkpoint is even saved)",
+  "cell": "w1_wd48_ff8",
+  "cell_choice_note": "the order names one corrected overlay-enabled cell; w1_wd48_ff8 is overlay-enabled and fully eligible, while W0's section-4 flatten window is structurally one bar on H4 and refuses \u2014 reported separately, gate never weakened",
+  "identities_persisted_before_execution": "9b1ef6496a9ccc27f23c2644aad5f0ce6c29302ee6cfda359528220a78f7218a",
+  "bounds_respected": {
+   "max_env_steps": 20000,
+   "max_updates": 20000,
+   "wall_seconds": 7200
+  },
+  "environment_throughput": {
+   "steps": 2000,
+   "wall_seconds": 4.494,
+   "env_steps_per_second": 444.99
+  },
+  "sac_training": {
+   "env_steps": 20000,
+   "gradient_updates": 19000,
+   "wall_seconds": 148.045,
+   "combined_steps_per_second": 135.09,
+   "updates_per_second": 128.34
+  },
+  "peak_rss_kb": 1104192,
+  "session_state_counts_during_training": {
+   "NORMAL_TRADING": 5073,
+   "WIND_DOWN": 5332,
+   "FORCED_FLATTEN": 1066,
+   "REOPEN_BLACKOUT": 8529
+  },
+  "closure_compliance_gate": {
+   "verdict": "ELIGIBLE",
+   "failed_invariants": [],
+   "exposure_across_closure": []
+  },
+  "wall_seconds_total": 153.7,
+  "telemetry": "heartbeat JSON per phase with progress and ETA; SIGTERM/SIGINT and a stop-file both stop fail-closed; no checkpoint saved"
+ },
+ "mutation_check": {
+  "blackout_precedence_restored": 8,
+  "probation_factor_dropped": 1,
+  "claim_deserialized_per_pid": 3,
+  "restored": "green"
+ },
+ "suites": {
+  "full gym-fx": 497,
+  "custody races": "800/800 single winner",
+  "focused": "session 44+142, custody 47, wp4 61, stats 19"
+ },
+ "boundaries": "No deployment, installation, service restart, venue connection, order command, live position change, GPU, complete economic grid, checkpoint promotion or live activation. Economic campaigns remain blocked by VENUE_SESSION_HISTORY_UNAVAILABLE. Independent audit of F1-F3 and this preflight remains required before any live window."
+}

@@ -177,7 +177,20 @@ def build_config(
         "feature_binary_columns": list(anchor["feature_binary_columns"]),
         "include_agent_state": bool(anchor["include_agent_state"]),
         "include_price_window": bool(anchor["include_price_window"]),
+        # AUD-P1LR-20260815-235: the observation contract is now
+        # fail-closed, so this campaign's raw-price window is an
+        # EXPLICIT, RECORDED opt-out rather than an omission the
+        # validator used to wave through.
         "require_feature_aware_preprocessor": False,
+        "observation_contract_waiver_reason": (
+            "the pinned anchor's 2724-element observation embeds the "
+            "legacy 32-price + 32-diff raw window; dropping it would make "
+            "the artifact unloadable, so this campaign keeps the raw "
+            "window knowingly. AUD-P1LR-20260815-235 shows that window "
+            "drives the actor's first layer into the zero-gradient "
+            "dead-ReLU regime: this campaign is diagnostic only and its "
+            "results may not be read as a treatment effect."
+        ),
         "continuous_action_threshold": float(
             anchor["continuous_action_threshold"]
         ),

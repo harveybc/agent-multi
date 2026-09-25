@@ -89,7 +89,10 @@ class Rule:
 
 
 def _hostname_not_allowed(match: re.Match, allowlist: dict) -> bool:
-    value = match.group(match.lastindex or 0).lower()
+    value = next(
+        (group for group in match.groups() if group is not None),
+        match.group(0),
+    ).lower()
     if value in _HOSTNAME_STOPWORDS:
         return False
     return value not in {h.lower() for h in
@@ -143,11 +146,18 @@ RULES: list[Rule] = [
          r"\b(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}"
          r"(?:25[0-5]|2[0-4]\d|1?\d?\d)\b",
          check=_ip_not_allowed),
-    # Colon style (yaml/json keys) matches bare values; equals style
-    # (code) requires a QUOTED literal so `host = some_expr` never fires.
+    # Colon style accepts a complete quoted JSON value or a complete bare
+    # YAML value. Equals style requires a quoted literal. Requiring the bare
+    # value to end at a value delimiter prevents dynamic expressions such as
+    # ``hostname: socket.gethostname()`` and prose such as ``host: the
+    # marker`` from being misclassified as topology.
     Rule("topology", "hostname_assignment",
          r"(?i)\b(?:hostname|host|ssh_host|machine)\b[\"']?\s*"
-         r"(?::\s*|=\s*[\"'])[\"']?([a-z][a-z0-9_.-]{1,40})",
+         r"(?:"
+         r":\s*(?:[\"']([a-z][a-z0-9_.-]{1,40})[\"']|"
+         r"([a-z][a-z0-9_.-]{1,40})(?=\s*(?:[,}\]#]|$)))|"
+         r"=\s*[\"']([a-z][a-z0-9_.-]{1,40})[\"']"
+         r")",
          check=_hostname_not_allowed),
     Rule("topology", "gpu_uuid",
          r"\bGPU-[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-"

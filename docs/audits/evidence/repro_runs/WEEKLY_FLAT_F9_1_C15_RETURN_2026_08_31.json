@@ -1,0 +1,55 @@
+{
+ "order": "owner-relayed 2026-08-31 \u2014 F9.1 intra-segment guard + C15 collector-preflight hardening",
+ "repositories": {
+  "agent-multi F9 branch": {
+   "branch": "satoshi/f9-budget-guard-20260831",
+   "commit": "96654af6"
+  },
+  "lts": {
+   "branch": "satoshi/wp3-live-adapters-20260830",
+   "commit": "23df71d"
+  }
+ },
+ "F9_1_intra_segment_guard": {
+  "mechanism": "make_executing_budget_callback rides EVERY model.learn call (composed with the progress callback) and checks the ACTUAL _n_updates counter, wall clock and stop file on EVERY environment step, stopping learn mid-segment the moment a bound crosses; the loop records the typed reason in stop_reason and breaks. The pre/post segment checks remain.",
+  "invalid_values": "negative, zero, NaN, inf, bool and fractional update budgets are a TYPED refusal (ExecutingBudgetExceeded 'invalid budget value') \u2014 a malformed bound can never silently disable the guard",
+  "tests": "18 total (11 new): mid-segment update/wall/stop-file crossings, six invalid-value refusals, wiring assertion that the callback brackets every learn call",
+  "mutations": {
+   "callback_never_stops": 3,
+   "invalid_values_silently_disable": 7,
+   "restored": "green"
+  },
+  "no_rerun": "no training executed, per the order"
+ },
+ "C15_collector_preflight_hardening": {
+  "PRE_frozen": {
+   "counterexample": "invented JSON, zero real artifacts, no heartbeat, no terminal/build verification, digests that hash NOTHING",
+   "verdict_obtained": "GO_READ_ONLY_COLLECTOR_ONLY",
+   "failures": []
+  },
+  "hardening": [
+   "backup manifest SEALED (canonical self-digest verified) with the required artifact set (ea_source, ea_compiled, bridge_config), non-empty names, canonical lowercase 64-hex digests, and every artifact FILE present under the backup root hashing exactly to its declared digest",
+   "EA diff review carries a reviewer identity object (identity + review reference) AND the diff file matching its reviewed digest \u2014 a bare self-declared name binds nothing",
+   "rollback: tested, zero order effects, script present and hash-matching, BOUND to the sealed backup manifest digest",
+   "fresh strict HeartbeatPayload REQUIRED: account AND server fingerprints bound, connected, expected terminal build, 120s freshness",
+   "the snapshot must publish the expected symbol",
+   "structural no-act scan of the judge itself preserved"
+  ],
+  "counterexample_regression": "the exact invented kit that previously obtained GO with zero failures now returns COORDINATED_WINDOW_REQUIRED naming the missing heartbeat, the unsealed manifest and the digests that hash nothing \u2014 permanent test",
+  "blocking_invariants": "an open MT5 position always answers COORDINATED_WINDOW_REQUIRED with the never-restart warning; activation stays BLOCKED while the position exists or any direct evidence is missing; a GO covers ONLY the read-only collector",
+  "tests": 19,
+  "mutations": {
+   "artifact_hash_unchecked": 1,
+   "seal_unchecked": 1,
+   "heartbeat_optional": 2,
+   "restored": "green"
+  },
+  "self_reported_note": "the lts commit message overstates two mutation counts (says 2/2/2; the measured values are 1/1/2). The pushed history is not rewritten; this packet is the accurate record."
+ },
+ "suites": {
+  "F9 branch guard battery": 18,
+  "lts full": 1179
+ },
+ "activation_status": "COORDINATED_WINDOW_REQUIRED \u2014 unchanged and enforced",
+ "boundaries": "No training, no economic grids, no GPU, no deployment, no services, no venue connections, no commands, no position changes, no checkpoint promotion, no live activation."
+}

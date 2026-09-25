@@ -1,0 +1,47 @@
+{
+ "schema": "agent_multi.musashi_t1_external_review.v1",
+ "recorded_at_date": "2026-09-06",
+ "reviewer": "General Musashi",
+ "decision": "T1_V4_EXTERNALLY_REVIEWED_FOR_T2_ONLY",
+ "reviewed_return_commit": "d86152b2",
+ "reviewed_evidence_commit": "85f0197a",
+ "reviewed_design_commit": "6773c07d",
+ "preprocessor_reference_commit": "e6c3cdc",
+ "bindings": {
+  "design_sha256": "90d382aa941d74ce80da5d7f68bb3b62b8c6139c836bef3670706f2cb9f23f17",
+  "bank_inventory_sha256": "457db7781b799bed98992fa5e3251d5d60f1e17d92a7e87540b5f53a26c72bb0",
+  "measurement_manifest_sha256": "5a008e668092837f4336708cc948bf3bf91b7d59070ed3ac9e66612b8cd53564",
+  "measurements_sha256": "3ec02686d5b32725483c7e894bfd5e2bf8d26e38e180bc914cfd136457224977",
+  "publication_sha256": "715449179198215c03848f837accf88a84572734aaf3540544edc1a248c23856",
+  "review_submission_sha256": "5bb86be77cf00507315b95a4e8ed7053f228e19cdca1c460e7383e821a7ace54"
+ },
+ "executed_code_identity": {
+  "t1_known_truth_bank_sha256": "5934216d0d5e0b0d4eeb6560c57d9ab85ad2ecdfb5059ec3d21cd3a531aabfdf",
+  "t1_lab_run_sha256": "dc3c1c62ea65cd33e8f85b02a85c90748943442eb0c16839a69b4070936c7283",
+  "t1_adjudicator_sha256": "8f04e2f690fadbc97ccc186ff905580b12521dc03692e321349142658ee68801",
+  "t1_independent_verifier_sha256": "64ccc0ee30b3b8b8d04311435dde715e193f1c9a72a584fac67df0d9f46b7187"
+ },
+ "independent_observations": {
+  "focal_tests_passed": 57,
+  "records_rederived_from_arrays": 1116,
+  "complete_publication_equality": true,
+  "verifier_exit_code": 3,
+  "verifier_label": "SELF_CONSISTENT_ONLY_NOT_AUTHORIZING",
+  "verdict_counts": {
+   "NON_CAUSAL_ORACLE_ONLY": 64,
+   "LAB_CALIBRATED": 180,
+   "LAB_REJECTED": 116,
+   "INCONCLUSIVE": 24
+  }
+ },
+ "scope": [
+  "accept T1 v4 as reproducible known-truth laboratory evidence",
+  "open design and execution of the CPU-only T2 public out-of-family utility gate"
+ ],
+ "does_not_authorize": [
+  "T4 or any DOIN transformation gene",
+  "financial or live claims",
+  "GPU execution",
+  "venue, service, key, position or checkpoint actions"
+ ]
+}

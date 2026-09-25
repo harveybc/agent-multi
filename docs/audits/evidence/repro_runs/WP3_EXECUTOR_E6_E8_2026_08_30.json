@@ -1,0 +1,81 @@
+{
+ "order": "agent-multi@df1c74c6 — WP3 executor correction E6-E8",
+ "subject_repository": "lts",
+ "branch": "satoshi/wp3-live-adapters-20260830",
+ "pre_commit": "006a79e",
+ "post_commit": "5a9c664",
+ "note": "PRE reproduced and frozen BEFORE any edit. All three findings are mine.",
+
+ "PRE": {
+  "E6_lock_not_directory_durable": {
+   "acquire_fsyncs_parent_dir": false,
+   "release_fsyncs_parent_dir": false,
+   "verdict": "the lock file was fsynced but its DIRECTORY ENTRY was not, on acquire or on release; after a crash/reboot the entry could be absent though the effect transaction had begun, letting another process enter."
+  },
+  "E7_asset_id_not_an_instance_identity": {
+   "identity_kind_declared": false,
+   "contract_keys": ["idempotency_key", "position_identity", "reduce_only", "side", "signed_quantity", "units"],
+   "reproducer": "the position was closed elsewhere and REOPENED at entry 480 (was 500), same asset_id, same side, same quantity",
+   "resume_state": "completed",
+   "close_calls": 1,
+   "verdict": "coincidentally identical reopened exposure inherited an old close request and the plan COMPLETED — the equality check compared only asset/side/units, and the contract omitted the entry price."
+  },
+  "E8_local_wrapper_freshness": {
+   "venue_rows_carry_a_timestamp": false,
+   "wrapper_observed_at": "inserted by the caller before parsing",
+   "replayed_body_fresh_wrapper_accepted": true,
+   "verdict": "the terminal body had NO venue timestamp; a year-old replayed body inside a freshly stamped local wrapper verified as fresh. Authority and freshness did not come from original venue bytes — the same distinction the owner-authorized C7 capture demonstrated for open orders."
+  }
+ },
+
+ "POST": {
+  "E6": {
+   "acquire_and_release_fsync_the_parent": true,
+   "uncertain_acquire": "a failing file fsync or parent fsync raises typed PlanLockHeld, execution is blocked, and the lock STAYS — a future claimant refuses and an operator disposes",
+   "uncertain_release": "raises a typed ExecutorError and leaves the lock standing; the surviving lock refuses the next claimant — fail-closed, never a silent second entrant. The effects that already ran are not retracted and not repeated.",
+   "injected_failures": ["file fsync on acquire", "directory fsync on acquire", "unlink on release", "the surviving lock refusing a fresh claimant"],
+   "fresh_process_recovery": "after a clean release a new executor resumes the completed plan idempotently"
+  },
+  "E7": {
+   "identity_kind_stated_by_the_parsers": {"mt5": "venue_position_instance (a reopened position receives a new ticket)", "alpaca": "asset_identity_only (a reopened position carries the SAME asset_id)"},
+   "contract_now_binds": ["position_identity", "identity_kind", "side", "units", "entry_price", "reduce_only", "idempotency_key"],
+   "reissue_rule": "without a venue position-instance identity an unacknowledged close is CATEGORICALLY unresolved for operator disposition, even for a position identical in side, quantity and price. With the MT5 ticket, only the same ticket + side + units + entry price through a port declaring same_key_idempotent_reduce_only retries, with the SAME key.",
+   "observed": {
+    "alpaca_reopened_entry_480": {"resume_state": "unresolved", "close_calls": 0, "incident": "the venue supplies no position-instance identity …"},
+    "alpaca_identical_values": {"resume_state": "unresolved", "close_calls": 0},
+    "mt5_same_ticket": {"state": "completed", "close_calls": 1, "identity_kind": "venue_position_instance", "same_key": true},
+    "mt5_reopened_ticket": {"state": "unresolved", "close_calls": 0},
+    "mt5_changed_entry_price": {"state": "unresolved", "close_calls": 0}
+   },
+   "two_process_close_boundary_split": {"close_mt5": "exactly one reissue", "close_alpaca": "zero — nobody may reissue without an instance identity"}
+  },
+  "E8": {
+   "payload_shape": "the venue's ARRAY of order objects; the old local wrapper is refused outright as 'a local construction, not venue bytes'",
+   "freshness_source": "the venue's own event timestamps — Alpaca updated_at, MT5 done_time — with the evidence stamped at the LATEST event; an empty body refuses because absence is never a verdict",
+   "acquisition_receipt": "typed AcquisitionReceipt OUTSIDE the payload: collector_source, collector_code_identity, received_at, monotonic_seq, and body_sha256 binding the exact venue bytes",
+   "refusals_observed": {
+    "missing_receipt": "terminal evidence without a receipt refuses at parse",
+    "body_envelope_substitution": "the acquisition receipt does not bind these bytes — refused",
+    "future_receipt": "refused",
+    "receipt_predating_the_event": "an event cannot be received before it happened — refused",
+    "stale_receipt": "refused",
+    "replayed_body_fresh_receipt": "evidence is 31536000.000s old and the policy allows 120.000s — stale evidence is refused",
+    "duplicate_keys_in_the_body": "refused",
+    "old_wrapper_shape": "refused"
+   },
+   "provenance": "the receipt travels in the gate's journaled provenance"
+  }
+ },
+
+ "mutation_check": "dropping both lock parent fsyncs, the instance-identity gate and the receipt byte-binding broke exactly the tests claiming those properties (3 failures); green on revert.",
+
+ "commands_and_counts": {
+  "pytest tests/unit/test_wp3_effect_executor.py -q": 76,
+  "pytest tests/unit/test_wp3_venue_direct_evidence.py -q": 125,
+  "pytest tests/unit/test_wp3_session_adapter.py -q": 102,
+  "pytest tests/unit/test_wp3_contract_and_custody.py -q": 72,
+  "pytest tests/unit -q": 1043
+ },
+
+ "boundaries": "E1-E5 and C7-C10 preserved. Implementation and effect-free tests only: no service change, no venue connection, no order command, no position change. WP4 and live activation remain blocked pending independent reproduction."
+}

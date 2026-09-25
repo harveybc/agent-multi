@@ -1,0 +1,29 @@
+# Timer for the experiment transition enroller (order 2026-08-15 §3).
+#
+# Cadence: first pass 3 minutes after boot — a reboot must reconstruct
+# the transition from durable records rather than from a stale
+# heartbeat or operator memory, and the sooner the fleet is observed
+# the sooner an undispatched successor becomes visible. Then every 10
+# minutes, comfortably inside the default 1-hour transition budget, so
+# a terminal experiment cannot sit unenrolled for a whole budget
+# window.
+#
+# Telegram noise is impossible by cadence alone: the enroller emits
+# only on a transition state CHANGE, the dedup marker lives inside the
+# durable record (so a reboot or a second observer cannot re-emit), and
+# recovery closes the same event code.
+#
+# Ship-only file: installation is a separate reviewed operator step.
+
+[Unit]
+Description=Observe the fleet and enrol terminal experiments into the transition queue
+
+[Timer]
+OnBootSec=3min
+OnUnitActiveSec=10min
+RandomizedDelaySec=30
+Persistent=true
+Unit=experiment-transition-enroller.service
+
+[Install]
+WantedBy=timers.target

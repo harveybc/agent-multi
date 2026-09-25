@@ -1,0 +1,81 @@
+{
+  "packet": "WEEKLY_FLAT_C36_C37_RETURN",
+  "date": "2026-09-01",
+  "order": "agent-multi@6fe22d4a (Musashi C36-C37, branch musashi/wp4-session-readiness-c36-c37-20260901; audit verdict REVISE on C35)",
+  "subject_repository": "gym-fx",
+  "branch": "satoshi/trade-reconciliation-20260828",
+  "commit": "9353e0a",
+  "base_reproduced_against": "gym-fx@36caaef",
+  "scope": "CPU, offline, no venue, no key, no restricted storage, no collector, no live, no GPU, no SAC, no grid, no promotion; factory and consumption integrity only",
+  "pre_frozen_counterexamples": [
+    {
+      "id": "C36-PRE-1",
+      "claim": "minimal self-digested dict passes verify_consumable_readiness",
+      "observation": "a dict with production schema, fixture_marker False, the public pin, PROVISIONED status, an arbitrary verdict and a self-computed SHA returned consumable=True."
+    },
+    {
+      "id": "C37-PRE-2",
+      "claim": "caller-built ResolvedTrust naming the pin + fixture=False emits production authority",
+      "observation": "a directly constructed ResolvedTrust carrying the public pin digest under an attacker Ed25519 key drove _build_package(..., fixture=False) to schema gymfx.wp4.session_readiness.v4, fixture_marker False, collector_active True, state AUTHORITATIVE_SUPPORT_SUFFICIENT_FOR_CALIBRATION, 30 supported weeks."
+    },
+    {
+      "id": "C36-PRE-3",
+      "claim": "that forged production package passes the verifier",
+      "observation": "verify_consumable_readiness returned consumable=True, state AUTHORITATIVE_SUPPORT_SUFFICIENT_FOR_CALIBRATION on the forged package."
+    }
+  ],
+  "corrections": {
+    "C36": {
+      "internal_pin": "verify_consumable_readiness loads the pinned manifest internally; the caller digest parameter is removed (structural test asserts no expected_manifest_digest/digest/pin/trust/manifest parameter exists).",
+      "not_provisioned_gate": "while the pinned manifest is NOT_PROVISIONED, EVERY package refuses consumption with the typed state NOT_PROVISIONED_NON_CONSUMABLE — genuine production packages included, without exception.",
+      "provisioned_day_path": "defined now, rederivation-only (form 1 of the order): the caller must supply the signed source bytes, export and receipt, and the package must equal digest-for-digest what the pinned production factory rederives from them.",
+      "full_consistency": "exact production key set (_PACKAGE_FIELDS), intact package digest, internal pin match on both package and authoritative block, PROVISIONED status, non-null authority, collector_active True, state sufficient, supported_paired_weeks >= 30 and concordant with len(pairing_records), canonical source/export/pairing/ledger/roles digests, economic_grid_authorized always False."
+    },
+    "C37": {
+      "single_production_factory": "the common core is renamed _derive_readiness_body and loses the fixture selector; it emits an UNSEALED body (no schema, no fixture_marker, no digest). The literal production stamp '\"schema\": PRODUCTION_SCHEMA' occurs exactly once in the module, inside build_readiness_package, which takes no trust and loads the pinned manifest itself.",
+      "fixture_seam_pure": "tests/_wp4_trust_fixture.py seals exclusively the FIXTURE schema via _seal_fixture, a pure function with no selector; the seam source never references the production schema and refuses the pinned production trust.",
+      "no_public_trust_constructor": "ResolvedTrust is minted only inside _resolve_manifest under a module-private latch; direct construction and dataclasses.replace both refuse ('no public constructor'). The manifest self-digest check binds digest to content, so a trust naming the pin under any other content/key is unmintable.",
+      "structural_scan": "no function in the distributed module (private included) combines a trust parameter with a fixture selector; _build_package no longer exists."
+    }
+  },
+  "post": {
+    "pre1": "REFUSED: NOT_PROVISIONED_NON_CONSUMABLE (today) and 'package fields do not match the exact production schema fields' (provisioned-day gate)",
+    "pre2": "REFUSED at construction: 'ResolvedTrust has no public constructor'; dataclasses.replace refuses identically",
+    "pre3": "unreachable — no path stamps production schema under external trust; forged hand-stamps die on the internal pin check and on rederivation mismatch"
+  },
+  "mutation_checks": [
+    {"id": "M1", "target": "C36 NOT_PROVISIONED consumer gate disabled", "result": "5 failed, 52 passed"},
+    {"id": "M2", "target": "C37 ResolvedTrust mint guard disabled", "result": "1 failed, 56 passed"},
+    {"id": "M3", "target": "C36 exact-fields consistency check disabled", "result": "2 failed, 55 passed"},
+    {"id": "M4", "target": "C36 rederivation match disabled", "result": "2 failed, 55 passed"},
+    {"id": "M5", "target": "C37 fixture seam stamping the production schema literal", "result": "1 failed, 56 passed"}
+  ],
+  "suites": {
+    "focused": "57 passed (tests/test_wp4_session_readiness.py)",
+    "full_gymfx": "569 passed, 68 warnings",
+    "tier_a_fail_closed": "TestTierAEthConclusion fails closed (1 failed) when WP4_TIER_A_ROOT is unset",
+    "count_discipline": "all counts copied from terminal output of runs at the final commit state"
+  },
+  "self_reported": "The C33-C35 packet published 'full suite 555 passed' while Musashi's independent run at the same commit collected 557. Cause: the 555 figure came from a full-suite run executed BEFORE the battery was reinforced with the two targeted M3/M4 tests; the focused count (45) was fresh but the full count was stale. The counts above were re-run at the final C36-C37 commit state and read from the terminal. Disclosed unprompted.",
+  "real_eth_evidence": {
+    "input": "predictor:project3/ethusdt_4h_tech_stat",
+    "regenerated_via": "production build_readiness_package on gym-fx@9353e0a",
+    "package_digest": "4aaf5b7b59234010",
+    "preservation": "byte-identical to the sealed WEEKLY_FLAT_ETH_SESSION_READINESS_2026_09_01.json — the C36-C37 refactor changed factory and consumption boundaries, not the derivation. State HISTORICAL_BACKFILL_NON_AUTHORITATIVE_ONLY, deficit 30, SPOT_HISTORY_NOT_MT5_SESSION_AUTHORITY.",
+    "consumer": "refuses the production package with NOT_PROVISIONED_NON_CONSUMABLE (acceptance #7: production keeps generating the non-authoritative spot diagnostic; nothing is consumable)"
+  },
+  "sanitization": "clean — module, manifest, seam, battery and regenerated evidence carry no home-directory prefix, operator name, host, private IP or absolute-path topology (logical id only).",
+  "acceptance_9_point": {
+    "1_three_pre_refuse": "PASS — POST above",
+    "2_minimal_or_redigested_package_not_consumable": "PASS — gate + exact-fields + rederivation",
+    "3_no_caller_expected_manifest_digest": "PASS — structural test on the signature",
+    "4_under_not_provisioned_all_consumption_refuses": "PASS — test_everything_refuses_while_not_provisioned",
+    "5_no_distributed_seam_emits_production_schema_with_external_trust": "PASS — single stamp inside the trust-less factory; core unsealed; scan finds no trust+fixture combination",
+    "6_fixture_keeps_its_schema_and_never_passes_consumption": "PASS",
+    "7_production_still_yields_non_authoritative_spot_diagnostic": "PASS — byte-identical ETH package",
+    "8_published_suite_count_matches_real_output": "PASS — counts from terminal at final state; prior 555-vs-557 staleness disclosed",
+    "9_focused_full_sanitization_green": "PASS — 57 / 569 / clean"
+  },
+  "boundaries_respected": "no key generation, no restricted storage, no collector activation, no live/preflight, no service, no venue, no order/position command, no GPU, no SAC, no economic grid, no checkpoint promotion.",
+  "disposition": "AWAITING_MUSASHI"
+}

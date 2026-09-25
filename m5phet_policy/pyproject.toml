@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent-multi-m5phet"
+version = "0.1.0"
+description = "Inference-only M5PHET policy provider over an already fitted agent-multi policy"
+requires-python = ">=3.10"
+# deliberately empty: the interface's environment must not acquire torch or stable-baselines3. The engine runs in the
+# interpreter the operator configures through M5PHET_POLICY_PYTHON.
+dependencies = []
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[project.entry-points."m5phet.providers"]
+trading_policy = "agent_multi_m5phet.provider:PolicyProvider"
+
+[tool.setuptools.packages.find]
+where = ["src"]

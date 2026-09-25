@@ -1,0 +1,90 @@
+{
+ "order": "agent-multi@20d4d6f0 — WP3-C8 policy-binding correction, implementation/read-only only",
+ "subject_repository": "lts",
+ "branch": "satoshi/wp3-live-adapters-20260830",
+ "pre_commit": "59f89be",
+ "post_commit": "30aabe8",
+ "note": "PRE reproduced and frozen BEFORE any edit. The finding is mine, and it is the SAME class of defect as the simulator's claim-to-finish policy substitution, repeated at the only live discharge path.",
+
+ "PRE": {
+  "C8_policy_substitution_at_discharge": {
+   "policy_a": "strict — max_age_seconds 120.0, one allowed source",
+   "policy_b": "loose — max_age_seconds 31536000.0, allowlist extended with 'anything_at_all'",
+   "policy_a_digest": "53ebbc16f259af7a…",
+   "policy_b_digest": "ba684cb37fd33790…",
+   "record_names": "evidence_policy_digest=53ebbc16f259af7ad7618acb0466b5abf26711a4aef3ddb995f5353ad…",
+   "evidence_used": "positions and orders observed 30 days before now",
+   "policy_a_admits_the_evidence": false,
+   "policy_a_refusal": "evidence is 2592000.000s old and the policy allows 120.000s — stale evidence is refused",
+   "discharge_under_policy_b": {"accepted": true, "state": "flatten_confirmed", "reconciliation_policy_digest_recorded": null},
+   "final_state": "flatten_confirmed",
+   "verdict": "the obligation was opened under STRICT policy A and discharged under LOOSE policy B for the same venue, account and symbol. confirm_with_direct_evidence accepted an independent policy and never compared its digest with the one the binding and the durable record name."
+  },
+  "C8_digest_fields_unvalidated": {
+   "'not-a-digest'": "ACCEPTED",
+   "'AAAA…' (uppercase hex, 64)": "ACCEPTED",
+   "'000…' (63 characters)": "ACCEPTED",
+   "'000…0 ' (trailing space)": "ACCEPTED",
+   "''": "refused (nonempty-string check only)",
+   "True / 123 / None": "refused (type check only)",
+   "verdict": "a digest-shaped field that is not a digest made the comparison vacuous: a binding could name something no real policy digest could ever equal."
+  }
+ },
+
+ "POST": {
+  "C8_policy_identity_is_indivisible_from_verification": {
+   "discharge_under_policy_b": {"accepted": false, "error": "LiveCustodyError: policy substitution refused: the obligation is bound to policy 53ebbc16f259… and the discharge presents ba684cb37fd3…"},
+   "final_state": "flatten_in_flight",
+   "mechanism": "require_bound_policy recomputes the supplied policy's digest and requires exact equality with the binding AND with the digest the durable record names, and requires the policy's venue, account and symbol to equal the binding's.",
+   "ordering": {
+    "discharge_calls_require_bound_policy": true,
+    "helper_compares_the_binding": true,
+    "helper_compares_the_record": true,
+    "check_precedes_evidence_evaluation": true
+   },
+   "ordering_is_asserted_behaviourally_too": "a test supplies stale evidence with an unbound loose policy and asserts the refusal names the SUBSTITUTION and not staleness — an unbound policy never gets the chance to admit anything.",
+   "discharge_now_records_its_authority": "the reconciliation carries evidence_policy_digest, so the durable record shows which policy authorised it."
+  },
+
+  "C8_digest_fields_are_canonical": {
+   "refused": ["not-a-digest", "", "   ", "A*64 (uppercase)", "0*63", "0*65", "0*64 + trailing space", "leading space + 0*64", "True", "False", "123", "None", "g*64", "0*32"],
+   "no_normalisation": "uppercase hex is a DIFFERENT string and is refused rather than lowered; silently normalising would make two distinct bindings compare equal.",
+   "checked_before_store_access": "validation happens in VenueObligationBinding.__post_init__, so a malformed binding never reaches a store."
+  },
+
+  "adversarial_coverage": {
+   "exact_A_to_B_substitution": "refused; obligation stays flatten_in_flight",
+   "changed_maximum_age": "121.0 and 31536000.0 both refused",
+   "changed_source_allowlist": "widened and replaced, both refused",
+   "changed_schema_version": "refused",
+   "changed_calendar_identity": "refused",
+   "changed_venue / account / symbol": "refused",
+   "forged_binding_digest": "a binding naming a*64 can never be satisfied by any real policy, so the forgery blocks itself",
+   "durable_record_naming_another_policy": "refused even when the binding agrees",
+   "non_policy_object": "None, {}, a string, a float and a duck-typed object with a policy_digest attribute all refused",
+   "clean_store_reload": "a fresh custody over the same root recovers the obligation, still refuses the loose policy, and accepts the bound one",
+   "bound_policy_still_discharges": "flatten_confirmed, with the authorising digest recorded"
+  },
+
+  "mutation_check": "the suite was verified to BITE. Removing the policy check, and separately normalising digests instead of refusing them, each broke exactly the tests that claim those properties (12 failures); the suite returned to green when reverted."
+ },
+
+ "C7_still_incomplete": {
+  "status": "INCOMPLETE, and neither fabricated nor inferred",
+  "delivered": "tools/propose_alpaca_capture_export.py — a PROPOSED three-stage operator export: read under mode=ro selecting only the fields the WP3 parsers require, stage into a private 0700/0600 path and validate there with those parsers, then redact into a public fixture.",
+  "what_it_publishes": "the exact field list per evidence type, which identifier fields are pseudonymised, and which fields are dropped entirely because a renamed identifier is still an identifier.",
+  "what_it_cannot_do": "it performs no read, connects to nothing, holds no credential, and its EXECUTION BODY IS DELIBERATELY ABSENT even behind --i-am-the-owner: a public repository must not carry code capable of reading the private state tree, even behind a flag. Without the flag it prints the plan and exits 0.",
+  "asserted_by_tests": "no sqlite3, requests, urllib, expanduser, Path.home, os.environ or connect( appears in the module.",
+  "until_then": "the Alpaca bracket shape remains unverified against a recorded payload, and the committed Alpaca capture asserts typed absence with the limitation stated beside it."
+ },
+
+ "commands_and_counts": {
+  "pytest tests/unit/test_wp3_venue_direct_evidence.py -q": 78,
+  "pytest tests/unit/test_wp3_session_adapter.py -q": 72,
+  "pytest tests/unit/test_wp3_contract_and_custody.py -q": 68,
+  "pytest tests/unit -q": 886,
+  "writes_performed": 0
+ },
+
+ "boundaries_respected": "No deployment or service change. No venue write, order command or position change. No WP4 dispatch. No claim of live parity: C8 awaits independent reproduction and C7 awaits real sanitized evidence."
+}

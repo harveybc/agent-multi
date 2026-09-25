@@ -1,0 +1,131 @@
+{
+ "order": "agent-multi@c900656a — R1-R5, real cancellation and flatten recovery",
+ "subject_repository": "gym-fx",
+ "pre_commit": "3d7d1a3",
+ "note": "PRE reproduced and frozen BEFORE any edit. All four findings confirmed.",
+
+ "PRE": {
+  "R1_reference_coercion": {
+   "probes": {"1.5": {"accepted": true, "stored_as": 1}, "2.9": {"accepted": true, "stored_as": 2}, "'3'": "refused", "True": "refused", "-1": "refused"},
+   "registry_after": {"1": "entry", "2": "entry"},
+   "verdict": "register_order_role accepted float and applied int(), so 1.5 became identity 1 and 2.9 became 2 — real identities belonging to other live orders. A silent collision could attach the wrong role to a live order."
+  },
+  "R2_no_real_cancellation": {
+   "cancel_outcomes_over_a_full_run": {},
+   "resting_entry_orders_ever_seen": [],
+   "verdict": "the committed test injected ref 4242, which never existed in backtrader's book, so the expected outcome was 'not_open'. It proved the request reached the strategy and nothing more: no real order was ever cancelled, and the race against a fill at the next bar's open was untested. The principal economic risk of C2 was unproven."
+  },
+  "R3_reset_erases_the_obligation": {
+   "before_reset": {"phase": "flatten_in_flight", "confirmed": false},
+   "flatten_after_reset": null,
+   "first_step_phase": null,
+   "durable_store_exists": false,
+   "verdict": "an in-flight close obligation VANISHED on reset and the next episode started clean by forgetting it. The committed test asserted this as correct behaviour, so it encoded the defect."
+  },
+  "R4_freshness_is_a_constant": {
+   "line": "evidence_age_seconds=0.0, max_age_seconds=120.0)",
+   "verdict": "the age was asserted, not derived from any observation instant, and the check was not labelled as simulator-local evidence."
+  }
+ },
+
+ "POST": {
+  "R1_strict_references": {
+   "refused": {
+    "1.5": "order ref must be a non-boolean int identity, got float 1.5 — no coercion",
+    "2.9": "order ref must be a non-boolean int identity, got float 2.9 — no coercion",
+    "3.0": "refused — a float is not an identity even when integral",
+    "nan": "refused", "inf": "refused", "'3'": "refused",
+    "True": "refused", "False": "refused", "None": "refused",
+    "-1": "refused", "[1]": "refused"
+   },
+   "registry_unchanged_after_a_refusal": true,
+   "accepted": {"9001": "entry"}
+  },
+
+  "R2_real_cancellation_end_to_end": {
+   "method": "a genuine resting Limit BUY entry is submitted THROUGH THE EXECUTING PATH by a strategy plugin, registered as 'entry' like any other order, and sized to fit the cash the open position leaves free so the broker ACCEPTS it. The synthetic not_open fixture is retained separately as an incident test, never as evidence of an executed cancellation.",
+   "trajectory": [
+    {"step": 2, "bar": 3, "state": "NORMAL_TRADING", "inventory": [[4, "protective_stop"], [5, "protective_take_profit"]], "entry_orders": 0},
+    {"step": 3, "bar": 4, "state": "NORMAL_TRADING", "inventory": [[4, "protective_stop"], [5, "protective_take_profit"], [6, "entry"]], "entry_orders": 0},
+    {"step": 4, "bar": 5, "state": "WIND_DOWN", "inventory": [[4, "protective_stop"], [5, "protective_take_profit"]], "entry_orders": 1, "cancel_requested": [6]},
+    {"step": 5, "bar": 6, "state": "FORCED_FLATTEN", "inventory": [], "entry_orders": 0}
+   ],
+   "1_request_names_the_real_ref": 6,
+   "2_strategy_cancels_before_the_action": true,
+   "3_terminal_broker_verdict": "Canceled",
+   "4_ever_filled": false,
+   "5_both_brackets_alive_through_wind_down": "refs 4 and 5, protective_stop and protective_take_profit, present at every WIND_DOWN bar; retired by the CLOSE at bar 6",
+   "6_failure_modes_never_count_as_success": {
+    "Rejected": "rejected + ENTRY_CANCELLATION_REJECTED",
+    "Completed": "filled_before_cancel + ENTRY_FILLED_DESPITE_CANCELLATION",
+    "left_resting": "still_open, counted as pending",
+    "unknown_role": "refused_role_None + CANCELLATION_REFUSED_WRONG_ROLE"
+   },
+   "flatten_still_reaches_zero_zero": true
+  },
+
+  "R3_durable_obligation_and_fail_closed_recovery": {
+   "mechanism": "app/flatten_custody.py::FlattenObligationStore writes the obligation durably at the moment it is requested, reusing the migration custody's audited no-overwrite protocol: O_EXCL creation, 0600, fsync of file and parent, symlink refusal, and an exclusive transition lock with expected-state identity. reset() no longer clears the attempt; it RE-READS custody.",
+   "phase_before_restart": "flatten_in_flight",
+   "object_restart": {
+    "outstanding_in_durable_custody": ["flatten-<run>-1-bar5"],
+    "recovered": true,
+    "incident_at_recovery": "RECOVERED_FROM_DURABLE_CUSTODY",
+    "recovery_active": true,
+    "overlay": "blocked_by_flatten_recovery",
+    "submitted": 0
+   },
+   "process_restart": {
+    "new_object_over_the_same_root_sees": ["flatten-<run>-1-bar5"],
+    "recovery_active": true,
+    "overlay": "blocked_by_flatten_recovery",
+    "submitted": 0
+   },
+   "discharge": {
+    "lifted_at_bar": 2,
+    "gate": {"flat_confirmed": true, "positions": 0, "orders": 0, "evidence_provenance": "simulator_bar_local", "venue_direct": false},
+    "still_outstanding_after": [],
+    "rule": "recovery lifts ONLY on fresh evidence of zero positions AND zero orders, and the discharge is written to durable custody, not only to memory."
+   },
+   "self_reported_defect_1": "my first obligation id was flatten-ep{bridge.episode_seq}-bar{n}. bridge.episode_seq restarts at 1 for every new bridge, so the second episode collided and the store correctly refused. The identity now carries a per-process, per-env run token.",
+   "self_reported_defect_2": "my first store passed the record's OWN current state as the expected state to the terminal transition, so the expected-state check matched itself and a confirmed obligation could be overwritten by a later fail(). A terminal obligation is now explicitly immutable and only an open state may be closed.",
+   "unreadable_records": "a record that cannot be parsed counts as OUTSTANDING: an unreadable file is not evidence that the obligation was discharged."
+  },
+
+  "R4_reconciliation_provenance": {
+   "gate": {"flat_confirmed": true, "fresh": true, "positions": 0, "orders": 0, "incident": null, "evidence_provenance": "simulator_bar_local", "venue_direct": false, "observed_at_bar": 7, "evaluated_at_bar": 7, "observed_at": "2024-01-03T04:00:00+00:00", "age_seconds": 0.0},
+   "literal_age_removed": true,
+   "monotonic_clock": "a bar index that goes backwards is a typed refusal",
+   "max_age_configurable": "session_max_evidence_age_seconds, default 120.0, no longer hardcoded at the call site",
+   "wp3_boundary": "venue_direct is False. WP3 must replace this with typed DIRECT venue evidence; any consumer requiring venue authority must refuse on this provenance, and the zero-age literal may not be inherited."
+  }
+ },
+
+ "mandatory_cases_from_the_order": {
+  "R1 fractional/NaN/inf/string/bool refusal, no coercion": "TestR1StrictOrderReferences (13 cases)",
+  "R2.1 request names the real ref": "test_a_real_resting_entry_exists_and_is_registered",
+  "R2 visible at wind-down": "test_the_order_is_visible_when_wind_down_begins",
+  "R2.2 cancel precedes the bar's action": "test_the_cancellation_precedes_the_action_of_that_bar",
+  "R2.3 terminal verdict Canceled": "test_the_real_order_is_cancelled_and_never_fills",
+  "R2.4 never fills": "test_the_real_order_is_cancelled_and_never_fills",
+  "R2.5 both brackets alive": "test_both_protective_brackets_survive_the_cancellation",
+  "R2.6 failure modes never succeed": "test_a_rejected_or_unfilled_cancellation_is_never_success, test_an_order_left_resting_counts_as_pending",
+  "R3 object restart": "test_a_restart_recovers_the_obligation_it_must_not_forget (the previous 'inherits nothing' test INVERTED)",
+  "R3 process restart": "test_a_process_restart_recovers_the_same_obligation",
+  "R3 discharge only on zero/zero": "test_recovery_lifts_only_on_fresh_zero_zero_evidence",
+  "R3 durability adversaries": "test_an_unreadable_record_still_counts_as_outstanding, test_a_confirmation_requires_evidence_that_says_flat, test_a_terminal_obligation_is_immutable",
+  "R4 provenance and bound age": "TestR4ReconciliationProvenance (4 cases)"
+ },
+
+ "suites": {
+  "session_env": "tests/test_session_exposure_env.py — 105 passed",
+  "session_pure": "tests/test_session_exposure.py — 37 passed",
+  "parity": "tests/test_session_exposure_engine_parity.py — 17 passed",
+  "foundations": "tests/test_env_foundations.py — 17 passed",
+  "custody": "tests/test_migration_custody.py — 40 passed",
+  "envelope": "tests/test_shared_execution_envelope.py — 28 passed",
+  "full": "gym-fx tests — 370 passed, 68 warnings (was 339)"
+ },
+
+ "not_done": "No deployment. The live MT5 position was not touched. No training launched. No live parity claimed. WP3 remains blocked pending independent acceptance of R1-R4; WP4 remains behind WP3 live parity."
+}

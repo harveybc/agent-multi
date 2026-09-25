@@ -1,0 +1,65 @@
+{
+ "order": "agent-multi@632f7b21 — WP3 executor correction E9-E11",
+ "subject_repository": "lts",
+ "branch": "satoshi/wp3-live-adapters-20260830",
+ "pre_commit": "5a9c664",
+ "post_commit": "b495950",
+ "note": "PRE reproduced and frozen BEFORE any edit. All three findings are mine.",
+
+ "PRE": {
+  "E9_absent_unacknowledged_lock": {
+   "sequence": "unlink succeeded, then the directory fsync failed",
+   "release_raised": "ExecutorError: the lock release could not be made durable",
+   "lock_file_exists_after": false,
+   "second_claimant_entered_immediately": true,
+   "verdict": "the function raised but the lock was already absent from the live namespace; my earlier claim that the surviving lock refuses was false for this boundary."
+  },
+  "E10_aggregate_max_authorizes_an_old_verdict": {
+   "batch": "a YEAR-old cancellation for the target identity plus one fresh unrelated terminal row",
+   "envelope_verifies_fresh": true,
+   "plan_state": "completed",
+   "submit_calls": [0],
+   "verdict": "the parser reduced all rows to latest; the fresh bystander refreshed the old verdict and the gate RELEASED."
+  },
+  "E11_declarative_receipt": {
+   "non_hex_body_sha256_on_direct_construction": "ACCEPTED (Z*64 passed the length-only check)",
+   "foreign_collector_and_fabricated_seq_999999": "ACCEPTED",
+   "policy_binds_a_collector": false,
+   "durable_ledger_exists": false,
+   "verdict": "monotonicity and authority were declarations, not facts."
+  }
+ },
+
+ "POST": {
+  "E9_monotone_lock": {
+   "mechanism": "the lock file is NEVER unlinked. Content transitions held -> releasing -> released, each an in-place write plus file fsync — no namespace change, so no directory fsync can strand it. Entry is legal ONLY over the exact durable content 'released'; the reclaim transition is elected by its own O_EXCL lock.",
+   "observed_after_the_exact_failure_sequence": {"release_raised": "ExecutorError", "lock_exists": true, "lock_content": "held:<pid>", "second_claimant_in_process": "refused: PlanLockHeld", "second_REAL_process": "refused: PlanLockHeld"},
+   "refused_contents": ["held:<pid>", "releasing", "empty", "garbage", "RELEASED (case matters)", "unreadable"],
+   "invariant": "at every injected boundary either the old lock remains authoritative or a durable released state exists; no failure leaves an absent, unacknowledged lock."
+  },
+  "E10_per_identity_freshness": {
+   "mechanism": "each verdict carries ITS OWN venue event time, preferring the stamp field the venue dedicates to the declared status (canceled_at/expired_at/filled_at); contradictory status/stamp combinations refuse. The executor judges freshness PER REQUESTED IDENTITY, drops stale verdicts into a journaled dropped_stale, and the gate blocks naming the identity.",
+   "observed": {"stopped": "PlanStopped", "message": "the pending-entry inventory is unresolved for ['parent-order-id'] …", "submit_calls": []},
+   "frozen": "mixed old/fresh batches in BOTH row orders on BOTH venues, plus the status-specific stamp preference and both contradiction directions."
+  },
+  "E11_receipt_ledger": {
+   "canonical_digest": "body_sha256 must be 64 lowercase hex on DIRECT construction too",
+   "policy_bound_collector": "VenueEvidencePolicy names collector_source and collector_code_identity (both in the policy digest); a foreign collector refuses at verify",
+   "ledger": "durable per-route ReceiptLedger under a route-level registration lock, records written with the audited uncertain-write protocol",
+   "observed": {"replayed_body_higher_seq": "ReceiptLedgerError — this exact body was already registered", "seq_reuse": "ReceiptLedgerError", "rollback": "refused", "concurrent_collectors": "exactly one registers", "identical_reregistration": "idempotent"},
+   "registration_before_authority": "the executor registers the receipt BEFORE consuming verdicts; no ledger → 'an unregistered receipt authorizes nothing'; the registration lands in the gate journal."
+  }
+ },
+
+ "mutation_check": "reverting the release to unlink-then-fsync, disabling the per-identity staleness drop, and disabling the ledger's rollback and body-uniqueness checks broke 13 tests together; green on revert.",
+
+ "commands_and_counts": {
+  "pytest tests/unit/test_wp3_effect_executor.py -q": 101,
+  "pytest tests/unit/test_wp3_venue_direct_evidence.py -q": 125,
+  "pytest tests/unit/test_wp3_session_adapter.py -q": 102,
+  "pytest tests/unit/test_wp3_contract_and_custody.py -q": 72,
+  "pytest tests/unit -q": 1068
+ },
+
+ "boundaries": "E1-E8 and C7-C10 preserved. Implementation and effect-free tests only: no service change, no venue connection, no order command, no position change. WP4 and live activation remain blocked pending independent reproduction."
+}

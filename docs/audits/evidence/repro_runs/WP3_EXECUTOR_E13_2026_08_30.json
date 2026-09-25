@@ -1,0 +1,77 @@
+{
+ "order": "agent-multi@d65b43ea — WP3 E13 receipt durability correction",
+ "subject_repository": "lts",
+ "branch": "satoshi/wp3-live-adapters-20260830",
+ "pre_commit": "fd6ec6d",
+ "post_commit": "a038a91",
+ "note": "PRE reproduced and frozen BEFORE any edit, with the crash boundary MODELLED as ordered: same-process visibility was never counted as persistence. For the target file, the bytes at the last successful fsync and the bytes of the write whose fsync FAILED are tracked separately — a failed fsync does not mean the write missed the platter — and the adversarial branch materialises the failed write as the post-crash content before handing the tree to a FRESH process.",
+
+ "PRE": {
+  "E13_1_ack_restoration_not_durable": {
+   "sequence": "digest fsync failed → register raised ReceiptUncertainError → PENDING rewritten WITHOUT fsync",
+   "live_after_restore": "PENDING",
+   "durable_at_last_successful_fsync": "PENDING",
+   "modelled_crash_reached_storage_branch": "the acknowledgement IS the record digest",
+   "fresh_process": "AUTHORITATIVE — idempotent-accepted, route open",
+   "verdict": "the un-fsynced restore proved nothing about crash durability; a REJECTED registration read as authoritative."
+  },
+  "E13_2_lock_restoration_not_durable": {
+   "sequence": "released fsync failed → execute raised ExecutorError → held rewritten WITHOUT fsync",
+   "durable_at_last_successful_fsync": "releasing",
+   "modelled_crash_reached_storage_branch": "released",
+   "second_claimant": "ENTERED despite the rejected release"
+  },
+  "E13_3_raceable_object_checks": {
+   "O_NOFOLLOW_in_either_module": false,
+   "raced_symlink": "the path-time is_symlink() was bypassed the way a racer would and the symlinked record was READ and ACCEPTED",
+   "ack_and_lock_type_mode_verified": false
+  }
+ },
+
+ "POST": {
+  "design": "never rely on the second durable write being provable. Every authorizing transition is guarded by a SEPARATE DURABLE UNCERTAINTY WITNESS created and fsynced BEFORE the transition — exactly the order's prescription — so even the branch where the failed authorizing write reached storage stays fail-closed.",
+  "acknowledgement_witness": {
+   "file": "<seq>.json.aw, durably 'authorizing' from the intent phase, 'done' only after the digest acknowledgement is durable",
+   "reached_storage_branch": "fresh process: REGISTRATION_UNCERTAIN (idempotent replay refused too)",
+   "restorative_fsync_also_failing": "still REGISTRATION_UNCERTAIN — the earlier-fsynced witness refuses",
+   "completion_witness_fsync_failure": "REGISTRATION_UNCERTAIN in the caller and in every fresh reader"
+  },
+  "release_witness": {
+   "files": "register.lock.rw (ledger route lock) and run.lock.rw (executor run lock): durably 'releasing' before the lock may say 'released', 'done' only after 'released' is durable",
+   "reached_storage_branch": "PRE counterexample re-run: second claimant now refused (PlanLockHeld naming the release witness); ledger claimants likewise",
+   "unwitnessed_released_lock": "a lock reading 'released' with no witness authorizes nothing",
+   "reclaim": "requires lock=='released' AND witness=='done', both revalidated descriptor-first UNDER the reclaim election before authority passes"
+  },
+  "durable_restoration": "restorative writes are fsynced; a source-level contract test asserts no release/registration exception path contains fsync=False",
+  "descriptor_bound_objects": {
+   "applied_to": ["records", "acknowledgements", "witnesses", "route lock", "run lock", "plan.json", "journal records"],
+   "mechanism": "O_NOFOLLOW + O_CLOEXEC open; regular-file type, owner uid and exact 0600 verified from the fstat of the SAME descriptor read or written; in-place writes carry no O_TRUNC at open — the object is verified before it is truncated, so a substituted object is never mutated",
+   "raced_symlink_post": "with every path-time is_symlink() disabled outright, the substituted record refuses: 'symlink refused — descriptor-bound open does not follow links'"
+  },
+  "adversarial_battery": "reached-storage branches for ack and both locks with and without the restorative fsync failing; completion-witness fsync failure; witness-gated reclaim; unwitnessed released lock; symlink substitution for record/ack/witness/both locks under disabled path checks; non-regular file; wrong mode 0644; foreign owner; two REAL processes after each uncertain boundary — none registers, refusals fail closed",
+  "two_process_note": "after an uncertain ack boundary one claimant classifies the route uncertain and the other may refuse on the held lock — both fail closed, neither registers; asserted exactly so."
+ },
+
+ "mutation_check": {
+  "ignore_ack_witness": "4 tests failed",
+  "drop_O_NOFOLLOW": "5 tests failed",
+  "ignore_release_witness_in_both_reclaims": "5 tests failed",
+  "unfsync_run_lock_restoration": "1 test failed — the no-unfsynced-restoration source contract; behaviourally that branch is masked by the witness layer, which is the witness's purpose. Disclosed, not hidden.",
+  "restored": "green on revert"
+ },
+
+ "self_reported_notes": [
+  "my first PRE probe read the file AFTER the restorative write and so captured the restore, not the failed write; it showed refusals and did NOT reproduce the finding. The crash model was corrected to capture the failed write's bytes at the moment its fsync raised, and only then did PRE reproduce all three findings exactly.",
+  "the E12 test that targeted the acknowledgement fsync by ordinal was silently retargeted by the new witness files; it now targets the digest write by CONTENT so insertions cannot move it again."
+ ],
+
+ "commands_and_counts": {
+  "pytest tests/unit/test_wp3_effect_executor.py -q": 143,
+  "pytest tests/unit/test_wp3_venue_direct_evidence.py -q": 125,
+  "pytest tests/unit/test_wp3_session_adapter.py -q": 102,
+  "pytest tests/unit/test_wp3_contract_and_custody.py -q": 72,
+  "pytest tests/unit -q": 1110
+ },
+
+ "boundaries": "C7-C10 and E1-E12 preserved. Receipt-ledger durability scope only: no venue connection, no service change, no order command, no position change, no WP4 dispatch, no training. WP4 and live activation remain blocked pending independent acceptance."
+}
