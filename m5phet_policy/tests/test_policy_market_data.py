@@ -311,7 +311,8 @@ def test_a_contract_that_disagrees_with_the_bundle_is_refused_and_neither_is_pre
 
 
 @needs_builder
-def test_what_it_declares_about_market_data_is_what_it_then_requires(bundle):
+def test_what_it_declares_about_market_data_is_what_it_then_requires(bundle, monkeypatch):
+    monkeypatch.delenv("M5PHET_POLICY_SAMPLE", raising=False)      # the operator's sample must not shape this test
     readiness = provider(bundle).capabilities()["market_data"]
     assert readiness["supported"] is True
     assert readiness["required_rows"] == SCALING_WINDOW
@@ -367,4 +368,30 @@ def test_without_a_declared_sample_the_example_is_absent_rather_than_unrunnable(
     monkeypatch.delenv("M5PHET_POLICY_SAMPLE", raising=False)
     made = provider(bundle)
     assert not [e for e in made.chat_examples() if "market data" in e["title"]]
-    assert [e for e in made.chat_examples() if "one observation" in e["title"]], "the vector example remains"
+    assert [e for e in made.chat_examples() if "all-zero observation" in e["title"]], "the vector example remains"
+
+
+def test_the_two_examples_say_they_are_two_inputs_and_two_actions(tmp_path, monkeypatch, bundle):
+    """Retsu (2026-09-24, §8.6): the zero-vector example answered -0.0200 and the bars example 0.0591 under one
+    policy_id, and the titles let a person read them as 'the action'. Each title now names the other as a different
+    input, and each carries a reading of what its number is."""
+    import csv
+
+    made = provider(bundle)
+    readiness = made.market_data_readiness()
+    if not readiness.get("supported"):
+        pytest.skip("gym-fx is not importable in this environment")
+    columns = ["DATE_TIME", readiness["price_column"], *FEATURES]
+    sample = tmp_path / "bars.csv"
+    with sample.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.writer(handle, lineterminator="\n")
+        writer.writerow(columns)
+        for index in range(readiness["required_rows"] + 40):
+            writer.writerow([f"2026-01-01T{index:02d}:00:00"] + [str(1.0 + index * 0.001)] * (len(columns) - 1))
+    monkeypatch.setenv("M5PHET_POLICY_SAMPLE", str(sample))
+    examples = made.chat_examples()
+    assert len(examples) == 2, [e["title"] for e in examples]
+    zero, bars = examples
+    assert "all-zero" in zero["title"] and "not the bars example's" in zero["title"]
+    assert "different input" in bars["title"] and "different action" in bars["title"]
+    assert "zeros" in zero["reading"] and "not an order" in bars["reading"]

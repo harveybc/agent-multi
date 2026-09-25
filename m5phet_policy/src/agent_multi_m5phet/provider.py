@@ -513,8 +513,14 @@ class PolicyProvider:
         if manifest is None:
             return []
         size = manifest["observation_size"]
-        examples = [{"title": "DEVELOPMENT: fitted policy, one observation, proposed action",
+        # Two examples, two inputs, two actions from the same policy (Retsu measured -0.0200 here and 0.0591 on the
+        # bars, 2026-09-24). The titles say so, because a person who pastes one and a person who pastes the other are
+        # not asking the same thing and must not read the answers as one number.
+        examples = [{"title": "DEVELOPMENT: an all-zero observation vector; its action is this input's, not the "
+                              "bars example's",
                      "prompt": "What action does this fitted policy propose for this observation?",
+                     "reading": "a synthetic observation of zeros; the same policy answers the market-data example "
+                                "with a different action because the input differs",
                      "data": json.dumps([0.0] * size),
                      "config": {"input": "json", "provider": NAME, "family": FAMILY, "output_kind": OUTPUT_KIND,
                                 "state": state_ref_for(manifest)}}]
@@ -527,8 +533,11 @@ class PolicyProvider:
             if bars:
                 examples.append({
                     "title": (f"DEVELOPMENT: market data in, proposed action out "
-                              f"({readiness['required_rows']} rows of {readiness['feature_count']} fitted columns)"),
+                              f"({readiness['required_rows']} rows of {readiness['feature_count']} fitted columns); "
+                              f"a different input from the zero-vector example, so a different action"),
                     "prompt": "What action does this fitted policy propose for these bars?",
+                    "reading": "the observation is built from these bars by gym-fx's own construction; the action is "
+                               "a target position fraction of the policy's action scale, not an order",
                     "data": bars,
                     "config": {"input": "csv", "provider": NAME, "family": FAMILY, "output_kind": OUTPUT_KIND,
                                "state": state_ref_for(manifest)}})
