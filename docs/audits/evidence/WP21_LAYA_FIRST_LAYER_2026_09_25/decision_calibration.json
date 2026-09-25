@@ -1,0 +1,235 @@
+{
+  "bin_width": 0.1,
+  "decimals": 6,
+  "decision_schema": "m5phet.decision.v1",
+  "expected_calibration_error_definition": "expected calibration error = sum over non-empty bins of (n_bin / n_scored) * |agreement_bin - mean_argmax_probability_bin|, where agreement_bin is the fraction of that bin's outcomes whose argmax was the best-ranked option. It is a gap between what the head claimed and what the closure table found; it is not an accuracy, and it says nothing about whether the ranked-first pipeline was any good.",
+  "groups": [
+    {
+      "agreement_rate": null,
+      "agreements": null,
+      "best_ranked_option": null,
+      "bins": [],
+      "excluded": {
+        "ambiguous_argmax": 0,
+        "human_choice_not_scored": 0,
+        "probability_out_of_range": 0
+      },
+      "expected_calibration_error": null,
+      "human_stages": [],
+      "kind": "feature_grouping",
+      "missing": 29,
+      "n_human_linked": 0,
+      "n_linked": 1,
+      "n_scorable_linked": 1,
+      "n_scored": 0,
+      "options": [
+        [
+          "k=2",
+          "2 groups, sizes 6|1; within 0.426, between 0.129, silhouette 0.298"
+        ],
+        [
+          "k=3",
+          "3 groups, sizes 5|1|1; within 0.537, between 0.151, silhouette 0.308"
+        ],
+        [
+          "k=4",
+          "4 groups, sizes 4|1|1|1; within 0.653, between 0.173, silhouette 0.246"
+        ],
+        [
+          "k=5",
+          "5 groups, sizes 3|1|1|1|1; within 0.787, between 0.211, silhouette 0.237"
+        ],
+        [
+          "k=6",
+          "6 groups, sizes 2|1|1|1|1|1; within 0.999, between 0.255, silhouette 0.284"
+        ]
+      ],
+      "question": "grouping_cut",
+      "reason": "NO_NEW_MEASUREMENT: NO_BEST_RANKED_OPTION: no linked outcome came from a stage the table ranked first, so no option is the label the others are scored against; 1 scorable linked outcome(s) of 1, 30 required \u2014 29 missing",
+      "stage_coverage": [],
+      "stages": [
+        "laya_chosen"
+      ],
+      "status": "NO_NEW_MEASUREMENT"
+    },
+    {
+      "agreement_rate": null,
+      "agreements": null,
+      "best_ranked_option": null,
+      "bins": [],
+      "excluded": {
+        "ambiguous_argmax": 0,
+        "human_choice_not_scored": 0,
+        "probability_out_of_range": 0
+      },
+      "expected_calibration_error": null,
+      "human_stages": [],
+      "kind": "feature_preprocessing",
+      "missing": 23,
+      "n_human_linked": 0,
+      "n_linked": 7,
+      "n_scorable_linked": 7,
+      "n_scored": 0,
+      "options": [
+        [
+          "default_preprocessor",
+          "Default Preprocessor Plugin"
+        ],
+        [
+          "stl_preprocessor",
+          "stl_preprocessor"
+        ],
+        [
+          "default_plugin",
+          "Plugin to preprocess the dataset for feature extraction..."
+        ],
+        [
+          "normalizer",
+          "1.60139 1.16481"
+        ],
+        [
+          "unbiaser",
+          "Unbiaser Plugin to apply unbiasing methods to the dataset."
+        ],
+        [
+          "trimmer",
+          "trimmer"
+        ],
+        [
+          "feature_selector",
+          "Feature Selector Plugin to perform feature selection on the..."
+        ],
+        [
+          "cleaner",
+          "cleaner"
+        ]
+      ],
+      "question": "preprocessing",
+      "reason": "NO_NEW_MEASUREMENT: NO_BEST_RANKED_OPTION: no linked outcome came from a stage the table ranked first, so no option is the label the others are scored against; 7 scorable linked outcome(s) of 7, 30 required \u2014 23 missing",
+      "stage_coverage": [],
+      "stages": [
+        "laya_chosen"
+      ],
+      "status": "NO_NEW_MEASUREMENT"
+    },
+    {
+      "agreement_rate": null,
+      "agreements": null,
+      "best_ranked_option": null,
+      "bins": [],
+      "excluded": {
+        "ambiguous_argmax": 0,
+        "human_choice_not_scored": 0,
+        "probability_out_of_range": 0
+      },
+      "expected_calibration_error": null,
+      "human_stages": [],
+      "kind": "group_extractor",
+      "missing": 28,
+      "n_human_linked": 0,
+      "n_linked": 2,
+      "n_scorable_linked": 2,
+      "n_scored": 0,
+      "options": [
+        [
+          "default",
+          "Encoder of per-channel Dense branches over the window."
+        ],
+        [
+          "ann",
+          "Encoder of per-channel Dense branches over the window."
+        ],
+        [
+          "rnn",
+          "Encoder of two recurrent layers (SimpleRNN or GRU)."
+        ],
+        [
+          "transformer",
+          "Encoder: positional encoding, attention, strided Conv1D."
+        ],
+        [
+          "lstm",
+          "Encoder: positional encoding, attention, two BiLSTM layers."
+        ],
+        [
+          "cnn",
+          "Encoder of two strided Conv1D layers over the input window."
+        ],
+        [
+          "vae",
+          "Encoder of two strided Conv1D layers, with no sampling step."
+        ],
+        [
+          "vae_small",
+          "Per-step CVAE inference network: mean and log-variance."
+        ]
+      ],
+      "question": "extractor",
+      "reason": "NO_NEW_MEASUREMENT: NO_BEST_RANKED_OPTION: no linked outcome came from a stage the table ranked first, so no option is the label the others are scored against; 2 scorable linked outcome(s) of 2, 30 required \u2014 28 missing",
+      "stage_coverage": [],
+      "stages": [
+        "laya_chosen"
+      ],
+      "status": "NO_NEW_MEASUREMENT"
+    }
+  ],
+  "inventory": {
+    "directories": [
+      "/home/harveybc/.local/state/m5phet/decisions"
+    ],
+    "groups": [
+      {
+        "kind": "dataset_choice",
+        "linked": 0,
+        "question": "dataset",
+        "records": 1,
+        "unlinked": 1
+      },
+      {
+        "kind": "feature_grouping",
+        "linked": 1,
+        "question": "grouping_cut",
+        "records": 1,
+        "unlinked": 0
+      },
+      {
+        "kind": "feature_preprocessing",
+        "linked": 7,
+        "question": "preprocessing",
+        "records": 14,
+        "unlinked": 7
+      },
+      {
+        "kind": "group_extractor",
+        "linked": 2,
+        "question": "extractor",
+        "records": 4,
+        "unlinked": 2
+      },
+      {
+        "kind": "representation",
+        "linked": 0,
+        "question": "candidate",
+        "records": 1,
+        "unlinked": 1
+      },
+      {
+        "kind": "trading_decision",
+        "linked": 0,
+        "question": "exposure",
+        "records": 256,
+        "unlinked": 256
+      }
+    ],
+    "linked": 10,
+    "records": 277,
+    "unlinked": 267,
+    "unreadable": []
+  },
+  "linked_outcomes": 10,
+  "minimum_linked": 30,
+  "outcome_schema": "m5phet.decision_outcome.v1",
+  "rule": "A decision record becomes a label only when a closure-table row exists for the pipeline it led to, that row is COMPARABLE, and it carries a rank. The label is the rank \u2014 never a person's opinion of the choice.",
+  "unreadable": [],
+  "version": "m5phet-decision-calibration/1"
+}

@@ -1,0 +1,22 @@
+{
+  "decision_records_of_this_kind": 256,
+  "execution_authorized": false,
+  "linked": 0,
+  "reading": "a decision becomes evidence about the chooser only when a measured, COMPARABLE, ranked closure-table row judged the pipeline it led to. Both refusals below are that rule working, not a failure to run it",
+  "refusal_reasons": {
+    "ABSTENTION_HAS_NO_OUTCOME": "the record at /home/harveybc/.local/state/m5phet/decisions/0075ebaeab0f1b2995541ad5a4bff650757f001ee53cb389b28cf4ca6e806127.json is an abstention: the checkpoint's top probability was below the declared threshold and nothing was chosen. A row of the table cannot rank a choice that was not made, and calling the stage's configuration Laya's choice would put a person's fallback under the model's name"
+  },
+  "refused": {
+    "ABSTENTION_HAS_NO_OUTCOME": 256
+  },
+  "schema": "m5phet.wp21_outcome_linking.v1",
+  "stage": "laya_first_layer",
+  "table_row": {
+    "comparability": "NO_NEW_MEASUREMENT",
+    "metric": "policy_profitability (refused)",
+    "rank": null,
+    "reason": "policy_profitability is refused by this package: a proposed action is not a realised return: no order was placed, no fill, slippage, financing or timing exists, and the market did not respond to it. What can be reported is the action statistics; profit belongs to an execution record from the system that actually traded. The report carries what this area can report; none of it is a quality claim.",
+    "stage": "laya_first_layer",
+    "status": "NO_NEW_MEASUREMENT"
+  }
+}

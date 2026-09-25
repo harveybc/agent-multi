@@ -1,0 +1,113 @@
+{
+  "answers": {
+    "n": 450,
+    "path": "/home/harveybc/.local/state/m5phet/wp09-quality-20260925/answers.jsonl",
+    "sha256": "fee46222540f498f1d2297babfe68417c76630fa8871c9181c1ace7351d73dc1"
+  },
+  "bands": [
+    {
+      "accuracy": 0.33916083916083917,
+      "from": 0.0,
+      "n": 286,
+      "to": 0.5
+    },
+    {
+      "accuracy": 0.29310344827586204,
+      "from": 0.5,
+      "n": 58,
+      "to": 0.6
+    },
+    {
+      "accuracy": 0.2727272727272727,
+      "from": 0.6,
+      "n": 22,
+      "to": 0.7
+    },
+    {
+      "accuracy": 0.3103448275862069,
+      "from": 0.7,
+      "n": 29,
+      "to": 0.8
+    },
+    {
+      "accuracy": 0.7083333333333334,
+      "from": 0.8,
+      "n": 24,
+      "to": 0.9
+    },
+    {
+      "accuracy": 1.0,
+      "from": 0.9,
+      "n": 31,
+      "to": 1.0
+    }
+  ],
+  "chance_rate": 0.3333333333333333,
+  "chance_rate_reading": "1/len(classes); it is the rate of a uniform guess and it is the right reference only where the classes are balanced, which `rows_per_class` shows",
+  "checkpoint": "laya-checkpoint:bd12df887789924672d1c848319caf9866a172183e6959beab369d9e20aaaa89",
+  "classes": [
+    "euro_area",
+    "other",
+    "united_states"
+  ],
+  "corpus_id": "7e4789e5835d6e19c2c4627db289459a9f8492d02c783d8b1f6a2ecd8749ae6f",
+  "execution_authorized": false,
+  "quality": {
+    "path": "/home/harveybc/.local/state/m5phet/wp09-quality-20260925/quality.json",
+    "sha256": "29ac41fd437040cf347d9badf97487e2269dafecadb9f626ef6c62363fdeb33a"
+  },
+  "reading": "accuracy per bucket of the probability the checkpoint put on the option it chose, over the sealed WP09 corpus. A bucket whose accuracy is the chance rate is a bucket in which the checkpoint's answer carries no information about the label; nothing here is calibrated or recalibrated",
+  "rows_per_class": {
+    "euro_area": 150,
+    "other": 150,
+    "united_states": 150
+  },
+  "schema": "m5phet.abstention_source.v1",
+  "thresholds": [
+    {
+      "at_or_above": {
+        "accuracy": 0.5943396226415094,
+        "n": 106
+      },
+      "below": {
+        "accuracy": 0.3313953488372093,
+        "n": 344
+      },
+      "threshold": 0.6
+    },
+    {
+      "at_or_above": {
+        "accuracy": 0.6785714285714286,
+        "n": 84
+      },
+      "below": {
+        "accuracy": 0.32786885245901637,
+        "n": 366
+      },
+      "threshold": 0.7
+    },
+    {
+      "at_or_above": {
+        "accuracy": 0.8727272727272727,
+        "n": 55
+      },
+      "below": {
+        "accuracy": 0.3265822784810127,
+        "n": 395
+      },
+      "threshold": 0.8
+    },
+    {
+      "at_or_above": {
+        "accuracy": 1.0,
+        "n": 31
+      },
+      "below": {
+        "accuracy": 0.34844868735083534,
+        "n": 419
+      },
+      "threshold": 0.9
+    }
+  ],
+  "transfer_assumption": "measured on a classification corpus (which economy a calendar release names), not on any trading question. Using this threshold to decide which trading choices to keep assumes this checkpoint's confidence means the same thing on both tasks. That assumption is not tested here and nothing in this document supports it"
+}
