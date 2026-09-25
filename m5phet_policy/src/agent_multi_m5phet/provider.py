@@ -295,13 +295,20 @@ class PolicyProvider:
         return [{"name": "policy_id", "type": "string", "allowed": [policy_id],
                  "aliases": {policy_id: aliases}, "number_hints": []}]
 
-    def chat_request(self, prompt, data, config, parameters=None):
+    def chat_request(self, prompt, data, config, parameters=None, spec=None):
         """A question plus one observation becomes a typed request. The prompt selects nothing it could get wrong: this
         provider has exactly one supported question, so a prose instruction cannot widen what it does.
 
         `parameters` carries what the workbench resolved from the person's words. A policy named there that is not this
         bundle's is refused BY NAME: serving the only policy available under a name nobody asked for would answer a
-        different question, and the person would have no way to tell."""
+        different question, and the person would have no way to tell.
+
+        `spec` is optional and only reaches the market-data path: a `m5phet.representation.v1` object saying which
+        representation the attached bars are to be read under. Absent, the bars are read under the fitted policy's own
+        contract and nothing about this call changes. Present, the spec must reproduce that contract or the request is
+        refused `OBSERVATION_CONTRACT_MISMATCH` -- a policy answers only the representation it was fitted on. It may
+        also arrive inside the attachment itself, as `{"rows": ..., "spec": ...}`, which is how a question envelope
+        carries it."""
         manifest = self.manifest
         if manifest is None:
             raise PolicyRefusal("POLICY_BUNDLE_UNAVAILABLE: no operator-declared bundle is configured")
@@ -316,7 +323,7 @@ class PolicyProvider:
                 raise PolicyRefusal(
                     f"UNKNOWN_POLICY: {named!r} is not this bundle's fitted policy, which is "
                     f"{manifest['policy_id']!r}; the one policy available is not a substitute for the one named")
-        observation, build = self._observation_from(data)
+        observation, build = self._observation_from(data, spec)
         state = config.get("state") or state_ref_for(manifest)
         inputs = {"observation": observation, "question": prompt}
         if build is not None:
@@ -332,7 +339,7 @@ class PolicyProvider:
                 "inputs": inputs,
                 "execution_constraints": {"partial_results": False}}
 
-    def _observation_from(self, data):
+    def _observation_from(self, data, spec=None):
         """Resolve what was attached into (observation, how it was built).
 
         Two inputs are accepted and they are told apart by SHAPE, never by the prompt. A list of numbers is the
@@ -342,7 +349,10 @@ class PolicyProvider:
 
         Routing on shape matters for the refusals. A table sent down the vector path would come back as "not a list of
         numbers", and the person would go looking for a formatting mistake instead of reading that their file is 40
-        rows short of the window the policy needs."""
+        rows short of the window the policy needs.
+
+        A representation spec, when one is supplied, changes nothing about that routing: it changes which contract the
+        market data is read under, and only after that contract has been proved to be this policy's own."""
         market_data = None
         supplied_state = None
         observation = data
@@ -352,6 +362,7 @@ class PolicyProvider:
                 observation = data.get("observation")
             elif "rows" in data:
                 market_data, supplied_state = data.get("rows"), data.get("agent_state")
+                spec = data.get("spec", spec)
                 observation = None
             else:
                 observation = None
@@ -388,7 +399,17 @@ class PolicyProvider:
         if market_data is not None:
             payload = ({"rows": market_data, "agent_state": supplied_state}
                        if supplied_state is not None else market_data)
+            if spec is not None:
+                return market.observation_from_spec(payload, spec, self._required_contract(), self.manifest,
+                                                   self.gym_fx_root)
             return market.build_from_rows(payload, self._required_contract(), self.manifest, self.gym_fx_root)
+
+        if spec is not None:
+            # A vector was supplied, not rows. There is nothing to read under a representation, and accepting the spec
+            # would let a receipt say the observation was built under it when it was typed by hand.
+            raise PolicyRefusal(
+                "REPRESENTATION_SPEC_NEEDS_MARKET_DATA: a representation says how to READ rows into an observation, "
+                "and what was supplied is the observation itself; attach the bars, or drop the spec")
 
         if not isinstance(observation, list):
             raise PolicyRefusal("OBSERVATION_REQUIRED: attach a JSON list of numbers, or a CSV row of numbers, as the "
@@ -443,6 +464,9 @@ class PolicyProvider:
         state = state if isinstance(state, dict) else {}
         observation = state.get("current_observation", data)
         parameters = {"policy_id": state["policy_id"]} if state.get("policy_id") is not None else None
+        # `spec` is the state's optional declaration of WHICH representation the supplied rows are; absent, the
+        # fitted policy's own contract reads them, exactly as before.
+        spec = state.get("spec")
         instructions = next((q.get("instructions") for q in questions.values()
                              if isinstance(q.get("instructions"), str)), "") or ""
         try:
@@ -450,7 +474,8 @@ class PolicyProvider:
                 raise PolicyRefusal("OBSERVATION_REQUIRED: the state names no current_observation; supply the vector "
                                     "this policy was fitted on, or a table of the fitted columns ending at the bar "
                                     "being asked about")
-            request = self.chat_request(instructions, observation, {"as_of": as_of, "state": ""}, parameters)
+            request = self.chat_request(instructions, observation, {"as_of": as_of, "state": ""}, parameters,
+                                        spec=spec)
             fitted = self.load(request["fitted_state_ref"])
         except PolicyRefusal as refusal:
             return {name: envelope.refusal(envelope.STATE_REQUIRED, str(refusal), q["type"])
