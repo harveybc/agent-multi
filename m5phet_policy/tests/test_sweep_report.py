@@ -184,3 +184,36 @@ def test_the_population_identifies_a_step_by_ordinal_and_instant(tmp_path):
     built = build(tmp_path)
     assert built["population"][0] == "0000@2026-01-01T00:00:00"
     assert len(set(built["population"])) == len(built["population"]) == STEPS
+
+
+# --- the reward table: the totals side by side, and the two columns it refuses ------------------------------------------
+
+def test_the_reward_table_ranks_the_arms_it_can_and_names_the_naive_row(tmp_path):
+    built = build(tmp_path)
+    rows = {row["stage"]: row for row in sweep_report.reward_rows(built["reports"])}
+    assert set(rows) == {"laya_first_layer", "flat", "fitted_sac"}
+    assert all(row["comparability"] == "COMPARABLE" for row in rows.values())
+    assert rows["laya_first_layer"]["value"] == pytest.approx(STEPS * 0.5)
+    assert rows["flat"]["is_naive"] is True and rows["flat"]["difference"] == 0.0
+    assert rows["laya_first_layer"]["difference"] == pytest.approx(STEPS * 0.5)
+    assert rows["laya_first_layer"]["rank"] == 1
+
+
+def test_the_reward_table_refuses_skill_and_literature_rather_than_inventing_them(tmp_path):
+    built = build(tmp_path)
+    table = sweep_report.reward_table_markdown(built["reports"], seal=built["seal"].seal)
+    assert "NOT_DEFINED: skill is 1 - model_error / naive_error" in table
+    assert "NOT_CARRIED" in table
+    assert "policy_profitability` stays refused" in table
+    assert built["seal"].seal in table
+    # the reading travels with the number, in the table itself
+    assert "not a backtest result and not evidence about any market" in table
+
+
+def test_arms_with_different_seals_are_not_ranked_against_each_other(tmp_path):
+    built = build(tmp_path)
+    reports = {stage: json.loads(json.dumps(payload)) for stage, payload in built["reports"].items()}
+    reports["fitted_sac"]["corpus_seal"] = "f" * 64
+    rows = sweep_report.reward_rows(reports)
+    assert all(row["comparability"].startswith("NOT_COMPARABLE") for row in rows)
+    assert all("rank" not in row for row in rows)
