@@ -308,16 +308,35 @@ def unit_claim_path(out_root, unit_id) -> Path:
 
 def claim_unit(out_root, unit_id) -> dict:
     """An O_EXCL claim per unit, so even without the run lock two
-    sessions can never fit the same unit twice."""
+    sessions can never fit the same unit twice.
+
+    A LIVE claim refuses. A claim left behind by an interrupted attempt is
+    PRESERVED under ABORTED_PARTIALS/ and replaced, exactly as its partial
+    bytes are — so this guard adds a concurrency refusal and changes
+    nothing about how an interrupted unit is disposed of."""
     p = unit_claim_path(out_root, unit_id)
     doc = _claim_doc("unit_claim")
     try:
         fd = os.open(str(p), os.O_CREAT | os.O_EXCL | os.O_WRONLY,
                      0o600)
     except FileExistsError:
-        raise ConfirmationRunnerRefusal(
-            f"unit {unit_id!r} is already claimed by another session — "
-            "a unit is executed exactly once")
+        if _holder_is_live(p):
+            raise ConfirmationRunnerRefusal(
+                f"unit {unit_id!r} is already claimed by another LIVE "
+                "session — a unit is executed exactly once")
+        base = (Path(out_root) / ABORTED_DIR / rn._safe(unit_id)
+                / "stale_claims")
+        base.mkdir(parents=True, exist_ok=True)
+        k = 1 + len([q for q in base.glob("claim_*.json")
+                     if q.is_file()])
+        os.replace(p, base / f"claim_{k:03d}.json")
+        try:
+            fd = os.open(str(p), os.O_CREAT | os.O_EXCL | os.O_WRONLY,
+                         0o600)
+        except FileExistsError:
+            raise ConfirmationRunnerRefusal(
+                f"the claim on {unit_id!r} reappeared while it was being "
+                "set aside — UNCERTAIN, never raced")
     try:
         os.write(fd, json.dumps(doc, indent=1,
                                 sort_keys=True).encode())

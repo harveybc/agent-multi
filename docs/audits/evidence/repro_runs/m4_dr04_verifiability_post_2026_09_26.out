@@ -1,0 +1,38 @@
+$ CUDA_VISIBLE_DEVICES='' PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 $HOME/.local/bin/crispdm-run -m 3G -t 1800 -n m4verify -- python3 -B docs/audits/evidence/repro_runs/m4_dr04_verifiability_post_2026_09_26.py
+# agent-multi branch satoshi/dr04-m4-verifiability-20260926, repaired candidate
+
+EXACT_CENSUS_UNCHANGED [3024, "12cfd9ad785b41e788ffce575ec575ab2a78ab772151b5e3b94c8f0c71169ea0"]
+IMPLEMENTATION_DIGEST {"files": 6, "implementation_sha256": "68e4c0ed22bb910cad1ba5722f5d5647821064dd1db3ff0f1b1474e4923fa83c"}
+POSITIVE_COMPLETE_ENTRYPOINT_DEVELOPMENT_FIXTURE {"checkpoint_population": {"chirp::clean::w16": 2, "chirp::clean::w64": 2, "sine::clean::w16": 2, "sine::clean::w64": 2}, "generators_disjointness_verified": 4, "population_complete": true, "raw_per_batch_logs": 96, "reconstruction": "FULL_REPLAY_FROM_RAW_RECORDS", "records_numerically_rederived": 24, "session_status": "CENSUS_COMPLETE", "units_complete": 24, "units_total": 24, "verdict": "VERIFIED", "verdict_authority": "NON_CONFIRMATORY_DEVELOPMENT_FIXTURE_NO_SCIENTIFIC_VERDICT"}
+R3_FABRICATED_SUMMARY_REFUSED REFUSED: intervention::DEVELOPMENT::chirp::clean::w16::g0::s0: record omits the identity field 'kind' — an incomplete id
+R3_CONSISTENTLY_ALTERED_ENDPOINT_PAIR_REFUSED REFUSED: intervention::DEVELOPMENT::chirp::clean::w16::g0::s0/initialization: declared restricted endpoint 8 does not re-derive from the raw log (0) —
+R3_MISSING_RAW_LOG_REFUSED REFUSED: intervention__DEVELOPMENT__chirp__clean__w16__g0__s0__pre_stop.jsonl is ABSENT — a summary without its raw per-
+R3_ALTERED_RAW_LINE_REFUSED REFUSED: intervention__DEVELOPMENT__chirp__clean__w16__g0__s0__initialization.jsonl line 0: raw record self-identity doe
+R3_EMPTY_GATE_MAP_REFUSED_WHEN_WRITTEN {"ledger_created": false, "refusal": "REFUSED: the pre-result ledger gate map is not the exact schema (missing/extra: ['census_role', 'executing_head', 'execu"}
+R1_R3_FABRICATED_CONFIRMATION_WORLD_CANNOT_BE_BUILT {"anything_created": [], "fixture_token_in_a_confirmation_ledger": "REFUSED: ledger gate 'review_record_sha256' is not a recorded digest \u2014", "no_gates": "REFUSED: the pre-result ledger gate map is not the exact schema (missi"}
+R2_OUT_OF_CENSUS_IDENTITY_REFUSED REFUSED: intervention::DEVELOPMENT::chirp::clean::w16::g9000::s0 is NOT in the exact census — an out-of-census identity is never c
+R2_REPEATED_SEED_REFUSED_BY_NAME {"names_the_generator": true, "names_the_seed": true, "refusal": "EPEATS model seed s0 of generator DEVELOPMENT-chirp-clean-g0, whose canonical record already exists \u2014 a repetition is never an independent observation"}
+R2_IDENTITY_FIELD_MUST_REDERIVE REFUSED: intervention::DEVELOPMENT::chirp::clean::w16::g0::s0: record identity field 'model_seed' is 2, the census says 
+R2_POSITIVE_EXACT_SEED_SET_NOT_A_ROW_COUNT {"a_list_of_rows_refuses": "REFUSED: sine::clean::w16::g0: the effects are not keyed by model seed \u2014 a row count is ne", "three_copies_of_one_seed": ["sine::clean::w16::g0", "sine::clean::w64::g0"]}
+R4_INCOMPLETE_POPULATION_REFUSES_NEVER_NARROWS REFUSED: POPULATION_INCOMPLETE: 1 of 24 census units have no record (first intervention::DEVELOPMENT::sine::clean::w64::g1::s2) — an incomplete population refuses, it nev
+R4_FIFTEENTH_CONTRAST_AFTER_ATTRITION {"checkpoint_population": {}, "checkpoint_reject": false, "checkpoint_status": "NOT_EVALUABLE", "floor": 2, "population_complete": false, "slots_below_floor": 4}
+R4_GENERATOR_INDICES_NEVER_POOL_ACROSS_CELLS {"distinct_identities": 8, "n_generators_in_the_contrast": 8, "rule": "one observation per VERIFIED COMPLETE generator identity (family, noise, width, "}
+R5_UNIT_ID_AND_HASH_ONLY_IS_NOT_COMPLETE REFUSED: intervention::DEVELOPMENT::chirp::clean::w16::g0::s0: record omits the identity field 'kind' — an incomplete identity is 
+R5_RESUME_REVALIDATES_DISJOINTNESS REFUSED: 6 CONFIRMATION array byte-digests collide with prior-role bytes — reused data never confirms (first: 068705ffa57f9147)
+R5_RESUMED_RECORD_MUST_BIND_ITS_GENERATOR REFUSED: intervention::DEVELOPMENT::chirp::clean::w16::g0::s0: the resumed record binds manifest '00000000000000000000000000000000
+R5_POSITIVE_RESUME_RERUNS_NOTHING {"generators_disjointness_verified": 4, "records_byte_identical": true, "units_complete": 24, "units_new_this_session": 0}
+R6_LIVE_RUN_LOCK_REFUSES REFUSED: another session holds the run lock M4_RUN_SESSION.lock (live pid on this boot) — concurrent sessions never exec
+R6_STALE_LOCK_PRESERVED_AND_RUN_CONTINUES {"lock_released": true, "preserved": ["lock_001.json"], "stale_locks_set_aside": 1, "token_preserved": "stale"}
+R6_LIVE_UNIT_CLAIM_REFUSES_DOUBLE_EXECUTION REFUSED: unit 'intervention::DEVELOPMENT::chirp::clean::w16::g0::s0' is claimed by a LIVE session — its bytes are never set aside 
+R6_SEALED_WALL_COUNTS_THE_WHOLE_RUN {"prior_sessions_wall_seconds": 8.86, "session_status": "WALL_STOP", "tightened_wall": 4.43, "units_new_this_session": 0}
+R6_CUMULATIVE_ACCOUNTING {"optimization_updates": 99500, "sessions": 1, "units_new": 24, "wall_seconds": 8.86}
+R6_UNVERIFIABLE_PRIOR_REPORT_IS_UNCERTAIN REFUSED: SESSION_001_REPORT.json: session report self-identity does not re-derive — the cumulative account is UNCERTAIN
+R1_LEDGER_FROM_OTHER_CODE_NEVER_YIELDS_A_VERDICT {"ledger_recorded": true, "refusal": "REFUSED: the ledger was written by implementation aaaaaaaaaaaaaaaa\u2026 and this verifier is 68e4c0ed22bb910c\u2026 \u2014 a verdict is never re"}
+R1_ONE_CHANGED_BYTE_CHANGES_THE_AUTHORITY_DIGEST {"identical_copy_same_digest": true, "no_record_created_or_simulated_in_this_post": true, "one_byte_changed_digest_differs": true, "review_schema_pins_it": true}
+ROLES_NEVER_CROSS {"fixture_root_as_confirmatory": "REFUSED: a confirmatory verdict is only ever derived from the order-pinned successor ident", "pinned_successor_as_a_fixture": "REFUSED: the order-pinned successor declares the CONFIRMATION population; it never yields "}
+CONTROL_ABSENT_RECORDS_REFUSE_BEFORE_ANY_WRITE {"execution_record_present": false, "out_root_created": false, "refusal": "REFUSED: Musashi design-review record is ABSENT \u2014 planning may report ", "review_record_present": false}
+CONTROL_ARRAY_DIGEST_COMPARATOR_REFUSES_A_COLLISION true
+CONTROL_KILL_17_STILL_CLOSED REFUSED: CONFIRMATION generators are RESERVED — construction is closed
+F6_FOUR_FACTS {"1_in_memory_construction_for_the_disjointness_proof": "HAPPENS (the bank's named exception): 6 array digests", "2_materialization": "DOES NOT HAPPEN: [] in the state root", "3_fitting": "DOES NOT HAPPEN: REFUSED: CONFIRMATION generators are RESERVED \u2014 construction", "4_scoring": "DOES NOT HAPPEN: no CONFIRMATION record, session report or verification document has ever existed"}
+POST_CONFIRMED every frozen counterexample is refused BY NAME on the same public path, each repair has a positive case through the complete entrypoint, and CONFIRMATION remains closed: the two-record gate refuses first and creates nothing
+exit=0
