@@ -1,0 +1,61 @@
+{
+ "schema": "agent_multi.n5_transition_ledger.v3",
+ "purpose": "Pointer repair only: the roadmap next-node pointer still reads Screen B / B4, and that node closed on 2026-09-12. This ledger supersedes v2 WITHOUT rewriting it, in the same manner v2 superseded v1.",
+ "authored": "2026-09-26",
+ "authored_under": "no order — the successor found the stale pointer while a stale premise re-dispatched the closed node, and repaired the pointer rather than the closed design",
+ "supersedes": {
+  "v2": "N5_TRANSITION_LEDGER_V2_2026_09_04.json",
+  "v2_sha256": "26fc0473345fdeb0f0c122f03be8d2fe3cee247ea3bfe2e531db2c06fec97c86",
+  "v2_status": "PRESERVED UNCHANGED, SUPERSEDED",
+  "v2_defect": "exactly one, and it is staleness, not error: roadmap_next_node names Screen B / B4 with status 'under B4-R0..R3 audit in this same return'. That audit returned, its disposition was reviewed, and the node was closed eight days later. Every other v2 field is left standing and is not restated here.",
+  "v1": "N5_TRANSITION_LEDGER_2026_09_04.json — PRESERVED UNCHANGED, SUPERSEDED by v2"
+ },
+ "roadmap_next_node": {
+  "node": "NOT SET BY THIS LEDGER",
+  "why": "naming the next node is a reviewed roadmap act and is not a pointer repair. This ledger only retires the closed pointer; the successor node must be named by Musashi or by the owner.",
+  "what_is_no_longer_next": "Screen B / B4 (causal per-origin random-initialized SAC arm) — CLOSED, see b4_closure below",
+  "still_true_from_v2": [
+   "feature selection remains DEFERRED until Screens B, A, R and C complete (doc 38 §23.2) — B is now closed without a verdict, which is not the same as complete; whether a no-verdict closure satisfies the ordering is Musashi's to decide, not this ledger's",
+   "rolling retraining still has no sealed succession design (doc 32 is direction, not contract)",
+   "the weekly-flat collector remains COORDINATED_WINDOW_REQUIRED on its four owner-side blockers"
+  ]
+ },
+ "b4_closure": {
+  "decision": "B4_V4_ACCEPTED_AS_NON_AUTHORIZING_FINAL_CLOSURE",
+  "outcome": "SCIENTIFICALLY_INSUFFICIENT_NO_VERDICT",
+  "decided_by": "Musashi, MUSASHI_AUDIT_ROUND7_C87_C105_2026_09_12.md §3",
+  "recorded_by": "C110, commit 2042af83, docs/audits/work_plan/B4_V4_CLOSURE_DISPOSITION_2026_09_12.md sha256 8700cc95ee8423a9cf5a30f3c446025ed443f4c07449f29cb29c8db13f5cd019",
+  "cells": {"COMPLETED_VERIFIED": 2, "QUARANTINED_PARTIAL": 1, "NOT_STARTED": 9},
+  "campaign": "closed; no consumer, no runner, no comparison computed from the two completed cells",
+  "olap": "C111 loaded one additive closure envelope (commits 1b4c22a5, 432599be)"
+ },
+ "r1_discharged": {
+  "returned": "B4_RANDOM_ONLY_REQUIRES_SUPERSEDING_DESIGN, naming ONE unavoidable semantic change: execution-truth lineage",
+  "divergence_source": "B4_COMPATIBILITY_MATRIX_2026_09_04.json sha256 e46ad103efcab9bbc7559e80bf3952aa70f4ca3148a928ea6557c2f52b12ff22, key gymfx_env_semantics",
+  "proposal": "B4_SUPERSEDING_DESIGN_PROPOSAL_2026_09_04.json sha256 c84750d6c76c2b6b568789213be6c862a013f6ae2c5785e7f70f2e0d739a2203 — recommended option B",
+  "reviewer_decision": "agent-multi@0b4d2748 §6 'OPTION B IS ACCEPTED' (order file sha256 479608adcb6d67d6bf0b4de8ba0120faf368b33877bea6060c5fa68b1e13c738)",
+  "design_written": "B4_SUPERSEDING_DESIGN_V2_OPTION_B_2026_09_05.json sha256 9155f508afc4b87f345a652070a6727a13373c75877c619f6110d54e9e678237 — a NEW artifact as ordered, status SEALED_BEFORE_ANY_NEW_SCORE, population label SCREEN_B_CURRENT_EXECUTION_TRUTH_OPTION_B",
+  "amendments": "B4_SUPERSEDING_DESIGN_V2_AMENDMENT_1..16, the last dated 2026-09-10 with scientific_change NONE",
+  "consequence": "this design identity is pinned by bind_superseding_design(), the amendment chain, 12 cell configs, the comparator population and the OLAP closure envelope. It must not be re-authored. A second superseding design would be a second trust root."
+ },
+ "r3_discharged": {
+  "returned": "B4_CORRECTION_REQUIRED — its literal content was 'the superseding design awaits your review', not a defect list",
+  "met_by": "the same reviewer decision at 0b4d2748",
+  "distinct_later_correction": {
+   "issued": "agent-multi@61622469 (order file sha256 f58448ade0c81ec110f32e250562f6d5c471378f416d704c12d5dcf3949ed394), items B4-E1..E7, disposition B4_CORRECTION_REQUIRED",
+   "findings": ["unequal economic envelopes 0.012102 comparator vs 0.007102 B4", "the proposed GPU command was not a B4 command", "the final code could not satisfy its own sealed design", "a cell was not a complete runnable recipe", "comparator verification trusted a summary", "pending-ratification wording in executing code"],
+   "answered_by": ["03b05cf7 PRE", "9b3fd8b8 E1-E7 sealed", "b478d520 v6 comparator population", "446360ee re-materialization and replay"]
+  }
+ },
+ "evidence_declared_incomparable": [
+  "screen_b_rule_arms_v4_alpaca_20260826 at agent-multi@81fa5a2b — ran under the superseded 2026-08-25/26 lineage; immutable evidence, refused as the B4 comparator by the design's old_evidence_quarantine",
+  "screen_b_rule_arms_v5_current_truth_20260905 — superseded by the v6 population after the E1 envelope-parity correction; preserved byte-intact as historical evidence",
+  "the quarantined partial cell o2022_seed303 — neither a failure nor a result; its GPU charge is published ONLY as a lower bound of 124993.6 s from claim to stop signal"
+ ],
+ "traps_for_the_next_reader": {
+  "doc_42": "docs/work_plan/42_WEEKLY_SESSION_EXPOSURE_AND_REOPEN_POLICY.md contains NO B4 content. Screen B / B4 is specified in docs/work_plan/40_POST_P1_SCREEN_SPECS_2026_08_24.md and 41_STATISTICS_CONTRACT_2026_08_24.md; the machinery is tools/screen_b_baselines.py, tools/materialize_b4_causal_sac.py, tools/b4_run_cell.py, agent_plugins/b4_authority.py and docs/audits/evidence/b4_*. Doc 42 bears on B4 only in reverse: the Option-B order requires session_exposure_enabled=false explicitly in every B0-B4 config so that doc 42's opt-in MT5 weekly-session state machine cannot change the Screen B question.",
+  "commit_79ed23c7": "agent-multi@79ed23c7 is 'audit request to Musashi: subtle integration of capacity-sizing into the multi-fidelity proposal (E1-E6)' — the doctoral capacity / multi-fidelity line (doc 44; predictor/docs/RETSU_TO_MUSASHI_ACOPLE_CAPACIDAD_MULTIFIDELIDAD_2026_09_04.md). It is NOT related to the B4-E1..E7 economic-parity items despite the colliding E-labels.",
+  "front_tip_b3539478": "the R1/R3 dispositions are a snapshot at tip b3539478, 2026-09-04. Anything that still presents them as the open state of the front is stale by the whole D-series, E-series, C39-C56, R11-R26 and C110-C111."
+ },
+ "no_effects_statement": "documents and committed evidence only. No process, service, GPU, venue, database, campaign or live action. No score, no verdict, no promotion, no relaunch. This ledger opens nothing and authorizes nothing."
+}
