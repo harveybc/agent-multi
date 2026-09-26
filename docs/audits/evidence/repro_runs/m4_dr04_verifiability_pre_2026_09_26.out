@@ -1,0 +1,15 @@
+$ CUDA_VISIBLE_DEVICES='' PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 $HOME/.local/bin/crispdm-run -m 2G -t 900 -n m4verify -- python3 -B docs/audits/evidence/repro_runs/m4_dr04_verifiability_pre_2026_09_26.py
+# agent-multi worktree at 0de54534 (branch satoshi/dr04-m4-verifiability-20260926), tools/ UNMODIFIED
+
+EXACT_CENSUS [3024, "12cfd9ad785b41e788ffce575ec575ab2a78ab772151b5e3b94c8f0c71169ea0"]
+P1_FABRICATED_SUMMARIES_REACH_REJECTION {"ledger_gates": {}, "n_generators": 39, "p_holm": 5.4399453636652144e-33, "raw_per_batch_logs": 0, "records_carrying_record_sha256": 0, "records_verified": 234, "reject_at_alpha": true}
+P2_DUPLICATE_SEED_AND_OUT_OF_CENSUS_GENERATORS {"any_g9000_id_in_census": false, "distinct_model_seeds_present": 1, "filenames_are_arbitrary": true, "generator_index_min": 9000, "n_generators": 39, "reject_at_alpha": true, "seeds_required_by_successor": 3}
+P3A_FIFTEENTH_CONTRAST_IGNORES_ATTRITION_AND_POPULATION {"census_units_total": 3024, "incomplete_slots": 21, "min_complete_required": 39, "n_generators": 30, "p_holm": 4.1244935474544496e-25, "records_present": 90, "reject_at_alpha": true}
+P3B_DISTINCT_FAMILY_GENERATORS_COLLAPSE_BY_G_INDEX {"distinct_family_generator_identities": 60, "every_identity_missing_seed_2": true, "reject_at_alpha": true, "reported_n_generators": 30}
+P4_RESUME_ACCEPTS_UNIT_ID_AND_HASH_ONLY {"arms_in_record": 0, "census_complete": true, "generators_disjointness_verified": 0, "lineage_in_record": 0, "record_keys": ["record_sha256", "unit_id"], "typed_terminal_status_in_record": 0, "units_complete": 1, "units_new_this_session": 0}
+P5_AUTHORITY_DOES_NOT_PIN_THE_EXECUTABLE_IMPLEMENTATION {"different_heads_both_verified": ["1111111111111111111111111111111111111111", "2222222222222222222222222222222222222222"], "ledger_gate_keys_naming_the_implementation": [], "review_schema_keys_naming_the_implementation": [], "verifier_validates_gates": false}
+P6_ZERO_ARRAY_SENTENCE_IS_NOT_WHAT_THE_CODE_DOES {"bank_docstring_allows_the_disjointness_proof_exception": true, "call_sites_building_CONFIRMATION_arrays": {"docs/audits/evidence/repro_runs/m4_confirmation_exec_body_post_2026_09_26.py": 1, "tests/test_m4_confirmation_execution_body.py": 2}, "four_facts_to_distinguish": ["disjointness_proof", "materialization", "fitting", "scoring"]}
+CONTROL_ABSENT_RECORDS_REFUSE_BEFORE_ANY_WRITE {"execution_record_present": false, "out_root_created": false, "refusal": "REFUSED: Musashi design-review record is ABSENT \u2014 planning may report ", "review_record_present": false}
+CONTROL_ARRAY_DIGEST_COMPARATOR_REFUSES_A_COLLISION true
+PRE_FROZEN six counterexamples reproduced through the public path; nothing repaired in this commit
+exit=0
