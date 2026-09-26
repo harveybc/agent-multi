@@ -434,9 +434,20 @@ def _run_arm_durable(design, u, g, tape, ckpt, kind, out, acct):
             "final_params_digest": res["final_params_digest"]}
 
 
-def _run_intervention_unit_v5(design, u, out, acct):
+def _run_intervention_unit_v5(design, u, out, acct,
+                              allow_confirmation=False):
+    """`allow_confirmation` is a PASS-THROUGH to the generator
+    bank's C33 kill-17 construction guard and nothing else. It
+    defaults to False, so every existing caller (execute_v5,
+    verify_run_v5, the DEVELOPMENT mechanics probe) keeps
+    refusing CONFIRMATION bytes exactly as before; only a caller
+    that has ALREADY passed the two-record gate — the
+    confirmation runner's execution body — may set it. It grants
+    no authority, opens no gate and changes no other check.
+    """
     g = gb.generate(u["role"], u["family"], u["noise_coord"],
-                    u["generator_index"])
+                    u["generator_index"],
+                    allow_confirmation=allow_confirmation)
     gb.consumer_verify(g)
     kind = pv.task_kind(u["family"])
     tape = pv.association_tape(design["design_sha256"], g,

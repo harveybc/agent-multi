@@ -1,0 +1,37 @@
+
+== Phase 1: the gate chain, unchanged and still first
+run_confirmation: REFUSED at the two-record gate before any artifact — REFUSED: Musashi design-review record is ABSENT — planning may report 
+with the body stubbed to raise: still REFUSED, body entered 0 times
+plan: 3024 units, 21 slots, execution_open False | records present: False False
+kill 17 (default caller, CONFIRMATION unit): REFUSED — REFUSED: CONFIRMATION generators are RESERVED — construction
+sealed DEVELOPMENT mechanics probe: 2 records, 0 CONFIRMATION artifacts
+
+== Phase 2: the body over DEVELOPMENT units, real process boundary
+{"units_total": 4, "units_complete": 4, "units_new_this_session": 4, "generators_disjointness_verified": 4, "prior_role_digests": 384, "session_status": "CENSUS_COMPLETE", "accounting": {"optimization_updates": 16350, "evaluations": 19, "descriptor_evals": 16, "descriptor_seconds": 0.00298}, "wall_seconds": 1.44}
+measured basis 0.360 s/unit (process wall 1.81 s) -> 3024 CONFIRMATION units project to 18.1 min of one CPU inside the sealed 172800 s wall
+idempotent re-run: 0 new units, 4 verified complete
+batched session 2+2: complete, and the first two records are byte-identical after the resume
+SIGKILL delivered inside a unit: rc -9 | records 1 | arm logs 5 | session reports 0
+mutant set_aside_off: {"result": "REFUSED", "reason": "REFUSED: intervention__DEVELOPMENT__parity4__clean__w64__g0__s0__initialization.jsonl: partial intervention log without its durable predecessor state \u2014 UNCERTAIN; explicit dispositio
+restart after the kill: {"units_complete": 4, "units_new_this_session": 3, "partial_attempts_set_aside": 1, "session_status": "CENSUS_COMPLETE"}
+partial bytes PRESERVED, not deleted: 1
+    ABORTED_PARTIALS/intervention__DEVELOPMENT__parity4__clean__w64__g0__s0/attempt_001/intervention__DEVELOPMENT__parity4__clean__w64__g0__s0__initialization.jsonl
+
+== Phase 3: the sealed batteries, re-run unchanged
+pytest (5 sealed M4 batteries + the new body battery): 108 passed, 2 warnings in 38.74s
+   [frozen C37/POST] C32 bind: 4 identities verified; 21 eligible / 7 ineligible slots; 2 incomplete generators
+   [frozen C37/POST] C33 successor verified: self 6a50d97ddfb3 | floor 39 | contrasts 16
+   [frozen C37/POST] C35 plan: 3024 units = 21 slots x 48 gen x 3 seeds; records present: False False
+   [frozen C37/POST] execute: REFUSED at the two-record gate before any artifact
+   [frozen C37/POST] DEVELOPMENT probe: 2 real units through the real machinery, 0 CONFIRMATION artifacts
+   [frozen C37/POST] state root: zero CONFIRMATION artifacts
+   [frozen C37/POST] mutant A_gate_off: {"adversary": "gate_off", "result": "EXECUTED", "ledger_exists": true, "units": 3024}
+   [frozen C37/POST] mutant B_diverge_off: {"adversary": "diverge_off", "result": "VERIFIED", "threshold": 11}
+   [frozen C37/POST] successor bytes restored and re-verified after mutants
+   [frozen C37/POST] POST CONFIRMED: the protocol binds and verifies on corrected code, execution is closed by the two-record gate alone (mutant A executes to census+ledger without records), scientific mutation is rejected by the live re-derivation alone (mutant B verifies a changed threshold), and no CONFIRMATION artifact exists anywhere.
+
+== Phase 4: nothing authorized, nothing created
+both external records: ABSENT | state root: zero CONFIRMATION artifacts | this POST's roots: zero CONFIRMATION-named artifacts
+role namespaces remain byte-disjoint in the array domain (checked, not assumed)
+
+POST CONFIRMED: the CONFIRMATION screen now has an execution body — the 3024 units are driven through the sealed v5 limit machinery, resumably, with per-array role disjointness and atomic per-unit records — and the two-record gate still refuses FIRST with the records absent, creating nothing and never entering the body. No CONFIRMATION array, score or ledger was created.
