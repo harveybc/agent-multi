@@ -7,9 +7,25 @@ the body changed NOTHING about who may run it:
 
 - the gate chain still refuses FIRST, with the records absent,
   and the body is never even reached;
-- no test in this file installs either external record, and no
-  CONFIRMATION array, score or ledger is created anywhere — the
-  body is exercised over DEVELOPMENT units only;
+- no test in this file installs either external record, and the body
+  is exercised over DEVELOPMENT units only;
+- CORRECTED 2026-09-26 (DR04, auditor finding F6): this file's earlier
+  claim that "no CONFIRMATION array … is created anywhere" was FALSE as
+  written, and four separate facts must not be blurred into it.
+  (1) CONSTRUCTION of CONFIRMATION arrays in memory DOES happen, in the
+      explicit byte-level role-disjointness proof the bank's own docstring
+      permits (``gb.generate(..., allow_confirmation=True)`` below and in
+      the POST) — and nowhere else;
+  (2) MATERIALIZATION to storage does NOT happen: no CONFIRMATION array,
+      run root, ledger or record is persisted anywhere;
+  (3) FITTING does NOT happen: no model is ever trained on CONFIRMATION
+      bytes — the kill-17 guard refuses for every default caller and the
+      two-record gate refuses before the execution body is reached;
+  (4) SCORING does NOT happen: no endpoint, paired difference, contrast or
+      Holm p-value has ever been derived from CONFIRMATION bytes.
+  A filesystem name scan cannot establish (1); it is established by
+  reading the call sites, and (2)-(4) are asserted mechanically in
+  tests/test_m4_dr04_verifiability.py;
 - the bank's C33 kill-17 construction guard still refuses
   CONFIRMATION bytes for every caller that does not explicitly
   pass the new pass-through flag.

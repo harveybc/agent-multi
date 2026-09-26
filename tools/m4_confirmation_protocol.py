@@ -107,6 +107,55 @@ def _selfsha(doc, key):
         body, sort_keys=True).encode()).hexdigest()
 
 
+# ---- C36 DR04: the digest of the implementation that will RUN ----
+#
+# A record that names a revision is not a record that binds the code that
+# will execute. The review record must pin THIS digest, and the gate
+# compares it against the bytes of the modules actually imported, so an
+# approval can never travel to a different analysis implementation.
+IMPLEMENTATION_FILES = (
+    "tools/m4_confirmation_protocol.py",
+    "tools/m4_confirmation_runner.py",
+    "tools/m4_generator_bank.py",
+    "tools/m4_residual_capacity.py",
+    "tools/m4_v5_protocol.py",
+    "tools/m4_v5_runner.py",
+)
+
+
+def implementation_file_digests(repo_root=REPO) -> dict:
+    """sha256 of the WORKING-TREE bytes of every module that participates
+    in generating, executing, analysing or verifying the screen."""
+    out = {}
+    for rel in IMPLEMENTATION_FILES:
+        p = Path(repo_root) / rel
+        if not p.is_file():
+            raise ConfirmationProtocolRefusal(
+                f"implementation file {rel!r} is ABSENT — an "
+                "implementation that cannot be digested is never "
+                "authorized")
+        fd = os.open(str(p), os.O_RDONLY | os.O_NOFOLLOW)
+        try:
+            raw = b""
+            while True:
+                chunk = os.read(fd, 1 << 20)
+                if not chunk:
+                    break
+                raw += chunk
+        finally:
+            os.close(fd)
+        out[rel] = hashlib.sha256(raw).hexdigest()
+    return out
+
+
+def implementation_digest(repo_root=REPO) -> str:
+    """One identity for the executable analysis surface: sha256 over the
+    canonical (path, file digest) table."""
+    return hashlib.sha256(json.dumps(
+        implementation_file_digests(repo_root),
+        sort_keys=True).encode()).hexdigest()
+
+
 def _read_pinned(repo_root, rel, self_key, pinned):
     p = Path(repo_root) / rel
     fd = os.open(str(p), os.O_RDONLY | os.O_NOFOLLOW)
@@ -557,6 +606,7 @@ OWNER_EXECUTION_RECORD_PATH = (
 _REVIEW_KEYS = {
     "schema", "author", "role", "date",
     "reviewed_successor_sha256", "reviewed_tip",
+    "reviewed_implementation_sha256",
     "reviewed_analysis_statement", "decision",
     "record_sha256"}
 _EXEC_KEYS = {
@@ -615,7 +665,8 @@ def _read_external(path, expected_keys, schema, author_role,
     return doc
 
 
-def read_musashi_review_record(successor_sha) -> dict:
+def read_musashi_review_record(successor_sha,
+                               implementation_sha=None) -> dict:
     doc = _read_external(
         MUSASHI_REVIEW_RECORD_PATH, _REVIEW_KEYS,
         "musashi_m4_confirmation_design_review.v1",
@@ -630,6 +681,23 @@ def read_musashi_review_record(successor_sha) -> dict:
         raise ConfirmationProtocolRefusal(
             "Musashi review record pins a different reviewed "
             "tip")
+    # DR04 R1: the record must pin the EXECUTABLE implementation, and it
+    # must be the one about to run. A recorded revision binds a name; this
+    # binds the bytes.
+    live = (implementation_digest() if implementation_sha is None
+            else implementation_sha)
+    pinned = doc["reviewed_implementation_sha256"]
+    if not (isinstance(pinned, str) and len(pinned) == 64):
+        raise ConfirmationProtocolRefusal(
+            "Musashi review record does not pin a 64-hex "
+            "implementation digest — an approval that names no "
+            "executable analysis authorizes nothing")
+    if pinned != live:
+        raise ConfirmationProtocolRefusal(
+            "Musashi review record pins implementation "
+            f"{pinned[:16]}… but the implementation that would run is "
+            f"{live[:16]}… — a review of other code authorizes "
+            "nothing (m4_confirmation_protocol.implementation_digest)")
     return doc
 
 
@@ -653,11 +721,13 @@ def read_owner_execution_record(successor_sha,
     return doc
 
 
-def require_both_records(successor_doc) -> dict:
-    """The ONE gate: both external records, chained, or typed
-    refusal before any CONFIRMATION array/ledger."""
+def require_both_records(successor_doc,
+                         implementation_sha=None) -> dict:
+    """The ONE gate: both external records, chained, pinning the
+    executable implementation, or typed refusal before any CONFIRMATION
+    array/ledger."""
     ssha = successor_doc["successor_sha256"]
-    rev = read_musashi_review_record(ssha)
+    rev = read_musashi_review_record(ssha, implementation_sha)
     own = read_owner_execution_record(ssha,
                                       rev["record_sha256"])
     return {"review": rev, "execution": own}

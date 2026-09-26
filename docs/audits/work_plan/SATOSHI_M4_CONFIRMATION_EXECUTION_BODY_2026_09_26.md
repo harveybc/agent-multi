@@ -150,9 +150,31 @@ and it is the reviewer's to overrule.
   new fixture resembling one. Both paths are still absent on this host
   (asserted in POST Phases 1 and 4). No test in my new battery installs a
   record; the only record doubles that exist are the sealed battery's own.
-- **The CONFIRMATION screen was not run.** No CONFIRMATION array, score or
-  ledger was created by me, anywhere, at any point. The body was exercised
-  over DEVELOPMENT units only.
+- **The CONFIRMATION screen was not run.** The body was exercised over
+  DEVELOPMENT units only.
+
+  **ERRATUM, 2026-09-26 (DR04, auditor finding F6).** The sentence that
+  stood here — "No CONFIRMATION array, score or ledger was created by me,
+  anywhere, at any point" — was **false as written**, and it blurred four
+  facts that are not interchangeable. What holds, stated separately:
+
+  | fact | holds? | where it is established |
+  |---|---|---|
+  | **1. Disjointness proof / in-memory CONSTRUCTION** of CONFIRMATION arrays | **HAPPENED** | `gb.generate("CONFIRMATION", …, allow_confirmation=True)` is called by the explicit byte-level role-disjointness proof — `tests/test_m4_confirmation_execution_body.py` (2 call sites) and `docs/audits/evidence/repro_runs/m4_confirmation_exec_body_post_2026_09_26.py` (1). `tools/m4_generator_bank.py:198` permits exactly this exception and nothing else. |
+  | **2. MATERIALIZATION** of any CONFIRMATION array, run root, pre-result ledger or unit record to storage | **did NOT happen** | nothing is written: the arrays exist only as in-memory digests; both authority record paths are absent; the state root holds zero `*m4*confirmation*` artifacts. |
+  | **3. FITTING** of any model on CONFIRMATION bytes | **did NOT happen** | the kill-17 construction guard refuses for every default caller, and the two-record gate refuses before the execution body is reached, so no arm, tape or checkpoint was ever built on CONFIRMATION bytes. |
+  | **4. SCORING** — any endpoint, paired difference, contrast or Holm p-value derived from CONFIRMATION bytes | **did NOT happen** | no CONFIRMATION record, session report or verification document has ever existed. |
+
+  A filesystem name scan cannot establish fact 1 either way, and the POST's
+  printed sentence (same wording, same date) is superseded by this table.
+  Facts 2, 3 and 4 are now asserted mechanically in
+  `tests/test_m4_dr04_verifiability.py`. The protocol exception is resolved
+  explicitly: C35/C36's "no CONFIRMATION arrays before the gate" is read as
+  *no materialization, no fitting, no scoring*; the bank's named
+  disjointness-proof exception is the one construction it allows, it is
+  in-memory only, and it is what makes the byte-level disjointness claim
+  checkable rather than asserted. See
+  `docs/audits/work_plan/SATOSHI_DR04_M4_VERIFIABILITY_2026_09_26.md` §7.
 
 ## 4. The three proofs
 

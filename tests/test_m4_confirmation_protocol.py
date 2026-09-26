@@ -65,6 +65,10 @@ def _mk_records(tmp, monkeypatch, successor_sha,
         "date": "2026-09-10",
         "reviewed_successor_sha256": successor_sha,
         "reviewed_tip": cp.REVIEWED_TIP,
+        # DR04 R1: a record that names a revision is not a record that
+        # binds the code that will run. Every double pins the live digest.
+        "reviewed_implementation_sha256":
+            cp.implementation_digest(REPO),
         "reviewed_analysis_statement":
             "16-slot family, Holm supersession, 21 slots",
         "decision":
@@ -207,71 +211,60 @@ def test_m2_always_placeholder(succ_doc):
     assert m2["reject_at_alpha"] is False
 
 
-# ---- kills 9/10/12/15 need a mock run world ----
-def _mock_run(tmp, succ_doc, n_gen=40, drop_seed_of=None,
-              forge_aggregate_of=None, invalid_of=None):
-    run = tmp / "run"
-    (run / "intervention").mkdir(parents=True)
-    design = cp.bind_calibration_evidence(REPO)["design"]
-    census = cr.materialize_census(succ_doc, design)
-    gates = {"successor_sha256": succ_doc["successor_sha256"]}
-    cr.write_pre_result_ledger(run, census, gates)
-    slots = succ_doc["eligible_slots"][:2]
-    uid_n = 0
-    for s in slots:
+# ---- kills 9/10/12/15: the ANALYSIS STAGE, exactly ----
+#
+# DR04: these four properties are properties of the analysis stage, and
+# they are now tested on the stage itself, which is pure and exact
+# (cr.analyse_complete_population). Before DR04 they were driven by
+# fabricated CONFIRMATION summary documents fed to the verifier; that is
+# precisely the route the auditor showed could manufacture a rejection, and
+# the repaired verifier refuses it at the authority gate. The record layer
+# that FEEDS this stage is covered end to end, over real records, in
+# tests/test_m4_dr04_verifiability.py.
+
+def _effects(succ_doc, n_gen=40, n_slots=2, seeds=3,
+             drop_seed_of=None, invalid_of=None):
+    """{"fam::nz": {width: {"gN": {model_seed: paired effect}}}} — the
+    SEED-KEYED map the analysis stage consumes. ``drop_seed_of`` removes a
+    nested seed; ``invalid_of`` models a unit that stayed in the
+    denominator as typed-invalid (no effect at all)."""
+    out = {}
+    attrited = []
+    for s in succ_doc["eligible_slots"][:n_slots]:
         pre, w = s["cell"].rsplit("::w", 1)
-        fam, nz = pre.split("::")
         for gi in range(n_gen):
-            for ms in range(3):
-                uid = (f"intervention::CONFIRMATION::{fam}::"
-                       f"{nz}::w{w}::g{gi}::s{ms}")
-                if drop_seed_of == (s["cell"], gi) and ms == 2:
+            eff = 0.3 + 0.01 * gi
+            per_seed = {}
+            for ms in range(seeds):
+                if drop_seed_of == (s["cell"], gi) and ms == seeds - 1:
                     continue
-                eff = 0.3 + 0.01 * gi
-                rec = {
-                    "unit_id": uid,
-                    "arms": {
-                        "initialization": {
-                            "restricted_endpoint": 10.0,
-                            "updates_done": 0},
-                        "calibration_stop": {
-                            "restricted_endpoint": 10.0 + eff,
-                            "updates_done": 400}},
-                    "paired_primary_difference": eff}
                 if invalid_of == (s["cell"], gi) and ms == 0:
-                    rec["unit_status"] = \
-                        "NUMERICALLY_INVALID_TASK_TRAINING"
-                if forge_aggregate_of == (s["cell"], gi) \
-                        and ms == 0:
-                    rec["paired_primary_difference"] = 99.9
-                safe = uid.replace("::", "__")
-                (run / "intervention" /
-                 f"{safe}_summary.json").write_text(
-                    json.dumps(rec))
-                uid_n += 1
-    return run
+                    attrited.append(f"{s['cell']}::g{gi}::s{ms}")
+                    continue
+                per_seed[ms] = eff
+            out.setdefault(pre, {}).setdefault(
+                int(w), {})[f"g{gi}"] = per_seed
+    return out, attrited
 
 
-def test_missing_nested_seed_never_completes(tmp_path,
-                                             succ_doc):
+def test_missing_nested_seed_never_completes(succ_doc):
     cell = succ_doc["eligible_slots"][0]["cell"]
-    run = _mock_run(tmp_path, succ_doc, n_gen=40,
-                    drop_seed_of=(cell, 0))
-    out = cr.verify_confirmation_run(REPO, run, succ_doc)
+    eff, _ = _effects(succ_doc, n_gen=40, drop_seed_of=(cell, 0))
+    out = cr.analyse_complete_population(succ_doc, eff)
     pre, w = cell.rsplit("::w", 1)
-    key = f"intervention_effect::{pre}"
-    r = out["analysis"]["contrasts"][key]
-    # g0 has 2 of 3 seeds -> never averaged as complete;
-    # the slot itself remains above the floor with 39
-    assert r["status"] in ("EVALUATED", "NOT_EVALUABLE")
+    # g0 has 2 of 3 seeds -> never averaged as complete, and it is NAMED
+    assert f"{pre}::w{w}::g0" in out["generators_incomplete_seed_sets"]
+    assert "g0" not in out["complete"][pre][int(w)]
+    assert out["population_complete"] is False
+    r = out["analysis"]["contrasts"][f"intervention_effect::{pre}"]
     if r["status"] == "EVALUATED":
         assert r["n_generators"] <= 39
+    assert r["population_complete"] is False
 
 
-def test_attrition_beyond_allowance_never_favorable(
-        tmp_path, succ_doc):
-    run = _mock_run(tmp_path, succ_doc, n_gen=30)
-    out = cr.verify_confirmation_run(REPO, run, succ_doc)
+def test_attrition_beyond_allowance_never_favorable(succ_doc):
+    eff, _ = _effects(succ_doc, n_gen=30)
+    out = cr.analyse_complete_population(succ_doc, eff)
     for cell, st in out["confirmation_incomplete"].items():
         assert st["status"] == "CONFIRMATION_INCOMPLETE"
         assert st["complete_generators"] < st[
@@ -281,25 +274,56 @@ def test_attrition_beyond_allowance_never_favorable(
         if k.startswith("intervention_effect::"):
             assert r.get("reject_at_alpha") is not True or \
                 r.get("n_generators", 0) >= 39
+    # DR04 R4: the FIFTEENTH contrast no longer escapes attrition —
+    # below-floor slots contribute no observation at all
+    ck = out["analysis"]["contrasts"]["checkpoint_effect::primary_pair"]
+    assert ck["reject_at_alpha"] is not True
+    assert all(c not in out["checkpoint_population"]
+               for c in out["confirmation_incomplete"])
+    assert out["population_complete"] is False
 
 
-def test_forged_producer_aggregate_refuses(tmp_path, succ_doc):
-    cell = succ_doc["eligible_slots"][0]["cell"]
-    run = _mock_run(tmp_path, succ_doc,
-                    forge_aggregate_of=(cell, 0))
+def test_forged_producer_aggregate_refuses(succ_doc):
+    """A declared paired difference that does not equal the difference of
+    the record's own arm endpoints refuses at the record boundary."""
+    design = cp.bind_calibration_evidence(REPO)["design"]
+    unit = cr.census_units(succ_doc, "CONFIRMATION")[0]
+    rec = dict(unit)
+    rec.update({
+        "manifest_sha256": "0" * 64, "task_kind": "regression",
+        "tape_id": "t", "tape_digest": "d", "tape_tol": 0.1,
+        "genesis_digest": "g", "stop_trajectory_digest": "s",
+        "stop_trajectory_slope": 0.0, "selected_stop_update": 1,
+        "checkpoint_lineage": {
+            k: {"params_digest": "g" if k == "initialization" else k,
+                "parent": None, "updates": 0}
+            for k in ("initialization", "pre_stop",
+                      "calibration_stop", "post_stop_bounded")},
+        "arms": {k: {"restricted_endpoint": 10, "cap_reached": False,
+                     "stopping_cause": "ACQUISITION_ENDPOINT",
+                     "updates_done": 400, "retention_margin": 1.0,
+                     "fail_batch": 0, "final_params_digest": "f",
+                     "descriptors": {}, "checkpoint_loss_stop": 1.0}
+                 for k in ("initialization", "pre_stop",
+                           "calibration_stop", "post_stop_bounded")},
+        "paired_primary_difference": 99.9})
     with pytest.raises(SystemExit,
-                       match="does not re-derive|producer"):
-        cr.verify_confirmation_run(REPO, run, succ_doc)
+                       match="does not equal the difference"):
+        cr.validate_unit_record(rec, unit, "CONFIRMATION")
+    assert design is not None
 
 
-def test_numerical_failure_stays_in_denominator(tmp_path,
-                                                succ_doc):
+def test_numerical_failure_stays_in_denominator(succ_doc):
     cell = succ_doc["eligible_slots"][0]["cell"]
-    run = _mock_run(tmp_path, succ_doc, invalid_of=(cell, 0))
-    out = cr.verify_confirmation_run(REPO, run, succ_doc)
+    eff, attrited = _effects(succ_doc, n_gen=40,
+                             invalid_of=(cell, 0))
+    assert attrited, "the typed-invalid unit must be named"
+    out = cr.analyse_complete_population(succ_doc, eff)
     pre, w = cell.rsplit("::w", 1)
-    fam, nz = pre.split("::")
-    assert out["attrition"].get(f"{fam}::{nz}::w{w}", 0) >= 1
+    # the generator that lost a seed to numerical failure is NOT complete
+    # and the loss is visible, never silently removed from the denominator
+    assert f"{pre}::w{w}::g0" in out["generators_incomplete_seed_sets"]
+    assert out["population_complete"] is False
 
 
 # ---- kill 11: CAL/CONF byte overlap ----
@@ -357,6 +381,47 @@ def test_broken_owner_chain_refuses(succ_doc, tmp_path,
                     authorized_review_record_sha256="cd" * 32))
     with pytest.raises(SystemExit, match="chain"):
         cp.require_both_records(succ_doc)
+
+
+# ---- DR04 R1: authority binds the EXECUTABLE implementation ----
+def test_review_pinning_another_implementation_refuses(
+        succ_doc, tmp_path, monkeypatch):
+    """A review record that pins a different implementation digest
+    authorizes nothing: a recorded revision names a commit, this binds the
+    bytes that would run. The role token and the decision string are
+    untouched, and nothing is installed at the real record path."""
+    _mk_records(tmp_path, monkeypatch,
+                succ_doc["successor_sha256"],
+                forge_review=lambda r: r.update(
+                    reviewed_implementation_sha256="ab" * 32))
+    with pytest.raises(SystemExit,
+                       match="a review of other code authorizes nothing"):
+        cp.require_both_records(succ_doc)
+    assert not (Path.home() / ".local/share/agent-multi"
+                / "m4_confirmation_authority").exists()
+
+
+def test_review_without_an_implementation_digest_refuses(
+        succ_doc, tmp_path, monkeypatch):
+    _mk_records(tmp_path, monkeypatch,
+                succ_doc["successor_sha256"],
+                forge_review=lambda r: r.update(
+                    reviewed_implementation_sha256="<to be filled>"))
+    with pytest.raises(SystemExit, match="template|64-hex"):
+        cp.require_both_records(succ_doc)
+
+
+def test_review_pinning_the_live_implementation_passes_that_check(
+        succ_doc, tmp_path, monkeypatch):
+    """The positive: with the live digest pinned, the implementation check
+    is satisfied and the chain proceeds to the owner record."""
+    _mk_records(tmp_path, monkeypatch,
+                succ_doc["successor_sha256"])
+    both = cp.require_both_records(succ_doc)
+    assert both["review"]["reviewed_implementation_sha256"] == \
+        cp.implementation_digest(REPO)
+    assert both["execution"]["authorized_review_record_sha256"] == \
+        both["review"]["record_sha256"]
 
 
 def test_template_placeholder_refuses(succ_doc, tmp_path,
@@ -420,11 +485,10 @@ MUTANTS = {
         "fifteen_slot_analysis_admitted"),
     "rederive_off": (
         "m4_confirmation_runner.py",
-        '''        if declared is not None and \\
-                abs(eff - declared) > 1e-9:
-            raise ConfirmationRunnerRefusal(''',
-        '''        if False:
-            raise ConfirmationRunnerRefusal(''',
+        '''    if rec["paired_primary_difference"] != want:
+        raise ConfirmationRunnerRefusal(''',
+        '''    if False:
+        raise ConfirmationRunnerRefusal(''',
         "forged_aggregate_admitted"),
     "floor_off": (
         "m4_confirmation_runner.py",
@@ -516,14 +580,15 @@ except SystemExit as e:
 
 
 def test_guard_removal_rederive_and_floor(tmp_path):
-    """rederive_off and floor_off need the mock world: run them
-    in-process against mutated module copies."""
+    """rederive_off and floor_off are exercised in-process against
+    mutated module copies — the forged aggregate on a record, and the
+    over-attrition slot on the analysis stage."""
     import importlib.util
     succ_doc = cp.verify_confirmation_successor(REPO)
     for name in ("rederive_off", "floor_off"):
         fname, old, new, marker = MUTANTS[name]
         src = (REPO / "tools" / fname).read_text()
-        assert old in src
+        assert old in src, (name, "anchor missing")
         mdir = tmp_path / name
         mdir.mkdir()
         (mdir / fname).write_text(src.replace(old, new))
@@ -532,16 +597,44 @@ def test_guard_removal_rederive_and_floor(tmp_path):
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
         if name == "rederive_off":
-            cell = succ_doc["eligible_slots"][0]["cell"]
-            run = _mock_run(mdir, succ_doc,
-                            forge_aggregate_of=(cell, 0))
-            out = mod.verify_confirmation_run(REPO, run,
-                                              succ_doc)
-            assert out["records_verified"] > 0, (
-                "mutant did not admit the forged aggregate")
+            unit = cr.census_units(succ_doc, "CONFIRMATION")[0]
+            rec = dict(unit)
+            rec.update({
+                "manifest_sha256": "0" * 64,
+                "task_kind": "regression", "tape_id": "t",
+                "tape_digest": "d", "tape_tol": 0.1,
+                "genesis_digest": "g", "stop_trajectory_digest": "s",
+                "stop_trajectory_slope": 0.0,
+                "selected_stop_update": 1,
+                "checkpoint_lineage": {
+                    k: {"params_digest":
+                        "g" if k == "initialization" else k,
+                        "parent": None, "updates": 0}
+                    for k in ("initialization", "pre_stop",
+                              "calibration_stop",
+                              "post_stop_bounded")},
+                "arms": {k: {"restricted_endpoint": 10,
+                             "cap_reached": False,
+                             "stopping_cause": "ACQUISITION_ENDPOINT",
+                             "updates_done": 400,
+                             "retention_margin": 1.0,
+                             "fail_batch": 0,
+                             "final_params_digest": "f",
+                             "descriptors": {},
+                             "checkpoint_loss_stop": 1.0}
+                         for k in ("initialization", "pre_stop",
+                                   "calibration_stop",
+                                   "post_stop_bounded")},
+                "paired_primary_difference": 99.9})
+            # the mutant ADMITS the forged aggregate
+            mod.validate_unit_record(rec, unit, "CONFIRMATION")
+            with pytest.raises(SystemExit):
+                cr.validate_unit_record(rec, unit, "CONFIRMATION")
         else:
-            run = _mock_run(mdir, succ_doc, n_gen=30)
-            out = mod.verify_confirmation_run(REPO, run,
-                                              succ_doc)
+            eff, _ = _effects(succ_doc, n_gen=30)
+            out = mod.analyse_complete_population(succ_doc, eff)
             assert out["confirmation_incomplete"] == {}, (
                 "mutant did not admit the over-attrition slot")
+            live = cr.analyse_complete_population(succ_doc, eff)
+            assert live["confirmation_incomplete"] != {}, (
+                "the LIVE floor guard does not bite")
