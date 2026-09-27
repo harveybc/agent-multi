@@ -20,6 +20,8 @@ from pathlib import Path
 
 
 REPO = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO / "tools"))
+import host_admission as ADM   # RR02: the fleet's one memory authority, asked before launch
 PYTHON = Path("/home/harveybc/anaconda3/envs/trading-stack/bin/python")
 RUNNER = REPO / "tools/eth_curriculum_decision_experiment.py"
 AGGREGATOR = REPO / "tools/aggregate_curriculum_decision.py"
@@ -153,11 +155,24 @@ def preflight(output_root: Path) -> dict:
     return payload
 
 
-def start(output_root: Path) -> dict:
+def start(output_root: Path, *, mem_per_worker_bytes: int | None = None,
+          wall_seconds: int = 12 * 3600) -> dict:
+    """RR02 (order 2026-09-26): every launch here now takes a per-host memory RESERVATION first.
+
+    Before this, each worker's training run was started with `systemd-run --user` and no admission
+    call at all: the load was invisible to every other launcher's capacity reading on that host,
+    which is the defect that let two 8 GiB requests be admitted against one 12 GiB reading.
+
+    `mem_per_worker_bytes` has no default on purpose.  The measured memory need of an arm is a
+    measurement, not a guess, and a cap invented to get past a gate is worse than no gate.  Without
+    it nothing is dispatched.
+    """
     preflight_packet = preflight(output_root)
     launched = []
     selected_gpu_uuids = {}
     errors = []
+    reservations = {}
+    refusals = []
     for worker in WORKERS:
         seed_dir = output_root / f"seed{worker.seed}"
         _remote(worker, ["mkdir", "-p", str(seed_dir)])
@@ -185,10 +200,37 @@ def start(output_root: Path) -> dict:
             "--epoch-timesteps", "20000",
             "--arms", "N14,EN4_10,E4",
         ]
+        admission = ADM.HostAdmission(
+            run=None if worker.ssh_target is None
+            else (lambda argv, w=worker: _remote(w, argv, check=False)))
+        try:
+            decision = ADM.reserve_or_refuse(
+                admission, name="ethfleet", cap_bytes=mem_per_worker_bytes,
+                wall_seconds=wall_seconds, label=worker.unit, detached=True)
+        except ADM.AdmissionRefused as refusal:
+            # Not started, and nothing changed.  A refusal is answered by waiting for capacity or
+            # by moving the work to a host that admits it, never by asking again for less.
+            refusals.append({"worker": worker.name, "verdict": refusal.decision.get("verdict"),
+                             "code": refusal.decision.get("code"),
+                             "reason": refusal.decision.get("reason")})
+            continue
+        reservations[worker.name] = decision["lease_id"]
+
         result = _remote(worker, command, check=False)
         if result.returncode == 0:
             launched.append(worker.name)
+            # a detached unit is witnessed by its OWN cgroup: bind the reservation to the load, or
+            # the lease has no witness at all and the sweep reclaims it while the load still runs
+            cgroup = ADM.unit_cgroup(admission.run, worker.unit)
+            armed = admission.arm(decision["lease_id"], unit=worker.unit, cgroup=cgroup)
+            if not armed.get("ok") or not cgroup:
+                errors.append({"worker": worker.name, "returncode": 0,
+                               "stdout": "", "stderr": (
+                                   "RR02: the reservation could not be armed to this unit's own "
+                                   "cgroup, so this load is not accounted for; stop it and relaunch "
+                                   "rather than leaving it unreserved")})
         else:
+            admission.release(decision["lease_id"])
             errors.append({
                 "worker": worker.name,
                 "returncode": result.returncode,
@@ -196,7 +238,10 @@ def start(output_root: Path) -> dict:
                 "stderr": result.stderr[-1000:],
             })
     packet = {
-        "schema": "agent_multi.eth_curriculum_fleet_launch.v1",
+        "schema": "agent_multi.eth_curriculum_fleet_launch.v2",
+        "memory_admission": {"reservations": reservations, "refusals": refusals,
+                             "cap_bytes_declared": mem_per_worker_bytes,
+                             "authority": ADM.DEPLOYED_MODULE},
         "launched_at": datetime.now(timezone.utc).isoformat(),
         "output_root": str(output_root),
         "preflight_sha256": _sha(output_root / "fleet_preflight.json"),
@@ -353,6 +398,11 @@ def main() -> int:
     parser.add_argument("command", choices=(
         "preflight", "start", "status", "collect"))
     parser.add_argument("--output-root", type=Path, default=DEFAULT_ROOT)
+    parser.add_argument("--mem-per-worker-bytes", type=int, default=None,
+                        help="RR02: the MEASURED memory need of one worker's arm. Required by "
+                             "`start`; there is no default, because a cap chosen to pass a gate is "
+                             "not a cap.")
+    parser.add_argument("--wall-seconds", type=int, default=12 * 3600)
     args = parser.parse_args()
     operation = {
         "preflight": preflight,
@@ -361,7 +411,12 @@ def main() -> int:
         "collect": collect,
     }[args.command]
     try:
-        result = operation(args.output_root.expanduser().resolve())
+        root = args.output_root.expanduser().resolve()
+        if args.command == "start":
+            result = start(root, mem_per_worker_bytes=args.mem_per_worker_bytes,
+                           wall_seconds=args.wall_seconds)
+        else:
+            result = operation(root)
     except Exception as exc:  # noqa: BLE001
         print(json.dumps({"ok": False, "error": str(exc)}, indent=2))
         return 1
