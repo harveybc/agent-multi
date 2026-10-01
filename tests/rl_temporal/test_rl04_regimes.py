@@ -159,3 +159,16 @@ def test_keras_bundle_weights_import_with_fidelity():
     np.testing.assert_allclose(stages["latent"].detach().numpy(), export["arrays"]["reference:latent"], atol=1e-4)
     assert report["fidelity"]["latent_max_abs_diff"] < 1e-4
     assert report["versions_export"]["keras"] and report["versions_import"]["torch"]
+
+
+def test_unknown_modular_config_keys_raise_not_dropped():
+    from rl_temporal.modular_torch import normalize_modular_config
+    cfg = modular_config()
+    normalize_modular_config(cfg)
+    for mutate, needle in ((lambda c: c.update(input_normalization={"mean": 0}), "input_normalization"),
+                           (lambda c: c["branches"][0].setdefault("params", {}).update(dilation=2), "dilation"),
+                           (lambda c: c["core"]["params"].update(rotary=True), "rotary")):
+        bad = modular_config()
+        mutate(bad)
+        with pytest.raises(ValueError, match=needle):
+            normalize_modular_config(bad)

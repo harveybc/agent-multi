@@ -61,6 +61,27 @@ def normalize_modular_config(config: Dict[str, Any]) -> Dict[str, Any]:
     groups, alignment flags and the per-component regime/donor are dropped: a
     donor's compatibility is architectural, and regimes come from the run."""
     src = copy.deepcopy(config)
+    # Unknown keys RAISE (they used to be dropped silently). `head`, `horizons`, `target_count`, `regime`,
+    # `entry_point_groups` and `alignment_probe` are known engine keys this consumer deliberately ignores
+    # (identity is architectural); `input_normalization` and anything else is not supported here.
+    known = {"schema", "window", "sample_hours", "feature_names", "branches", "branch_steps", "core", "fusion",
+             "head", "output_steps", "output_channels", "entry_point_groups", "horizons", "target_count",
+             "regime", "alignment_probe"}
+    unknown = sorted(set(src) - known)
+    if unknown:
+        raise ValueError(f"modular config keys not supported by the torch consumer: {unknown} "
+                         "(NOT_SUPPORTED_BY_TORCH_CONSUMER; e.g. input_normalization)")
+    for spec in src.get("branches") or []:
+        bad = sorted(set(spec) - {"name", "features", "plugin", "params", "regime", "donor"})
+        if bad:
+            raise ValueError(f"branch spec keys not supported by the torch consumer: {bad}")
+        pbad = sorted(set(spec.get("params") or {}) - {"channels", "kernel_size"})
+        if pbad:
+            raise ValueError(f"branch params not supported by the torch consumer: {pbad}")
+    cbad = sorted(set((src.get("core") or {}).get("params") or {}) -
+                  {"d_model", "heads", "blocks", "ff_dim", "dropout", "stage_channels", "time_factors", "kernel_size"})
+    if cbad:
+        raise ValueError(f"core params not supported by the torch consumer: {cbad}")
     if src.get("schema", CONFIG_SCHEMA) != CONFIG_SCHEMA:
         raise ValueError(f"unsupported modular config schema {src.get('schema')!r}")
     c: Dict[str, Any] = {"schema": CONFIG_SCHEMA}
