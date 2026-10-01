@@ -26,3 +26,13 @@ Sep 30 23:22:28 <coordinator> kernel: Memory cgroup stats for /user.slice/user-1
 Sep 30 23:22:28 <coordinator> kernel: oom-kill:constraint=CONSTRAINT_MEMCG,nodemask=(null),cpuset=user.slice,mems_allowed=0,oom_memcg=/user.slice/user-1000.slice/user@1000.service/crispdm.slice/crispdm-batch.slice/crispdm-g-rl-green2-1790828298-1027440.scope,task_memcg=/user.slice/user-1000.slice/user@1000.service/crispdm.slice/crispdm-batch.slice/crispdm-g-rl-green2-1790828298-1027440.scope,task=python,pid=1027654,uid=1000
 Sep 30 23:22:28 <coordinator> kernel: Memory cgroup out of memory: Killed process 1027654 (python) total-vm:6402000kB, anon-rss:261064kB, file-rss:263900kB, shmem-rss:0kB, UID:1000 pgtables:2228kB oom_score_adj:100
 ```
+
+## G-STOP-01 (2026-10-01 ~08:10Z): RL-S1 CPU pilot on worker_b withdrawn by me
+
+Reason: M07's 4090 cost pilot (6G) could not admit while two lane G leases (RL-S1 CPU 3G + RL-D0 GPU 3G)
+held worker_b headroom; the coordinator's rule is one RL job at a time per host beside M07, GPU first.
+The RL-S1 CPU pilot's purpose (a per-step rate for the modular arm on CPU) was already measured:
+832 transitions in 339 s and 1,096 in 582 s = 0.41-0.53 s/transition (SAC, 83-branch extractor, CPU, 3G).
+Stopped by TERM to the python child (own job), lease released by the wrapper; partial outputs retained under
+~/.local/state/scratch/g-rl/runs/pilot_c2/RL-S1_seed101 (heartbeat, run.log). The modular arms will be
+measured on a GPU; no CPU modular pilot is rerun.
