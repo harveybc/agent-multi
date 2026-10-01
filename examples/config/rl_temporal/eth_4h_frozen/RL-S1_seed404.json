@@ -388,7 +388,7 @@
   "buffer_size": 100000,
   "checkpoint_every_epochs": 5,
   "commission": 0.001,
-  "config_sha256": "c9bc22f289e5dc28b29d1aa4ca9737cc1bf6f4f33a6d9ec9c28202f9a0661f66",
+  "config_sha256": "8df9ac61085981b9b1981458b1d2e82baa54971ca5778d505057c66e4b1be66a",
   "continuous_action_contract": "legacy_directional_v1",
   "continuous_action_threshold": 0.33,
   "data_feed_plugin": "default_data_feed",
@@ -398,6 +398,12 @@
   "env_mode": "training",
   "env_plugin": "gym_fx_env",
   "epoch_timesteps": 2000,
+  "eval_schedule": {
+    "applies_to": "all arms in cells not started before this declaration",
+    "train_full_every_epochs": 5,
+    "train_tail_every_epochs": 1,
+    "validation_every_epochs": 1
+  },
   "eval_seed": 404,
   "evaluate_test_split": false,
   "feature_clip": 10.0,

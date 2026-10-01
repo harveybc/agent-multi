@@ -63,6 +63,10 @@ SHARED_TRAINING = {
     # a policy that never becomes activity-eligible is a MEASURED outcome (inactive), not a
     # harness failure: the pipeline saves the terminal weights and returns a typed result
     "inactive_terminal_is_typed_result": True,
+    # coordinator ruling: only the FULL-train evaluation (display-only) is thinned; train_TAIL and
+    # validation, which drive the composite, the early stop and the activity gate, run every epoch
+    "eval_schedule": {"train_full_every_epochs": 5, "train_tail_every_epochs": 1, "validation_every_epochs": 1,
+                      "applies_to": "all arms in cells not started before this declaration"},
 }
 ALGO = {
     "SAC": {"learning_rate": 3e-4, "buffer_size": 100000, "learning_starts": 2000, "batch_size": 256,

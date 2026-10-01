@@ -1522,6 +1522,7 @@ class PipelinePlugin:
                     return actor, critic, ent
 
                 stop_reason = "max_epochs_budget"
+                _last_full_train, _last_full_train_epoch = None, 0
                 for epoch in range(1, max_epochs + 1):
                     _set_env_training_progress(
                         train_env,
@@ -1549,9 +1550,19 @@ class PipelinePlugin:
                     nts_after = int(getattr(model, "num_timesteps", 0))
                     rb_after = int(getattr(getattr(model, "replay_buffer", None), "size", lambda: 0)()) if hasattr(model, "replay_buffer") else 0
 
-                    train_summary = self._eval_on_split(
-                        env_plugin_name, config, paths["train"], agent_plugin, model, seed, "train_epoch"
-                    )
+                    # eval_schedule.train_full_every_epochs (default 1 = every epoch, legacy behaviour):
+                    # the FULL-train evaluation is display/history only -- selection, the early stop and the
+                    # activity gate read train_TAIL and validation (see _early_stop_composite) -- so it may
+                    # run every Nth epoch. A skipped epoch re-uses the last full-train summary, marked stale.
+                    _every = int((config.get("eval_schedule") or {}).get("train_full_every_epochs", 1) or 1)
+                    if _every > 1 and epoch > 1 and (epoch % _every) != 0 and _last_full_train is not None:
+                        train_summary = dict(_last_full_train)
+                        train_summary["eval_stale_from_epoch"] = _last_full_train_epoch
+                    else:
+                        train_summary = self._eval_on_split(
+                            env_plugin_name, config, paths["train"], agent_plugin, model, seed, "train_epoch"
+                        )
+                        _last_full_train, _last_full_train_epoch = dict(train_summary), epoch
                     train_tail_summary = self._eval_on_split(
                         env_plugin_name, config, paths.get("train_tail", paths["train"]),
                         agent_plugin, model, seed, "train_tail_epoch"

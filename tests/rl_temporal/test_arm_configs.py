@@ -69,3 +69,21 @@ def test_replay_storage_option_reaches_sb3_and_env_never_truncates(tmp_path):
         assert "truncated = False" in src and "truncated = True" not in src
     finally:
         env.close()
+
+
+def test_eval_schedule_declared_and_pairing_intact(binding, tmp_path):
+    arms = require("ARMS", "rl_temporal.arms", "build_matrix", "matrix")
+    pairing = require("ARMS", "rl_temporal.arms", "check_pairing", "pairing")
+    cells = arms(binding, out_root=str(tmp_path), seeds=(1,))
+    assert all(c["eval_schedule"]["train_full_every_epochs"] == 5 and c["eval_schedule"]["validation_every_epochs"] == 1 for c in cells)
+    assert all(v["identical_outside_representation"] for v in pairing(cells).values())
+
+
+def test_pipeline_skips_only_the_full_train_eval(tmp_path, monkeypatch):
+    """The skipped evaluation is the full-train one; tail and validation run every epoch."""
+    import pipeline_plugins.rl_pipeline_with_validation as mod
+    src = open(mod.__file__).read()
+    i = src.index("train_full_every_epochs")
+    block = src[i - 400:i + 1400]
+    assert '"train_epoch"' in block and '"train_tail_epoch"' in src and '"validation_epoch"' in src
+    assert "eval_stale_from_epoch" in block
