@@ -6,6 +6,14 @@ Consequence: both python processes killed by the memory cgroup; the owner deskto
 Orders received and applied: no further runs of any size on the coordinator; all test/parity/fixture runs on worker_a or worker_b under crispdm-run with a cap declared from this record (3G for the suite: 2.0 GB measured + child + margin); scratch under ~/.local/state/scratch/g-rl/; the Keras-side parity export in the pinned env on a worker.
 Live coordinator jobs at the time of the order: none (the g-rl-keras lease had already exited with the test failure; systemd listed no crispdm-g-rl-* unit; nothing to stop).
 
+## Other lane G scopes on the coordinator in the same window (coordinator readings)
+
+- g-rl-rest (suite minus the Keras test, 1G): self-stopped 23:28:08 local at 1.064 GB of 1 GiB.
+- g-rl-test_rl05_checkpoint (RL05 alone, 1G): stopped 23:30:38 local at 1.034 GB of 1 GiB (the fresh-process child inside the same scope).
+- g-rl-keras (Keras fidelity test alone, 1G): exited by itself with a test failure (config-identity mismatch, since fixed); not killed, no stop needed.
+
+Caps re-declared from these measurements: 3G for the whole suite (parent + child, measured peak 1.17 GB RSS on worker_a plus the coordinator's 2.0 GB combined reading and margin); 3G for the pinned-env Keras export (TF import). Nothing on the coordinator since the order.
+
 ## Kernel journal lines (host name redacted)
 
 ```
