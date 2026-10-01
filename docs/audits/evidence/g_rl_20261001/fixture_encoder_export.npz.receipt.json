@@ -1,0 +1,105 @@
+{
+  "array_count": 63,
+  "modular_config": {
+    "alignment_probe": true,
+    "branch_steps": 24,
+    "branches": [
+      {
+        "donor": null,
+        "features": [
+          "f_ret1"
+        ],
+        "name": "branch_0",
+        "params": {},
+        "plugin": "causal_conv1d",
+        "regime": "R0"
+      },
+      {
+        "donor": null,
+        "features": [
+          "f_ret4"
+        ],
+        "name": "branch_1",
+        "params": {},
+        "plugin": "causal_conv1d",
+        "regime": "R0"
+      },
+      {
+        "donor": null,
+        "features": [
+          "f_vol8"
+        ],
+        "name": "branch_2",
+        "params": {},
+        "plugin": "causal_conv1d",
+        "regime": "R0"
+      }
+    ],
+    "core": {
+      "donor": null,
+      "params": {
+        "blocks": 1,
+        "d_model": 16,
+        "ff_dim": 32,
+        "heads": 2,
+        "stage_channels": [
+          12,
+          10,
+          8
+        ],
+        "time_factors": [
+          2,
+          2,
+          1
+        ]
+      },
+      "plugin": "transformer_conv",
+      "regime": "R0"
+    },
+    "entry_point_groups": {
+      "branch": "modular.branch",
+      "core": "modular.core",
+      "fusion": "modular.fusion",
+      "head": "modular.head"
+    },
+    "feature_names": [
+      "f_ret1",
+      "f_ret4",
+      "f_vol8"
+    ],
+    "fusion": {
+      "params": {},
+      "plugin": "sequence_concat"
+    },
+    "head": {
+      "params": {},
+      "plugin": "forecast"
+    },
+    "horizons": [
+      1
+    ],
+    "output_channels": 8,
+    "output_steps": 6,
+    "regime": null,
+    "sample_hours": 1,
+    "schema": "predictor.modular.v1",
+    "target_count": 1,
+    "window": 24
+  },
+  "path": "/home/harveybc/.local/state/scratch/g-rl/logs/fixture_encoder_export.npz",
+  "reference_batch": 3,
+  "reference_seed": 0,
+  "schema": "modular_encoder_export.v1",
+  "sha256": "a04c7e71575a0816253da9a27ba226391a0d454ed2ebf6b378aa0f09159df372",
+  "source": {
+    "kind": "config_random_init",
+    "label": "RANDOM_INIT_NOT_PRETRAINED",
+    "path": "/home/harveybc/.local/state/scratch/g-rl/logs/fixture_modular_config.json",
+    "seed": 0
+  },
+  "versions": {
+    "keras": "3.13.2",
+    "python": "3.12.13",
+    "tensorflow": "2.21.0"
+  }
+}

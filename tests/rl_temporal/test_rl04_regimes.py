@@ -125,28 +125,37 @@ def test_sac_target_critic_tracks_critic_encoder_with_polyak(csv):
         env.close()
 
 
-def test_keras_bundle_weights_import_with_fidelity(tmp_path):
-    """Keras bundle at the engine pin -> torch extractor: same window, same outputs."""
-    keras_mod = pytest.importorskip("predictor_plugins.modular_temporal")
+def test_keras_bundle_weights_import_with_fidelity():
+    """Keras export at the engine pin (made in the PINNED env by predictor
+    tools/export_modular_encoder_npz.py) -> torch extractor: same window, same
+    fused and latent outputs. The export path comes from RL_TEMPORAL_ENCODER_EXPORT."""
+    import os
+
     import_weights = require("RL04", "rl_temporal.keras_import", "import_keras_bundle",
                              "Keras->torch weight import with per-stage fidelity report")
     Extractor = require("RL04", "rl_temporal.modular_torch", "ModularTemporalExtractor",
                         "torch modular temporal features extractor")
     from gymnasium import spaces
-    from predictor_plugins.modular_temporal.assembly import build_modular
+    from rl_temporal.keras_import import load_export
+    from rl_temporal.modular_torch import modular_config_sha256
     from rl_temporal.observation_layout import ObservationLayout
 
-    cfg = modular_config()
-    bundle = build_modular(cfg)
+    export_path = os.environ.get("RL_TEMPORAL_ENCODER_EXPORT")
+    if not export_path or not os.path.isfile(export_path):
+        pytest.fail("RL04 missing mechanism: Keras-side export artifact (run predictor "
+                    "tools/export_modular_encoder_npz.py --config <fixture modular config> in the pinned "
+                    "Keras env and set RL_TEMPORAL_ENCODER_EXPORT)")
+    export = load_export(export_path)
+    cfg = export["meta"]["modular_config"]
+    assert modular_config_sha256(cfg) == modular_config_sha256(modular_config()), "export is not the fixture config"
     layout = ObservationLayout.synthetic(window=WINDOW, feature_order=FEATURES, extras=4)
     space = spaces.Box(-np.inf, np.inf, shape=(layout.total_dim,), dtype=np.float32)
-    ext = Extractor(space, layout=layout, modular_config=cfg)
-    report = import_weights(ext, bundle)
+    ext = Extractor(space, layout=layout, modular_config=modular_config())
+    report = import_weights(ext, export_path)
     assert report["imported_tensors"] > 0 and report["unmatched_keras_weights"] == []
-    x = np.random.default_rng(0).normal(size=(3, WINDOW, len(FEATURES))).astype("float32")
-    stages = ext.stage_outputs_from_window(torch.as_tensor(x))
-    keras_latent = bundle.encoder_model(x).numpy()
-    keras_fused = bundle.fusion_model(x).numpy()
-    np.testing.assert_allclose(stages["fused"].detach().numpy(), keras_fused, atol=1e-5)
-    np.testing.assert_allclose(stages["latent"].detach().numpy(), keras_latent, atol=1e-4)
+    x = torch.as_tensor(export["arrays"]["reference:input"])
+    stages = ext.stage_outputs_from_window(x)
+    np.testing.assert_allclose(stages["fused"].detach().numpy(), export["arrays"]["reference:fused"], atol=1e-5)
+    np.testing.assert_allclose(stages["latent"].detach().numpy(), export["arrays"]["reference:latent"], atol=1e-4)
     assert report["fidelity"]["latent_max_abs_diff"] < 1e-4
+    assert report["versions_export"]["keras"] and report["versions_import"]["torch"]

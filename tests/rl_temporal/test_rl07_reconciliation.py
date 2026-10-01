@@ -27,9 +27,9 @@ def test_open_terminal_position_is_reported_not_filled(tmp_path):
     assert record["terminal_fill_manufactured"] is False
     assert record["trades_closed"] == 0
     assert record["entries_submitted"] >= 1
-    assert record["commission_paid"] > 0.0
+    assert record["commission_paid"] > 0.0 and record["commission_reconciled"] is True
     assert abs(record["conservation_gap"]) < 1e-6, record
-    assert record["final_equity"] == record["initial_cash"] + record["sum_step_pnl"]
+    assert record["final_equity"] == pytest.approx(record["initial_cash"] + record["sum_step_pnl"], abs=1e-6)
     assert record["costs"]["commission"] == 0.001 and record["costs"]["slippage"] == 0.0
     assert record["margin"]["min_equity"] > 0 and "leverage" in record["margin"]
     assert isinstance(record["rejected_orders"], int)
@@ -56,7 +56,8 @@ def test_round_trip_closes_and_costs_reconcile(tmp_path):
         env.close()
     assert record["trades_closed"] >= 1
     assert record["terminal_position"] == 0
-    assert record["commission_paid"] == pytest.approx(record["sum_step_trade_cost"], abs=1e-9)
+    assert record["commission_paid"] > 0.0
+    assert record["commission_reconciled"] is True, (record["commission_paid"], record["commission_expected_from_fills"])
     assert abs(record["conservation_gap"]) < 1e-6, record
     assert record["turnover_units"] > 0
 

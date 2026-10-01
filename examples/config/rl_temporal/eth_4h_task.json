@@ -1,0 +1,21 @@
+{
+  "task_id": "rl_temporal.eth_4h.v0",
+  "manifest": {
+    "path": "examples/config/rl_temporal/SELECTED_FEATURE_MANIFEST.eth_4h.v0-DRAFT.json",
+    "sha256": "22ae773085c0c8ed475146ab020a7f02d1e93902fffaf37d15489992e36614b0",
+    "source": "feature-eng satoshi/b-source-transform-coverage-20261001 @ 9162ca3 docs/feature_metrics/laneB/ (lane B, DRAFT_NOT_FROZEN; blockers B1-B4 with lane B / owner)"
+  },
+  "selected_variant": "A_all_admissible_control",
+  "window": 24,
+  "sample_hours": 4,
+  "input_data_file": "../predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+  "input_data_sha256_declared": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+  "observation_extras_dim": 4,
+  "seeds": [101, 202, 303, 404],
+  "out_root": "~/.local/state/scratch/g-rl/runs/eth_4h",
+  "notes": [
+    "window 24 bars x 4h = 96h physical; branch_steps 24; core 24->12->6->6 [2,2,1]; latent (6,8)",
+    "configs are BOUND to the DRAFT manifest sha and refuse any real-data fit until lane B publishes the FROZEN variant A with its new sha",
+    "R1/R2 arms need ETH-task donors from M02 (none exist); only R0 arms are runnable"
+  ]
+}

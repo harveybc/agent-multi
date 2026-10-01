@@ -1,0 +1,2754 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF                                 [100%]
+=================================== FAILURES ===================================
+__________ test_binding_resolves_feature_order_and_resource_identity ___________
+
+test_id = 'RL01', module = 'rl_temporal.lake_binding'
+attribute = 'SelectedFeatureBinding'
+mechanism = 'selected-feature manifest binding (feature order + resource sha)'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.lake_binding', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+lake = {'csv': PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_binding_resolves_feature_0/lake/fixture.csv'), 'manifest': ...re_0/lake/manifest.json'), 'dir': PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_binding_resolves_feature_0/lake')}
+
+    def test_binding_resolves_feature_order_and_resource_identity(lake):
+        assert_checkout_resolution("RL01")
+>       Binding = require("RL01", "rl_temporal.lake_binding", "SelectedFeatureBinding",
+                          "selected-feature manifest binding (feature order + resource sha)")
+
+tests/rl_temporal/test_rl01_lake_read.py:28: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL01', module = 'rl_temporal.lake_binding'
+attribute = 'SelectedFeatureBinding'
+mechanism = 'selected-feature manifest binding (feature order + resource sha)'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL01 missing mechanism: selected-feature manifest binding (feature order + resource sha) (expected rl_temporal.lake_binding.SelectedFeatureBinding; module 'rl_temporal.lake_binding' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+___________________ test_binding_refuses_a_tampered_resource ___________________
+
+test_id = 'RL01', module = 'rl_temporal.lake_binding'
+attribute = 'SelectedFeatureBinding'
+mechanism = 'immutable resource identity check'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.lake_binding', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+lake = {'csv': PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_binding_refuses_a_tampere0/lake/fixture.csv'), 'manifest': ...ere0/lake/manifest.json'), 'dir': PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_binding_refuses_a_tampere0/lake')}
+
+    def test_binding_refuses_a_tampered_resource(lake):
+>       Binding = require("RL01", "rl_temporal.lake_binding", "SelectedFeatureBinding",
+                          "immutable resource identity check")
+
+tests/rl_temporal/test_rl01_lake_read.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL01', module = 'rl_temporal.lake_binding'
+attribute = 'SelectedFeatureBinding'
+mechanism = 'immutable resource identity check'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL01 missing mechanism: immutable resource identity check (expected rl_temporal.lake_binding.SelectedFeatureBinding; module 'rl_temporal.lake_binding' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+________________ test_draft_manifest_refuses_a_real_data_pilot _________________
+
+test_id = 'RL01', module = 'rl_temporal.lake_binding'
+attribute = 'SelectedFeatureBinding'
+mechanism = 'DRAFT_NOT_FROZEN refusal of real-data pilots'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.lake_binding', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+lake = {'csv': PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_draft_manifest_refuses_a_0/lake/fixture.csv'), 'manifest': ..._a_0/lake/manifest.json'), 'dir': PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_draft_manifest_refuses_a_0/lake')}
+
+    def test_draft_manifest_refuses_a_real_data_pilot(lake):
+>       Binding = require("RL01", "rl_temporal.lake_binding", "SelectedFeatureBinding",
+                          "DRAFT_NOT_FROZEN refusal of real-data pilots")
+
+tests/rl_temporal/test_rl01_lake_read.py:52: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL01', module = 'rl_temporal.lake_binding'
+attribute = 'SelectedFeatureBinding'
+mechanism = 'DRAFT_NOT_FROZEN refusal of real-data pilots'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL01 missing mechanism: DRAFT_NOT_FROZEN refusal of real-data pilots (expected rl_temporal.lake_binding.SelectedFeatureBinding; module 'rl_temporal.lake_binding' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+____________ test_observation_at_step_t_ignores_rows_at_or_after_t _____________
+
+test_id = 'RL01', module = 'rl_temporal.lake_binding'
+attribute = 'causal_timestamp_probe'
+mechanism = 'causal timestamp probe (future rows cannot move an observation)'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.lake_binding', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+lake = {'csv': PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_observation_at_step_t_ign0/lake/fixture.csv'), 'manifest': ...ign0/lake/manifest.json'), 'dir': PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_observation_at_step_t_ign0/lake')}
+
+    def test_observation_at_step_t_ignores_rows_at_or_after_t(lake):
+>       probe = require("RL01", "rl_temporal.lake_binding", "causal_timestamp_probe",
+                        "causal timestamp probe (future rows cannot move an observation)")
+
+tests/rl_temporal/test_rl01_lake_read.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL01', module = 'rl_temporal.lake_binding'
+attribute = 'causal_timestamp_probe'
+mechanism = 'causal timestamp probe (future rows cannot move an observation)'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL01 missing mechanism: causal timestamp probe (future rows cannot move an observation) (expected rl_temporal.lake_binding.causal_timestamp_probe; module 'rl_temporal.lake_binding' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+______________ test_manifest_without_selected_variant_is_refused _______________
+
+test_id = 'RL01', module = 'rl_temporal.lake_binding'
+attribute = 'SelectedFeatureBinding', mechanism = 'explicit variant selection'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.lake_binding', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+lake = {'csv': PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_manifest_without_selected0/lake/fixture.csv'), 'manifest': ...ted0/lake/manifest.json'), 'dir': PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_manifest_without_selected0/lake')}
+
+    def test_manifest_without_selected_variant_is_refused(lake):
+>       Binding = require("RL01", "rl_temporal.lake_binding", "SelectedFeatureBinding",
+                          "explicit variant selection")
+
+tests/rl_temporal/test_rl01_lake_read.py:75: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL01', module = 'rl_temporal.lake_binding'
+attribute = 'SelectedFeatureBinding', mechanism = 'explicit variant selection'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL01 missing mechanism: explicit variant selection (expected rl_temporal.lake_binding.SelectedFeatureBinding; module 'rl_temporal.lake_binding' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+________ test_layout_locates_the_feature_window_inside_the_flat_vector _________
+
+test_id = 'RL02', module = 'rl_temporal.observation_layout'
+attribute = 'ObservationLayout'
+mechanism = 'flat observation layout resolved from the Dict space'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.observation_layout', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+env = <FlattenObservation<GymFxEnv instance>>
+
+    def test_layout_locates_the_feature_window_inside_the_flat_vector(env):
+        assert_checkout_resolution("RL02")
+>       layout = _layout(env)
+                 ^^^^^^^^^^^^
+
+tests/rl_temporal/test_rl02_modular_time.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/rl_temporal/test_rl02_modular_time.py:26: in _layout
+    Layout = require("RL02", "rl_temporal.observation_layout", "ObservationLayout",
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL02', module = 'rl_temporal.observation_layout'
+attribute = 'ObservationLayout'
+mechanism = 'flat observation layout resolved from the Dict space'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL02 missing mechanism: flat observation layout resolved from the Dict space (expected rl_temporal.observation_layout.ObservationLayout; module 'rl_temporal.observation_layout' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+________ test_modular_extractor_keeps_time_through_branches_fusion_core ________
+
+test_id = 'RL02', module = 'rl_temporal.modular_torch'
+attribute = 'ModularTemporalExtractor'
+mechanism = 'torch modular temporal features extractor'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.modular_torch', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+env = <FlattenObservation<GymFxEnv instance>>
+
+    def test_modular_extractor_keeps_time_through_branches_fusion_core(env):
+>       Extractor = require("RL02", "rl_temporal.modular_torch", "ModularTemporalExtractor",
+                            "torch modular temporal features extractor")
+
+tests/rl_temporal/test_rl02_modular_time.py:45: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL02', module = 'rl_temporal.modular_torch'
+attribute = 'ModularTemporalExtractor'
+mechanism = 'torch modular temporal features extractor'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL02 missing mechanism: torch modular temporal features extractor (expected rl_temporal.modular_torch.ModularTemporalExtractor; module 'rl_temporal.modular_torch' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+_____________________ test_branch_output_is_causal_in_time _____________________
+
+test_id = 'RL02', module = 'rl_temporal.modular_torch'
+attribute = 'ModularTemporalExtractor', mechanism = 'causal branch convolution'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.modular_torch', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+env = <FlattenObservation<GymFxEnv instance>>
+
+    def test_branch_output_is_causal_in_time(env):
+>       Extractor = require("RL02", "rl_temporal.modular_torch", "ModularTemporalExtractor",
+                            "causal branch convolution")
+
+tests/rl_temporal/test_rl02_modular_time.py:63: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL02', module = 'rl_temporal.modular_torch'
+attribute = 'ModularTemporalExtractor', mechanism = 'causal branch convolution'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL02 missing mechanism: causal branch convolution (expected rl_temporal.modular_torch.ModularTemporalExtractor; module 'rl_temporal.modular_torch' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+________ test_baseline_and_modular_consume_the_same_source_information _________
+
+test_id = 'RL02', module = 'rl_temporal.modular_torch'
+attribute = 'NativeFlatExtractor'
+mechanism = 'declared native baseline extractor'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.modular_torch', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+env = <FlattenObservation<GymFxEnv instance>>
+
+    def test_baseline_and_modular_consume_the_same_source_information(env):
+>       Native = require("RL02", "rl_temporal.modular_torch", "NativeFlatExtractor",
+                         "declared native baseline extractor")
+
+tests/rl_temporal/test_rl02_modular_time.py:78: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL02', module = 'rl_temporal.modular_torch'
+attribute = 'NativeFlatExtractor'
+mechanism = 'declared native baseline extractor'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL02 missing mechanism: declared native baseline extractor (expected rl_temporal.modular_torch.NativeFlatExtractor; module 'rl_temporal.modular_torch' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+____________ test_sac_actor_and_critics_ownership_is_explicit[True] ____________
+
+test_id = 'RL03', module = 'rl_temporal.donor_contract'
+attribute = 'optimizer_ownership', mechanism = 'optimizer ownership report'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.donor_contract', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+csv = PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_sac_actor_and_critics_own0/fixture.csv')
+share = True
+
+    @pytest.mark.parametrize("share", [True, False])
+    def test_sac_actor_and_critics_ownership_is_explicit(csv, share):
+        assert_checkout_resolution("RL03")
+>       ownership = require("RL03", "rl_temporal.donor_contract", "optimizer_ownership",
+                            "optimizer ownership report")
+
+tests/rl_temporal/test_rl03_consumers.py:35: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL03', module = 'rl_temporal.donor_contract'
+attribute = 'optimizer_ownership', mechanism = 'optimizer ownership report'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL03 missing mechanism: optimizer ownership report (expected rl_temporal.donor_contract.optimizer_ownership; module 'rl_temporal.donor_contract' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+___________ test_sac_actor_and_critics_ownership_is_explicit[False] ____________
+
+test_id = 'RL03', module = 'rl_temporal.donor_contract'
+attribute = 'optimizer_ownership', mechanism = 'optimizer ownership report'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.donor_contract', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+csv = PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_sac_actor_and_critics_own1/fixture.csv')
+share = False
+
+    @pytest.mark.parametrize("share", [True, False])
+    def test_sac_actor_and_critics_ownership_is_explicit(csv, share):
+        assert_checkout_resolution("RL03")
+>       ownership = require("RL03", "rl_temporal.donor_contract", "optimizer_ownership",
+                            "optimizer ownership report")
+
+tests/rl_temporal/test_rl03_consumers.py:35: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL03', module = 'rl_temporal.donor_contract'
+attribute = 'optimizer_ownership', mechanism = 'optimizer ownership report'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL03 missing mechanism: optimizer ownership report (expected rl_temporal.donor_contract.optimizer_ownership; module 'rl_temporal.donor_contract' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+__________ test_dqn_online_and_target_consume_the_same_representation __________
+
+test_id = 'RL03', module = 'rl_temporal.donor_contract'
+attribute = 'optimizer_ownership', mechanism = 'optimizer ownership report'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.donor_contract', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+csv = PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_dqn_online_and_target_con0/fixture.csv')
+
+    def test_dqn_online_and_target_consume_the_same_representation(csv):
+>       ownership = require("RL03", "rl_temporal.donor_contract", "optimizer_ownership",
+                            "optimizer ownership report")
+
+tests/rl_temporal/test_rl03_consumers.py:60: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL03', module = 'rl_temporal.donor_contract'
+attribute = 'optimizer_ownership', mechanism = 'optimizer ownership report'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL03 missing mechanism: optimizer ownership report (expected rl_temporal.donor_contract.optimizer_ownership; module 'rl_temporal.donor_contract' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+______ test_a_gradient_step_updates_each_extractor_parameter_at_most_once ______
+
+test_id = 'RL03', module = 'rl_temporal.donor_contract'
+attribute = 'count_parameter_updates'
+mechanism = 'per-parameter update counter across one train() call'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.donor_contract', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+csv = PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_a_gradient_step_updates_e0/fixture.csv')
+
+    def test_a_gradient_step_updates_each_extractor_parameter_at_most_once(csv):
+>       count = require("RL03", "rl_temporal.donor_contract", "count_parameter_updates",
+                        "per-parameter update counter across one train() call")
+
+tests/rl_temporal/test_rl03_consumers.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL03', module = 'rl_temporal.donor_contract'
+attribute = 'count_parameter_updates'
+mechanism = 'per-parameter update counter across one train() call'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL03 missing mechanism: per-parameter update counter across one train() call (expected rl_temporal.donor_contract.count_parameter_updates; module 'rl_temporal.donor_contract' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+______________ test_r1_branches_stay_fixed_while_r0_core_updates _______________
+
+test_id = 'RL04', module = 'rl_temporal.donor_contract'
+attribute = 'random_donor'
+mechanism = 'donor artifact (torch state dict + identity) for R1/R2 fixtures'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.donor_contract', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+csv = PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_r1_branches_stay_fixed_wh0/fixture.csv')
+tmp_path = PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_r1_branches_stay_fixed_wh0')
+
+    def test_r1_branches_stay_fixed_while_r0_core_updates(csv, tmp_path):
+        assert_checkout_resolution("RL04")
+>       make_donor = require("RL04", "rl_temporal.donor_contract", "random_donor",
+                             "donor artifact (torch state dict + identity) for R1/R2 fixtures")
+
+tests/rl_temporal/test_rl04_regimes.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL04', module = 'rl_temporal.donor_contract'
+attribute = 'random_donor'
+mechanism = 'donor artifact (torch state dict + identity) for R1/R2 fixtures'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL04 missing mechanism: donor artifact (torch state dict + identity) for R1/R2 fixtures (expected rl_temporal.donor_contract.random_donor; module 'rl_temporal.donor_contract' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+_______________ test_r2_branches_start_from_donor_and_then_move ________________
+
+test_id = 'RL04', module = 'rl_temporal.donor_contract'
+attribute = 'random_donor', mechanism = 'donor artifact for R2'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.donor_contract', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+csv = PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_r2_branches_start_from_do0/fixture.csv')
+tmp_path = PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_r2_branches_start_from_do0')
+
+    def test_r2_branches_start_from_donor_and_then_move(csv, tmp_path):
+>       make_donor = require("RL04", "rl_temporal.donor_contract", "random_donor",
+                             "donor artifact for R2")
+
+tests/rl_temporal/test_rl04_regimes.py:60: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL04', module = 'rl_temporal.donor_contract'
+attribute = 'random_donor', mechanism = 'donor artifact for R2'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL04 missing mechanism: donor artifact for R2 (expected rl_temporal.donor_contract.random_donor; module 'rl_temporal.donor_contract' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+_____________ test_r1_without_donor_is_refused_and_r0_forbids_one ______________
+
+test_id = 'RL04', module = 'rl_temporal.consumers', attribute = 'build_model'
+mechanism = 'regime/donor contract'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.consumers', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+csv = PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_r1_without_donor_is_refus0/fixture.csv')
+tmp_path = PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_r1_without_donor_is_refus0')
+
+    def test_r1_without_donor_is_refused_and_r0_forbids_one(csv, tmp_path):
+>       build = require("RL04", "rl_temporal.consumers", "build_model", "regime/donor contract")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/test_rl04_regimes.py:79: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL04', module = 'rl_temporal.consumers', attribute = 'build_model'
+mechanism = 'regime/donor contract'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL04 missing mechanism: regime/donor contract (expected rl_temporal.consumers.build_model; module 'rl_temporal.consumers' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+________________ test_dqn_target_sync_copies_the_online_encoder ________________
+
+test_id = 'RL04', module = 'rl_temporal.consumers', attribute = 'build_model'
+mechanism = 'SB3 model builder with the modular extractor plugged into the policy'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.consumers', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+csv = PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_dqn_target_sync_copies_th0/fixture.csv')
+
+    def test_dqn_target_sync_copies_the_online_encoder(csv):
+>       env, model = _model(csv, "DQN", {"branch_0": "R0", "branch_1": "R0", "branch_2": "R0", "core": "R0"})
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/test_rl04_regimes.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/rl_temporal/test_rl04_regimes.py:23: in _model
+    build = require("RL04", "rl_temporal.consumers", "build_model",
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL04', module = 'rl_temporal.consumers', attribute = 'build_model'
+mechanism = 'SB3 model builder with the modular extractor plugged into the policy'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL04 missing mechanism: SB3 model builder with the modular extractor plugged into the policy (expected rl_temporal.consumers.build_model; module 'rl_temporal.consumers' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+___________ test_sac_target_critic_tracks_critic_encoder_with_polyak ___________
+
+test_id = 'RL04', module = 'rl_temporal.consumers', attribute = 'build_model'
+mechanism = 'SB3 model builder with the modular extractor plugged into the policy'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.consumers', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+csv = PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_sac_target_critic_tracks_0/fixture.csv')
+
+    def test_sac_target_critic_tracks_critic_encoder_with_polyak(csv):
+>       env, model = _model(csv, "SAC", {"branch_0": "R0", "branch_1": "R0", "branch_2": "R0", "core": "R0"})
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/test_rl04_regimes.py:114: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/rl_temporal/test_rl04_regimes.py:23: in _model
+    build = require("RL04", "rl_temporal.consumers", "build_model",
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL04', module = 'rl_temporal.consumers', attribute = 'build_model'
+mechanism = 'SB3 model builder with the modular extractor plugged into the policy'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL04 missing mechanism: SB3 model builder with the modular extractor plugged into the policy (expected rl_temporal.consumers.build_model; module 'rl_temporal.consumers' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+________________ test_keras_bundle_weights_import_with_fidelity ________________
+
+test_id = 'RL04', module = 'rl_temporal.keras_import'
+attribute = 'import_keras_bundle'
+mechanism = 'Keras->torch weight import with per-stage fidelity report'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.keras_import', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_keras_bundle_weights_impo0')
+
+    def test_keras_bundle_weights_import_with_fidelity(tmp_path):
+        """Keras bundle at the engine pin -> torch extractor: same window, same outputs."""
+        keras_mod = pytest.importorskip("predictor_plugins.modular_temporal")
+>       import_weights = require("RL04", "rl_temporal.keras_import", "import_keras_bundle",
+                                 "Keras->torch weight import with per-stage fidelity report")
+
+tests/rl_temporal/test_rl04_regimes.py:131: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL04', module = 'rl_temporal.keras_import'
+attribute = 'import_keras_bundle'
+mechanism = 'Keras->torch weight import with per-stage fidelity report'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL04 missing mechanism: Keras->torch weight import with per-stage fidelity report (expected rl_temporal.keras_import.import_keras_bundle; module 'rl_temporal.keras_import' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+----------------------------- Captured stderr call -----------------------------
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1790827776.320715 1016445 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+_______________ test_bundle_round_trips_in_a_fresh_process[SAC] ________________
+
+test_id = 'RL05', module = 'rl_temporal.consumers', attribute = 'build_model'
+mechanism = 'model builder'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.consumers', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_bundle_round_trips_in_a_f0')
+algorithm = 'SAC'
+
+    @pytest.mark.parametrize("algorithm", ["SAC", "DQN"])
+    def test_bundle_round_trips_in_a_fresh_process(tmp_path, algorithm):
+        assert_checkout_resolution("RL05")
+>       build = require("RL05", "rl_temporal.consumers", "build_model", "model builder")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/test_rl05_checkpoint.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL05', module = 'rl_temporal.consumers', attribute = 'build_model'
+mechanism = 'model builder'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL05 missing mechanism: model builder (expected rl_temporal.consumers.build_model; module 'rl_temporal.consumers' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+_______________ test_bundle_round_trips_in_a_fresh_process[DQN] ________________
+
+test_id = 'RL05', module = 'rl_temporal.consumers', attribute = 'build_model'
+mechanism = 'model builder'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.consumers', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_bundle_round_trips_in_a_f1')
+algorithm = 'DQN'
+
+    @pytest.mark.parametrize("algorithm", ["SAC", "DQN"])
+    def test_bundle_round_trips_in_a_fresh_process(tmp_path, algorithm):
+        assert_checkout_resolution("RL05")
+>       build = require("RL05", "rl_temporal.consumers", "build_model", "model builder")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/test_rl05_checkpoint.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL05', module = 'rl_temporal.consumers', attribute = 'build_model'
+mechanism = 'model builder'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL05 missing mechanism: model builder (expected rl_temporal.consumers.build_model; module 'rl_temporal.consumers' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+_______________ test_bundle_refuses_a_mismatched_action_mapping ________________
+
+test_id = 'RL05', module = 'rl_temporal.consumers', attribute = 'build_model'
+mechanism = 'model builder'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.consumers', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_bundle_refuses_a_mismatch0')
+
+    def test_bundle_refuses_a_mismatched_action_mapping(tmp_path):
+>       build = require("RL05", "rl_temporal.consumers", "build_model", "model builder")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/test_rl05_checkpoint.py:83: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL05', module = 'rl_temporal.consumers', attribute = 'build_model'
+mechanism = 'model builder'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL05 missing mechanism: model builder (expected rl_temporal.consumers.build_model; module 'rl_temporal.consumers' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+____________ test_scripted_validation_scores_stop_and_restore_best _____________
+
+test_id = 'RL06', module = 'rl_temporal.consumers', attribute = 'build_model'
+mechanism = 'model builder'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.consumers', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_scripted_validation_score0')
+
+    def test_scripted_validation_scores_stop_and_restore_best(tmp_path):
+        assert_checkout_resolution("RL06")
+>       build = require("RL06", "rl_temporal.consumers", "build_model", "model builder")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/test_rl06_validation_early_stop.py:21: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL06', module = 'rl_temporal.consumers', attribute = 'build_model'
+mechanism = 'model builder'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL06 missing mechanism: model builder (expected rl_temporal.consumers.build_model; module 'rl_temporal.consumers' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+_______ test_validation_episodes_are_chronologically_after_training_rows _______
+
+test_id = 'RL06', module = 'rl_temporal.monitoring'
+attribute = 'chronological_validation_factory'
+mechanism = 'validation env factory bound to rows after the training rows'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.monitoring', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_validation_episodes_are_c0')
+
+    def test_validation_episodes_are_chronologically_after_training_rows(tmp_path):
+>       split = require("RL06", "rl_temporal.monitoring", "chronological_validation_factory",
+                        "validation env factory bound to rows after the training rows")
+
+tests/rl_temporal/test_rl06_validation_early_stop.py:55: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL06', module = 'rl_temporal.monitoring'
+attribute = 'chronological_validation_factory'
+mechanism = 'validation env factory bound to rows after the training rows'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL06 missing mechanism: validation env factory bound to rows after the training rows (expected rl_temporal.monitoring.chronological_validation_factory; module 'rl_temporal.monitoring' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+________________________ test_heartbeat_and_hard_limits ________________________
+
+test_id = 'RL06', module = 'rl_temporal.consumers', attribute = 'build_model'
+mechanism = 'model builder'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.consumers', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_heartbeat_and_hard_limits0')
+
+    def test_heartbeat_and_hard_limits(tmp_path):
+>       build = require("RL06", "rl_temporal.consumers", "build_model", "model builder")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/test_rl06_validation_early_stop.py:73: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL06', module = 'rl_temporal.consumers', attribute = 'build_model'
+mechanism = 'model builder'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL06 missing mechanism: model builder (expected rl_temporal.consumers.build_model; module 'rl_temporal.consumers' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+______________ test_open_terminal_position_is_reported_not_filled ______________
+
+test_id = 'RL07', module = 'rl_temporal.reconciliation'
+attribute = 'reconcile_episode', mechanism = 'episode reconciliation record'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.reconciliation', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_open_terminal_position_is0')
+
+    def test_open_terminal_position_is_reported_not_filled(tmp_path):
+        assert_checkout_resolution("RL07")
+>       reconcile = require("RL07", "rl_temporal.reconciliation", "reconcile_episode",
+                            "episode reconciliation record")
+
+tests/rl_temporal/test_rl07_reconciliation.py:16: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL07', module = 'rl_temporal.reconciliation'
+attribute = 'reconcile_episode', mechanism = 'episode reconciliation record'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL07 missing mechanism: episode reconciliation record (expected rl_temporal.reconciliation.reconcile_episode; module 'rl_temporal.reconciliation' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+__________________ test_round_trip_closes_and_costs_reconcile __________________
+
+test_id = 'RL07', module = 'rl_temporal.reconciliation'
+attribute = 'reconcile_episode', mechanism = 'episode reconciliation record'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.reconciliation', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_round_trip_closes_and_cos0')
+
+    def test_round_trip_closes_and_costs_reconcile(tmp_path):
+>       reconcile = require("RL07", "rl_temporal.reconciliation", "reconcile_episode",
+                            "episode reconciliation record")
+
+tests/rl_temporal/test_rl07_reconciliation.py:39: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL07', module = 'rl_temporal.reconciliation'
+attribute = 'reconcile_episode', mechanism = 'episode reconciliation record'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL07 missing mechanism: episode reconciliation record (expected rl_temporal.reconciliation.reconcile_episode; module 'rl_temporal.reconciliation' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+___________________ test_margin_breach_terminates_with_cause ___________________
+
+test_id = 'RL07', module = 'rl_temporal.reconciliation'
+attribute = 'reconcile_episode', mechanism = 'episode reconciliation record'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.reconciliation', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/tmp/pytest-of-harveybc/pytest-242/test_margin_breach_terminates_0')
+
+    def test_margin_breach_terminates_with_cause(tmp_path):
+>       reconcile = require("RL07", "rl_temporal.reconciliation", "reconcile_episode",
+                            "episode reconciliation record")
+
+tests/rl_temporal/test_rl07_reconciliation.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL07', module = 'rl_temporal.reconciliation'
+attribute = 'reconcile_episode', mechanism = 'episode reconciliation record'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL07 missing mechanism: episode reconciliation record (expected rl_temporal.reconciliation.reconcile_episode; module 'rl_temporal.reconciliation' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+________________ test_full_record_validates_and_digests_stably _________________
+
+test_id = 'RL08', module = 'rl_temporal.warehouse_binding'
+attribute = 'validate_result_record', mechanism = 'result record validator'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.warehouse_binding', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+    def test_full_record_validates_and_digests_stably():
+        assert_checkout_resolution("RL08")
+>       validate = require("RL08", "rl_temporal.warehouse_binding", "validate_result_record",
+                           "result record validator")
+
+tests/rl_temporal/test_rl08_warehouse.py:41: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL08', module = 'rl_temporal.warehouse_binding'
+attribute = 'validate_result_record', mechanism = 'result record validator'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL08 missing mechanism: result record validator (expected rl_temporal.warehouse_binding.validate_result_record; module 'rl_temporal.warehouse_binding' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+________________ test_missing_binding_is_refused_by_name[seed] _________________
+
+test_id = 'RL08', module = 'rl_temporal.warehouse_binding'
+attribute = 'validate_result_record', mechanism = 'result record validator'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.warehouse_binding', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+missing = 'seed'
+
+    @pytest.mark.parametrize("missing", ["seed", "actions", "reward", "evaluation_population",
+                                         "costs", "resources", "representation_identity", "task", "data"])
+    def test_missing_binding_is_refused_by_name(missing):
+>       validate = require("RL08", "rl_temporal.warehouse_binding", "validate_result_record",
+                           "result record validator")
+
+tests/rl_temporal/test_rl08_warehouse.py:53: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL08', module = 'rl_temporal.warehouse_binding'
+attribute = 'validate_result_record', mechanism = 'result record validator'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL08 missing mechanism: result record validator (expected rl_temporal.warehouse_binding.validate_result_record; module 'rl_temporal.warehouse_binding' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+_______________ test_missing_binding_is_refused_by_name[actions] _______________
+
+test_id = 'RL08', module = 'rl_temporal.warehouse_binding'
+attribute = 'validate_result_record', mechanism = 'result record validator'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.warehouse_binding', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+missing = 'actions'
+
+    @pytest.mark.parametrize("missing", ["seed", "actions", "reward", "evaluation_population",
+                                         "costs", "resources", "representation_identity", "task", "data"])
+    def test_missing_binding_is_refused_by_name(missing):
+>       validate = require("RL08", "rl_temporal.warehouse_binding", "validate_result_record",
+                           "result record validator")
+
+tests/rl_temporal/test_rl08_warehouse.py:53: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL08', module = 'rl_temporal.warehouse_binding'
+attribute = 'validate_result_record', mechanism = 'result record validator'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL08 missing mechanism: result record validator (expected rl_temporal.warehouse_binding.validate_result_record; module 'rl_temporal.warehouse_binding' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+_______________ test_missing_binding_is_refused_by_name[reward] ________________
+
+test_id = 'RL08', module = 'rl_temporal.warehouse_binding'
+attribute = 'validate_result_record', mechanism = 'result record validator'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.warehouse_binding', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+missing = 'reward'
+
+    @pytest.mark.parametrize("missing", ["seed", "actions", "reward", "evaluation_population",
+                                         "costs", "resources", "representation_identity", "task", "data"])
+    def test_missing_binding_is_refused_by_name(missing):
+>       validate = require("RL08", "rl_temporal.warehouse_binding", "validate_result_record",
+                           "result record validator")
+
+tests/rl_temporal/test_rl08_warehouse.py:53: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL08', module = 'rl_temporal.warehouse_binding'
+attribute = 'validate_result_record', mechanism = 'result record validator'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL08 missing mechanism: result record validator (expected rl_temporal.warehouse_binding.validate_result_record; module 'rl_temporal.warehouse_binding' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+________ test_missing_binding_is_refused_by_name[evaluation_population] ________
+
+test_id = 'RL08', module = 'rl_temporal.warehouse_binding'
+attribute = 'validate_result_record', mechanism = 'result record validator'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.warehouse_binding', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+missing = 'evaluation_population'
+
+    @pytest.mark.parametrize("missing", ["seed", "actions", "reward", "evaluation_population",
+                                         "costs", "resources", "representation_identity", "task", "data"])
+    def test_missing_binding_is_refused_by_name(missing):
+>       validate = require("RL08", "rl_temporal.warehouse_binding", "validate_result_record",
+                           "result record validator")
+
+tests/rl_temporal/test_rl08_warehouse.py:53: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL08', module = 'rl_temporal.warehouse_binding'
+attribute = 'validate_result_record', mechanism = 'result record validator'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL08 missing mechanism: result record validator (expected rl_temporal.warehouse_binding.validate_result_record; module 'rl_temporal.warehouse_binding' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+________________ test_missing_binding_is_refused_by_name[costs] ________________
+
+test_id = 'RL08', module = 'rl_temporal.warehouse_binding'
+attribute = 'validate_result_record', mechanism = 'result record validator'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.warehouse_binding', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+missing = 'costs'
+
+    @pytest.mark.parametrize("missing", ["seed", "actions", "reward", "evaluation_population",
+                                         "costs", "resources", "representation_identity", "task", "data"])
+    def test_missing_binding_is_refused_by_name(missing):
+>       validate = require("RL08", "rl_temporal.warehouse_binding", "validate_result_record",
+                           "result record validator")
+
+tests/rl_temporal/test_rl08_warehouse.py:53: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL08', module = 'rl_temporal.warehouse_binding'
+attribute = 'validate_result_record', mechanism = 'result record validator'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL08 missing mechanism: result record validator (expected rl_temporal.warehouse_binding.validate_result_record; module 'rl_temporal.warehouse_binding' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+______________ test_missing_binding_is_refused_by_name[resources] ______________
+
+test_id = 'RL08', module = 'rl_temporal.warehouse_binding'
+attribute = 'validate_result_record', mechanism = 'result record validator'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.warehouse_binding', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+missing = 'resources'
+
+    @pytest.mark.parametrize("missing", ["seed", "actions", "reward", "evaluation_population",
+                                         "costs", "resources", "representation_identity", "task", "data"])
+    def test_missing_binding_is_refused_by_name(missing):
+>       validate = require("RL08", "rl_temporal.warehouse_binding", "validate_result_record",
+                           "result record validator")
+
+tests/rl_temporal/test_rl08_warehouse.py:53: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL08', module = 'rl_temporal.warehouse_binding'
+attribute = 'validate_result_record', mechanism = 'result record validator'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL08 missing mechanism: result record validator (expected rl_temporal.warehouse_binding.validate_result_record; module 'rl_temporal.warehouse_binding' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+_______ test_missing_binding_is_refused_by_name[representation_identity] _______
+
+test_id = 'RL08', module = 'rl_temporal.warehouse_binding'
+attribute = 'validate_result_record', mechanism = 'result record validator'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.warehouse_binding', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+missing = 'representation_identity'
+
+    @pytest.mark.parametrize("missing", ["seed", "actions", "reward", "evaluation_population",
+                                         "costs", "resources", "representation_identity", "task", "data"])
+    def test_missing_binding_is_refused_by_name(missing):
+>       validate = require("RL08", "rl_temporal.warehouse_binding", "validate_result_record",
+                           "result record validator")
+
+tests/rl_temporal/test_rl08_warehouse.py:53: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL08', module = 'rl_temporal.warehouse_binding'
+attribute = 'validate_result_record', mechanism = 'result record validator'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL08 missing mechanism: result record validator (expected rl_temporal.warehouse_binding.validate_result_record; module 'rl_temporal.warehouse_binding' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+________________ test_missing_binding_is_refused_by_name[task] _________________
+
+test_id = 'RL08', module = 'rl_temporal.warehouse_binding'
+attribute = 'validate_result_record', mechanism = 'result record validator'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.warehouse_binding', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+missing = 'task'
+
+    @pytest.mark.parametrize("missing", ["seed", "actions", "reward", "evaluation_population",
+                                         "costs", "resources", "representation_identity", "task", "data"])
+    def test_missing_binding_is_refused_by_name(missing):
+>       validate = require("RL08", "rl_temporal.warehouse_binding", "validate_result_record",
+                           "result record validator")
+
+tests/rl_temporal/test_rl08_warehouse.py:53: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL08', module = 'rl_temporal.warehouse_binding'
+attribute = 'validate_result_record', mechanism = 'result record validator'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL08 missing mechanism: result record validator (expected rl_temporal.warehouse_binding.validate_result_record; module 'rl_temporal.warehouse_binding' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+________________ test_missing_binding_is_refused_by_name[data] _________________
+
+test_id = 'RL08', module = 'rl_temporal.warehouse_binding'
+attribute = 'validate_result_record', mechanism = 'result record validator'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.warehouse_binding', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+missing = 'data'
+
+    @pytest.mark.parametrize("missing", ["seed", "actions", "reward", "evaluation_population",
+                                         "costs", "resources", "representation_identity", "task", "data"])
+    def test_missing_binding_is_refused_by_name(missing):
+>       validate = require("RL08", "rl_temporal.warehouse_binding", "validate_result_record",
+                           "result record validator")
+
+tests/rl_temporal/test_rl08_warehouse.py:53: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL08', module = 'rl_temporal.warehouse_binding'
+attribute = 'validate_result_record', mechanism = 'result record validator'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL08 missing mechanism: result record validator (expected rl_temporal.warehouse_binding.validate_result_record; module 'rl_temporal.warehouse_binding' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+__________________ test_draft_manifest_cannot_label_a_result ___________________
+
+test_id = 'RL08', module = 'rl_temporal.warehouse_binding'
+attribute = 'validate_result_record', mechanism = 'result record validator'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.warehouse_binding', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+    def test_draft_manifest_cannot_label_a_result():
+>       validate = require("RL08", "rl_temporal.warehouse_binding", "validate_result_record",
+                           "result record validator")
+
+tests/rl_temporal/test_rl08_warehouse.py:62: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL08', module = 'rl_temporal.warehouse_binding'
+attribute = 'validate_result_record', mechanism = 'result record validator'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL08 missing mechanism: result record validator (expected rl_temporal.warehouse_binding.validate_result_record; module 'rl_temporal.warehouse_binding' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+___________ test_heuristic_baseline_without_gate_pass_is_unavailable ___________
+
+test_id = 'RL08', module = 'rl_temporal.warehouse_binding'
+attribute = 'validate_result_record', mechanism = 'result record validator'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+>           mod = importlib.import_module(module)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/rl_temporal/_mechanisms.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'rl_temporal.warehouse_binding', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'rl_temporal'
+
+../../../../anaconda3/envs/trading-stack/lib/python3.12/importlib/__init__.py:90: ModuleNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+    def test_heuristic_baseline_without_gate_pass_is_unavailable():
+>       validate = require("RL08", "rl_temporal.warehouse_binding", "validate_result_record",
+                           "result record validator")
+
+tests/rl_temporal/test_rl08_warehouse.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_id = 'RL08', module = 'rl_temporal.warehouse_binding'
+attribute = 'validate_result_record', mechanism = 'result record validator'
+
+    def require(test_id: str, module: str, attribute: str, mechanism: str):
+        """Return ``module.attribute`` or fail naming the mechanism it implements."""
+        try:
+            mod = importlib.import_module(module)
+        except ModuleNotFoundError as exc:
+            if exc.name and (module == exc.name or module.startswith(exc.name + ".")):
+>               pytest.fail(
+                    f"{test_id} missing mechanism: {mechanism} "
+                    f"(expected {module}.{attribute}; module {module!r} does not exist)"
+                )
+E               Failed: RL08 missing mechanism: result record validator (expected rl_temporal.warehouse_binding.validate_result_record; module 'rl_temporal.warehouse_binding' does not exist)
+
+tests/rl_temporal/_mechanisms.py:28: Failed
+=========================== short test summary info ============================
+FAILED tests/rl_temporal/test_rl01_lake_read.py::test_binding_resolves_feature_order_and_resource_identity
+FAILED tests/rl_temporal/test_rl01_lake_read.py::test_binding_refuses_a_tampered_resource
+FAILED tests/rl_temporal/test_rl01_lake_read.py::test_draft_manifest_refuses_a_real_data_pilot
+FAILED tests/rl_temporal/test_rl01_lake_read.py::test_observation_at_step_t_ignores_rows_at_or_after_t
+FAILED tests/rl_temporal/test_rl01_lake_read.py::test_manifest_without_selected_variant_is_refused
+FAILED tests/rl_temporal/test_rl02_modular_time.py::test_layout_locates_the_feature_window_inside_the_flat_vector
+FAILED tests/rl_temporal/test_rl02_modular_time.py::test_modular_extractor_keeps_time_through_branches_fusion_core
+FAILED tests/rl_temporal/test_rl02_modular_time.py::test_branch_output_is_causal_in_time
+FAILED tests/rl_temporal/test_rl02_modular_time.py::test_baseline_and_modular_consume_the_same_source_information
+FAILED tests/rl_temporal/test_rl03_consumers.py::test_sac_actor_and_critics_ownership_is_explicit[True]
+FAILED tests/rl_temporal/test_rl03_consumers.py::test_sac_actor_and_critics_ownership_is_explicit[False]
+FAILED tests/rl_temporal/test_rl03_consumers.py::test_dqn_online_and_target_consume_the_same_representation
+FAILED tests/rl_temporal/test_rl03_consumers.py::test_a_gradient_step_updates_each_extractor_parameter_at_most_once
+FAILED tests/rl_temporal/test_rl04_regimes.py::test_r1_branches_stay_fixed_while_r0_core_updates
+FAILED tests/rl_temporal/test_rl04_regimes.py::test_r2_branches_start_from_donor_and_then_move
+FAILED tests/rl_temporal/test_rl04_regimes.py::test_r1_without_donor_is_refused_and_r0_forbids_one
+FAILED tests/rl_temporal/test_rl04_regimes.py::test_dqn_target_sync_copies_the_online_encoder
+FAILED tests/rl_temporal/test_rl04_regimes.py::test_sac_target_critic_tracks_critic_encoder_with_polyak
+FAILED tests/rl_temporal/test_rl04_regimes.py::test_keras_bundle_weights_import_with_fidelity
+FAILED tests/rl_temporal/test_rl05_checkpoint.py::test_bundle_round_trips_in_a_fresh_process[SAC]
+FAILED tests/rl_temporal/test_rl05_checkpoint.py::test_bundle_round_trips_in_a_fresh_process[DQN]
+FAILED tests/rl_temporal/test_rl05_checkpoint.py::test_bundle_refuses_a_mismatched_action_mapping
+FAILED tests/rl_temporal/test_rl06_validation_early_stop.py::test_scripted_validation_scores_stop_and_restore_best
+FAILED tests/rl_temporal/test_rl06_validation_early_stop.py::test_validation_episodes_are_chronologically_after_training_rows
+FAILED tests/rl_temporal/test_rl06_validation_early_stop.py::test_heartbeat_and_hard_limits
+FAILED tests/rl_temporal/test_rl07_reconciliation.py::test_open_terminal_position_is_reported_not_filled
+FAILED tests/rl_temporal/test_rl07_reconciliation.py::test_round_trip_closes_and_costs_reconcile
+FAILED tests/rl_temporal/test_rl07_reconciliation.py::test_margin_breach_terminates_with_cause
+FAILED tests/rl_temporal/test_rl08_warehouse.py::test_full_record_validates_and_digests_stably
+FAILED tests/rl_temporal/test_rl08_warehouse.py::test_missing_binding_is_refused_by_name[seed]
+FAILED tests/rl_temporal/test_rl08_warehouse.py::test_missing_binding_is_refused_by_name[actions]
+FAILED tests/rl_temporal/test_rl08_warehouse.py::test_missing_binding_is_refused_by_name[reward]
+FAILED tests/rl_temporal/test_rl08_warehouse.py::test_missing_binding_is_refused_by_name[evaluation_population]
+FAILED tests/rl_temporal/test_rl08_warehouse.py::test_missing_binding_is_refused_by_name[costs]
+FAILED tests/rl_temporal/test_rl08_warehouse.py::test_missing_binding_is_refused_by_name[resources]
+FAILED tests/rl_temporal/test_rl08_warehouse.py::test_missing_binding_is_refused_by_name[representation_identity]
+FAILED tests/rl_temporal/test_rl08_warehouse.py::test_missing_binding_is_refused_by_name[task]
+FAILED tests/rl_temporal/test_rl08_warehouse.py::test_missing_binding_is_refused_by_name[data]
+FAILED tests/rl_temporal/test_rl08_warehouse.py::test_draft_manifest_cannot_label_a_result
+FAILED tests/rl_temporal/test_rl08_warehouse.py::test_heuristic_baseline_without_gate_pass_is_unavailable
+40 failed in 5.82s

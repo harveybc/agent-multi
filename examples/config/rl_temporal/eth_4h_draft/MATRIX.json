@@ -1,0 +1,208 @@
+{
+  "cells": [
+    {
+      "arm": "RL-S0",
+      "config_sha256": "110fc367b930ff69eaac8cf7ab051795ee8badabaafddb5ceca33ba3a97ddac4",
+      "file": "RL-S0_seed101.json",
+      "real_data_fit_allowed": false,
+      "representation_status": "RUNNABLE",
+      "seed": 101
+    },
+    {
+      "arm": "RL-S1",
+      "config_sha256": "15c244c685e29b1b44105a38ec5a491997a850c072c12423ad408cd1c3b317ca",
+      "file": "RL-S1_seed101.json",
+      "real_data_fit_allowed": false,
+      "representation_status": "RUNNABLE_R0_RANDOM_INIT",
+      "seed": 101
+    },
+    {
+      "arm": "RL-D0",
+      "config_sha256": "e8dde000c12913cdc0ce3d8de5aeba832bada15271fd86dc70df8230eb18bd06",
+      "file": "RL-D0_seed101.json",
+      "real_data_fit_allowed": false,
+      "representation_status": "RUNNABLE",
+      "seed": 101
+    },
+    {
+      "arm": "RL-D1",
+      "config_sha256": "9da660f45499bf0c8a79548bdaf4b19592c581a1dbe871da660d445acecec5bd",
+      "file": "RL-D1_seed101.json",
+      "real_data_fit_allowed": false,
+      "representation_status": "RUNNABLE_R0_RANDOM_INIT",
+      "seed": 101
+    },
+    {
+      "arm": "RL-S0",
+      "config_sha256": "ba899698613e25ff1b68936f44c197b24ea78222535010b2849f4f03e2be5954",
+      "file": "RL-S0_seed202.json",
+      "real_data_fit_allowed": false,
+      "representation_status": "RUNNABLE",
+      "seed": 202
+    },
+    {
+      "arm": "RL-S1",
+      "config_sha256": "f3e3c74bbd5a277f029dbb30229289edae56de75d823bc53cc257c0b7db2bc4e",
+      "file": "RL-S1_seed202.json",
+      "real_data_fit_allowed": false,
+      "representation_status": "RUNNABLE_R0_RANDOM_INIT",
+      "seed": 202
+    },
+    {
+      "arm": "RL-D0",
+      "config_sha256": "ed8f671f7635b7ec23354733c606833a9c8237bcc82901b1be14b539b951c905",
+      "file": "RL-D0_seed202.json",
+      "real_data_fit_allowed": false,
+      "representation_status": "RUNNABLE",
+      "seed": 202
+    },
+    {
+      "arm": "RL-D1",
+      "config_sha256": "a56bea7a35f170841763d894b3e50f3180df09e8b809cfc8d4cd2c1c9a17f494",
+      "file": "RL-D1_seed202.json",
+      "real_data_fit_allowed": false,
+      "representation_status": "RUNNABLE_R0_RANDOM_INIT",
+      "seed": 202
+    },
+    {
+      "arm": "RL-S0",
+      "config_sha256": "2f82ade8ae113ca48d3f79e17a0178e76e45ece30d862bad79a7fb4503592ecf",
+      "file": "RL-S0_seed303.json",
+      "real_data_fit_allowed": false,
+      "representation_status": "RUNNABLE",
+      "seed": 303
+    },
+    {
+      "arm": "RL-S1",
+      "config_sha256": "581080fc688d14307110fc7ac1daa818474ea72d846c93114c7aa51430afe414",
+      "file": "RL-S1_seed303.json",
+      "real_data_fit_allowed": false,
+      "representation_status": "RUNNABLE_R0_RANDOM_INIT",
+      "seed": 303
+    },
+    {
+      "arm": "RL-D0",
+      "config_sha256": "b6d82f42cb0c18dc98382a5963d58ab4debd8f995135bbead6fc8dbfeee3d832",
+      "file": "RL-D0_seed303.json",
+      "real_data_fit_allowed": false,
+      "representation_status": "RUNNABLE",
+      "seed": 303
+    },
+    {
+      "arm": "RL-D1",
+      "config_sha256": "5e55273ab3dfa2f82b1f6f2b7050d4c098ad5bd3b3ffcb74577a5838872f01c8",
+      "file": "RL-D1_seed303.json",
+      "real_data_fit_allowed": false,
+      "representation_status": "RUNNABLE_R0_RANDOM_INIT",
+      "seed": 303
+    },
+    {
+      "arm": "RL-S0",
+      "config_sha256": "51bc904c61db01e3fe3fb3fe9f1ed0cede4e18106db1a8204ce8da3ac61c18b9",
+      "file": "RL-S0_seed404.json",
+      "real_data_fit_allowed": false,
+      "representation_status": "RUNNABLE",
+      "seed": 404
+    },
+    {
+      "arm": "RL-S1",
+      "config_sha256": "a0c318a1f493433eb177110894d9438ed621ae84109e509a53d23d6da71462da",
+      "file": "RL-S1_seed404.json",
+      "real_data_fit_allowed": false,
+      "representation_status": "RUNNABLE_R0_RANDOM_INIT",
+      "seed": 404
+    },
+    {
+      "arm": "RL-D0",
+      "config_sha256": "f14287664b117ca0bd25884679f8289bdb2de1d8124cec4eb392a4505a6db852",
+      "file": "RL-D0_seed404.json",
+      "real_data_fit_allowed": false,
+      "representation_status": "RUNNABLE",
+      "seed": 404
+    },
+    {
+      "arm": "RL-D1",
+      "config_sha256": "36af916876c9c05732ea4aa2e777053d0ea7a29dc0fbd8b6f9023bae07fce4e5",
+      "file": "RL-D1_seed404.json",
+      "real_data_fit_allowed": false,
+      "representation_status": "RUNNABLE_R0_RANDOM_INIT",
+      "seed": 404
+    }
+  ],
+  "feature_count": 83,
+  "manifest_sha256": "22ae773085c0c8ed475146ab020a7f02d1e93902fffaf37d15489992e36614b0",
+  "manifest_status": "DRAFT_NOT_FROZEN",
+  "pairing": {
+    "D1-D0:seed101": {
+      "differences": [],
+      "identical_outside_representation": true
+    },
+    "D1-D0:seed202": {
+      "differences": [],
+      "identical_outside_representation": true
+    },
+    "D1-D0:seed303": {
+      "differences": [],
+      "identical_outside_representation": true
+    },
+    "D1-D0:seed404": {
+      "differences": [],
+      "identical_outside_representation": true
+    },
+    "S1-S0:seed101": {
+      "differences": [],
+      "identical_outside_representation": true
+    },
+    "S1-S0:seed202": {
+      "differences": [],
+      "identical_outside_representation": true
+    },
+    "S1-S0:seed303": {
+      "differences": [],
+      "identical_outside_representation": true
+    },
+    "S1-S0:seed404": {
+      "differences": [],
+      "identical_outside_representation": true
+    }
+  },
+  "resources": {
+    "lake_parents": {
+      "reason": "NO_SHA_DECLARED",
+      "verified": false
+    },
+    "model_ready_view": {
+      "path": "predictor examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+      "reason": "NOT_RESOLVABLE",
+      "sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+      "verified": false
+    }
+  },
+  "selected_variant": "A_all_admissible_control",
+  "task": {
+    "input_data_file": "../predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "input_data_sha256_declared": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+    "manifest": {
+      "path": "examples/config/rl_temporal/SELECTED_FEATURE_MANIFEST.eth_4h.v0-DRAFT.json",
+      "sha256": "22ae773085c0c8ed475146ab020a7f02d1e93902fffaf37d15489992e36614b0",
+      "source": "feature-eng satoshi/b-source-transform-coverage-20261001 @ 9162ca3 docs/feature_metrics/laneB/ (lane B, DRAFT_NOT_FROZEN; blockers B1-B4 with lane B / owner)"
+    },
+    "notes": [
+      "window 24 bars x 4h = 96h physical; branch_steps 24; core 24->12->6->6 [2,2,1]; latent (6,8)",
+      "configs are BOUND to the DRAFT manifest sha and refuse any real-data fit until lane B publishes the FROZEN variant A with its new sha",
+      "R1/R2 arms need ETH-task donors from M02 (none exist); only R0 arms are runnable"
+    ],
+    "observation_extras_dim": 4,
+    "out_root": "~/.local/state/scratch/g-rl/runs/eth_4h",
+    "sample_hours": 4,
+    "seeds": [
+      101,
+      202,
+      303,
+      404
+    ],
+    "selected_variant": "A_all_admissible_control",
+    "task_id": "rl_temporal.eth_4h.v0",
+    "window": 24
+  }
+}

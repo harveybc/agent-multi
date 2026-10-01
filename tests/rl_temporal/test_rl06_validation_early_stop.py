@@ -61,7 +61,7 @@ def test_validation_episodes_are_chronologically_after_training_rows(tmp_path):
     try:
         frame = venv.unwrapped.dataframe
         assert len(frame) == 100 + 24 + 64, "validation keeps only its scaler/window context before it"
-        assert str(frame["DATE_TIME"].iloc[-1]) > str(frame["DATE_TIME"].iloc[0])
+        assert str(frame.index[-1]) > str(frame.index[0])
         assert factory.description["validation_rows"] == [200, 300]
         assert factory.description["context_rows"] == 24 + 64
         assert factory.description["first_decision_row"] == 200

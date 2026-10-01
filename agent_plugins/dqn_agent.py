@@ -71,6 +71,11 @@ class Plugin:
 
         p = self._resolve(config)
         policy_kwargs = {"net_arch": list(p["net_arch"])}
+        # Optional declared representation (rl_temporal): plugs an SB3 features
+        # extractor into this same policy; absent block = native FlattenExtractor.
+        if config.get("representation"):
+            from rl_temporal.consumers import policy_kwargs_for
+            policy_kwargs.update(policy_kwargs_for(env, config, algorithm="DQN"))
         model = DQN(
             policy="MlpPolicy",
             env=env,

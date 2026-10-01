@@ -116,3 +116,7 @@ def modular_config(features: List[str] | None = None) -> Dict[str, Any]:
                             "stage_channels": [12, 10, 8], "time_factors": [2, 2, 1]}},
         "output_steps": 6, "output_channels": 8,
     }
+
+
+if __name__ == "__main__":  # python -m tests.rl_temporal._fixtures > fixture_modular_config.json
+    print(json.dumps(modular_config(), indent=2, sort_keys=True))
