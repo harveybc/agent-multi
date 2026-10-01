@@ -1,0 +1,33 @@
+{
+  "initiative": "lane-g-executable-replica-policy",
+  "method": "portable-test-led-data-centric-development",
+  "current_stage": "S11_SYSTEM_VERIFICATION",
+  "stage_status": {
+    "S0_S8_DISCOVERY_THROUGH_TEST_DESIGN": "passed_before_implementation",
+    "S9_UNIT_IMPLEMENTATION": "passed",
+    "S10_INTEGRATION_VERIFICATION": "passed_local_sandbox",
+    "S11_SYSTEM_VERIFICATION": "passed_local_pending_remote_adoption",
+    "S12_ALPHA_ACCEPTANCE": "pending_operator_handoff_deployment"
+  },
+  "traceability_file": "docs/work_plan/RL_REPLICA_POLICY_2026_10_01.md",
+  "evidence": [
+    "RED: pytest tests/rl_temporal/test_replica_policy.py -> ModuleNotFoundError before implementation",
+    "RED: renamed historical-result test failed before identity-based legacy lookup was implemented",
+    "GREEN: 20 passed, 2 deselected in 2.13s; CUDA_VISIBLE_DEVICES empty and numeric thread limits 1",
+    "Command: python -m pytest tests/rl_temporal/test_replica_policy.py tests/rl_temporal/test_arm_configs.py -k 'not replay_storage and not pipeline_skips' -q",
+    "bash -n tools/rl_temporal_queue.sh and git diff --check passed; full suite not run",
+    "tests/rl_temporal/test_replica_policy.py: policy, concurrency, shell handoff and direct-runner refusal without training",
+    "tests/rl_temporal/test_arm_configs.py: default four-cell matrix, held extras and fourth-seed refusal"
+  ],
+  "next_allowed_actions": [
+    "operator adopts tested policy/runner for successor without interrupting the current cell",
+    "reconcile existing campaign results and partial attempts into the shared policy root before dispatch",
+    "persist any scientifically justified extra-replica authorization before its first attempt"
+  ],
+  "blocked_actions": [
+    "claim remote handoff protected without deployment evidence",
+    "launch a fourth replica",
+    "automatically launch S0/202 without persisted justification",
+    "overwrite existing results or automatically retrain a partial attempt"
+  ]
+}

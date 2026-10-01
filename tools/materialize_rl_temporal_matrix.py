@@ -35,7 +35,7 @@ def main(argv=None) -> int:
     resources = binding.verify_resources()
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
-    cells = build_matrix(binding, out_root=task.get("out_root", str(out / "runs")), seeds=task["seeds"],
+    cells = build_matrix(binding, out_root=task.get("out_root", str(out / "runs")), seeds=task.get("seeds", [101]),
                          window=task["window"], sample_hours=task["sample_hours"],
                          input_data_file=task.get("input_data_file"),
                          observation_extras_dim=task.get("observation_extras_dim", 4))
@@ -46,6 +46,7 @@ def main(argv=None) -> int:
         index.append({"file": name, "arm": cell["arm"], "seed": cell["train_seed"],
                       "representation_status": cell["representation"]["status"],
                       "real_data_fit_allowed": cell["pilot_gate"]["real_data_fit_allowed"],
+                      "replica_admission": cell["replica_admission"],
                       "config_sha256": cell["config_sha256"]})
     summary = {"task": task, "manifest_sha256": binding.manifest_sha256, "manifest_status": binding.status,
                "selected_variant": binding.selected_variant, "feature_count": len(binding.feature_order),

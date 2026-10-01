@@ -78,9 +78,20 @@ def main(argv=None) -> int:
     ap.add_argument("--pilot", action="store_true")
     ap.add_argument("--device", default="cpu")
     ap.add_argument("--host-alias", default="UNDECLARED")
+    ap.add_argument("--replica-root", help="Shared campaign policy root; defaults to output parent")
     ap.add_argument("--pilot-epochs", type=int, default=2)
     ap.add_argument("--pilot-epoch-timesteps", type=int, default=2000)
     args = ap.parse_args(argv)
+
+    from rl_temporal.replica_policy import ALLOWED, ReplicaPolicy
+    out = Path(args.out)
+    cell = json.loads(Path(args.cell).read_text())
+    admission = ReplicaPolicy(args.replica_root or os.environ.get("RL_REPLICA_ROOT") or out.parent).admit(cell, out, claim=True)
+    print(json.dumps({"replica_admission": admission}), flush=True)
+    if admission["status"] == "PRESERVED_EXISTING_RESULT":
+        return 0
+    if admission["status"] not in ALLOWED:
+        return 3
 
     import stable_baselines3
     import torch
@@ -92,7 +103,7 @@ def main(argv=None) -> int:
 
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
-    cell = json.loads(Path(args.cell).read_text())
+    (out / "replica_admission.json").write_text(json.dumps(admission, indent=2) + "\n")
     if not cell["pilot_gate"]["real_data_fit_allowed"]:
         raise SystemExit(f"REFUSED: pilot gate closed: {cell['pilot_gate']}")
     data = Path(args.data_root) / cell["input_data_file"]

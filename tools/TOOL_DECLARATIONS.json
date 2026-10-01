@@ -2,6 +2,27 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "materialize_rl_temporal_matrix.py": {
+   "purpose": "Materialize lane G configs with one screening seed per arm by default and explicit held replica annotations; never train",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "lane G"
+  },
+  "run_rl_temporal_cell.py": {
+   "purpose": "Claim replica admission before ML imports, preserve existing results, then run one authorized RL cell; real training tool",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "campaign_operation",
+   "owner": "lane G"
+  },
+  "rl_temporal_queue.sh": {
+   "purpose": "Check persisted replica policy for every successor before resource admission; never authorize extra replicas implicitly",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "campaign_operation",
+   "owner": "lane G"
+  },
   "arm_differentiation.py": {
    "purpose": "Campaign precondition (finding D8-20260815): refuse to dispatch when arms declaring different treatments report byte-identical metric tuples for a defective reason. Typed ladder over POLICY TENSOR hashes (never .zip container digests, whose mtimes make identical weights hash differently) and behaviour fingerprints from return traces with identity columns stripped. SHARED_SCORED_POLICY / TREATMENT_NOT_REALIZED / METRIC_COLLAPSE / UNDECIDABLE refuse; DEGENERATE_IDENTICAL accepts, because a zero-trade or constant-action policy ignores its observations and MUST score alike under any treatment",
    "lifecycle": "supported",

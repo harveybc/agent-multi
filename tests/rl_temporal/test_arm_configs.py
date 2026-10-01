@@ -48,6 +48,20 @@ def test_r1_arm_without_donor_is_blocked_not_relabelled(binding, tmp_path):
     assert cfg["representation"]["regimes_summary"] == "MIXED"
 
 
+def test_screening_default_and_explicit_replica_holds(binding, tmp_path):
+    from rl_temporal.arms import build_matrix
+    cells = build_matrix(binding, out_root=str(tmp_path))
+    assert len(cells) == 4
+    assert {c["train_seed"] for c in cells} == {101}
+    assert {c["replica_admission"]["status"] for c in cells} == {"ALLOW_SCREENING"}
+    extras = build_matrix(binding, out_root=str(tmp_path), seeds=(101, 202, 303))
+    assert len(extras) == 12
+    assert all(c["replica_admission"]["status"] == "HELD_EXTRA_REPLICA"
+               for c in extras if c["train_seed"] != 101)
+    with pytest.raises(ValueError):
+        build_matrix(binding, out_root=str(tmp_path), seeds=(101, 202, 303, 404))
+
+
 def test_replay_storage_option_reaches_sb3_and_env_never_truncates(tmp_path):
     """Option (c): optimize_memory_usage True + handle_timeout_termination False reach the
     SB3 buffer through the plugins, and gym-fx never truncates (so no bootstrapping change)."""

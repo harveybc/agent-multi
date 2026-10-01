@@ -21,6 +21,7 @@ import json
 from typing import Any, Dict, List, Optional, Sequence
 
 from . import ENGINE_PIN
+from .replica_policy import declaration, validate_matrix_seeds
 from .checkpoint import action_mapping_from_config
 from .lake_binding import SelectedFeatureBinding
 from .modular_torch import ModularTemporalEncoder, modular_config_sha256, normalize_modular_config, parameter_accounting
@@ -79,7 +80,7 @@ ALGO = {
             "exploration_fraction": 0.2, "exploration_initial_eps": 1.0, "exploration_final_eps": 0.05,
             "net_arch": [64, 64], "action_space_mode": "discrete"},
 }
-PAIRED_SEEDS: Sequence[int] = (101, 202, 303, 404)
+PAIRED_SEEDS: Sequence[int] = (101,)
 
 #: Coordinator ruling 2026-10-01 (option c): replay storage change only, same transitions and
 #: sampling. SB3 forbids optimize_memory_usage together with handle_timeout_termination; with
@@ -212,6 +213,7 @@ def build_arm_config(arm: str, binding: SelectedFeatureBinding, *, seed: int, ou
     cfg["results_file"] = f"{out_dir}/results.json"
     cfg["save_config"] = f"{out_dir}/config_out.json"
     cfg["quiet_mode"] = True
+    cfg["replica_admission"] = declaration(seed)
     cfg["observation_contract"] = {k: cfg[k] for k in ("require_feature_aware_preprocessor", "preprocessor_plugin",
                                                        "feature_scaling", "feature_scaling_window", "feature_clip",
                                                        "include_price_window", "include_agent_state", "window_size")}
@@ -241,6 +243,7 @@ def _split_dates(split: Dict[str, Any]) -> Dict[str, Any]:
 
 def build_matrix(binding: SelectedFeatureBinding, *, out_root: str, seeds: Sequence[int] = PAIRED_SEEDS,
                  **kwargs: Any) -> List[Dict[str, Any]]:
+    validate_matrix_seeds(seeds)
     cells = []
     for seed in seeds:
         for arm in ARMS:

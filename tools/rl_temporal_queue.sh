@@ -17,11 +17,18 @@ for cell in "$@"; do
   if pgrep -f "run_rl_temporal_cell.py --cell .*$name.json" >/dev/null; then echo "skip $name (running)"; continue; fi
   dir="$OUT/$name"
   if [ -f "$dir/RESULT.json" ]; then echo "skip $name (RESULT exists)"; continue; fi
+  # Re-read persisted authority for every successor; a historical matrix is not permission.
+  if ! python3 -m rl_temporal.replica_policy check --cell "$cell" \
+      --root "${RL_REPLICA_ROOT:-$OUT}" --out "$dir"; then
+    echo "skip $name (replica policy refused; no training launched)"
+    continue
+  fi
   mkdir -p "$dir"
   echo "== $name start $(date -u +%FT%TZ) device=$DEVICE cap=$CAP"
   /usr/bin/time -f "wall %e s maxrss %M kB" $HOME/.local/bin/crispdm-run -m "$CAP" -q -W 7200 -t 5h -n "g-rl-$name" -- \
     ~/anaconda3/envs/trading-stack/bin/python tools/run_rl_temporal_cell.py --cell "$cell" \
-    --data-root ~/Documents/GitHub/predictor --out "$dir" --device "$DEVICE" --host-alias "$HOST" $PILOT_ARGS > "$dir/run.log" 2>&1
+    --data-root ~/Documents/GitHub/predictor --out "$dir" --device "$DEVICE" --host-alias "$HOST" \
+    --replica-root "${RL_REPLICA_ROOT:-$OUT}" ${PILOT_ARGS:-} > "$dir/run.log" 2>&1
   rc=$?
   echo "== $name exit $rc $(date -u +%FT%TZ)"; tail -2 "$dir/run.log"
   python3 - "$OUT" "$HOST" <<'PY'
