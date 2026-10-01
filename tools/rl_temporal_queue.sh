@@ -11,7 +11,10 @@ export TF_CPP_MIN_LOG_LEVEL=3
 if [ "$DEVICE" = "cuda" ]; then export CUDA_VISIBLE_DEVICES="$UUID"; else export CUDA_VISIBLE_DEVICES=""; fi
 mkdir -p "$OUT"
 for cell in "$@"; do
+  if [ -f "$OUT/STOP" ]; then echo "STOP file present: not starting further cells"; break; fi
   name=$(basename "$cell" .json)
+  # adopt, never duplicate: a live python child for this cell means another runner owns it
+  if pgrep -f "run_rl_temporal_cell.py --cell .*$name.json" >/dev/null; then echo "skip $name (running)"; continue; fi
   dir="$OUT/$name"
   if [ -f "$dir/RESULT.json" ]; then echo "skip $name (RESULT exists)"; continue; fi
   mkdir -p "$dir"
