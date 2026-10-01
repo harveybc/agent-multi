@@ -1,0 +1,26 @@
+{
+  "train_rows": [
+    0,
+    13699
+  ],
+  "validation_rows": [
+    13699,
+    15895
+  ],
+  "test_rows": [
+    15895,
+    18085
+  ],
+  "total_rows": 18085,
+  "first_timestamp": "2017-09-28 04:00:00",
+  "last_timestamp": "2025-12-31 20:00:00",
+  "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+  "split": {
+    "train_start": "2017-09-28 04:00:00",
+    "train_end": "2024-01-01 00:00:00",
+    "validation_start": "2024-01-01 00:00:00",
+    "validation_end": "2025-01-01 00:00:00",
+    "test_start": "2025-01-01 00:00:00",
+    "test_end": "2026-01-01 00:00:00"
+  }
+}

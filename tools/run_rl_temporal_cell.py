@@ -45,6 +45,22 @@ def _rows_by_period(csv_path: Path, cfg: dict) -> dict:
             "first_timestamp": str(ts.iloc[0]), "last_timestamp": str(ts.iloc[-1])}
 
 
+def _transitions(summary: dict, out: Path):
+    """Transitions actually collected: the pipeline's own count, else the heartbeat's."""
+    for key in ("num_timesteps", "total_timesteps_collected"):
+        if summary.get(key):
+            return int(summary[key])
+    hist = summary.get("history") or []
+    for h in reversed(hist):
+        for key in ("num_timesteps", "timesteps", "steps_after"):
+            if isinstance(h, dict) and h.get(key):
+                return int(h[key])
+    hb = out / "heartbeat.json"
+    if hb.exists():
+        return int(json.loads(hb.read_text()).get("num_timesteps") or 0) or None
+    return None
+
+
 def _no_trade(factory):
     from rl_temporal.reconciliation import reconcile_episode
     env = factory()
@@ -105,9 +121,13 @@ def main(argv=None) -> int:
     wall = time.monotonic() - t0
     peak_rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1024
     (out / "pipeline_summary.json").write_text(json.dumps(summary, indent=2, default=str) + "\n")
-    best_path = summary.get("best_model_path") or cfg["save_model"]
+    best_path = summary.get("best_model_path")
+    policy_kind = "best_validation_checkpoint"
     if not best_path or not Path(best_path).exists():
-        raise SystemExit(f"no best policy artifact at {best_path}: {summary.get('stop_reason')}")
+        best_path = summary.get("terminal_model_path")
+        policy_kind = "terminal_inactive_no_eligible_checkpoint"
+    if not best_path or not Path(best_path).exists():
+        raise SystemExit(f"no policy artifact (best or terminal): {summary.get('stop_reason')}")
 
     # ---- evaluate the best policy on the chronological validation episode (held out from training)
     from gymnasium.wrappers import FlattenObservation
@@ -153,14 +173,16 @@ def main(argv=None) -> int:
         "actions": cell["action_mapping"], "reward": {"plugin": cell["reward_plugin"], "frozen_before_fit": True},
         "evaluation_population": {"split": "validation", "episodes": 1, "rows": rows["validation_rows"], "selection_metric": cell["selection_metric"],
                                   "pipeline_selection": {"best_composite": summary.get("best_composite"), "stop_reason": summary.get("stop_reason"),
-                                                         "epochs": len(summary.get("history") or [])}},
+                                                         "epochs": len(summary.get("history") or []), "policy_evaluated": policy_kind,
+                                                         "activity_eligible_checkpoint": policy_kind == "best_validation_checkpoint"}},
         "costs": episode["costs"],
         "metrics": {k: episode[k] for k in ("net_return", "max_drawdown_fraction", "sharpe", "turnover_units", "trades_closed", "exposure_fraction")},
         "baselines": {"no_trade": {k: baseline[k] for k in ("net_return", "max_drawdown_fraction", "sharpe", "turnover_units", "trades_closed", "exposure_fraction")},
                       "heuristic": "UNAVAILABLE"},
         "resources": {"host_alias": args.host_alias, "device": args.device, "wall_s": wall, "peak_rss_bytes": int(peak_rss),
+                      "learn_s": (json.loads((out / "heartbeat.json").read_text()).get("elapsed_s") if (out / "heartbeat.json").exists() else None),
                       "gradient_updates": summary.get("compute_contract", {}).get("measured", {}).get("optimizer_calls") if isinstance(summary.get("compute_contract"), dict) else None,
-                      "transitions": summary.get("num_timesteps") or (summary.get("history") or [{}])[-1].get("num_timesteps"),
+                      "transitions": _transitions(summary, out),
                       "epochs": len(summary.get("history") or []), "pilot": bool(args.pilot),
                       "pretraining_cost": {"state": "NONE"} if rep.get("regimes_summary", "R0") == "R0" else {"state": "CHARGED_FROM_DONOR_RECEIPT"}},
         "versions": {"stable_baselines3": stable_baselines3.__version__, "torch": torch.__version__, "engine_pin": rep.get("engine_pin") or "NOT_APPLICABLE"},
@@ -169,7 +191,9 @@ def main(argv=None) -> int:
     doc = validate_result_record(record)
     (out / "RESULT.json").write_text(json.dumps({**record, "validation": doc, "episode": episode, "no_trade_episode": baseline}, indent=2, default=str) + "\n")
     per_step = wall / max(1, int(record["resources"]["transitions"] or 1))
+    hb = json.loads((out / "heartbeat.json").read_text()) if (out / "heartbeat.json").exists() else {}
     print(json.dumps({"arm": cell["arm"], "seed": cell["train_seed"], "status": status, "wall_s": round(wall, 1),
+                      "learn_s": hb.get("elapsed_s"), "policy_evaluated": policy_kind,
                       "transitions": record["resources"]["transitions"], "s_per_transition": round(per_step, 5),
                       "peak_rss_mb": round(peak_rss / 1e6), "net_return": episode["net_return"], "no_trade": baseline["net_return"],
                       "trades": episode["trades_closed"], "stop_reason": summary.get("stop_reason"), "out": str(out)}))

@@ -155,6 +155,9 @@ class Plugin:
         "progress_file": None,
         "progress_update_interval_steps": 1000,
         "ga_fitness_dd_lambda": 1.0,
+        # SB3 ReplayBuffer storage options, e.g. {"optimize_memory_usage": true,
+        # "handle_timeout_termination": false}; None keeps SB3 defaults.
+        "replay_buffer_kwargs": None,
         "oracle_behavior_pretrain_enabled": False,
         "oracle_behavior_labels_file": None,
         "oracle_behavior_pretrain_epochs": 3,
@@ -196,6 +199,7 @@ class Plugin:
         self._require_continuous(env)
         p = self._resolve(config)
         policy_kwargs = {"net_arch": list(p["net_arch"])}
+        _rb = dict(p.get("replay_buffer_kwargs") or {})
         # Optional declared representation (rl_temporal): plugs an SB3 features
         # extractor into this same policy; absent block = native FlattenExtractor.
         if config.get("representation"):
@@ -218,6 +222,10 @@ class Plugin:
             target_entropy=p["target_entropy"],
             use_sde=bool(p["use_sde"]),
             policy_kwargs=policy_kwargs,
+            # SB3 takes optimize_memory_usage as its own kwarg and forwards it to the buffer;
+            # passing it inside replay_buffer_kwargs too raises "multiple values".
+            optimize_memory_usage=bool(_rb.pop("optimize_memory_usage", False)),
+            replay_buffer_kwargs=(_rb or None),
             verbose=int(p["agent_verbose"]),
             seed=seed,
             device=str(p["device"]),

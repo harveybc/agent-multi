@@ -46,3 +46,26 @@ def test_r1_arm_without_donor_is_blocked_not_relabelled(binding, tmp_path):
     assert cfg["representation"]["status"] == "BLOCKED_NO_COMPATIBLE_DONOR"
     assert cfg["representation"]["regimes"]["core"] == "R1"
     assert cfg["representation"]["regimes_summary"] == "MIXED"
+
+
+def test_replay_storage_option_reaches_sb3_and_env_never_truncates(tmp_path):
+    """Option (c): optimize_memory_usage True + handle_timeout_termination False reach the
+    SB3 buffer through the plugins, and gym-fx never truncates (so no bootstrapping change)."""
+    import inspect
+
+    from ._fixtures import FEATURES, env_config, flat_env, modular_config, write_synthetic_csv
+    build = require("ARMS", "rl_temporal.consumers", "build_model", "model builder")
+    import rl_temporal.arms as arms
+    kw = arms.ALGO["DQN"]["replay_buffer_kwargs"]
+    csv = write_synthetic_csv(tmp_path / "f.csv", rows=200)
+    env = flat_env(env_config(csv, action_space_mode="discrete"))
+    try:
+        model = build("DQN", env, modular_config=modular_config(), feature_order=FEATURES, device="cpu", seed=0,
+                      learning_starts=4, buffer_size=64, batch_size=4, replay_buffer_kwargs=kw)
+        assert model.replay_buffer.optimize_memory_usage is True
+        assert model.replay_buffer.handle_timeout_termination is False
+        import gym_fx.env as gym_env
+        src = inspect.getsource(gym_env.GymFxEnv.step)
+        assert "truncated = False" in src and "truncated = True" not in src
+    finally:
+        env.close()

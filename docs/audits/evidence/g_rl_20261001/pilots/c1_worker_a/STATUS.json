@@ -1,0 +1,34 @@
+{
+ "host_alias": "worker_a",
+ "written_at": "2026-10-01T07:49:31Z",
+ "cells": {
+  "RL-D0_seed101": {
+   "result": true,
+   "heartbeat": {
+    "arm": "RL-D0",
+    "elapsed_s": 1.7155826809976134,
+    "interval_s": 30.0,
+    "num_timesteps": 4000,
+    "phase": "training_ended",
+    "pid": 389122,
+    "schema": "rl_temporal.heartbeat.v1",
+    "train_seed": 101,
+    "written_at": "2026-10-01T07:49:12.472114+00:00"
+   }
+  },
+  "RL-S0_seed101": {
+   "result": true,
+   "heartbeat": {
+    "arm": "RL-S0",
+    "elapsed_s": 23.704011234000063,
+    "interval_s": 30.0,
+    "num_timesteps": 4000,
+    "phase": "training_ended",
+    "pid": 387784,
+    "schema": "rl_temporal.heartbeat.v1",
+    "train_seed": 101,
+    "written_at": "2026-10-01T07:48:38.965018+00:00"
+   }
+  }
+ }
+}

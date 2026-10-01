@@ -1,0 +1,26 @@
+Attempting to load plugin: gym_fx_env from group: env.plugins
+Successfully loaded plugin: gym_fx_env (class-level defaults, see config_out.json for actual): {'env_mode': 'inference', 'input_data_file': None, 'price_column': 'CLOSE', 'date_column': 'DATE_TIME', 'headers': True, 'max_rows': None, 'window_size': 32, 'initial_cash': 10000.0, 'position_size': 1.0, 'simulation_engine': 'backtrader', 'execution_cost_profile': None, 'commission': 0.0, 'slippage': 0.0, 'data_feed_plugin': 'default_data_feed', 'broker_plugin': 'default_broker', 'strategy_plugin': 'default_strategy', 'preprocessor_plugin': 'default_preprocessor', 'reward_plugin': 'pnl_reward', 'metrics_plugin': 'default_metrics'}
+Attempting to load plugin: dqn_agent from group: agent.plugins
+Successfully loaded plugin: dqn_agent (class-level defaults, see config_out.json for actual): {'total_timesteps': 10000, 'learning_rate': 0.0001, 'buffer_size': 100000, 'learning_starts': 1000, 'batch_size': 64, 'tau': 1.0, 'gamma': 0.99, 'train_freq': 4, 'gradient_steps': 1, 'target_update_interval': 1000, 'exploration_fraction': 0.1, 'exploration_initial_eps': 1.0, 'exploration_final_eps': 0.05, 'max_grad_norm': 10.0, 'net_arch': (128, 128), 'device': 'auto', 'agent_verbose': 0, 'train_seed': 0, 'training_progress_file': None, 'progress_file': None, 'progress_update_interval_steps': 1000, 'ga_fitness_dd_lambda': 1.0}
+Attempting to load plugin: rl_pipeline_with_validation from group: pipeline.plugins
+Successfully loaded plugin: rl_pipeline_with_validation (class-level defaults, see config_out.json for actual): {'train_years': 4, 'val_years': 1, 'test_years': 1, 'train_days': None, 'val_days': None, 'test_days': None, 'train_start': None, 'train_end': None, 'validation_start': None, 'validation_end': None, 'val_start': None, 'val_end': None, 'test_start': None, 'test_end': None, 'min_split_rows': 100, 'split_anchor': 'start', 'epoch_timesteps': 2000, 'max_epochs': 2000, 'l1_patience': 60, 'l1_patience_start_epoch': 40, 'l1_activity_patience': 40, 'l1_activity_patience_start_epoch': None, 'l1_min_delta': 1e-05, 'l1_min_checkpoint_timesteps': None, 'early_stop_train_tail_days': 7, 'early_stop_min_trades': 1, 'early_stop_min_train_tail_trades': None, 'early_stop_min_validation_trades': None, 'early_stop_no_trade_penalty': 1000000.0, 'selection_metric': 'total_return', 'risk_penalty_lambda': 1.0, 'l1_generalization_gap_penalty_beta': 0.25, 'eval_seed': 0, 'train_seed': 0, 'save_model': './agent_model.zip', 'load_model': None, 'warm_start_model': None, 'return_trace_dir': None, 'evaluate_test_split': True, 'write_results_sidecar': True, 'execution_cost_curriculum_epochs': None, 'actor_liveness_probe_observations': 256, 'actor_liveness_min_live_unit_fraction': 0.1, 'refuse_dead_actor': True, 'refuse_constant_policy_actor': False}
+[epoch   1/2] L1 epoch-warmup<10  L2 -/-  net_return composite=-0.2600 raw=-0.2600 trade_gate=PASS best=-0.2600 (IMPROVED, model saved) actor|w|=nan Δa=+nan critic|w|=nan Δc=+nan ent=nan steps=0->2000 buf=0->2000
+            TRAIN trades=1351 win%=47.15 sharpe=-0.0166 profit=-31.41% bal=6858.99
+            TRAIN_TAIL trades=  15 win%=53.33 sharpe=+0.5048 profit=+1.18% bal=10117.77
+            VAL   trades= 197 win%=38.07 sharpe=-0.0880 profit=-35.06% bal=6493.88
+[epoch   2/2] L1 epoch-warmup<10  L2 -/-  net_return composite=-0.1861 raw=-0.1861 trade_gate=PASS best=-0.1861 (IMPROVED, model saved) actor|w|=nan Δa=+nan critic|w|=nan Δc=+nan ent=nan steps=2000->4000 buf=2000->4000
+            TRAIN trades=1597 win%=45.59 sharpe=-0.0186 profit=-28.67% bal=7133.10
+            TRAIN_TAIL trades=   8 win%=50.00 sharpe=+0.9297 profit=+2.17% bal=10216.50
+            VAL   trades= 223 win%=38.12 sharpe=-0.0657 profit=-25.54% bal=7446.10
+
+=== Final results (best-composite checkpoint) ===
++------------+--------+-------+---------+---------+----------+
+| Split      | Trades | Win % | Sharpe  | Profit  | Balance  |
++------------+--------+-------+---------+---------+----------+
+| Train      | 1597   | 45.59 | -0.0186 | -28.67% | 7133.10  |
+| TrainTail  | 8      | 50.00 | 0.9297  | 2.17%   | 10216.50 |
+| Validation | 223    | 38.12 | -0.0657 | -25.54% | 7446.10  |
++------------+--------+-------+---------+---------+----------+
+[results] wrote /home/harveybc/.local/state/scratch/g-rl/runs/pilot_c1/RL-D0_seed101/results.json
+{"arm": "RL-D0", "seed": 101, "status": "PILOT_NOT_A_RESULT", "wall_s": 26.9, "learn_s": 1.7155826809976134, "policy_evaluated": "best_validation_checkpoint", "transitions": null, "s_per_transition": 26.92301, "peak_rss_mb": 1242, "net_return": -0.26073862499999906, "no_trade": 0.0, "trades": 216, "stop_reason": "max_epochs_budget", "out": "/home/harveybc/.local/state/scratch/g-rl/runs/pilot_c1/RL-D0_seed101"}
+wall 32.64 s maxrss 1363084 kB

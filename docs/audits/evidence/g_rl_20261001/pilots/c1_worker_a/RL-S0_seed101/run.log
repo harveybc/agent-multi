@@ -1,0 +1,27 @@
+Attempting to load plugin: gym_fx_env from group: env.plugins
+Successfully loaded plugin: gym_fx_env (class-level defaults, see config_out.json for actual): {'env_mode': 'inference', 'input_data_file': None, 'price_column': 'CLOSE', 'date_column': 'DATE_TIME', 'headers': True, 'max_rows': None, 'window_size': 32, 'initial_cash': 10000.0, 'position_size': 1.0, 'simulation_engine': 'backtrader', 'execution_cost_profile': None, 'commission': 0.0, 'slippage': 0.0, 'data_feed_plugin': 'default_data_feed', 'broker_plugin': 'default_broker', 'strategy_plugin': 'default_strategy', 'preprocessor_plugin': 'default_preprocessor', 'reward_plugin': 'pnl_reward', 'metrics_plugin': 'default_metrics'}
+Attempting to load plugin: sac_agent from group: agent.plugins
+Successfully loaded plugin: sac_agent (class-level defaults, see config_out.json for actual): {'total_timesteps': 10000, 'learning_rate': 0.0003, 'buffer_size': 100000, 'learning_starts': 1000, 'batch_size': 256, 'tau': 0.005, 'gamma': 0.99, 'train_freq': 1, 'gradient_steps': 1, 'ent_coef': 'auto', 'target_update_interval': 1, 'target_entropy': 'auto', 'use_sde': False, 'net_arch': (256, 256), 'device': 'auto', 'agent_verbose': 0, 'train_seed': 0, 'training_progress_file': None, 'progress_file': None, 'progress_update_interval_steps': 1000, 'ga_fitness_dd_lambda': 1.0, 'oracle_behavior_pretrain_enabled': False, 'oracle_behavior_labels_file': None, 'oracle_behavior_pretrain_epochs': 3, 'oracle_behavior_pretrain_batch_size': 512, 'oracle_behavior_pretrain_hold_fraction': 0.1, 'oracle_behavior_pretrain_max_samples': 0, 'oracle_behavior_pretrain_clip_grad_norm': 1.0}
+Attempting to load plugin: rl_pipeline_with_validation from group: pipeline.plugins
+Successfully loaded plugin: rl_pipeline_with_validation (class-level defaults, see config_out.json for actual): {'train_years': 4, 'val_years': 1, 'test_years': 1, 'train_days': None, 'val_days': None, 'test_days': None, 'train_start': None, 'train_end': None, 'validation_start': None, 'validation_end': None, 'val_start': None, 'val_end': None, 'test_start': None, 'test_end': None, 'min_split_rows': 100, 'split_anchor': 'start', 'epoch_timesteps': 2000, 'max_epochs': 2000, 'l1_patience': 60, 'l1_patience_start_epoch': 40, 'l1_activity_patience': 40, 'l1_activity_patience_start_epoch': None, 'l1_min_delta': 1e-05, 'l1_min_checkpoint_timesteps': None, 'early_stop_train_tail_days': 7, 'early_stop_min_trades': 1, 'early_stop_min_train_tail_trades': None, 'early_stop_min_validation_trades': None, 'early_stop_no_trade_penalty': 1000000.0, 'selection_metric': 'total_return', 'risk_penalty_lambda': 1.0, 'l1_generalization_gap_penalty_beta': 0.25, 'eval_seed': 0, 'train_seed': 0, 'save_model': './agent_model.zip', 'load_model': None, 'warm_start_model': None, 'return_trace_dir': None, 'evaluate_test_split': True, 'write_results_sidecar': True, 'execution_cost_curriculum_epochs': None, 'actor_liveness_probe_observations': 256, 'actor_liveness_min_live_unit_fraction': 0.1, 'refuse_dead_actor': True, 'refuse_constant_policy_actor': False}
+[epoch   1/2] L1 no-activity 0/1000000  L2 -/-  net_return composite=-1000000.0000 raw=+0.0000 trade_gate=FAIL best=-inf (checkpoint ineligible) actor|w|=1757.61 Δa=+52.0743 critic|w|=3702.70 Δc=+312.1551 ent=0.6375 steps=0->2000 buf=0->2000
+            TRAIN trades=   0 win%= 0.00 sharpe=+nan profit=+0.00% bal=10000.00
+            TRAIN_TAIL trades=   0 win%= 0.00 sharpe=+nan profit=+0.00% bal=10000.00
+            VAL   trades=   0 win%= 0.00 sharpe=+nan profit=+0.00% bal=10000.00
+[epoch   2/2] L1 no-activity 0/1000000  L2 -/-  net_return composite=-1000000.0000 raw=+0.0000 trade_gate=FAIL best=-inf (checkpoint ineligible) actor|w|=1792.63 Δa=+35.0175 critic|w|=4070.98 Δc=+368.2708 ent=0.3498 steps=2000->4000 buf=2000->4000
+            TRAIN trades=   0 win%= 0.00 sharpe=+nan profit=+0.00% bal=10000.00
+            TRAIN_TAIL trades=   0 win%= 0.00 sharpe=+nan profit=+0.00% bal=10000.00
+            VAL   trades=   0 win%= 0.00 sharpe=+nan profit=+0.00% bal=10000.00
+[train] INACTIVE TERMINAL RESULT: training ended before an activity-eligible L1 checkpoint became available: num_timesteps=4000, l1_min_checkpoint_timesteps=501; train-tail and validation trade gates must both pass
+
+=== Final results (best-composite checkpoint) ===
++------------+--------+-------+--------+--------+----------+
+| Split      | Trades | Win % | Sharpe | Profit | Balance  |
++------------+--------+-------+--------+--------+----------+
+| Train      | 0      | 0.00  | nan    | 0.00%  | 10000.00 |
+| TrainTail  | 0      | 0.00  | nan    | 0.00%  | 10000.00 |
+| Validation | 0      | 0.00  | nan    | 0.00%  | 10000.00 |
++------------+--------+-------+--------+--------+----------+
+[results] wrote /home/harveybc/.local/state/scratch/g-rl/runs/pilot_c1/RL-S0_seed101/results.json
+{"arm": "RL-S0", "seed": 101, "status": "PILOT_NOT_A_RESULT", "wall_s": 69.7, "learn_s": 23.704011234000063, "policy_evaluated": "terminal_inactive_no_eligible_checkpoint", "transitions": null, "s_per_transition": 69.7128, "peak_rss_mb": 1212, "net_return": 0.0, "no_trade": 0.0, "trades": 0, "stop_reason": "max_epochs_budget", "out": "/home/harveybc/.local/state/scratch/g-rl/runs/pilot_c1/RL-S0_seed101"}
+wall 75.40 s maxrss 1341980 kB

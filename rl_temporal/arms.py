@@ -60,6 +60,9 @@ SHARED_TRAINING = {
     "training_progress_file": "{out_dir}/heartbeat.json", "progress_update_interval_steps": 200,
     "heartbeat_interval_s": 30, "hard_limits": {"max_wall_s": 14400, "max_timesteps": 400000},
     "checkpoint_every_epochs": 5, "best_policy_restore": True,
+    # a policy that never becomes activity-eligible is a MEASURED outcome (inactive), not a
+    # harness failure: the pipeline saves the terminal weights and returns a typed result
+    "inactive_terminal_is_typed_result": True,
 }
 ALGO = {
     "SAC": {"learning_rate": 3e-4, "buffer_size": 100000, "learning_starts": 2000, "batch_size": 256,
@@ -73,6 +76,19 @@ ALGO = {
             "net_arch": [64, 64], "action_space_mode": "discrete"},
 }
 PAIRED_SEEDS: Sequence[int] = (101, 202, 303, 404)
+
+#: Coordinator ruling 2026-10-01 (option c): replay storage change only, same transitions and
+#: sampling. SB3 forbids optimize_memory_usage together with handle_timeout_termination; with
+#: handle_timeout_termination False a TRUNCATED episode end would be bootstrapped as terminal,
+#: but gym-fx never truncates (GymFxEnv.step always returns truncated=False; episodes end only
+#: by data_end / min_equity termination), so episode-end bootstrapping is unchanged.
+REPLAY_STORAGE = {"replay_buffer_kwargs": {"optimize_memory_usage": True, "handle_timeout_termination": False},
+                  "replay_storage_declaration": {"change": "storage_only", "ruling": "coordinator 2026-10-01 option (c)",
+                                                 "buffer_size": 100000, "learning_dynamics_change": "none",
+                                                 "truncation_in_env": "never (gym-fx truncated=False)",
+                                                 "bootstrapping_change": "none"}}
+for _algo in ALGO.values():
+    _algo.update(REPLAY_STORAGE)
 
 
 def default_modular_config(feature_order: Sequence[str], *, window: int, sample_hours: float) -> Dict[str, Any]:

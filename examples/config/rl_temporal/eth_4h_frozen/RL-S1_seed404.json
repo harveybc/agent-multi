@@ -388,7 +388,7 @@
   "buffer_size": 100000,
   "checkpoint_every_epochs": 5,
   "commission": 0.001,
-  "config_sha256": "044423a156755dcfb4f184adcad50d15c84f592930b53391f1b05be77f11ba62",
+  "config_sha256": "c9bc22f289e5dc28b29d1aa4ca9737cc1bf6f4f33a6d9ec9c28202f9a0661f66",
   "continuous_action_contract": "legacy_directional_v1",
   "continuous_action_threshold": 0.33,
   "data_feed_plugin": "default_data_feed",
@@ -517,6 +517,7 @@
   },
   "heartbeat_file": "~/.local/state/scratch/g-rl/runs/eth_4h/RL-S1/seed404/heartbeat.json",
   "heartbeat_interval_s": 30,
+  "inactive_terminal_is_typed_result": true,
   "include_agent_state": true,
   "include_price_window": false,
   "initial_cash": 10000.0,
@@ -557,6 +558,18 @@
   "preprocessor_plugin": "feature_window_preprocessor",
   "progress_update_interval_steps": 200,
   "quiet_mode": true,
+  "replay_buffer_kwargs": {
+    "handle_timeout_termination": false,
+    "optimize_memory_usage": true
+  },
+  "replay_storage_declaration": {
+    "bootstrapping_change": "none",
+    "buffer_size": 100000,
+    "change": "storage_only",
+    "learning_dynamics_change": "none",
+    "ruling": "coordinator 2026-10-01 option (c)",
+    "truncation_in_env": "never (gym-fx truncated=False)"
+  },
   "representation": {
     "donor": null,
     "engine_pin": "3ecdb256",
