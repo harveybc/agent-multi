@@ -1,0 +1,203 @@
+{
+ "schema": "selected_feature_manifest.v1",
+ "version": "1",
+ "status": "FROZEN_DEVELOPMENT",
+ "frozen_at": "2026-10-01",
+ "frozen_by": "Satoshi, successor technical lead (lane B / M03), under the owner standing order of 2026-10-01 and the coordinator's rulings",
+ "supersedes_draft": "SELECTED_FEATURE_MANIFEST.eth_4h.v0-DRAFT.json sha 22ae773085c0c8ed475146ab020a7f02d1e93902fffaf37d15489992e36614b0 (draft kept, not mutated)",
+ "variant": "A_all_admissible_control",
+ "task": {
+  "asset": "ETHUSDT spot",
+  "bar": "4h",
+  "decision_time": "after bar t closes (bar-close convention, uncertified)",
+  "targets": "Y_s@4h and Y_l@24..144h elapsed-time labels (FS02 real-stamp tests); Y_b NOT_EVALUATED"
+ },
+ "resource": {
+  "availability_class": "DEVELOPMENT",
+  "reference_kind": "GIT_PINNED",
+  "repo": "predictor",
+  "commit": "b1f8a74f19f6d164be6367b6d57e726c6ff6b95a",
+  "path": "examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+  "sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+  "rows": 18085,
+  "columns_total": 90,
+  "timestamp_column": "DATE_TIME",
+  "point_in_time": {
+   "stamp": "2026-05-03T02:27:04-05:00",
+   "meaning": "commit time of the pinned bytes; a DEVELOPMENT stamp, not an observed publication or receipt clock"
+  },
+  "resolvable_without_coordinator": "verified on worker_b: same commit, sha256 1b447c66 (2026-10-01)",
+  "governed_resource_id": "NONE (git-pinned DEVELOPMENT reference; not a governed lake resource)"
+ },
+ "lake_parents": {
+  "state": "BOUNDED_AT_FILE_GRAIN",
+  "files": [
+   "features/trading_asset_data/ethusdt/4h.parquet (census app_00bd88770beb60e9ac4b30f4, sha 37321161\u2026)",
+   "features/trading_asset_features/ethusdt/4h/technical.parquet",
+   "features/trading_asset_features/ethusdt/4h/statistical.parquet"
+  ],
+  "unverified_producer": "financial-data _scripts/workers/stage22_trading_features_worker.py@ef0ba661 (technical/statistical; not temporally verified)"
+ },
+ "split": {
+  "declared_by": "the view's immutable manifest, predictor commit 14a1077f9c799940bdc24479d68e1402684cb473 (precedence: a dataset's declared split is preserved, dispatch b327b771 item 11)",
+  "train": {
+   "rows": [
+    0,
+    13699
+   ],
+   "period": "2017-09-28T04:00..2023-12-31T20:00"
+  },
+  "validation": {
+   "period": "2024-01-01..2024-12-31"
+  },
+  "test": {
+   "period": "2025-01-01..2025-12-31",
+   "use": "protected; never selects"
+  },
+  "inner_folds": "3 expanding chronological folds inside TRAIN, validation 15 percent each, purge 60 rows = 24-row context + 36 bars (144 h maximum label support); labels located by elapsed seconds",
+  "related_contracts": {
+   "c127": "d88c2cc9\u2026 (0.6/0.2/0.2 by rows on the raw lake bars; NOT used for this task)",
+   "calendar_successor_draft": "cd46e819\u2026 (prepared, not activated; same calendar cuts on the raw bars)"
+  }
+ },
+ "admissible_declaration_sha256": "f3c0becaa1655ac16a567aef6ac0e67ecbb89ddc5b204e05d5a8dac2394b527d",
+ "admissible_declaration_file_sha256": "5129f274683561e2971e5ec9c3cea7841876247a90a34a215f87638ac6665c1e",
+ "feature_order": "exactly all_admissible_control of the admissible declaration",
+ "features": [
+  "return_1",
+  "log_return_1",
+  "return_5",
+  "log_return_5",
+  "return_10",
+  "log_return_10",
+  "return_20",
+  "log_return_20",
+  "return_60",
+  "log_return_60",
+  "sma_10",
+  "ema_10",
+  "close_sma_ratio_10",
+  "sma_20",
+  "ema_20",
+  "close_sma_ratio_20",
+  "sma_50",
+  "ema_50",
+  "close_sma_ratio_50",
+  "sma_100",
+  "ema_100",
+  "close_sma_ratio_100",
+  "sma_200",
+  "ema_200",
+  "close_sma_ratio_200",
+  "macd",
+  "macd_signal",
+  "macd_hist",
+  "rsi_7",
+  "rsi_14",
+  "rsi_21",
+  "stoch_k",
+  "stoch_d",
+  "williams_r_14",
+  "cci_14",
+  "roc_10",
+  "roc_20",
+  "roc_60",
+  "mom_10",
+  "mom_20",
+  "bb_upper",
+  "bb_middle",
+  "bb_lower",
+  "bb_pct_b",
+  "bb_width",
+  "atr_14",
+  "natr_14",
+  "hist_vol_10",
+  "hist_vol_20",
+  "hist_vol_60",
+  "ema_cross_10_50",
+  "ema_cross_20_100",
+  "trend_slope_50",
+  "trend_strength_50",
+  "obv",
+  "obv_delta_20",
+  "volume_sma_10",
+  "volume_sma_20",
+  "volume_ratio_20",
+  "vwap_60",
+  "mfi_14",
+  "statistical__log_return_1",
+  "roll_mean_ret_20",
+  "roll_std_ret_20",
+  "roll_skew_ret_20",
+  "roll_kurt_ret_20",
+  "roll_mean_ret_60",
+  "roll_std_ret_60",
+  "roll_skew_ret_60",
+  "roll_kurt_ret_60",
+  "roll_mean_ret_252",
+  "roll_std_ret_252",
+  "roll_skew_ret_252",
+  "roll_kurt_ret_252",
+  "realized_var_12",
+  "realized_var_48",
+  "autocorr_lag1_100",
+  "autocorr_lag5_100",
+  "sqret_autocorr_lag1_100",
+  "vol_regime_high",
+  "vol_regime_low",
+  "hurst_proxy_200",
+  "zscore_close_100"
+ ],
+ "feature_count": 83,
+ "exclusions": [
+  {
+   "column": "DATE_TIME",
+   "status": "EXCLUDED",
+   "reason": "time index; never a branch input"
+  },
+  {
+   "column": "typical_price",
+   "status": "EXCLUDED",
+   "reason": "RAW_PRICE_OR_VOLUME_LEVEL_NOT_IN_DATASET_FEATURE_LIST (predictor manifest 14a1077f feature_columns)"
+  },
+  {
+   "column": "OPEN",
+   "status": "EXCLUDED",
+   "reason": "RAW_PRICE_OR_VOLUME_LEVEL_NOT_IN_DATASET_FEATURE_LIST (predictor manifest 14a1077f feature_columns)"
+  },
+  {
+   "column": "HIGH",
+   "status": "EXCLUDED",
+   "reason": "RAW_PRICE_OR_VOLUME_LEVEL_NOT_IN_DATASET_FEATURE_LIST (predictor manifest 14a1077f feature_columns)"
+  },
+  {
+   "column": "LOW",
+   "status": "EXCLUDED",
+   "reason": "RAW_PRICE_OR_VOLUME_LEVEL_NOT_IN_DATASET_FEATURE_LIST (predictor manifest 14a1077f feature_columns)"
+  },
+  {
+   "column": "CLOSE",
+   "status": "EXCLUDED",
+   "reason": "ASSET_PRICE_SOURCE: CLOSE is the declared source of Y_s/Y_l; raw level not in the dataset manifest's feature list"
+  },
+  {
+   "column": "VOLUME",
+   "status": "EXCLUDED",
+   "reason": "RAW_PRICE_OR_VOLUME_LEVEL_NOT_IN_DATASET_FEATURE_LIST (predictor manifest 14a1077f feature_columns)"
+  }
+ ],
+ "blockers": {
+  "B1_point_in_time": "RECORDED_NOT_CLEARED: no observed availability contract; DEVELOPMENT class by coordinator ruling (Q19)",
+  "B2_lake_resource": "RECORDED_NOT_CLEARED: parents BOUNDED_AT_FILE_GRAIN, producer not temporally verified",
+  "B3_split": "RECORDED_NOT_CLEARED in the lake (C127 0.6/0.2/0.2 vs task calendar split); this manifest declares the task split",
+  "B4_selection": "NOT_APPLICABLE to variant A (no selection decision)"
+ },
+ "use": "RL and forecast cost pilots and the all-admissible control; development evidence only",
+ "not_claimed": [
+  "point-in-time admissibility",
+  "utility",
+  "financial performance",
+  "any selection result"
+ ],
+ "manifest_sha256_canonical": "30b780784c9ec4f04ec6d58bec056e7dd9b15706595489856bf8e336202b3a67"
+}

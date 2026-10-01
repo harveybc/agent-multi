@@ -46,9 +46,11 @@ def validate_result_record(record: Dict[str, Any]) -> Dict[str, Any]:
                 raise ValueError(f"result record {key}.{f} is missing")
     if record["status"] not in _STATUSES:
         raise ValueError(f"status must be one of {_STATUSES}")
-    if record["status"] == "RESULT" and record["task"]["manifest_status"] != "FROZEN":
+    if record["status"] == "RESULT" and record["task"]["manifest_status"] not in ("FROZEN", "FROZEN_DEVELOPMENT"):
         raise ValueError(f"a RESULT cannot be labelled from a {record['task']['manifest_status']} manifest "
-                         "(DRAFT_NOT_FROZEN selection may be recomputed; only FROZEN binds a result)")
+                         "(DRAFT_NOT_FROZEN selection may be recomputed; only a frozen manifest binds a result)")
+    if record["task"]["manifest_status"] == "FROZEN_DEVELOPMENT" and not record["task"].get("availability_class"):
+        raise ValueError("a FROZEN_DEVELOPMENT manifest must carry task.availability_class (DEVELOPMENT evidence)")
     sharpe = record["metrics"]["sharpe"]
     if not isinstance(sharpe, dict) or "convention" not in sharpe or "value" not in sharpe:
         raise ValueError("metrics.sharpe must carry value and convention (and undefined_reason when None)")

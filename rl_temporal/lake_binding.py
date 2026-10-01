@@ -18,7 +18,8 @@ from typing import Any, Dict, Optional, Tuple
 import numpy as np
 
 MANIFEST_SCHEMA = "selected_feature_manifest.v1"
-STATUSES = ("FROZEN", "DRAFT_NOT_FROZEN")
+STATUSES = ("FROZEN", "FROZEN_DEVELOPMENT", "DRAFT_NOT_FROZEN")
+FROZEN_STATUSES = ("FROZEN", "FROZEN_DEVELOPMENT")
 
 
 class PilotRefused(RuntimeError):
@@ -58,33 +59,50 @@ class SelectedFeatureBinding:
         status = doc.get("status")
         if status not in STATUSES:
             raise ValueError(f"manifest status must be one of {STATUSES}; got {status!r}")
-        variant = selected_variant or doc.get("selected_variant")
+        variant = selected_variant or doc.get("selected_variant") or doc.get("variant")
         if not variant:
             raise ValueError("manifest declares no selected_variant; the RL task must name one explicitly")
-        variants = doc.get("variants") or {}
-        if variant not in variants:
-            raise ValueError(f"selected_variant {variant!r} is not among {sorted(variants)}")
-        features = variants[variant].get("features") or []
+        if "variants" in doc:                      # v0 draft shape: several variants
+            variants = doc.get("variants") or {}
+            if variant not in variants:
+                raise ValueError(f"selected_variant {variant!r} is not among {sorted(variants)}")
+            features = variants[variant].get("features") or []
+            resources = dict(doc.get("resources") or {})
+        else:                                      # v1 frozen shape: one variant, features at top level
+            if doc.get("variant") != variant:
+                raise ValueError(f"selected_variant {variant!r} != frozen manifest variant {doc.get('variant')!r}")
+            features = doc.get("features") or []
+            resources = {"model_ready_view": dict(doc.get("resource") or {})}
+            if doc.get("feature_count") not in (None, len(features)):
+                raise ValueError("manifest feature_count disagrees with its features list")
         if not features or len(set(features)) != len(features):
             raise ValueError("selected variant must list unique feature names")
+        task = dict(doc.get("task") or {})
+        task.setdefault("dataset_id", (doc.get("resource") or {}).get("path") or task.get("asset"))
+        task["availability_class"] = (doc.get("resource") or {}).get("availability_class") or ("GOVERNED" if status == "FROZEN" else None)
+        task["manifest_sha256_canonical"] = doc.get("manifest_sha256_canonical")
+        task["supersedes_draft"] = doc.get("supersedes_draft")
+        task["blockers"] = doc.get("blockers") or doc.get("blockers_to_freezing")
         return cls(str(p), _sha(p), status, variant, tuple(str(f) for f in features),
-                   dict(doc.get("task") or {}), dict(doc.get("split") or {}), dict(doc.get("resources") or {}))
+                   task, dict(doc.get("split") or {}), resources)
 
-    def _resolve(self, raw: str) -> Optional[Path]:
-        candidates = [Path(raw), Path(self.manifest_path).parent / raw]
+    def _resolve(self, raw: str, extra_roots: Tuple[Path, ...] = ()) -> Optional[Path]:
+        candidates = [Path(raw), Path(self.manifest_path).parent / raw, *[Path(r) / raw for r in extra_roots]]
         for c in candidates:
             if c.is_file():
                 return c
         return None
 
-    def verify_resources(self) -> Dict[str, Any]:
+    def verify_resources(self, *, roots: Tuple[Path, ...] = ()) -> Dict[str, Any]:
+        """``roots``: directories a GIT_PINNED resource path may be resolved against
+        (for example a local checkout of the pinned repo)."""
         out: Dict[str, Any] = {}
         for name, res in self.resources.items():
             if not isinstance(res, dict) or "sha256" not in res:
                 out[name] = {"verified": False, "reason": "NO_SHA_DECLARED"}
                 continue
             raw = str(res.get("path", ""))
-            path = self._resolve(raw)
+            path = self._resolve(raw, tuple(Path(r) for r in roots))
             if path is None:
                 out[name] = {"verified": False, "reason": "NOT_RESOLVABLE", "path": raw, "sha256": res["sha256"]}
                 continue
@@ -92,17 +110,24 @@ class SelectedFeatureBinding:
             if actual != res["sha256"]:
                 raise ResourceIdentityMismatch(
                     f"resource {name} at {path} has sha256 {actual[:12]}..., manifest declares {res['sha256'][:12]}...")
-            out[name] = {"verified": True, "path": str(path), "sha256": actual}
+            out[name] = {"verified": True, "path": str(path), "sha256": actual,
+                         "reference_kind": res.get("reference_kind"), "commit": res.get("commit"),
+                         "availability_class": res.get("availability_class")}
         return out
 
     def env_overrides(self) -> Dict[str, Any]:
         return {"feature_columns": list(self.feature_order),
                 "selected_feature_manifest_sha256": self.manifest_sha256,
                 "selected_feature_manifest_status": self.status,
+                "selected_feature_availability_class": self.task.get("availability_class"),
                 "selected_variant": self.selected_variant}
 
+    @property
+    def frozen(self) -> bool:
+        return self.status in FROZEN_STATUSES
+
     def refuse_real_data_pilot(self) -> None:
-        if self.status != "FROZEN":
+        if not self.frozen:
             raise PilotRefused(f"manifest {Path(self.manifest_path).name} is {self.status}: no real-data pilot "
                                "may start from an unfrozen selection")
 

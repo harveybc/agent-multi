@@ -1,0 +1,206 @@
+{
+  "cells": [
+    {
+      "arm": "RL-S0",
+      "config_sha256": "c44dacf73953bc684c446c0134e60b84e5cf3f65b23bdee876244c057f1ac68e",
+      "file": "RL-S0_seed101.json",
+      "real_data_fit_allowed": true,
+      "representation_status": "RUNNABLE",
+      "seed": 101
+    },
+    {
+      "arm": "RL-S1",
+      "config_sha256": "18c45b50f548e95596a27cd88387dcd11bbdc0a7b958cd6d432fda077a8254bc",
+      "file": "RL-S1_seed101.json",
+      "real_data_fit_allowed": true,
+      "representation_status": "RUNNABLE_R0_RANDOM_INIT",
+      "seed": 101
+    },
+    {
+      "arm": "RL-D0",
+      "config_sha256": "119c0f787f0a33bc9cc4d796a0e22ef7787063fb0b0dd3a73bacdf4f202e0d7f",
+      "file": "RL-D0_seed101.json",
+      "real_data_fit_allowed": true,
+      "representation_status": "RUNNABLE",
+      "seed": 101
+    },
+    {
+      "arm": "RL-D1",
+      "config_sha256": "3191080dae5d6e94f07a09249e27047879dfdc999eaa669f5ff72700544957c4",
+      "file": "RL-D1_seed101.json",
+      "real_data_fit_allowed": true,
+      "representation_status": "RUNNABLE_R0_RANDOM_INIT",
+      "seed": 101
+    },
+    {
+      "arm": "RL-S0",
+      "config_sha256": "a12e62183c4ff359b66d7a7901e4d7d459def88a941d9d04def246aab14db8db",
+      "file": "RL-S0_seed202.json",
+      "real_data_fit_allowed": true,
+      "representation_status": "RUNNABLE",
+      "seed": 202
+    },
+    {
+      "arm": "RL-S1",
+      "config_sha256": "b3a8eb9826eba0a75a9b8b80d0f6ce3ea9c9d0d0e7498eeede1345161a0595c6",
+      "file": "RL-S1_seed202.json",
+      "real_data_fit_allowed": true,
+      "representation_status": "RUNNABLE_R0_RANDOM_INIT",
+      "seed": 202
+    },
+    {
+      "arm": "RL-D0",
+      "config_sha256": "fc630431e037185c4d32c0da4602c387df3d4ecb129246261f9294a542ff5274",
+      "file": "RL-D0_seed202.json",
+      "real_data_fit_allowed": true,
+      "representation_status": "RUNNABLE",
+      "seed": 202
+    },
+    {
+      "arm": "RL-D1",
+      "config_sha256": "741f6927a7bde64bc39c4cb5b29eb6babb09f00e99883042f24cb136defe939f",
+      "file": "RL-D1_seed202.json",
+      "real_data_fit_allowed": true,
+      "representation_status": "RUNNABLE_R0_RANDOM_INIT",
+      "seed": 202
+    },
+    {
+      "arm": "RL-S0",
+      "config_sha256": "c9f991249d0ae3d94f8cb5017d6e0f44b634ea183948196ba46b13014a712b45",
+      "file": "RL-S0_seed303.json",
+      "real_data_fit_allowed": true,
+      "representation_status": "RUNNABLE",
+      "seed": 303
+    },
+    {
+      "arm": "RL-S1",
+      "config_sha256": "0ffaeb8f8b263fe5f76aa3771d5f7dbef003b893cc972e176b4e102d1f12a774",
+      "file": "RL-S1_seed303.json",
+      "real_data_fit_allowed": true,
+      "representation_status": "RUNNABLE_R0_RANDOM_INIT",
+      "seed": 303
+    },
+    {
+      "arm": "RL-D0",
+      "config_sha256": "16d804e28a7cc18d4a35ab9a64ac99bc365277b1dfce4133c952bab3a1a5ef71",
+      "file": "RL-D0_seed303.json",
+      "real_data_fit_allowed": true,
+      "representation_status": "RUNNABLE",
+      "seed": 303
+    },
+    {
+      "arm": "RL-D1",
+      "config_sha256": "e751522aaac4901a7c44b2daf0190b6cb8d620e82962873c17347c42a4dfc573",
+      "file": "RL-D1_seed303.json",
+      "real_data_fit_allowed": true,
+      "representation_status": "RUNNABLE_R0_RANDOM_INIT",
+      "seed": 303
+    },
+    {
+      "arm": "RL-S0",
+      "config_sha256": "d67760358f04374cd4b4c9966c53e4ae7a0195b51719c62912bceee3b97ebb07",
+      "file": "RL-S0_seed404.json",
+      "real_data_fit_allowed": true,
+      "representation_status": "RUNNABLE",
+      "seed": 404
+    },
+    {
+      "arm": "RL-S1",
+      "config_sha256": "044423a156755dcfb4f184adcad50d15c84f592930b53391f1b05be77f11ba62",
+      "file": "RL-S1_seed404.json",
+      "real_data_fit_allowed": true,
+      "representation_status": "RUNNABLE_R0_RANDOM_INIT",
+      "seed": 404
+    },
+    {
+      "arm": "RL-D0",
+      "config_sha256": "5a905dec30ee71197e61861a8cd1c927b306a8689d5c0fcb3879c36582a195e0",
+      "file": "RL-D0_seed404.json",
+      "real_data_fit_allowed": true,
+      "representation_status": "RUNNABLE",
+      "seed": 404
+    },
+    {
+      "arm": "RL-D1",
+      "config_sha256": "87dab2a8ac4c3691a577e62cae53cd751aeddf53b39247ca27ee3536041b0bb6",
+      "file": "RL-D1_seed404.json",
+      "real_data_fit_allowed": true,
+      "representation_status": "RUNNABLE_R0_RANDOM_INIT",
+      "seed": 404
+    }
+  ],
+  "feature_count": 83,
+  "manifest_sha256": "fdff0c85fc376cd6930cede4981a64b076022bd701c6a045339689e3ab892d4c",
+  "manifest_status": "FROZEN_DEVELOPMENT",
+  "pairing": {
+    "D1-D0:seed101": {
+      "differences": [],
+      "identical_outside_representation": true
+    },
+    "D1-D0:seed202": {
+      "differences": [],
+      "identical_outside_representation": true
+    },
+    "D1-D0:seed303": {
+      "differences": [],
+      "identical_outside_representation": true
+    },
+    "D1-D0:seed404": {
+      "differences": [],
+      "identical_outside_representation": true
+    },
+    "S1-S0:seed101": {
+      "differences": [],
+      "identical_outside_representation": true
+    },
+    "S1-S0:seed202": {
+      "differences": [],
+      "identical_outside_representation": true
+    },
+    "S1-S0:seed303": {
+      "differences": [],
+      "identical_outside_representation": true
+    },
+    "S1-S0:seed404": {
+      "differences": [],
+      "identical_outside_representation": true
+    }
+  },
+  "resources": {
+    "model_ready_view": {
+      "path": "examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+      "reason": "NOT_RESOLVABLE",
+      "sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+      "verified": false
+    }
+  },
+  "selected_variant": "A_all_admissible_control",
+  "task": {
+    "input_data_file": "examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "input_data_roots_note": "GIT_PINNED to predictor b1f8a74f; resolved at run time against a local predictor checkout root passed to the runner (--data-root); sha verified before any fit",
+    "input_data_sha256_declared": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+    "manifest": {
+      "canonical_sha256": "30b780784c9ec4f04ec6d58bec056e7dd9b15706595489856bf8e336202b3a67",
+      "path": "examples/config/rl_temporal/SELECTED_FEATURE_MANIFEST.eth_4h.v1.FROZEN_DEVELOPMENT.json",
+      "sha256": "fdff0c85fc376cd6930cede4981a64b076022bd701c6a045339689e3ab892d4c",
+      "source": "feature-eng satoshi/b-source-transform-coverage-20261001 @ b90c4b3 docs/feature_metrics/laneB/ (lane B, FROZEN_DEVELOPMENT; supersedes draft 22ae7730)"
+    },
+    "notes": [
+      "window 24 bars x 4h = 96h physical; branch_steps 24; core 24->12->6->6 [2,2,1]; latent (6,8)",
+      "configs bound to the FROZEN_DEVELOPMENT manifest (availability class DEVELOPMENT; blockers B1-B3 RECORDED_NOT_CLEARED): development evidence only",
+      "R1/R2 arms need ETH-task donors (M07 forecast campaign); only R0 arms are runnable"
+    ],
+    "observation_extras_dim": 4,
+    "out_root": "~/.local/state/scratch/g-rl/runs/eth_4h",
+    "sample_hours": 4,
+    "seeds": [
+      101,
+      202,
+      303,
+      404
+    ],
+    "selected_variant": "A_all_admissible_control",
+    "task_id": "rl_temporal.eth_4h.v1",
+    "window": 24
+  }
+}

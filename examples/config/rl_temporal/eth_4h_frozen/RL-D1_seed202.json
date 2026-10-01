@@ -1,0 +1,1844 @@
+{
+  "accounting": {
+    "compute": {
+      "fields": [
+        "wall_s",
+        "gradient_updates",
+        "transitions",
+        "peak_rss_bytes"
+      ],
+      "state": "MEASURED_AT_RUN_TIME"
+    },
+    "extractor": {
+      "branches": {
+        "branch_0": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_1": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_10": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_11": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_12": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_13": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_14": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_15": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_16": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_17": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_18": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_19": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_2": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_20": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_21": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_22": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_23": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_24": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_25": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_26": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_27": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_28": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_29": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_3": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_30": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_31": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_32": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_33": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_34": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_35": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_36": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_37": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_38": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_39": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_4": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_40": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_41": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_42": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_43": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_44": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_45": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_46": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_47": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_48": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_49": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_5": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_50": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_51": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_52": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_53": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_54": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_55": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_56": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_57": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_58": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_59": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_6": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_60": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_61": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_62": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_63": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_64": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_65": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_66": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_67": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_68": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_69": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_7": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_70": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_71": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_72": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_73": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_74": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_75": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_76": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_77": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_78": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_79": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_8": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_80": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_81": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_82": {
+          "total": 64,
+          "trainable": 64
+        },
+        "branch_9": {
+          "total": 64,
+          "trainable": 64
+        }
+      },
+      "core": {
+        "total": 168320,
+        "trainable": 168320
+      },
+      "total": 173632,
+      "trainable": 173632
+    },
+    "extractor_parameters": 173632,
+    "features_dim": 52,
+    "observation_dim": 1996,
+    "policy_heads": {
+      "extractor_copies": 2,
+      "q_net": 7747,
+      "q_net_target": 7747
+    },
+    "pretraining_cost": {
+      "state": "NONE"
+    }
+  },
+  "action_mapping": {
+    "action_space_mode": "discrete",
+    "mapping": {
+      "0": "hold",
+      "1": "long",
+      "2": "short"
+    },
+    "space": "Discrete(3)"
+  },
+  "action_space_mode": "discrete",
+  "action_space_note": "SAC Box(-1,1) thresholded by the env (3 effective actions) vs DQN Discrete(3): not an identical action space; no discrete-SAC is installed (SB3 2.9.0)",
+  "agent_plugin": "dqn_agent",
+  "agent_state_contract": "legacy_episode_v1",
+  "algorithm": "DQN",
+  "arm": "RL-D1",
+  "batch_size": 128,
+  "best_policy_restore": true,
+  "broker_plugin": "default_broker",
+  "buffer_size": 100000,
+  "checkpoint_every_epochs": 5,
+  "commission": 0.001,
+  "config_sha256": "741f6927a7bde64bc39c4cb5b29eb6babb09f00e99883042f24cb136defe939f",
+  "data_feed_plugin": "default_data_feed",
+  "device": "cpu",
+  "early_stop_min_trades": 1,
+  "env_mode": "training",
+  "env_plugin": "gym_fx_env",
+  "epoch_timesteps": 2000,
+  "eval_seed": 202,
+  "evaluate_test_split": false,
+  "exploration_final_eps": 0.05,
+  "exploration_fraction": 0.2,
+  "exploration_initial_eps": 1.0,
+  "feature_clip": 10.0,
+  "feature_columns": [
+    "return_1",
+    "log_return_1",
+    "return_5",
+    "log_return_5",
+    "return_10",
+    "log_return_10",
+    "return_20",
+    "log_return_20",
+    "return_60",
+    "log_return_60",
+    "sma_10",
+    "ema_10",
+    "close_sma_ratio_10",
+    "sma_20",
+    "ema_20",
+    "close_sma_ratio_20",
+    "sma_50",
+    "ema_50",
+    "close_sma_ratio_50",
+    "sma_100",
+    "ema_100",
+    "close_sma_ratio_100",
+    "sma_200",
+    "ema_200",
+    "close_sma_ratio_200",
+    "macd",
+    "macd_signal",
+    "macd_hist",
+    "rsi_7",
+    "rsi_14",
+    "rsi_21",
+    "stoch_k",
+    "stoch_d",
+    "williams_r_14",
+    "cci_14",
+    "roc_10",
+    "roc_20",
+    "roc_60",
+    "mom_10",
+    "mom_20",
+    "bb_upper",
+    "bb_middle",
+    "bb_lower",
+    "bb_pct_b",
+    "bb_width",
+    "atr_14",
+    "natr_14",
+    "hist_vol_10",
+    "hist_vol_20",
+    "hist_vol_60",
+    "ema_cross_10_50",
+    "ema_cross_20_100",
+    "trend_slope_50",
+    "trend_strength_50",
+    "obv",
+    "obv_delta_20",
+    "volume_sma_10",
+    "volume_sma_20",
+    "volume_ratio_20",
+    "vwap_60",
+    "mfi_14",
+    "statistical__log_return_1",
+    "roll_mean_ret_20",
+    "roll_std_ret_20",
+    "roll_skew_ret_20",
+    "roll_kurt_ret_20",
+    "roll_mean_ret_60",
+    "roll_std_ret_60",
+    "roll_skew_ret_60",
+    "roll_kurt_ret_60",
+    "roll_mean_ret_252",
+    "roll_std_ret_252",
+    "roll_skew_ret_252",
+    "roll_kurt_ret_252",
+    "realized_var_12",
+    "realized_var_48",
+    "autocorr_lag1_100",
+    "autocorr_lag5_100",
+    "sqret_autocorr_lag1_100",
+    "vol_regime_high",
+    "vol_regime_low",
+    "hurst_proxy_200",
+    "zscore_close_100"
+  ],
+  "feature_scaling": "rolling_zscore",
+  "feature_scaling_window": 256,
+  "frozen_evaluation": {
+    "baselines": [
+      "no_trade",
+      "heuristic:UNAVAILABLE unless naive_gate passed"
+    ],
+    "report": [
+      "net_return",
+      "max_drawdown_fraction",
+      "sharpe(per-bar, ddof=1, not annualized)",
+      "turnover_units",
+      "trades_closed",
+      "exposure_fraction"
+    ],
+    "risk_penalty_lambda": 1.0,
+    "selection_metric": "net_return",
+    "selection_source": "validation_episode"
+  },
+  "frozen_reward": {
+    "metrics_plugin": "trading_metrics",
+    "reward_plugin": "pnl_reward"
+  },
+  "gamma": 0.99,
+  "gradient_steps": 1,
+  "hard_limits": {
+    "max_timesteps": 400000,
+    "max_wall_s": 14400
+  },
+  "heartbeat_file": "~/.local/state/scratch/g-rl/runs/eth_4h/RL-D1/seed202/heartbeat.json",
+  "heartbeat_interval_s": 30,
+  "include_agent_state": true,
+  "include_price_window": false,
+  "initial_cash": 10000.0,
+  "input_data_file": "examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+  "l1_activity_patience": 20,
+  "l1_patience": 20,
+  "l1_patience_start_epoch": 10,
+  "learning_rate": 0.0001,
+  "learning_starts": 2000,
+  "max_epochs": 200,
+  "metrics_plugin": "trading_metrics",
+  "min_equity": 100.0,
+  "mode": "train",
+  "net_arch": [
+    64,
+    64
+  ],
+  "observation_contract": {
+    "feature_clip": 10.0,
+    "feature_scaling": "rolling_zscore",
+    "feature_scaling_window": 256,
+    "include_agent_state": true,
+    "include_price_window": false,
+    "preprocessor_plugin": "feature_window_preprocessor",
+    "require_feature_aware_preprocessor": true,
+    "window_size": 24
+  },
+  "paired_seed_group": "seed202",
+  "pilot_gate": {
+    "availability_class": "DEVELOPMENT",
+    "evidence_class": "DEVELOPMENT",
+    "manifest_status": "FROZEN_DEVELOPMENT",
+    "real_data_fit_allowed": true,
+    "reason": null
+  },
+  "pipeline_plugin": "rl_pipeline_with_validation",
+  "position_size": 1.0,
+  "preprocessor_plugin": "feature_window_preprocessor",
+  "progress_update_interval_steps": 200,
+  "quiet_mode": true,
+  "representation": {
+    "donor": null,
+    "engine_pin": "3ecdb256",
+    "feature_order": [
+      "return_1",
+      "log_return_1",
+      "return_5",
+      "log_return_5",
+      "return_10",
+      "log_return_10",
+      "return_20",
+      "log_return_20",
+      "return_60",
+      "log_return_60",
+      "sma_10",
+      "ema_10",
+      "close_sma_ratio_10",
+      "sma_20",
+      "ema_20",
+      "close_sma_ratio_20",
+      "sma_50",
+      "ema_50",
+      "close_sma_ratio_50",
+      "sma_100",
+      "ema_100",
+      "close_sma_ratio_100",
+      "sma_200",
+      "ema_200",
+      "close_sma_ratio_200",
+      "macd",
+      "macd_signal",
+      "macd_hist",
+      "rsi_7",
+      "rsi_14",
+      "rsi_21",
+      "stoch_k",
+      "stoch_d",
+      "williams_r_14",
+      "cci_14",
+      "roc_10",
+      "roc_20",
+      "roc_60",
+      "mom_10",
+      "mom_20",
+      "bb_upper",
+      "bb_middle",
+      "bb_lower",
+      "bb_pct_b",
+      "bb_width",
+      "atr_14",
+      "natr_14",
+      "hist_vol_10",
+      "hist_vol_20",
+      "hist_vol_60",
+      "ema_cross_10_50",
+      "ema_cross_20_100",
+      "trend_slope_50",
+      "trend_strength_50",
+      "obv",
+      "obv_delta_20",
+      "volume_sma_10",
+      "volume_sma_20",
+      "volume_ratio_20",
+      "vwap_60",
+      "mfi_14",
+      "statistical__log_return_1",
+      "roll_mean_ret_20",
+      "roll_std_ret_20",
+      "roll_skew_ret_20",
+      "roll_kurt_ret_20",
+      "roll_mean_ret_60",
+      "roll_std_ret_60",
+      "roll_skew_ret_60",
+      "roll_kurt_ret_60",
+      "roll_mean_ret_252",
+      "roll_std_ret_252",
+      "roll_skew_ret_252",
+      "roll_kurt_ret_252",
+      "realized_var_12",
+      "realized_var_48",
+      "autocorr_lag1_100",
+      "autocorr_lag5_100",
+      "sqret_autocorr_lag1_100",
+      "vol_regime_high",
+      "vol_regime_low",
+      "hurst_proxy_200",
+      "zscore_close_100"
+    ],
+    "kind": "modular_temporal",
+    "modular_config": {
+      "branch_steps": 24,
+      "branches": [
+        {
+          "features": [
+            "return_1"
+          ],
+          "name": "branch_0",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "log_return_1"
+          ],
+          "name": "branch_1",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "return_5"
+          ],
+          "name": "branch_2",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "log_return_5"
+          ],
+          "name": "branch_3",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "return_10"
+          ],
+          "name": "branch_4",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "log_return_10"
+          ],
+          "name": "branch_5",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "return_20"
+          ],
+          "name": "branch_6",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "log_return_20"
+          ],
+          "name": "branch_7",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "return_60"
+          ],
+          "name": "branch_8",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "log_return_60"
+          ],
+          "name": "branch_9",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "sma_10"
+          ],
+          "name": "branch_10",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "ema_10"
+          ],
+          "name": "branch_11",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "close_sma_ratio_10"
+          ],
+          "name": "branch_12",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "sma_20"
+          ],
+          "name": "branch_13",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "ema_20"
+          ],
+          "name": "branch_14",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "close_sma_ratio_20"
+          ],
+          "name": "branch_15",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "sma_50"
+          ],
+          "name": "branch_16",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "ema_50"
+          ],
+          "name": "branch_17",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "close_sma_ratio_50"
+          ],
+          "name": "branch_18",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "sma_100"
+          ],
+          "name": "branch_19",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "ema_100"
+          ],
+          "name": "branch_20",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "close_sma_ratio_100"
+          ],
+          "name": "branch_21",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "sma_200"
+          ],
+          "name": "branch_22",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "ema_200"
+          ],
+          "name": "branch_23",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "close_sma_ratio_200"
+          ],
+          "name": "branch_24",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "macd"
+          ],
+          "name": "branch_25",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "macd_signal"
+          ],
+          "name": "branch_26",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "macd_hist"
+          ],
+          "name": "branch_27",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "rsi_7"
+          ],
+          "name": "branch_28",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "rsi_14"
+          ],
+          "name": "branch_29",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "rsi_21"
+          ],
+          "name": "branch_30",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "stoch_k"
+          ],
+          "name": "branch_31",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "stoch_d"
+          ],
+          "name": "branch_32",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "williams_r_14"
+          ],
+          "name": "branch_33",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "cci_14"
+          ],
+          "name": "branch_34",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "roc_10"
+          ],
+          "name": "branch_35",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "roc_20"
+          ],
+          "name": "branch_36",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "roc_60"
+          ],
+          "name": "branch_37",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "mom_10"
+          ],
+          "name": "branch_38",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "mom_20"
+          ],
+          "name": "branch_39",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "bb_upper"
+          ],
+          "name": "branch_40",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "bb_middle"
+          ],
+          "name": "branch_41",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "bb_lower"
+          ],
+          "name": "branch_42",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "bb_pct_b"
+          ],
+          "name": "branch_43",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "bb_width"
+          ],
+          "name": "branch_44",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "atr_14"
+          ],
+          "name": "branch_45",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "natr_14"
+          ],
+          "name": "branch_46",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "hist_vol_10"
+          ],
+          "name": "branch_47",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "hist_vol_20"
+          ],
+          "name": "branch_48",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "hist_vol_60"
+          ],
+          "name": "branch_49",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "ema_cross_10_50"
+          ],
+          "name": "branch_50",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "ema_cross_20_100"
+          ],
+          "name": "branch_51",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "trend_slope_50"
+          ],
+          "name": "branch_52",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "trend_strength_50"
+          ],
+          "name": "branch_53",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "obv"
+          ],
+          "name": "branch_54",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "obv_delta_20"
+          ],
+          "name": "branch_55",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "volume_sma_10"
+          ],
+          "name": "branch_56",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "volume_sma_20"
+          ],
+          "name": "branch_57",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "volume_ratio_20"
+          ],
+          "name": "branch_58",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "vwap_60"
+          ],
+          "name": "branch_59",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "mfi_14"
+          ],
+          "name": "branch_60",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "statistical__log_return_1"
+          ],
+          "name": "branch_61",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "roll_mean_ret_20"
+          ],
+          "name": "branch_62",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "roll_std_ret_20"
+          ],
+          "name": "branch_63",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "roll_skew_ret_20"
+          ],
+          "name": "branch_64",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "roll_kurt_ret_20"
+          ],
+          "name": "branch_65",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "roll_mean_ret_60"
+          ],
+          "name": "branch_66",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "roll_std_ret_60"
+          ],
+          "name": "branch_67",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "roll_skew_ret_60"
+          ],
+          "name": "branch_68",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "roll_kurt_ret_60"
+          ],
+          "name": "branch_69",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "roll_mean_ret_252"
+          ],
+          "name": "branch_70",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "roll_std_ret_252"
+          ],
+          "name": "branch_71",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "roll_skew_ret_252"
+          ],
+          "name": "branch_72",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "roll_kurt_ret_252"
+          ],
+          "name": "branch_73",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "realized_var_12"
+          ],
+          "name": "branch_74",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "realized_var_48"
+          ],
+          "name": "branch_75",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "autocorr_lag1_100"
+          ],
+          "name": "branch_76",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "autocorr_lag5_100"
+          ],
+          "name": "branch_77",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "sqret_autocorr_lag1_100"
+          ],
+          "name": "branch_78",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "vol_regime_high"
+          ],
+          "name": "branch_79",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "vol_regime_low"
+          ],
+          "name": "branch_80",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "hurst_proxy_200"
+          ],
+          "name": "branch_81",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        },
+        {
+          "features": [
+            "zscore_close_100"
+          ],
+          "name": "branch_82",
+          "params": {
+            "channels": 16,
+            "kernel_size": 3
+          },
+          "plugin": "causal_conv1d"
+        }
+      ],
+      "core": {
+        "params": {
+          "blocks": 2,
+          "d_model": 64,
+          "dropout": 0.0,
+          "ff_dim": 128,
+          "heads": 4,
+          "kernel_size": 3,
+          "stage_channels": [
+            32,
+            16,
+            8
+          ],
+          "time_factors": [
+            2,
+            2,
+            1
+          ]
+        },
+        "plugin": "transformer_conv"
+      },
+      "feature_names": [
+        "return_1",
+        "log_return_1",
+        "return_5",
+        "log_return_5",
+        "return_10",
+        "log_return_10",
+        "return_20",
+        "log_return_20",
+        "return_60",
+        "log_return_60",
+        "sma_10",
+        "ema_10",
+        "close_sma_ratio_10",
+        "sma_20",
+        "ema_20",
+        "close_sma_ratio_20",
+        "sma_50",
+        "ema_50",
+        "close_sma_ratio_50",
+        "sma_100",
+        "ema_100",
+        "close_sma_ratio_100",
+        "sma_200",
+        "ema_200",
+        "close_sma_ratio_200",
+        "macd",
+        "macd_signal",
+        "macd_hist",
+        "rsi_7",
+        "rsi_14",
+        "rsi_21",
+        "stoch_k",
+        "stoch_d",
+        "williams_r_14",
+        "cci_14",
+        "roc_10",
+        "roc_20",
+        "roc_60",
+        "mom_10",
+        "mom_20",
+        "bb_upper",
+        "bb_middle",
+        "bb_lower",
+        "bb_pct_b",
+        "bb_width",
+        "atr_14",
+        "natr_14",
+        "hist_vol_10",
+        "hist_vol_20",
+        "hist_vol_60",
+        "ema_cross_10_50",
+        "ema_cross_20_100",
+        "trend_slope_50",
+        "trend_strength_50",
+        "obv",
+        "obv_delta_20",
+        "volume_sma_10",
+        "volume_sma_20",
+        "volume_ratio_20",
+        "vwap_60",
+        "mfi_14",
+        "statistical__log_return_1",
+        "roll_mean_ret_20",
+        "roll_std_ret_20",
+        "roll_skew_ret_20",
+        "roll_kurt_ret_20",
+        "roll_mean_ret_60",
+        "roll_std_ret_60",
+        "roll_skew_ret_60",
+        "roll_kurt_ret_60",
+        "roll_mean_ret_252",
+        "roll_std_ret_252",
+        "roll_skew_ret_252",
+        "roll_kurt_ret_252",
+        "realized_var_12",
+        "realized_var_48",
+        "autocorr_lag1_100",
+        "autocorr_lag5_100",
+        "sqret_autocorr_lag1_100",
+        "vol_regime_high",
+        "vol_regime_low",
+        "hurst_proxy_200",
+        "zscore_close_100"
+      ],
+      "fusion": {
+        "plugin": "sequence_concat"
+      },
+      "output_channels": 8,
+      "output_steps": 6,
+      "sample_hours": 4,
+      "schema": "predictor.modular.v1",
+      "window": 24
+    },
+    "modular_config_sha256": "5943ec123ee151f731244839487b1092ac923d4487705a7e8315fbd66198ceb2",
+    "regimes": {
+      "branch_0": "R0",
+      "branch_1": "R0",
+      "branch_10": "R0",
+      "branch_11": "R0",
+      "branch_12": "R0",
+      "branch_13": "R0",
+      "branch_14": "R0",
+      "branch_15": "R0",
+      "branch_16": "R0",
+      "branch_17": "R0",
+      "branch_18": "R0",
+      "branch_19": "R0",
+      "branch_2": "R0",
+      "branch_20": "R0",
+      "branch_21": "R0",
+      "branch_22": "R0",
+      "branch_23": "R0",
+      "branch_24": "R0",
+      "branch_25": "R0",
+      "branch_26": "R0",
+      "branch_27": "R0",
+      "branch_28": "R0",
+      "branch_29": "R0",
+      "branch_3": "R0",
+      "branch_30": "R0",
+      "branch_31": "R0",
+      "branch_32": "R0",
+      "branch_33": "R0",
+      "branch_34": "R0",
+      "branch_35": "R0",
+      "branch_36": "R0",
+      "branch_37": "R0",
+      "branch_38": "R0",
+      "branch_39": "R0",
+      "branch_4": "R0",
+      "branch_40": "R0",
+      "branch_41": "R0",
+      "branch_42": "R0",
+      "branch_43": "R0",
+      "branch_44": "R0",
+      "branch_45": "R0",
+      "branch_46": "R0",
+      "branch_47": "R0",
+      "branch_48": "R0",
+      "branch_49": "R0",
+      "branch_5": "R0",
+      "branch_50": "R0",
+      "branch_51": "R0",
+      "branch_52": "R0",
+      "branch_53": "R0",
+      "branch_54": "R0",
+      "branch_55": "R0",
+      "branch_56": "R0",
+      "branch_57": "R0",
+      "branch_58": "R0",
+      "branch_59": "R0",
+      "branch_6": "R0",
+      "branch_60": "R0",
+      "branch_61": "R0",
+      "branch_62": "R0",
+      "branch_63": "R0",
+      "branch_64": "R0",
+      "branch_65": "R0",
+      "branch_66": "R0",
+      "branch_67": "R0",
+      "branch_68": "R0",
+      "branch_69": "R0",
+      "branch_7": "R0",
+      "branch_70": "R0",
+      "branch_71": "R0",
+      "branch_72": "R0",
+      "branch_73": "R0",
+      "branch_74": "R0",
+      "branch_75": "R0",
+      "branch_76": "R0",
+      "branch_77": "R0",
+      "branch_78": "R0",
+      "branch_79": "R0",
+      "branch_8": "R0",
+      "branch_80": "R0",
+      "branch_81": "R0",
+      "branch_82": "R0",
+      "branch_9": "R0",
+      "core": "R0"
+    },
+    "regimes_summary": "R0",
+    "share_features_extractor": true,
+    "status": "RUNNABLE_R0_RANDOM_INIT"
+  },
+  "require_feature_aware_preprocessor": true,
+  "results_file": "~/.local/state/scratch/g-rl/runs/eth_4h/RL-D1/seed202/results.json",
+  "return_trace_dir": "~/.local/state/scratch/g-rl/runs/eth_4h/RL-D1/seed202/traces",
+  "reward_plugin": "pnl_reward",
+  "save_config": "~/.local/state/scratch/g-rl/runs/eth_4h/RL-D1/seed202/config_out.json",
+  "save_model": "~/.local/state/scratch/g-rl/runs/eth_4h/RL-D1/seed202/best_policy.zip",
+  "selected_feature_availability_class": "DEVELOPMENT",
+  "selected_feature_manifest_sha256": "fdff0c85fc376cd6930cede4981a64b076022bd701c6a045339689e3ab892d4c",
+  "selected_feature_manifest_status": "FROZEN_DEVELOPMENT",
+  "selected_variant": "A_all_admissible_control",
+  "selection_metric": "net_return",
+  "slippage": 0.0,
+  "solvency_mode": "normal_realistic",
+  "split_source": "manifest split (train end = validation start; validation end = test start)",
+  "strategy_plugin": "default_strategy",
+  "target_update_interval": 1000,
+  "task": {
+    "asset": "ETHUSDT spot",
+    "availability_class": "DEVELOPMENT",
+    "bar": "4h",
+    "blockers": {
+      "B1_point_in_time": "RECORDED_NOT_CLEARED: no observed availability contract; DEVELOPMENT class by coordinator ruling (Q19)",
+      "B2_lake_resource": "RECORDED_NOT_CLEARED: parents BOUNDED_AT_FILE_GRAIN, producer not temporally verified",
+      "B3_split": "RECORDED_NOT_CLEARED in the lake (C127 0.6/0.2/0.2 vs task calendar split); this manifest declares the task split",
+      "B4_selection": "NOT_APPLICABLE to variant A (no selection decision)"
+    },
+    "dataset_id": "examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "decision_time": "after bar t closes (bar-close convention, uncertified)",
+    "manifest_path": "examples/config/rl_temporal/SELECTED_FEATURE_MANIFEST.eth_4h.v1.FROZEN_DEVELOPMENT.json",
+    "manifest_sha256": "fdff0c85fc376cd6930cede4981a64b076022bd701c6a045339689e3ab892d4c",
+    "manifest_sha256_canonical": "30b780784c9ec4f04ec6d58bec056e7dd9b15706595489856bf8e336202b3a67",
+    "manifest_status": "FROZEN_DEVELOPMENT",
+    "selected_variant": "A_all_admissible_control",
+    "split": {
+      "declared_by": "the view's immutable manifest, predictor commit 14a1077f9c799940bdc24479d68e1402684cb473 (precedence: a dataset's declared split is preserved, dispatch b327b771 item 11)",
+      "inner_folds": "3 expanding chronological folds inside TRAIN, validation 15 percent each, purge 60 rows = 24-row context + 36 bars (144 h maximum label support); labels located by elapsed seconds",
+      "related_contracts": {
+        "c127": "d88c2cc9\u2026 (0.6/0.2/0.2 by rows on the raw lake bars; NOT used for this task)",
+        "calendar_successor_draft": "cd46e819\u2026 (prepared, not activated; same calendar cuts on the raw bars)"
+      },
+      "test": {
+        "period": "2025-01-01..2025-12-31",
+        "use": "protected; never selects"
+      },
+      "train": {
+        "period": "2017-09-28T04:00..2023-12-31T20:00",
+        "rows": [
+          0,
+          13699
+        ]
+      },
+      "validation": {
+        "period": "2024-01-01..2024-12-31"
+      }
+    },
+    "supersedes_draft": "SELECTED_FEATURE_MANIFEST.eth_4h.v0-DRAFT.json sha 22ae773085c0c8ed475146ab020a7f02d1e93902fffaf37d15489992e36614b0 (draft kept, not mutated)",
+    "targets": "Y_s@4h and Y_l@24..144h elapsed-time labels (FS02 real-stamp tests); Y_b NOT_EVALUATED"
+  },
+  "tau": 1.0,
+  "test_end": "2026-01-01 00:00:00",
+  "test_start": "2025-01-01 00:00:00",
+  "train_end": "2024-01-01 00:00:00",
+  "train_freq": 4,
+  "train_seed": 202,
+  "train_start": "2017-09-28 04:00:00",
+  "training_progress_file": "~/.local/state/scratch/g-rl/runs/eth_4h/RL-D1/seed202/heartbeat.json",
+  "validation_end": "2025-01-01 00:00:00",
+  "validation_start": "2024-01-01 00:00:00",
+  "versions": {
+    "backtrader": "1.9.78.123",
+    "engine_pin": "3ecdb256",
+    "gymnasium": "1.3.0",
+    "stable_baselines3": "2.9.0",
+    "torch": "2.13.0+cu130"
+  },
+  "window_size": 24
+}

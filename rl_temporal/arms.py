@@ -181,14 +181,42 @@ def build_arm_config(arm: str, binding: SelectedFeatureBinding, *, seed: int, ou
     obs_dim = int(window) * len(binding.feature_order) + int(observation_extras_dim)
     cfg["accounting"] = accounting(arm, cfg, obs_dim, int(observation_extras_dim))
     cfg["versions"] = _versions()
-    cfg["pilot_gate"] = {"manifest_status": binding.status,
-                         "real_data_fit_allowed": binding.status == "FROZEN",
-                         "reason": None if binding.status == "FROZEN" else f"manifest is {binding.status}"}
+    cfg["pilot_gate"] = {"manifest_status": binding.status, "real_data_fit_allowed": binding.frozen,
+                         "availability_class": binding.task.get("availability_class"),
+                         "evidence_class": "DEVELOPMENT" if binding.status == "FROZEN_DEVELOPMENT" else
+                                           ("GOVERNED" if binding.status == "FROZEN" else None),
+                         "reason": None if binding.frozen else f"manifest is {binding.status}"}
+    cfg.update(_split_dates(binding.split))
+    cfg["evaluate_test_split"] = False            # test 2025 is protected: never selects, never reported here
+    cfg["heartbeat_file"] = f"{out_dir}/heartbeat.json"
+    cfg["results_file"] = f"{out_dir}/results.json"
+    cfg["save_config"] = f"{out_dir}/config_out.json"
+    cfg["quiet_mode"] = True
     cfg["observation_contract"] = {k: cfg[k] for k in ("require_feature_aware_preprocessor", "preprocessor_plugin",
                                                        "feature_scaling", "feature_scaling_window", "feature_clip",
                                                        "include_price_window", "include_agent_state", "window_size")}
     cfg["config_sha256"] = hashlib.sha256(json.dumps(cfg, sort_keys=True, default=str).encode()).hexdigest()
     return cfg
+
+
+def _split_dates(split: Dict[str, Any]) -> Dict[str, Any]:
+    """Explicit calendar split for the pipeline (half-open ranges), from the manifest split."""
+    def _period(block):
+        if isinstance(block, dict):
+            return str(block.get("period") or "")
+        return str(block or "")
+    train, val, test = _period(split.get("train")), _period(split.get("validation")), _period(split.get("test"))
+    if not (train and val and test):
+        return {}
+    t0, t1 = [x.strip() for x in train.split("..")]
+    v0, v1 = [x.strip() for x in val.split("..")]
+    s0, s1 = [x.strip() for x in test.split("..")]
+    import pandas as pd
+    end_of = lambda d: str(pd.Timestamp(d) + (pd.Timedelta(days=1) if len(d) == 10 else pd.Timedelta(hours=4)))
+    return {"train_start": str(pd.Timestamp(t0)), "train_end": str(pd.Timestamp(v0)),
+            "validation_start": str(pd.Timestamp(v0)), "validation_end": str(pd.Timestamp(s0)),
+            "test_start": str(pd.Timestamp(s0)), "test_end": end_of(s1),
+            "split_source": "manifest split (train end = validation start; validation end = test start)"}
 
 
 def build_matrix(binding: SelectedFeatureBinding, *, out_root: str, seeds: Sequence[int] = PAIRED_SEEDS,
@@ -203,7 +231,7 @@ def build_matrix(binding: SelectedFeatureBinding, *, out_root: str, seeds: Seque
 def check_pairing(cells: List[Dict[str, Any]]) -> Dict[str, Any]:
     """Within each contrast and seed, everything but the representation block must be equal."""
     ignore = {"arm", "representation", "accounting", "config_sha256", "save_model", "return_trace_dir",
-              "training_progress_file"}
+              "training_progress_file", "heartbeat_file", "results_file", "save_config"}  # per-cell paths
     by = {(c["arm"], c["train_seed"]): c for c in cells}
     report = {}
     for name, (treated, control) in CONTRASTS.items():

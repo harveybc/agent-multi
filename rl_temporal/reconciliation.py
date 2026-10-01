@@ -57,6 +57,7 @@ def reconcile_episode(env, *, actions: Callable[[int, Dict[str, Any]], Any], fla
     last_info: Dict[str, Any] = dict(info)
     terminated = truncated = False
     step = 0
+    trace: List[Dict[str, Any]] = []
     while not (terminated or truncated):
         if flatten_at is not None and step == flatten_at and hasattr(base, "flatten_step"):
             # risk-reducing close through the simulator's own tested path (action 3 +
@@ -110,6 +111,11 @@ def reconcile_episode(env, *, actions: Callable[[int, Dict[str, Any]], Any], fla
                 commission_expected += delta_units * fill_price * commission_rate
         units_prev = units
         exposed += int(int(info.get("position", 0) or 0) != 0)
+        trace.append({"step": step, "bar_index": int(info.get("bar_index", 0) or 0),
+                      "action": int(info.get("coerced_action", 0) or 0), "raw_action": float(info.get("raw_action_value", 0.0) or 0.0),
+                      "position": int(info.get("position", 0) or 0), "position_units": units, "equity": equity,
+                      "pnl": float(info.get("pnl", equity - equities[-2])), "trades": int(info.get("trades", 0) or 0),
+                      "is_context_prefix": bool(info.get("is_context_prefix", False))})
         equity_prev = equity
         last_info = dict(info)
     final_equity = float(last_info.get("equity", equity_prev))
@@ -152,4 +158,5 @@ def reconcile_episode(env, *, actions: Callable[[int, Dict[str, Any]], Any], fla
         "margin": {"min_equity": float(cfg.get("min_equity", 100.0) or 0.0),
                    "leverage": cfg.get("leverage"), "solvency_mode": cfg.get("solvency_mode", "normal_realistic")},
         "execution_diagnostics": diag,
+        "trace": trace,
     }

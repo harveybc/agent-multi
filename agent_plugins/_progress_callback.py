@@ -37,10 +37,17 @@ def _safe_int(value: Any, default: int = 0) -> int:
 
 
 def make_progress_callback(config: Dict[str, Any], total_timesteps: int):
-    """Return an SB3 callback or ``None`` when progress reporting is disabled."""
+    """Return an SB3 callback (or list) or ``None`` when progress reporting is disabled.
+
+    Besides the step-interval JSON progress file, a config may declare a
+    time-based heartbeat (``heartbeat_file`` + ``heartbeat_interval_s`` <= 60)
+    and hard limits (``hard_limits: {max_wall_s, max_timesteps}``) from
+    ``rl_temporal.monitoring``; they are appended to the same callback list.
+    """
+    extras = _monitoring_callbacks(config)
     progress_file = config.get("training_progress_file") or config.get("progress_file")
     if not progress_file:
-        return None
+        return extras or None
     try:
         from stable_baselines3.common.callbacks import BaseCallback
     except ImportError:  # pragma: no cover - SB3 agents already require SB3.
@@ -213,7 +220,8 @@ def make_progress_callback(config: Dict[str, Any], total_timesteps: int):
                     payload["no_trade_diagnosis"] = "training_no_trades_observed"
             return payload
 
-    return JsonTrainingProgressCallback()
+    callback = JsonTrainingProgressCallback()
+    return [callback, *extras] if extras else callback
 
 
 def _action_payload(action_diag: Dict[str, Any]) -> Dict[str, Any]:
@@ -261,3 +269,22 @@ def _execution_payload(exec_diag: Dict[str, Any]) -> Dict[str, Any]:
             exec_diag.get("event_context_forced_flat_orders")
         ),
     }
+
+
+def _monitoring_callbacks(config: Dict[str, Any]) -> list:
+    """Time-based heartbeat and hard limits, when declared (rl_temporal.monitoring)."""
+    out = []
+    hb_file = config.get("heartbeat_file")
+    limits = config.get("hard_limits") or {}
+    if not hb_file and not limits:
+        return out
+    try:
+        from rl_temporal.monitoring import HardLimitCallback, HeartbeatCallback
+    except ImportError:  # pragma: no cover - rl_temporal ships with this checkout
+        return out
+    if hb_file:
+        out.append(HeartbeatCallback(hb_file, interval_s=float(config.get("heartbeat_interval_s", 30.0)),
+                                     extra={"arm": config.get("arm"), "train_seed": config.get("train_seed")}))
+    if limits:
+        out.append(HardLimitCallback(max_timesteps=limits.get("max_timesteps"), max_wall_s=limits.get("max_wall_s")))
+    return out

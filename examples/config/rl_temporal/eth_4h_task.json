@@ -1,21 +1,28 @@
 {
-  "task_id": "rl_temporal.eth_4h.v0",
+  "task_id": "rl_temporal.eth_4h.v1",
   "manifest": {
-    "path": "examples/config/rl_temporal/SELECTED_FEATURE_MANIFEST.eth_4h.v0-DRAFT.json",
-    "sha256": "22ae773085c0c8ed475146ab020a7f02d1e93902fffaf37d15489992e36614b0",
-    "source": "feature-eng satoshi/b-source-transform-coverage-20261001 @ 9162ca3 docs/feature_metrics/laneB/ (lane B, DRAFT_NOT_FROZEN; blockers B1-B4 with lane B / owner)"
+    "path": "examples/config/rl_temporal/SELECTED_FEATURE_MANIFEST.eth_4h.v1.FROZEN_DEVELOPMENT.json",
+    "sha256": "fdff0c85fc376cd6930cede4981a64b076022bd701c6a045339689e3ab892d4c",
+    "canonical_sha256": "30b780784c9ec4f04ec6d58bec056e7dd9b15706595489856bf8e336202b3a67",
+    "source": "feature-eng satoshi/b-source-transform-coverage-20261001 @ b90c4b3 docs/feature_metrics/laneB/ (lane B, FROZEN_DEVELOPMENT; supersedes draft 22ae7730)"
   },
   "selected_variant": "A_all_admissible_control",
   "window": 24,
   "sample_hours": 4,
-  "input_data_file": "../predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+  "input_data_file": "examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
   "input_data_sha256_declared": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
   "observation_extras_dim": 4,
-  "seeds": [101, 202, 303, 404],
+  "seeds": [
+    101,
+    202,
+    303,
+    404
+  ],
   "out_root": "~/.local/state/scratch/g-rl/runs/eth_4h",
   "notes": [
     "window 24 bars x 4h = 96h physical; branch_steps 24; core 24->12->6->6 [2,2,1]; latent (6,8)",
-    "configs are BOUND to the DRAFT manifest sha and refuse any real-data fit until lane B publishes the FROZEN variant A with its new sha",
-    "R1/R2 arms need ETH-task donors from M02 (none exist); only R0 arms are runnable"
-  ]
+    "configs bound to the FROZEN_DEVELOPMENT manifest (availability class DEVELOPMENT; blockers B1-B3 RECORDED_NOT_CLEARED): development evidence only",
+    "R1/R2 arms need ETH-task donors (M07 forecast campaign); only R0 arms are runnable"
+  ],
+  "input_data_roots_note": "GIT_PINNED to predictor b1f8a74f; resolved at run time against a local predictor checkout root passed to the runner (--data-root); sha verified before any fit"
 }
