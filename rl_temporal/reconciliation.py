@@ -58,6 +58,7 @@ def reconcile_episode(env, *, actions: Callable[[int, Dict[str, Any]], Any], fla
     terminated = truncated = False
     step = 0
     trace: List[Dict[str, Any]] = []
+    prefix_bars = 0
     while not (terminated or truncated):
         if flatten_at is not None and step == flatten_at and hasattr(base, "flatten_step"):
             # risk-reducing close through the simulator's own tested path (action 3 +
@@ -97,7 +98,10 @@ def reconcile_episode(env, *, actions: Callable[[int, Dict[str, Any]], Any], fla
         equity = float(info.get("equity", equity_prev))
         sum_pnl += float(info.get("pnl", equity - equity_prev))
         sum_cost += float(info.get("trade_cost", 0.0) or 0.0)
-        step_returns.append((equity - equity_prev) / equity_prev if equity_prev else 0.0)
+        in_prefix = bool(info.get("is_context_prefix", False))
+        prefix_bars += int(in_prefix)
+        if not in_prefix:   # forced-hold context bars carry no decision: excluded from scored statistics
+            step_returns.append((equity - equity_prev) / equity_prev if equity_prev else 0.0)
         equities.append(equity)
         units = float(info.get("position_units") or 0.0)
         delta_units = abs(units - units_prev)
@@ -110,7 +114,7 @@ def reconcile_episode(env, *, actions: Callable[[int, Dict[str, Any]], Any], fla
                 fill_price = float(frame["OPEN"].iloc[fill_bar]) if "OPEN" in frame.columns else float(info.get("price", 0.0))
                 commission_expected += delta_units * fill_price * commission_rate
         units_prev = units
-        exposed += int(int(info.get("position", 0) or 0) != 0)
+        exposed += int(int(info.get("position", 0) or 0) != 0 and not in_prefix)
         trace.append({"step": step, "bar_index": int(info.get("bar_index", 0) or 0),
                       "action": int(info.get("coerced_action", 0) or 0), "raw_action": float(info.get("raw_action_value", 0.0) or 0.0),
                       "position": int(info.get("position", 0) or 0), "position_units": units, "equity": equity,
@@ -149,8 +153,8 @@ def reconcile_episode(env, *, actions: Callable[[int, Dict[str, Any]], Any], fla
         "terminal_position_units": float(last_info.get("position_units") or 0.0),
         "terminal_fill_manufactured": manufactured,
         "termination_cause": cause, "terminated": bool(terminated), "truncated": bool(truncated),
-        "bars_run": bars, "total_bars": int(last_info.get("total_bars", bars) or bars),
-        "turnover_units": turnover, "exposure_fraction": exposed / bars if bars else 0.0,
+        "bars_run": bars, "bars_prefix_excluded": prefix_bars, "bars_scored": bars - prefix_bars, "total_bars": int(last_info.get("total_bars", bars) or bars),
+        "turnover_units": turnover, "exposure_fraction": exposed / max(1, bars - prefix_bars),
         "max_drawdown_fraction": max_dd, "sharpe": _sharpe(step_returns),
         "costs": {"commission": float(cfg.get("commission", 0.0) or 0.0),
                   "slippage": float(cfg.get("slippage", 0.0) or 0.0),

@@ -109,7 +109,7 @@ def main(argv=None) -> int:
     if args.pilot:
         cfg.update(max_epochs=int(args.pilot_epochs), epoch_timesteps=int(args.pilot_epoch_timesteps),
                    l1_patience=10**6, l1_activity_patience=10**6, learning_starts=min(int(cfg.get("learning_starts", 2000)), 500))
-    status = "PILOT_NOT_A_RESULT" if args.pilot else "RESULT"
+    status = "PILOT_NOT_A_RESULT" if args.pilot else ("RESULT" if cell["selected_feature_manifest_status"] == "FROZEN" else "DEVELOPMENT_NOT_CONFIRMATORY")
     rows = _rows_by_period(data, cfg)
     (out / "EPISODES.json").write_text(json.dumps({**rows, "data_sha256": actual, "split": {k: cfg[k] for k in
         ("train_start", "train_end", "validation_start", "validation_end", "test_start", "test_end")}}, indent=2) + "\n")
@@ -187,6 +187,8 @@ def main(argv=None) -> int:
                       "pretraining_cost": {"state": "NONE"} if rep.get("regimes_summary", "R0") == "R0" else {"state": "CHARGED_FROM_DONOR_RECEIPT"}},
         "versions": {"stable_baselines3": stable_baselines3.__version__, "torch": torch.__version__, "engine_pin": rep.get("engine_pin") or "NOT_APPLICABLE"},
         "status": status,
+        "caveats": ["checkpoint selected on the same validation episode it is reported on (selection-on-validation); not a held-out number",
+                    "DEVELOPMENT availability class; one seed is not a comparison", "metrics exclude the forced-hold context prefix (bars_prefix_excluded)"],
     }
     doc = validate_result_record(record)
     (out / "RESULT.json").write_text(json.dumps({**record, "validation": doc, "episode": episode, "no_trade_episode": baseline}, indent=2, default=str) + "\n")

@@ -1,0 +1,264 @@
+{
+  "arm": "RL-D0",
+  "algorithm": "DQN",
+  "representation": "native_flat",
+  "task": {
+    "dataset_id": "examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "selected_feature_manifest_sha256": "fdff0c85fc376cd6930cede4981a64b076022bd701c6a045339689e3ab892d4c",
+    "manifest_status": "FROZEN_DEVELOPMENT",
+    "availability_class": "DEVELOPMENT",
+    "selected_variant": "A_all_admissible_control"
+  },
+  "data": {
+    "model_ready_view_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+    "train_rows": [
+      0,
+      13699
+    ],
+    "validation_rows": [
+      13699,
+      15895
+    ],
+    "test_rows": null,
+    "validation_context_rows": 280,
+    "episode_definition": {
+      "train_rows": [
+        0,
+        13699
+      ],
+      "validation_rows": [
+        13699,
+        15895
+      ],
+      "context_rows": 280,
+      "first_decision_row": 13699,
+      "rows_written": 2476,
+      "source_csv": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv"
+    }
+  },
+  "representation_identity": {
+    "modular_config_sha256": null,
+    "layout_digest": null,
+    "regimes": {
+      "all": "R0"
+    },
+    "donor_identity": null,
+    "parameter_count": 0
+  },
+  "seed": 101,
+  "paired_seed_group": "seed101",
+  "actions": {
+    "action_space_mode": "discrete",
+    "mapping": {
+      "0": "hold",
+      "1": "long",
+      "2": "short"
+    },
+    "space": "Discrete(3)"
+  },
+  "reward": {
+    "plugin": "pnl_reward",
+    "frozen_before_fit": true
+  },
+  "evaluation_population": {
+    "split": "validation",
+    "episodes": 1,
+    "rows": [
+      13699,
+      15895
+    ],
+    "selection_metric": "net_return",
+    "pipeline_selection": {
+      "best_composite": 0.11758323599999987,
+      "stop_reason": "l1_early_stop",
+      "epochs": 75,
+      "policy_evaluated": "best_validation_checkpoint",
+      "activity_eligible_checkpoint": true
+    }
+  },
+  "costs": {
+    "commission": 0.001,
+    "slippage": 0.0,
+    "financing_enabled": false
+  },
+  "metrics": {
+    "net_return": 0.38318245599999845,
+    "max_drawdown_fraction": 0.09953647242770546,
+    "sharpe": {
+      "value": 0.040384835645211836,
+      "convention": "mean/std of per-bar equity returns, sample std (ddof=1), NOT annualized",
+      "undefined_reason": null,
+      "bars": 2476
+    },
+    "turnover_units": 313.0,
+    "trades_closed": 156,
+    "exposure_fraction": 0.8865105008077544
+  },
+  "baselines": {
+    "no_trade": {
+      "net_return": 0.0,
+      "max_drawdown_fraction": 0.0,
+      "sharpe": {
+        "value": null,
+        "convention": "mean/std of per-bar equity returns, sample std (ddof=1), NOT annualized",
+        "undefined_reason": "zero or non-finite variance"
+      },
+      "turnover_units": 0.0,
+      "trades_closed": 0,
+      "exposure_fraction": 0.0
+    },
+    "heuristic": "UNAVAILABLE"
+  },
+  "resources": {
+    "host_alias": "worker_b",
+    "device": "cuda",
+    "wall_s": 2608.098452395003,
+    "peak_rss_bytes": 2746433536,
+    "learn_s": 5.2643057919922285,
+    "gradient_updates": null,
+    "transitions": 150000,
+    "epochs": 75,
+    "pilot": false,
+    "pretraining_cost": {
+      "state": "NONE"
+    }
+  },
+  "versions": {
+    "stable_baselines3": "2.9.0",
+    "torch": "2.13.0+cu130",
+    "engine_pin": "NOT_APPLICABLE"
+  },
+  "status": "RESULT",
+  "validation": {
+    "schema": "rl_temporal_result.v1",
+    "digest": "705dee4bd733ea9be302a278af4df2937d2d459e62b86d5d635e71bf1da15611",
+    "status": "RESULT"
+  },
+  "episode": {
+    "schema": "rl_temporal.episode_reconciliation.v1",
+    "initial_cash": 10000.0,
+    "final_equity": 13831.824559999985,
+    "net_return": 0.38318245599999845,
+    "sum_step_pnl": 3831.8245599999846,
+    "conservation_gap": 0.0,
+    "commission_paid": 941.4354399999994,
+    "commission_expected_from_fills": 941.4354400000007,
+    "commission_reconciled": true,
+    "sum_step_trade_cost": 0.0,
+    "trades_closed": 156,
+    "entries_submitted": 313,
+    "rejected_orders": 0,
+    "terminal_position": -1,
+    "terminal_position_units": -1.0,
+    "terminal_fill_manufactured": false,
+    "termination_cause": "data_end",
+    "terminated": true,
+    "truncated": false,
+    "bars_run": 2476,
+    "total_bars": 2476,
+    "turnover_units": 313.0,
+    "exposure_fraction": 0.8865105008077544,
+    "max_drawdown_fraction": 0.09953647242770546,
+    "sharpe": {
+      "value": 0.040384835645211836,
+      "convention": "mean/std of per-bar equity returns, sample std (ddof=1), NOT annualized",
+      "undefined_reason": null,
+      "bars": 2476
+    },
+    "costs": {
+      "commission": 0.001,
+      "slippage": 0.0,
+      "financing_enabled": false
+    },
+    "margin": {
+      "min_equity": 100.0,
+      "leverage": null,
+      "solvency_mode": "normal_realistic"
+    },
+    "execution_diagnostics": {
+      "entry_actions_seen": 1870,
+      "entry_orders_submitted": 0,
+      "blocked_session_filter": 0,
+      "blocked_atr_warmup": 0,
+      "blocked_non_positive_atr": 0,
+      "blocked_non_positive_size": 0,
+      "blocked_non_positive_price": 0,
+      "default_orders_submitted": 313,
+      "plugin_apply_errors": 0,
+      "protected_entry_rejections": 0,
+      "protected_market_entries": 0,
+      "protected_limit_entries": 0,
+      "protected_stop_entries": 0,
+      "protected_bracket_cancellations": 0,
+      "risk_reducing_close_orders": 0,
+      "event_context_no_trade_active_steps": 0,
+      "event_context_action_overrides": 0,
+      "event_context_blocked_entries": 0,
+      "event_context_forced_flat_actions": 0,
+      "event_context_forced_flat_orders": 0
+    }
+  },
+  "no_trade_episode": {
+    "schema": "rl_temporal.episode_reconciliation.v1",
+    "initial_cash": 10000.0,
+    "final_equity": 10000.0,
+    "net_return": 0.0,
+    "sum_step_pnl": 0.0,
+    "conservation_gap": 0.0,
+    "commission_paid": 0.0,
+    "commission_expected_from_fills": 0.0,
+    "commission_reconciled": true,
+    "sum_step_trade_cost": 0.0,
+    "trades_closed": 0,
+    "entries_submitted": 0,
+    "rejected_orders": 0,
+    "terminal_position": 0,
+    "terminal_position_units": 0.0,
+    "terminal_fill_manufactured": false,
+    "termination_cause": "data_end",
+    "terminated": true,
+    "truncated": false,
+    "bars_run": 2476,
+    "total_bars": 2476,
+    "turnover_units": 0.0,
+    "exposure_fraction": 0.0,
+    "max_drawdown_fraction": 0.0,
+    "sharpe": {
+      "value": null,
+      "convention": "mean/std of per-bar equity returns, sample std (ddof=1), NOT annualized",
+      "undefined_reason": "zero or non-finite variance"
+    },
+    "costs": {
+      "commission": 0.001,
+      "slippage": 0.0,
+      "financing_enabled": false
+    },
+    "margin": {
+      "min_equity": 100.0,
+      "leverage": null,
+      "solvency_mode": "normal_realistic"
+    },
+    "execution_diagnostics": {
+      "entry_actions_seen": 0,
+      "entry_orders_submitted": 0,
+      "blocked_session_filter": 0,
+      "blocked_atr_warmup": 0,
+      "blocked_non_positive_atr": 0,
+      "blocked_non_positive_size": 0,
+      "blocked_non_positive_price": 0,
+      "default_orders_submitted": 0,
+      "plugin_apply_errors": 0,
+      "protected_entry_rejections": 0,
+      "protected_market_entries": 0,
+      "protected_limit_entries": 0,
+      "protected_stop_entries": 0,
+      "protected_bracket_cancellations": 0,
+      "risk_reducing_close_orders": 0,
+      "event_context_no_trade_active_steps": 0,
+      "event_context_action_overrides": 0,
+      "event_context_blocked_entries": 0,
+      "event_context_forced_flat_actions": 0,
+      "event_context_forced_flat_orders": 0
+    }
+  }
+}

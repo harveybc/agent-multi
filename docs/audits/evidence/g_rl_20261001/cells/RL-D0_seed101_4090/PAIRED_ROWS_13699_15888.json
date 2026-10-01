@@ -1,0 +1,15 @@
+{
+  "schema": "rl_temporal.paired_rows.v1",
+  "cut": [
+    13699,
+    15888
+  ],
+  "rows_written": 2190,
+  "file": "PAIRED_ROWS_13699_15888.csv",
+  "sha256": "bf7ad569a97673f5fe7ccab13196db77d5140fa045cd77bb29e87594731605ab",
+  "equity_first": 10000.0,
+  "equity_last": 13807.764559999985,
+  "net_return_on_cut": 0.38077645599999843,
+  "trades_on_cut": 156,
+  "note": "secondary strict row-parity view; the primary result is the full episode in RESULT.json"
+}

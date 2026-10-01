@@ -31,7 +31,7 @@ _NESTED = {
     "resources": ("host_alias", "device", "wall_s", "peak_rss_bytes", "gradient_updates", "pretraining_cost"),
     "versions": ("stable_baselines3", "torch", "engine_pin"),
 }
-_STATUSES = ("RESULT", "PILOT_NOT_A_RESULT", "FIXTURE_NOT_A_RESULT", "SKIPPED", "FAILED")
+_STATUSES = ("RESULT", "DEVELOPMENT_NOT_CONFIRMATORY", "PILOT_NOT_A_RESULT", "FIXTURE_NOT_A_RESULT", "SKIPPED", "FAILED")
 
 
 def validate_result_record(record: Dict[str, Any]) -> Dict[str, Any]:

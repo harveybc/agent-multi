@@ -1,0 +1,1 @@
+{"arm": "RL-D0", "elapsed_s": 5.2643057919922285, "interval_s": 30.0, "num_timesteps": 150000, "phase": "training_ended", "pid": 1671079, "schema": "rl_temporal.heartbeat.v1", "train_seed": 101, "written_at": "2026-10-01T08:48:36.918557+00:00"}
