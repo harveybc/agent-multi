@@ -34,7 +34,11 @@ def action_mapping_from_config(cfg: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def normalization_from_config(cfg: Dict[str, Any]) -> Dict[str, Any]:
-    return {k: cfg.get(k) for k in _NORMALIZATION_KEYS}
+    out = {k: cfg.get(k) for k in _NORMALIZATION_KEYS}
+    out["window"] = cfg.get("window_size")                      # bars per observation
+    out["bar_period"] = cfg.get("bar_period") or cfg.get("timeframe") or cfg.get("bar") or "UNDECLARED"
+    out["other_frequency_streams"] = cfg.get("other_frequency_streams", [])  # none: one stream, one bar grid
+    return out
 
 
 def _versions() -> Dict[str, str]:
@@ -89,7 +93,12 @@ def save_policy_bundle(model, directory, *, env_config: Dict[str, Any], arm: str
            "normalization": normalization_from_config(env_config),
            "representation": _representation(model), "versions": _versions(),
            "tolerance": {"device": str(model.device), "abs": float(tolerance_abs)},
-           "num_timesteps": int(model.num_timesteps), **(extra or {})}
+           "num_timesteps": int(model.num_timesteps),
+           # M05 shadow intake contract: never an execution claim, evidence declared explicitly
+           "execution_authorized": False,
+           "evidence": {"research_validated": False, "live_inference_eligible": False,
+                        "live_execution_eligible": False},
+           **(extra or {})}
     (d / "env_config.json").write_text(json.dumps(env_config, indent=2, sort_keys=True, default=str) + "\n")
     (d / "bundle.json").write_text(json.dumps(doc, indent=2, sort_keys=True, default=str) + "\n")
     return doc

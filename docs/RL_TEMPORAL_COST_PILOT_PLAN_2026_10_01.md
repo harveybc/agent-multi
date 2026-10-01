@@ -13,11 +13,11 @@ publishes it. Until then: no real-data fit, no GPU.
 
 | Class | Arms | What is measured |
 | --- | --- | --- |
-| C1 native, 83 features | RL-S0, RL-D0 | obs dim 1996 -> MLP [64,64]; SAC actor 132,098 + critics 2x132,097 params; DQN q_net ~128k |
-| C2 modular R0, 83 branches | RL-S1, RL-D1 | extractor 173,632 params (83 branches x 64 + core), latent 48 + 4 extras -> MLP [64,64]; SAC heads 7,682 / 2x7,681; DQN q_net 7,747 |
+| C1 native, 83 features | RL-S0, RL-D0 | MEASURED from built models (worker_a, no training): obs dim 1996 -> MLP [64,64]; SAC actor 132,098 / critics 264,194 (2) / critic targets 264,194, unique 660,486; DQN q_net 132,163 / target 132,163, unique 264,326 |
+| C2 modular R0, 83 branches | RL-S1, RL-D1 | MEASURED from built models: extractor 173,632 (83 branches x 64 + core), latent 48 + 4 extras -> MLP [64,64]; SAC actor head 7,682 / critics 15,362 (2, shared extractor) / targets 15,362 (own extractor copy), unique 385,670; DQN q_net head 7,747 + extractor, target copy, unique 362,758 |
 | C3 modular R1/R2 | RL-S1/D1 secondary | BLOCKED: no ETH-task donor; priced from a measured donor receipt when M02 produces one |
 
-Parameter/compute difference is part of the report, not hidden: the control carries its parameters in
+Counts: examples/config/rl_temporal/eth_4h_draft/PARAMETERS_MEASURED.json (tools/rl_temporal_measure_parameters.py, label MEASURED_FROM_BUILT_MODEL_NO_TRAINING; the net_arch formula values agree). Parameter/compute difference is part of the report, not hidden: the control carries its parameters in
 the first MLP layer, the modular arm in the encoder.
 
 ## Pilot protocol (per class, per algorithm; one host at a time; CPU first)

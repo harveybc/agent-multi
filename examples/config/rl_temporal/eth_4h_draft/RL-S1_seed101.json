@@ -353,6 +353,36 @@
     },
     "extractor_parameters": 173632,
     "features_dim": 52,
+    "measured": {
+      "algorithm": "SAC",
+      "formula_values_superseded": true,
+      "label": "MEASURED_FROM_BUILT_MODEL_NO_TRAINING",
+      "networks": {
+        "actor": {
+          "features_dim": 52,
+          "features_extractor": 173632,
+          "head_excluding_extractor": 7682,
+          "total": 181314
+        },
+        "critic": {
+          "features_dim": 52,
+          "features_extractor": 173632,
+          "head_excluding_extractor": 15362,
+          "total": 188994
+        },
+        "critic_target": {
+          "features_dim": 52,
+          "features_extractor": 173632,
+          "head_excluding_extractor": 15362,
+          "total": 188994
+        }
+      },
+      "observation_dim": 1996,
+      "policy_total_parameters": 385670,
+      "representation": "modular_temporal",
+      "shared_features_extractor": true,
+      "unique_parameters_all_networks": 385670
+    },
     "observation_dim": 1996,
     "policy_heads": {
       "actor": 7682,

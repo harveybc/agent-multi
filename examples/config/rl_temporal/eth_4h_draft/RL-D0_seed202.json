@@ -14,6 +14,29 @@
     },
     "extractor_parameters": 0,
     "features_dim": 1996,
+    "measured": {
+      "algorithm": "DQN",
+      "formula_values_superseded": true,
+      "label": "MEASURED_FROM_BUILT_MODEL_NO_TRAINING",
+      "networks": {
+        "q_net": {
+          "features_dim": 1996,
+          "features_extractor": 0,
+          "head_excluding_extractor": 132163,
+          "total": 132163
+        },
+        "q_net_target": {
+          "features_dim": 1996,
+          "features_extractor": 0,
+          "head_excluding_extractor": 132163,
+          "total": 132163
+        }
+      },
+      "observation_dim": 1996,
+      "policy_total_parameters": 264326,
+      "representation": "native_flat",
+      "unique_parameters_all_networks": 264326
+    },
     "observation_dim": 1996,
     "policy_heads": {
       "extractor_copies": 2,
