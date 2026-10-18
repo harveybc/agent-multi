@@ -103,6 +103,9 @@ class PipelinePlugin:
 
             summary = self._evaluate(env, agent_plugin, model, config)
             summary["mode"] = mode
+            identity = getattr(base_env, "config", {}).get("curated_input_identity")
+            if identity is not None:
+                summary["curated_input_identity"] = identity
             summary.update(_observed_work(model, mode))
             if meter is not None:
                 summary["compute_contract"] = meter.record(

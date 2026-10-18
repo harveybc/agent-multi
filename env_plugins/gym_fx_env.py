@@ -68,6 +68,17 @@ class Plugin:
     def _build_env_config(self, agent_config: Dict[str, Any]) -> Dict[str, Any]:
         merged = dict(self.params)
         merged.update(agent_config)
+        daily_limit = (merged.get("execution_envelope") or {}).get(
+            "max_entries_per_day", merged.get("max_entries_per_day"))
+        if daily_limit is not None:
+            if (merged.get("simulation_engine", "backtrader") != "backtrader"
+                    or merged.get("strategy_plugin") not in
+                    {"direct_atr_sltp", "shared_execution_envelope"}):
+                raise ValueError("DAILY_QUOTA_UNSUPPORTED_EXECUTION_PATH")
+        from app.curated_rl_input import validate_curated_rl_input
+        identity = validate_curated_rl_input(merged)
+        if identity is not None:
+            merged["curated_input_identity"] = identity
         # gym-fx uses key "mode"; we relabel from env_mode to avoid
         # stomping on agent-multi's own "mode".
         merged["mode"] = merged.get("env_mode", "inference")

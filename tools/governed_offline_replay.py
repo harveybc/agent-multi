@@ -19,6 +19,7 @@ import argparse
 import copy
 import hashlib
 import json
+import math
 import os
 import subprocess
 import sys
@@ -57,6 +58,14 @@ def merged_config(flat: dict, template: Path, output_dir: Path) -> dict:
     for key in COMPUTE_CONTRACT_KEYS:
         if flat.get(key) is not None:
             config[key] = flat[key]
+    for key in CURATED_RL_CONFIG_KEYS:
+        if key in flat:
+            config[key] = copy.deepcopy(flat[key])
+    if config.get("require_curated_rl_input"):
+        # Curated support is pinned in its receipt; never silently truncate it
+        # to the historical mechanical replay default of 384 rows.
+        config["max_rows"] = None
+        environment["max_rows"] = None
     return config
 
 
@@ -64,6 +73,14 @@ def merged_config(flat: dict, template: Path, output_dir: Path) -> dict:
 #: copied verbatim: this runner never invents a limit and never widens one to fit the settings.
 COMPUTE_CONTRACT_KEYS = ("training_transition_cap", "evaluation_transition_cap",
                          "agent_plugin", "n_steps", "batch_size", "n_epochs")
+
+CURATED_RL_CONFIG_KEYS = (
+    "require_curated_rl_input", "curated_input_manifest", "curated_input_manifest_sha256",
+    "curated_input_split", "feature_columns", "window_size", "observation_stride_bars",
+    "require_full_observation_window", "observation_encoder", "temporal_branch_filters",
+    "temporal_core_filters", "temporal_kernel_size", "max_entries_per_day",
+    "entry_day_timezone", "load_model",
+)
 
 #: Counters published as terminal metrics, each under the name of what it actually is.
 COMPUTE_METRIC_KEYS = ("requested_training_transitions", "training_transition_cap",
@@ -104,6 +121,13 @@ REQUESTED_KEYS = {"total_timesteps": "requested_timesteps"}
 OBSERVED_KEYS = ("observed_timesteps", "observed_updates", "best_fitness",
                  "champion_fitness", "final_reward", "candidates_evaluated", "generations")
 
+TRADING_METRIC_KEYS = ("initial_cash", "final_equity", "net_profit", "total_return",
+                       "max_drawdown_pct", "max_drawdown_money", "sharpe_ratio",
+                       "trades_total", "trades_closed", "trades_won", "trades_lost",
+                       "win_rate_pct", "avg_trade_pnl", "profit_factor", "trade_costs_total",
+                       "entry_submissions", "filled_entries", "max_entries_filled_in_day",
+                       "daily_entry_limit")
+
 
 def digest_of(path: Path) -> str | None:
     return hashlib.sha256(path.read_bytes()).hexdigest() if path and path.is_file() else None
@@ -118,9 +142,9 @@ def metrics_of(summary: dict, wall_seconds: float, requested: dict) -> dict:
     """
     out = {"wall_seconds": wall_seconds}
     out.update(requested)
-    for key in OBSERVED_KEYS:
+    for key in (*OBSERVED_KEYS, *TRADING_METRIC_KEYS):
         value = summary.get(key)
-        if isinstance(value, (int, float)) and not isinstance(value, bool):
+        if isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value):
             out[key] = float(value)
     return out
 
@@ -131,6 +155,9 @@ def main(argv=None) -> int:
     parser.add_argument("--load_config", required=True, help="the flat governed configuration")
     args = parser.parse_args(argv)
     flat = json.loads(Path(args.load_config).read_text(encoding="utf-8"))
+    replay_mode = flat.get("replay_mode", "train")
+    if replay_mode not in {"train", "inference"}:
+        raise ValueError("INVALID_GOVERNED_REPLAY_MODE")
     template = Path(flat["experiment_config"])
     overlay = Path(flat["runtime_overlay"])
     output_dir = Path(flat.get("save_log", "./replay_log.json")).resolve().parent
@@ -147,7 +174,7 @@ def main(argv=None) -> int:
     entry_point = Path(flat.get("entry_point") or (REPO / "app" / "main.py"))
     command = [sys.executable, str(entry_point),
                "--load_config", str(merged_path),
-               "--runtime_overlay", str(overlay), "--mode", "train"]
+               "--runtime_overlay", str(overlay), "--mode", replay_mode]
     log_path = output_dir / "replay_stdout.log"
     with open(log_path, "wb") as handle:
         code = subprocess.run(command, cwd=str(REPO), stdout=handle, stderr=subprocess.STDOUT,
@@ -190,6 +217,7 @@ def main(argv=None) -> int:
             # the full contract, kept whole beside the flattened metrics: the meanings and the
             # list of what could NOT be measured do not survive flattening into floats
             "compute_contract": summary.get("compute_contract"),
+            "curated_input_identity": summary.get("curated_input_identity"),
             "experiment_config_sha256": hashlib.sha256(
                 merged_path.read_bytes()).hexdigest(), **measured,
             "offline": True, "network": "none", "device": "cpu",

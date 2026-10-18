@@ -1,0 +1,16 @@
+{
+  "schema": "rl_static_engineering_state.v1",
+  "updated_on": "2026-10-18",
+  "current_stage": "COMPONENT_AND_SYNTHETIC_INTEGRATION_VERIFIED",
+  "test_design": "43_STATIC_RL_CURATED_COMPARISON.md",
+  "data_interface": "44_CURATED_RL_INPUT_INTERFACE.md",
+  "design_config": "examples/config/rl_static_curated_design.v1.json",
+  "verified": ["SAC encoder selection and real CPU gradient smoke", "temporal prefix and origin sensitivity", "policy save/reload", "strict strided window and actual-bar warmup", "daily entry cap in real Backtrader execution", "data receipt and byte/support checks before env construction", "metric collector field transport"],
+  "verification": {"agent_multi_focused_passed": 62, "gym_fx_focused_passed": 191, "cross_repo_static_inference_passed": 2, "financial_fits": 0, "GPU_used": false},
+  "data_admission_complete": false,
+  "scientific_campaign_started": false,
+  "next_allowed_actions": ["accept Satoshi source/calendar evidence and finish data recovery", "recompute affected preprocessing and feature selection", "certify full environment and static evaluation path with admitted manifests", "seal finite SAC flat/temporal experiment and automatic publication/close"],
+  "deferred": ["frequency sweep", "DOIN", "forecasting", "NEAT"],
+  "daily_entry_cap_baseline": 1,
+  "daily_entry_cap_proposed_contrast": [1, 2, 4]
+}

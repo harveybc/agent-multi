@@ -148,6 +148,10 @@ class Plugin:
         "target_entropy": "auto",
         "use_sde": False,
         "net_arch": (256, 256),
+        "observation_encoder": "flat",
+        "temporal_branch_filters": 4,
+        "temporal_core_filters": 8,
+        "temporal_kernel_size": 3,
         "device": "auto",
         "agent_verbose": 0,
         "train_seed": 0,
@@ -196,9 +200,24 @@ class Plugin:
         self._require_continuous(env)
         p = self._resolve(config)
         policy_kwargs = {"net_arch": list(p["net_arch"])}
+        encoder = p["observation_encoder"]
+        if encoder not in {"flat", "per_feature_conv1d"}:
+            raise ValueError("UNKNOWN_SAC_OBSERVATION_ENCODER")
+        policy = "MlpPolicy"
+        if encoder == "per_feature_conv1d":
+            from agent_plugins.temporal_features import PerFeatureTemporalExtractor
+            policy = "MultiInputPolicy"
+            policy_kwargs.update(
+                features_extractor_class=PerFeatureTemporalExtractor,
+                features_extractor_kwargs={
+                    "branch_filters": p["temporal_branch_filters"],
+                    "core_filters": p["temporal_core_filters"],
+                    "kernel_size": p["temporal_kernel_size"],
+                },
+            )
         seed = int(p["train_seed"])
         model = SAC(
-            policy="MlpPolicy",
+            policy=policy,
             env=env,
             learning_rate=float(p["learning_rate"]),
             buffer_size=int(p["buffer_size"]),
@@ -518,7 +537,15 @@ class Plugin:
         return target
 
     def wrap_env(self, env, config: Dict[str, Any] | None = None):
-        """Called by the pipeline before build/load — SAC needs flat obs."""
+        """Keep the temporal Dict layout only for the explicitly selected encoder."""
+        encoder = self._resolve(config or {})["observation_encoder"]
+        if encoder == "per_feature_conv1d":
+            from gymnasium import spaces
+            if not isinstance(env.observation_space, spaces.Dict):
+                raise ValueError("TEMPORAL_DICT_OBSERVATION_REQUIRED")
+            return env
+        if encoder != "flat":
+            raise ValueError("UNKNOWN_SAC_OBSERVATION_ENCODER")
         return self._flatten_if_dict(env)
 
     def fitness(self, summary: Dict[str, Any], config: Dict[str, Any]) -> float:
