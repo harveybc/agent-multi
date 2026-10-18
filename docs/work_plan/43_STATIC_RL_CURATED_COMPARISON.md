@@ -33,9 +33,11 @@ do not consume allowance. One position; reversal first closes, never opens
 another position in the same action. Keep the 12h close/open exclusions.
 Quota is enforced by the execution plugin, not learned by the agent.
 
-SAC currently uses a thresholded scalar exposure/direction interface. That is
-not a genuinely continuous sizing control. Retain this explicit limitation;
-do not describe SAC versus a discrete agent as identical action expressivity.
+SAC uses a thresholded scalar direction interface whose magnitude can also
+control entry size: the shared envelope supports portfolio-fraction sizing.
+It holds same-direction positions unchanged. The separate raw fractional path
+can continuously rebalance and needs additional weekly risk-increase masking.
+Do not describe SAC versus a discrete agent as identical action expressivity.
 Before deployment certify session timing and next-bar fills on the real path.
 
 Owner's later question: compare daily caps 1, 2, 4 after the static baseline,
@@ -96,4 +98,8 @@ critic BatchNorm, and currently accepts Box but not Dict observations. Its large
 default critic must not silently replace the compact comparison above.
 Sources: https://arxiv.org/abs/1902.05605 and
 https://sb3-contrib.readthedocs.io/en/master/modules/crossq.html .
-Wait for Satoshi's bounded research comparison before adding another agent.
+Satoshi's bounded comparison is received. Its weekly-first/80-run proposal is
+not adopted: this static comparison still comes first. Before training, close
+the real-engine action/fill/reward transition and financing/accounting findings
+recorded in gym-fx `RL_PREPARATION_REVIEW.md`. Synthetic encoder integration
+does not certify those separate contracts.
