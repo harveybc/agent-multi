@@ -6,6 +6,9 @@
   "refit_cadence": "NONE",
   "validation_weight_updates": false,
   "initial_cash": 10000.0,
+  "execution_transition": "next_open_v2",
+  "execution_max_delay_hours": 1.0,
+  "strategy_plugin": "shared_execution_envelope",
   "common_observation": {
     "window_size": 13,
     "observation_stride_bars": 2,

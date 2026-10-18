@@ -103,3 +103,29 @@ not adopted: this static comparison still comes first. Before training, close
 the real-engine action/fill/reward transition and financing/accounting findings
 recorded in gym-fx `RL_PREPARATION_REVIEW.md`. Synthetic encoder integration
 does not certify those separate contracts.
+
+## Execution repair status
+
+Curated inputs now require `next_open_v2` + Backtrader + the shared execution
+envelope. The same path is used in the flat and temporal SAC integration tests;
+the policy's weights remain fixed during evaluation. Engine acceptance details
+are in gym-fx `NEXT_OPEN_TRANSITION.md`. Financing can debit via an explicitly
+declared analytical model/rate; actual broker rollover is not yet verified.
+Absent/nonfinite returns and drawdowns cannot rank as zero-return/risk-free
+checkpoints. Undefined risk diagnostics remain null in final reports.
+
+Bounded automation (no service or financial fit):
+
+```bash
+python -m tools.verify_rl_static_engineering \
+  --gym-root <matching-gym-checkout> --output-root <new-private-report-directory>
+python -m tools.verify_rl_static_engineering \
+  --output-root <same-report-directory> --status
+```
+
+Actual consolidated run: gym 247/247, agent 65/65, no skips; approximately 23 s
+total on the verification machine. Runner unit tests: 7/7. PRE regressions:
+12/13 metric-integrity tests failed before the score correction. Reports/logs
+are private generated artifacts, not committed datasets. This is engineering
+acceptance only: data/selection admission, broker costs, full risk/accounting
+acceptance and the financial campaign's sealed schedule remain open.

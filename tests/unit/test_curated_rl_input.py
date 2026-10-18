@@ -27,6 +27,7 @@ def fixture(tmp_path):
             "row_count": 2}
     manifest = tmp_path / "manifest.json"
     cfg = {"require_curated_rl_input": True, "input_data_file": str(path),
+           "execution_transition": "next_open_v2", "strategy_plugin": "shared_execution_envelope",
            "curated_input_manifest": str(manifest), "curated_input_split": "validation",
            "feature_columns": ["feature"]}
     seal(cfg, body)
@@ -45,6 +46,15 @@ def test_admitted_input_reaches_env_config(tmp_path):
     result = Plugin()._build_env_config(cfg)
     assert result["curated_input_identity"]["row_count"] == 2
     assert result["curated_input_identity"]["split"] == "validation"
+
+
+@pytest.mark.parametrize('change', [{'execution_transition':'legacy_delayed_v1'},
+    {'strategy_plugin':'direct_atr_sltp'}, {'simulation_engine':'nautilus'}])
+def test_curated_run_cannot_revert_to_an_unverified_execution_path(tmp_path, change):
+    cfg, _, _ = fixture(tmp_path)
+    cfg.update(change)
+    with pytest.raises(ValueError, match='CURATED_NEXT_OPEN_PROTECTED_EXECUTION_REQUIRED'):
+        Plugin()._build_env_config(cfg)
 
 
 @pytest.mark.parametrize("change", ["pin", "bytes", "features", "split", "limit"])

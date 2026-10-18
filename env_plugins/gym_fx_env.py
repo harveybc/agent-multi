@@ -78,6 +78,10 @@ class Plugin:
         from app.curated_rl_input import validate_curated_rl_input
         identity = validate_curated_rl_input(merged)
         if identity is not None:
+            if (merged.get('execution_transition') != 'next_open_v2'
+                    or merged.get('simulation_engine', 'backtrader') != 'backtrader'
+                    or merged.get('strategy_plugin') != 'shared_execution_envelope'):
+                raise ValueError('CURATED_NEXT_OPEN_PROTECTED_EXECUTION_REQUIRED')
             merged["curated_input_identity"] = identity
         # gym-fx uses key "mode"; we relabel from env_mode to avoid
         # stomping on agent-multi's own "mode".

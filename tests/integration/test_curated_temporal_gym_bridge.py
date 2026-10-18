@@ -40,6 +40,7 @@ frame = pd.DataFrame({"DATE_TIME": pd.date_range("2024-01-08", periods=80, freq=
 path = output / "synthetic.csv"
 frame.to_csv(path, index=False)
 cfg = {"input_data_file": str(path), "date_column": "DATE_TIME", "price_column": "CLOSE",
+    "execution_transition": "next_open_v2",
     "headers": True, "feature_columns": ["feature"], "window_size": 13,
     "observation_stride_bars": 2, "require_full_observation_window": True,
     "include_price_window": False, "include_agent_state": True,
@@ -61,9 +62,12 @@ try:
     obs, _ = wrapped.reset(seed=7)
     assert env.bridge.bar_index == 25
     for _ in range(8):
+        previous_bar = env.bridge.bar_index
         action = agent.predict(policy, obs)
         obs, reward, done, truncated, info = wrapped.step(action)
         assert np.isfinite(reward)
+        assert env.bridge.bar_index == previous_bar + 1
+        assert info['execution_transition'] == 'next_open_v2'
         if done or truncated: break
     assert all(torch.equal(weights[key], value) for key, value in policy.policy.state_dict().items())
     assert env.summary()["max_entries_filled_in_day"] <= 1

@@ -76,6 +76,8 @@ COMPUTE_CONTRACT_KEYS = ("training_transition_cap", "evaluation_transition_cap",
 
 CURATED_RL_CONFIG_KEYS = (
     "require_curated_rl_input", "curated_input_manifest", "curated_input_manifest_sha256",
+    "execution_transition", "execution_max_delay_hours",
+    "financing_enabled", "financing_model", "financing_annual_rate",
     "curated_input_split", "feature_columns", "window_size", "observation_stride_bars",
     "require_full_observation_window", "observation_encoder", "temporal_branch_filters",
     "temporal_core_filters", "temporal_kernel_size", "max_entries_per_day",
