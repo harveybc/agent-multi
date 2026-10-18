@@ -12,7 +12,8 @@ import time
 import xml.etree.ElementTree as ET
 
 GYM_TESTS = [
-    'test_financing_debit', 'test_next_open_transition', 'test_daily_entry_quota',
+    'test_financing_debit', 'test_next_open_transition', 'test_next_open_repeated_accounting',
+    'test_daily_entry_quota',
     'test_strided_observation', 'test_feature_window_preprocessor',
     'test_protected_order_execution', 'test_shared_execution_envelope',
     'test_trading_metrics', 'test_session_exposure_env',

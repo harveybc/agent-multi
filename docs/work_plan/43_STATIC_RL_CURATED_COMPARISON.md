@@ -123,8 +123,10 @@ python -m tools.verify_rl_static_engineering \
   --output-root <same-report-directory> --status
 ```
 
-Actual consolidated run: gym 247/247, agent 65/65, no skips; approximately 23 s
-total on the verification machine. Runner unit tests: 7/7. PRE regressions:
+Latest consolidated run: gym 256/256, agent 65/65, no skips. The additional nine
+engine tests cover native trade lifecycle after direct settlement, repeated
+closes, zero net PnL and a hand ledger with slippage/commission/financing.
+Runner unit tests: 7/7. PRE regressions:
 12/13 metric-integrity tests failed before the score correction. Reports/logs
 are private generated artifacts, not committed datasets. This is engineering
 acceptance only: data/selection admission, broker costs, full risk/accounting
