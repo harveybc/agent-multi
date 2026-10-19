@@ -14,7 +14,7 @@ Inputs are H1 completed-bar availability, observed open-market bars only,
 contains OHLC plus causal bar/range/observed-close-return and elapsed-time
 features; it is explicitly not a selected inventory.
 
-One seed (7), four mechanical controls first, then SAC flat and small per-feature
+One seed (7), SAC flat and small per-feature
 causal Conv1D (four branch filters, eight core filters, kernel three), heads
 [32,32]. Each SAC has a fixed 100000-transition budget, 1000 learning starts,
 batch256, one gradient step per transition. No genetic search, pretraining,
@@ -30,6 +30,14 @@ Commission0.00005 and slippage fraction0.00005 per fill; analytical annual
 notional financing0.05. The constant one-pip ASSUMED_SPREAD column is a
 non-observed stability scenario, not fake Ask data or the cost-debit authority.
 These costs are assumptions, not verified broker charges.
+
+Operational correction 2026-10-19: prioritize both SAC arms, followed by the
+four mechanical controls. The earlier controls-first queue left the GPU idle
+while replaying NO_TRADE. It had not trained a SAC or completed/published any
+terminal. Its partial control replay is explicitly cancelled for scheduling,
+not presented as a result. A new contract/root changes only dispatch order and
+operational identities; model, data, seed, costs, splits and compute budgets
+are unchanged. No code in the training/evaluation engine changes.
 
 ## Execution And Recovery
 

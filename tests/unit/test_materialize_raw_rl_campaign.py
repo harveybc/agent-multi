@@ -13,7 +13,8 @@ def test_frozen_raw_design_has_business_rules_small_models_and_finite_budget():
     body = json.loads(DESIGN.read_text())
     cfg = body['common_config']
     assert body['scope'] == 'EURUSD_CORE_PRICES_ONLY_NOT_FINAL_FEATURE_SELECTION'
-    assert body['arms'][:4] == ['NO_TRADE', 'PASSIVE_LONG', 'PASSIVE_SHORT', 'RANDOM']
+    assert body['arms'][:2] == ['SAC_FLAT', 'SAC_PER_FEATURE_CONV1D']
+    assert body['arms'][2:] == ['NO_TRADE', 'PASSIVE_LONG', 'PASSIVE_SHORT', 'RANDOM']
     assert body['refit_cadence'] == 'NONE'
     assert cfg['window_size'] == 13 and cfg['observation_stride_bars'] == 2
     assert cfg['total_timesteps'] == cfg['training_transition_cap'] == 100000
