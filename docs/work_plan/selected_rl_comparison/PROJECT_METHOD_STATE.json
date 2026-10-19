@@ -1,6 +1,6 @@
 {
   "schema": "selected_rl_comparison_method.v1",
-  "current_stage": "S12_SELECTION_PUBLICATION_GATE_VERIFIED_AWAITING_DEPLOYMENT_RECEIPT",
+  "current_stage": "S12_BALANCE_BUDGET_ALPHA_VERIFIED_READY_FOR_BOUNDED_DEPLOY",
   "scope": "SELECTED_ADMITTED_POPULATION_ONLY",
   "full_inventory_complete": false,
   "upstream_method_state": "../RL_STATIC_METHOD_STATE.json",
@@ -8,8 +8,8 @@
   "stages_passed": ["S0_DISCOVERY", "S1_REQUIREMENTS", "S2_USE_CASES", "S3_ACCEPTANCE_TEST_DESIGN", "S4_ARCHITECTURE", "S5_SYSTEM_TEST_DESIGN", "S6_COMPONENT_DESIGN", "S7_INTEGRATION_TEST_DESIGN", "S8_UNIT_TEST_DESIGN", "S9_UNIT_IMPLEMENTATION", "S10_INTEGRATION_VERIFICATION", "S11_SYNTHETIC_SYSTEM_VERIFICATION", "S12_SYNTHETIC_ALPHA_ACCEPTANCE"],
   "traceability": "TRACEABILITY.md",
   "design": "../45_SELECTED_RL_COMPARISON.md",
-  "next_allowed_actions": ["main completes real selection OLAP readback and two-copy verification", "main supplies pinned DEPLOYMENT_RECEIPT.json linking the same-root selection CLOSE", "operator materializes and checks new comparison root without dispatch"],
-  "blocked_actions": ["financial training", "source admission or feature selection", "full inventory completion claims", "deployment", "existing-file edits"],
+  "next_allowed_actions": ["consume pinned closed selection deployment receipt", "materialize and verify new balance-budget campaign identity", "deploy bounded selected comparison under existing user authorization after runtime and resource checks"],
+  "blocked_actions": ["training from unclosed selection", "source admission or feature selection", "full inventory completion claims", "in-place scientific changes to an active campaign", "reuse incomplete portfolio-fraction fit under balance-budget identity"],
   "evidence": [
     {"kind": "test_first_red", "result": "collection refused because adapter module did not exist"},
     {"kind": "new_unit_tests", "path": "tests/unit/test_selected_rl_comparison.py", "passed": 31},
@@ -23,12 +23,13 @@
   "gpu_used": false,
   "source_admission_performed": false,
   "scientific_acceptance": "NOT_CLAIMED",
-  "release_operation": "NOT_STARTED; main reports tool registration complete; real verified deployment receipt remains main-owned",
+  "release_operation": "Initial selected worker stopped and disabled after user clarified allocation; replacement requires v2 request and new identity, same verified selection",
   "history": [
     "2026-10-19: discovered generic queue, CSV-only gym feed, RAW-specific materializer and closure; designed tests before adapter implementation",
     "2026-10-19: observed expected red, implemented new-file-only binding adapter, verified synthetic units and no-learning information path; 91 focused regressions passed",
     "2026-10-19: delivered exact producer interface; no selection invented and no financial inputs opened; await main's finalized scoped selection",
     "2026-10-19: added mandatory pinned selection OLAP/two-copy close gate using test-first negatives; original 91 focused tests plus 25 gate cases passed; adapter/tests/docs only, no fits or commits",
-    "2026-10-19: corrected adapter arms to list(design['arms']); exact SAC-first order tests observed red then full 116-test focused CPU set passed in 5.79 seconds; no fits, commits or declaration edits"
+    "2026-10-19: corrected adapter arms to list(design['arms']); exact SAC-first order tests observed red then full 116-test focused CPU set passed in 5.79 seconds; no fits, commits or declaration edits",
+    "2026-10-19: user clarified mandatory SL/TP and rel_volume times balance allocation; v2 request tested first,127 focused CPU tests passed with real no-learning SAC construction;108 gym budget/protection/session tests passed; no incomplete fitted policy reused"
   ]
 }

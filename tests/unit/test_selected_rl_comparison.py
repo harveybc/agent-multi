@@ -111,6 +111,35 @@ def repin(path, request, receipt):
     write(path, request)
 
 
+def test_balance_budget_request_changes_only_order_allocation(tmp_path):
+    path, request, _ = fixture(tmp_path)
+    request.update(schema='selected_rl_comparison_request.v2', order_budget=dict(
+        rel_volume=.1, min_order_volume=1, max_order_volume=1e12, volume_step=1))
+    write(path, request)
+    body, _ = selected._build(path, tmp_path / 'out')
+    config = body['common_config']
+    assert config['execution_envelope']['sizing_mode'] == 'balance_budget'
+    assert config['execution_envelope']['rel_volume'] == .1
+    assert config['execution_envelope']['leverage'] == config['leverage'] == 1
+    assert config['window_size'] == 13 and config['observation_stride_bars'] == 2
+    assert config['total_timesteps'] == 100000
+    assert config['execution_envelope']['atr_sl_mult'] == 2
+    assert config['execution_envelope']['atr_tp_mult'] == 4
+
+
+@pytest.mark.parametrize('key,value', [('rel_volume', 0), ('rel_volume', 1.01),
+    ('min_order_volume', -1), ('volume_step', 0), ('max_order_volume', .5),
+    ('rel_volume', float('nan'))])
+def test_bad_order_budget_refused_before_dispatch(tmp_path, key, value):
+    path, request, _ = fixture(tmp_path)
+    request.update(schema='selected_rl_comparison_request.v2', order_budget=dict(
+        rel_volume=.1, min_order_volume=1, max_order_volume=1e12, volume_step=1))
+    request['order_budget'][key] = value
+    write(path, request)
+    with pytest.raises(ValueError, match='SELECTED_ORDER_BUDGET'):
+        selected._build(path, tmp_path / 'out')
+
+
 @pytest.mark.parametrize('parquet', [False, True])
 def test_selected_csv_and_parquet_use_existing_queue_and_same_information(tmp_path, parquet):
     path, request, receipt = fixture(tmp_path, parquet)

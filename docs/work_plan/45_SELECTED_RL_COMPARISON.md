@@ -26,6 +26,31 @@ curated-input validator to be extended together.
 
 ## Test Design
 
+### Mandatory Balance Budget Amendment
+
+The user clarified the sizing contract before either selected-input arm
+completed. The initial portfolio-fraction worker was stopped and disabled;
+its incomplete fit is not reused by the replacement experiment. Selection
+artifacts, rows, windows and model architecture remain unchanged.
+
+`selected_rl_comparison_request.v2` adds exactly `order_budget` with
+`rel_volume`, `min_order_volume`, `max_order_volume`, `volume_step`.
+The shared envelope uses `balance_budget`: allocation ceiling is
+`min(abs(action), 1) * rel_volume * cash_at_decision`. This is margin in
+account currency, not loss-to-SL. Broker leverage (still 1 in this comparator)
+converts margin to notional, then decision price converts to base units.
+Cost headroom reduces allocation; rounding is downward; below minimum abstains.
+Each entry needs finite positive SL/TP geometry before submission. Initial
+minimum/step of one base unit are illustrative, not broker verified.
+Both arms and mechanical comparators use the same rule under a new campaign
+identity; no completed RAW result or old selection is relabeled.
+
+Acceptance and unit design: cash versus equity distinction, 20%/100% actions,
+leverage conversion at 1/10/50/100, below-minimum abstention, bad SL/TP before
+parent submission, real Backtrader protected entry and unchanged legacy cases.
+Request negatives reject invalid budgets before dispatch. No new learning
+algorithm, policy action shape, refit cadence, DOIN or admission logic.
+
 Acceptance: a synthetic selected bundle yields twelve finite tasks (four
 controls and two SAC arms, train/validation), identical selected information,
 scoped identity and publication/copy continuation without running a financial

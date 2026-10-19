@@ -161,8 +161,22 @@ def _check_rows(text, manifest, columns, availability_column, common, binary):
 
 def _build(request_path, output_root):
     request = _json(request_path)
-    if request.get('schema') != 'selected_rl_comparison_request.v1' or set(request) != REQUEST_KEYS:
+    budget_mode = request.get('schema') == 'selected_rl_comparison_request.v2'
+    keys = REQUEST_KEYS | {'order_budget'} if budget_mode else REQUEST_KEYS
+    if (request.get('schema') not in ('selected_rl_comparison_request.v1',
+                                     'selected_rl_comparison_request.v2')
+            or set(request) != keys):
         _fail('REQUEST_SCHEMA_OR_OVERRIDES_REFUSED')
+    if budget_mode:
+        budget = request['order_budget']
+        if (not isinstance(budget, dict) or set(budget) != {
+                'rel_volume', 'min_order_volume', 'max_order_volume', 'volume_step'}
+                or any(type(v) not in (int, float) or not math.isfinite(v)
+                       for v in budget.values())
+                or not 0 < budget['rel_volume'] <= 1
+                or not 0 <= budget['min_order_volume'] <= budget['max_order_volume']
+                or budget['max_order_volume'] <= 0 or budget['volume_step'] <= 0):
+            _fail('ORDER_BUDGET_INVALID')
     base_path = _pinned(request['base_design_file'], request['base_design_sha256'])
     design = _json(base_path)
     reference = _json(queue.ROOT / 'examples/config/rl_raw_eurusd_static.v1.json')
@@ -214,6 +228,9 @@ def _build(request_path, output_root):
             or any(c not in columns for c in binary) or len(set(binary)) != len(binary)):
         _fail('CAUSAL_ROLLING_NORMALIZATION_REQUIRED')
     common = copy.deepcopy(design['common_config'])
+    if budget_mode:
+        common['execution_envelope'].update(request['order_budget'],
+            sizing_mode='balance_budget', leverage=common['leverage'])
     common.update(FLAGS, selection_sha256=request['selection_sha256'],
                   selected_population_sha256=population, feature_binary_columns=binary)
     closures = _pinned(_member(root, receipt['closure_intervals_file']),

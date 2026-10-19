@@ -11,6 +11,7 @@
 | SEL-7 | No private input/fit/service needed for verification | all fixtures synthetic under tmp_path; dispatch doubles |
 | SEL-8 | Shared queue resume/status/publication and verified physical copy | publication refusal/idempotence and backup tests |
 | SEL-9 | Final selection OLAP/two-copy closure required before source reads or dispatch | 21 close negatives, fresh/resume rechecks, deployment-receipt positive and source-close tamper test |
+| SEL-10 | Mandatory SL/TP and user balance allocation in both arms | v2 budget binding/negative tests; gym balance-budget unit and real Backtrader protection tests |
 
 Data admission and causal transformation reproduction belong to the upstream
 owner. These tests verify consumption and transport, not source truth or
@@ -27,3 +28,10 @@ absent. After implementation, the same focused regression command passed 116
 tests in 9.01 seconds (original 91 plus 25 cases). Closure identity is now
 mandatory before source reads and rechecked before dispatch/resume. This
 verification used only synthetic receipts; no mirrors or services were read.
+
+Balance-budget amendment: the seven new request tests plus existing selected,
+no-learning integration, input, queue and collector regressions passed127/127
+on CPU with the matching gym checkout. Gym's budget/protection/session suites
+passed108/108. Thirty-one budget/protection cases were observed red before the
+gym change; request-negative cases were observed red before the v2 adapter.
+This establishes engineering behavior, not a profitable trading policy.
