@@ -117,6 +117,12 @@ def _q(value):
     return json.dumps(value.replace('%','%%'))
 
 
+def _setting_path(value):
+    path=str(Path(value).resolve())
+    _q(path)
+    return path.replace('%','%%')
+
+
 def render(spec,directory,environment_file,spec_path=None,runtime_root=None):
     directory=Path(directory);directory.mkdir(parents=True,exist_ok=True)
     runtime=Path(runtime_root).resolve() if runtime_root else Path(__file__).resolve().parents[1]
@@ -142,7 +148,7 @@ def render(spec,directory,environment_file,spec_path=None,runtime_root=None):
         service='\n'.join(['[Unit]','Description=Finite SAC regularization '+node['profile'],
             'After=network-online.target','ConditionPathExists=!'+str(root/'CLOSE.json'),
             'StartLimitIntervalSec=900','StartLimitBurst=3','','[Service]','Type=exec',
-            'WorkingDirectory='+str(runtime).replace('%','%%'),'EnvironmentFile='+_q(environment_file),
+            'WorkingDirectory='+_setting_path(runtime),'EnvironmentFile='+_setting_path(environment_file),
             'ExecCondition='+' '.join(_q(x) for x in gate),
             'ExecCondition='+' '.join(_q(x) for x in smoke),
             'ExecStart='+' '.join(_q(x) for x in start),
@@ -156,8 +162,8 @@ def render(spec,directory,environment_file,spec_path=None,runtime_root=None):
              'tools.selected_rl_regularization_sequence','publish','--spec',path]
     publisher='\n'.join(['[Unit]','Description=Sequential SAC checkpoint publication and readback',
         'ConditionPathExists=!'+str(path.parent/'SEQUENCE_COMPLETE.json'),'',
-        '[Service]','Type=oneshot','WorkingDirectory='+str(runtime).replace('%','%%'),
-        'EnvironmentFile='+_q(environment_file),'ExecStart='+' '.join(_q(x) for x in command),
+        '[Service]','Type=oneshot','WorkingDirectory='+_setting_path(runtime),
+        'EnvironmentFile='+_setting_path(environment_file),'ExecStart='+' '.join(_q(x) for x in command),
         'SuccessExitStatus=2','MemoryHigh=768M','MemoryMax=1500M','MemorySwapMax=0',
         'CPUQuota=100%','TasksMax=64','TimeoutStartSec=300','UMask=0077',''])
     paths.extend(_unit(directory,PREFIX+'-publication',publisher))
