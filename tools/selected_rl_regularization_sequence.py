@@ -147,7 +147,7 @@ def render(spec,directory,environment_file,spec_path=None,runtime_root=None):
                'agent_plugins.sac_regularization','--smoke-root',root]
         service='\n'.join(['[Unit]','Description=Finite SAC regularization '+node['profile'],
             'After=network-online.target','ConditionPathExists=!'+str(root/'CLOSE.json'),
-            'StartLimitIntervalSec=900','StartLimitBurst=3','','[Service]','Type=exec',
+            'StartLimitIntervalSec=0','','[Service]','Type=exec',
             'WorkingDirectory='+_setting_path(runtime),'EnvironmentFile='+_setting_path(environment_file),
             'ExecCondition='+' '.join(_q(x) for x in gate),
             'ExecCondition='+' '.join(_q(x) for x in smoke),

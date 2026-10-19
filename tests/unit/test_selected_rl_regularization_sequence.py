@@ -42,6 +42,8 @@ def test_prepare_four_configs_chain_units_and_idempotence(tmp_path):
     assert 'CUDA_VISIBLE_DEVICES=GPU-' in first
     assert json.dumps('--predecessor-sha256')+' '+json.dumps('f'*64) in first
     assert 'MemoryMax=6G' in first
+    assert 'StartLimitIntervalSec=0' in first
+    assert 'StartLimitBurst=' not in first
     assert 'WorkingDirectory="/' not in first
     assert 'EnvironmentFile="/' not in first
     assert 'rl-selected-reg-dropout005.service' in (root/'units/rl-selected-reg-dropout005.timer').read_text()
