@@ -7,7 +7,7 @@
    "lifecycle": "experimental", "mutability": "mixed", "authority_class": "campaign_operation", "owner": "static RL comparison"
   },
   "collect_closed_raw_rl.py": {
-   "purpose": "Collect only warehouse-acknowledged closed RL artifacts and the closed SQLite backup, verify every identity/hash, and stop after successful physical collection; never trains or copies the live outbox",
+   "purpose": "Collect only warehouse-acknowledged closed RAW or selected-input RL artifacts and the closed SQLite backup, verify identities including the same selected subset and every artifact hash, then stop after physical collection; never trains or copies the live outbox",
    "lifecycle": "supported", "mutability": "mutating", "authority_class": "campaign_operation", "owner": "General Musashi"
   },
   "materialize_raw_rl_campaign.py": {

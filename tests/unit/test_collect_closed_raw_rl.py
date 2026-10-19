@@ -88,6 +88,26 @@ def test_exact_collection_closed_sqlite_exclusions_and_readonly_next_tick(campai
     assert {p.name: p.read_bytes() for p in state.iterdir()} == before
 
 
+@pytest.mark.parametrize('tamper',[None,'scope','binding','columns'])
+def test_selected_collection_requires_same_scoped_selection_as_contract(campaign,tamper):
+    source,archive,state,_=campaign
+    flags=dict(feature_selection_complete=True,selection_complete='WITHIN_DECLARED_ADMITTED_POPULATION',full_inventory_complete=False)
+    binding=dict(selection_sha256='a'*64,feature_columns=['selected_a','selected_b'])
+    contract=dict(schema='curated_rl_campaign.v1',**flags,selected_input_binding=binding)
+    (source/'CONTRACT.json').write_text(json.dumps(contract))
+    pin=m.digest(source/'CONTRACT.json')
+    status=json.loads((source/'STATUS.json').read_text()); status['contract_sha256']=pin
+    (source/'STATUS.json').write_text(json.dumps(status))
+    close=json.loads((source/'CLOSE.json').read_text())
+    close.update(schema='selected_rl_close.v1',contract_sha256=pin,**flags,selected_input_binding=dict(binding))
+    if tamper=='scope':close['full_inventory_complete']=True
+    if tamper=='binding':close['selected_input_binding']['selection_sha256']='b'*64
+    if tamper=='columns':close['selected_input_binding']['feature_columns']=['selected_b','selected_a']
+    (source/'CLOSE.json').write_text(json.dumps(close))
+    assert m.collect(HOST,REMOTE,archive,state)==(0 if tamper is None else 2)
+    assert (state/'COLLECTION_COMPLETE.json').exists()==(tamper is None)
+
+
 @pytest.mark.parametrize('target', ['CONTRACT.json', 'metrics-backup.sqlite', 'task-0/summary.bin'])
 def test_changed_bytes_never_mark_collection_complete(campaign, target):
     source, archive, state, _ = campaign

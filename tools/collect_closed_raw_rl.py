@@ -1,4 +1,4 @@
-"""One-shot closed raw-control collection; never trains or contacts a warehouse."""
+"""One-shot closed RAW/selected RL collection; never trains or contacts a warehouse."""
 import argparse
 import hashlib
 import json
@@ -12,6 +12,21 @@ from app.curated_rl_input import _digest as digest
 from tools.verify_rl_static_engineering import save_status
 
 
+def selected_close_matches(close, contract):
+    if close.get('schema') != 'selected_rl_close.v1':
+        return close.get('schema') == 'raw_rl_close.v1'
+    flags = dict(feature_selection_complete=True,
+                 selection_complete='WITHIN_DECLARED_ADMITTED_POPULATION', full_inventory_complete=False)
+    binding = close.get('selected_input_binding')
+    if (any(close.get(k) != v or contract.get(k) != v for k,v in flags.items())
+            or not isinstance(binding,dict) or binding != contract.get('selected_input_binding')):
+        return False
+    columns = binding.get('feature_columns')
+    return (isinstance(columns,list) and bool(columns) and all(isinstance(c,str) for c in columns)
+            and len(set(columns)) == len(columns)
+            and bool(re.fullmatch('[0-9a-f]{64}',str(binding.get('selection_sha256')))))
+
+
 def member(root, relative):
     name = PurePosixPath(relative)
     path = root / str(name)
@@ -23,9 +38,9 @@ def member(root, relative):
 def verify(archive, source, close_sha):
     names = ('CLOSE.json', 'CONTRACT.json', 'STATUS.json', 'metrics-backup.sqlite')
     proofs = {name: digest(member(archive, name)) for name in names}
-    close, status = [json.loads((archive / name).read_bytes()) for name in ('CLOSE.json', 'STATUS.json')]
+    close, status, contract = [json.loads((archive / name).read_bytes()) for name in ('CLOSE.json', 'STATUS.json', 'CONTRACT.json')]
     warehouse, tasks = close['warehouse'], status['tasks']
-    if (proofs['CLOSE.json'] != close_sha or close.get('schema') != 'raw_rl_close.v1'
+    if (proofs['CLOSE.json'] != close_sha or not selected_close_matches(close,contract)
             or close.get('state') != 'COMPLETED_AND_WAREHOUSE_READBACK_VERIFIED'
             or close['completed_tasks'] != 12 or len(tasks) != 12 or len({t['id'] for t in tasks}) != 12
             or warehouse['expected'] != 12 or warehouse['delivered'] != 12 or warehouse['pending'] or warehouse['mismatch']
@@ -85,16 +100,16 @@ def collect(host, source_root, archive_root, state_root):
             return 0
         close_sha = hashlib.sha256(result.stdout).hexdigest()
         close = json.loads(result.stdout)
-        if close.get('schema') != 'raw_rl_close.v1' or close.get('state') != 'COMPLETED_AND_WAREHOUSE_READBACK_VERIFIED':
+        if close.get('schema') not in ('raw_rl_close.v1','selected_rl_close.v1') or close.get('state') != 'COMPLETED_AND_WAREHOUSE_READBACK_VERIFIED':
             raise ValueError('REMOTE_CLOSE_INVALID')
         archive.mkdir(parents=True, exist_ok=True)
-        command = ['rsync', '-rlt', '--safe-links', '--protect-args', '--timeout=60',
+        command = ['rsync', '-rlt', '--fsync', '--safe-links', '--protect-args', '--timeout=60',
                    '-e', 'ssh -o BatchMode=yes -o ConnectTimeout=10', '--include=/metrics-backup.sqlite',
                    '--exclude=warehouse-outbox.sqlite*', '--exclude=*.sqlite*', '--exclude=*-wal', '--exclude=*-shm',
                    '--exclude=*.lock*', '--exclude=locks/', '--exclude=*.partial*', '--', f'{host}:{source}/', str(archive) + '/']
         subprocess.run(command, check=True, capture_output=True, timeout=3600)
         proofs = verify(archive, source, close_sha)
-        record = dict(schema='raw_rl_collection.v1', state='COLLECTION_COMPLETE',
+        record = dict(schema='selected_rl_collection.v1' if close['schema']=='selected_rl_close.v1' else 'raw_rl_collection.v1', state='COLLECTION_COMPLETE',
                       identity=identity, close_sha256=close_sha, proofs=proofs)
         save_status(state / 'COLLECTION_STATUS.json', record)
         save_status(complete, record)

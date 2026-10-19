@@ -198,6 +198,15 @@ Main-owned existing-file integration, not performed by this write set:
   parquet, if preferred over export, requires coordinated feed/validator work
   and is not implemented here.
 
+Integration2026-10-19: executable registration is now present. The existing
+closed collector also accepts `selected_rl_close.v1` only when scoped completion,
+ordered selected binding and contract agree, with the same exact artifact and
+closed SQLite checks. RAW behavior remains covered. Four regressions include
+scope, selection-hash and selected-order mismatches. The focused comparison,
+input/materializer/status/collector suite passes120 tests; no active fit code
+or gym source changes are needed for collection. The scientific runtime remains
+pinned independently of this later collector-only repair.
+
 CPU-only verification in the existing dedicated trading-stack environment:
 
 ```bash
