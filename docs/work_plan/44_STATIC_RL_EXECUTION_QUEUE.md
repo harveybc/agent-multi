@@ -106,10 +106,8 @@ publication helpers. No server is required to enqueue. There is no auto-send.
 
 ## Consolidation gate
 
-This file carries the session method delta because the shared method state is
-outside the authorized disjoint file set. Main must register the new tool in
-`tools/TOOL_DECLARATIONS.json` before engineering-surface CI acceptance. The
-registry is intentionally not edited here. Financial execution remains blocked
+Main integrated the method delta into `RL_STATIC_METHOD_STATE.json` and
+registered the tool in `tools/TOOL_DECLARATIONS.json`. Financial execution remains blocked
 on the existing admission/environment/cost/schedule requirements, not on a
 new boolean approval synthesized by this wrapper.
 
@@ -137,8 +135,7 @@ DATA_GOV_CHECKOUT=<existing-data-gov-checkout> python -m pytest \
   tests/unit/test_temporal_sac_features.py tests/unit/test_static_engineering_checks.py -q
 ```
 
-Next action: main consolidates this three-file engineering change, declares
-the tool, updates the shared method state and supplies actual admitted
+Next action: main supplies actual admitted
 split/delivery/unit identities only after closing its source/replacement and
 full environment acceptance gates. Governing classification, sealed TEST
 release, broker-cost certification and warehouse send/readback remain outside
