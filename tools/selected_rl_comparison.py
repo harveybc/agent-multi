@@ -21,6 +21,7 @@ import tempfile
 
 from tools import curated_rl_campaign as queue
 from tools import run_raw_rl_campaign as shared_status
+from tools.collect_closed_raw_rl import live_monitor_state
 from tools.verify_rl_static_engineering import save_status
 
 
@@ -437,7 +438,7 @@ def publish_monitors(body, root, state):
                 path = Path(task[key]).resolve()
                 if not path.is_relative_to(root.resolve()) or queue.digest(path) != pin:
                     _fail('MONITOR_ARTIFACT_CHANGED')
-            queue._enqueue(body, state, task, None)
+            queue._enqueue(body, state, task, None, warehouse_root=root)
             count += 1
     return count
 
@@ -465,7 +466,10 @@ def publish_and_close(root):
             if queue.digest(_member(root, close['physical_copy'])) != close['physical_sha256']:
                 _fail('CLOSED_PHYSICAL_COPY_CHANGED')
             for name, value in close.get('monitor_files', {}).items():
-                if queue.digest(_member(root, name)) != value:
+                path = _member(root, name)
+                if body['common_config'].get('paired_early_stopping') and live_monitor_state(name):
+                    continue
+                if queue.digest(path) != value:
                     _fail('CLOSED_MONITOR_CHANGED')
             return 0
         state = queue.status(root)
@@ -505,6 +509,8 @@ def publish_and_close(root):
                     if file.is_file():
                         if file.is_symlink() or not file.resolve().is_relative_to(root.resolve()):
                             _fail('MONITOR_PATH_ESCAPE')
+                        if live_monitor_state(str(file.relative_to(root))):
+                            continue
                         monitor_files[str(file.relative_to(root))] = queue.digest(file)
         save_status(close_path, dict(schema='selected_rl_close.v1',
             state='COMPLETED_AND_WAREHOUSE_READBACK_VERIFIED', contract_sha256=pin,

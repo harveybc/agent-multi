@@ -109,7 +109,8 @@ def test_selected_collection_requires_same_scoped_selection_as_contract(campaign
 
 
 @pytest.mark.parametrize('tamper',[False,True])
-def test_paired_direct_collection_counts_monitor_reports_and_checks_files(campaign,tamper):
+@pytest.mark.parametrize('legacy_outbox',[False,True])
+def test_paired_direct_collection_counts_monitor_reports_and_checks_files(campaign,tamper,legacy_outbox):
     from agent_plugins.paired_early_stopping import SETTINGS
     source,archive,state,_=campaign
     flags=dict(feature_selection_complete=True,selection_complete='WITHIN_DECLARED_ADMITTED_POPULATION',full_inventory_complete=False)
@@ -126,6 +127,10 @@ def test_paired_direct_collection_counts_monitor_reports_and_checks_files(campai
     pair=source/'task-0/paired-monitor/step-005000/PAIR.json'
     pair.parent.mkdir(parents=True); pair.write_text('{"schema":"synthetic-pair"}')
     monitor_files={str(pair.relative_to(source)):m.digest(pair)}
+    if legacy_outbox:
+        live = pair.parent.parent / 'warehouse-outbox.sqlite'
+        live.write_bytes(b'LIVE REDUNDANT OUTBOX')
+        monitor_files[str(live.relative_to(source))] = m.digest(live)
     close=json.loads((source/'CLOSE.json').read_text())
     close.update(schema='selected_rl_close.v1',contract_sha256=pin,
         completed_tasks=2,monitor_files=monitor_files,monitor_reports=2,
@@ -134,6 +139,10 @@ def test_paired_direct_collection_counts_monitor_reports_and_checks_files(campai
     (source/'CLOSE.json').write_text(json.dumps(close))
     if tamper: pair.write_text('changed')
     assert m.collect(HOST,REMOTE,archive,state)==(2 if tamper else 0)
+    if legacy_outbox and not tamper:
+        record=json.loads((state/'COLLECTION_COMPLETE.json').read_text())
+        assert record['excluded_live_monitor_state']==[str(live.relative_to(source))]
+        assert not (archive/live.relative_to(source)).exists()
 
 
 @pytest.mark.parametrize('target', ['CONTRACT.json', 'metrics-backup.sqlite', 'task-0/summary.bin'])

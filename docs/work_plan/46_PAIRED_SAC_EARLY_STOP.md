@@ -50,3 +50,17 @@ an agent monitoring logs.
 Discovery through unit-test design complete. Engineering implementation and
 synthetic verification precede sealed real deployment. Validation is used for
 checkpoint selection and is development data, not an independent holdout.
+
+## Operational Publication Correction
+
+2026-10-19: real checkpoint pairs exposed an incorrect outbox root inferred
+from nested monitor directories. ES7 now passes the campaign root explicitly;
+ordinary task publication remains unchanged. Regression failed before the fix.
+The isolated publisher can be upgraded without modifying the running learner,
+its scientific pin, contract, stopping rule or checkpoints. Legacy monitor
+outboxes are redundant live state, not physical scientific artifacts: validate
+their member paths, exclude only the recognized monitor outbox filenames, and
+record exclusions in collection evidence. The canonical closed metrics backup,
+all report readbacks, and all scientific file digests remain mandatory.
+Focused CPU verification: 159 tests passed, including monitor-root regression
+and legacy collection with positive and corrupted-artifact controls.

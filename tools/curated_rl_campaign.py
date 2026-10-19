@@ -558,7 +558,7 @@ def pump_warehouse(body, output_root):
         return 2
 
 
-def _enqueue(body, state, task, outbox):
+def _enqueue(body, state, task, outbox, *, warehouse_root=None):
     summary = json.loads(Path(task['summary']).read_text())
     if body['publication'].get('mode') == 'WAREHOUSE_REPORTS':
         directory = Path(task['summary']).parent
@@ -567,7 +567,8 @@ def _enqueue(body, state, task, outbox):
         save_status(report_path, report)
         request = directory / 'warehouse_request.json'
         save_status(request, {'report': report, 'source_unit': task['id']})
-        result = rl_warehouse.invoke(body['publication'], directory.parents[1], 'enqueue', request)
+        root = Path(warehouse_root) if warehouse_root is not None else directory.parents[1]
+        result = rl_warehouse.invoke(body['publication'], root, 'enqueue', request)
         task['warehouse_report_sha256'] = result['report_sha256']
         task['warehouse_report'] = str(report_path)
         task['artifacts']['warehouse_report'] = digest(report_path)

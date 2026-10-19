@@ -92,10 +92,15 @@ def test_pair_reports_are_published_once_per_role_with_integrity(tmp_path, monke
     pair=directory/'PAIR.json'
     pair.write_text(json.dumps(dict(schema='paired_sac_checkpoint.v1',reports=reports)))
     calls=[]
-    monkeypatch.setattr(queue,'_enqueue',lambda body,state,task,box:calls.append(task))
+    roots=[]
+    def enqueue(body,state,task,box,*,warehouse_root=None):
+        roots.append(warehouse_root)
+        calls.append(task)
+    monkeypatch.setattr(queue,'_enqueue',enqueue)
     body=dict(common_config=dict(paired_early_stopping=True),seeds=[7])
     assert selected.publish_monitors(body,tmp_path,{})==2
     assert [t['split'] for t in calls]==['train','validation']
+    assert roots==[tmp_path,tmp_path]
     Path(reports[0]['summary']).write_text('changed')
     with pytest.raises(ValueError,match='MONITOR_ARTIFACT_CHANGED'):
         selected.publish_monitors(body,tmp_path,{})

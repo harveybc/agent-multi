@@ -35,6 +35,12 @@ def member(root, relative):
     return path
 
 
+def live_monitor_state(relative):
+    name = PurePosixPath(relative)
+    return (name.parent.name == 'paired-monitor' and name.name in
+            ('warehouse-outbox.sqlite', 'warehouse-outbox.sqlite-wal', 'warehouse-outbox.sqlite-shm'))
+
+
 def verify(archive, source, close_sha):
     names = ('CLOSE.json', 'CONTRACT.json', 'STATUS.json', 'metrics-backup.sqlite')
     proofs = {name: digest(member(archive, name)) for name in names}
@@ -73,7 +79,12 @@ def verify(archive, source, close_sha):
                 raise ValueError('ARTIFACT_DIGEST_MISMATCH')
             proofs[relative] = pin
     for name, pin in monitor_files.items():
-        if digest(member(archive,name)) != pin:
+        path = member(archive,name)
+        # Older publishers indexed their redundant live outbox; the canonical
+        # closed backup and readback counts above remain mandatory.
+        if paired and live_monitor_state(name):
+            continue
+        if digest(path) != pin:
             raise ValueError('MONITOR_DIGEST_MISMATCH')
         proofs[name] = pin
     for path in archive.rglob('*'):
@@ -129,6 +140,9 @@ def collect(host, source_root, archive_root, state_root):
         proofs = verify(archive, source, close_sha)
         record = dict(schema='selected_rl_collection.v1' if close['schema']=='selected_rl_close.v1' else 'raw_rl_collection.v1', state='COLLECTION_COMPLETE',
                       identity=identity, close_sha256=close_sha, proofs=proofs)
+        if close.get('monitor_files'):
+            record['excluded_live_monitor_state'] = sorted(
+                name for name in close['monitor_files'] if live_monitor_state(name))
         save_status(state / 'COLLECTION_STATUS.json', record)
         save_status(complete, record)
         return 0
