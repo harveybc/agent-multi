@@ -2,6 +2,7 @@
   "schema": "selected_rl_comparison_method.v1",
   "current_stage": "S12_BALANCE_BUDGET_ALPHA_VERIFIED_READY_FOR_BOUNDED_DEPLOY",
   "scope": "SELECTED_ADMITTED_POPULATION_ONLY",
+  "approved_followup": "../46_PAIRED_SAC_EARLY_STOP.md; direct-only request_v4; separate new identity after baseline close",
   "full_inventory_complete": false,
   "upstream_method_state": "../RL_STATIC_METHOD_STATE.json",
   "method": "portable test-led-data-centric-development checklist; no repository method validator found",

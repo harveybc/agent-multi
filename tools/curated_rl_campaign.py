@@ -48,6 +48,11 @@ METRIC_UNITS = {
     **dict.fromkeys(('max_drawdown_pct', 'win_rate_pct'), 'percent'),
     'total_return': 'fraction', 'sharpe_ratio': 'ratio', 'profit_factor': 'ratio',
     'episode_reward': 'reward', 'final_reward': 'reward', 'wall_seconds': 'seconds',
+    'mean_daily_log_return': 'log_fraction_per_observed_day',
+    'monitor_score': 'log_fraction_per_observed_day',
+    'monitor_generalization_gap': 'log_fraction_per_observed_day',
+    'monitor_step': 'transitions', 'observed_days': 'observed_days',
+    'monitor_patience_used': 'evaluations', 'monitor_best_step': 'transitions',
     **dict.fromkeys(('trades_total', 'trades_closed', 'trades_won', 'trades_lost',
                      'entry_submissions', 'filled_entries', 'max_entries_filled_in_day',
                      'daily_entry_limit', 'observed_updates', 'no_trade_min_trades'), 'count'),
@@ -211,7 +216,13 @@ def load_contract(path):
     if body.get('scientific_scope', 'SYNTHETIC_ENGINEERING') not in ('SYNTHETIC_ENGINEERING', 'REAL_DATA_DEVELOPMENT'):
         raise ValueError('QUEUE_UNSUPPORTED_SCIENTIFIC_SCOPE')
     execution_settings(body)
-    if len(arm_order(body)) != len(ARMS) or set(arm_order(body)) != set(ARMS):
+    paired = body['common_config'].get('paired_early_stopping')
+    if paired:
+        from agent_plugins.paired_early_stopping import validate_settings
+        validate_settings(paired)
+        if body.get('arms') != ['SAC_FLAT']:
+            raise ValueError('QUEUE_PAIRED_ES_DIRECT_ONLY')
+    elif len(arm_order(body)) != len(ARMS) or set(arm_order(body)) != set(ARMS):
         raise ValueError('QUEUE_EXACT_ORDERED_ARM_SET_REQUIRED')
     seeds, common, splits = body['seeds'], body['common_config'], body['splits']
     if (not isinstance(seeds, list) or not 1 <= len(seeds) <= 32
@@ -247,7 +258,7 @@ def load_contract(path):
     if body.get('scientific_scope') == 'REAL_DATA_DEVELOPMENT' and not warehouse:
         raise ValueError('QUEUE_REAL_DEVELOPMENT_REQUIRES_WAREHOUSE_REPORTS')
     units = publication.get('unit_ids', {})
-    expected_units = {f'{seed}/{arm}/{role}' for seed in seeds for arm in ARMS
+    expected_units = {f'{seed}/{arm}/{role}' for seed in seeds for arm in arm_order(body)
                       for role in ('train', 'validation')}
     if not warehouse and (not _pin(publication.get('campaign_sha256'))
             or set(publication.get('deliveries', {})) != set(splits)
@@ -438,6 +449,11 @@ def _task_config(body, task, directory, checkpoint):
                       'return_trace_file': 'returns.csv',
                       'session_flatten_custody_root': 'session_custody'}.items():
         base[key] = str(directory / name)
+    if base.get('paired_early_stopping') and task['split'] == 'train':
+        campaign_root = directory.parents[1]
+        base.update(paired_campaign_root=str(campaign_root),
+                    paired_campaign_sha256=digest(campaign_root / 'CONTRACT.json'),
+                    paired_source_unit=f"{task['id']}:a{task['attempt']}")
     template = directory / 'template.json'
     save_status(template, base)
     # The legacy merge coerces max_rows before applying curated full-population mode.
@@ -464,6 +480,8 @@ def warehouse_report(body, state, task, summary):
     for field in ('execution_diagnostics', 'execution_counters'):
         if isinstance(summary.get(field), dict):
             diagnostics(field, summary[field])
+    if isinstance(summary.get('paired_early_stopping'), dict):
+        diagnostics('paired_early_stopping', summary['paired_early_stopping'])
     split = body['splits'][task['split']]
     if digest(split['curated_input_manifest']) != split['curated_input_manifest_sha256']:
         raise ValueError('QUEUE_REPORT_INPUT_IDENTITY_DRIFT')
@@ -477,6 +495,9 @@ def warehouse_report(body, state, task, summary):
     for key in ('input_policy', 'cost_scope'):
         if key in body:
             tags[key] = body[key] if isinstance(body[key], str) else json.dumps(body[key], sort_keys=True)
+    if body['common_config'].get('paired_early_stopping'):
+        tags['checkpoint_selection_protocol'] = json.dumps(body['common_config']['paired_early_stopping'], sort_keys=True)
+        tags['validation_role'] = 'DEVELOPMENT_CHECKPOINT_TUNING_NOT_HOLDOUT'
     raw_label = str(body.get('input_policy', body.get('scope', ''))).upper()
     if 'RAW' in raw_label or 'CORE_PRICES' in raw_label or body.get('feature_selection_complete') is False:
         tags['feature_selection_complete'] = 'false'

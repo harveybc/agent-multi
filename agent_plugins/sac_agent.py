@@ -251,6 +251,10 @@ class Plugin:
         p = self._resolve(config)
         total_timesteps = int(p["total_timesteps"])
         callback = make_progress_callback({**config, **p}, total_timesteps)
+        if config.get('paired_early_stopping'):
+            from stable_baselines3.common.callbacks import CallbackList
+            from .paired_early_stopping import make_callback
+            callback = CallbackList([c for c in (callback, make_callback(config)) if c is not None])
         model.learn(total_timesteps=total_timesteps, callback=callback)
         return model
 

@@ -108,6 +108,34 @@ def test_selected_collection_requires_same_scoped_selection_as_contract(campaign
     assert (state/'COLLECTION_COMPLETE.json').exists()==(tamper is None)
 
 
+@pytest.mark.parametrize('tamper',[False,True])
+def test_paired_direct_collection_counts_monitor_reports_and_checks_files(campaign,tamper):
+    from agent_plugins.paired_early_stopping import SETTINGS
+    source,archive,state,_=campaign
+    flags=dict(feature_selection_complete=True,selection_complete='WITHIN_DECLARED_ADMITTED_POPULATION',full_inventory_complete=False)
+    binding=dict(selection_sha256='a'*64,feature_columns=['a','b'])
+    contract=dict(schema='curated_rl_campaign.v1',arms=['SAC_FLAT'],
+        common_config=dict(paired_early_stopping=SETTINGS),**flags,selected_input_binding=binding)
+    (source/'CONTRACT.json').write_text(json.dumps(contract))
+    pin=m.digest(source/'CONTRACT.json')
+    status=json.loads((source/'STATUS.json').read_text())
+    status['tasks']=status['tasks'][:2]; status['contract_sha256']=pin
+    for task,role in zip(status['tasks'],('train','validation')):
+        task.update(arm='SAC_FLAT',split=role)
+    (source/'STATUS.json').write_text(json.dumps(status))
+    pair=source/'task-0/paired-monitor/step-005000/PAIR.json'
+    pair.parent.mkdir(parents=True); pair.write_text('{"schema":"synthetic-pair"}')
+    monitor_files={str(pair.relative_to(source)):m.digest(pair)}
+    close=json.loads((source/'CLOSE.json').read_text())
+    close.update(schema='selected_rl_close.v1',contract_sha256=pin,
+        completed_tasks=2,monitor_files=monitor_files,monitor_reports=2,
+        warehouse=dict(expected=4,delivered=4,pending=0,mismatch=0),
+        **flags,selected_input_binding=binding)
+    (source/'CLOSE.json').write_text(json.dumps(close))
+    if tamper: pair.write_text('changed')
+    assert m.collect(HOST,REMOTE,archive,state)==(2 if tamper else 0)
+
+
 @pytest.mark.parametrize('target', ['CONTRACT.json', 'metrics-backup.sqlite', 'task-0/summary.bin'])
 def test_changed_bytes_never_mark_collection_complete(campaign, target):
     source, archive, state, _ = campaign

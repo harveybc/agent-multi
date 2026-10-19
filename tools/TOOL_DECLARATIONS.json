@@ -2,6 +2,10 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "verify_rl_predecessor.py": {
+   "purpose": "Bounded systemd ExecCondition verifies a pinned closed RL predecessor, task artifacts, warehouse readback, closed backup and free resources; writes successor dispatch status without training or modifying the predecessor",
+   "lifecycle": "experimental", "mutability": "mixed", "authority_class": "campaign_operation", "owner": "static RL comparison"
+  },
   "selected_rl_comparison.py": {
    "purpose": "Bind scoped selected inputs to the existing static RL queue",
    "lifecycle": "experimental", "mutability": "mixed", "authority_class": "campaign_operation", "owner": "static RL comparison"

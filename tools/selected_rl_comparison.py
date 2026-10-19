@@ -161,17 +161,26 @@ def _check_rows(text, manifest, columns, availability_column, common, binary):
 
 def _build(request_path, output_root):
     request = _json(request_path)
-    leverage_mode = request.get('schema') == 'selected_rl_comparison_request.v3'
+    es_mode = request.get('schema') == 'selected_rl_comparison_request.v4'
+    leverage_mode = request.get('schema') in ('selected_rl_comparison_request.v3',
+                                            'selected_rl_comparison_request.v4')
     budget_mode = request.get('schema') in ('selected_rl_comparison_request.v2',
-                                          'selected_rl_comparison_request.v3')
+                                          'selected_rl_comparison_request.v3',
+                                          'selected_rl_comparison_request.v4')
     keys = REQUEST_KEYS | {'order_budget'} if budget_mode else REQUEST_KEYS
     if leverage_mode:
         keys = keys | {'leverage'}
+    if es_mode:
+        keys = keys | {'early_stopping'}
     if (request.get('schema') not in ('selected_rl_comparison_request.v1',
                                      'selected_rl_comparison_request.v2',
-                                     'selected_rl_comparison_request.v3')
+                                     'selected_rl_comparison_request.v3',
+                                     'selected_rl_comparison_request.v4')
             or set(request) != keys):
         _fail('REQUEST_SCHEMA_OR_OVERRIDES_REFUSED')
+    if es_mode:
+        from agent_plugins.paired_early_stopping import validate_settings
+        validate_settings(request['early_stopping'])
     if leverage_mode and (type(request['leverage']) not in (int, float)
                           or not math.isfinite(request['leverage'])
                           or not 1 <= request['leverage'] <= 100):
@@ -237,6 +246,8 @@ def _build(request_path, output_root):
             or any(c not in columns for c in binary) or len(set(binary)) != len(binary)):
         _fail('CAUSAL_ROLLING_NORMALIZATION_REQUIRED')
     common = copy.deepcopy(design['common_config'])
+    if es_mode:
+        common['paired_early_stopping'] = request['early_stopping']
     if leverage_mode:
         common['leverage'] = request['leverage']
         common['execution_envelope']['leverage_cap'] = request['leverage']
@@ -296,7 +307,7 @@ def _build(request_path, output_root):
         **selection_close)
     body = dict(schema='curated_rl_campaign.v1', classification='NON_GOVERNING',
         scientific_scope='REAL_DATA_DEVELOPMENT', execution_backend='local_subprocess',
-        seeds=[7], arms=list(design['arms']), refit_cadence='NONE',
+        seeds=[7], arms=['SAC_FLAT'] if es_mode else list(design['arms']), refit_cadence='NONE',
         common_config=common, splits=splits, **FLAGS,
         selection_sha256=request['selection_sha256'], selected_input_binding=binding,
         input_policy=dict(kind=SCOPE, **binding), cost_scope=design['cost_scope'],
@@ -387,8 +398,48 @@ def read_status(root):
     state = queue.status(root)
     if state.get('contract_sha256', queue.digest(root / 'CONTRACT.json')) != queue.digest(root / 'CONTRACT.json'):
         _fail('STATUS_CONTRACT_DRIFT')
+    if body['common_config'].get('paired_early_stopping'):
+        if state.get('state') == 'UNAVAILABLE':
+            result['declared_tasks'] = len(body['seeds']) * len(body['arms']) * 2
+            dispatch = root / 'DISPATCH_STATUS.json'
+            if dispatch.is_file():
+                result['dispatch'] = _json(dispatch)
+                result['state'] = result['dispatch']['state']
+        current = next((t for t in state.get('tasks', []) if t['state'] == 'RUNNING'), None)
+        if current and current.get('config'):
+            monitor = Path(current['config']).parent / 'paired-monitor' / 'STATUS.json'
+            if monitor.exists():
+                detail = _json(monitor)
+                result['paired_monitor'] = detail
+                if detail.get('state') == 'EVALUATING':
+                    result['current_training_eta_seconds'] = None
+                    progress = Path(detail['progress_file'])
+                    if progress.is_file():
+                        result['paired_monitor_progress'] = _json(progress)
     return {**result, **FLAGS, 'selected_input_binding': binding,
             'input_integrity': 'NOT_RECHECKED_READ_ONLY_STATUS'}
+
+
+def publish_monitors(body, root, state):
+    if not body['common_config'].get('paired_early_stopping'):
+        return 0
+    count = 0
+    for pair in sorted(root.glob('*/*/paired-monitor/step-*/PAIR.json')):
+        record = _json(pair)
+        if (record.get('schema') != 'paired_sac_checkpoint.v1'
+                or [t['split'] for t in record['reports']] != ['train', 'validation']):
+            _fail('MONITOR_PAIR_INVALID')
+        for original in record['reports']:
+            task = copy.deepcopy(original)
+            if task['arm'] != 'SAC_FLAT' or task['seed'] not in body['seeds']:
+                _fail('MONITOR_TASK_INVALID')
+            for key, pin in task['artifacts'].items():
+                path = Path(task[key]).resolve()
+                if not path.is_relative_to(root.resolve()) or queue.digest(path) != pin:
+                    _fail('MONITOR_ARTIFACT_CHANGED')
+            queue._enqueue(body, state, task, None)
+            count += 1
+    return count
 
 
 def publish_and_close(root):
@@ -413,7 +464,12 @@ def publish_and_close(root):
                 _fail('CLOSE_IDENTITY_DRIFT')
             if queue.digest(_member(root, close['physical_copy'])) != close['physical_sha256']:
                 _fail('CLOSED_PHYSICAL_COPY_CHANGED')
+            for name, value in close.get('monitor_files', {}).items():
+                if queue.digest(_member(root, name)) != value:
+                    _fail('CLOSED_MONITOR_CHANGED')
             return 0
+        state = queue.status(root)
+        monitor_reports = publish_monitors(body, root, state)
         if queue.pump_warehouse(body, root) != 0:
             return 2
         state = queue.status(root)
@@ -424,7 +480,8 @@ def publish_and_close(root):
         if (state.get('contract_sha256') != pin
                 or [(t['arm'], t['seed'], t['split']) for t in tasks] != expected
                 or any(t['state'] != 'ENQUEUED' for t in tasks)
-                or warehouse['expected'] != len(expected) or warehouse['delivered'] != len(expected)
+                or warehouse['expected'] != len(expected) + monitor_reports
+                or warehouse['delivered'] != len(expected) + monitor_reports
                 or warehouse['pending'] or warehouse['mismatch']):
             return 2
         queue._verify_artifacts(state)
@@ -439,11 +496,23 @@ def publish_and_close(root):
         with partial.open('rb') as stream:
             os.fsync(stream.fileno())
         os.replace(partial, target)
+        monitor_files = {}
+        if body['common_config'].get('paired_early_stopping'):
+            if monitor_reports < 2:
+                _fail('MONITOR_EVIDENCE_REQUIRED')
+            for directory in root.glob('*/*/paired-monitor'):
+                for file in directory.rglob('*'):
+                    if file.is_file():
+                        if file.is_symlink() or not file.resolve().is_relative_to(root.resolve()):
+                            _fail('MONITOR_PATH_ESCAPE')
+                        monitor_files[str(file.relative_to(root))] = queue.digest(file)
         save_status(close_path, dict(schema='selected_rl_close.v1',
             state='COMPLETED_AND_WAREHOUSE_READBACK_VERIFIED', contract_sha256=pin,
             completed_tasks=len(tasks), physical_copy=target.name, physical_sha256=queue.digest(target),
             warehouse=warehouse, scientific_scope=body['scientific_scope'], **FLAGS,
-            selected_input_binding=body['selected_input_binding']))
+            selected_input_binding=body['selected_input_binding'],
+            **(dict(monitor_reports=monitor_reports, monitor_files=monitor_files)
+               if monitor_files else {})))
         return 0
 
 

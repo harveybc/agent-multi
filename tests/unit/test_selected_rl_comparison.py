@@ -127,6 +127,40 @@ def test_balance_budget_request_changes_only_order_allocation(tmp_path):
     assert config['execution_envelope']['atr_tp_mult'] == 4
 
 
+def test_paired_early_stop_is_direct_only_and_preserves_other_configuration(tmp_path):
+    from agent_plugins.paired_early_stopping import SETTINGS
+    path, request, _ = fixture(tmp_path)
+    request.update(schema='selected_rl_comparison_request.v4', leverage=50,
+        order_budget=dict(rel_volume=.1, min_order_volume=1, max_order_volume=1e12, volume_step=1),
+        early_stopping=SETTINGS)
+    write(path, request)
+    output = tmp_path / 'comparison'
+    contract = selected.materialize(path, output)
+    body = queue.load_contract(contract)
+    assert body['arms'] == ['SAC_FLAT']
+    assert body['common_config']['paired_early_stopping'] == SETTINGS
+    assert body['common_config']['net_arch'] == [32, 32]
+    assert body['common_config']['leverage'] == 50
+    task = dict(arm='SAC_FLAT', split='train', seed=7, id='test', attempt=1)
+    d = output / 'task' / 'attempt-1'
+    d.mkdir(parents=True)
+    cfg = queue._task_config(body, task, d, d / 'policy.zip')
+    assert cfg['paired_campaign_root'] == str(output)
+    assert cfg['paired_campaign_sha256'] == digest(contract)
+    assert cfg['paired_source_unit'] == 'test:a1'
+
+
+def test_unapproved_monitor_settings_refused(tmp_path):
+    from agent_plugins.paired_early_stopping import SETTINGS
+    path, request, _ = fixture(tmp_path)
+    request.update(schema='selected_rl_comparison_request.v4', leverage=50,
+        order_budget=dict(rel_volume=.1, min_order_volume=1, max_order_volume=1e12, volume_step=1),
+        early_stopping={**SETTINGS, 'patience': 1})
+    write(path, request)
+    with pytest.raises(ValueError):
+        selected.materialize(path, tmp_path / 'comparison')
+
+
 @pytest.mark.parametrize('leverage', [50, 100])
 def test_explicit_leverage_binds_broker_and_envelope_together(tmp_path, leverage):
     path, request, _ = fixture(tmp_path)

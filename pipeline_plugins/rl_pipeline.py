@@ -107,6 +107,8 @@ class PipelinePlugin:
             if identity is not None:
                 summary["curated_input_identity"] = identity
             summary.update(_observed_work(model, mode))
+            if getattr(model, 'paired_early_stopping_evidence', None):
+                summary['paired_early_stopping'] = model.paired_early_stopping_evidence
             if meter is not None:
                 summary["compute_contract"] = meter.record(
                     evaluation_transitions=summary.get("episode_length"))

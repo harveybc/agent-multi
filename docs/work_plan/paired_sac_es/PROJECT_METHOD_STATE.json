@@ -1,0 +1,13 @@
+{
+  "schema": "paired_sac_es_method.v1",
+  "current_stage": "S12_SYNTHETIC_ALPHA_VERIFIED_PREPARING_AUTOMATIC_SUCCESSOR",
+  "design": "../46_PAIRED_SAC_EARLY_STOP.md",
+  "stages_passed": ["DISCOVERY", "REQUIREMENTS", "ACCEPTANCE_TEST_DESIGN", "ARCHITECTURE", "SYSTEM_COMPONENT_UNIT_TEST_DESIGN", "UNIT_IMPLEMENTATION", "INTEGRATION_VERIFICATION", "REAL_ENGINE_CPU_ALPHA"],
+  "scientific_scope": "SELECTED_DIRECT_SAC_DEVELOPMENT_CHECKPOINT_SELECTION",
+  "regularizers": {"batch_norm": false, "dropout": false, "weight_decay": false, "batch_norm_dropout_combination_authorized": false},
+  "verification": {"focused_tests_passed": 157, "real_engine_cpu_gradient_and_two_subprocess_evaluations": true, "parent_python_numpy_torch_rng_unchanged": true, "parent_replay_unchanged": true, "full_policy_and_optimizer_restore": true, "actual_work_counters_preserved": true, "gpu_monitor_round_trip": "PENDING_FIRST_REAL_CHECKPOINT"},
+  "traceability": "../46_PAIRED_SAC_EARLY_STOP.md#test-design-and-traceability",
+  "next_allowed_actions": ["finish synthetic successor and closure checks", "pin new code and materialize request_v4", "enable finite resource-aware successor after pinned predecessor close", "publish every checkpoint pair with readback", "collect closed metrics and policies to second physical machine"],
+  "blocked_actions": ["modify an active baseline", "TEST fitting or selection", "add BatchNorm or dropout", "claim independent validation performance after checkpoint tuning", "claim profitable policy from mean objective alone"],
+  "history": ["2026-10-19: user approved paired mean TRAIN/VALIDATION early stop and required BN/dropout separation", "Observed missing module and unsupported request failures before implementation", "Verified real SAC gradient, isolated existing curated inference, parent RNG/replay invariance and exact best-weight restore in CPU subprocess"]
+}

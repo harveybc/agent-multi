@@ -40,10 +40,24 @@ def verify(archive, source, close_sha):
     proofs = {name: digest(member(archive, name)) for name in names}
     close, status, contract = [json.loads((archive / name).read_bytes()) for name in ('CLOSE.json', 'STATUS.json', 'CONTRACT.json')]
     warehouse, tasks = close['warehouse'], status['tasks']
+    monitor_files = close.get('monitor_files', {})
+    paired = contract.get('common_config', {}).get('paired_early_stopping')
+    task_count, report_count = 12, 12
+    if paired:
+        from agent_plugins.paired_early_stopping import validate_settings
+        validate_settings(paired)
+        if (contract.get('arms') != ['SAC_FLAT'] or close.get('schema') != 'selected_rl_close.v1'
+                or [(t.get('arm'),t.get('split')) for t in tasks] !=
+                    [('SAC_FLAT','train'),('SAC_FLAT','validation')]):
+            raise ValueError('PAIRED_COLLECTION_TASKS_INVALID')
+        n_pairs = sum(name.endswith('/PAIR.json') for name in monitor_files)
+        if not 1 <= n_pairs <= 40 or close.get('monitor_reports') != 2 * n_pairs:
+            raise ValueError('PAIRED_COLLECTION_MONITORS_INVALID')
+        task_count, report_count = 2, 2 + 2 * n_pairs
     if (proofs['CLOSE.json'] != close_sha or not selected_close_matches(close,contract)
             or close.get('state') != 'COMPLETED_AND_WAREHOUSE_READBACK_VERIFIED'
-            or close['completed_tasks'] != 12 or len(tasks) != 12 or len({t['id'] for t in tasks}) != 12
-            or warehouse['expected'] != 12 or warehouse['delivered'] != 12 or warehouse['pending'] or warehouse['mismatch']
+            or close['completed_tasks'] != task_count or len(tasks) != task_count or len({t['id'] for t in tasks}) != task_count
+            or warehouse['expected'] != report_count or warehouse['delivered'] != report_count or warehouse['pending'] or warehouse['mismatch']
             or close['physical_copy'] != 'metrics-backup.sqlite' or proofs['metrics-backup.sqlite'] != close['physical_sha256']
             or proofs['CONTRACT.json'] != close['contract_sha256'] or status['contract_sha256'] != close['contract_sha256']):
         raise ValueError('CLOSED_COLLECTION_IDENTITY_MISMATCH')
@@ -58,6 +72,10 @@ def verify(archive, source, close_sha):
             if digest(member(archive, relative)) != pin:
                 raise ValueError('ARTIFACT_DIGEST_MISMATCH')
             proofs[relative] = pin
+    for name, pin in monitor_files.items():
+        if digest(member(archive,name)) != pin:
+            raise ValueError('MONITOR_DIGEST_MISMATCH')
+        proofs[name] = pin
     for path in archive.rglob('*'):
         if (path.name.startswith('warehouse-outbox.sqlite') or '.lock' in path.name or path.name == 'locks'
                 or path.name.endswith(('-wal', '-shm')) or '.sqlite' in path.name and path != archive / 'metrics-backup.sqlite'):
