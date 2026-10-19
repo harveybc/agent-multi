@@ -15,6 +15,8 @@ GYM_TESTS = [
     'test_financing_debit', 'test_next_open_transition', 'test_next_open_repeated_accounting',
     'test_submitted_order_cancellation', 'test_completed_bar_clock',
     'test_submitted_oco_bracket_regression',
+    'test_reopen_evidence_equivalence',
+    'test_reopen_evidence_precision_regression',
     'test_daily_entry_quota',
     'test_strided_observation', 'test_feature_window_preprocessor',
     'test_protected_order_execution', 'test_shared_execution_envelope',
