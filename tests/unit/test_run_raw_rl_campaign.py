@@ -1,5 +1,8 @@
 import json
 import sqlite3
+from datetime import datetime, timezone
+
+import pytest
 
 from tools import run_raw_rl_campaign as runner
 
@@ -18,6 +21,23 @@ def test_status_has_no_eta_before_measured_training(tmp_path):
     value = runner.read_status(tmp_path)
     assert value['current_training_eta_seconds'] is None
     assert value['completed_tasks'] == 0
+
+
+@pytest.mark.parametrize('phase,elapsed,expected', [
+    ('evaluation', None, None), ('evaluation', 100, None),
+    ('training', None, None), ('training', False, None),
+    ('training', -1, None), ('training', float('nan'), None),
+    ('training', 100, 1900.0),
+])
+def test_eta_requires_finite_measured_training_not_evaluation(tmp_path, phase, elapsed, expected):
+    config = tmp_path/'config.json'
+    (tmp_path/'STATUS.json').write_text(json.dumps({'schema':'curated_rl_queue_status.v1',
+        'state':'RUNNING', 'tasks':[{'state':'RUNNING', 'arm':'SAC_FLAT',
+            'split':'train', 'config':str(config)}]}))
+    (tmp_path/'progress.json').write_text(json.dumps(dict(status=phase,
+        updated_at_utc=datetime.now(timezone.utc).isoformat(),
+        current_step=5000, total_timesteps=100000, elapsed_seconds=elapsed)))
+    assert runner.read_status(tmp_path)['current_training_eta_seconds'] == expected
 
 
 def test_results_keep_train_validation_and_null_risk_distinct(tmp_path):

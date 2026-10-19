@@ -3,6 +3,7 @@ import argparse
 import fcntl
 from datetime import datetime, timezone
 import json
+import math
 import os
 from pathlib import Path
 import sqlite3
@@ -39,8 +40,13 @@ def read_status(root):
                 age = (datetime.now(timezone.utc)-updated).total_seconds()
                 result['heartbeat_age_seconds'] = age
                 step, total = progress['current_step'], progress['total_timesteps']
-                if 0 <= age <= 180 and 5000 <= step <= total:
-                    result['current_training_eta_seconds'] = progress['elapsed_seconds']*(total-step)/step
+                elapsed = progress.get('elapsed_seconds')
+                if (progress.get('status') == 'training' and 0 <= age <= 180
+                        and type(step) is int and type(total) is int
+                        and 5000 <= step <= total
+                        and type(elapsed) in (int, float)
+                        and math.isfinite(elapsed) and elapsed > 0):
+                    result['current_training_eta_seconds'] = elapsed*(total-step)/step
     warehouse = root/'WAREHOUSE_STATUS.json'
     if warehouse.exists():
         result['warehouse'] = json.loads(warehouse.read_text())
