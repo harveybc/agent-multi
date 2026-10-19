@@ -1,0 +1,34 @@
+{
+  "schema": "selected_rl_comparison_method.v1",
+  "current_stage": "S12_SELECTION_PUBLICATION_GATE_VERIFIED_AWAITING_DEPLOYMENT_RECEIPT",
+  "scope": "SELECTED_ADMITTED_POPULATION_ONLY",
+  "full_inventory_complete": false,
+  "upstream_method_state": "../RL_STATIC_METHOD_STATE.json",
+  "method": "portable test-led-data-centric-development checklist; no repository method validator found",
+  "stages_passed": ["S0_DISCOVERY", "S1_REQUIREMENTS", "S2_USE_CASES", "S3_ACCEPTANCE_TEST_DESIGN", "S4_ARCHITECTURE", "S5_SYSTEM_TEST_DESIGN", "S6_COMPONENT_DESIGN", "S7_INTEGRATION_TEST_DESIGN", "S8_UNIT_TEST_DESIGN", "S9_UNIT_IMPLEMENTATION", "S10_INTEGRATION_VERIFICATION", "S11_SYNTHETIC_SYSTEM_VERIFICATION", "S12_SYNTHETIC_ALPHA_ACCEPTANCE"],
+  "traceability": "TRACEABILITY.md",
+  "design": "../45_SELECTED_RL_COMPARISON.md",
+  "next_allowed_actions": ["main completes real selection OLAP readback and two-copy verification", "main supplies pinned DEPLOYMENT_RECEIPT.json linking the same-root selection CLOSE", "operator materializes and checks new comparison root without dispatch"],
+  "blocked_actions": ["financial training", "source admission or feature selection", "full inventory completion claims", "deployment", "existing-file edits"],
+  "evidence": [
+    {"kind": "test_first_red", "result": "collection refused because adapter module did not exist"},
+    {"kind": "new_unit_tests", "path": "tests/unit/test_selected_rl_comparison.py", "passed": 31},
+    {"kind": "no_learning_integration", "path": "tests/integration/test_selected_rl_information_path.py", "passed": 1, "checks": ["real gym feed and selected columns", "causal rolling normalization and prefix/future perturbation", "same flat/temporal information", "independent trainable actor/critic temporal encoders", "zero SAC timesteps and empty replay"]},
+    {"kind": "focused_regression", "passed": 91, "seconds": 5.61, "environment": "existing trading-stack; CPU and single-thread numerical libraries", "paths": ["tests/unit/test_selected_rl_comparison.py", "tests/integration/test_selected_rl_information_path.py", "tests/unit/test_curated_rl_input.py", "tests/unit/test_materialize_raw_rl_campaign.py", "tests/unit/test_run_raw_rl_campaign.py", "tests/unit/test_collect_closed_raw_rl.py"]},
+    {"kind": "selection_close_test_first_red", "failed_as_expected": 21, "result": "invalid closure claims previously reached source loading"},
+    {"kind": "selection_close_gate_regression", "passed": 116, "seconds": 9.01, "new_gate_cases": 25, "new_unit_total": 56, "environment": "existing trading-stack; CPU-only, single-thread numerical libraries; explicit matching gym checkout", "checks": ["same-root pinned closure link required", "closed OLAP/two-copy state and exact selection/count", "zero pending/mismatch and positive verified file count", "full_inventory_complete remains false", "refusal before source rows/output creation", "fresh dispatch and resume recheck", "DEPLOYMENT_RECEIPT filename supported"]},
+    {"kind": "baseline_arm_order_regression", "test_first_red": 2, "passed": 116, "seconds": 5.79, "result": "exact baseline design arms preserved, both SAC arms first; twelve tasks and all other settings unchanged", "environment": "existing trading-stack; CPU-only, single-thread numerical libraries; explicit matching gym checkout"}
+  ],
+  "financial_fits": 0,
+  "gpu_used": false,
+  "source_admission_performed": false,
+  "scientific_acceptance": "NOT_CLAIMED",
+  "release_operation": "NOT_STARTED; main reports tool registration complete; real verified deployment receipt remains main-owned",
+  "history": [
+    "2026-10-19: discovered generic queue, CSV-only gym feed, RAW-specific materializer and closure; designed tests before adapter implementation",
+    "2026-10-19: observed expected red, implemented new-file-only binding adapter, verified synthetic units and no-learning information path; 91 focused regressions passed",
+    "2026-10-19: delivered exact producer interface; no selection invented and no financial inputs opened; await main's finalized scoped selection",
+    "2026-10-19: added mandatory pinned selection OLAP/two-copy close gate using test-first negatives; original 91 focused tests plus 25 gate cases passed; adapter/tests/docs only, no fits or commits",
+    "2026-10-19: corrected adapter arms to list(design['arms']); exact SAC-first order tests observed red then full 116-test focused CPU set passed in 5.79 seconds; no fits, commits or declaration edits"
+  ]
+}
