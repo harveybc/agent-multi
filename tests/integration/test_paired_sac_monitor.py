@@ -7,7 +7,8 @@ import sys
 import pytest
 
 
-def test_real_monitor_does_not_modify_learning_and_restores_best(tmp_path):
+@pytest.mark.parametrize('profile',[None,'dropout005','l2_1e6','dropout005_l2_1e6','batchnorm'])
+def test_real_monitor_does_not_modify_learning_and_restores_best(tmp_path,profile):
     gym = os.environ.get('GYM_FX_CHECKOUT')
     if not gym:
         pytest.skip('matching GYM_FX_CHECKOUT required')
@@ -22,11 +23,15 @@ from tools import selected_rl_comparison as selected, curated_rl_campaign as que
 from agent_plugins.paired_early_stopping import SETTINGS, monitor_pair, make_callback
 from agent_plugins.sac_agent import Plugin as Agent, _policy_tensor_hash
 from env_plugins.gym_fx_env import Plugin as Env
-root, gym = map(Path, sys.argv[1:])
+root, gym = map(Path, sys.argv[1:3])
+profile=sys.argv[3]
 path, request, _ = fixture(root)
 request.update(schema='selected_rl_comparison_request.v4', leverage=50,
     early_stopping=SETTINGS, order_budget=dict(rel_volume=.1,
         min_order_volume=1, max_order_volume=1e12, volume_step=1))
+if profile!='NONE':
+    from agent_plugins.sac_regularization import PROFILES
+    request.update(schema='selected_rl_comparison_request.v5',regularization=PROFILES[profile])
 request['execution'].update(gym_root=str(gym), gym_code_commit=subprocess.check_output(
     ['git','-C',str(gym),'rev-parse','HEAD'],text=True).strip())
 write(path,request)
@@ -73,13 +78,18 @@ try:
                 wanted=expected['state'][key][field]
                 assert torch.equal(value,wanted) if isinstance(value,torch.Tensor) else value==wanted
     assert model.paired_early_stopping_evidence['best_step']==8
-    assert not any(isinstance(m,(torch.nn.modules.batchnorm._BatchNorm,torch.nn.Dropout))
-                   for m in model.policy.modules())
+    if profile=='NONE':
+        assert not any(isinstance(m,(torch.nn.modules.batchnorm._BatchNorm,torch.nn.Dropout))
+                       for m in model.policy.modules())
+    else:
+        assert model.policy.regularization==PROFILES[profile]
+        assert not any(isinstance(m,(torch.nn.modules.batchnorm._BatchNorm,torch.nn.Dropout))
+                       for m in model.actor.modules())
     print('PAIRED_MONITOR_REAL_ENGINE_VERIFIED')
 finally:
     owner.close()
 '''
-    result = subprocess.run([sys.executable, '-c', code, str(tmp_path), gym],
+    result = subprocess.run([sys.executable, '-c', code, str(tmp_path), gym,profile or 'NONE'],
         cwd=Path(__file__).resolve().parents[2], env={**os.environ,
             'CUDA_VISIBLE_DEVICES':'', 'OMP_NUM_THREADS':'1', 'OPENBLAS_NUM_THREADS':'1'},
         text=True, capture_output=True, timeout=120)

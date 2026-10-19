@@ -217,6 +217,11 @@ def load_contract(path):
         raise ValueError('QUEUE_UNSUPPORTED_SCIENTIFIC_SCOPE')
     execution_settings(body)
     paired = body['common_config'].get('paired_early_stopping')
+    if body['common_config'].get('sac_regularization') is not None:
+        from agent_plugins.sac_regularization import validate_profile
+        validate_profile(body['common_config']['sac_regularization'])
+        if not paired or body.get('arms') != ['SAC_FLAT']:
+            raise ValueError('QUEUE_REGULARIZATION_PAIRED_DIRECT_ONLY')
     if paired:
         from agent_plugins.paired_early_stopping import validate_settings
         validate_settings(paired)
@@ -498,6 +503,10 @@ def warehouse_report(body, state, task, summary):
     if body['common_config'].get('paired_early_stopping'):
         tags['checkpoint_selection_protocol'] = json.dumps(body['common_config']['paired_early_stopping'], sort_keys=True)
         tags['validation_role'] = 'DEVELOPMENT_CHECKPOINT_TUNING_NOT_HOLDOUT'
+    if body['common_config'].get('sac_regularization') is not None:
+        tags['regularization_scope']='CRITIC_ONLY'
+        tags['regularization_parameters']=json.dumps(body['common_config']['sac_regularization'],sort_keys=True)
+        tags['l2_semantics']='ADAM_COUPLED_WEIGHT_DECAY_ALL_CRITIC_PARAMETERS'
     raw_label = str(body.get('input_policy', body.get('scope', ''))).upper()
     if 'RAW' in raw_label or 'CORE_PRICES' in raw_label or body.get('feature_selection_complete') is False:
         tags['feature_selection_complete'] = 'false'

@@ -43,3 +43,24 @@ def test_broken_close_does_not_dispatch(tmp_path,change):
     if change=='tasks':close['completed_tasks']=1
     (root/'CLOSE.json').write_text(json.dumps(close))
     with pytest.raises(ValueError):predecessor_ready(root,pin)
+
+
+@pytest.mark.parametrize('tamper',[False,True])
+def test_paired_predecessor_counts_and_authenticates_monitor_files(tmp_path,tamper):
+    from agent_plugins.paired_early_stopping import SETTINGS
+    root=tmp_path/'old'; _,close=fixture(root)
+    body=dict(seeds=[7],arms=['SAC_FLAT'],common_config=dict(paired_early_stopping=SETTINGS))
+    (root/'CONTRACT.json').write_text(json.dumps(body));pin=digest(root/'CONTRACT.json')
+    state=json.loads((root/'STATUS.json').read_text());state['contract_sha256']=pin
+    for t in state['tasks']:t['arm']='SAC_FLAT'
+    (root/'STATUS.json').write_text(json.dumps(state))
+    pair=root/'task/attempt-1/paired-monitor/step-005000/PAIR.json'
+    pair.parent.mkdir(parents=True);pair.write_text('{"test":"pair"}')
+    close.update(contract_sha256=pin,monitor_reports=2,
+        monitor_files={str(pair.relative_to(root)):digest(pair)},
+        warehouse=dict(expected=4,delivered=4,pending=0,mismatch=0))
+    (root/'CLOSE.json').write_text(json.dumps(close))
+    if tamper:pair.write_text('changed')
+    if tamper:
+        with pytest.raises(ValueError):predecessor_ready(root,pin)
+    else:assert predecessor_ready(root,pin)=='READY'

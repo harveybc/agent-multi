@@ -149,6 +149,7 @@ class Plugin:
         "use_sde": False,
         "net_arch": (256, 256),
         "observation_encoder": "flat",
+        "sac_regularization": None,
         "temporal_branch_filters": 4,
         "temporal_core_filters": 8,
         "temporal_kernel_size": 3,
@@ -215,6 +216,12 @@ class Plugin:
                     "kernel_size": p["temporal_kernel_size"],
                 },
             )
+        if p.get('sac_regularization') is not None:
+            from agent_plugins.sac_regularization import RegularizedSACPolicy, validate_profile
+            if encoder != 'flat':
+                raise ValueError('SAC_REGULARIZATION_FLAT_ONLY')
+            policy=RegularizedSACPolicy
+            policy_kwargs['regularization']=validate_profile(p['sac_regularization'])
         seed = int(p["train_seed"])
         model = SAC(
             policy=policy,

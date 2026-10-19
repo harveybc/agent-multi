@@ -162,26 +162,32 @@ def _check_rows(text, manifest, columns, availability_column, common, binary):
 
 def _build(request_path, output_root):
     request = _json(request_path)
-    es_mode = request.get('schema') == 'selected_rl_comparison_request.v4'
+    regularization_mode = request.get('schema') == 'selected_rl_comparison_request.v5'
+    es_mode = request.get('schema') in ('selected_rl_comparison_request.v4', 'selected_rl_comparison_request.v5')
     leverage_mode = request.get('schema') in ('selected_rl_comparison_request.v3',
-                                            'selected_rl_comparison_request.v4')
+                                            'selected_rl_comparison_request.v4', 'selected_rl_comparison_request.v5')
     budget_mode = request.get('schema') in ('selected_rl_comparison_request.v2',
                                           'selected_rl_comparison_request.v3',
-                                          'selected_rl_comparison_request.v4')
+                                          'selected_rl_comparison_request.v4', 'selected_rl_comparison_request.v5')
     keys = REQUEST_KEYS | {'order_budget'} if budget_mode else REQUEST_KEYS
     if leverage_mode:
         keys = keys | {'leverage'}
     if es_mode:
         keys = keys | {'early_stopping'}
+    if regularization_mode:
+        keys = keys | {'regularization'}
     if (request.get('schema') not in ('selected_rl_comparison_request.v1',
                                      'selected_rl_comparison_request.v2',
                                      'selected_rl_comparison_request.v3',
-                                     'selected_rl_comparison_request.v4')
+                                     'selected_rl_comparison_request.v4', 'selected_rl_comparison_request.v5')
             or set(request) != keys):
         _fail('REQUEST_SCHEMA_OR_OVERRIDES_REFUSED')
     if es_mode:
         from agent_plugins.paired_early_stopping import validate_settings
         validate_settings(request['early_stopping'])
+    if regularization_mode:
+        from agent_plugins.sac_regularization import validate_profile
+        validate_profile(request['regularization'])
     if leverage_mode and (type(request['leverage']) not in (int, float)
                           or not math.isfinite(request['leverage'])
                           or not 1 <= request['leverage'] <= 100):
@@ -249,6 +255,8 @@ def _build(request_path, output_root):
     common = copy.deepcopy(design['common_config'])
     if es_mode:
         common['paired_early_stopping'] = request['early_stopping']
+    if regularization_mode:
+        common['sac_regularization'] = request['regularization']
     if leverage_mode:
         common['leverage'] = request['leverage']
         common['execution_envelope']['leverage_cap'] = request['leverage']

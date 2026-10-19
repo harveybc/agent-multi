@@ -23,13 +23,29 @@ def predecessor_ready(root, pin):
     state=json.loads((root/'STATUS.json').read_text())
     expected=[(arm,seed,role) for seed in body['seeds'] for arm in body['arms']
               for role in ('train','validation')]
+    report_count=len(expected)
+    if body.get('common_config',{}).get('paired_early_stopping'):
+        from agent_plugins.paired_early_stopping import validate_settings
+        from tools.collect_closed_raw_rl import member, live_monitor_state
+        validate_settings(body['common_config']['paired_early_stopping'])
+        monitors=close.get('monitor_files',{})
+        pairs=sum(name.endswith('/PAIR.json') for name in monitors)
+        if not 1<=pairs<=40 or close.get('monitor_reports')!=2*pairs:
+            raise ValueError('PREDECESSOR_MONITOR_COUNTS_INVALID')
+        report_count+=2*pairs
+        for name,value in monitors.items():
+            path=member(root.resolve(),name)
+            if live_monitor_state(name):
+                continue
+            if digest(path)!=value:
+                raise ValueError('PREDECESSOR_MONITOR_CHANGED')
     box=close['warehouse']
     if (close['state']!='COMPLETED_AND_WAREHOUSE_READBACK_VERIFIED'
             or close['contract_sha256']!=pin or state['contract_sha256']!=pin
             or close['completed_tasks']!=len(expected)
             or [(t['arm'],t['seed'],t['split']) for t in state['tasks']]!=expected
             or any(t['state']!='ENQUEUED' for t in state['tasks'])
-            or box['expected']!=len(expected) or box['delivered']!=len(expected)
+            or box['expected']!=report_count or box['delivered']!=report_count
             or box['pending'] or box['mismatch']
             or close['physical_copy']!='metrics-backup.sqlite'
             or digest(root/'metrics-backup.sqlite')!=close['physical_sha256']):

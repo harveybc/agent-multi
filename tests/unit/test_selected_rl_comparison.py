@@ -161,6 +161,30 @@ def test_unapproved_monitor_settings_refused(tmp_path):
         selected.materialize(path, tmp_path / 'comparison')
 
 
+@pytest.mark.parametrize('name',['dropout005','l2_1e6','dropout005_l2_1e6','batchnorm'])
+def test_regularization_request_only_adds_approved_profile(tmp_path,name):
+    from agent_plugins.paired_early_stopping import SETTINGS
+    from agent_plugins.sac_regularization import PROFILES
+    path,request,_=fixture(tmp_path)
+    request.update(schema='selected_rl_comparison_request.v4',leverage=50,
+        order_budget=dict(rel_volume=.1,min_order_volume=1,max_order_volume=1e12,volume_step=1),
+        early_stopping=SETTINGS)
+    write(path,request);baseline,_=selected._build(path,tmp_path/'out')
+    request.update(schema='selected_rl_comparison_request.v5',regularization=PROFILES[name])
+    write(path,request);body,_=selected._build(path,tmp_path/'out')
+    common=dict(body['common_config'])
+    assert common.pop('sac_regularization')==PROFILES[name]
+    assert common==baseline['common_config']
+    contract=selected.materialize(path,tmp_path/'out')
+    assert queue.load_contract(contract)['arms']==['SAC_FLAT']
+    report=queue.warehouse_report(queue.load_contract(contract),
+        dict(contract_sha256=digest(contract)),dict(arm='SAC_FLAT',seed=7,split='train',
+            wall_seconds=1,id='test',artifacts=dict.fromkeys(
+                ('config','summary','checkpoint','effective_config'),'c'*64)),{})
+    assert json.loads(report['tags']['regularization_parameters'])==PROFILES[name]
+    assert report['tags']['regularization_scope']=='CRITIC_ONLY'
+
+
 @pytest.mark.parametrize('leverage', [50, 100])
 def test_explicit_leverage_binds_broker_and_envelope_together(tmp_path, leverage):
     path, request, _ = fixture(tmp_path)
