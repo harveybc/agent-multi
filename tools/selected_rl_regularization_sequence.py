@@ -117,12 +117,15 @@ def _q(value):
     return json.dumps(value.replace('%','%%'))
 
 
-def render(spec,directory,environment_file,spec_path=None):
+def render(spec,directory,environment_file,spec_path=None,runtime_root=None):
     directory=Path(directory);directory.mkdir(parents=True,exist_ok=True)
-    runtime=Path(__file__).resolve().parents[1]
+    runtime=Path(runtime_root).resolve() if runtime_root else Path(__file__).resolve().parents[1]
+    runtime_pin=subprocess.check_output(['git','-C',str(runtime),'rev-parse','HEAD'],text=True).strip()
     paths=[]
     for node,root in checked_nodes(spec):
         contract=json.loads((root/'CONTRACT.json').read_text())
+        if contract['publication']['code_commit']!=runtime_pin:
+            raise ValueError('SEQUENCE_RENDER_RUNTIME_PIN_MISMATCH')
         uuid=contract['execution']['gpu_evidence']['assigned_gpu_uuid']
         if not re.fullmatch(r'GPU-[0-9a-fA-F-]{36}',uuid):
             raise ValueError('SEQUENCE_GPU_UUID_REQUIRED')
@@ -139,7 +142,7 @@ def render(spec,directory,environment_file,spec_path=None):
         service='\n'.join(['[Unit]','Description=Finite SAC regularization '+node['profile'],
             'After=network-online.target','ConditionPathExists=!'+str(root/'CLOSE.json'),
             'StartLimitIntervalSec=900','StartLimitBurst=3','','[Service]','Type=exec',
-            'WorkingDirectory='+_q(runtime),'EnvironmentFile='+_q(environment_file),
+            'WorkingDirectory='+str(runtime).replace('%','%%'),'EnvironmentFile='+_q(environment_file),
             'ExecCondition='+' '.join(_q(x) for x in gate),
             'ExecCondition='+' '.join(_q(x) for x in smoke),
             'ExecStart='+' '.join(_q(x) for x in start),
@@ -153,7 +156,7 @@ def render(spec,directory,environment_file,spec_path=None):
              'tools.selected_rl_regularization_sequence','publish','--spec',path]
     publisher='\n'.join(['[Unit]','Description=Sequential SAC checkpoint publication and readback',
         'ConditionPathExists=!'+str(path.parent/'SEQUENCE_COMPLETE.json'),'',
-        '[Service]','Type=oneshot','WorkingDirectory='+_q(runtime),
+        '[Service]','Type=oneshot','WorkingDirectory='+str(runtime).replace('%','%%'),
         'EnvironmentFile='+_q(environment_file),'ExecStart='+' '.join(_q(x) for x in command),
         'SuccessExitStatus=2','MemoryHigh=768M','MemoryMax=1500M','MemorySwapMax=0',
         'CPUQuota=100%','TasksMax=64','TimeoutStartSec=300','UMask=0077',''])
@@ -183,6 +186,8 @@ def main(argv=None):
     p.add_argument('--predecessor-root',type=Path)
     p.add_argument('--predecessor-sha256')
     p.add_argument('--environment-file',type=Path)
+    p.add_argument('--runtime-root',type=Path)
+    p.add_argument('--units-dir',type=Path)
     a=p.parse_args(argv)
     if a.action=='prepare':
         if not all((a.base_request,a.root,a.predecessor_root,a.predecessor_sha256)):
@@ -193,7 +198,8 @@ def main(argv=None):
         spec=json.loads(a.spec.read_text())
         if a.action=='render':
             if not a.environment_file:p.error('--environment-file required')
-            result=[str(x) for x in render(spec,a.spec.parent/'units',a.environment_file,a.spec)]
+            result=[str(x) for x in render(spec,a.units_dir or a.spec.parent/'units',
+                                           a.environment_file,a.spec,a.runtime_root)]
         elif a.action=='status':result=status(spec)
         else:return publish(spec,a.spec)
     print(json.dumps(result,indent=2))

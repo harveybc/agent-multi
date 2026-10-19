@@ -1,6 +1,8 @@
 import copy
 import json
 from pathlib import Path
+import shutil
+import subprocess
 
 import pytest
 
@@ -40,9 +42,14 @@ def test_prepare_four_configs_chain_units_and_idempotence(tmp_path):
     assert 'CUDA_VISIBLE_DEVICES=GPU-' in first
     assert json.dumps('--predecessor-sha256')+' '+json.dumps('f'*64) in first
     assert 'MemoryMax=6G' in first
+    assert 'WorkingDirectory="/' not in first
     assert 'rl-selected-reg-dropout005.service' in (root/'units/rl-selected-reg-dropout005.timer').read_text()
     publisher=(root/'units/rl-selected-reg-publication.service').read_text()
     assert 'selected_rl_regularization_sequence' in publisher and 'publish' in publisher
+    if shutil.which('systemd-analyze'):
+        verified=subprocess.run(['systemd-analyze','--user','verify',*map(str,units)],
+            capture_output=True,text=True,timeout=30)
+        assert verified.returncode==0,verified.stderr
     changed=copy.deepcopy(request);changed['leverage']=100;write(path,changed)
     with pytest.raises(ValueError):sequence.prepare(path,root,tmp_path/'previous','f'*64)
 
