@@ -97,6 +97,23 @@ The publication timer owns delivery/readback; the existing collector CLI on
 the second physical machine owns closed artifact snapshots. Fresh experiments
 have independent OLAP experiment-set keys and explicit regularizer tags.
 
+Deployment2026-10-19: all four worker timers and the publication timer enabled
+and checked once, plus the physical collection timer on the second machine.
+Initial state of every new arm: WAIT_PREDECESSOR. No regularized scientific
+fit or GPU smoke is claimed yet. Scientific runtime `d9e635f7`, unit renderer
+`381da73c`; the renderer fixes were applied outside the sealed scientific
+runtime. Real systemd verification caught path quoting before enablement;
+corrected units and their credential-file paths passed the real parser and
+the one-shot publication returned the expected incomplete code2 successfully.
+The active unregularized runtime remains `e119e8ad`.
+
+| Profile | Contract prefix | Initial state |
+| --- | --- | --- |
+| dropout005 | 8c038a0fba26 | WAIT_PREDECESSOR |
+| l2_1e6 | 6648b2004659 | WAIT_PREDECESSOR |
+| dropout005_l2_1e6 | 74f48bbae704 | WAIT_PREDECESSOR |
+| batchnorm | 684a5fb611a0 | WAIT_PREDECESSOR |
+
 ## Primary Sources
 
 - [SB3 SAC policy extension points](https://stable-baselines3.readthedocs.io/en/master/modules/sac.html)
