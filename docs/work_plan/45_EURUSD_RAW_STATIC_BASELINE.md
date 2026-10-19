@@ -60,3 +60,19 @@ Status reads the journal without polling workers. Current-fit ETA is projected
 only after5000 measured steps with a fresh heartbeat. It is not an asserted ETA
 for a different encoder or the entire experiment. Training diagnostics and
 frozen validation are always separate. No automatic real-money deployment.
+
+Closed evidence collection is a separate one-shot scheduled task:
+
+```bash
+python -m tools.collect_closed_raw_rl \
+  --source-host <worker> --source-root <private-campaign-root> \
+  --archive-root <bulk-closed-artifact-root> --state-root <private-ext4-state-root>
+```
+
+It returns PENDING after one read while computation/publication is incomplete.
+After closure it transports only closed artifacts, not the live SQLite outbox,
+WAL, SHM or locks; verifies every checkpoint/config/result digest, the complete
+12-task population and the physical SQLite backup; then writes its completion
+receipt. A timer conditional on absence of that receipt stops further work.
+This keeps the active operational database off NTFS while placing closed
+evidence on the large bulk volume with a second-machine physical copy.
