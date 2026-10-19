@@ -51,6 +51,13 @@ parent submission, real Backtrader protected entry and unchanged legacy cases.
 Request negatives reject invalid budgets before dispatch. No new learning
 algorithm, policy action shape, refit cadence, DOIN or admission logic.
 
+The owner's next instruction prioritizes leveraged FX: request v3 adds one
+explicit `leverage` (finite numeric1..100). It binds the simulated broker,
+envelope leverage and envelope cap together. The initial campaign uses50,
+not1;100 and later1 are separately identified comparisons, not silent runtime
+changes. rel_volume remains0.1, the allocation is still margin rather than
+notional, and all15 inputs/window/architectures/seed/budgets remain unchanged.
+
 Acceptance: a synthetic selected bundle yields twelve finite tasks (four
 controls and two SAC arms, train/validation), identical selected information,
 scoped identity and publication/copy continuation without running a financial

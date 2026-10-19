@@ -161,12 +161,21 @@ def _check_rows(text, manifest, columns, availability_column, common, binary):
 
 def _build(request_path, output_root):
     request = _json(request_path)
-    budget_mode = request.get('schema') == 'selected_rl_comparison_request.v2'
+    leverage_mode = request.get('schema') == 'selected_rl_comparison_request.v3'
+    budget_mode = request.get('schema') in ('selected_rl_comparison_request.v2',
+                                          'selected_rl_comparison_request.v3')
     keys = REQUEST_KEYS | {'order_budget'} if budget_mode else REQUEST_KEYS
+    if leverage_mode:
+        keys = keys | {'leverage'}
     if (request.get('schema') not in ('selected_rl_comparison_request.v1',
-                                     'selected_rl_comparison_request.v2')
+                                     'selected_rl_comparison_request.v2',
+                                     'selected_rl_comparison_request.v3')
             or set(request) != keys):
         _fail('REQUEST_SCHEMA_OR_OVERRIDES_REFUSED')
+    if leverage_mode and (type(request['leverage']) not in (int, float)
+                          or not math.isfinite(request['leverage'])
+                          or not 1 <= request['leverage'] <= 100):
+        _fail('LEVERAGE_INVALID')
     if budget_mode:
         budget = request['order_budget']
         if (not isinstance(budget, dict) or set(budget) != {
@@ -228,6 +237,9 @@ def _build(request_path, output_root):
             or any(c not in columns for c in binary) or len(set(binary)) != len(binary)):
         _fail('CAUSAL_ROLLING_NORMALIZATION_REQUIRED')
     common = copy.deepcopy(design['common_config'])
+    if leverage_mode:
+        common['leverage'] = request['leverage']
+        common['execution_envelope']['leverage_cap'] = request['leverage']
     if budget_mode:
         common['execution_envelope'].update(request['order_budget'],
             sizing_mode='balance_budget', leverage=common['leverage'])

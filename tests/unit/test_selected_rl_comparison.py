@@ -127,6 +127,34 @@ def test_balance_budget_request_changes_only_order_allocation(tmp_path):
     assert config['execution_envelope']['atr_tp_mult'] == 4
 
 
+@pytest.mark.parametrize('leverage', [50, 100])
+def test_explicit_leverage_binds_broker_and_envelope_together(tmp_path, leverage):
+    path, request, _ = fixture(tmp_path)
+    request.update(schema='selected_rl_comparison_request.v3', leverage=leverage,
+        order_budget=dict(rel_volume=.1, min_order_volume=1,
+                          max_order_volume=1e12, volume_step=1))
+    write(path, request)
+    body, _ = selected._build(path, tmp_path / 'out')
+    config = body['common_config']
+    assert config['leverage'] == leverage
+    assert config['execution_envelope']['leverage'] == leverage
+    assert config['execution_envelope']['leverage_cap'] == leverage
+    assert config['execution_envelope']['rel_volume'] == .1
+    assert config['window_size'] == 13 and config['observation_stride_bars'] == 2
+    assert config['total_timesteps'] == 100000
+
+
+@pytest.mark.parametrize('leverage', [0, -50, 101, True, float('inf'), '50'])
+def test_invalid_explicit_leverage_refused_before_dispatch(tmp_path, leverage):
+    path, request, _ = fixture(tmp_path)
+    request.update(schema='selected_rl_comparison_request.v3', leverage=leverage,
+        order_budget=dict(rel_volume=.1, min_order_volume=1,
+                          max_order_volume=1e12, volume_step=1))
+    write(path, request)
+    with pytest.raises(ValueError, match='SELECTED_LEVERAGE'):
+        selected._build(path, tmp_path / 'out')
+
+
 @pytest.mark.parametrize('key,value', [('rel_volume', 0), ('rel_volume', 1.01),
     ('min_order_volume', -1), ('volume_step', 0), ('max_order_volume', .5),
     ('rel_volume', float('nan'))])

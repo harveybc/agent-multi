@@ -30,6 +30,7 @@
     "2026-10-19: delivered exact producer interface; no selection invented and no financial inputs opened; await main's finalized scoped selection",
     "2026-10-19: added mandatory pinned selection OLAP/two-copy close gate using test-first negatives; original 91 focused tests plus 25 gate cases passed; adapter/tests/docs only, no fits or commits",
     "2026-10-19: corrected adapter arms to list(design['arms']); exact SAC-first order tests observed red then full 116-test focused CPU set passed in 5.79 seconds; no fits, commits or declaration edits",
-    "2026-10-19: user clarified mandatory SL/TP and rel_volume times balance allocation; v2 request tested first,127 focused CPU tests passed with real no-learning SAC construction;108 gym budget/protection/session tests passed; no incomplete fitted policy reused"
+    "2026-10-19: user clarified mandatory SL/TP and rel_volume times balance allocation; v2 request tested first,127 focused CPU tests passed with real no-learning SAC construction;108 gym budget/protection/session tests passed; no incomplete fitted policy reused",
+    "2026-10-19: owner changed initial leverage to50; v3 binds actual broker and envelope leverage together;135 focused CPU tests pass, old1:1 incomplete campaign stopped, new identity required"
   ]
 }

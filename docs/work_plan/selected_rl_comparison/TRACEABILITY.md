@@ -35,3 +35,8 @@ on CPU with the matching gym checkout. Gym's budget/protection/session suites
 passed108/108. Thirty-one budget/protection cases were observed red before the
 gym change; request-negative cases were observed red before the v2 adapter.
 This establishes engineering behavior, not a profitable trading policy.
+
+Leverage amendment: request v3 binds broker leverage and both sizing leverage
+fields together. Eight test-first request cases cover50/100 and malformed
+values. The focused CPU regression set passed135/135. Real gym entries at
+10/50/100 verify both protection children and effective broker leverage.
