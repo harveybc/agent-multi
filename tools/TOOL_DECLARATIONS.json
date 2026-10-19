@@ -2,8 +2,16 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "materialize_raw_rl_campaign.py": {
+   "purpose": "Bind owner-admitted EURUSD raw splits, business calendar, code pins and GPU evidence to an explicit development-only static campaign; never declares final feature selection",
+   "lifecycle": "supported", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "General Musashi"
+  },
+  "run_raw_rl_campaign.py": {
+   "purpose": "Resume the existing sequential queue after restart; read-only status/results; bounded publication retry and closed SQLite physical backup without retraining",
+   "lifecycle": "supported", "mutability": "mixed", "authority_class": "campaign_operation", "owner": "General Musashi"
+  },
   "curated_rl_campaign.py": {
-   "purpose": "Sequential finite CPU engineering queue over the existing registered SAC/control pipelines, curated input receipts, frozen validation, saved checkpoints, durable resume and local governed outbox; does not issue source admission, open sealed TEST, publish remotely or grant scientific promotion",
+   "purpose": "Sequential finite engineering/development queue over existing SAC/control pipelines; explicit CPU or evidence-bound GPU, frozen validation, checkpoint custody, bounded resume and existing warehouse reports/readback; never issues source admission, opens sealed TEST or grants promotion",
    "lifecycle": "supported",
    "mutability": "mutating",
    "mutability_note": "Writes only the declared private queue output root, per-attempt configs/checkpoints/results and local terminal outbox; status reads the existing journal",
