@@ -1,13 +1,13 @@
 {
   "schema": "sac_regularization_sequence_method.v1",
-  "current_stage": "S13_DEPLOYED_AUTOMATIC_SUCCESSORS_WAIT_PREDECESSOR",
+  "current_stage": "S13_DROPOUT_RUNNING_AFTER_PREDECESSOR_CLOSURE",
   "design": "../47_SAC_REGULARIZATION_SEQUENCE.md",
   "stages_passed": ["DISCOVERY", "REQUIREMENTS", "ACCEPTANCE_TEST_DESIGN", "ARCHITECTURE", "SYSTEM_COMPONENT_UNIT_TEST_DESIGN", "UNIT_IMPLEMENTATION", "INTEGRATION_VERIFICATION", "REAL_ENGINE_CPU_ALPHA"],
   "profiles_in_order": ["dropout005", "l2_1e6", "dropout005_l2_1e6", "batchnorm"],
   "scope": "CRITIC_ONLY_FRESH_TRAINING_PAIRED_DEVELOPMENT_CHECKPOINT_SELECTION",
   "scientific_settings_changed": ["approved critic regularizer only"],
-  "verification": {"focused_tests_passed": 182, "real_engine_monitor_profiles": 5, "gpu_smoke": "DEFERRED_BOUNDED_GATE_WHEN_GPU_FREE", "scientific_results": "NOT_YET_RUN", "systemd_paths_and_real_parser": "VERIFIED", "worker_timers_active": 4, "publication_timer_active": true, "second_machine_collection_timer_active": true, "initial_dispatch": "ALL_FOUR_WAIT_PREDECESSOR"},
-  "deployment": {"scientific_runtime_commit": "d9e635f7", "unit_renderer_commit": "381da73c", "active_baseline_runtime_commit_unchanged": "e119e8ad"},
+  "verification": {"focused_tests_passed": 182, "real_engine_monitor_profiles": 5, "gpu_smoke": "DROPOUT_VERIFIED_24_SYNTHETIC_TRANSITIONS_20_UPDATES", "scientific_results": "DROPOUT_TRAIN_RUNNING_NO_COMPLETE_PAIR_YET", "systemd_paths_and_real_parser": "VERIFIED", "worker_timers_active": 4, "publication_timer_active": true, "second_machine_collection_timer_active": true, "initial_dispatch": "ALL_FOUR_WAIT_PREDECESSOR", "rate_limit_regression_tests_passed": 10, "observed_dropout_steps": 1000},
+  "deployment": {"scientific_runtime_commit": "d9e635f7", "unit_renderer_commit": "a7b4da3e", "closed_baseline_runtime_commit_unchanged": "e119e8ad", "normal_wait_global_start_throttle_disabled": true, "native_actual_task_attempts_unchanged": 2},
   "next_allowed_actions": ["native timers perform authenticated sequential handoff", "bounded synthetic GPU admission then native SAC fit", "publish/readback every complete checkpoint", "collect closed policy and metric artifacts on second physical disk", "report status without agent polling"],
   "blocked_actions": ["modify active scientific runtime", "TEST selection", "combine BatchNorm and dropout", "new temporal SAC fits", "claim reduced gap implies profit"],
   "history": ["2026-10-19: owner approved automatic continuation with isolated regularizers followed by combinations; baseline remains unchanged", "Unsupported profile, missing implementation and paired predecessor tests observed failing before fixes"]
