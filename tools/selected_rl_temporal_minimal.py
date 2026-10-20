@@ -16,7 +16,7 @@ ARCH = dict(net_arch=[8], branch_filters=2, core_filters=4, kernel_size=3)
 MODULE = 'tools.selected_rl_temporal_minimal'
 
 
-def prepare(base_request, root, previous, previous_pin):
+def prepare(base_request, root, previous, previous_pin, *, fixed_budget=False):
     root = selected._output_root(root); previous = Path(previous).resolve()
     if (not re.fullmatch('[0-9a-f]{64}', previous_pin)
             or previous.is_relative_to(root) or root.is_relative_to(previous)):
@@ -25,10 +25,14 @@ def prepare(base_request, root, previous, previous_pin):
     request = copy.deepcopy(json.loads(base_request.read_text()))
     if request['schema'] != 'selected_rl_comparison_request.v4':
         raise ValueError('TEMPORAL_PAIRED_BASE_REQUIRED')
-    request.update(schema='selected_rl_comparison_request.v7', temporal_encoder=ARCH)
+    request.update(schema='selected_rl_comparison_request.v8' if fixed_budget else 'selected_rl_comparison_request.v7', temporal_encoder=ARCH)
+    if fixed_budget:
+        from agent_plugins.fixed_budget_monitor import SETTINGS
+        request['early_stopping']=SETTINGS
     request['publication']['code_commit'] = subprocess.check_output(
         ['git','-C',str(Path(__file__).resolve().parents[1]),'rev-parse','HEAD'],text=True).strip()
     request['publication']['experiment_set_key'] += '-temporal-minimal-2x4-n8'
+    if fixed_budget:request['publication']['experiment_set_key']+='-fixed100k'
     path = root.parent/(root.name+'-request.json')
     sequence.immutable(path, request)
     output = root/'conv1d2x4-n8'
@@ -38,11 +42,15 @@ def prepare(base_request, root, previous, previous_pin):
         predecessor_sha256=previous_pin)
     spec = dict(schema=sequence.SCHEMA, experiment_kind='MINIMAL_CAUSAL_TEMPORAL_SAC',
         architecture=ARCH, nodes=[node])
+    if fixed_budget:spec['monitoring']=request['early_stopping']
     sequence.immutable(root/'SEQUENCE.json', spec)
     return spec
 
 
 def validate(spec):
+    if 'monitoring' in spec:
+        from agent_plugins.fixed_budget_monitor import SETTINGS
+        if spec['monitoring']!=SETTINGS:raise ValueError('FIXED_MONITOR_SPEC_INVALID')
     if (spec.get('experiment_kind') != 'MINIMAL_CAUSAL_TEMPORAL_SAC'
             or spec.get('architecture') != ARCH or len(spec.get('nodes', [])) != 1
             or spec['nodes'][0]['profile'] != 'conv1d2x4-n8'):
@@ -53,12 +61,15 @@ def validate(spec):
 def render(spec, directory, environment_file, spec_path, runtime_root=None):
     validate(spec)
     return sequence.render(spec, directory, environment_file, spec_path, runtime_root,
-        prefix='rl-selected-temporal-minimal', sequence_module=MODULE, smoke_module=MODULE)
+        prefix='rl-selected-temporal-fixed' if 'monitoring' in spec else 'rl-selected-temporal-minimal', sequence_module=MODULE, smoke_module=MODULE)
 
 
 def publish(spec, spec_path):
     validate(spec)
     node = spec['nodes'][0]; root = Path(node['root'])
+    if 'monitoring' in spec and not (root/'CLOSE.json').exists():
+        from tools.fixed_budget_diagnostics import refresh
+        refresh(root)
     if selected.publish_and_close(root) != 0:
         return 2
     if predecessor_ready(root, node['contract_sha256']) != 'READY':
@@ -147,9 +158,10 @@ def main():
     p.add_argument('--predecessor-root',type=Path);p.add_argument('--predecessor-sha256')
     p.add_argument('--spec',type=Path);p.add_argument('--environment-file',type=Path)
     p.add_argument('--units-dir',type=Path);p.add_argument('--runtime-root',type=Path)
+    p.add_argument('--fixed-budget',action='store_true')
     a=p.parse_args()
     if a.smoke_root:return smoke(a.smoke_root)
-    if a.action=='prepare':result=prepare(a.base_request,a.root,a.predecessor_root,a.predecessor_sha256)
+    if a.action=='prepare':result=prepare(a.base_request,a.root,a.predecessor_root,a.predecessor_sha256,fixed_budget=a.fixed_budget)
     else:
         spec=json.loads(a.spec.read_text());validate(spec)
         if a.action=='publish':return publish(spec,a.spec)

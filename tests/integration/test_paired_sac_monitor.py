@@ -7,7 +7,7 @@ import sys
 import pytest
 
 
-@pytest.mark.parametrize('profile',[None,'dropout005','l2_1e6','dropout005_l2_1e6','batchnorm','TEMPORAL'])
+@pytest.mark.parametrize('profile',[None,'dropout005','l2_1e6','dropout005_l2_1e6','batchnorm','TEMPORAL','FIXED'])
 def test_real_monitor_does_not_modify_learning_and_restores_best(tmp_path,profile):
     gym = os.environ.get('GYM_FX_CHECKOUT')
     if not gym:
@@ -29,9 +29,12 @@ path, request, _ = fixture(root)
 request.update(schema='selected_rl_comparison_request.v4', leverage=50,
     early_stopping=SETTINGS, order_budget=dict(rel_volume=.1,
         min_order_volume=1, max_order_volume=1e12, volume_step=1))
-if profile=='TEMPORAL':
+if profile in ('TEMPORAL','FIXED'):
     request.update(schema='selected_rl_comparison_request.v7',temporal_encoder=dict(
         net_arch=[8],branch_filters=2,core_filters=4,kernel_size=3))
+    if profile=='FIXED':
+        from agent_plugins.fixed_budget_monitor import SETTINGS as FIXED_SETTINGS
+        request.update(schema='selected_rl_comparison_request.v8',early_stopping=FIXED_SETTINGS)
 elif profile!='NONE':
     from agent_plugins.sac_regularization import PROFILES
     request.update(schema='selected_rl_comparison_request.v5',regularization=PROFILES[profile])
@@ -69,11 +72,29 @@ try:
     model.learn(total_timesteps=8,reset_num_timesteps=False)
     assert _policy_tensor_hash(model.policy)!=before
     steps,updates=model.num_timesteps,model._n_updates
-    callback=make_callback(cfg); callback.model=model; callback.best=record
-    callback.records=[record]; callback.monitor.observe(8,0.,0.)
-    callback._on_training_end()
-    assert _policy_tensor_hash(model.policy)==before
-    assert model.num_timesteps==steps and model._n_updates==updates
+    callback=make_callback(cfg); callback.model=model
+    if profile=='FIXED':
+        for tick in (25000,50000,75000):
+            model.num_timesteps=tick
+            assert callback._on_step() is True
+        model.num_timesteps=100000
+        assert callback._on_step() is True and len(callback.records)==3
+        model.train(gradient_steps=1,batch_size=2)
+        final_hash=_policy_tensor_hash(model.policy)
+        final_updates=model._n_updates
+        callback._on_training_end()
+        assert _policy_tensor_hash(model.policy)==final_hash
+        assert model._n_updates==final_updates
+        assert model.paired_early_stopping_evidence['selected_step']==100000
+        assert model.paired_early_stopping_evidence['stop_reason']=='FIXED_BUDGET'
+        assert 'best_step' not in model.paired_early_stopping_evidence
+        record=callback.records[-1]
+    else:
+        callback.best=record;callback.records=[record];callback.monitor.observe(8,0.,0.)
+        callback._on_training_end()
+        assert _policy_tensor_hash(model.policy)==before
+        assert model.num_timesteps==steps and model._n_updates==updates
+        assert model.paired_early_stopping_evidence['best_step']==8
     restored_source=SAC.load(record['checkpoint'],device='cpu')
     for name in ('actor','critic'):
         actual=getattr(model,name).optimizer.state_dict()
@@ -84,8 +105,7 @@ try:
             for field,value in values.items():
                 wanted=expected['state'][key][field]
                 assert torch.equal(value,wanted) if isinstance(value,torch.Tensor) else value==wanted
-    assert model.paired_early_stopping_evidence['best_step']==8
-    if profile in ('NONE','TEMPORAL'):
+    if profile in ('NONE','TEMPORAL','FIXED'):
         assert not any(isinstance(m,(torch.nn.modules.batchnorm._BatchNorm,torch.nn.Dropout))
                        for m in model.policy.modules())
     else:

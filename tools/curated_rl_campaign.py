@@ -502,7 +502,9 @@ def warehouse_report(body, state, task, summary):
             tags[key] = body[key] if isinstance(body[key], str) else json.dumps(body[key], sort_keys=True)
     if body['common_config'].get('paired_early_stopping'):
         tags['checkpoint_selection_protocol'] = json.dumps(body['common_config']['paired_early_stopping'], sort_keys=True)
-        tags['validation_role'] = 'DEVELOPMENT_CHECKPOINT_TUNING_NOT_HOLDOUT'
+        tags['validation_role'] = ('DEVELOPMENT_MONITOR_ONLY_NO_CHECKPOINT_SELECTION'
+            if body['common_config']['paired_early_stopping'].get('early_stopping') is False
+            else 'DEVELOPMENT_CHECKPOINT_TUNING_NOT_HOLDOUT')
     if body['common_config'].get('sac_regularization') is not None:
         tags['regularization_scope']='CRITIC_ONLY'
         tags['regularization_parameters']=json.dumps(body['common_config']['sac_regularization'],sort_keys=True)

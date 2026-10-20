@@ -162,7 +162,8 @@ def _check_rows(text, manifest, columns, availability_column, common, binary):
 
 def _build(request_path, output_root):
     request = _json(request_path)
-    temporal_mode = request.get('schema') == 'selected_rl_comparison_request.v7'
+    fixed_mode = request.get('schema') == 'selected_rl_comparison_request.v8'
+    temporal_mode = fixed_mode or request.get('schema') == 'selected_rl_comparison_request.v7'
     capacity_mode = request.get('schema') == 'selected_rl_comparison_request.v6'
     regularization_mode = request.get('schema') == 'selected_rl_comparison_request.v5'
     es_mode = temporal_mode or capacity_mode or request.get('schema') in ('selected_rl_comparison_request.v4', 'selected_rl_comparison_request.v5')
@@ -186,7 +187,8 @@ def _build(request_path, output_root):
                                      'selected_rl_comparison_request.v2',
                                      'selected_rl_comparison_request.v3',
                                      'selected_rl_comparison_request.v4', 'selected_rl_comparison_request.v5',
-                                     'selected_rl_comparison_request.v6', 'selected_rl_comparison_request.v7')
+                                     'selected_rl_comparison_request.v6', 'selected_rl_comparison_request.v7',
+                                     'selected_rl_comparison_request.v8')
             or set(request) != keys):
         _fail('REQUEST_SCHEMA_OR_OVERRIDES_REFUSED')
     if temporal_mode:
@@ -201,8 +203,11 @@ def _build(request_path, output_root):
                 or arch not in ([8], [16], [16, 16])):
             _fail('DECLARED_SMALL_CAPACITY_REQUIRED')
     if es_mode:
-        from agent_plugins.paired_early_stopping import validate_settings
+        from agent_plugins.paired_early_stopping import validate_settings, SETTINGS
+        from agent_plugins.fixed_budget_monitor import SETTINGS as FIXED_SETTINGS
         validate_settings(request['early_stopping'])
+        if request['early_stopping']!=(FIXED_SETTINGS if fixed_mode else SETTINGS):
+            _fail('MONITOR_PROTOCOL_SCHEMA_MISMATCH')
     if regularization_mode:
         from agent_plugins.sac_regularization import validate_profile
         validate_profile(request['regularization'])

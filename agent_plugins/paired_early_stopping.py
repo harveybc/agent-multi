@@ -15,7 +15,9 @@ SETTINGS = dict(protocol=PROTOCOL, eval_interval=5000, patience=10, min_delta=1e
 
 
 def validate_settings(value):
-    if value != SETTINGS or any(type(value[k]) is not type(v) for k, v in SETTINGS.items()):
+    from agent_plugins.fixed_budget_monitor import SETTINGS as FIXED_SETTINGS
+    expected=FIXED_SETTINGS if isinstance(value,dict) and value.get('protocol')==FIXED_SETTINGS['protocol'] else SETTINGS
+    if value != expected or any(type(value[k]) is not type(v) for k, v in expected.items()):
         raise ValueError('PAIRED_ES_APPROVED_SETTINGS_REQUIRED')
 
 
@@ -139,6 +141,9 @@ def monitor_pair(config, model, step):
 
 
 def make_callback(config):
+    from agent_plugins.fixed_budget_monitor import SETTINGS as FIXED_SETTINGS, make_callback as fixed_callback
+    if config['paired_early_stopping'].get('protocol')==FIXED_SETTINGS['protocol']:
+        return fixed_callback(config)
     from stable_baselines3.common.callbacks import BaseCallback
     from tools.verify_rl_static_engineering import save_status
     settings = config['paired_early_stopping']

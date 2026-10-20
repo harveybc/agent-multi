@@ -97,6 +97,27 @@ def compare_curve(points, min_delta=1e-8, patience=10):
                 positive_validation_checkpoints=sum(r['validation_growth'] > 0 for r in rows))
 
 
+def compare_fixed_curve(points):
+    expected=(25000,50000,75000,100000)
+    if not points or tuple(p['step'] for p in points)!=expected[:len(points)]:
+        raise ValueError('FIXED_BUDGET_CURVE_STEP_SEQUENCE')
+    rows=[]
+    for p in points:
+        t,v=p['train_growth'],p['validation_growth']
+        if not all(math.isfinite(x) for x in (t,v)):
+            raise ValueError('FIXED_BUDGET_NONFINITE_CURVE')
+        previous=rows[-1] if rows else None
+        rows.append(dict(p,score=-.5*(t+v),gap=t-v,stop=False,
+            selected_step=100000 if p['step']==100000 else None,
+            checkpoint_selection='FINAL_100000',
+            validation_delta_previous=None if previous is None else v-previous['validation_growth'],
+            possible_overtraining_step=bool(previous and t>previous['train_growth'] and v<previous['validation_growth'])))
+    return dict(rows=rows,selected_step=rows[-1]['selected_step'],resets_after_first=None,
+        resets_worse_than_incumbent=None,resets_worse_than_previous=None,
+        positive_validation_checkpoints=sum(r['validation_growth']>0 for r in rows),
+        checkpoint_selection='FINAL_100000')
+
+
 def analyze(root):
     root = Path(root).resolve()
     body = read(root / 'CONTRACT.json')
@@ -143,16 +164,17 @@ def analyze(root):
         templates.append(path.parent / 'validation' / 'warehouse_report.json')
         decisions.append(record['decision'])
         points.append(point)
-    result = compare_curve(points, settings['min_delta'], settings['patience'])
+    fixed=settings.get('early_stopping') is False
+    result = compare_fixed_curve(points) if fixed else compare_curve(points, settings['min_delta'], settings['patience'])
     for row, decision in zip(result['rows'], decisions):
-        for key in ('step', 'improved', 'best_step', 'patience_used', 'stop'):
+        for key in (('step','selected_step','checkpoint_selection','stop') if fixed else ('step', 'improved', 'best_step', 'patience_used', 'stop')):
             if row[key] != decision[key]:
                 raise ValueError('DECISION_REPLAY_MISMATCH:' + key)
         if not math.isclose(row['score'], decision['score'], rel_tol=0, abs_tol=1e-14):
             raise ValueError('SCORE_REPLAY_MISMATCH')
     final_path = paths[0].parent.parent / 'FINAL.json'
     final = read(final_path) if final_path.exists() else None
-    if final and (final['best_step'] != result['selected_step'] or final['evaluations'] != len(points)):
+    if final and (final['selected_step' if fixed else 'best_step'] != result['selected_step'] or final['evaluations'] != len(points)):
         raise ValueError('FINAL_REPLAY_MISMATCH')
     result.update(protocol=PROTOCOL, contract_sha256=digest(root / 'CONTRACT.json'),
                   analyzer_sha256=digest(__file__), input_identities=inputs,
@@ -178,6 +200,7 @@ def publish(result, body, templates, destination):
         for key in ('train_growth', 'validation_growth', 'gap', 'score', 'validation_delta_incumbent',
                     'validation_delta_previous', 'train_return_pct', 'validation_return_pct',
                     'reset_worse_incumbent', 'reset_worse_previous', 'improved', 'patience_used'):
+            if key not in row:continue
             value = row[key]
             unit = 'percent' if key.endswith('_pct') else 'log_fraction_per_observed_day'
             if isinstance(value, bool):
