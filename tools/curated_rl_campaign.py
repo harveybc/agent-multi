@@ -225,7 +225,7 @@ def load_contract(path):
     if paired:
         from agent_plugins.paired_early_stopping import validate_settings
         validate_settings(paired)
-        if body.get('arms') != ['SAC_FLAT']:
+        if body.get('arms') not in (['SAC_FLAT'], ['SAC_PER_FEATURE_CONV1D']):
             raise ValueError('QUEUE_PAIRED_ES_DIRECT_ONLY')
     elif len(arm_order(body)) != len(ARMS) or set(arm_order(body)) != set(ARMS):
         raise ValueError('QUEUE_EXACT_ORDERED_ARM_SET_REQUIRED')

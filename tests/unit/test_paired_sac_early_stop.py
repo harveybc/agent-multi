@@ -78,7 +78,8 @@ def test_nonfinite_score_and_repeated_step_refused():
         m.observe(10000, float('nan'), .01)
 
 
-def test_pair_reports_are_published_once_per_role_with_integrity(tmp_path, monkeypatch):
+@pytest.mark.parametrize('arm', ['SAC_FLAT','SAC_PER_FEATURE_CONV1D'])
+def test_pair_reports_are_published_once_per_role_with_integrity(tmp_path, monkeypatch, arm):
     import json
     from tools import selected_rl_comparison as selected
     from tools import curated_rl_campaign as queue
@@ -87,7 +88,7 @@ def test_pair_reports_are_published_once_per_role_with_integrity(tmp_path, monke
     reports=[]
     for role in ('train','validation'):
         file=directory/(role+'.json'); file.write_text('{}')
-        reports.append(dict(arm='SAC_FLAT',seed=7,split=role,
+        reports.append(dict(arm=arm,seed=7,split=role,
             summary=str(file),artifacts=dict(summary=queue.digest(file))))
     pair=directory/'PAIR.json'
     pair.write_text(json.dumps(dict(schema='paired_sac_checkpoint.v1',reports=reports)))
@@ -97,7 +98,7 @@ def test_pair_reports_are_published_once_per_role_with_integrity(tmp_path, monke
         roots.append(warehouse_root)
         calls.append(task)
     monkeypatch.setattr(queue,'_enqueue',enqueue)
-    body=dict(common_config=dict(paired_early_stopping=True),seeds=[7])
+    body=dict(common_config=dict(paired_early_stopping=True),seeds=[7],arms=[arm])
     assert selected.publish_monitors(body,tmp_path,{})==2
     assert [t['split'] for t in calls]==['train','validation']
     assert roots==[tmp_path,tmp_path]

@@ -75,6 +75,9 @@ def monitor_pair(config, model, step):
     body = queue.load_contract(root / 'CONTRACT.json')
     if queue.digest(root / 'CONTRACT.json') != config['paired_campaign_sha256']:
         raise ValueError('PAIRED_ES_CONTRACT_DRIFT')
+    arm = config.get('queue_arm', 'SAC_FLAT')
+    if body['arms'] != [arm] or arm not in ('SAC_FLAT', 'SAC_PER_FEATURE_CONV1D'):
+        raise ValueError('PAIRED_ES_ARM_BINDING_MISMATCH')
     monitor_root = Path(config['save_model']).parent / 'paired-monitor'
     directory = monitor_root / f'step-{step:06d}'
     directory.mkdir(parents=True, exist_ok=False)
@@ -87,7 +90,7 @@ def monitor_pair(config, model, step):
     for role in ('train', 'validation'):
         child = directory / role
         child.mkdir()
-        task = dict(arm='SAC_FLAT', split=role, seed=config['train_seed'], attempt=1,
+        task = dict(arm=arm, split=role, seed=config['train_seed'], attempt=1,
             id=f"{config['paired_source_unit']}:{step}:{role}",
             started_at=queue._now(), policy_tensor_sha256=before)
         child_body = copy.deepcopy(body)

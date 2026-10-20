@@ -7,7 +7,7 @@ import sys
 import pytest
 
 
-@pytest.mark.parametrize('profile',[None,'dropout005','l2_1e6','dropout005_l2_1e6','batchnorm'])
+@pytest.mark.parametrize('profile',[None,'dropout005','l2_1e6','dropout005_l2_1e6','batchnorm','TEMPORAL'])
 def test_real_monitor_does_not_modify_learning_and_restores_best(tmp_path,profile):
     gym = os.environ.get('GYM_FX_CHECKOUT')
     if not gym:
@@ -29,7 +29,10 @@ path, request, _ = fixture(root)
 request.update(schema='selected_rl_comparison_request.v4', leverage=50,
     early_stopping=SETTINGS, order_budget=dict(rel_volume=.1,
         min_order_volume=1, max_order_volume=1e12, volume_step=1))
-if profile!='NONE':
+if profile=='TEMPORAL':
+    request.update(schema='selected_rl_comparison_request.v7',temporal_encoder=dict(
+        net_arch=[8],branch_filters=2,core_filters=4,kernel_size=3))
+elif profile!='NONE':
     from agent_plugins.sac_regularization import PROFILES
     request.update(schema='selected_rl_comparison_request.v5',regularization=PROFILES[profile])
 request['execution'].update(gym_root=str(gym), gym_code_commit=subprocess.check_output(
@@ -39,7 +42,8 @@ out = root/'campaign'
 contract = selected.materialize(path,out)
 body = queue.load_contract(contract)
 d = out/'training'/'attempt-1'; d.mkdir(parents=True)
-cfg=queue._task_config(body,dict(arm='SAC_FLAT',split='train',seed=7,id='test',attempt=1),d,d/'policy.zip')
+arm=body['arms'][0]
+cfg=queue._task_config(body,dict(arm=arm,split='train',seed=7,id='test',attempt=1),d,d/'policy.zip')
 queue.verify_execution_runtime(body['execution'],cfg)
 agent=Agent(cfg); owner=Env(cfg); env=agent.wrap_env(owner.make_env(cfg),cfg)
 model=agent.build(env,{**cfg,'learning_starts':0,'batch_size':2,'buffer_size':100})
@@ -55,6 +59,9 @@ try:
     assert torch.equal(torch.get_rng_state(),rng[2])
     assert set(record['growth'])=={'train','validation'}
     for task in record['reports']:
+        assert task['arm']==arm
+        task_cfg=json.loads(Path(task['config']).read_text())
+        assert task_cfg['observation_encoder']==cfg['observation_encoder']
         summary=json.loads(Path(task['summary']).read_text())
         assert summary['mode']=='inference'
         assert summary['static_policy']==dict(before=before,after=before)
@@ -78,7 +85,7 @@ try:
                 wanted=expected['state'][key][field]
                 assert torch.equal(value,wanted) if isinstance(value,torch.Tensor) else value==wanted
     assert model.paired_early_stopping_evidence['best_step']==8
-    if profile=='NONE':
+    if profile in ('NONE','TEMPORAL'):
         assert not any(isinstance(m,(torch.nn.modules.batchnorm._BatchNorm,torch.nn.Dropout))
                        for m in model.policy.modules())
     else:

@@ -162,12 +162,13 @@ def _check_rows(text, manifest, columns, availability_column, common, binary):
 
 def _build(request_path, output_root):
     request = _json(request_path)
+    temporal_mode = request.get('schema') == 'selected_rl_comparison_request.v7'
     capacity_mode = request.get('schema') == 'selected_rl_comparison_request.v6'
     regularization_mode = request.get('schema') == 'selected_rl_comparison_request.v5'
-    es_mode = capacity_mode or request.get('schema') in ('selected_rl_comparison_request.v4', 'selected_rl_comparison_request.v5')
-    leverage_mode = capacity_mode or request.get('schema') in ('selected_rl_comparison_request.v3',
+    es_mode = temporal_mode or capacity_mode or request.get('schema') in ('selected_rl_comparison_request.v4', 'selected_rl_comparison_request.v5')
+    leverage_mode = temporal_mode or capacity_mode or request.get('schema') in ('selected_rl_comparison_request.v3',
                                             'selected_rl_comparison_request.v4', 'selected_rl_comparison_request.v5')
-    budget_mode = capacity_mode or request.get('schema') in ('selected_rl_comparison_request.v2',
+    budget_mode = temporal_mode or capacity_mode or request.get('schema') in ('selected_rl_comparison_request.v2',
                                           'selected_rl_comparison_request.v3',
                                           'selected_rl_comparison_request.v4', 'selected_rl_comparison_request.v5')
     keys = REQUEST_KEYS | {'order_budget'} if budget_mode else REQUEST_KEYS
@@ -179,13 +180,21 @@ def _build(request_path, output_root):
         keys = keys | {'regularization'}
     if capacity_mode:
         keys = keys | {'net_arch'}
+    if temporal_mode:
+        keys = keys | {'temporal_encoder'}
     if (request.get('schema') not in ('selected_rl_comparison_request.v1',
                                      'selected_rl_comparison_request.v2',
                                      'selected_rl_comparison_request.v3',
                                      'selected_rl_comparison_request.v4', 'selected_rl_comparison_request.v5',
-                                     'selected_rl_comparison_request.v6')
+                                     'selected_rl_comparison_request.v6', 'selected_rl_comparison_request.v7')
             or set(request) != keys):
         _fail('REQUEST_SCHEMA_OR_OVERRIDES_REFUSED')
+    if temporal_mode:
+        arch = request['temporal_encoder']
+        if (arch != dict(net_arch=[8], branch_filters=2, core_filters=4, kernel_size=3)
+                or any(type(arch[k]) is not int for k in ('branch_filters','core_filters','kernel_size'))
+                or type(arch['net_arch'][0]) is not int):
+            _fail('DECLARED_MINIMAL_TEMPORAL_RECIPE_REQUIRED')
     if capacity_mode:
         arch = request['net_arch']
         if (not isinstance(arch, list) or any(type(v) is not int for v in arch)
@@ -262,6 +271,11 @@ def _build(request_path, output_root):
             or any(c not in columns for c in binary) or len(set(binary)) != len(binary)):
         _fail('CAUSAL_ROLLING_NORMALIZATION_REQUIRED')
     common = copy.deepcopy(design['common_config'])
+    if temporal_mode:
+        common.update(net_arch=request['temporal_encoder']['net_arch'],
+            temporal_branch_filters=request['temporal_encoder']['branch_filters'],
+            temporal_core_filters=request['temporal_encoder']['core_filters'],
+            temporal_kernel_size=request['temporal_encoder']['kernel_size'])
     if capacity_mode:
         common['net_arch'] = request['net_arch']
     if es_mode:
@@ -325,9 +339,10 @@ def _build(request_path, output_root):
         feature_columns_sha256=col_pin, population_sha256=population, **FLAGS,
         source_receipt_sha256=request['receipt_sha256'], source_splits=source_pins,
         **selection_close)
+    paired_arm = 'SAC_PER_FEATURE_CONV1D' if temporal_mode else 'SAC_FLAT'
     body = dict(schema='curated_rl_campaign.v1', classification='NON_GOVERNING',
         scientific_scope='REAL_DATA_DEVELOPMENT', execution_backend='local_subprocess',
-        seeds=[7], arms=['SAC_FLAT'] if es_mode else list(design['arms']), refit_cadence='NONE',
+        seeds=[7], arms=[paired_arm] if es_mode else list(design['arms']), refit_cadence='NONE',
         common_config=common, splits=splits, **FLAGS,
         selection_sha256=request['selection_sha256'], selected_input_binding=binding,
         input_policy=dict(kind=SCOPE, **binding), cost_scope=design['cost_scope'],
@@ -451,7 +466,7 @@ def publish_monitors(body, root, state):
             _fail('MONITOR_PAIR_INVALID')
         for original in record['reports']:
             task = copy.deepcopy(original)
-            if task['arm'] != 'SAC_FLAT' or task['seed'] not in body['seeds']:
+            if task['arm'] not in body['arms'] or task['seed'] not in body['seeds']:
                 _fail('MONITOR_TASK_INVALID')
             for key, pin in task['artifacts'].items():
                 path = Path(task[key]).resolve()
