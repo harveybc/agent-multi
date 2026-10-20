@@ -96,5 +96,33 @@ No unseen-TEST or profitable strategy claim is made.
 | FB05-FB07 | independent fixed curve replay,forged-final refusal,plot idempotence and source-byte tests |
 | FB08 | actual-worker25tests,GPU16updates/bitwise reload,systemd parser check,RUNNING/progress,two enabled publisher/worker timers,second-machine collector and network health |
 
-Stage: OPERATION_FIXED_BUDGET_TEMPORAL_RUNNING. Next: native finite completion,
-paired metrics,authenticated curves,warehouse readback and physical closure.
+## Final Result
+
+Completed2026-10-20T08:36:51UTC,about70min from startup,100000 transitions,
+four full monitor pairs,zero worker restarts. Selected final100000 by fixed
+budget,never an intermediate validation winner. TRAIN2020-23:net-1454.77USD,
+return-14.5477%,maxDD37.0186%,827 closed trades,44.8609% wins,PF0.9340,
+daily nonannualized Sharpe-0.02002. VALIDATION2024:net-727.83USD,
+return-7.2783%,maxDD10.7319%,203 closed trades,43.3498% wins,PF0.8326,
+daily nonannualized Sharpe-0.06103. Native terminal inference matches the
+100000 monitor metrics. The model remains unprofitable on both periods;
+this is not evidence that temporal processing solves generalization.
+TRAIN return across25k/50k/75k/100k was-52.64/-41.23/-30.46/-14.55%;
+VALIDATION-16.81/-32.08/-22.64/-7.28%. Final improves both versus earlier
+observations; the curve does not support a simple monotonically worsening
+validation-from-overtraining explanation. It also does not exclude overfit,
+insufficient learning,capacity limitations or distribution shift.
+
+All10 reports delivered with readback,zero pending/mismatch;closed source
+authenticated and574 files checksum-verified on a second physical machine.
+The collector initially rejected this closed temporal arm because its paired
+branch hardcoded SAC_FLAT. Four new positive tests reproduced the defect;
+after allowing the exact contract's supported arm and enforcing the same arm
+on both terminal tasks,60 collector tests passed,including mixed-arm rejection
+and hash-tampering cases. Only collector code changed;no source model,metric,
+runtime or closed artifact was modified. The archive is47MiB approximately.
+Root STATUS is the retained pre-publication snapshot;CLOSE.json is the final
+completion/readback authority. TEST was not consumed by this experiment.
+
+Stage: COMPLETED_UNPROFITABLE_DEVELOPMENT_AND_PHYSICAL_COPY_VERIFIED.
+No further scientific fit is running under this fixed-budget identity.

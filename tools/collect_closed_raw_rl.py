@@ -52,9 +52,10 @@ def verify(archive, source, close_sha):
     if paired:
         from agent_plugins.paired_early_stopping import validate_settings
         validate_settings(paired)
-        if (contract.get('arms') != ['SAC_FLAT'] or close.get('schema') != 'selected_rl_close.v1'
+        arms=contract.get('arms')
+        if (arms not in (['SAC_FLAT'],['SAC_PER_FEATURE_CONV1D']) or close.get('schema') != 'selected_rl_close.v1'
                 or [(t.get('arm'),t.get('split')) for t in tasks] !=
-                    [('SAC_FLAT','train'),('SAC_FLAT','validation')]):
+                    [(arms[0],'train'),(arms[0],'validation')]):
             raise ValueError('PAIRED_COLLECTION_TASKS_INVALID')
         n_pairs = sum(name.endswith('/PAIR.json') for name in monitor_files)
         if not 1 <= n_pairs <= 40 or close.get('monitor_reports') != 2 * n_pairs:

@@ -1,6 +1,6 @@
 {
   "schema": "sac_fixed_budget_temporal_method.v1",
-  "current_stage": "OPERATION_FIXED_BUDGET_TEMPORAL_RUNNING",
+  "current_stage": "COMPLETED_UNPROFITABLE_DEVELOPMENT_AND_PHYSICAL_COPY_VERIFIED",
   "design": "../51_FIXED_BUDGET_TEMPORAL_SAC.md",
   "authority": "OWNER_IMMEDIATE_FIXED_BUDGET_EXECUTION_2026_10_20",
   "stages_passed": ["DISCOVERY", "REQUIREMENTS", "ACCEPTANCE_TEST_DESIGN", "ARCHITECTURE", "SYSTEM_COMPONENT_UNIT_TEST_DESIGN", "UNIT_IMPLEMENTATION", "INTEGRATION_VERIFICATION", "REAL_ENGINE_CPU_ACCEPTANCE", "GPU_SYNTHETIC_ADMISSION"],
@@ -32,7 +32,23 @@
     "terminal_monitor_after_last_gradient_update": true,
     "native_final_reporting_pair_additional_to_monitors": true
   },
-  "next_allowed_actions": ["finite native SAC learning", "sparse full TRAIN/VALIDATION frozen inference", "automatic descriptive plots without selection", "warehouse readback and physical closure", "report required trading metrics with exact units and scope"],
+  "closure": {
+    "finished_at_utc": "2026-10-20T08:36:51Z",
+    "actual_steps": 100000,
+    "complete_monitor_pairs": 4,
+    "selected_step": 100000,
+    "stop_reason": "FIXED_BUDGET",
+    "train_net_profit_usd": -1454.7668268898306,
+    "validation_net_profit_usd": -727.8253125112551,
+    "warehouse_delivered": 10,
+    "warehouse_pending": 0,
+    "warehouse_mismatch": 0,
+    "physical_files_verified": 574,
+    "close_sha256": "810364a7c01b5dc4b6bd02b4de1cf972f64a80e28b648557b85d1d4ec50a3761",
+    "collector_tests_after_temporal_arm_fix": 60,
+    "scientific_artifacts_changed_by_collector_fix": false
+  },
+  "next_allowed_actions": ["report final required trading metrics with exact units and scope", "read-only diagnostic analysis", "separately identify any subsequent experiment without altering this closed result"],
   "blocked_actions": ["TEST for tuning", "restore best intermediate checkpoint", "stop on validation metric", "silently alter data,architecture,costs or business rules", "resume previous partial protocol or flat sweep", "integrate Satoshi expert labels without separate design"],
   "history": ["Owner approved cheaper fixed-budget exploration", "Requirements and tests written before implementation", "Focused local and actual-worker acceptance passed", "Old temporal stopped with five pairs preserved", "Fresh fixed-budget worker passed GPU admission and reached10000 transitions", "Expired overlay route replaced for this workload by authenticated LAN and warehouse health verified"]
 }

@@ -110,19 +110,25 @@ def test_selected_collection_requires_same_scoped_selection_as_contract(campaign
 
 @pytest.mark.parametrize('tamper',[False,True])
 @pytest.mark.parametrize('legacy_outbox',[False,True])
-def test_paired_direct_collection_counts_monitor_reports_and_checks_files(campaign,tamper,legacy_outbox):
+@pytest.mark.parametrize('arm',['SAC_FLAT','SAC_PER_FEATURE_CONV1D'])
+@pytest.mark.parametrize('fixed',[False,True])
+@pytest.mark.parametrize('wrong_task',[False,True])
+def test_paired_direct_collection_counts_monitor_reports_and_checks_files(campaign,tamper,legacy_outbox,arm,fixed,wrong_task):
     from agent_plugins.paired_early_stopping import SETTINGS
+    if fixed:
+        from agent_plugins.fixed_budget_monitor import SETTINGS
     source,archive,state,_=campaign
     flags=dict(feature_selection_complete=True,selection_complete='WITHIN_DECLARED_ADMITTED_POPULATION',full_inventory_complete=False)
     binding=dict(selection_sha256='a'*64,feature_columns=['a','b'])
-    contract=dict(schema='curated_rl_campaign.v1',arms=['SAC_FLAT'],
+    contract=dict(schema='curated_rl_campaign.v1',arms=[arm],
         common_config=dict(paired_early_stopping=SETTINGS),**flags,selected_input_binding=binding)
     (source/'CONTRACT.json').write_text(json.dumps(contract))
     pin=m.digest(source/'CONTRACT.json')
     status=json.loads((source/'STATUS.json').read_text())
     status['tasks']=status['tasks'][:2]; status['contract_sha256']=pin
     for task,role in zip(status['tasks'],('train','validation')):
-        task.update(arm='SAC_FLAT',split=role)
+        task.update(arm=arm,split=role)
+    if wrong_task:status['tasks'][1]['arm']='SAC_FLAT' if arm!='SAC_FLAT' else 'SAC_PER_FEATURE_CONV1D'
     (source/'STATUS.json').write_text(json.dumps(status))
     pair=source/'task-0/paired-monitor/step-005000/PAIR.json'
     pair.parent.mkdir(parents=True); pair.write_text('{"schema":"synthetic-pair"}')
@@ -138,8 +144,8 @@ def test_paired_direct_collection_counts_monitor_reports_and_checks_files(campai
         **flags,selected_input_binding=binding)
     (source/'CLOSE.json').write_text(json.dumps(close))
     if tamper: pair.write_text('changed')
-    assert m.collect(HOST,REMOTE,archive,state)==(2 if tamper else 0)
-    if legacy_outbox and not tamper:
+    assert m.collect(HOST,REMOTE,archive,state)==(2 if tamper or wrong_task else 0)
+    if legacy_outbox and not tamper and not wrong_task:
         record=json.loads((state/'COLLECTION_COMPLETE.json').read_text())
         assert record['excluded_live_monitor_state']==[str(live.relative_to(source))]
         assert not (archive/live.relative_to(source)).exists()
