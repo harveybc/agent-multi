@@ -56,7 +56,8 @@ trading domain.
 
 ## Document Map
 
-Current2026-10-20 owner-approved RL sequence: [gradual temporal capacity](52_TEMPORAL_CAPACITY_SWEEP.md).
+Current2026-10-20 owner-approved follow-up: [controlled modular specialists](53_MODULAR_SPECIALISTS_FOLLOWUP.md).
+Previous sequence closed: [gradual temporal capacity](52_TEMPORAL_CAPACITY_SWEEP.md).
 Its completed baseline is [fixed-budget minimal temporal SAC](51_FIXED_BUDGET_TEMPORAL_SAC.md).
 This owner-approved stage supersedes the interrupted frequent-monitor temporal
 run without changing its historical evidence. Older roadmap states below are
