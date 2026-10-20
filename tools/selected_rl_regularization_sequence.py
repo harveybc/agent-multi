@@ -123,7 +123,9 @@ def _setting_path(value):
     return path.replace('%','%%')
 
 
-def render(spec,directory,environment_file,spec_path=None,runtime_root=None):
+def render(spec,directory,environment_file,spec_path=None,runtime_root=None,*,
+           prefix=PREFIX,sequence_module='tools.selected_rl_regularization_sequence',
+           smoke_module='agent_plugins.sac_regularization'):
     directory=Path(directory);directory.mkdir(parents=True,exist_ok=True)
     runtime=Path(runtime_root).resolve() if runtime_root else Path(__file__).resolve().parents[1]
     runtime_pin=subprocess.check_output(['git','-C',str(runtime),'rev-parse','HEAD'],text=True).strip()
@@ -135,7 +137,7 @@ def render(spec,directory,environment_file,spec_path=None,runtime_root=None):
         uuid=contract['execution']['gpu_evidence']['assigned_gpu_uuid']
         if not re.fullmatch(r'GPU-[0-9a-fA-F-]{36}',uuid):
             raise ValueError('SEQUENCE_GPU_UUID_REQUIRED')
-        name=PREFIX+'-'+node['profile']
+        name=prefix+'-'+node['profile']
         gate=[sys.executable,'-m','tools.verify_rl_predecessor',
               '--predecessor-root',node['predecessor_root'],'--predecessor-sha256',node['predecessor_sha256'],
               '--root',root,'--gpu-uuid',uuid]
@@ -144,7 +146,7 @@ def render(spec,directory,environment_file,spec_path=None,runtime_root=None):
                '-m','tools.selected_rl_comparison','run','--root',root]
         smoke=['/usr/bin/env','CUDA_VISIBLE_DEVICES='+uuid,'OMP_NUM_THREADS=1',
                'OPENBLAS_NUM_THREADS=1',sys.executable,'-m',
-               'agent_plugins.sac_regularization','--smoke-root',root]
+               smoke_module,'--smoke-root',root]
         service='\n'.join(['[Unit]','Description=Finite SAC regularization '+node['profile'],
             'After=network-online.target','ConditionPathExists=!'+str(root/'CLOSE.json'),
             'StartLimitIntervalSec=0','','[Service]','Type=exec',
@@ -159,14 +161,14 @@ def render(spec,directory,environment_file,spec_path=None,runtime_root=None):
     path=Path(spec_path) if spec_path else directory.parent/'SEQUENCE.json'
     command=['/usr/bin/env','CUDA_VISIBLE_DEVICES=','OMP_NUM_THREADS=1',
              'OPENBLAS_NUM_THREADS=1',sys.executable,'-m',
-             'tools.selected_rl_regularization_sequence','publish','--spec',path]
+             sequence_module,'publish','--spec',path]
     publisher='\n'.join(['[Unit]','Description=Sequential SAC checkpoint publication and readback',
         'ConditionPathExists=!'+str(path.parent/'SEQUENCE_COMPLETE.json'),'',
         '[Service]','Type=oneshot','WorkingDirectory='+_setting_path(runtime),
         'EnvironmentFile='+_setting_path(environment_file),'ExecStart='+' '.join(_q(x) for x in command),
         'SuccessExitStatus=2','MemoryHigh=768M','MemoryMax=1500M','MemorySwapMax=0',
         'CPUQuota=100%','TasksMax=64','TimeoutStartSec=300','UMask=0077',''])
-    paths.extend(_unit(directory,PREFIX+'-publication',publisher))
+    paths.extend(_unit(directory,prefix+'-publication',publisher))
     return paths
 
 

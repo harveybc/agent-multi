@@ -162,11 +162,12 @@ def _check_rows(text, manifest, columns, availability_column, common, binary):
 
 def _build(request_path, output_root):
     request = _json(request_path)
+    capacity_mode = request.get('schema') == 'selected_rl_comparison_request.v6'
     regularization_mode = request.get('schema') == 'selected_rl_comparison_request.v5'
-    es_mode = request.get('schema') in ('selected_rl_comparison_request.v4', 'selected_rl_comparison_request.v5')
-    leverage_mode = request.get('schema') in ('selected_rl_comparison_request.v3',
+    es_mode = capacity_mode or request.get('schema') in ('selected_rl_comparison_request.v4', 'selected_rl_comparison_request.v5')
+    leverage_mode = capacity_mode or request.get('schema') in ('selected_rl_comparison_request.v3',
                                             'selected_rl_comparison_request.v4', 'selected_rl_comparison_request.v5')
-    budget_mode = request.get('schema') in ('selected_rl_comparison_request.v2',
+    budget_mode = capacity_mode or request.get('schema') in ('selected_rl_comparison_request.v2',
                                           'selected_rl_comparison_request.v3',
                                           'selected_rl_comparison_request.v4', 'selected_rl_comparison_request.v5')
     keys = REQUEST_KEYS | {'order_budget'} if budget_mode else REQUEST_KEYS
@@ -176,12 +177,20 @@ def _build(request_path, output_root):
         keys = keys | {'early_stopping'}
     if regularization_mode:
         keys = keys | {'regularization'}
+    if capacity_mode:
+        keys = keys | {'net_arch'}
     if (request.get('schema') not in ('selected_rl_comparison_request.v1',
                                      'selected_rl_comparison_request.v2',
                                      'selected_rl_comparison_request.v3',
-                                     'selected_rl_comparison_request.v4', 'selected_rl_comparison_request.v5')
+                                     'selected_rl_comparison_request.v4', 'selected_rl_comparison_request.v5',
+                                     'selected_rl_comparison_request.v6')
             or set(request) != keys):
         _fail('REQUEST_SCHEMA_OR_OVERRIDES_REFUSED')
+    if capacity_mode:
+        arch = request['net_arch']
+        if (not isinstance(arch, list) or any(type(v) is not int for v in arch)
+                or arch not in ([8], [16], [16, 16])):
+            _fail('DECLARED_SMALL_CAPACITY_REQUIRED')
     if es_mode:
         from agent_plugins.paired_early_stopping import validate_settings
         validate_settings(request['early_stopping'])
@@ -253,6 +262,8 @@ def _build(request_path, output_root):
             or any(c not in columns for c in binary) or len(set(binary)) != len(binary)):
         _fail('CAUSAL_ROLLING_NORMALIZATION_REQUIRED')
     common = copy.deepcopy(design['common_config'])
+    if capacity_mode:
+        common['net_arch'] = request['net_arch']
     if es_mode:
         common['paired_early_stopping'] = request['early_stopping']
     if regularization_mode:
