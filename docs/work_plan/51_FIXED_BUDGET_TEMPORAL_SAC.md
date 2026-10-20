@@ -38,4 +38,63 @@ proof or a new automatic selection rule. Compare equal daily-growth units,
 not four-year cumulative TRAIN profit with one-year VALIDATION profit.
 Keep all complete validation dates; never choose a more favorable year.
 
-Stage: requirements and unit/integration test design recorded before code.
+## Verified Deployment
+
+Runtime `ec4855ce4337fc4dbe1cc9d72f05256b0999923b`; contract
+`fc9c0c532d43d541df4023ab2eeeda8fa63396ea80b938476c84da53da62d68f`.
+Requirements/tests above were recorded before implementation. Focused local
+suite144/144 passed; actual worker25/25 passed in29.84s,1.4GiB peak with no
+swap. The bounded GPU admission passed16 native updates and exact reload on
+attempt1. Synthetic admission is not a financial result.
+
+The new worker started2026-10-20T07:26:43Z and reached10000 transitions in
+225.7434s. One heavy5090 worker,zero restarts,approximately1.7GiB process-group
+RAM,686MiB compute GPU allocation at the check. No5070Ti parallel job.
+Common-config comparison against the previous minimal temporal contract found
+only `paired_early_stopping` changed; arms and selected input binding match.
+The earlier run is STOPPED,not CLOSED: five full pairs retained and checksum
+copied to the second physical disk. Do not combine its partial scientific
+scope with the new final model. Fresh seed7 native initialization,not a partial
+policy warm start without its replay/RNG state.
+
+Full reporting/publication/readback,plots and closed-model collection run on
+timers. The live contract has zero expected reports before its first complete
+pair,not missing measured results. No re-approval or agent polling is required.
+The overlay node key expired immediately after dispatch; existing-key-verified
+LAN SSH restored worker access,collector and the warehouse reverse forwarding.
+Warehouse `/healthz` returned200 through that route. No secret,authentication
+policy,training process or scientific setting was changed for network repair.
+The overlay credential itself remains expired and should be renewed separately.
+
+SB3 calls `_on_step` before a transition's last gradient update. Therefore the
+100000 observation is deliberately in `_on_training_end`,after the final
+update; it authenticates the exact final policy without restoring older weights.
+The first three checkpoints retain their native pre-update callback timing.
+This timing is explicit,not a claim all four observations occur at identical
+gradient-update offsets.
+
+## Operator Status
+
+Use the pinned runtime and private spec:
+
+```bash
+python -m tools.selected_rl_temporal_minimal status --spec "$SPEC"
+```
+
+Read the native attempt `progress.json` for current transitions. After the first
+pair,`paired-monitor/diagnostics/CURVES.json` and `CURVES.png` are generated
+automatically. Four monitor pairs plus native final reporting are the full cost;
+provisional60-80min from startup is not a measured completion guarantee.
+No unseen-TEST or profitable strategy claim is made.
+
+## Traceability
+
+| IDs | Implemented evidence |
+| --- | --- |
+| FB01 | strictv8 request and immutable fixed SETTINGS; matched-recipe check |
+| FB02-FB04 | `test_fixed_budget_sac.py`; real-engine FIXED monitor integration; terminal update-order test |
+| FB05-FB07 | independent fixed curve replay,forged-final refusal,plot idempotence and source-byte tests |
+| FB08 | actual-worker25tests,GPU16updates/bitwise reload,systemd parser check,RUNNING/progress,two enabled publisher/worker timers,second-machine collector and network health |
+
+Stage: OPERATION_FIXED_BUDGET_TEMPORAL_RUNNING. Next: native finite completion,
+paired metrics,authenticated curves,warehouse readback and physical closure.

@@ -56,6 +56,11 @@ trading domain.
 
 ## Document Map
 
+Current2026-10-20 RL execution: [fixed-budget minimal temporal SAC](51_FIXED_BUDGET_TEMPORAL_SAC.md).
+This owner-approved stage supersedes the interrupted frequent-monitor temporal
+run without changing its historical evidence. Older roadmap states below are
+not assertions that the paused campaigns are still running.
+
 | Document | Purpose |
 | --- | --- |
 | [01 Architecture](01_SYSTEM_ARCHITECTURE.md) | System boundaries, repositories, decision layers, clocks, and ownership |

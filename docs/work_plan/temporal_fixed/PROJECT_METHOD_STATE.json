@@ -1,0 +1,38 @@
+{
+  "schema": "sac_fixed_budget_temporal_method.v1",
+  "current_stage": "OPERATION_FIXED_BUDGET_TEMPORAL_RUNNING",
+  "design": "../51_FIXED_BUDGET_TEMPORAL_SAC.md",
+  "authority": "OWNER_IMMEDIATE_FIXED_BUDGET_EXECUTION_2026_10_20",
+  "stages_passed": ["DISCOVERY", "REQUIREMENTS", "ACCEPTANCE_TEST_DESIGN", "ARCHITECTURE", "SYSTEM_COMPONENT_UNIT_TEST_DESIGN", "UNIT_IMPLEMENTATION", "INTEGRATION_VERIFICATION", "REAL_ENGINE_CPU_ACCEPTANCE", "GPU_SYNTHETIC_ADMISSION"],
+  "verification": {
+    "local_tests_passed": 144,
+    "worker_tests_passed": 25,
+    "worker_seconds": 29.84,
+    "worker_memory_peak_gib": 1.4,
+    "gpu_smoke_updates": 16,
+    "gpu_smoke_attempt": 1,
+    "gpu_smoke_reload_equal": true,
+    "runtime": "ec4855ce4337fc4dbe1cc9d72f05256b0999923b",
+    "contract_sha256": "fc9c0c532d43d541df4023ab2eeeda8fa63396ea80b938476c84da53da62d68f",
+    "started_at_utc": "2026-10-20T07:26:43Z",
+    "verified_transitions": 10000,
+    "training_seconds_at_check": 225.7434,
+    "common_config_difference": ["paired_early_stopping"],
+    "previous_temporal_stopped_partial_pairs": 5,
+    "previous_temporal_copy_checksum_verified": true,
+    "warehouse_reverse_forward_health_http": 200,
+    "collector_route": "AUTHENTICATED_LAN_EXISTING_HOST_KEY",
+    "overlay_key": "EXPIRED_NOT_CHANGED"
+  },
+  "protocol": {
+    "steps": 100000,
+    "monitor_steps": [25000, 50000, 75000, 100000],
+    "early_stopping": false,
+    "selected_checkpoint": "FINAL_100000",
+    "terminal_monitor_after_last_gradient_update": true,
+    "native_final_reporting_pair_additional_to_monitors": true
+  },
+  "next_allowed_actions": ["finite native SAC learning", "sparse full TRAIN/VALIDATION frozen inference", "automatic descriptive plots without selection", "warehouse readback and physical closure", "report required trading metrics with exact units and scope"],
+  "blocked_actions": ["TEST for tuning", "restore best intermediate checkpoint", "stop on validation metric", "silently alter data,architecture,costs or business rules", "resume previous partial protocol or flat sweep", "integrate Satoshi expert labels without separate design"],
+  "history": ["Owner approved cheaper fixed-budget exploration", "Requirements and tests written before implementation", "Focused local and actual-worker acceptance passed", "Old temporal stopped with five pairs preserved", "Fresh fixed-budget worker passed GPU admission and reached10000 transitions", "Expired overlay route replaced for this workload by authenticated LAN and warehouse health verified"]
+}
