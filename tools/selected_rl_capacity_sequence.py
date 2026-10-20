@@ -53,12 +53,12 @@ def validate(spec):
     if (spec.get('schema') != SCHEMA
             or [(n['profile'], n['net_arch']) for n in spec['nodes']] != list(CAPACITIES.items())):
         raise ValueError('CAPACITY_SEQUENCE_IDENTITY_INVALID')
-    list(sequence.checked_nodes(spec))
+    list(sequence.checked_nodes({**spec, 'schema': sequence.SCHEMA}))
 
 
 def render(spec, directory, environment_file, spec_path, runtime_root=None):
     validate(spec)
-    return sequence.render(spec, directory, environment_file, spec_path, runtime_root,
+    return sequence.render({**spec, 'schema': sequence.SCHEMA}, directory, environment_file, spec_path, runtime_root,
         prefix='rl-selected-capacity', sequence_module='tools.selected_rl_capacity_sequence',
         smoke_module='tools.selected_rl_capacity_sequence')
 
@@ -72,7 +72,7 @@ def status(spec):
 def publish(spec, spec_path):
     validate(spec)
     complete = True
-    for node, root in sequence.checked_nodes(spec):
+    for node, root in sequence.checked_nodes({**spec, 'schema': sequence.SCHEMA}):
         if (selected.publish_and_close(root) != 0
                 or predecessor_ready(root, node['contract_sha256']) != 'READY'):
             complete = False
@@ -83,24 +83,14 @@ def publish(spec, spec_path):
     return 0 if complete else 2
 
 
-def smoke(root):
-    """Synthetic CUDA updates; no market data or financial measurements."""
+def smoke_model(arch, device):
+    """Native synthetic updates and exact policy roundtrip, CPU-testable."""
     import gymnasium as gym
     import numpy as np
     import torch
-    from agent_plugins.sac_agent import Plugin
-    from tools.curated_rl_campaign import validate_gpu_evidence
-    root = Path(root)
-    body = selected.validate(root)
-    arch = body['common_config']['net_arch']
+    from agent_plugins.sac_agent import Plugin, _policy_tensor_hash
     if arch not in CAPACITIES.values():
         raise ValueError('CAPACITY_SMOKE_ARCHITECTURE_INVALID')
-    validate_gpu_evidence(body['execution'])
-    uuid = body['execution']['gpu_evidence']['assigned_gpu_uuid']
-    import os
-    if (os.environ.get('CUDA_VISIBLE_DEVICES') != uuid or not torch.cuda.is_available()
-            or torch.cuda.device_count() != 1):
-        raise ValueError('CAPACITY_SMOKE_GPU_REQUIRED')
     class Synthetic(gym.Env):
         observation_space = gym.spaces.Box(-1., 1., shape=(201,), dtype=np.float32)
         action_space = gym.spaces.Box(-1., 1., shape=(1,), dtype=np.float32)
@@ -109,7 +99,7 @@ def smoke(root):
             return np.zeros(201, dtype=np.float32), {}
         def step(self, action):
             return np.zeros(201, dtype=np.float32), -float(action[0]**2), False, False, {}
-    cfg = dict(net_arch=arch, device='cuda', train_seed=7, buffer_size=64,
+    cfg = dict(net_arch=arch, device=device, train_seed=7, buffer_size=64,
                batch_size=8, learning_starts=0)
     env = Synthetic(); model = Plugin().build(env, cfg)
     actor_widths = [m.out_features for m in model.actor.latent_pi if isinstance(m, torch.nn.Linear)]
@@ -117,23 +107,62 @@ def smoke(root):
     other_widths = [m.out_features for m in model.critic.qf1 if isinstance(m, torch.nn.Linear)][:-1]
     if actor_widths != arch or critic_widths != arch or other_widths != arch:
         raise ValueError('CAPACITY_SMOKE_LAYER_MISMATCH')
+    original = _policy_tensor_hash(model.policy)
     model.learn(total_timesteps=16)
+    if original == _policy_tensor_hash(model.policy):
+        raise ValueError('CAPACITY_SMOKE_NO_UPDATE')
     if not all(torch.isfinite(p).all().item() for p in model.policy.parameters()):
         raise ValueError('CAPACITY_SMOKE_NONFINITE')
     import tempfile
     from stable_baselines3 import SAC
     with tempfile.TemporaryDirectory() as temp:
         path = Path(temp)/'smoke.zip'; model.save(path)
-        loaded = SAC.load(path, env=env, device='cuda')
+        loaded = SAC.load(path, env=env, device=device)
         obs, _ = env.reset()
-        if not np.array_equal(model.predict(obs, deterministic=True)[0], loaded.predict(obs, deterministic=True)[0]):
+        if (_policy_tensor_hash(model.policy) != _policy_tensor_hash(loaded.policy)
+                or not np.array_equal(model.predict(obs, deterministic=True)[0], loaded.predict(obs, deterministic=True)[0])):
             raise ValueError('CAPACITY_SMOKE_RELOAD_MISMATCH')
-    save_status(root/'CAPACITY_GPU_SMOKE.json', dict(schema=SCHEMA,
-        classification='SYNTHETIC_ENGINEERING_ONLY', net_arch=arch,
+    result = dict(net_arch=arch,
         actor_parameters=sum(p.numel() for p in model.actor.parameters()),
         critic_parameters=sum(p.numel() for p in model.critic.parameters()),
-        synthetic_observation_dimension=201, updates_finite=True, reload_equal=True))
+        synthetic_observation_dimension=201, updates_finite=True, reload_equal=True,
+        gradient_updates=model._n_updates)
     env.close()
+    return result
+
+
+def smoke(root):
+    """Bounded, idempotent synthetic CUDA admission; never financial data."""
+    import os
+    import torch
+    from tools.curated_rl_campaign import validate_gpu_evidence
+    root = Path(root)
+    body = selected.validate(root)
+    uuid = body['execution']['gpu_evidence']['assigned_gpu_uuid']
+    validate_gpu_evidence(body['execution'])
+    if (os.environ.get('CUDA_VISIBLE_DEVICES') != uuid or not torch.cuda.is_available()
+            or torch.cuda.device_count() != 1):
+        return 78
+    path = root/'CAPACITY_GPU_SMOKE.json'
+    identity = dict(contract_sha256=digest(root/'CONTRACT.json'), gpu_uuid=uuid,
+                    net_arch=body['common_config']['net_arch'])
+    previous = json.loads(path.read_text()) if path.exists() else {}
+    if previous and previous.get('identity') != identity:
+        return 78
+    if previous.get('state') == 'VERIFIED':
+        return 0
+    attempt = previous.get('attempt', 0)+1
+    if attempt > 2:
+        return 78
+    save_status(path, dict(schema=SCHEMA, identity=identity, attempt=attempt, state='STARTED'))
+    try:
+        result = smoke_model(identity['net_arch'], 'cuda')
+    except (ValueError, RuntimeError) as exc:
+        save_status(path, dict(schema=SCHEMA, identity=identity, attempt=attempt,
+                              state='FAILED', error_type=type(exc).__name__))
+        return 1 if attempt < 2 else 78
+    save_status(path, dict(schema=SCHEMA, identity=identity, attempt=attempt,
+        state='VERIFIED', classification='SYNTHETIC_ENGINEERING_ONLY', **result))
     return 0
 
 

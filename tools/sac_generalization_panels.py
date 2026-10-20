@@ -88,10 +88,10 @@ def analyze(sources):
         for task in pair['reports']:
             role = task['split']; cfg = checkpoints.read(task['config'])
             daily[role] = daily_growth(task['return_trace_file'], cfg['initial_cash'], cfg['entry_day_timezone'])
-            if not math.isclose(statistics.mean(daily[role]), chosen[role+'_growth'], abs_tol=1e-14):
+            if not math.isclose(statistics.mean(daily[role].values()), chosen[role+'_growth'], abs_tol=1e-14):
                 raise ValueError('DAILY_GROWTH_REPLAY_MISMATCH')
             roles[role] = dict(quarters=panels(daily[role]), days=len(daily[role]),
-                daily_log_growth=statistics.mean(daily[role]),
+                daily_log_growth=statistics.mean(daily[role].values()),
                 selected_metrics={k: checkpoints.read(task['summary']).get(k) for k in (
                     'net_profit', 'total_return', 'max_drawdown_pct', 'sharpe_ratio',
                     'trades_closed', 'win_rate_pct', 'profit_factor')})

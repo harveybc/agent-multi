@@ -1,5 +1,7 @@
 import csv
 import math
+import json
+from datetime import datetime, timedelta, timezone
 
 import pytest
 
@@ -38,3 +40,28 @@ def test_nonfinite_and_nonchronological_trace_rejected(tmp_path):
                  ('2024-01-02T00:00:00Z,100', '2024-01-01T00:00:00Z,100')]:
         path = tmp_path/'bad.csv'; path.write_text('timestamp,equity\n'+'\n'.join(rows)+'\n')
         with pytest.raises(ValueError): daily_growth(path, 100, 'UTC')
+
+
+def test_analyzer_composes_authenticated_curve_and_daily_panels(tmp_path, monkeypatch):
+    from tools import sac_generalization_panels as module
+    root = tmp_path/'campaign'; pair_root = root/'task/attempt-1/paired-monitor/step-005000'
+    pair_root.mkdir(parents=True)
+    trace = tmp_path/'trace.csv'
+    with trace.open('w') as stream:
+        writer = csv.writer(stream); writer.writerow(['timestamp','equity'])
+        for i in range(40):
+            writer.writerow([(datetime(2024,1,1, tzinfo=timezone.utc)+timedelta(days=i)).isoformat(),100])
+    cfg = tmp_path/'cfg.json'; cfg.write_text(json.dumps(dict(initial_cash=100, entry_day_timezone='UTC')))
+    summary = tmp_path/'summary.json'; summary.write_text('{}')
+    (pair_root/'PAIR.json').write_text(json.dumps(dict(reports=[dict(split=role,
+        config=str(cfg), summary=str(summary), return_trace_file=str(trace)) for role in ('train','validation')])))
+    curve = dict(campaign_closed=True, selected_step=5000, contract_sha256='a'*64,
+        input_identities={'identity':'same'}, positive_validation_checkpoints=0,
+        resets_worse_than_incumbent=0, final=dict(stop_reason='PATIENCE'),
+        rows=[dict(step=5000, gap=0, pair_sha256='b'*64, train_growth=0, validation_growth=0)])
+    monkeypatch.setattr(module.checkpoints,'analyze', lambda _: (curve,{},[tmp_path/'template.json']))
+    result, _ = module.analyze(dict(reference='base',campaigns={'base':str(root)}))
+    row = result['experiments']['base']
+    assert row['roles']['train']['daily_log_growth'] == 0
+    assert row['roles']['validation']['days'] == 40
+    assert row['validation_vs_no_trade']['5']['upper'] == 0

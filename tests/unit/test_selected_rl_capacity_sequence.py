@@ -80,3 +80,13 @@ def test_sequence_and_units_are_pinned_ordered_and_idempotent(tmp_path):
     assert 'tools.selected_rl_capacity_sequence' in first and '--smoke-root' in first
     assert 'tools.selected_rl_capacity_sequence' in publisher and 'publish' in publisher
     assert 'selected_rl_regularization_sequence' not in publisher
+
+
+@pytest.mark.parametrize('arch', [[8], [16], [16,16]])
+def test_native_capacity_updates_and_exact_policy_reload(arch):
+    from tools.selected_rl_capacity_sequence import smoke_model
+    result = smoke_model(arch, 'cpu')
+    assert result['net_arch'] == arch
+    assert result['updates_finite'] and result['reload_equal']
+    assert result['gradient_updates'] == 16
+    assert result['actor_parameters'] > 0 and result['critic_parameters'] > 0
