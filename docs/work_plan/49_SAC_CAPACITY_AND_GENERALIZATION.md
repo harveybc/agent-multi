@@ -1,5 +1,12 @@
 # SAC Capacity And Generalization Follow-Up
 
+Superseded execution priority2026-10-20: owner requested an immediate minimal
+Conv1D comparison. Flat workers/successor timers are stopped; [8] has6 complete
+pairs only and no scientific closure. Its partial evidence is retained/mirrored.
+The running successor is [minimal temporal SAC](50_MINIMAL_TEMPORAL_SAC.md),
+not the remainder of this flat sweep. Historical deployment notes below remain
+evidence of that earlier start, not a claim that those timers are still enabled.
+
 Owner authorization 2026-10-20: continue remaining generalization diagnostics
 after the four critic-regularization contrasts closed. Those strengths/seed did
 not improve VALIDATION. They do not exclude regularization families or prove

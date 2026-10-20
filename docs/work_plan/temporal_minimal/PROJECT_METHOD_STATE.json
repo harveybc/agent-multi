@@ -1,0 +1,30 @@
+{
+  "schema": "sac_minimal_temporal_method.v1",
+  "current_stage": "OPERATION_SCIENTIFIC_TEMPORAL_ARM_RUNNING",
+  "design": "../50_MINIMAL_TEMPORAL_SAC.md",
+  "authority": "OWNER_IMMEDIATE_CONTRAST_2026_10_20_RELEASES_TEMPORAL_PAUSE",
+  "stages_passed": ["DISCOVERY", "REQUIREMENTS", "ACCEPTANCE_TEST_DESIGN", "ARCHITECTURE", "SYSTEM_COMPONENT_UNIT_TEST_DESIGN", "UNIT_IMPLEMENTATION", "INTEGRATION_VERIFICATION", "REAL_ENGINE_CPU_ACCEPTANCE", "GPU_SYNTHETIC_ADMISSION"],
+  "verification": {
+    "local_tests_passed": 166,
+    "worker_tests_passed": 29,
+    "worker_real_temporal_monitor_passed": true,
+    "prefix_causality_and_origin_sensitivity": true,
+    "gpu_smoke_updates": 16,
+    "gpu_smoke_attempt": 1,
+    "gpu_smoke_reload_equal": true,
+    "runtime": "96e19edb",
+    "contract_sha256": "9cae5a6fb9f0b348efc42767bd05237dcd626450f76704a8ff4ac180b1aee10f",
+    "arm": "SAC_PER_FEATURE_CONV1D",
+    "real_transitions_at_followup": 5000,
+    "training_seconds_before_first_pair": 109.0488,
+    "real_checkpoint_actor_parameters": 1062,
+    "real_checkpoint_critic_parameters": 1638,
+    "real_checkpoint_target_critic_parameters": 1638,
+    "scientific_financial_result_at_start_check": "NOT_YET_COMPLETE",
+    "flat_capacity_stopped": true,
+    "flat_complete_partial_pairs_retained": 6
+  },
+  "next_allowed_actions": ["native finite temporal SAC train and paired full-period inference", "automatic warehouse readback and close", "independent physical model/metric collection", "report generated metrics without relabeling partial results"],
+  "blocked_actions": ["TEST for tuning", "silent flat substitution", "mix regularizers or alter early stopping", "resume stopped flat sweep as though priority had not changed", "reuse interrupted flat donor weights"],
+  "history": ["Owner released temporal pause and prioritized a minimal temporal contrast", "New temporal request tests failed before implementation", "Existing causal extractor reused without architecture rewrite", "Monitor and publication arm binding extended and tested", "Flat sweep stopped; its six complete pairs retained and mirrored", "Fresh GPU synthetic admission passed and scientific temporal worker started"]
+}
