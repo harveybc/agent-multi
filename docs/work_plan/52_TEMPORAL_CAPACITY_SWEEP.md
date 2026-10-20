@@ -143,4 +143,24 @@ completed trials. Scientific progress subsequently reached10000 transitions
 in221.296s,worker restart count0,no BLOCKED marker. No new complete financial
 pair had been issued at that startup cut.
 
-Stage: OPERATION_GRADUAL_TEMPORAL_CAPACITY_RUNNING.
+## Scientific Closure
+
+7/7 new trials closed on first attempt,2026-10-20T09:50:33UTC through
+18:07:38UTC (approximately8h17min). All seed7,100000 transitions,final100000.
+VALIDATION return baseline-7.2783%,core8-11.5466%,core16-17.6482%,
+hidden16-23.9880%,hidden32-17.6642%,branches4-26.3552%,branches8-22.6025%,
+depth2-15.6083%. All new candidates have worse validation maxDD as well.
+None improved validation daily growth even before the gap/risk filter,so
+baseline stayed incumbent through all four stages. Conditional seed17/29
+confirmation correctly did not activate. This is a one-seed negative ladder,
+not a universal finding about capacity or interacting hyperparameters.
+
+All70 new reports have warehouse readback,zero pending/mismatch. Independent
+collection is complete for8 closed runs including the retained baseline.
+Each child retains final model and four checkpoint curves;the sweep JSON/CSV/MD
+retain all outcomes,config/seed/identity and explicit no-promotion disposition.
+No active fit or further authorized trial remains under this sequence. TEST
+was not read. Full numerical result is recorded in predictor's
+`RL_TEMPORAL_CAPACITY_RESULT_2026_10_20.md` in the master program corpus.
+
+Stage: COMPLETED_NO_PROMOTION_AND_INDEPENDENT_COPY_VERIFIED.
