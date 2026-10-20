@@ -46,3 +46,50 @@ that the existing checkpoint objective prevents every form of overtraining.
 
 Current stage: requirements through unit/integration test design frozen before
 implementation. Runtime/launch evidence is added only after execution.
+
+## Executed Evidence, 2026-10-20
+
+D0 completed on all91 authenticated checkpoint pairs:20 reference,20 dropout,
+20 L2,20 combination,11 BatchNorm. Five new panel reports were delivered and
+read back (pending0,mismatch0); result digest
+`c4148f52830ea60439868cbc94dc0746cc5e0f579cdeaf3b42c1cd7bc3e0d61e`.
+Closed diagnostic JSON/outbox backup were copied to the independent bulk disk
+and a second checksum comparison found no differences. No original checkpoint
+or source campaign was modified. The bounded CPU job used98.5MiB peak and
+12.253s wall time. Trade-level concentration and Q/gradient/replay telemetry
+are explicitly unavailable from the authenticated pair trace, not imputed.
+
+Reference VALIDATION quarterly returns:Q1 +1.82524%,Q2 -3.18103%,Q3 +1.13833%,
+Q4 +1.04655%. Q2 was negative for all five arms, descriptive evidence to
+investigate time dependence, not proof of a regime cause. Moving-block10-day
+95% interval for reference mean daily log growth versus no-trade:
+[-0.000593810,+0.000631361], point0.0000240857. These are311 observed NY
+calendar dates including partial-session dates, not a relabeling as252 full
+trading days. The interval is descriptive after adaptive checkpoint selection.
+
+Capacity runtime pinned to `dad7294c`;132 focused tests passed in the actual
+worker environment (525.3MiB peak,5.680s wall). Three native synthetic CPU
+update/save-load tests and predecessor/publisher regressions are included.
+Fresh GPU readiness returned GPU_READY. Real systemd parser verification
+passed for generated units (an unrelated existing spice-vdagent warning is
+not a campaign parser failure). A real request/contract comparison found the
+only common scientific configuration difference was `net_arch`, for all3 arms.
+
+All3 workers, warehouse publisher, post-closure panel analyzer and independent
+closed-artifact collector are enabled on timers. The synthetic GPU smoke for
+[8] passed16 updates and exact reload on its first attempt. At05:49UTC the
+[8] task had5000 real transitions and was evaluating VALIDATION of its first
+pair; no capacity outcome was yet complete. [16] and[16,16] reported
+WAIT_PREDECESSOR. Service restart count0 and one assigned GPU process only.
+Contracts:bb2a9f3c9072,d443f9dfd52b,edf777576a9c.
+
+Status (single read, no log polling):
+
+```bash
+python -m tools.selected_rl_capacity_sequence status --spec <private-capacity-root>/SEQUENCE.json
+```
+
+Provisional budget from prior matched runs:2-3h per arm to cap,6-9h total;
+patience can shorten this. Re-estimate from completed pairs, not bare training
+speed (full TRAIN/VALIDATION inference dominates runtime). No next owner
+approval is required between these declared arms. Temporal fits stay paused.
