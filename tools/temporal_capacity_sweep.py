@@ -346,6 +346,7 @@ def _text(path,value):
 
 def status(root):
     spec,state=plan(root);current=read(Path(root)/'WORK_STATUS.json') if (Path(root)/'WORK_STATUS.json').exists() else dict(state='READY')
+    if (Path(root)/'BLOCKED.json').exists():current={**current,**read(Path(root)/'BLOCKED.json')}
     progress=None
     if current.get('current_root') and not (Path(current['current_root'])/'CLOSE.json').exists():progress=selected.read_status(Path(current['current_root']))
     finished=sum(t['state'] in ('CLOSED','FAILED_EXHAUSTED') for t in state['trials'])
@@ -355,7 +356,7 @@ def status(root):
     upper=remaining+(confirm_remaining if state['replications_declared'] else 4)
     blocked=current['state'].startswith(('WAIT_RAM','WAIT_DISK','WAIT_GPU','BLOCKED'))
     complete=(Path(root)/'SWEEP_COMPLETE.json').exists()
-    return dict(schema=SCHEMA,state=state['state'],operation=current,completed_trials=finished,declared_trials=len(state['trials']),
+    return dict(schema=SCHEMA,state=state['state'] if complete else current['state'],operation=current,completed_trials=finished,declared_trials=len(state['trials']),
         maximum_new_fits=11,stages_completed=len(state['stages']),incumbent=state['incumbent'],current=progress,
         estimated_remaining_seconds=None if blocked else [0,0] if complete else [remaining*statistics.mean(durations),upper*statistics.mean(durations)],
         eta_scope='PROVISIONAL_BASED_ON_COMPLETED_FULL_TRIALS_INCLUDES_CURRENT_TRIAL',

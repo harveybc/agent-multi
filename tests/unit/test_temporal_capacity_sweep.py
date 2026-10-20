@@ -153,6 +153,7 @@ def test_publication_wait_does_not_refit_and_validation_retry_reuses_root(sweep,
     monkeypatch.setattr(m.selected,'run',native)
     assert m.work(root)==0 and m.work(root)==0 and len(calls)==1
     assert m.read(root/'WORK_STATUS.json')['state']=='WAIT_PUBLICATION'
+    assert m.status(root)['state']=='WAIT_PUBLICATION'
     write(calls[0]/'STATUS.json',dict(tasks=[dict(split='train',state='ENQUEUED',attempt=1),
         dict(split='validation',state='FAILED_EXECUTION',attempt=1)]))
     assert m.work(root)==0 and calls[0]==calls[1]
