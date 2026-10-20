@@ -28,7 +28,7 @@ class PerFeatureTemporalExtractor(BaseFeaturesExtractor):
     """
 
     def __init__(self, observation_space, branch_filters=4, core_filters=8,
-                 kernel_size=3):
+                 kernel_size=3, core_layers=1):
         if not isinstance(observation_space, spaces.Dict):
             raise ValueError("TEMPORAL_DICT_OBSERVATION_REQUIRED")
         if "features" not in observation_space.spaces:
@@ -39,6 +39,8 @@ class PerFeatureTemporalExtractor(BaseFeaturesExtractor):
         for value in (branch_filters, core_filters, kernel_size):
             if type(value) is not int or value < 1:
                 raise ValueError("TEMPORAL_POSITIVE_INTEGER_REQUIRED")
+        if type(core_layers) is not int or core_layers not in (1,2):
+            raise ValueError("TEMPORAL_CORE_DEPTH_ONE_OR_TWO_REQUIRED")
         auxiliary_keys = tuple(k for k in observation_space.spaces if k != "features")
         if any(not isinstance(observation_space.spaces[k], spaces.Box)
                for k in observation_space.spaces):
@@ -53,6 +55,7 @@ class PerFeatureTemporalExtractor(BaseFeaturesExtractor):
             CausalConv1d(1, branch_filters, kernel_size) for _ in range(features)
         ])
         self.core = CausalConv1d(features * branch_filters, core_filters, kernel_size)
+        self.extra_core = CausalConv1d(core_filters,core_filters,kernel_size) if core_layers==2 else None
 
     def temporal_forward(self, features):
         if features.ndim != 3 or features.shape[1:] != (self.time_size, self.feature_count):
@@ -60,7 +63,8 @@ class PerFeatureTemporalExtractor(BaseFeaturesExtractor):
         channels = features.transpose(1, 2)
         branches = [F.silu(branch(channels[:, i:i + 1, :]))
                     for i, branch in enumerate(self.branches)]
-        return F.silu(self.core(torch.cat(branches, dim=1)))
+        encoded=F.silu(self.core(torch.cat(branches, dim=1)))
+        return F.silu(self.extra_core(encoded)) if self.extra_core is not None else encoded
 
     def forward(self, observations):
         temporal = self.temporal_forward(observations["features"])

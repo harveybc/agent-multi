@@ -162,7 +162,8 @@ def _check_rows(text, manifest, columns, availability_column, common, binary):
 
 def _build(request_path, output_root):
     request = _json(request_path)
-    fixed_mode = request.get('schema') == 'selected_rl_comparison_request.v8'
+    variable_temporal = request.get('schema') == 'selected_rl_comparison_request.v9'
+    fixed_mode = variable_temporal or request.get('schema') == 'selected_rl_comparison_request.v8'
     temporal_mode = fixed_mode or request.get('schema') == 'selected_rl_comparison_request.v7'
     capacity_mode = request.get('schema') == 'selected_rl_comparison_request.v6'
     regularization_mode = request.get('schema') == 'selected_rl_comparison_request.v5'
@@ -183,17 +184,27 @@ def _build(request_path, output_root):
         keys = keys | {'net_arch'}
     if temporal_mode:
         keys = keys | {'temporal_encoder'}
+    if variable_temporal:
+        keys = keys | {'experiment_seed'}
     if (request.get('schema') not in ('selected_rl_comparison_request.v1',
                                      'selected_rl_comparison_request.v2',
                                      'selected_rl_comparison_request.v3',
                                      'selected_rl_comparison_request.v4', 'selected_rl_comparison_request.v5',
                                      'selected_rl_comparison_request.v6', 'selected_rl_comparison_request.v7',
-                                     'selected_rl_comparison_request.v8')
+                                     'selected_rl_comparison_request.v8','selected_rl_comparison_request.v9')
             or set(request) != keys):
         _fail('REQUEST_SCHEMA_OR_OVERRIDES_REFUSED')
     if temporal_mode:
         arch = request['temporal_encoder']
-        if (arch != dict(net_arch=[8], branch_filters=2, core_filters=4, kernel_size=3)
+        if variable_temporal:
+            if (not isinstance(arch,dict) or set(arch)!={'net_arch','branch_filters','core_filters','kernel_size','core_layers'}
+                    or any(type(arch[k]) is not int for k in ('branch_filters','core_filters','kernel_size','core_layers'))
+                    or arch['branch_filters'] not in (2,4,8) or arch['core_filters'] not in (4,8,16)
+                    or arch['core_layers'] not in (1,2) or arch['kernel_size']!=3
+                    or arch['net_arch'] not in ([8],[16],[32]) or type(arch['net_arch'][0]) is not int
+                    or type(request['experiment_seed']) is not int or request['experiment_seed'] not in (7,17,29)):
+                _fail('DECLARED_TEMPORAL_CAPACITY_REQUIRED')
+        elif (arch != dict(net_arch=[8], branch_filters=2, core_filters=4, kernel_size=3)
                 or any(type(arch[k]) is not int for k in ('branch_filters','core_filters','kernel_size'))
                 or type(arch['net_arch'][0]) is not int):
             _fail('DECLARED_MINIMAL_TEMPORAL_RECIPE_REQUIRED')
@@ -281,6 +292,7 @@ def _build(request_path, output_root):
             temporal_branch_filters=request['temporal_encoder']['branch_filters'],
             temporal_core_filters=request['temporal_encoder']['core_filters'],
             temporal_kernel_size=request['temporal_encoder']['kernel_size'])
+        if variable_temporal:common['temporal_core_layers']=request['temporal_encoder']['core_layers']
     if capacity_mode:
         common['net_arch'] = request['net_arch']
     if es_mode:
@@ -347,7 +359,7 @@ def _build(request_path, output_root):
     paired_arm = 'SAC_PER_FEATURE_CONV1D' if temporal_mode else 'SAC_FLAT'
     body = dict(schema='curated_rl_campaign.v1', classification='NON_GOVERNING',
         scientific_scope='REAL_DATA_DEVELOPMENT', execution_backend='local_subprocess',
-        seeds=[7], arms=[paired_arm] if es_mode else list(design['arms']), refit_cadence='NONE',
+        seeds=[request['experiment_seed']] if variable_temporal else [7], arms=[paired_arm] if es_mode else list(design['arms']), refit_cadence='NONE',
         common_config=common, splits=splits, **FLAGS,
         selection_sha256=request['selection_sha256'], selected_input_binding=binding,
         input_policy=dict(kind=SCOPE, **binding), cost_scope=design['cost_scope'],

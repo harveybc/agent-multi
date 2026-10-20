@@ -1,0 +1,20 @@
+{
+  "schema": "temporal_capacity_method.v1",
+  "current_stage": "VERIFIED_LOCAL_READY_FOR_WORKER_ACCEPTANCE",
+  "design": "../52_TEMPORAL_CAPACITY_SWEEP.md",
+  "authority": "OWNER_AUTONOMOUS_GRADUAL_TEMPORAL_CAPACITY_2026_10_20",
+  "stages_passed": ["DISCOVERY", "REQUIREMENTS", "ACCEPTANCE_TEST_DESIGN", "ARCHITECTURE", "SYSTEM_COMPONENT_UNIT_TEST_DESIGN", "UNIT_IMPLEMENTATION", "INTEGRATION_VERIFICATION", "REAL_ENGINE_CPU_ACCEPTANCE"],
+  "verification": {
+    "new_tests_before_implementation_failed": 6,
+    "focused_regression_passed": 219,
+    "real_engine_temporal_depth2_seed17_monitor_passed": true,
+    "legacy_depth1_state_dict_and_forward_preserved": true,
+    "synthetic_full_ladder_and_shared_seed_handoff_passed": true,
+    "bounded_fresh_root_retry_and_validation_adoption_passed": true,
+    "closed_run_collector_discovery_passed": true
+  },
+  "remaining_acceptance": ["final focused suite", "actual worker CPU tests", "systemd parser", "GPU synthetic admission", "real initial progress", "publication and independent-copy automation enabled"],
+  "next_allowed_actions": ["pin and publish tested runtime", "prepare private sequence from authenticated baseline", "worker acceptance", "deploy owner-authorized finite sequence"],
+  "blocked_actions": ["TEST", "alter windows,stride,costs,reward,business rules or SAC budget", "choose intermediate checkpoint", "repeat baseline seed7", "silently substitute a flat model", "resume exact SAC from policy-only files", "declare seed7 champion independently confirmed"],
+  "history": ["Owner approved gradual capacity with fixed input context", "Requirements and tests recorded before implementation", "New request,depth,ranking and native smoke tests observed failing", "Full synthetic ladder and recovery cases passed", "219 focused unit and real-engine integration regressions passed"]
+}

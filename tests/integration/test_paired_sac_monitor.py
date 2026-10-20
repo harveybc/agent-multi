@@ -7,7 +7,7 @@ import sys
 import pytest
 
 
-@pytest.mark.parametrize('profile',[None,'dropout005','l2_1e6','dropout005_l2_1e6','batchnorm','TEMPORAL','FIXED'])
+@pytest.mark.parametrize('profile',[None,'dropout005','l2_1e6','dropout005_l2_1e6','batchnorm','TEMPORAL','FIXED','CAPACITY'])
 def test_real_monitor_does_not_modify_learning_and_restores_best(tmp_path,profile):
     gym = os.environ.get('GYM_FX_CHECKOUT')
     if not gym:
@@ -29,12 +29,15 @@ path, request, _ = fixture(root)
 request.update(schema='selected_rl_comparison_request.v4', leverage=50,
     early_stopping=SETTINGS, order_budget=dict(rel_volume=.1,
         min_order_volume=1, max_order_volume=1e12, volume_step=1))
-if profile in ('TEMPORAL','FIXED'):
+if profile in ('TEMPORAL','FIXED','CAPACITY'):
     request.update(schema='selected_rl_comparison_request.v7',temporal_encoder=dict(
         net_arch=[8],branch_filters=2,core_filters=4,kernel_size=3))
-    if profile=='FIXED':
+    if profile in ('FIXED','CAPACITY'):
         from agent_plugins.fixed_budget_monitor import SETTINGS as FIXED_SETTINGS
         request.update(schema='selected_rl_comparison_request.v8',early_stopping=FIXED_SETTINGS)
+    if profile=='CAPACITY':
+        request.update(schema='selected_rl_comparison_request.v9',experiment_seed=17,
+            temporal_encoder=dict(net_arch=[16],branch_filters=4,core_filters=8,kernel_size=3,core_layers=2))
 elif profile!='NONE':
     from agent_plugins.sac_regularization import PROFILES
     request.update(schema='selected_rl_comparison_request.v5',regularization=PROFILES[profile])
@@ -46,7 +49,7 @@ contract = selected.materialize(path,out)
 body = queue.load_contract(contract)
 d = out/'training'/'attempt-1'; d.mkdir(parents=True)
 arm=body['arms'][0]
-cfg=queue._task_config(body,dict(arm=arm,split='train',seed=7,id='test',attempt=1),d,d/'policy.zip')
+cfg=queue._task_config(body,dict(arm=arm,split='train',seed=body['seeds'][0],id='test',attempt=1),d,d/'policy.zip')
 queue.verify_execution_runtime(body['execution'],cfg)
 agent=Agent(cfg); owner=Env(cfg); env=agent.wrap_env(owner.make_env(cfg),cfg)
 model=agent.build(env,{**cfg,'learning_starts':0,'batch_size':2,'buffer_size':100})
@@ -65,6 +68,9 @@ try:
         assert task['arm']==arm
         task_cfg=json.loads(Path(task['config']).read_text())
         assert task_cfg['observation_encoder']==cfg['observation_encoder']
+        if profile=='CAPACITY':
+            assert task_cfg['temporal_core_layers']==2 and task_cfg['train_seed']==17
+            assert task['seed']==17
         summary=json.loads(Path(task['summary']).read_text())
         assert summary['mode']=='inference'
         assert summary['static_policy']==dict(before=before,after=before)
@@ -73,7 +79,7 @@ try:
     assert _policy_tensor_hash(model.policy)!=before
     steps,updates=model.num_timesteps,model._n_updates
     callback=make_callback(cfg); callback.model=model
-    if profile=='FIXED':
+    if profile in ('FIXED','CAPACITY'):
         for tick in (25000,50000,75000):
             model.num_timesteps=tick
             assert callback._on_step() is True
@@ -105,7 +111,7 @@ try:
             for field,value in values.items():
                 wanted=expected['state'][key][field]
                 assert torch.equal(value,wanted) if isinstance(value,torch.Tensor) else value==wanted
-    if profile in ('NONE','TEMPORAL','FIXED'):
+    if profile in ('NONE','TEMPORAL','FIXED','CAPACITY'):
         assert not any(isinstance(m,(torch.nn.modules.batchnorm._BatchNorm,torch.nn.Dropout))
                        for m in model.policy.modules())
     else:

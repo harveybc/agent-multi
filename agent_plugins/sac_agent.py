@@ -152,6 +152,7 @@ class Plugin:
         "sac_regularization": None,
         "temporal_branch_filters": 4,
         "temporal_core_filters": 8,
+        "temporal_core_layers": 1,
         "temporal_kernel_size": 3,
         "device": "auto",
         "agent_verbose": 0,
@@ -213,6 +214,7 @@ class Plugin:
                 features_extractor_kwargs={
                     "branch_filters": p["temporal_branch_filters"],
                     "core_filters": p["temporal_core_filters"],
+                    "core_layers": p["temporal_core_layers"],
                     "kernel_size": p["temporal_kernel_size"],
                 },
             )
