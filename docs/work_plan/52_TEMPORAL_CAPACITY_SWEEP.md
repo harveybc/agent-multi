@@ -77,4 +77,70 @@ not a measured promise for larger architectures.
 | TC07 | staged config/code/plan pins survive restart;tampering,unknown shape,changing support or seed are refused;status/results preserve scope and units |
 | TC08 | actual worker CPU tests,GPU admission,systemd parser,real initial progress;all sequence units and physical collector enabled before handoff |
 
-Stage: REQUIREMENTS_AND_UNIT_TEST_DESIGN_BEFORE_IMPLEMENTATION.
+## Verified Deployment
+
+Runtime `ee35cb3b174cac1941c703ba0cad6dd3374a21c4`;private spec digest
+`b7cca8ea21c326fc51bd788c3816eba0a8cc97385d5c2ac323cf6b73beb2c3f9`.
+219 focused local regressions passed,including both native FIXED and new
+CAPACITY real-engine monitors;79 collector/orchestration regressions and19
+final status cases passed after their narrow follow-ups. Actual-worker
+acceptance35/35 passed in30.13s,1.5GiB peak,no swap. Depth2/seed17 propagates
+through the real monitor with parent policy/RNG/replay invariance and native
+roundtrip;legacy depth1 state keys and deterministic forward remain unchanged.
+
+All generated services parsed by systemd. Worker and publisher timers are
+enabled;second-machine discovery/collection timer is enabled independently.
+The first candidate,branches2/core8/hidden[8]/depth1/seed7,passed native GPU
+admission16 updates and exact reload on attempt1;contract
+`446e378c77130de164b7994a7706305e2675b2ed53ba9f14ec959a535aa3ec53`.
+Scientific TRAIN began2026-10-20T09:50:37UTC and reached5000 transitions in
+104.9758s. No previous weights were imported. The next width is core16;
+later heads/branches/depth and conditional shared-seed confirmation are
+selected and dispatched by the frozen script,not by conversational turns.
+Startup/progress is not a completed financial result.
+
+## Runbook
+
+The operator provisions one pinned runtime and supplies private paths:
+
+```bash
+python -m tools.temporal_capacity_sweep prepare --root "$ROOT" \
+  --base-request "$BASE_REQUEST" --baseline "$BASELINE" \
+  --baseline-sha256 "$BASELINE_SHA256"
+python -m tools.temporal_capacity_sweep render --root "$ROOT" \
+  --units-dir "$UNITS" --environment-file "$ENVIRONMENT_FILE"
+```
+
+Install those four rendered files into the user systemd directory,reload and
+enable `rl-temporal-capacity-worker.timer` and
+`rl-temporal-capacity-publication.timer`. Start the worker service once for
+immediate launch. Do not launch individual configs manually while it owns the
+sweep lock. Enable the independent collector with its authenticated SSH alias,
+remote runtime/interpreter,private state directory and bulk archive. Do not
+print EnvironmentFile contents or copy live SQLite WAL files to NTFS.
+
+```bash
+python -m tools.temporal_capacity_sweep status --root "$ROOT"
+```
+
+Read-only status includes the active child/native monitor,stage incumbent,
+completed trials,full closed metrics and provisional whole-trial ETA bounds.
+`SUMMARY.json`,`RESULTS.csv`,`RESULTS.md` refresh after complete trials.
+`SWEEP_COMPLETE.json` ends computation/publication;the collector's own
+`COLLECTION_COMPLETE.json` separately certifies physical copies. Failed partial
+run folders remain at source with explicit failure ledgers;the collector's
+scope does not falsely claim nonterminal roots as closed models.
+
+The collector initially reclaimed memory under its inherited192MiB soft cap:
+no OOM occurred. The dedicated collection unit was corrected to768MiB soft,
+1500MiB hard because importing the existing sequence helpers also imports the
+native policy library. This operational correction changes no training cap,
+runtime,contract or metric. Closed-model physical collection is checked below
+through its generated status,not inferred merely from the timer being enabled.
+After correction it exited successfully at468893696 bytes peak. The baseline
+closed-model copy is verified,pending0;the collector now waits for newly
+completed trials. Scientific progress subsequently reached10000 transitions
+in221.296s,worker restart count0,no BLOCKED marker. No new complete financial
+pair had been issued at that startup cut.
+
+Stage: OPERATION_GRADUAL_TEMPORAL_CAPACITY_RUNNING.
