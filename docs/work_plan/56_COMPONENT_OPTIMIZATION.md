@@ -13,6 +13,11 @@ hypothesis to measure, not a result assumed before its comparison.
 
 ## Ordered Program
 
+Owner addendum: interleave [incremental input subsets](57_INCREMENTAL_FEATURE_SUBSETS.md)
+between steps1 and2, before expanding extractor/component capacity. It includes
+the provisional15-feature priority table, cyclic coding/transform checks and
+bounded interaction rescue. No active request, worker or input identity changes.
+
 1. Fine window search: stride2, observations9/11/15/17 versus the closed13
    control, seed7. If one improves the declared validation/risk/gap rule, run
    its two integer neighbours. If none improves13, do not manufacture a winner.
@@ -41,8 +46,10 @@ hypothesis to measure, not a result assumed before its comparison.
    Predict before incorporating the period just predicted. Do not reuse the
    old contaminated post-update evaluation as prospective performance.
 
-All stages use TRAIN2020-2023, VALIDATION2024, selected15, mandatory SL/TP and
-volume, one entry/day,12h close/reopen envelope and identical assumed costs.
+All stages use TRAIN2020-2023, VALIDATION2024, mandatory SL/TP and volume,
+one entry/day,12h close/reopen envelope and identical assumed costs. The active
+window stage keeps selected15; the planned subset study derives separately
+manifested subsets of those inputs without changing the running identity.
 Static SAC uses100000 transitions with diagnostics25k/50k/75k/100k, final100k,
 no expensive early stopping, no checkpoint selection. Keep weights, effective
 configs, data/code/selection digests, seeds and native OLAP readback/copies.

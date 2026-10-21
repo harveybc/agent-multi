@@ -57,6 +57,8 @@ trading domain.
 ## Document Map
 
 Current2026-10-21 owner-approved follow-up: [fine window and component optimization](56_COMPONENT_OPTIMIZATION.md).
+New planned successor after that window grid: [incremental feature subsets](57_INCREMENTAL_FEATURE_SUBSETS.md),
+before extractor/capacity refinements, without modifying the active queue.
 Weekly adaptation LAST; per-feature Dense requires a matched comparison, not
 automatic reuse of differently configured historical flat SAC results.
 The [coarse window study](55_FIXED_STRIDE_WINDOW_STUDY.md) closed2/2, no promotion:

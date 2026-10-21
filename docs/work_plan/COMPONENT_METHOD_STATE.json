@@ -8,5 +8,6 @@
   "evidence": ["PRE:6 expected failures,7 passes", "POST:170 focused regressions passed with actual prefix/current/future probes", "POST:4 native real-engine monitor integrations passed,8 deselected; includes v12 windows8/18 and legacy v11 windows7/25"],
   "deployment": {"runtime": "6916e49ab4a36176dc58e1377e4857aa529cab0f", "spec_sha256": "9e13d797a2fab60960a474c4cd8b30fbee6a39f08b16d7bc06e72a29bf7531a4", "first_contract_sha256": "a7931e4ef06437a9a0bf1c0352c9900030833a853ed3eca6328beeebc11e0889", "verified_steps": 1000, "first_window": 9, "budget": 100000, "worker_checks_passed": 48, "worker_optional_checks_skipped": 11, "baseline_common_reports_readback": 2, "baseline_independent_copy": true},
   "next_allowed_actions": ["finite_automatic_screen_refinement_confirmation", "publication_readback_and_independent_collection", "analyse_component_comparability"],
-  "later_work": ["matched_per_feature_dense_vs_conv1d", "separate_component_refinement", "interaction_shortlist", "adaptation_cadence_last"]
+  "later_work": ["incremental_feature_subsets_with_cyclic_groups", "matched_per_feature_dense_vs_conv1d", "separate_component_refinement", "interaction_shortlist", "per_feature_processing_research_hypothesis", "adaptation_cadence_last"],
+  "feature_subset_plan": {"document": "57_INCREMENTAL_FEATURE_SUBSETS.md", "state": "PLANNED_NOT_DEPLOYED", "priority": "after_fine_window_before_component_refinements", "current_inputs": 15, "importance_order": "PROVISIONAL_NOT_MEASURED", "active_campaign_changed": false}
 }
