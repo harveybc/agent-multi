@@ -2,6 +2,10 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "window_common_support.py": {
+   "purpose": "Authenticate closed native traces and compare fixed common-time suffixes for a bounded fine-window search; preserve native metrics and pre-suffix account histories, publish derived scores through the existing governed warehouse",
+   "lifecycle": "experimental", "mutability": "mixed", "authority_class": "evidence_producer", "owner": "static RL comparison"
+  },
   "temporal_capacity_sweep.py": {
    "purpose": "Finite owner-approved native SAC capacity, stride or window contrasts, with strict configs, actual-shape GPU/reload witnesses, pinned predecessor handoff, conditional paired-seed confirmation, warehouse readback, status and independent closed collection",
    "lifecycle": "experimental", "mutability": "mixed", "authority_class": "campaign_operation", "owner": "static RL comparison"

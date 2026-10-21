@@ -7,7 +7,7 @@ import sys
 import pytest
 
 
-@pytest.mark.parametrize('profile',[None,'dropout005','l2_1e6','dropout005_l2_1e6','batchnorm','TEMPORAL','FIXED','CAPACITY','WINDOW7','WINDOW25'])
+@pytest.mark.parametrize('profile',[None,'dropout005','l2_1e6','dropout005_l2_1e6','batchnorm','TEMPORAL','FIXED','CAPACITY','WINDOW7','WINDOW25','FINE8','FINE18'])
 def test_real_monitor_does_not_modify_learning_and_restores_best(tmp_path,profile):
     gym = os.environ.get('GYM_FX_CHECKOUT')
     if not gym:
@@ -26,7 +26,8 @@ from env_plugins.gym_fx_env import Plugin as Env
 root, gym = map(Path, sys.argv[1:3])
 profile=sys.argv[3]
 path, request, _ = fixture(root)
-window_profile=profile in ('WINDOW7','WINDOW25')
+fine_profile=profile in ('FINE8','FINE18')
+window_profile=fine_profile or profile in ('WINDOW7','WINDOW25')
 if window_profile:
     import csv, hashlib
     from datetime import datetime, timedelta
@@ -58,8 +59,8 @@ if profile in ('TEMPORAL','FIXED','CAPACITY') or window_profile:
         request.update(schema='selected_rl_comparison_request.v9',experiment_seed=17,
             temporal_encoder=dict(net_arch=[16],branch_filters=4,core_filters=8,kernel_size=3,core_layers=2))
     if window_profile:
-        request.update(schema='selected_rl_comparison_request.v11',experiment_seed=7,
-            window_size=int(profile.removeprefix('WINDOW')),
+        request.update(schema='selected_rl_comparison_request.v12' if fine_profile else 'selected_rl_comparison_request.v11',experiment_seed=7,
+            window_size=int(profile.removeprefix('FINE') if fine_profile else profile.removeprefix('WINDOW')),
             temporal_encoder=dict(net_arch=[8],branch_filters=2,core_filters=4,kernel_size=3,core_layers=1))
 elif profile!='NONE':
     from agent_plugins.sac_regularization import PROFILES
@@ -98,6 +99,11 @@ try:
         assert summary['mode']=='inference'
         assert summary['static_policy']==dict(before=before,after=before)
         assert record['growth'][task['split']]['rows']==(80-(request['window_size']-1)*2-1 if window_profile else 15)
+    if fine_profile:
+        from tools.window_common_support import score
+        write(out/'STATUS.json',dict(tasks=record['reports']))
+        shared=score(dict(root=str(out)),dict(train_growth=0,validation_growth=0))
+        for values in shared['common_support']['roles'].values():assert values['rows']==45
     model.learn(total_timesteps=8,reset_num_timesteps=False)
     assert _policy_tensor_hash(model.policy)!=before
     steps,updates=model.num_timesteps,model._n_updates

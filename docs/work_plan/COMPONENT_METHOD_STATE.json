@@ -1,0 +1,11 @@
+{
+  "schema": "research_method_state.v1",
+  "initiative": "component_optimization_fine_windows_first",
+  "current_stage": "verified_ready_for_deployment",
+  "authority": "owner_2026_10_21_fine_grid_and_components_adaptation_last",
+  "test_design": "56_COMPONENT_OPTIMIZATION.md#test-design-and-traceability",
+  "constraints": ["native_SAC_unchanged", "DOIN_unchanged", "stride_2", "static_fixed_100000", "TEST_closed", "weekly_adaptation_last"],
+  "evidence": ["PRE:6 expected failures,7 passes", "POST:170 focused regressions passed with actual prefix/current/future probes", "POST:4 native real-engine monitor integrations passed,8 deselected; includes v12 windows8/18 and legacy v11 windows7/25"],
+  "next_allowed_actions": ["focused_regressions", "native_shape_and_prefix_verification", "deploy_finite_fine_window_queue_after_verification"],
+  "later_work": ["matched_per_feature_dense_vs_conv1d", "separate_component_refinement", "interaction_shortlist", "adaptation_cadence_last"]
+}

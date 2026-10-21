@@ -143,7 +143,8 @@ def test_v10_rejects_architecture_change_even_if_allowed_by_capacity_schema(tmp_
     with pytest.raises(ValueError,match='CONTEXT_REQUIRED'):selected._build(path,tmp_path/'bad')
 
 
-@pytest.mark.parametrize('stride,n',[(1,13),(2,13),(4,13),(2,7),(2,25)])
+@pytest.mark.parametrize('stride,n',[(1,13),(2,13),(4,13),(2,7),(2,25),
+    (2,8),(2,9),(2,11),(2,15),(2,17),(2,18)])
 def test_real_preprocessor_origin_weekend_and_future_invariance(stride,n):
     import importlib.util
     import os

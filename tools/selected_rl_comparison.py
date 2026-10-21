@@ -162,7 +162,8 @@ def _check_rows(text, manifest, columns, availability_column, common, binary):
 
 def _build(request_path, output_root):
     request = _json(request_path)
-    window_mode = request.get('schema') == 'selected_rl_comparison_request.v11'
+    fine_window_mode = request.get('schema') == 'selected_rl_comparison_request.v12'
+    window_mode = fine_window_mode or request.get('schema') == 'selected_rl_comparison_request.v11'
     context_mode = request.get('schema') == 'selected_rl_comparison_request.v10'
     variable_temporal = window_mode or context_mode or request.get('schema') == 'selected_rl_comparison_request.v9'
     fixed_mode = variable_temporal or request.get('schema') == 'selected_rl_comparison_request.v8'
@@ -198,7 +199,8 @@ def _build(request_path, output_root):
                                      'selected_rl_comparison_request.v4', 'selected_rl_comparison_request.v5',
                                      'selected_rl_comparison_request.v6', 'selected_rl_comparison_request.v7',
                                      'selected_rl_comparison_request.v8','selected_rl_comparison_request.v9',
-                                     'selected_rl_comparison_request.v10','selected_rl_comparison_request.v11')
+                                     'selected_rl_comparison_request.v10','selected_rl_comparison_request.v11',
+                                     'selected_rl_comparison_request.v12')
             or set(request) != keys):
         _fail('REQUEST_SCHEMA_OR_OVERRIDES_REFUSED')
     if context_mode:
@@ -208,7 +210,8 @@ def _build(request_path, output_root):
                     core_filters=4, kernel_size=3, core_layers=1)):
             _fail('DECLARED_FIXED_SHAPE_CONTEXT_REQUIRED')
     if window_mode:
-        if (type(request['window_size']) is not int or request['window_size'] not in (7,13,25)
+        allowed_windows = range(8,19) if fine_window_mode else (7,13,25)
+        if (type(request['window_size']) is not int or request['window_size'] not in allowed_windows
                 or request['temporal_encoder'] != dict(net_arch=[8], branch_filters=2,
                     core_filters=4, kernel_size=3, core_layers=1)):
             _fail('DECLARED_FIXED_STRIDE_WINDOW_REQUIRED')
