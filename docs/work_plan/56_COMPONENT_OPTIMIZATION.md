@@ -4,6 +4,13 @@ Owner authority: 2026-10-21. Small improvements matter; optimize components
 experimentally rather than assuming that greater capacity helps every component.
 Weekly adaptation remains last. TEST stays closed. DOIN is not modified.
 
+The static stage is a comparative foundation for subsequent periodic adaptation,
+not a profitability admission test. Select better net performance/risk and less
+harmful TRAIN/VALIDATION divergence even while returns are negative. Do not
+require profit>0 to proceed to controlled adaptation. Record every trial and
+all outcomes, independent of sign. Adaptation benefit is an experimental
+hypothesis to measure, not a result assumed before its comparison.
+
 ## Ordered Program
 
 1. Fine window search: stride2, observations9/11/15/17 versus the closed13
@@ -78,4 +85,10 @@ then DD. Repeat all three seed-pair outcomes transparently. Do not pick seeds.
 Evidence: PRE6 expected failures; POST170 focused checks; native real-engine
 monitor integration4 passed,8 deselected, including fine windows8/18 and old
 windows7/25. No scientific new fit is claimed by these synthetic CPU checks.
-Current stage: verified, ready for deployment.
+Deployment: runtime6916e49a, spec9e13d797, first contracta7931e4e. Native
+window9/stride2 training verified1000/100000 in12.7458s on the preferred GPU.
+Synthetic GPU witness16 updates and exact reload, actor934/critics1382.
+Worker CPU checks48 passed,11 optional prefix probes skipped (those ran locally).
+Worker/publication/independent collection timers enabled; baseline common2/2
+reports read back and baseline physical copy verified. Later windows11/15/17,
+conditional neighbours and shared-seed confirmations require no human boundary.
