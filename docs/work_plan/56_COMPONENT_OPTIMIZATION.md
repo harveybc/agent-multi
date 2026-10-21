@@ -1,5 +1,46 @@
 # Local Window And Component Optimization
 
+## Current Follow-up: Missing Neighbours And Shared Seeds
+
+Owner continuation2026-10-21: fresh13 seed7 is closed and reproduces the
+reference policy tensors, business traces and metrics exactly. No mismatch;
+TRAIN-14.547669%, VALIDATION-7.278253%, validation DD10.731872%,203 trades.
+The following new sealed study completes the omitted local comparison without
+rewriting any previous experiment: first12/14 seed7, then13/12/14 seed17,
+then13/12/14 seed29. Eight new fits, all mandatory irrespective of promotion.
+The original13 seed7 is reused only after its exact fresh reproduction.
+
+Implementation uses the same native runner and common suffix35 evaluator,
+new schema temporal_local_window_sweep.v1. One worker, one heavy GPU process,
+preferred GPU sequentially; strict baseline-config parity admits only window
+and declared seed changes. Preserve all native metrics, compare each neighbour
+with13 for all three seeds, report paired daily-growth differences, DD and
+TRAIN/VALIDATION gap; do not select a convenient seed or claim a global optimum.
+Seed7 promotion remains the existing conservative rule; multi-seed evidence
+is reported separately and cannot silently rewrite that decision.
+
+TRAIN2020-2023, VALIDATION2024, TEST closed,15 selected inputs,stride2,
+100000 transitions,99000 updates,final100k and four diagnostics; no refitting,
+no expensive ES, no model/DOIN change. Window12 spans22 observed intervals,
+13 spans24 and14 spans26. Warmups23/25/27 differ; heads/initialization can
+differ with shape, as already documented. Common-time support is authenticated;
+pre-suffix positions and account histories are not reset. Native costs retained.
+
+Automation reuses bounded two-attempt recovery, durable task ledger, GPU/RAM/
+disk admission, per-shape synthetic GPU/reload witness, governed outbox/readback,
+independent closed-artifact collector and automatic successor dispatch. Closure
+requires all expected common reports read back. Integrity errors fail closed;
+resource waits resume by timer. The next input-subset study remains planned,
+not an implicit experiment started after this finite batch.
+
+Traceability: new PRE3 expected failures; POST local finite-queue replay verifies
+all8 fits even when13 wins, six unconditional confirmations, no duplicate fits,
+publication wait then close, strict maximum, predecessor identity and tampering.
+Actual12/14 CPU gradient/reload witnesses use actor1030/1094 and critics1574/1702.
+Runtime and deploy evidence will be appended after real start verification.
+
+## Previous Cuts
+
 Latest result2026-10-21: fine window queue ALL_TRIALS_CLOSED4/4, no failures.
 VALIDATION returns9=-31.7603%,11=-34.4700%,13=-7.2783%,15=-26.5253%,17=-19.7006%.
 Retain13 under this recipe/seed. No refinement or confirmation was activated.

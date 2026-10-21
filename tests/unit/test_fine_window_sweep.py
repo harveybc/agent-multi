@@ -17,6 +17,78 @@ def test_fine_recipes_and_conditional_refinement():
             dict(base,window_size=n) for n in expected]
 
 
+def test_local_windows_and_shared_seeds_do_not_depend_on_promotion():
+    from tools import temporal_capacity_sweep as m
+    spec=dict(schema=m.LOCAL_WINDOW_SCHEMA)
+    base=dict(m.BASE_ARCH,observation_stride_bars=2,window_size=13)
+    assert [a['window_size'] for a in m.stage_recipes(spec,0,base)]==[12,14]
+    with pytest.raises(ValueError):m.stage_recipes(spec,1,base)
+    recipes=m.confirmation_recipes(spec,dict(incumbent=dict(architecture=base)))
+    assert [(r['architecture']['window_size'],r['seed']) for r in recipes]==[
+        (n,seed) for seed in (17,29) for n in (13,12,14)]
+
+
+def test_local_queue_runs_all_eight_fits_even_if_control_wins(tmp_path,monkeypatch):
+    from tools import temporal_capacity_sweep as m,selected_rl_comparison as selected
+    from tools import window_common_support as common
+    from agent_plugins.fixed_budget_monitor import SETTINGS
+    path,request=paired_request(tmp_path)
+    baseline=tmp_path/'baseline';bp=tmp_path/'baseline-request.json'
+    write(bp,dict(request,schema='selected_rl_comparison_request.v9',experiment_seed=7,
+        temporal_encoder=m.BASE_ARCH,early_stopping=SETTINGS))
+    selected.materialize(bp,baseline)
+    def result(node):
+        metric=dict(net_profit=-100,total_return=-.01,max_drawdown_pct=10,
+            sharpe_ratio=-.1,trades_closed=100,win_rate_pct=45,profit_factor=.9)
+        return dict(train_growth=-.001,validation_growth=-.002,max_drawdown_pct=10,
+            trades_closed=100,wall_seconds=4200,metrics=dict(train=metric,validation=metric))
+    monkeypatch.setattr(m,'outcome',result)
+    monkeypatch.setattr(m,'scored_outcome',lambda spec,node:result(node))
+    monkeypatch.setattr(m,'context_predecessor',lambda s:'READY')
+    monkeypatch.setattr(m,'resources_ready',lambda *a:'READY')
+    monkeypatch.setattr(m,'smoke',lambda *a:None)
+    ready=[False]
+    monkeypatch.setattr(common,'publication_ready',lambda *a:ready[0])
+    source=tmp_path/'source';source.mkdir();write(source/'SPEC.json',{})
+    root=tmp_path/'local'
+    m.prepare(path,root,baseline,m.digest(baseline/'CONTRACT.json'),source,
+        m.digest(source/'SPEC.json'),'local-window')
+    write(root/'COMMON_PUBLICATION_STATUS.json',{});write(root/'COMMON_REPORTS.json',{})
+    calls=[]
+    def native(r):calls.append(r);write(r/'CLOSE.json',{});return 0
+    monkeypatch.setattr(m.selected,'run',native)
+    for _ in range(12):assert m.work(root)==0
+    assert len(calls)==8 and not (root/'SWEEP_COMPLETE.json').exists()
+    assert m.read(root/'SWEEP_STATE.json')['state']=='WAIT_COMMON_PUBLICATION'
+    ready[0]=True
+    assert m.work(root)==0
+    state=m.read(root/'SWEEP_STATE.json');summary=m.read(root/'SUMMARY.json')
+    assert state['state']=='ALL_TRIALS_CLOSED' and len(calls)==8
+    assert {(t['architecture']['window_size'],t['seed']) for t in state['trials']}=={
+        (n,seed) for n in (12,13,14) for seed in (7,17,29)}-{(13,7)}
+    assert m.status(root)['maximum_new_fits']==8
+    assert m.status(root)['estimated_remaining_seconds']==[0,0]
+    assert len(summary['window_comparisons'])==2
+    assert all(len(row['paired_seeds'])==3 for row in summary['window_comparisons'])
+    assert state['incumbent']['architecture']['window_size']==13
+    spec=m.read(root/'SPEC.json');spec['maximum_new_fits']=7;write(root/'SPEC.json',spec)
+    with pytest.raises(ValueError):m.plan(root)
+
+
+def test_local_predecessor_requires_the_closed_fine_study(tmp_path):
+    from tools import temporal_capacity_sweep as m
+    source=tmp_path/'source';source.mkdir()
+    pin=write(source/'SPEC.json',dict(schema=m.FINE_WINDOW_SCHEMA))
+    spec=dict(schema=m.LOCAL_WINDOW_SCHEMA,predecessor=dict(root=str(source),spec_sha256=pin))
+    state=dict(spec_sha256=pin,trials=[]);write(source/'SWEEP_STATE.json',state)
+    summary=write(source/'SUMMARY.json',{})
+    write(source/'SWEEP_COMPLETE.json',dict(schema=m.FINE_WINDOW_SCHEMA,state='ALL_TRIALS_CLOSED',
+        spec_sha256=pin,state_sha256=m.digest(source/'SWEEP_STATE.json'),summary_sha256=summary,trials=0,successful=0))
+    assert m.context_predecessor(spec)=='READY'
+    write(source/'SUMMARY.json',dict(tampered=True))
+    with pytest.raises(ValueError):m.context_predecessor(spec)
+
+
 def test_v12_only_declared_window_changes(tmp_path):
     from tools import selected_rl_comparison as s,temporal_capacity_sweep as m
     from agent_plugins.fixed_budget_monitor import SETTINGS
@@ -133,7 +205,7 @@ def test_common_readback_must_cover_current_closed_nodes(tmp_path):
 
 
 @pytest.mark.parametrize('n,actor,critic',[(8,902,1318),(9,934,1382),(11,998,1510),
-    (15,1126,1766),(17,1190,1894),(18,1222,1958)])
+    (12,1030,1574),(14,1094,1702),(15,1126,1766),(17,1190,1894),(18,1222,1958)])
 def test_fine_native_shape_gradient_reload(n,actor,critic):
     from tools import temporal_capacity_sweep as m
     result=m.smoke_model(dict(m.BASE_ARCH,window_size=n),'cpu')

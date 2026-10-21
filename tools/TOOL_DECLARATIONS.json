@@ -11,7 +11,7 @@
    "lifecycle": "experimental", "mutability": "mixed", "authority_class": "evidence_producer", "owner": "static RL comparison"
   },
   "temporal_capacity_sweep.py": {
-   "purpose": "Finite owner-approved native SAC capacity, stride or window contrasts, with strict configs, actual-shape GPU/reload witnesses, pinned predecessor handoff, conditional paired-seed confirmation, warehouse readback, status and independent closed collection",
+   "purpose": "Finite owner-approved native SAC capacity, stride or window contrasts, with strict configs, actual-shape GPU/reload witnesses, pinned predecessor handoff, conditional legacy confirmation or unconditional local-window shared seeds, warehouse readback, status and independent closed collection",
    "lifecycle": "experimental", "mutability": "mixed", "authority_class": "campaign_operation", "owner": "static RL comparison"
   },
   "selected_rl_regularization_sequence.py": {

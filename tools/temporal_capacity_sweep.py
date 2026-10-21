@@ -24,6 +24,8 @@ SCHEMA='temporal_capacity_sweep.v1'
 CONTEXT_SCHEMA='temporal_context_sweep.v1'
 WINDOW_SCHEMA='temporal_window_sweep.v1'
 FINE_WINDOW_SCHEMA='temporal_fine_window_sweep.v1'
+LOCAL_WINDOW_SCHEMA='temporal_local_window_sweep.v1'
+COMMON_WINDOW_SCHEMAS=(FINE_WINDOW_SCHEMA,LOCAL_WINDOW_SCHEMA)
 BASE_ARCH=dict(net_arch=[8],branch_filters=2,core_filters=4,kernel_size=3,core_layers=1)
 RULE=dict(min_daily_gain=1e-8,numeric_tolerance=1e-8,max_fresh_fit_attempts=2)
 METADATA=('SPEC.json','SWEEP_STATE.json','WORK_STATUS.json','PUBLICATION_STATUS.json',
@@ -42,7 +44,18 @@ def replications(arch,base=BASE_ARCH):
         for seed in (17,29) for role in ('baseline','finalist')]
 
 
+def confirmation_recipes(spec,state):
+    if spec['schema']==LOCAL_WINDOW_SCHEMA:
+        return [dict(role='baseline' if n==13 else 'window'+str(n),seed=seed,
+            architecture=dict(BASE_ARCH,observation_stride_bars=2,window_size=n))
+            for seed in (17,29) for n in (13,12,14)]
+    return replications(state['incumbent']['architecture'],spec['baseline']['architecture'])
+
+
 def stage_recipes(spec,stage,incumbent):
+    if spec['schema']==LOCAL_WINDOW_SCHEMA:
+        if stage!=0:raise ValueError('LOCAL_WINDOW_SINGLE_SCREEN_REQUIRED')
+        return [dict(copy.deepcopy(BASE_ARCH),observation_stride_bars=2,window_size=n) for n in (12,14)]
     if spec['schema']==FINE_WINDOW_SCHEMA:
         if stage not in (0,1):raise ValueError('FINE_WINDOW_TWO_STAGES_REQUIRED')
         n=incumbent['window_size']
@@ -62,11 +75,11 @@ def context_predecessor(spec):
     if digest(root/'SPEC.json')!=item['spec_sha256']:
         raise ValueError('CONTEXT_PREDECESSOR_CHANGED')
     if (root/'BLOCKED.json').exists():return 'WAIT_PREDECESSOR_BLOCKED'
-    if spec.get('schema') in (WINDOW_SCHEMA,FINE_WINDOW_SCHEMA):
+    if spec.get('schema') in (WINDOW_SCHEMA,*COMMON_WINDOW_SCHEMAS):
         if not (root/'SWEEP_COMPLETE.json').exists():return 'WAIT_PREDECESSOR'
         end=read(root/'SWEEP_COMPLETE.json');state=read(root/'SWEEP_STATE.json')
         source=read(root/'SPEC.json');trials=state['trials']
-        expected=WINDOW_SCHEMA if spec['schema']==FINE_WINDOW_SCHEMA else CONTEXT_SCHEMA
+        expected=FINE_WINDOW_SCHEMA if spec['schema']==LOCAL_WINDOW_SCHEMA else WINDOW_SCHEMA if spec['schema']==FINE_WINDOW_SCHEMA else CONTEXT_SCHEMA
         if (source['schema']!=expected or end['schema']!=source['schema']
                 or end['state'] not in ('ALL_TRIALS_CLOSED','COMPLETED_WITH_FAILED_CANDIDATES')
                 or end['spec_sha256']!=item['spec_sha256'] or state['spec_sha256']!=item['spec_sha256']
@@ -141,7 +154,7 @@ def outcome(node):
 
 def scored_outcome(spec,node):
     result=outcome(node)
-    if spec['schema']!=FINE_WINDOW_SCHEMA:return result
+    if spec['schema'] not in COMMON_WINDOW_SCHEMAS:return result
     from tools.window_common_support import score,require_equal_support
     result=score(node,result)
     if 'baseline_outcome' in spec:
@@ -159,7 +172,7 @@ def prepare(base_request,root,baseline,baseline_pin,predecessor=None,predecessor
     base=read(base_request)
     if base['schema']!='selected_rl_comparison_request.v4':raise ValueError('SWEEP_BASE_V4_REQUIRED')
     arch=dict(BASE_ARCH,observation_stride_bars=2) if predecessor is not None else BASE_ARCH
-    if study in ('window','fine-window'):
+    if study in ('window','fine-window','local-window'):
         if predecessor is None:raise ValueError('WINDOW_PREDECESSOR_REQUIRED')
         arch=dict(arch,window_size=13)
     elif study not in (None,'context'):raise ValueError('SWEEP_STUDY_UNDECLARED')
@@ -171,10 +184,10 @@ def prepare(base_request,root,baseline,baseline_pin,predecessor=None,predecessor
     if predecessor is not None:
         if digest(Path(predecessor)/'SPEC.json')!=predecessor_pin:
             raise ValueError('CONTEXT_PREDECESSOR_PIN_MISMATCH')
-        spec.update(schema=FINE_WINDOW_SCHEMA if study=='fine-window' else WINDOW_SCHEMA if study=='window' else CONTEXT_SCHEMA,
-                    stages=2 if study=='fine-window' else 1,maximum_new_fits=10 if study=='fine-window' else 6,
+        spec.update(schema=LOCAL_WINDOW_SCHEMA if study=='local-window' else FINE_WINDOW_SCHEMA if study=='fine-window' else WINDOW_SCHEMA if study=='window' else CONTEXT_SCHEMA,
+                    stages=2 if study=='fine-window' else 1,maximum_new_fits=8 if study=='local-window' else 10 if study=='fine-window' else 6,
                     predecessor=dict(root=str(Path(predecessor).resolve()),spec_sha256=predecessor_pin))
-    if study=='fine-window':
+    if study in ('fine-window','local-window'):
         probe={k:v for k,v in spec.items() if k!='baseline_outcome'}
         spec['baseline_outcome']=scored_outcome(probe,old)
         spec['common_support_context_bars']=35
@@ -187,9 +200,9 @@ def prepare(base_request,root,baseline,baseline_pin,predecessor=None,predecessor
 
 def plan(root):
     root=Path(root).resolve();spec=read(root/'SPEC.json')
-    if (spec['schema'] not in (SCHEMA,CONTEXT_SCHEMA,WINDOW_SCHEMA,FINE_WINDOW_SCHEMA) or spec['runtime']!=_commit() or spec['rule']!=RULE
-            or (spec['stages'],spec['maximum_new_fits'])!=((4,11) if spec['schema']==SCHEMA else (2,10) if spec['schema']==FINE_WINDOW_SCHEMA else (1,6))
-            or spec['schema']==FINE_WINDOW_SCHEMA and spec.get('common_support_context_bars')!=35
+    if (spec['schema'] not in (SCHEMA,CONTEXT_SCHEMA,WINDOW_SCHEMA,*COMMON_WINDOW_SCHEMAS) or spec['runtime']!=_commit() or spec['rule']!=RULE
+            or (spec['stages'],spec['maximum_new_fits'])!=((4,11) if spec['schema']==SCHEMA else (2,10) if spec['schema']==FINE_WINDOW_SCHEMA else (1,8) if spec['schema']==LOCAL_WINDOW_SCHEMA else (1,6))
+            or spec['schema'] in COMMON_WINDOW_SCHEMAS and spec.get('common_support_context_bars')!=35
             or digest(spec['base_request'])!=spec['base_request_sha256']
             or digest(Path(spec['baseline']['root'])/'CONTRACT.json')!=spec['baseline']['contract_sha256']):
         raise ValueError('SWEEP_SPEC_OR_RUNTIME_DRIFT')
@@ -220,11 +233,11 @@ def _candidate(root,spec,trial):
     request.update(schema='selected_rl_comparison_request.v9',experiment_seed=trial['seed'],
         temporal_encoder={k:v for k,v in trial['architecture'].items() if k not in ('observation_stride_bars','window_size')},early_stopping=SETTINGS)
     context=spec['schema']==CONTEXT_SCHEMA
-    window=spec['schema'] in (WINDOW_SCHEMA,FINE_WINDOW_SCHEMA)
+    window=spec['schema'] in (WINDOW_SCHEMA,*COMMON_WINDOW_SCHEMAS)
     if context:request.update(schema='selected_rl_comparison_request.v10',
         observation_stride_bars=trial['architecture']['observation_stride_bars'])
     if window:request.update(schema='selected_rl_comparison_request.v11',window_size=trial['architecture']['window_size'])
-    if spec['schema']==FINE_WINDOW_SCHEMA:request['schema']='selected_rl_comparison_request.v12'
+    if spec['schema'] in COMMON_WINDOW_SCHEMAS:request['schema']='selected_rl_comparison_request.v12'
     request['publication']['code_commit']=spec['runtime']
     request['publication']['experiment_set_key']+=('-window-' if window else '-context-' if context else '-temporal-ladder-')+name
     request_file=Path(root)/'requests'/(name+'.json');sequence.immutable(request_file,request)
@@ -297,11 +310,11 @@ def _advance(root,spec,state):
             sequence.immutable(Path(root)/'decisions'/f'stage-{stage+1}.json',decision)
             state['stages'].append(decision);state['incumbent']=incumbent;_save(root,state);continue
         if not state['replications_declared']:
-            for item in replications(state['incumbent']['architecture'],spec['baseline']['architecture']):
+            for item in confirmation_recipes(spec,state):
                 state['trials'].append(dict(name=f"confirm-{item['role']}-s{item['seed']}",phase=spec['stages'],
                     seed=item['seed'],role=item['role'],architecture=item['architecture'],state='PENDING',attempts=[]))
             state['replications_declared']=True;_save(root,state);continue
-        if spec['schema']==FINE_WINDOW_SCHEMA:
+        if spec['schema'] in COMMON_WINDOW_SCHEMAS:
             from tools.window_common_support import publication_ready
             if not publication_ready(root,spec,state):
                 state['state']='WAIT_COMMON_PUBLICATION';_save(root,state);return None
@@ -313,7 +326,7 @@ def _advance(root,spec,state):
             successful=sum(t['state']=='CLOSED' for t in state['trials']),
             **(dict(common_publication_sha256=digest(Path(root)/'COMMON_PUBLICATION_STATUS.json'),
                 common_reports_sha256=digest(Path(root)/'COMMON_REPORTS.json'))
-                if spec['schema']==FINE_WINDOW_SCHEMA else {})))
+                if spec['schema'] in COMMON_WINDOW_SCHEMAS else {})))
         return None
 
 
@@ -379,7 +392,7 @@ def work(root):
     with (root/'.worker.lock').open('a') as lock:
         try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         except BlockingIOError:return 0
-        if spec['schema'] in (CONTEXT_SCHEMA,WINDOW_SCHEMA,FINE_WINDOW_SCHEMA):
+        if spec['schema'] in (CONTEXT_SCHEMA,WINDOW_SCHEMA,*COMMON_WINDOW_SCHEMAS):
             ready=context_predecessor(spec)
             if ready!='READY':write(root/'WORK_STATUS.json',dict(state=ready));return 0
         uuid=read(spec['base_request'])['execution']['gpu_evidence']['assigned_gpu_uuid']
@@ -404,7 +417,7 @@ def publish(root):
             r=Path(node['root'])
             if not (r/'CLOSE.json').exists():refresh(r)
             pending+=selected.publish_and_close(r)!=0
-    if spec['schema']==FINE_WINDOW_SCHEMA:
+    if spec['schema'] in COMMON_WINDOW_SCHEMAS:
         from tools.window_common_support import publish as publish_common
         pending+=publish_common(spec,state,root)!=0
     write(root/'PUBLICATION_STATUS.json',dict(state='PENDING' if pending else 'CURRENT_REPORTS_VERIFIED',pending_attempts=pending))
@@ -428,11 +441,29 @@ def summarize(root,spec,state):
     payload=dict(schema=spec['schema'],state=state['state'],scope='DEVELOPMENT_NO_TEST',incumbent=state['incumbent'],trials=items,
         replication=replication,confirmation=verdict,
         mean_paired_daily_growth_difference=statistics.mean(r['validation_daily_growth_difference'] for r in replication) if len(replication)==3 else None)
+    if spec['schema']==LOCAL_WINDOW_SCHEMA:
+        comparisons=[]
+        for n in (12,14):
+            paired=[]
+            for seed in (7,17,29):
+                pair={item['architecture']['window_size']:item for item in items
+                    if item['seed']==seed and item['state']=='CLOSED'}
+                if n in pair and 13 in pair:
+                    candidate,control=pair[n]['outcome'],pair[13]['outcome']
+                    paired.append(dict(seed=seed,validation_daily_growth_difference=
+                        candidate['validation_growth']-control['validation_growth'],
+                        nonworse_risk_and_gap=improves(candidate,control)))
+            comparisons.append(dict(window_size=n,paired_seeds=paired,
+                mean_paired_daily_growth_difference=statistics.mean(r['validation_daily_growth_difference'] for r in paired) if len(paired)==3 else None,
+                improves_all_shared_seeds=len(paired)==3 and all(r['nonworse_risk_and_gap'] for r in paired)))
+        payload.update(window_comparisons=comparisons,replication=[],mean_paired_daily_growth_difference=None,
+            confirmation='SHARED_SEEDS_COMPLETE' if all(len(c['paired_seeds'])==3 for c in comparisons) else 'SHARED_SEEDS_PENDING',
+            incumbent_scope='SEED7_SCREEN_ONLY_NOT_A_JOINT_OPTIMUM')
     write(Path(root)/'SUMMARY.json',payload)
     stream=io.StringIO();writer=csv.writer(stream);writer.writerow(['trial','seed','split','state','architecture','profit_usd','return_fraction','max_dd_pct','sharpe_daily_nonannualized','trades','win_pct','profit_factor'])
     lines=['# Temporal SAC Results','','Development only;all final100000;TEST not read.','',
         '| Trial | Seed | TRAIN return | VALIDATION return | V maxDD | State |','| --- | --- | --- | --- | --- | --- |']
-    if spec['schema']==FINE_WINDOW_SCHEMA:
+    if spec['schema'] in COMMON_WINDOW_SCHEMAS:
         lines[2]+=' Table shows native full-period returns. Selection uses common suffix35 with unreset account histories; details in SUMMARY.json.'
     for item in items:
         metrics=(item.get('outcome') or {}).get('metrics',{})
@@ -460,16 +491,17 @@ def status(root):
     finished=sum(t['state'] in ('CLOSED','FAILED_EXHAUSTED') for t in state['trials'])
     durations=[t['outcome']['wall_seconds'] for t in state['trials'] if t['state']=='CLOSED'] or [spec['baseline_outcome']['wall_seconds']]
     fine=spec['schema']==FINE_WINDOW_SCHEMA
+    local=spec['schema']==LOCAL_WINDOW_SCHEMA
     screen_count=7 if spec['schema']==SCHEMA else 6 if fine else 2
     if fine and (not state['stages'] or state['stages'][0]['winner']=='baseline'):screen_count=4
     remaining=max(0,screen_count-sum(t['phase']<spec['stages'] and t['state'] in ('CLOSED','FAILED_EXHAUSTED') for t in state['trials']))
     confirm_remaining=sum(t['phase']==spec['stages'] and t['state'] not in ('CLOSED','FAILED_EXHAUSTED') for t in state['trials'])
-    upper=remaining+(2 if fine and not state['stages'] else 0)+(confirm_remaining if state['replications_declared'] else 4)
+    upper=remaining+(2 if fine and not state['stages'] else 0)+(confirm_remaining if state['replications_declared'] else 6 if local else 4)
     blocked=current['state'].startswith(('WAIT_RAM','WAIT_DISK','WAIT_GPU','WAIT_PREDECESSOR','BLOCKED'))
     complete=(Path(root)/'SWEEP_COMPLETE.json').exists()
     return dict(schema=spec['schema'],state=state['state'] if complete else current['state'],operation=current,completed_trials=finished,declared_trials=len(state['trials']),
         maximum_new_fits=spec['maximum_new_fits'],stages_completed=len(state['stages']),incumbent=state['incumbent'],current=progress,
-        estimated_remaining_seconds=None if blocked else [0,0] if complete else [remaining*statistics.mean(durations),upper*statistics.mean(durations)],
+        estimated_remaining_seconds=None if blocked else [0,0] if complete else [(upper if local else remaining)*statistics.mean(durations),upper*statistics.mean(durations)],
         eta_scope='PROVISIONAL_BASED_ON_COMPLETED_FULL_TRIALS_INCLUDES_CURRENT_TRIAL',
         trials=[dict(name=t['name'],state=t['state'],architecture=t['architecture'],seed=t['seed'],outcome=t.get('outcome')) for t in state['trials']])
 
@@ -492,7 +524,7 @@ def render(root,directory,environment_file):
             'MemoryMax='+('6G' if role=='worker' else '1500M'),'MemorySwapMax=0',
             'CPUQuota='+('200%' if role=='worker' else '100%'),'TasksMax=256','KillMode=control-group',
             'RuntimeMaxSec=21600' if role=='worker' else 'TimeoutStartSec=300','UMask=0077',''])
-        prefix='rl-temporal-fine-window-' if spec['schema']==FINE_WINDOW_SCHEMA else 'rl-temporal-window-' if spec['schema']==WINDOW_SCHEMA else 'rl-temporal-context-' if spec['schema']==CONTEXT_SCHEMA else 'rl-temporal-capacity-'
+        prefix='rl-temporal-local-window-' if spec['schema']==LOCAL_WINDOW_SCHEMA else 'rl-temporal-fine-window-' if spec['schema']==FINE_WINDOW_SCHEMA else 'rl-temporal-window-' if spec['schema']==WINDOW_SCHEMA else 'rl-temporal-context-' if spec['schema']==CONTEXT_SCHEMA else 'rl-temporal-capacity-'
         paths.extend(sequence._unit(directory,prefix+role,service))
     return paths
 
@@ -536,7 +568,7 @@ def collect(host,source_root,runtime,archive,state_root,remote_python='python3')
         end=json.loads(raw['SWEEP_COMPLETE.json'])
         if end['state_sha256']!=packet['SWEEP_STATE.json']['sha256'] or end['summary_sha256']!=packet['SUMMARY.json']['sha256']:
             raise ValueError('SWEEP_CLOSE_EXPORT_CHANGED')
-        if spec['schema']==FINE_WINDOW_SCHEMA and (
+        if spec['schema'] in COMMON_WINDOW_SCHEMAS and (
                 end['common_publication_sha256']!=packet['COMMON_PUBLICATION_STATUS.json']['sha256']
                 or end['common_reports_sha256']!=packet['COMMON_REPORTS.json']['sha256']):
             raise ValueError('SWEEP_COMMON_EXPORT_CHANGED')
@@ -553,7 +585,7 @@ def main():
     p.add_argument('--root',type=Path,required=True);p.add_argument('--base-request',type=Path)
     p.add_argument('--baseline',type=Path);p.add_argument('--baseline-sha256')
     p.add_argument('--predecessor',type=Path);p.add_argument('--predecessor-sha256')
-    p.add_argument('--study',choices=('context','window','fine-window'))
+    p.add_argument('--study',choices=('context','window','fine-window','local-window'))
     p.add_argument('--units-dir',type=Path);p.add_argument('--environment-file',type=Path)
     p.add_argument('--host');p.add_argument('--runtime',type=Path);p.add_argument('--archive',type=Path);p.add_argument('--state-root',type=Path)
     p.add_argument('--remote-python',default='python3')
