@@ -1,5 +1,12 @@
 # Local Window And Component Optimization
 
+Latest result2026-10-21: fine window queue ALL_TRIALS_CLOSED4/4, no failures.
+VALIDATION returns9=-31.7603%,11=-34.4700%,13=-7.2783%,15=-26.5253%,17=-19.7006%.
+Retain13 under this recipe/seed. No refinement or confirmation was activated.
+Native publication current; common reports10/10 readback,5 independent closed
+copies including control. No fit remains active; next is the planned subset
+study, whose driver/configs are not yet deployed. Launch notes below are history.
+
 Owner authority: 2026-10-21. Small improvements matter; optimize components
 experimentally rather than assuming that greater capacity helps every component.
 Weekly adaptation remains last. TEST stays closed. DOIN is not modified.
