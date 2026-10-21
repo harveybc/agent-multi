@@ -58,4 +58,9 @@ PRE retained in session evidence: three expected context-contract failures.
 POST: 125 focused regressions including native monitor integration passed;
 120 focused CPU checks including real preprocessor stride/prefix probes passed.
 The two sets overlap and are not 245 independent tests. Current stage:
-integration verification. Next: pin runtime, install timers, verify launch.
+integration verification passed. Sixteen final context tests and 35 worker
+tests passed. Runtime `9aa461dd`, spec `faab4d09`: worker, publisher and independent
+collector timers enabled. Initial dispatch waits for the pinned predecessor;
+its latest observed progress was 8/10 without failures. No new native SAC result
+is claimed at this deployment snapshot. The scientific runtime stays pinned
+while these operational notes are updated.
