@@ -86,7 +86,8 @@ def test_predecessor_accepts_only_authenticated_terminal_state(tmp_path):
 
 
 @pytest.mark.parametrize('promotion', [False, True])
-def test_complete_context_queue_and_conditional_paired_replication(tmp_path,monkeypatch,promotion):
+@pytest.mark.parametrize('study',['context','window'])
+def test_complete_context_queue_and_conditional_paired_replication(tmp_path,monkeypatch,promotion,study):
     from tools import temporal_capacity_sweep as m,selected_rl_comparison as selected
     from agent_plugins.fixed_budget_monitor import SETTINGS
     path,request=paired_request(tmp_path)
@@ -95,7 +96,8 @@ def test_complete_context_queue_and_conditional_paired_replication(tmp_path,monk
         temporal_encoder=m.BASE_ARCH,early_stopping=SETTINGS))
     selected.materialize(bp,baseline)
     def result(node):
-        growth=-.001+(.0001 if promotion and node['architecture']['observation_stride_bars']==4 else 0)
+        chosen=(node['architecture'].get('window_size')==25 if study=='window' else node['architecture']['observation_stride_bars']==4)
+        growth=-.001+(.0001 if promotion and chosen else 0)
         metric=dict(net_profit=growth*10000,total_return=growth,max_drawdown_pct=10,
             sharpe_ratio=.1,trades_closed=100,win_rate_pct=50,profit_factor=.9)
         return dict(train_growth=.001,validation_growth=growth,max_drawdown_pct=10,
@@ -106,7 +108,7 @@ def test_complete_context_queue_and_conditional_paired_replication(tmp_path,monk
     monkeypatch.setattr(m,'smoke',lambda *a:None)
     source=tmp_path/'source';source.mkdir();write(source/'SPEC.json',{})
     root=tmp_path/'sweep'
-    m.prepare(path,root,baseline,m.digest(baseline/'CONTRACT.json'),source,m.digest(source/'SPEC.json'))
+    m.prepare(path,root,baseline,m.digest(baseline/'CONTRACT.json'),source,m.digest(source/'SPEC.json'),study)
     calls=[]
     def native(r):
         calls.append(r);write(r/'CLOSE.json',{});return 0
@@ -116,7 +118,7 @@ def test_complete_context_queue_and_conditional_paired_replication(tmp_path,monk
     assert m.read(root/'SWEEP_STATE.json')['trials']==[]
     assert m.status(root)['estimated_remaining_seconds'] is None
     units=root/'units';m.render(root,units,tmp_path/'private.env')
-    assert (units/'rl-temporal-context-worker.service').exists()
+    assert (units/f'rl-temporal-{study}-worker.service').exists()
     assert not (units/'rl-temporal-capacity-worker.service').exists()
     monkeypatch.setattr(m,'context_predecessor',lambda s:'READY')
     for _ in range(7):assert m.work(root)==0
@@ -141,8 +143,8 @@ def test_v10_rejects_architecture_change_even_if_allowed_by_capacity_schema(tmp_
     with pytest.raises(ValueError,match='CONTEXT_REQUIRED'):selected._build(path,tmp_path/'bad')
 
 
-@pytest.mark.parametrize('stride',[1,2,4])
-def test_real_preprocessor_origin_weekend_and_future_invariance(stride):
+@pytest.mark.parametrize('stride,n',[(1,13),(2,13),(4,13),(2,7),(2,25)])
+def test_real_preprocessor_origin_weekend_and_future_invariance(stride,n):
     import importlib.util
     import os
     from pathlib import Path
@@ -156,14 +158,14 @@ def test_real_preprocessor_origin_weekend_and_future_invariance(stride):
     stamps=pd.date_range('2023-01-01',periods=800,freq='h',tz='UTC')
     stamps=stamps[stamps.dayofweek<5]
     frame=pd.DataFrame(dict(DATE_TIME=stamps,feat=np.arange(len(stamps),dtype=float)))
-    cfg=dict(window_size=13,observation_stride_bars=stride,require_full_observation_window=True,
+    cfg=dict(window_size=n,observation_stride_bars=stride,require_full_observation_window=True,
         feature_columns=['feat'],feature_scaling='none',feature_clip=0,include_price_window=False,
         include_agent_state=False)
     def observe(data,config):
         return module.Plugin(config).make_observation(data=data,step=300,bridge_state={},config=config)['features']
     obs=observe(frame,cfg)
-    np.testing.assert_array_equal(obs[:,0],np.arange(299-12*stride,300,stride))
-    assert obs.shape==(13,1) and obs[-1,0]==299
+    np.testing.assert_array_equal(obs[:,0],np.arange(299-(n-1)*stride,300,stride))
+    assert obs.shape==(n,1) and obs[-1,0]==299
     scaled=dict(cfg,feature_scaling='rolling_zscore',feature_scaling_window=256)
     expected=observe(frame,scaled)
     changed=frame.copy();changed.loc[300:,'feat']=1e8

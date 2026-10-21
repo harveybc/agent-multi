@@ -56,7 +56,9 @@ trading domain.
 
 ## Document Map
 
-Current2026-10-20 owner-approved follow-up: [fixed-budget context study](54_FIXED_BUDGET_CONTEXT_STUDY.md).
+Current2026-10-21 owner-approved follow-up: [fixed-stride window study](55_FIXED_STRIDE_WINDOW_STUDY.md).
+The prior [stride contrast](54_FIXED_BUDGET_CONTEXT_STUDY.md) closed2/2 with no
+promotion: validation stride1=-8.96%,stride2=-7.28%,stride4=-26.08%.
 Native SAC stays fixed-budget; the separate finite BC/DAgger monitor contrast
 does not authorize expensive native early stopping or additional monitor sweeps.
 Previous side study: [controlled modular specialists](53_MODULAR_SPECIALISTS_FOLLOWUP.md).

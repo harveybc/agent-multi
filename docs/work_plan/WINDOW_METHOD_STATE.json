@@ -1,0 +1,11 @@
+{
+  "schema": "research_method_state.v1",
+  "initiative": "fixed_stride_window_study",
+  "current_stage": "integration_verification",
+  "authority": "owner_2026_10_21_dale",
+  "test_design": "55_FIXED_STRIDE_WINDOW_STUDY.md#test-design-and-traceability",
+  "constraints": ["native_SAC_unchanged", "DOIN_unchanged", "stride_2", "windows_7_25_control_13", "fixed_100000", "no_early_stopping", "TRAIN_2020_2023", "VALIDATION_2024", "TEST_closed"],
+  "support_limit": "Native warmup is13/25/49 observed bars, not256; origins at the beginning differ and are reported, not imputed.",
+  "evidence": ["PRE:5 expected failures before implementation", "POST:124 focused regressions passed", "POST:77 selected checks including native WINDOW7/WINDOW25 frozen-monitor integration passed;61 deselected, not a full-suite result", "POST:128 final focused unit checks passed including automatic window queue and actual-shape prefix probes"],
+  "next_allowed_actions": ["final_unit_regression", "pin_runtime", "prepare_and_deploy", "verify_actual_GPU_launch", "automatic_finite_execution_publication_collection"]
+}

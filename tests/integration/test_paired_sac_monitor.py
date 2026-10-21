@@ -7,7 +7,7 @@ import sys
 import pytest
 
 
-@pytest.mark.parametrize('profile',[None,'dropout005','l2_1e6','dropout005_l2_1e6','batchnorm','TEMPORAL','FIXED','CAPACITY'])
+@pytest.mark.parametrize('profile',[None,'dropout005','l2_1e6','dropout005_l2_1e6','batchnorm','TEMPORAL','FIXED','CAPACITY','WINDOW7','WINDOW25'])
 def test_real_monitor_does_not_modify_learning_and_restores_best(tmp_path,profile):
     gym = os.environ.get('GYM_FX_CHECKOUT')
     if not gym:
@@ -26,18 +26,41 @@ from env_plugins.gym_fx_env import Plugin as Env
 root, gym = map(Path, sys.argv[1:3])
 profile=sys.argv[3]
 path, request, _ = fixture(root)
+window_profile=profile in ('WINDOW7','WINDOW25')
+if window_profile:
+    import csv, hashlib
+    from datetime import datetime, timedelta
+    receipt_path=Path(request['receipt_file']); receipt=json.loads(receipt_path.read_text())
+    for item in receipt['splits'].values():
+        data=receipt_path.parent/item['input_file']; rows=list(csv.DictReader(data.open()))
+        first=datetime.fromisoformat(rows[0]['DATE_TIME'])
+        expanded=[]
+        for i in range(80):
+            row=dict(rows[i%len(rows)]);stamp=(first+timedelta(hours=i)).isoformat()
+            row.update(DATE_TIME=stamp,SELECTED_AVAILABLE_AT=stamp);expanded.append(row)
+        with data.open('w',newline='') as stream:
+            writer=csv.DictWriter(stream,fieldnames=list(expanded[0]));writer.writeheader();writer.writerows(expanded)
+        manifest_path=receipt_path.parent/item['manifest_file'];manifest=json.loads(manifest_path.read_text())
+        manifest.update(input_sha256=digest(data),row_count=len(expanded),expected_timestamps_sha256=
+            hashlib.sha256(''.join(r['DATE_TIME']+'\n' for r in expanded).encode()).hexdigest())
+        write(manifest_path,manifest);item['manifest_sha256']=digest(manifest_path)
+    write(receipt_path,receipt);request['receipt_sha256']=digest(receipt_path)
 request.update(schema='selected_rl_comparison_request.v4', leverage=50,
     early_stopping=SETTINGS, order_budget=dict(rel_volume=.1,
         min_order_volume=1, max_order_volume=1e12, volume_step=1))
-if profile in ('TEMPORAL','FIXED','CAPACITY'):
+if profile in ('TEMPORAL','FIXED','CAPACITY') or window_profile:
     request.update(schema='selected_rl_comparison_request.v7',temporal_encoder=dict(
         net_arch=[8],branch_filters=2,core_filters=4,kernel_size=3))
-    if profile in ('FIXED','CAPACITY'):
+    if profile in ('FIXED','CAPACITY') or window_profile:
         from agent_plugins.fixed_budget_monitor import SETTINGS as FIXED_SETTINGS
         request.update(schema='selected_rl_comparison_request.v8',early_stopping=FIXED_SETTINGS)
     if profile=='CAPACITY':
         request.update(schema='selected_rl_comparison_request.v9',experiment_seed=17,
             temporal_encoder=dict(net_arch=[16],branch_filters=4,core_filters=8,kernel_size=3,core_layers=2))
+    if window_profile:
+        request.update(schema='selected_rl_comparison_request.v11',experiment_seed=7,
+            window_size=int(profile.removeprefix('WINDOW')),
+            temporal_encoder=dict(net_arch=[8],branch_filters=2,core_filters=4,kernel_size=3,core_layers=1))
 elif profile!='NONE':
     from agent_plugins.sac_regularization import PROFILES
     request.update(schema='selected_rl_comparison_request.v5',regularization=PROFILES[profile])
@@ -74,12 +97,12 @@ try:
         summary=json.loads(Path(task['summary']).read_text())
         assert summary['mode']=='inference'
         assert summary['static_policy']==dict(before=before,after=before)
-        assert record['growth'][task['split']]['rows']==15
+        assert record['growth'][task['split']]['rows']==(80-(request['window_size']-1)*2-1 if window_profile else 15)
     model.learn(total_timesteps=8,reset_num_timesteps=False)
     assert _policy_tensor_hash(model.policy)!=before
     steps,updates=model.num_timesteps,model._n_updates
     callback=make_callback(cfg); callback.model=model
-    if profile in ('FIXED','CAPACITY'):
+    if profile in ('FIXED','CAPACITY') or window_profile:
         for tick in (25000,50000,75000):
             model.num_timesteps=tick
             assert callback._on_step() is True
@@ -111,7 +134,7 @@ try:
             for field,value in values.items():
                 wanted=expected['state'][key][field]
                 assert torch.equal(value,wanted) if isinstance(value,torch.Tensor) else value==wanted
-    if profile in ('NONE','TEMPORAL','FIXED','CAPACITY'):
+    if profile in ('NONE','TEMPORAL','FIXED','CAPACITY') or window_profile:
         assert not any(isinstance(m,(torch.nn.modules.batchnorm._BatchNorm,torch.nn.Dropout))
                        for m in model.policy.modules())
     else:
