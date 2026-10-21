@@ -4,6 +4,28 @@ Owner authority: 2026-10-21. Small improvements matter; optimize components
 experimentally rather than assuming that greater capacity helps every component.
 Weekly adaptation remains last. TEST stays closed. DOIN is not modified.
 
+## Research Posture And Authority
+
+Owner clarification2026-10-21: use evidence without optimistic or pessimistic
+framing. A finite failed contrast only limits that recipe, data, budget and
+evaluation protocol; it does not exhaust SAC, RL, inputs or trading strategies.
+Do not recommend abandoning the research because a limited grid failed. The
+owner decides whether to end or redirect the program. Close finite experiment
+batches as specified, retain all outcomes, and use observations to update the
+next hypotheses and controlled tests. Distinguish observation, interpretation
+and proposed experiment. Continue improving the static comparative foundation
+before measuring periodic adaptation; do not require profit>0 at this stage.
+
+Bayesian/uncertainty follow-up: record the owner's successful predictor-thesis
+experience as motivation, not a measured RL outcome. The separate collaborator
+lane plans that contrast; do not duplicate its runs or silently import its
+implementation into SAC. Later, assess a compatible Bayesian/uncertainty arm
+against its deterministic reference, with the same inputs/business/budget and
+recorded inference sampling cost. Separate the layer effect from the effect of
+using uncertainty for decisions/sizing; preserve mandatory SL/TP/volume limits.
+Measure uncertainty calibration and trading metrics under a declared protocol.
+This is planned research, not a modification to the active window queue.
+
 The static stage is a comparative foundation for subsequent periodic adaptation,
 not a profitability admission test. Select better net performance/risk and less
 harmful TRAIN/VALIDATION divergence even while returns are negative. Do not
