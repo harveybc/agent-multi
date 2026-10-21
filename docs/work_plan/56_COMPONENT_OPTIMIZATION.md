@@ -37,7 +37,18 @@ Traceability: new PRE3 expected failures; POST local finite-queue replay verifie
 all8 fits even when13 wins, six unconditional confirmations, no duplicate fits,
 publication wait then close, strict maximum, predecessor identity and tampering.
 Actual12/14 CPU gradient/reload witnesses use actor1030/1094 and critics1574/1702.
-Runtime and deploy evidence will be appended after real start verification.
+Deployment verified: runtimed0f05548,spec2d3cd84c,first contract75a887f6.
+Window12 seed7 TRAIN started23:52:34UTC;4000/100000 in80.6848s verified.
+GPU witness16 updates/exact reload,actor1030/critics1574. Worker26 tests pass;
+local63 targeted tests and2 native-engine integrations pass. The initial local
+integration command named a nonexistent gym checkout and failed before loading
+the environment; rerunning with the pinned checkout passed both. No code or
+scientific setting changed to obtain that pass. GPU readiness renewed before
+dispatch; host~72GiB disk free, independent archive~673GiB free. Baseline
+common reports2/2 readback and first independent copy verified. Worker,
+publisher and collector timers enabled; user lingering enabled on the worker.
+Provisional full-batch duration~9-11h from the completed4207s control, not an
+extrapolation of the initial random-action1000 steps. No new final metric yet.
 
 ## Previous Cuts
 
