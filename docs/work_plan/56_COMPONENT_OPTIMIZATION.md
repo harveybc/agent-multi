@@ -7,6 +7,15 @@ Native publication current; common reports10/10 readback,5 independent closed
 copies including control. No fit remains active; next is the planned subset
 study, whose driver/configs are not yet deployed. Launch notes below are history.
 
+Owner-triggered comparability audit follow-up: five archived runs verified,
+including real weights and metrics. Fresh13 seed7 reproduction is now running
+at the sweep runtime, contractf2437f30, with automatic closure comparison.
+The original conditional refinement skipped12/14 when13 remained incumbent:
+that is incomplete local refinement, not evidence that13 is optimal. Next
+window design must include those missing neighbours and shared-seed checks;
+do not rewrite the closed sweep. Its fit execution and the scope of its
+conclusion are separate questions. Planned subset work is retained afterwards.
+
 Owner authority: 2026-10-21. Small improvements matter; optimize components
 experimentally rather than assuming that greater capacity helps every component.
 Weekly adaptation remains last. TEST stays closed. DOIN is not modified.
