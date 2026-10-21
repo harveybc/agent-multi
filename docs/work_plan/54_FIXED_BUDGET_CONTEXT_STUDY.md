@@ -64,3 +64,8 @@ collector timers enabled. Initial dispatch waits for the pinned predecessor;
 its latest observed progress was 8/10 without failures. No new native SAC result
 is claimed at this deployment snapshot. The scientific runtime stays pinned
 while these operational notes are updated.
+
+Automatic handoff subsequently verified: predecessor10/10 with zero failures;
+native stride1 reached1000/100000 transitions in12.4763s at01:20:37UTC Oct21.
+Actor1062 and critics1638 parameters,15 features,13 positions; ES=false.
+Contract `eaeb5fd4`, retained `LAUNCH_VERIFIED.json`. No new financial result yet.
