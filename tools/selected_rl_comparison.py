@@ -162,7 +162,8 @@ def _check_rows(text, manifest, columns, availability_column, common, binary):
 
 def _build(request_path, output_root):
     request = _json(request_path)
-    variable_temporal = request.get('schema') == 'selected_rl_comparison_request.v9'
+    context_mode = request.get('schema') == 'selected_rl_comparison_request.v10'
+    variable_temporal = context_mode or request.get('schema') == 'selected_rl_comparison_request.v9'
     fixed_mode = variable_temporal or request.get('schema') == 'selected_rl_comparison_request.v8'
     temporal_mode = fixed_mode or request.get('schema') == 'selected_rl_comparison_request.v7'
     capacity_mode = request.get('schema') == 'selected_rl_comparison_request.v6'
@@ -186,14 +187,23 @@ def _build(request_path, output_root):
         keys = keys | {'temporal_encoder'}
     if variable_temporal:
         keys = keys | {'experiment_seed'}
+    if context_mode:
+        keys = keys | {'observation_stride_bars'}
     if (request.get('schema') not in ('selected_rl_comparison_request.v1',
                                      'selected_rl_comparison_request.v2',
                                      'selected_rl_comparison_request.v3',
                                      'selected_rl_comparison_request.v4', 'selected_rl_comparison_request.v5',
                                      'selected_rl_comparison_request.v6', 'selected_rl_comparison_request.v7',
-                                     'selected_rl_comparison_request.v8','selected_rl_comparison_request.v9')
+                                     'selected_rl_comparison_request.v8','selected_rl_comparison_request.v9',
+                                     'selected_rl_comparison_request.v10')
             or set(request) != keys):
         _fail('REQUEST_SCHEMA_OR_OVERRIDES_REFUSED')
+    if context_mode:
+        if (type(request['observation_stride_bars']) is not int
+                or request['observation_stride_bars'] not in (1, 2, 4)
+                or request['temporal_encoder'] != dict(net_arch=[8], branch_filters=2,
+                    core_filters=4, kernel_size=3, core_layers=1)):
+            _fail('DECLARED_FIXED_SHAPE_CONTEXT_REQUIRED')
     if temporal_mode:
         arch = request['temporal_encoder']
         if variable_temporal:
@@ -287,6 +297,8 @@ def _build(request_path, output_root):
             or any(c not in columns for c in binary) or len(set(binary)) != len(binary)):
         _fail('CAUSAL_ROLLING_NORMALIZATION_REQUIRED')
     common = copy.deepcopy(design['common_config'])
+    if context_mode:
+        common['observation_stride_bars'] = request['observation_stride_bars']
     if temporal_mode:
         common.update(net_arch=request['temporal_encoder']['net_arch'],
             temporal_branch_filters=request['temporal_encoder']['branch_filters'],

@@ -1,0 +1,11 @@
+{
+  "schema": "research_method_state.v1",
+  "initiative": "fixed_budget_temporal_context",
+  "current_stage": "integration_verification",
+  "authority": "owner_2026_10_20",
+  "problem": "Poor validation generalization has not been attributed to overtraining; compare context without changing tensor capacity.",
+  "constraints": ["native_SAC_unchanged", "no_DOIN_changes", "fixed_100000", "no_expensive_early_stopping", "TRAIN_2020_2023", "VALIDATION_2024", "TEST_closed", "one_heavy_GPU_process"],
+  "test_design": "54_FIXED_BUDGET_CONTEXT_STUDY.md#traceability--test-design",
+  "evidence": ["125 focused regressions passed including native real-engine monitor integration", "120 focused CPU checks passed including three real-preprocessor context/prefix probes", "PRE: three intended context contract failures before implementation"],
+  "next_allowed_actions": ["verify_real_preprocessor_context_probes", "pin_runtime", "prepare_immutable_spec", "install_finite_timers", "verify_native_launch"]
+}

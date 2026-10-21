@@ -56,7 +56,10 @@ trading domain.
 
 ## Document Map
 
-Current2026-10-20 owner-approved follow-up: [controlled modular specialists](53_MODULAR_SPECIALISTS_FOLLOWUP.md).
+Current2026-10-20 owner-approved follow-up: [fixed-budget context study](54_FIXED_BUDGET_CONTEXT_STUDY.md).
+Native SAC stays fixed-budget; the separate finite BC/DAgger monitor contrast
+does not authorize expensive native early stopping or additional monitor sweeps.
+Previous side study: [controlled modular specialists](53_MODULAR_SPECIALISTS_FOLLOWUP.md).
 Previous sequence closed: [gradual temporal capacity](52_TEMPORAL_CAPACITY_SWEEP.md).
 Its completed baseline is [fixed-budget minimal temporal SAC](51_FIXED_BUDGET_TEMPORAL_SAC.md).
 This owner-approved stage supersedes the interrupted frequent-monitor temporal

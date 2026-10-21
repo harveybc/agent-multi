@@ -21,6 +21,7 @@ from tools.paired_checkpoint_diagnostics import read,write
 from tools.verify_rl_predecessor import predecessor_ready,resources_ready
 
 SCHEMA='temporal_capacity_sweep.v1'
+CONTEXT_SCHEMA='temporal_context_sweep.v1'
 BASE_ARCH=dict(net_arch=[8],branch_filters=2,core_filters=4,kernel_size=3,core_layers=1)
 RULE=dict(min_daily_gain=1e-8,numeric_tolerance=1e-8,max_fresh_fit_attempts=2)
 METADATA=('SPEC.json','SWEEP_STATE.json','WORK_STATUS.json','PUBLICATION_STATUS.json',
@@ -33,10 +34,34 @@ def stage_architectures(stage,incumbent):
     return [dict(copy.deepcopy(incumbent),**{field:value}) for value in values]
 
 
-def replications(arch):
-    return [] if arch==BASE_ARCH else [dict(role=role,seed=seed,
-        architecture=copy.deepcopy(BASE_ARCH if role=='baseline' else arch))
+def replications(arch,base=BASE_ARCH):
+    return [] if arch==base else [dict(role=role,seed=seed,
+        architecture=copy.deepcopy(base if role=='baseline' else arch))
         for seed in (17,29) for role in ('baseline','finalist')]
+
+
+def stage_recipes(spec,stage,incumbent):
+    if spec['schema']==CONTEXT_SCHEMA:
+        if stage!=0:raise ValueError('CONTEXT_SINGLE_SCREEN_REQUIRED')
+        return [dict(copy.deepcopy(BASE_ARCH),observation_stride_bars=s) for s in (1,4)]
+    return stage_architectures(stage,incumbent)
+
+
+def context_predecessor(spec):
+    item=spec['predecessor'];root=Path(item['root'])
+    if digest(root/'SPEC.json')!=item['spec_sha256']:
+        raise ValueError('CONTEXT_PREDECESSOR_CHANGED')
+    if (root/'BLOCKED.json').exists():return 'WAIT_PREDECESSOR_BLOCKED'
+    if not (root/'SCIENTIFIC_COMPLETE.json').exists():return 'WAIT_PREDECESSOR'
+    close=read(root/'SCIENTIFIC_COMPLETE.json');state=read(root/'STATE.json')
+    source=read(root/'SPEC.json')
+    if (close.get('state') not in ('SCIENTIFIC_COMPLETE','COMPLETE_WITH_FAILURES')
+            or close.get('state_sha256')!=digest(root/'STATE.json')
+            or state.get('spec_sha256')!=item['spec_sha256']
+            or [r['cell'] for r in state['cells']]!=source['cells']
+            or any(r['state'] not in ('CLOSED','FAILED_EXHAUSTED') for r in state['cells'])):
+        raise ValueError('CONTEXT_PREDECESSOR_NOT_TERMINAL')
+    return 'READY'
 
 
 def improves(candidate,incumbent):
@@ -65,6 +90,7 @@ def outcome(node):
     body=read(root/'CONTRACT.json');arch=node['architecture'];cfg=body['common_config']
     if (body['seeds']!=[node['seed']] or body['arms']!=['SAC_PER_FEATURE_CONV1D']
             or cfg['net_arch']!=arch['net_arch']
+            or cfg['observation_stride_bars']!=arch.get('observation_stride_bars',2)
             or any(cfg.get('temporal_'+k,1)!=arch[k] for k in ('branch_filters','core_filters','kernel_size','core_layers'))):
         raise ValueError('SWEEP_OUTCOME_ARCH_SEED_MISMATCH')
     train=next(t for t in read(root/'STATUS.json')['tasks'] if t['split']=='train')
@@ -86,26 +112,33 @@ def outcome(node):
     return result
 
 
-def prepare(base_request,root,baseline,baseline_pin):
+def prepare(base_request,root,baseline,baseline_pin,predecessor=None,predecessor_pin=None):
     root=selected._output_root(root);baseline=Path(baseline).resolve();base_request=Path(base_request).resolve()
     if baseline.is_relative_to(root) or root.is_relative_to(baseline):raise ValueError('SWEEP_SEPARATE_ROOT_REQUIRED')
     base=read(base_request)
     if base['schema']!='selected_rl_comparison_request.v4':raise ValueError('SWEEP_BASE_V4_REQUIRED')
-    old=_node(baseline,BASE_ARCH,7)
+    arch=dict(BASE_ARCH,observation_stride_bars=2) if predecessor is not None else BASE_ARCH
+    old=_node(baseline,arch,7)
     if old['contract_sha256']!=baseline_pin:raise ValueError('SWEEP_BASELINE_PIN_MISMATCH')
     result=outcome(old)
     spec=dict(schema=SCHEMA,runtime=_commit(),base_request=str(base_request),base_request_sha256=digest(base_request),
               baseline=old,baseline_outcome=result,rule=RULE,stages=4,maximum_new_fits=11)
+    if predecessor is not None:
+        if digest(Path(predecessor)/'SPEC.json')!=predecessor_pin:
+            raise ValueError('CONTEXT_PREDECESSOR_PIN_MISMATCH')
+        spec.update(schema=CONTEXT_SCHEMA,stages=1,maximum_new_fits=6,
+                    predecessor=dict(root=str(Path(predecessor).resolve()),spec_sha256=predecessor_pin))
     sequence.immutable(root/'SPEC.json',spec)
     if not (root/'SWEEP_STATE.json').exists():
-        write(root/'SWEEP_STATE.json',dict(schema=SCHEMA,spec_sha256=digest(root/'SPEC.json'),
+        write(root/'SWEEP_STATE.json',dict(schema=spec['schema'],spec_sha256=digest(root/'SPEC.json'),
             state='READY',stages=[],trials=[],incumbent=dict(name='baseline',**old),replications_declared=False))
     return spec
 
 
 def plan(root):
     root=Path(root).resolve();spec=read(root/'SPEC.json')
-    if (spec['schema']!=SCHEMA or spec['runtime']!=_commit() or spec['rule']!=RULE
+    if (spec['schema'] not in (SCHEMA,CONTEXT_SCHEMA) or spec['runtime']!=_commit() or spec['rule']!=RULE
+            or (spec['stages'],spec['maximum_new_fits'])!=((1,6) if spec['schema']==CONTEXT_SCHEMA else (4,11))
             or digest(spec['base_request'])!=spec['base_request_sha256']
             or digest(Path(spec['baseline']['root'])/'CONTRACT.json')!=spec['baseline']['contract_sha256']):
         raise ValueError('SWEEP_SPEC_OR_RUNTIME_DRIFT')
@@ -116,7 +149,7 @@ def plan(root):
         if read(root/'decisions'/f'stage-{index+1}.json')!=decision or decision['previous']!=incumbent['name']:
             raise ValueError('SWEEP_DECISION_DRIFT')
         group=[t for t in state['trials'] if t['phase']==index]
-        if [t['architecture'] for t in group]!=stage_architectures(index,incumbent['architecture']):
+        if [t['architecture'] for t in group]!=stage_recipes(spec,index,incumbent['architecture']):
             raise ValueError('SWEEP_STAGE_ARCHITECTURE_DRIFT')
         if decision['winner']!=incumbent['name']:
             chosen=next(t for t in group if t['name']==decision['winner'])
@@ -134,9 +167,12 @@ def _candidate(root,spec,trial):
     request=copy.deepcopy(read(spec['base_request']))
     from agent_plugins.fixed_budget_monitor import SETTINGS
     request.update(schema='selected_rl_comparison_request.v9',experiment_seed=trial['seed'],
-        temporal_encoder=trial['architecture'],early_stopping=SETTINGS)
+        temporal_encoder={k:v for k,v in trial['architecture'].items() if k!='observation_stride_bars'},early_stopping=SETTINGS)
+    context=spec['schema']==CONTEXT_SCHEMA
+    if context:request.update(schema='selected_rl_comparison_request.v10',
+        observation_stride_bars=trial['architecture']['observation_stride_bars'])
     request['publication']['code_commit']=spec['runtime']
-    request['publication']['experiment_set_key']+='-temporal-ladder-'+name
+    request['publication']['experiment_set_key']+=('-context-' if context else '-temporal-ladder-')+name
     request_file=Path(root)/'requests'/(name+'.json');sequence.immutable(request_file,request)
     output=Path(root)/'runs'/name
     selected.materialize(request_file,output)
@@ -144,7 +180,9 @@ def _candidate(root,spec,trial):
     baseline=read(Path(spec['baseline']['root'])/'CONTRACT.json');body=read(output/'CONTRACT.json')
     a,b=copy.deepcopy(baseline['common_config']),copy.deepcopy(body['common_config'])
     for values in (a,b):
-        for key in ('net_arch','temporal_branch_filters','temporal_core_filters','temporal_kernel_size','temporal_core_layers'):
+        mutable=('observation_stride_bars','temporal_core_layers') if context else (
+            'net_arch','temporal_branch_filters','temporal_core_filters','temporal_kernel_size','temporal_core_layers')
+        for key in mutable:
             values.pop(key,None)
     if a!=b or body['selected_input_binding']!=baseline['selected_input_binding']:
         raise ValueError('SWEEP_NONARCHITECTURAL_CHANGE')
@@ -187,10 +225,10 @@ def _advance(root,spec,state):
                 return None
             return node
         stage=len(state['stages'])
-        if stage<4:
+        if stage<spec['stages']:
             group=[t for t in state['trials'] if t['phase']==stage]
             if not group:
-                for index,arch in enumerate(stage_architectures(stage,state['incumbent']['architecture'])):
+                for index,arch in enumerate(stage_recipes(spec,stage,state['incumbent']['architecture'])):
                     state['trials'].append(dict(name=f's{stage+1}-v{index+1}',phase=stage,seed=7,
                         architecture=arch,state='PENDING',attempts=[]))
                 _save(root,state);continue
@@ -204,13 +242,13 @@ def _advance(root,spec,state):
             sequence.immutable(Path(root)/'decisions'/f'stage-{stage+1}.json',decision)
             state['stages'].append(decision);state['incumbent']=incumbent;_save(root,state);continue
         if not state['replications_declared']:
-            for item in replications(state['incumbent']['architecture']):
-                state['trials'].append(dict(name=f"confirm-{item['role']}-s{item['seed']}",phase=4,
+            for item in replications(state['incumbent']['architecture'],spec['baseline']['architecture']):
+                state['trials'].append(dict(name=f"confirm-{item['role']}-s{item['seed']}",phase=spec['stages'],
                     seed=item['seed'],role=item['role'],architecture=item['architecture'],state='PENDING',attempts=[]))
             state['replications_declared']=True;_save(root,state);continue
         state['state']='COMPLETED_WITH_FAILED_CANDIDATES' if any(t['state']=='FAILED_EXHAUSTED' for t in state['trials']) else 'ALL_TRIALS_CLOSED'
         _save(root,state);summarize(root,spec,state)
-        sequence.immutable(Path(root)/'SWEEP_COMPLETE.json',dict(schema=SCHEMA,state=state['state'],
+        sequence.immutable(Path(root)/'SWEEP_COMPLETE.json',dict(schema=spec['schema'],state=state['state'],
             spec_sha256=digest(Path(root)/'SPEC.json'),state_sha256=digest(Path(root)/'SWEEP_STATE.json'),
             summary_sha256=digest(Path(root)/'SUMMARY.json'),trials=len(state['trials']),
             successful=sum(t['state']=='CLOSED' for t in state['trials'])))
@@ -279,6 +317,9 @@ def work(root):
     with (root/'.worker.lock').open('a') as lock:
         try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         except BlockingIOError:return 0
+        if spec['schema']==CONTEXT_SCHEMA:
+            ready=context_predecessor(spec)
+            if ready!='READY':write(root/'WORK_STATUS.json',dict(state=ready));return 0
         uuid=read(spec['base_request'])['execution']['gpu_evidence']['assigned_gpu_uuid']
         ready=resources_ready(root,uuid)
         if ready!='READY':write(root/'WORK_STATUS.json',dict(state=ready));return 0
@@ -306,20 +347,20 @@ def publish(root):
 
 
 def summarize(root,spec,state):
-    items=[dict(name='baseline',seed=7,architecture=BASE_ARCH,state='CLOSED',outcome=spec['baseline_outcome'])]
+    items=[dict(name='baseline',seed=7,architecture=spec['baseline']['architecture'],state='CLOSED',outcome=spec['baseline_outcome'])]
     items.extend({k:t.get(k) for k in ('name','seed','architecture','state','outcome')} for t in state['trials'])
-    changed=bool(replications(state['incumbent']['architecture']))
+    changed=bool(replications(state['incumbent']['architecture'],spec['baseline']['architecture']))
     replication=[dict(seed=7,validation_daily_growth_difference=outcome(state['incumbent'])['validation_growth']-
         spec['baseline_outcome']['validation_growth'],nonworse_risk_and_gap=improves(outcome(state['incumbent']),spec['baseline_outcome']))] if changed else []
     for seed in (17,29):
-        pair={t.get('role'):t for t in state['trials'] if t['phase']==4 and t['seed']==seed}
+        pair={t.get('role'):t for t in state['trials'] if t['phase']==spec['stages'] and t['seed']==seed}
         if len(pair)==2 and all(t['state']=='CLOSED' for t in pair.values()):
             replication.append(dict(seed=seed,validation_daily_growth_difference=
                 pair['finalist']['outcome']['validation_growth']-pair['baseline']['outcome']['validation_growth'],
                 nonworse_risk_and_gap=improves(pair['finalist']['outcome'],pair['baseline']['outcome'])))
-    verdict='SEARCH_IN_PROGRESS' if len(state['stages'])<4 else 'NOT_NEEDED_NO_PROMOTION' if not changed else 'PROMISING_SHARED_SEEDS_DEVELOPMENT_ONLY' if (
+    verdict='SEARCH_IN_PROGRESS' if len(state['stages'])<spec['stages'] else 'NOT_NEEDED_NO_PROMOTION' if not changed else 'PROMISING_SHARED_SEEDS_DEVELOPMENT_ONLY' if (
         len(replication)==3 and all(r['nonworse_risk_and_gap'] for r in replication)) else 'INCONCLUSIVE'
-    payload=dict(schema=SCHEMA,state=state['state'],scope='DEVELOPMENT_NO_TEST',incumbent=state['incumbent'],trials=items,
+    payload=dict(schema=spec['schema'],state=state['state'],scope='DEVELOPMENT_NO_TEST',incumbent=state['incumbent'],trials=items,
         replication=replication,confirmation=verdict,
         mean_paired_daily_growth_difference=statistics.mean(r['validation_daily_growth_difference'] for r in replication) if len(replication)==3 else None)
     write(Path(root)/'SUMMARY.json',payload)
@@ -351,13 +392,14 @@ def status(root):
     if current.get('current_root') and not (Path(current['current_root'])/'CLOSE.json').exists():progress=selected.read_status(Path(current['current_root']))
     finished=sum(t['state'] in ('CLOSED','FAILED_EXHAUSTED') for t in state['trials'])
     durations=[t['outcome']['wall_seconds'] for t in state['trials'] if t['state']=='CLOSED'] or [spec['baseline_outcome']['wall_seconds']]
-    remaining=max(0,7-sum(t['phase']<4 and t['state'] in ('CLOSED','FAILED_EXHAUSTED') for t in state['trials']))
-    confirm_remaining=sum(t['phase']==4 and t['state'] not in ('CLOSED','FAILED_EXHAUSTED') for t in state['trials'])
+    screen_count=2 if spec['schema']==CONTEXT_SCHEMA else 7
+    remaining=max(0,screen_count-sum(t['phase']<spec['stages'] and t['state'] in ('CLOSED','FAILED_EXHAUSTED') for t in state['trials']))
+    confirm_remaining=sum(t['phase']==spec['stages'] and t['state'] not in ('CLOSED','FAILED_EXHAUSTED') for t in state['trials'])
     upper=remaining+(confirm_remaining if state['replications_declared'] else 4)
-    blocked=current['state'].startswith(('WAIT_RAM','WAIT_DISK','WAIT_GPU','BLOCKED'))
+    blocked=current['state'].startswith(('WAIT_RAM','WAIT_DISK','WAIT_GPU','WAIT_PREDECESSOR','BLOCKED'))
     complete=(Path(root)/'SWEEP_COMPLETE.json').exists()
-    return dict(schema=SCHEMA,state=state['state'] if complete else current['state'],operation=current,completed_trials=finished,declared_trials=len(state['trials']),
-        maximum_new_fits=11,stages_completed=len(state['stages']),incumbent=state['incumbent'],current=progress,
+    return dict(schema=spec['schema'],state=state['state'] if complete else current['state'],operation=current,completed_trials=finished,declared_trials=len(state['trials']),
+        maximum_new_fits=spec['maximum_new_fits'],stages_completed=len(state['stages']),incumbent=state['incumbent'],current=progress,
         estimated_remaining_seconds=None if blocked else [0,0] if complete else [remaining*statistics.mean(durations),upper*statistics.mean(durations)],
         eta_scope='PROVISIONAL_BASED_ON_COMPLETED_FULL_TRIALS_INCLUDES_CURRENT_TRIAL',
         trials=[dict(name=t['name'],state=t['state'],architecture=t['architecture'],seed=t['seed'],outcome=t.get('outcome')) for t in state['trials']])
@@ -381,7 +423,8 @@ def render(root,directory,environment_file):
             'MemoryMax='+('6G' if role=='worker' else '1500M'),'MemorySwapMax=0',
             'CPUQuota='+('200%' if role=='worker' else '100%'),'TasksMax=256','KillMode=control-group',
             'RuntimeMaxSec=21600' if role=='worker' else 'TimeoutStartSec=300','UMask=0077',''])
-        paths.extend(sequence._unit(directory,'rl-temporal-capacity-'+role,service))
+        prefix='rl-temporal-context-' if spec['schema']==CONTEXT_SCHEMA else 'rl-temporal-capacity-'
+        paths.extend(sequence._unit(directory,prefix+role,service))
     return paths
 
 
@@ -436,12 +479,13 @@ def main():
     p.add_argument('action',choices=('prepare','render','work','publish','status','export','collect'))
     p.add_argument('--root',type=Path,required=True);p.add_argument('--base-request',type=Path)
     p.add_argument('--baseline',type=Path);p.add_argument('--baseline-sha256')
+    p.add_argument('--predecessor',type=Path);p.add_argument('--predecessor-sha256')
     p.add_argument('--units-dir',type=Path);p.add_argument('--environment-file',type=Path)
     p.add_argument('--host');p.add_argument('--runtime',type=Path);p.add_argument('--archive',type=Path);p.add_argument('--state-root',type=Path)
     p.add_argument('--remote-python',default='python3')
     a=p.parse_args()
     try:
-        if a.action=='prepare':result=prepare(a.base_request,a.root,a.baseline,a.baseline_sha256)
+        if a.action=='prepare':result=prepare(a.base_request,a.root,a.baseline,a.baseline_sha256,a.predecessor,a.predecessor_sha256)
         elif a.action=='render':result=[str(v) for v in render(a.root,a.units_dir,a.environment_file)]
         elif a.action=='work':return work(a.root)
         elif a.action=='publish':return publish(a.root)
