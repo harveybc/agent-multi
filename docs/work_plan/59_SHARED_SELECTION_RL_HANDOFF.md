@@ -16,6 +16,13 @@ hypotheses, and records an exact ASINH full-series decision dependency witness.
 Bound its real selected-column impact and repair TRAIN-only transform choice
 before adoption; no automatic ASINH/differencing justified solely by diagnostics.
 
+Separate owner execution order2026-10-22: Musashi's available worker now runs
+Satoshi's pinned12-arm E3-M package sequentially on the large GPU, with automatic
+recovery and a second-disk collector. Explicit full/none treatments belong to
+that diagnostic package and do not override native SAC's no-feedback baseline.
+See predictor program_v3/E3M_ASSIGNED_GPU_EXECUTION_2026_10_22.md. No native SAC
+fit or old held-window worker was launched by this assignment.
+
 The detailed cross-repository contract is predictor master-v3
 `program_v3/SHARED_SELECTION_TO_RL_HANDOFF_2026_10_22.md`.
 
