@@ -11,7 +11,9 @@ The detailed cross-repository contract is predictor master-v3
 
 - Selection v3: 3894 merged units, no recorded errors. Independent checks found
   no support/seed/fold mismatches in 714 contrast, 78 encoding and 120 rescue
-  multi-arm groups. Candidate subsets: core15, strict126, shortlist174.
+  multi-arm groups. Selection subsets originally strict126/shortlist174;
+  consumer-corrected lists are core15, strict125, shortlist173. The removed
+  raw.log_close was a selection-only control, not a missing value to impute.
 - Satoshi's four expert-consumer finalist results and final audit are pending.
   Encoding decisions are task/model-specific; they do not select SAC's optimal
   extractor, fusion or core. Expert labels do not enter unguided SAC.
@@ -20,6 +22,10 @@ The detailed cross-repository contract is predictor master-v3
   its filters or its per-feature architecture are optimal for the new pool.
 - Frozen TRAIN scaler candidate gym-fx57d5556 remains separate from the selected
   SAC adapter. Do not claim fixed scaling is deployed in SAC before integration.
+- Satoshi's v3b strict fit is observed running; rolling/fixed controls and four
+  consolidated arms are queued, not scored. Its shared cutoff and support hashes
+  enable checking parity; they do not yet prove it. Preserve separate original
+  selection and effective consumer identities before binding SAC.
 
 ## Next Sequence
 
