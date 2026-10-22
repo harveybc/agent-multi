@@ -1,5 +1,16 @@
 # Local Window And Component Optimization
 
+Owner priority update2026-10-21: stop further window dispatch while fixing
+TRAIN-only scaling and completing the agreed engineered feature pool/selection.
+Worker timer stopped and disabled; the already-started12 trial finished,
+10/10 native reports read back and independent copy verified. Parent ledger
+records OWNER_HOLD, not a completed8-fit study. No subsequent fit is running.
+Satoshi implementation/audit guidance is in predictor program_v3/
+SATOSHI_SELECTION_CORRECTIONS_AND_AUDIT_BRIEF_2026_10_21.md. Original versus
+individual/grouped components and parent+components are mandatory contrasts.
+New fixed-scaler code is a separately tested gym-fx candidate, not deployed
+or integrated into the selected-input adapter. The cuts below are historical.
+
 ## Current Follow-up: Missing Neighbours And Shared Seeds
 
 Owner continuation2026-10-21: fresh13 seed7 is closed and reproduces the
