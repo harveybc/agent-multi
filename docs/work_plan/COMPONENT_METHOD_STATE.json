@@ -3,6 +3,7 @@
   "initiative": "component_optimization_fine_windows_first",
   "current_stage": "shared_selection_aggregated_pending_consumer_audit_and_SAC_input_binding",
   "current_handoff_plan": "59_SHARED_SELECTION_RL_HANDOFF.md",
+  "owner_input_policy_2026_10_22": {"agent_feedback": "none", "scaling": "fixed_TRAIN_only", "clip": null, "implicit_transforms": false, "initial_window": 13, "observed_stride": 2, "includes_current_t": true, "heterogeneous_profile_extractors": "CANDIDATES_NOT_SELECTED_OR_DEPLOYED", "upstream_ASINH_fit_scope": "synthetic dependency proven; actual selected-column impact pending"},
   "shared_selection_v3": {"merged_units": 3894, "recorded_errors": 0, "support_mismatches_in_checked_groups": 0, "strict_columns": 126, "shortlist_columns": 174, "expert_consumer_finalists": "PENDING_COMPLETED_EVIDENCE", "SAC_scaler_binding": "CANDIDATE_NOT_INTEGRATED", "extractor_architecture_selected": false, "new_SAC_fit_started": false},
   "effective_consumer_v3b": {"core15": 15, "strict": 125, "shortlist": 173, "strict_plus_encodings": 137, "excluded_control": "raw.log_close", "peer_strict_fit": "OBSERVED_RUNNING_2026_10_22", "rolling_and_consolidated_controls": "QUEUED_AWAIT_COMPLETED_RECEIPTS", "old_window_queue_resumed": false},
   "authority": "owner_2026_10_21_fine_grid_and_components_adaptation_last",

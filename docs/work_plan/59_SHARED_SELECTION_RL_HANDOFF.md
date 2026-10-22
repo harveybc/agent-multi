@@ -4,6 +4,18 @@ Status 2026-10-22: v3 selection execution completed, consumer/release audit pend
 This is the current follow-up after the owner-priority preprocessing repair;
 the previous window queue stays held. No new scientific fit launched here.
 
+Owner clarification2026-10-22: actor/critics receive formally selected market
+inputs only, no agent feedback. Frozen TRAIN scaling, no clipping/rolling or
+implicit extra transforms. Native cyclic/binary/probability coordinates stay
+explicit. Environment state/business enforcement and SAC replay actions/rewards
+remain intact. This supersedes ambiguous none/minimal language for the baseline.
+The companion predictor document
+`program_v3/FEATURE_PROFILES_ENCODINGS_AND_SAC_INPUT_POLICY_2026_10_22.md`
+distinguishes actual semantic families, measured encodings and untested extractor
+hypotheses, and records an exact ASINH full-series decision dependency witness.
+Bound its real selected-column impact and repair TRAIN-only transform choice
+before adoption; no automatic ASINH/differencing justified solely by diagnostics.
+
 The detailed cross-repository contract is predictor master-v3
 `program_v3/SHARED_SELECTION_TO_RL_HANDOFF_2026_10_22.md`.
 
