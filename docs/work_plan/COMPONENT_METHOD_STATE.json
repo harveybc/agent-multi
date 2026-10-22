@@ -1,7 +1,9 @@
 {
   "schema": "research_method_state.v1",
   "initiative": "component_optimization_fine_windows_first",
-  "current_stage": "owner_priority_fixed_scaling_and_complete_selection_repair",
+  "current_stage": "shared_selection_aggregated_pending_consumer_audit_and_SAC_input_binding",
+  "current_handoff_plan": "59_SHARED_SELECTION_RL_HANDOFF.md",
+  "shared_selection_v3": {"merged_units": 3894, "recorded_errors": 0, "support_mismatches_in_checked_groups": 0, "strict_columns": 126, "shortlist_columns": 174, "expert_consumer_finalists": "PENDING_COMPLETED_EVIDENCE", "SAC_scaler_binding": "CANDIDATE_NOT_INTEGRATED", "extractor_architecture_selected": false, "new_SAC_fit_started": false},
   "authority": "owner_2026_10_21_fine_grid_and_components_adaptation_last",
   "test_design": "56_COMPONENT_OPTIMIZATION.md#test-design-and-traceability",
   "constraints": ["native_SAC_unchanged", "DOIN_unchanged", "stride_2", "static_fixed_100000", "TEST_closed", "weekly_adaptation_last"],

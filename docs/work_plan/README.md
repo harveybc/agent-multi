@@ -56,7 +56,10 @@ trading domain.
 
 ## Document Map
 
-Current2026-10-21 owner-approved follow-up: [fine window and component optimization](56_COMPONENT_OPTIMIZATION.md).
+Current2026-10-22 follow-up: [shared selection and independent SAC consumption](59_SHARED_SELECTION_RL_HANDOFF.md).
+The repaired v3 selection is aggregated; final consumer/audit and fixed-scaler
+integration precede a fresh SAC sequence. The old window queue remains held.
+Previous2026-10-21 follow-up: [fine window and component optimization](56_COMPONENT_OPTIMIZATION.md).
 New planned successor after that window grid: [incremental feature subsets](57_INCREMENTAL_FEATURE_SUBSETS.md),
 before extractor/capacity refinements, without modifying the active queue.
 Weekly adaptation LAST; per-feature Dense requires a matched comparison, not
