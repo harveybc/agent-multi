@@ -2,6 +2,14 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "recipe_sac_collect.py": {
+   "purpose": "Checksum-copy the owner-authorized frozen-recipe SAC campaign to a second machine and publish its reports through the existing authenticated warehouse outbox; no training or metric selection",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "campaign_operation", "owner": "static RL comparison"
+  },
+  "recipe_sac_queue.py": {
+   "purpose": "Finite owner-authorized label-free native SAC queue on pinned shared observations and the existing recipe accounting engine, with duration-aware replay, sparse paired inference, authenticated completion and durable report outbox",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "campaign_operation", "owner": "static RL comparison"
+  },
   "audit_window_evidence.py": {
    "purpose": "Read-only verification of archived window study contracts, input hashes, complete compute, frozen policy weights and native/common-time metric replay; no fitting or promotion",
    "lifecycle": "experimental", "mutability": "mixed", "authority_class": "evidence_producer", "owner": "static RL comparison"

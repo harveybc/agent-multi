@@ -1,0 +1,456 @@
+"""Finite owner-authorized native SAC queue on the frozen shared market recipe."""
+from __future__ import annotations
+
+import argparse
+from contextlib import contextmanager
+from datetime import datetime, timezone
+import fcntl
+import hashlib
+import importlib.metadata
+import json
+import math
+import os
+from pathlib import Path
+import random
+import shutil
+import subprocess
+import sys
+import time
+
+from app.frozen_recipe_inputs import file_sha, require
+from tools.verify_rl_static_engineering import save_status
+
+ROOT = Path(__file__).resolve().parents[1]
+DESIGN = dict(seed=7, total_timesteps=100000, checkpoint_interval=25000,
+              learning_rate=.0003, buffer_size=20000, batch_size=64,
+              learning_starts=1000, gamma=.99, tau=.005,
+              early_stopping=False, refit=False, expert=False, agent_feedback=False)
+
+
+def now():
+    return datetime.now(timezone.utc).isoformat()
+
+
+def read(path):
+    return json.loads(Path(path).read_text())
+
+
+def write(path, value):
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    save_status(path, value)
+
+
+def source_pins(root, directories):
+    return {str(p.relative_to(root)): file_sha(p) for directory in directories
+            for p in sorted((root / directory).rglob('*.py'))}
+
+
+def software():
+    return {name: importlib.metadata.version(name) for name in
+            ('torch','stable-baselines3','gymnasium','numpy','pandas','pyarrow')}
+
+
+def prepare(a):
+    root = a.root.resolve()
+    require(not root.exists(), 'NEW_CAMPAIGN_REQUIRED')
+    engine = a.engine_root.resolve()
+    spec = dict(schema='recipe_sac_queue.v1', recipe_sha256=file_sha(a.recipe),
+                engine_root=str(engine), agent_root=str(ROOT), design=DESIGN,
+                arms=['GROUPED', 'FLAT'], device='cuda', max_attempts=2,
+                software=software(),
+                task_timeout_seconds=43200,
+                inputs={key: str(getattr(a, key).resolve()) for key in
+                        ('recipe', 'store', 'manifest', 'bars', 'closures')},
+                code={'agent': source_pins(ROOT, ['app', 'env_plugins', 'agent_plugins', 'tools']),
+                      'engine': source_pins(engine, ['app/short_horizon'])})
+    root.mkdir(parents=True)
+    write(root / 'SPEC.private.json', spec)
+    write(root / 'IDENTITY.json', {'spec_sha256': file_sha(root / 'SPEC.private.json'),
+                                  'created_at': now(), 'state': 'PREPARED'})
+    print(json.dumps({'state': 'PREPARED', 'spec_sha256': file_sha(root / 'SPEC.private.json')}))
+
+
+def verify(root):
+    spec = read(root / 'SPEC.private.json')
+    require(file_sha(root / 'SPEC.private.json') == read(root / 'IDENTITY.json')['spec_sha256'], 'SPEC_PIN')
+    require(spec['schema'] == 'recipe_sac_queue.v1' and spec['design'] == DESIGN
+            and spec['arms'] == ['GROUPED', 'FLAT'] and spec['max_attempts'] == 2
+            and spec['device'] == 'cuda', 'DESIGN')
+    require(spec['software'] == software(), 'SOFTWARE_PIN')
+    for role, path in [('agent', spec['agent_root']), ('engine', spec['engine_root'])]:
+        for name, digest in spec['code'][role].items():
+            require(file_sha(Path(path) / name) == digest, 'CODE_PIN')
+    return spec
+
+
+def clean(value):
+    """Preserve undefined metrics as null with explicit names, never NaN -> zero."""
+    import numpy as np
+    import pandas as pd
+    if isinstance(value, dict):
+        return {str(k): clean(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [clean(v) for v in value]
+    if isinstance(value, np.generic):
+        return clean(value.item())
+    if isinstance(value, float) and not math.isfinite(value):
+        return None
+    if isinstance(value, pd.Timestamp):
+        return value.isoformat()
+    return value
+
+
+def tensor_hash(model):
+    h = hashlib.sha256()
+    for name, value in sorted(model.policy.state_dict().items()):
+        h.update(name.encode())
+        h.update(value.detach().cpu().contiguous().numpy().tobytes())
+    return h.hexdigest()
+
+
+@contextmanager
+def preserve_rng():
+    import numpy as np
+    import torch
+    py, ns, ts = random.getstate(), np.random.get_state(), torch.get_rng_state()
+    cs = torch.cuda.get_rng_state_all() if torch.cuda.is_available() else None
+    try:
+        yield
+    finally:
+        random.setstate(py)
+        np.random.set_state(ns)
+        torch.set_rng_state(ts)
+        if cs is not None:
+            torch.cuda.set_rng_state_all(cs)
+
+
+def evaluate(model, market, period, output):
+    import numpy as np
+    import torch
+    from app.short_horizon.expert_guided.env import summary
+    env = market.env(period)
+    py, np_state, th = random.getstate(), np.random.get_state(), torch.get_rng_state()
+    cuda = torch.cuda.get_rng_state_all() if torch.cuda.is_available() else None
+    training = model.policy.training
+    before = tensor_hash(model)
+    started = time.monotonic()
+    try:
+        obs, _ = env.reset()
+        while True:
+            action, _ = model.predict(obs, deterministic=True)
+            obs, _, done, _, _ = env.step(action)
+            if done:
+                break
+        native = env.engine.result()
+        report = summary(native)
+        daily = native['daily_equity'].to_numpy(dtype=float)
+        previous = np.r_[env.engine.cfg.capital, daily[:-1]]
+        mean_log = (float(np.log(daily / previous).mean())
+                    if (daily > 0).all() and (previous > 0).all() else None)
+        report.update(period=period, period_limits=market.recipe['split']['periods'][period],
+                      coverage=env.coverage, seconds=time.monotonic() - started,
+                      initial_capital=env.engine.cfg.capital,
+                      total_return_pct=100 * native['net_profit_usd'] / env.engine.cfg.capital,
+                      mean_daily_log_return=mean_log,
+                      policy_tensor_sha256=before,
+                      undefined_metrics=[k for k, v in report.items()
+                                         if isinstance(v, float) and not math.isfinite(v)])
+        require(tensor_hash(model) == before, 'EVAL_CHANGED_WEIGHTS')
+        write(output / (period + '.json'), clean(report))
+        write(output / (period + '.trades.json'), clean(env.engine.trades))
+        native['daily_equity'].to_csv(output / (period + '.daily_equity.csv'))
+        return clean(report)
+    finally:
+        random.setstate(py)
+        np.random.set_state(np_state)
+        torch.set_rng_state(th)
+        if cuda is not None:
+            torch.cuda.set_rng_state_all(cuda)
+        model.policy.set_training_mode(training)
+        env.close()
+
+
+def outbox_report(root, spec, arm, step, report, checkpoint):
+    period = report['period']
+    key = f'{read(root / "IDENTITY.json")["spec_sha256"][:16]}-{arm}-{step}-{period}'
+    metrics = []
+    for k, v in report.items():
+        if type(v) in (int, float) or v is None:
+            unit = ('USD' if k.endswith('_usd') or k == 'initial_capital' else
+                    'percent' if k.endswith('_pct') else
+                    'fraction' if k in ('win_rate', 'weeks_below_min_share', 'exposure_bar_share') else
+                    'seconds' if k == 'seconds' else 'count' if k.startswith('n_') or k == 'trades' else 'ratio')
+            metrics.append(dict(metric=k, value=v, split=period.lower(), horizon=None, unit=unit))
+    payload = dict(experiment_key=key, experiment_set_key='recipe-r3-native-sac', actor='musashi',
+                   lake='financial-data', lineage='UNVERIFIED', project='agent-multi', phase='DEVELOPMENT',
+                   config_sha256=read(root / 'IDENTITY.json')['spec_sha256'],
+                   tags=dict(recipe_sha256=spec['recipe_sha256'], arm=arm, seed='7',
+                             checkpoint=str(step), checkpoint_archive_sha256=file_sha(checkpoint),
+                             policy_tensor_sha256=report['policy_tensor_sha256'],
+                             costs='ASSUMED_NOT_BROKER_VERIFIED',
+                             selection='FIXED_FINAL_100000', test='CLOSED',
+                             expert='NONE', feedback='NONE', scaling='FROZEN_TRAIN'),
+                   datasets=[dict(lake='financial-data',resource='shared-feature-store-r3',
+                                  sha256=read(spec['inputs']['recipe'])['store']['sha256'], role=period.lower(),
+                                  lineage='UNVERIFIED')], metrics=metrics)
+    write(root / 'outbox' / (key + '.json'), dict(report=payload, source_unit=key))
+
+
+def worker(root, arm, attempt):
+    import numpy as np
+    import torch
+    from stable_baselines3.common.callbacks import BaseCallback
+    from app.recipe_runtime import RecipeMarket, build_sac
+    spec = verify(root)
+    require(torch.cuda.is_available(), 'CUDA_REQUIRED')
+    torch.set_num_threads(1)
+    torch.set_num_interop_threads(1)
+    torch.backends.cudnn.benchmark = False
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cuda.matmul.allow_tf32 = False
+    torch.use_deterministic_algorithms(True)
+    folder = root / arm / f'attempt-{attempt}'
+    folder.mkdir(parents=True, exist_ok=False)
+    market = RecipeMarket(spec)
+    env = market.env('TRAIN', DESIGN['gamma'])
+    model = build_sac(env, market.recipe, DESIGN, arm, spec['device'])
+    start = time.monotonic()
+    progress = dict(state='TRAINING', arm=arm, attempt=attempt, step=0, budget=DESIGN['total_timesteps'],
+                    recipe=market.recipe['identity'], device=torch.cuda.get_device_name(),
+                    spec_sha256=file_sha(root / 'SPEC.private.json'), started_at=now())
+
+    class Heartbeat(BaseCallback):
+        def _on_step(self):
+            if self.num_timesteps % 250 == 0:
+                progress.update(step=self.num_timesteps, heartbeat_at=now(), elapsed_seconds=time.monotonic()-start,
+                                gradient_updates=self.model._n_updates,
+                                gpu_peak_bytes=torch.cuda.max_memory_allocated())
+                write(root / 'PROGRESS.json', progress)
+                print(json.dumps(progress), flush=True)
+            return True
+
+    write(root / 'PROGRESS.json', progress)
+    reports = []
+    for step in range(DESIGN['checkpoint_interval'], DESIGN['total_timesteps'] + 1, DESIGN['checkpoint_interval']):
+        # SB3 continuation preserves replay/optimizer/environment; no reset or refit between checkpoints.
+        model.learn(total_timesteps=DESIGN['checkpoint_interval'], reset_num_timesteps=(step == DESIGN['checkpoint_interval']),
+                    callback=Heartbeat())
+        require(model.num_timesteps == step, 'STEP_COUNT')
+        checkpoint_dir = folder / f'step-{step}'
+        checkpoint_dir.mkdir()
+        checkpoint = checkpoint_dir / 'model.zip'
+        model.save(checkpoint)
+        with preserve_rng():
+            probe_env = market.env('TRAIN')
+            obs, _ = probe_env.reset()
+            original = model.predict(obs, deterministic=True)[0]
+            from stable_baselines3 import SAC
+            loaded = SAC.load(checkpoint, device=spec['device'])
+            require(np.array_equal(original, loaded.predict(obs, deterministic=True)[0]), 'MODEL_RELOAD')
+            del loaded
+            probe_env.close()
+        checkpoint_reports = {}
+        for period in ('TRAIN', 'INNER_A', 'OBS_2024'):
+            progress.update(state='EVALUATING', step=step, period=period, heartbeat_at=now())
+            write(root / 'PROGRESS.json', progress)
+            report = evaluate(model, market, period, checkpoint_dir)
+            checkpoint_reports[period] = report
+            outbox_report(root, spec, arm, step, report, checkpoint)
+            reports.append(dict(step=step, **report))
+        base = checkpoint_reports['TRAIN']['mean_daily_log_return']
+        write(checkpoint_dir / 'GAPS.json', {
+            'metric': 'TRAIN minus other mean daily log return (same daily units)',
+            'gaps': {period: None if base is None or r['mean_daily_log_return'] is None
+                     else base - r['mean_daily_log_return'] for period, r in checkpoint_reports.items()}})
+        write(checkpoint_dir / 'RECEIPT.json', dict(
+            spec_sha256=file_sha(root / 'SPEC.private.json'), policy_tensor_sha256=tensor_hash(model),
+            artifacts={p.name: file_sha(p) for p in checkpoint_dir.iterdir() if p.is_file()}))
+        progress.update(state='TRAINING', heartbeat_at=now(), elapsed_seconds=time.monotonic()-start,
+                        eta_arm_seconds=(time.monotonic()-start) / step * (DESIGN['total_timesteps']-step))
+        write(root / 'PROGRESS.json', progress)
+    result = dict(state='COMPLETE', arm=arm, attempt=attempt, spec_sha256=file_sha(root / 'SPEC.private.json'),
+                  finished_at=now(), elapsed_seconds=time.monotonic()-start, reports=reports,
+                  artifacts={str(p.relative_to(folder)): file_sha(p) for p in folder.rglob('*') if p.is_file()})
+    write(folder / 'RESULT.json', result)
+    env.close()
+    return 0
+
+
+def authenticated_result(path, spec_sha):
+    result = read(path)
+    require(result['state'] == 'COMPLETE' and result['spec_sha256'] == spec_sha, 'RESULT_IDENTITY')
+    for name, digest in result['artifacts'].items():
+        p = (path.parent / name).resolve()
+        require(p.is_relative_to(path.parent.resolve()) and file_sha(p) == digest, 'RESULT_ARTIFACT')
+    require(len(result['reports']) == 12 and {r['step'] for r in result['reports']} == {25000,50000,75000,100000},
+            'RESULT_REPORTS')
+    return result
+
+
+def admission(root):
+    # Resource wait is not an experiment failure and never changes its settings.
+    mem = {line.split(':')[0]: int(line.split()[1]) for line in Path('/proc/meminfo').read_text().splitlines()
+           if line.startswith('MemAvailable:')}
+    if mem['MemAvailable'] < 5 * 1024**2 or shutil.disk_usage(root).free < 5 * 1024**3:
+        return False
+    visible = os.environ.get('CUDA_VISIBLE_DEVICES', '')
+    if not visible or ',' in visible:
+        return False
+    result = subprocess.run(['nvidia-smi', '-i', visible, '--query-gpu=memory.free',
+                             '--format=csv,noheader,nounits'], capture_output=True, text=True, timeout=15)
+    return result.returncode == 0 and int(result.stdout.strip()) >= 4096
+
+
+def gpu_witness(root):
+    """Real recipe shape, synthetic observations/rewards only, fresh disposable model."""
+    import gymnasium as gym
+    import numpy as np
+    import torch
+    from stable_baselines3 import SAC
+    from app.recipe_runtime import build_sac
+    spec = verify(root)
+    require(torch.cuda.is_available(), 'CUDA_REQUIRED')
+    torch.set_num_threads(1)
+    torch.backends.cudnn.benchmark = False
+    torch.use_deterministic_algorithms(True)
+    rec = read(spec['inputs']['recipe'])
+    require(file_sha(spec['inputs']['recipe']) == spec['recipe_sha256'], 'RECIPE_PIN')
+
+    class Synthetic(gym.Env):
+        observation_space = gym.spaces.Dict({'features': gym.spaces.Box(-np.inf, np.inf,
+            (rec['tensor']['window']['observations'], rec['list']['n']), np.float32)})
+        action_space = gym.spaces.Box(-1.,1.,(3,),np.float32)
+
+        def reset(self, seed=None, options=None):
+            super().reset(seed=seed)
+            self.n = 0
+            return {'features': np.ones(self.observation_space['features'].shape,np.float32)}, {}
+
+        def step(self, action):
+            self.n += 1
+            return {'features': np.full(self.observation_space['features'].shape,self.n / 20,np.float32)}, \
+                float(-np.square(action).sum()), self.n == 20, False, {'discount':.99}
+
+    for arm in spec['arms']:
+        with preserve_rng():
+            env = Synthetic()
+            design = {**DESIGN, 'learning_starts':2, 'batch_size':4, 'buffer_size':32}
+            model = build_sac(env, rec, design, arm, 'cuda')
+            model.learn(total_timesteps=16)
+            obs, _ = env.reset()
+            before = model.predict(obs, deterministic=True)[0]
+            path = root / ('ADMISSION_' + arm + '.zip')
+            model.save(path)
+            replay = SAC.load(path, device='cuda')
+            require(np.array_equal(before,replay.predict(obs,deterministic=True)[0]), 'GPU_RELOAD')
+            require(model._n_updates == 14, 'GPU_UPDATES')
+            del model, replay
+            env.close()
+    write(root / 'GPU_ADMISSION.json', dict(state='PASS', scope='SYNTHETIC_ONLY', scientific_fits=0,
+          spec_sha256=file_sha(root / 'SPEC.private.json'), created_at=now(),
+          device=torch.cuda.get_device_name(), torch=torch.__version__,
+          updates_per_arm=14, peak_bytes=torch.cuda.max_memory_allocated()))
+    torch.cuda.empty_cache()
+    return 0
+
+
+def run(root):
+    spec = verify(root)
+    lock = (root / 'QUEUE.lock').open('a')
+    try:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        return 0
+    spec_sha = file_sha(root / 'SPEC.private.json')
+    state = read(root / 'STATUS.json') if (root / 'STATUS.json').exists() else dict(
+        state='PREPARED', spec_sha256=spec_sha, attempts={}, completed={})
+    require(state['spec_sha256'] == spec_sha, 'QUEUE_IDENTITY')
+    if state['state'] == 'ADMISSION_FAILED':
+        return 2
+    for arm in spec['arms']:
+        if arm in state['completed']:
+            authenticated_result(root / state['completed'][arm], spec_sha)
+            continue
+        old = state['attempts'].get(arm, [])
+        # Recover a completed child even if the supervisor died before adopting it.
+        for row in old:
+            path = root / arm / f'attempt-{row["number"]}' / 'RESULT.json'
+            if path.exists():
+                authenticated_result(path, spec_sha)
+                state['completed'][arm] = str(path.relative_to(root))
+                break
+            if row['state'] == 'RUNNING':
+                row.update(state='INTERRUPTED', ended_at=now())
+        if arm in state['completed']:
+            write(root / 'STATUS.json', state)
+            continue
+        while len(old) < spec['max_attempts']:
+            if not admission(root):
+                state.update(state='WAIT_RESOURCES', updated_at=now())
+                write(root / 'STATUS.json', state)
+                return 75
+            # Isolated process: GPU engineering does not retain a CUDA context in the supervisor.
+            with (root / 'ADMISSION.log').open('a') as log:
+                witness = subprocess.run([sys.executable, '-m', 'tools.recipe_sac_queue', 'admit',
+                    '--root', str(root)], cwd=ROOT, stdout=log, stderr=subprocess.STDOUT, timeout=180)
+            if witness.returncode != 0:
+                state.update(state='ADMISSION_FAILED', updated_at=now())
+                write(root / 'STATUS.json', state)
+                return 2
+            number = len(old) + 1
+            row = dict(number=number, state='RUNNING', started_at=now())
+            old.append(row)
+            state['attempts'][arm] = old
+            state.update(state='RUNNING', current_arm=arm, updated_at=now())
+            write(root / 'STATUS.json', state)
+            with (root / f'{arm}-attempt-{number}.log').open('x') as log:
+                try:
+                    completed = subprocess.run([sys.executable, '-m', 'tools.recipe_sac_queue', 'worker',
+                        '--root', str(root), '--arm', arm, '--attempt', str(number)],
+                        cwd=ROOT, stdout=log, stderr=subprocess.STDOUT, timeout=spec['task_timeout_seconds'])
+                    row['returncode'] = completed.returncode
+                except subprocess.TimeoutExpired:
+                    row['returncode'] = 124
+            path = root / arm / f'attempt-{number}' / 'RESULT.json'
+            row.update(state='FAILED', ended_at=now())
+            if row['returncode'] == 0 and path.exists():
+                authenticated_result(path, spec_sha)
+                row['state'] = 'COMPLETE'
+                state['completed'][arm] = str(path.relative_to(root))
+            write(root / 'STATUS.json', state)
+            if row['state'] == 'COMPLETE':
+                break
+            time.sleep(30)
+    state.update(state='COMPLETE' if len(state['completed']) == len(spec['arms']) else 'COMPLETE_WITH_FAILURES',
+                 finished_at=now())
+    write(root / 'STATUS.json', state)
+    write(root / 'CLOSE.json', state)
+    return 0
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('mode', choices=['prepare', 'run', 'worker', 'status', 'admit'])
+    parser.add_argument('--root', type=Path, required=True)
+    for name in ('engine-root', 'recipe', 'store', 'manifest', 'bars', 'closures'):
+        parser.add_argument('--' + name, type=Path)
+    parser.add_argument('--arm', choices=['GROUPED','FLAT'])
+    parser.add_argument('--attempt', type=int)
+    a = parser.parse_args()
+    if a.mode == 'prepare':
+        prepare(a)
+        return 0
+    if a.mode == 'status':
+        print(json.dumps({p.stem: read(p) for p in (a.root / 'STATUS.json', a.root / 'PROGRESS.json', a.root / 'CLOSE.json')
+                          if p.exists()}, indent=2))
+        return 0
+    if a.mode == 'worker':
+        return worker(a.root.resolve(), a.arm, a.attempt)
+    if a.mode == 'admit':
+        return gpu_witness(a.root.resolve())
+    return run(a.root.resolve())
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())
