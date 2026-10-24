@@ -1,5 +1,12 @@
 # Frozen Shared Recipe Consumer
 
+Current input revision 3 (2026-10-24): recipe_a58261c0fdc0a59d removes only
+px.er_1. There are 120 columns; all survivor constants and common valid tensors
+are exact. New valid counts TRAIN/INNER_A/OBS_2024: 21221/2805/6208. Both native
+consumers agree and the eight-step real engine witness passes. No interpolation
+or new financial training. The previous 121-column results below refer to the
+parent. Remaining no-observation handling and economic parity still apply.
+
 Design 2026-10-24. The shared candidate is recipe_5a8f2155318ba7c7,
 derived from selected C, not the retired rolling-z observation path.
 
