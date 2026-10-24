@@ -1,5 +1,10 @@
 # Frozen Shared Recipe Consumer
 
+Current execution, 2026-10-24 21:42 UTC: native SAC is RUNNING. See
+61_RECIPE_NATIVE_SAC_QUEUE.md. The remaining integration described below is
+closed via direct reuse of the shared BarEnv engine, not by claiming the
+Backtrader cost adapter is equivalent. The old bridge evidence is historical.
+
 Current input revision 3 (2026-10-24): recipe_a58261c0fdc0a59d removes only
 px.er_1. There are 120 columns; all survivor constants and common valid tensors
 are exact. New valid counts TRAIN/INNER_A/OBS_2024: 21221/2805/6208. Both native
