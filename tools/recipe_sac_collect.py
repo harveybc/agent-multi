@@ -10,6 +10,32 @@ from tools.recipe_sac_queue import authenticated_result, now, read, write
 from tools import rl_warehouse
 
 
+def bind_report(mirror, request):
+    """Authenticate the checkpoint and native score; retain retries as distinct attempts."""
+    import copy
+    request = copy.deepcopy(request)
+    report = request['report']
+    tags = report['tags']
+    arm, step = tags['arm'], int(tags['checkpoint'])
+    require(arm in ('GROUPED','FLAT') and step in (25000,50000,75000,100000), 'REPORT_ARM_STEP')
+    candidates = [p for p in (mirror / arm).glob(f'attempt-*/step-{step}/model.zip')
+                  if file_sha(p) == tags['checkpoint_archive_sha256']]
+    require(len(candidates) == 1, 'REPORT_CHECKPOINT_BINDING')
+    checkpoint = candidates[0]
+    splits = {m['split'] for m in report['metrics']}
+    require(len(splits) == 1 and splits <= {'train','inner_a','obs_2024'}, 'REPORT_SPLIT')
+    native = read(checkpoint.parent / (next(iter(splits)).upper() + '.json'))
+    require(native['policy_tensor_sha256'] == tags['policy_tensor_sha256'], 'REPORT_POLICY')
+    require(all(m['metric'] in native and native[m['metric']] == m['value'] for m in report['metrics']),
+            'REPORT_NATIVE_VALUES')
+    attempt = checkpoint.parent.parent.name
+    tags['attempt'] = attempt
+    tags['consumer_scope'] = 'DEVELOPMENT_CHECKPOINT_NOT_FINAL_PROMOTION'
+    report['experiment_key'] += '-' + attempt
+    request['source_unit'] += '-' + attempt
+    return request
+
+
 def collect(spec):
     state_root, mirror = Path(spec['state_root']), Path(spec['mirror'])
     state_root.mkdir(parents=True, exist_ok=True)
@@ -30,13 +56,17 @@ def collect(spec):
     delivered = read(state_root / 'ENQUEUED.json') if (state_root / 'ENQUEUED.json').exists() else {}
     for p in sorted((mirror / 'outbox').glob('*.json')):
         sha = file_sha(p)
-        if p.name in delivered:
-            require(delivered[p.name] == sha, 'REPORT_CHANGED')
+        version = p.name + '#' + sha
+        if version in delivered:
             continue
         request = read(p)
         require(request['report']['config_sha256'] == identity, 'REPORT_IDENTITY')
-        result = rl_warehouse.invoke(pub, state_root, 'enqueue', p)
-        delivered[p.name] = sha
+        # A new attempt can regenerate a checkpoint after an interruption. Never
+        # overwrite the old report or merge its metrics with the successful retry.
+        archived = state_root / 'reports' / (sha + '.json')
+        write(archived, bind_report(mirror, request))
+        rl_warehouse.invoke(pub, state_root, 'enqueue', archived)
+        delivered[version] = sha
         write(state_root / 'ENQUEUED.json', delivered)
     request = state_root / 'PUMP.private.json'
     write(request, {k:pub[k] for k in ('warehouse_url','token_env')})
