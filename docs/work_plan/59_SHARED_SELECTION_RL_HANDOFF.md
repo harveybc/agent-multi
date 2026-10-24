@@ -1,6 +1,14 @@
 # Shared Feature Release And Independent SAC Consumption
 
-Status 2026-10-22: v3 selection execution completed, consumer/release audit pending.
+Current status 2026-10-24: v5 recipe_5a8f2155318ba7c7 accepted for development.
+Native SAC source-to-tensor, actor/twin-critic input, same-weight grouped trunk
+and save/reload parity passed on the 23-row real reference. See
+60_FROZEN_RECIPE_CONSUMER.md and the predictor master-v3 report
+MUSASHI_SHARED_RECIPE_REREVIEW_AND_NEXT_LANES_2026_10_24.md.
+No campaign deployed: actual simulator wiring, current run specs and automatic
+publisher remain. Do not rerun selection/T3 or reuse old rolling pipelines.
+
+Historical status 2026-10-22: v3 selection execution completed, consumer/release audit pending.
 This is the current follow-up after the owner-priority preprocessing repair;
 the previous window queue stays held. No new scientific fit launched here.
 

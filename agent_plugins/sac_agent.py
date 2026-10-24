@@ -149,6 +149,7 @@ class Plugin:
         "use_sde": False,
         "net_arch": (256, 256),
         "observation_encoder": "flat",
+        "shared_recipe": None,
         "sac_regularization": None,
         "temporal_branch_filters": 4,
         "temporal_core_filters": 8,
@@ -203,7 +204,7 @@ class Plugin:
         p = self._resolve(config)
         policy_kwargs = {"net_arch": list(p["net_arch"])}
         encoder = p["observation_encoder"]
-        if encoder not in {"flat", "per_feature_conv1d"}:
+        if encoder not in {"flat", "per_feature_conv1d", "shared_recipe"}:
             raise ValueError("UNKNOWN_SAC_OBSERVATION_ENCODER")
         policy = "MlpPolicy"
         if encoder == "per_feature_conv1d":
@@ -218,6 +219,13 @@ class Plugin:
                     "kernel_size": p["temporal_kernel_size"],
                 },
             )
+        if encoder == "shared_recipe":
+            from agent_plugins.recipe_features import RecipeTemporalExtractor
+            if p["oracle_behavior_pretrain_enabled"] or p["oracle_behavior_labels_file"]:
+                raise ValueError("SHARED_RECIPE_SAC_NO_EXPERT")
+            policy = "MultiInputPolicy"
+            policy_kwargs.update(features_extractor_class=RecipeTemporalExtractor,
+                                 features_extractor_kwargs={"recipe": p["shared_recipe"]})
         if p.get('sac_regularization') is not None:
             from agent_plugins.sac_regularization import RegularizedSACPolicy, validate_profile
             if encoder != 'flat':
@@ -552,7 +560,7 @@ class Plugin:
     def wrap_env(self, env, config: Dict[str, Any] | None = None):
         """Keep the temporal Dict layout only for the explicitly selected encoder."""
         encoder = self._resolve(config or {})["observation_encoder"]
-        if encoder == "per_feature_conv1d":
+        if encoder in {"per_feature_conv1d", "shared_recipe"}:
             from gymnasium import spaces
             if not isinstance(env.observation_space, spaces.Dict):
                 raise ValueError("TEMPORAL_DICT_OBSERVATION_REQUIRED")

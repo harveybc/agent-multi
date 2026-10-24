@@ -11,10 +11,10 @@ from torch.nn import functional as F
 
 
 class CausalConv1d(nn.Module):
-    def __init__(self, inputs: int, outputs: int, kernel: int):
+    def __init__(self, inputs: int, outputs: int, kernel: int, dilation: int = 1):
         super().__init__()
-        self.left_padding = kernel - 1
-        self.conv = nn.Conv1d(inputs, outputs, kernel)
+        self.left_padding = (kernel - 1) * dilation
+        self.conv = nn.Conv1d(inputs, outputs, kernel, dilation=dilation)
 
     def forward(self, x):
         return self.conv(F.pad(x, (self.left_padding, 0)))
