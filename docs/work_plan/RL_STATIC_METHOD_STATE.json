@@ -1,18 +1,21 @@
 {
   "schema": "rl_static_engineering_state.v1",
   "updated_on": "2026-10-24",
-  "current_stage": "FROZEN_V5_RECIPE_NATIVE_SAC_PROBE_PASS_ENGINE_INTEGRATION_NEXT",
+  "current_stage": "FROZEN_V5_ENGINE_OBSERVATION_BRIDGE_PASS_ACCOUNTING_AND_SUPPORT_NEXT",
   "current_baseline": {
     "recipe": "recipe_5a8f2155318ba7c7",
     "columns": 121,
     "test_design": "60_FROZEN_RECIPE_CONSUMER.md",
-    "CPU_tests_passed": 17,
+    "CPU_tests_passed": 27,
     "real_reference_probe_exact": true,
     "actor_and_twin_critic_inputs_exact": true,
     "trunk_same_weights_exact": true,
     "policy_reload_exact": true,
     "financial_fits": 0,
-    "engine_steps": 0
+    "engine_steps": 8,
+    "engine_steps_scope": "real-data CPU HOLD witness, no scientific trading score",
+    "synthetic_SAC_training_transitions": 4,
+    "full_rollout_accounting_parity_verified": false
   },
   "test_design": "43_STATIC_RL_CURATED_COMPARISON.md",
   "data_interface": "44_CURATED_RL_INPUT_INTERFACE.md",
@@ -24,7 +27,7 @@
   "sequential_queue": {"code": "9634bc89", "tool": "tools/curated_rl_campaign.py", "registered_in_tool_declarations": true, "scope": "CPU_ENGINEERING", "synthetic_focused_passed": 63, "real_financial_fits": 0, "remote_warehouse_delivery": false, "plan": "44_STATIC_RL_EXECUTION_QUEUE.md"},
   "scientific_campaign_started": false,
   "review": {"satoshi_return_received": true, "weekly_first_80_run_proposal_adopted": false, "closed_in_new_path": ["action/fill/reward transition", "entry-bar commission and leveraged capital reconciliation", "undefined checkpoint scores", "explicit analytical financing debit", "native Trade lifecycle after direct settlement", "zero-net trade accounting", "long/short repeated-close and nonzero-slippage analytical ledger"], "open_findings": ["broker-specific financing and actual execution costs", "raw fractional enlargement mask (not selected for curated baseline)", "alternate margin and full environment accounting acceptance"]},
-  "next_allowed_actions": ["bind frozen observations to actual gym-fx execution without hidden normalization or expert eligibility", "verify timestamp/action and real-engine business accounting", "pin finite native SAC design and explicit optimizer regularization", "wire publication, recovery and resource admission for sequential deployment"],
+  "next_allowed_actions": ["implement explicit causal no-observation intervals without dropping engine bars or silently changing SAC discount duration", "verify recipe costs, sizing, calendar and real-engine business accounting", "pin finite native SAC design and explicit optimizer regularization", "wire publication, recovery and resource admission for sequential deployment"],
   "deferred": ["frequency sweep", "DOIN", "forecasting", "NEAT"],
   "daily_entry_cap_baseline": 1,
   "daily_entry_cap_proposed_contrast": [1, 2, 4]

@@ -13,6 +13,15 @@ derived from selected C, not the retired rolling-z observation path.
 | R04 | No policy feedback or expert labels | Observation contains features only; loader never invokes expert generation |
 | R05 | Selected grouped representation reaches SAC | Actor and twin critics build from recipe; save/reload; input hook verifies tensor |
 | R06 | Real input parity | Native SAC input adapter matches peer's 23-row reference and all period window-valid masks |
+| R07 | Engine observation binding | Exact completed-bar timestamp, no positional join or old preprocessor, only market features exposed; refuse invalid windows before reset |
+| R08 | Engine transition preservation | Real backtrader CPU reset/step and SAC replay retain next-open transitions, finite rewards and daily quota while input tensors remain exact |
+
+R07-R08 implementation is an observation bridge, not certification that the old
+engine's cost/calendar configuration equals the shared recipe. Before any new
+scientific fit, compare every economic configuration field and execute the
+business accounting witnesses. In particular, the legacy annual financing and
+constant commission defaults must not silently replace the recipe's side-specific
+swap and per-lot costs. No expert label design is a dependency of this SAC work.
 
 ## Executed Result
 
@@ -44,3 +53,33 @@ No new fitted transform, padding of missing market data, rolling scaler,
 clipping, agent feedback, demonstration pretraining, or TEST read. The selected
 representation is an E3-M proxy; SAC must measure its own benefit. Dropout and
 weight decay from proxy T2 are not proof of the best SAC regularization.
+
+## Engine Bridge Executed
+
+R07-R08: 27 focused CPU tests pass, including the earlier input tests and legacy
+temporal bridge regressions. Seven new guard/clock tests fail before the bridge
+exists and pass afterwards. The real backtrader integration performs four
+synthetic SAC training transitions, checks every replay observation and next
+observation exactly, and completes an episode with the daily-entry cap intact.
+This is engineering training on synthetic prices, not a financial experiment.
+
+The real-data witness in predictor `tools/verify_sac_recipe_engine.py` passes
+eight HOLD transitions on the first eligible TRAIN prefix, with exact market
+tensor and actor input, matching action timestamps, zero orders, zero financial
+fits and no TEST read. The replaced preprocessor is never called. Engine
+session/quota/account fields remain internal diagnostics, not policy inputs.
+
+The bridge currently refuses any invalid interior window before reset. It does
+not silently remove price bars, forward-fill observations or invent zeros.
+Real support is TRAIN 19514/21809, INNER_A 2589/3086 and OBS_2024 5600/6221
+valid windows/bars. In OBS_2024, px.er_1 has 53 nonfinite source cells and
+px.er_2 has one; windows propagate the missingness. These match the already
+verified recipe mask, not new corruption by the bridge. A full rollout needs
+an explicit causal no-observation transition policy or a separately identified
+upstream semantic correction. Preserving every price bar and every protection,
+cost and forced close is mandatory. This is not authority to interpolate.
+
+Next implementation: account for unavailable-observation intervals without
+silently changing SAC's transition duration/discount, and reconcile the recipe's
+cost, sizing and calendar semantics with the engine. Then pin the finite run
+and deploy the sequential queue. No GPU campaign is started by these witnesses.
