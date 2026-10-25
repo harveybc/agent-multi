@@ -1,7 +1,7 @@
 {
   "schema": "rl_static_engineering_state.v1",
   "updated_on": "2026-10-25",
-  "current_stage": "CRITIC_DROPOUT_CONTRAST_DEPLOYING",
+  "current_stage": "CRITIC_DROPOUT_CONTRAST_RUNNING",
   "critic_dropout_study": {
     "plan": "65_CRITIC_DROPOUT_CONTRAST.md",
     "arms": ["CRITIC_BASE", "CRITIC_NODROP"],
@@ -10,7 +10,17 @@
     "tests_passed": 48,
     "same_initial_tensors_verified": true,
     "legacy_base_synthetic_training_exact": true,
-    "next_action": "deploy existing sequential queue and collector; confirm first real progress"
+    "next_action": "automatic control identity check then treatment, final comparison and warehouse readback",
+    "scientific_code": "afb3bc37",
+    "spec_sha256": "1c63c1a4f42630d87b8f35a0fd97dbde451badc4731d76fd5dd9f227fc908fd6",
+    "observed_at": "2026-10-25T07:37:59.853903+00:00",
+    "current_arm": "CRITIC_BASE",
+    "observed_decisions": 1500,
+    "observed_gradient_updates": 499,
+    "gpu_admission": "PASS; both arms, 14 synthetic updates each",
+    "reboot_timer_enabled": true,
+    "collector_timer_enabled": true,
+    "collector_first_check": "COPIED_AND_PUMPED; zero reports expected before first checkpoint"
   },
   "order_policy_diagnosis": {
     "plan": "63_ORDER_POLICY_DIAGNOSIS.md",

@@ -56,3 +56,20 @@ position routing, other algorithms and larger searches are not implicit successo
 after implementation they prove exact legacy/base initial and trained tensors,
 independent critic dropout and reload preservation. The real-engine integration
 also verifies that adding frozen probes leaves all native scores and RNG unchanged.
+
+## Deployment evidence
+
+At 2026-10-25T07:37:59Z the primary GPU was training CRITIC_BASE:
+1500 decisions,499 gradient updates, fresh heartbeat. Producer afb3bc37;
+spec1c63c1a4f42630d87b8f35a0fd97dbde451badc4731d76fd5dd9f227fc908fd6.
+Both synthetic GPU admissions passed with14 updates per arm. Effective model
+records actor/critic/target dropout0.3 and weight decay0.01 for the control.
+
+Worker and collector timers are enabled; worker user lingering is enabled.
+Worker limits: memory high5GiB/max6GiB, no swap, one heavy GPU process.
+Collector first run verified the copied spec and pumped an empty outbox:
+zero reports expected, zero pending or mismatches, no completed arms yet.
+The independent artifact destination is on the writable archival volume;
+queue and outbox remain on native local storage. No new final metric exists
+at this start check. Provisional total duration80-90min comes from the prior
+approximately38min/arm, not a measured duration of this new treatment.
