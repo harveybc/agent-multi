@@ -2,6 +2,16 @@
   "schema": "rl_static_engineering_state.v1",
   "updated_on": "2026-10-25",
   "current_stage": "HYBRID_OUTPUT_AND_REWARD_RUNNING",
+  "mandatory_early_exit": {
+    "contract": "67_RL_OUTPUT_ACTION_CONTRACT.md#mandatory-discretionary-early-exit",
+    "required": true,
+    "scope": "both directions; voluntary exit distinct from SL, TP and forced flattening",
+    "initial_completed_policies": "ZERO_AGENT_CLOSE; incomplete business behavior, not promotable as complete strategies",
+    "mechanics": "paired long/short native regression including exhausted entry allowance",
+    "learning_evidence": "paired adverse/favorable continuation controls pending; no claim from action availability alone",
+    "current_batch": "preserve frozen experiment; diagnostic rankings are not promotion",
+    "next": "early-exit learning qualification before additional unrelated tuning"
+  },
   "hybrid_execution": {
     "plan": "70_HYBRID_AUTOMATION_EXECUTION.md",
     "state": "RUNNING",

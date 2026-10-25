@@ -1,8 +1,48 @@
 # Categorical decisions and conditional order parameters
 
-Owner direction: 2026-10-25. Status: design, not implemented or deployed.
-This is the next structural study after the activity grid, before further
-entropy or capacity sweeps. Existing pinned producers and results stay unchanged.
+Owner direction: 2026-10-25. Original design below; implementation and deployed
+scope are recorded in `70_HYBRID_AUTOMATION_EXECUTION.md`. Existing pinned
+producers and results stay unchanged.
+
+## Mandatory discretionary early exit
+
+Owner clarification: voluntary early closing in either direction is indispensable
+business behavior, not an optional strategy enhancement. SL/TP and mandatory
+session flattening are safety/execution rules, not substitutes for this behavior.
+The policy must be able to close when its causal observations support closing
+rather than retaining exposure, including an unfavorable SL-before-TP outlook.
+No future barrier outcome is available to the live policy; an inferred risk is
+not certainty, and the raw probability alone is not a calibrated net-value rule.
+
+For an existing long/short, CLOSE_LONG/CLOSE_SHORT competes with HOLD at every
+valid observation. An exhausted daily entry allowance or a closed opening window
+must not suppress exits. Execution remains at the next permitted engine fill,
+with actual configured costs and without a hindsight fill. The current RL lane
+does not add forecasting outputs or expert labels to accomplish this.
+
+Three separate claims require separate evidence:
+
+1. Mechanical capability: both close commands execute before SL/TP on a neutral
+   fixture, including after the entry quota is exhausted, with correct costs.
+2. Learning capability: paired synthetic long/short trajectories where closing
+   avoids subsequent adverse movement, plus favorable continuation controls
+   where unnecessary closing loses value. Compare net executable outcomes with
+   the same entry and random seed, not just a close-action counter.
+3. Financial behavior: voluntary close counts/rates, side, time-to-barrier and
+   same-entry close-versus-hold counterfactuals, with costs and coverage declared.
+   Such counterfactuals are retrospective diagnostics, never policy inputs.
+
+The active batch proves neither (2) nor (3) merely by offering a close action.
+The initial completed policies had zero AGENT_CLOSE events. They are incomplete
+business-behavior candidates, even where the activity threshold passes. Do not
+promote them as complete strategies. There is no arbitrary mandatory close quota
+and no reward bonus for closing merely to make this metric nonzero.
+
+Priority after the frozen batch: qualify learning on the paired close/hold
+scenarios, investigate missing position-dependent information under the existing
+no-feedback constraint, then compare close-policy specialization if needed.
+Any new input/state representation requires an explicit contrast and identity;
+do not silently reintroduce account feedback or mutate a running experiment.
 
 ## Finding and scope
 
