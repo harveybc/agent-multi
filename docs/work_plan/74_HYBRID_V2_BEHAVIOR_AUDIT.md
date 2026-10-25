@@ -67,3 +67,32 @@ selection. Deterministic trade-file hashes and metric values must reproduce
 the parent before comparison. Every unit is resumable through authenticated
 completion; the sequence is finite. Early-close behavior and costs remain
 reported rather than inferred from activity alone.
+
+## Execution evidence
+
+Behavior audit completed: 24 units, 96 checkpoint probes and 12543 native
+voluntary-close accounting replays (absolute monetary tolerance 1e-8 USD),
+using TRAIN and INNER only. Independent copy: 75 files match the close manifest.
+Scope is per-trade accounting and probes, not full GPU trajectory replay.
+
+Inference audit source `211542e7`, collector `53345121`. First actual GPU
+argmax replay reproduced the parent's trade-file hashes and native metrics
+exactly for TRAIN and INNER. At 20:50 UTC, 3/21 evaluation units complete;
+the next unit dispatched automatically. About 46--57 seconds per measured
+model-based unit; blind controls not yet timed. Worker/reboot timer and
+independent mirror/warehouse collector enabled; first mirror successful.
+The collector publishes only the sealed completed audit, separately tagged
+as inference diagnostics. No new training, source campaign changes or TEST.
+
+Tests first failed on absent diagnostic modules, then 5 tests passed including
+eight native favorable/adverse directional fixtures. Publication seal tests
+reject changed bytes and path escape; final fast subset 6 passed. No full
+repository-suite claim. The audit remains descriptive: no isolated seed or
+checkpoint is promoted and no claim that all early exits should be disabled.
+
+Next decision: compare conditional sampling against its matched TRAIN-marginal
+control across all three training seeds and all three sampling seeds. If they
+are indistinguishable, do not attribute extra trades to learned timing. If
+conditional sampling adds value, quantify the deterministic-inference loss
+before changing training. Further training-budget, gradient-interference or
+credit-horizon experiments remain subsequent, not silently added here.
