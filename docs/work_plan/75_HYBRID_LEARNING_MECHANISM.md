@@ -59,3 +59,28 @@ from measured value/credit-horizon evidence instead. No speculative large grid.
 Financial evaluation at spaced checkpoints, not costly per-update early stopping.
 Report TRAIN and INNER separately with profit, Sharpe, drawdown, trades, win rate,
 long/short counts and voluntary/protective exits. More trades alone is not success.
+
+## Diagnosis measured and bounded contrast authorized
+
+Native reward/terminal/aliasing and analytical gradient tests: 13 passed. The
+synthetic financing witness handles both debit and credit according to the
+declared side-specific rates. Gradient audit: nine units, 18 batches, 4608 fresh
+TRAIN decisions, zero parameter updates, independent 12-file copy verified.
+Actor/critic cosine is negative in 14/18 batches, including all six batches of
+seed 19 (-0.67 to -0.33). Weighted critic/actor gradient norm ratios range about
+0.12--1.74; no universal critic dominance. Value explained variance is generally
+near zero. This supports measuring encoder separation, not declaring it a fix.
+
+Frozen next queue: four new independent-encoder synthetic learning controls
+(seeds 7/19/43 at current signal; seed 7 lag 6), same 131072-decision protocol
+as the parent's accepted shared encoder. All must pass nine contexts and exact
+reload before financial training. Then six fresh fits, paired by seed:
+SHARED, INDEPENDENT x 7/19/43, CAT_FIXED equity reward, 102400 decisions each.
+All original training parameters retained. Only encoder sharing changes; the
+independent critic is an exact deepcopy at initialization (extra parameters
+reported). Compare initial predictions/values and each common parameter exactly.
+Checkpoints at 25600/51200/76800/102400, financial scoring only at the fixed final
+checkpoint on TRAIN and INNER; no new 2024 read or selection. Instrument training
+logs and sparse gradient probes without perturbing RNG, then publish all six.
+Two fresh attempts maximum per unit, durable failures retained, reboot-resumable
+queue; a synthetic failure prevents financial fits. No intermediate human gate.
