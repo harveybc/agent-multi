@@ -1,7 +1,19 @@
 {
   "schema": "rl_static_engineering_state.v1",
   "updated_on": "2026-10-25",
-  "current_stage": "HYBRID_OUTPUT_AND_REWARD_RUNNING",
+  "current_stage": "HYBRID_SUSPENDED_DIRECTIONAL_QUALIFICATION",
+  "directional_diagnosis": {
+    "report": "71_HYBRID_DIRECTIONAL_COLLAPSE.md",
+    "real_probe": "3 authenticated checkpoints each choose LONG on 256/256 shared eligible INNER observations; SHORT unmasked",
+    "native_and_constant_action_tests": "5 passed",
+    "conditional_signal_test": "FAILED at 16384 decisions: negative signal chose LONG instead of SHORT",
+    "scope": "Qualification failure, not proof of root cause or corrupt trading accounting",
+    "completed_units": 19,
+    "interrupted_unit": "HYBRID_DSR_s19",
+    "worker_main_pid": 0,
+    "timer": "disabled",
+    "next": "isolate conditional representation/optimization learning failure before replacement campaign"
+  },
   "mandatory_early_exit": {
     "contract": "67_RL_OUTPUT_ACTION_CONTRACT.md#mandatory-discretionary-early-exit",
     "required": true,
@@ -14,7 +26,7 @@
   },
   "hybrid_execution": {
     "plan": "70_HYBRID_AUTOMATION_EXECUTION.md",
-    "state": "RUNNING",
+    "state": "SUSPENDED_DIRECTIONAL_QUALIFICATION",
     "spec_sha256": "bcd180f16a548dd9e402adecfdb9cb578066c611c5dd1b1340896ff0cf8df9f6",
     "started_at": "2026-10-25T12:21:44.209986+00:00",
     "observed_at": "2026-10-25T12:25:48.759267+00:00",
@@ -23,7 +35,8 @@
     "observed_updates": 780,
     "focused_CPU_tests_passed": 39,
     "GPU_admission": "PASS; fixed and learned risk, four updates each, saved-policy replay",
-    "worker_and_collector_timers_enabled": true,
+    "worker_and_collector_timers_enabled": false,
+    "collector_remains_enabled": true,
     "first_collector": "COPIED_AND_PUMPED; no final scientific reports yet",
     "first_completed_unit": "CAT_FIXED_s7",
     "first_completion_at": "2026-10-25T12:28:08.717556+00:00",
@@ -38,7 +51,7 @@
   },
   "reward_and_selection_study": {
     "plan": "69_REWARD_AND_SELECTION_CONTRASTS.md",
-    "state": "INITIAL_GRID_RUNNING; REFINEMENTS_DEFERRED",
+    "state": "INITIAL_GRID_SUSPENDED; REFINEMENTS_DEFERRED",
     "depends_on": "accepted categorical output contract and control",
     "reward_order": ["equity_delta_control", "log_equity_return", "incremental_max_drawdown", "differential_sharpe", "conditional_mixture_followup"],
     "selection_contrasts": ["sharpe", "sharpe_plus_return", "plus_activity", "return_minus_drawdown", "mixed_drawdown", "secondary_calmar_and_sharpe_uncertainty"],
@@ -175,7 +188,7 @@
   "sequential_queue": {"code": "2d4aaa99", "tool": "tools/recipe_sac_queue.py", "registered_in_tool_declarations": true, "scope": "DEVELOPMENT", "arms": ["GROUPED", "FLAT"], "steps_per_arm": 100000, "seed": 7, "auto_next_arm": true, "reboot_timer_enabled": true, "restart_policy": "bounded two fresh attempts, no false exact continuation", "collector_timer_enabled": true, "remote_warehouse_delivery": "ready; zero scientific reports expected before checkpoint", "plan": "61_RECIPE_NATIVE_SAC_QUEUE.md"},
   "scientific_campaign_started": true,
   "review": {"satoshi_return_received": true, "weekly_first_80_run_proposal_adopted": false, "closed_in_new_path": ["action/fill/reward transition", "entry-bar commission and leveraged capital reconciliation", "undefined checkpoint scores", "explicit analytical financing debit", "native Trade lifecycle after direct settlement", "zero-net trade accounting", "long/short repeated-close and nonzero-slippage analytical ledger"], "open_findings": ["broker-specific financing and actual execution costs", "raw fractional enlargement mask (not selected for curated baseline)", "alternate margin and full environment accounting acceptance"]},
-  "next_allowed_actions": ["automatic 24-unit hybrid queue, authenticated collection and publication", "compare eligible final reports only, with failed or inactive seeds explicit", "preserve frozen inputs and business rules; no TEST or expert demonstrations"],
+  "next_allowed_actions": ["diagnose conditional direction and early-close learning before any new financial fit", "preserve and label completed financial results as behavioral-failure diagnostics, not accepted strategy evidence", "preserve frozen inputs and business rules; no TEST or expert demonstrations"],
   "deferred": ["frequency sweep", "DOIN", "forecasting", "NEAT"],
   "daily_entry_cap_baseline": 1,
   "daily_entry_cap_proposed_contrast": [1, 2, 4]

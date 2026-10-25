@@ -1,0 +1,143 @@
+{
+  "schema": "hybrid_direction_probe.v1",
+  "spec_sha256": "bcd180f16a548dd9e402adecfdb9cb578066c611c5dd1b1340896ff0cf8df9f6",
+  "finished_at": "2026-10-25T14:20:35.837702+00:00",
+  "scope": "READ_ONLY_INNER_A_COMMON_FLAT_SUPPORT; NOT_TRADING_EVALUATION",
+  "policy_device": "CPU; not a bitwise GPU replay claim",
+  "fits": 0,
+  "test_read": false,
+  "observations": 256,
+  "eligible_flat_observations": 2205,
+  "input_std_mean": 0.8811858296394348,
+  "reports": [
+    {
+      "unit": "CAT_FIXED_s7",
+      "archive_sha256": "946b7d890f68836e52711afaf3566057cf010f9f3526c9c162911dcd06bbd6ce",
+      "result_sha256": "c2a72bcc33c07b75a2027f6090f2f3156851018a9ed4d768a4d93546555bcd56",
+      "probability_mean": [
+        0.360588014125824,
+        0.542677104473114,
+        0.09673522412776947,
+        0.0,
+        0.0
+      ],
+      "probability_min": [
+        0.3566442131996155,
+        0.5314030051231384,
+        0.08425619453191757,
+        0.0,
+        0.0
+      ],
+      "probability_max": [
+        0.36276906728744507,
+        0.559099555015564,
+        0.10582800209522247,
+        0.0,
+        0.0
+      ],
+      "argmax_counts": [
+        0,
+        256,
+        0,
+        0,
+        0
+      ],
+      "logits_std_by_command": [
+        0.010743005201220512,
+        0.026633361354470253,
+        0.03880498930811882,
+        0.010582509450614452,
+        0.0007946278201416135
+      ],
+      "encoder_std_mean": 0.09246132522821426,
+      "head_std_mean": 0.041951920837163925,
+      "head_saturated_fraction": 0.0
+    },
+    {
+      "unit": "CAT_FIXED_s19",
+      "archive_sha256": "34f57b579f82c643dc4cf624a515e0fefd01d5fd0de5c22f58aa5c64842ce268",
+      "result_sha256": "0c0e55d5eb9f1633e2a5bcd35acd187a48386c977f19d8188b7366c6bad8ae46",
+      "probability_mean": [
+        0.31595468521118164,
+        0.5876763463020325,
+        0.09636877477169037,
+        0.0,
+        0.0
+      ],
+      "probability_min": [
+        0.31521469354629517,
+        0.5822290182113647,
+        0.09482941031455994,
+        0.0,
+        0.0
+      ],
+      "probability_max": [
+        0.3175801932811737,
+        0.5899559855461121,
+        0.10019082576036453,
+        0.0,
+        0.0
+      ],
+      "argmax_counts": [
+        0,
+        256,
+        0,
+        0,
+        0
+      ],
+      "logits_std_by_command": [
+        0.0019193594343960285,
+        0.006094195414334536,
+        0.007878233678638935,
+        0.002772193867713213,
+        0.0008561382419429719
+      ],
+      "encoder_std_mean": 0.027768881991505623,
+      "head_std_mean": 0.011910506524145603,
+      "head_saturated_fraction": 0.0
+    },
+    {
+      "unit": "HYBRID_DD400_s7",
+      "archive_sha256": "f7bfdf8589c7722473af921642c7fe5e4221b6dc672b9c34a262c039695aa608",
+      "result_sha256": "33ffc47c52544c9bae13bcc8d3f19c2aad64e58de090e75b1115fafd1060e38d",
+      "probability_mean": [
+        0.26055413484573364,
+        0.6801779270172119,
+        0.05926761031150818,
+        0.0,
+        0.0
+      ],
+      "probability_min": [
+        0.2402103841304779,
+        0.6088468432426453,
+        0.04666145145893097,
+        0.0,
+        0.0
+      ],
+      "probability_max": [
+        0.2991791069507599,
+        0.7131281495094299,
+        0.09197401255369186,
+        0.0,
+        0.0
+      ],
+      "argmax_counts": [
+        0,
+        256,
+        0,
+        0,
+        0
+      ],
+      "logits_std_by_command": [
+        0.017037255689501762,
+        0.06068652495741844,
+        0.1108337789773941,
+        0.039082739502191544,
+        0.04242710396647453
+      ],
+      "encoder_std_mean": 0.29177993535995483,
+      "head_std_mean": 0.07598232477903366,
+      "head_saturated_fraction": 0.0224609375
+    }
+  ]
+}
