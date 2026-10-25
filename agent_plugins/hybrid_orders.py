@@ -124,6 +124,33 @@ class OrderPolicy(ActorCriticPolicy):
         return {**super()._get_constructor_parameters(),'recipe':self.recipe,'learned_risk':self.learned_risk}
 
 
+class SeparateHeadOrderPolicy(OrderPolicy):
+    """Conditional actions with SB3's independent policy/value latent heads."""
+
+    def _build(self, lr_schedule):
+        from functools import partial
+        from stable_baselines3.common.torch_layers import MlpExtractor
+        width = self.recipe['representation']['model']['head']
+        self.mlp_extractor = MlpExtractor(self.features_dim,
+            net_arch=dict(pi=[width], vf=[width]), activation_fn=nn.Tanh, device=self.device)
+        self.commands = nn.Linear(width, 5)
+        self.risks = nn.Linear(width, 12)
+        self.values = nn.Linear(width, 3)
+        for module, gain in ((self.mlp_extractor, np.sqrt(2)), (self.commands, .01),
+                             (self.risks, .01), (self.values, 1.)):
+            module.apply(partial(self.init_weights, gain=gain))
+        self.optimizer = self.optimizer_class(self.parameters(), lr=lr_schedule(1), **self.optimizer_kwargs)
+        self.action_dist = None
+        self.features_extractor.eval()
+
+    def _parts(self, obs):
+        pi, vf = self.mlp_extractor(self.features_extractor(obs))
+        mask = obs['action_mask'].bool()
+        dist = OrderDistribution(self.commands(pi), self.risks(pi).reshape(-1, 2, 6), mask, self.learned_risk)
+        route = mask[:, 3].long() + 2 * mask[:, 4].long()
+        return dist, self.values(vf).gather(1, route[:, None])
+
+
 class ElapsedRolloutBuffer(DictRolloutBuffer):
     def reset(self):
         super().reset()

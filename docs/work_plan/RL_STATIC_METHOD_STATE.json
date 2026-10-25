@@ -1,7 +1,19 @@
 {
   "schema": "rl_static_engineering_state.v1",
   "updated_on": "2026-10-25",
-  "current_stage": "HYBRID_SUSPENDED_DIRECTIONAL_QUALIFICATION",
+  "current_stage": "HYBRID_V2_CONDITIONAL_QUALIFICATION",
+  "conditional_repair": {
+    "plan": "72_HYBRID_CONDITIONAL_REPAIR.md",
+    "state": "CPU_CHECKED_GPU_QUALIFICATION_NEXT",
+    "old_campaign": "remains suspended; no result or runtime edited",
+    "new_representation": "selected branches + 8-channel causal fusion + full sequence + separate policy/value heads",
+    "full_shape_CPU_control": "PASS; nine mixed-route contexts, 131072 decisions, exact reload",
+    "focused_tests": "23 passed including learning; 25 passed final fast set including native exit economics",
+    "tiny_seed_limitation": "seed 19 NOP failed at 65536; not hidden or admitted as a pass",
+    "automatic_order": "four real-shape GPU learning controls -> smoke/reload -> 24 financial fits -> report and close",
+    "gate": "all synthetic controls must pass before any financial fit; behavioral coverage required for financial ranking",
+    "inputs_and_business": "unchanged, no feedback vector, rolling normalization, expert or TEST"
+  },
   "directional_diagnosis": {
     "report": "71_HYBRID_DIRECTIONAL_COLLAPSE.md",
     "real_probe": "3 authenticated checkpoints each choose LONG on 256/256 shared eligible INNER observations; SHORT unmasked",
@@ -188,7 +200,7 @@
   "sequential_queue": {"code": "2d4aaa99", "tool": "tools/recipe_sac_queue.py", "registered_in_tool_declarations": true, "scope": "DEVELOPMENT", "arms": ["GROUPED", "FLAT"], "steps_per_arm": 100000, "seed": 7, "auto_next_arm": true, "reboot_timer_enabled": true, "restart_policy": "bounded two fresh attempts, no false exact continuation", "collector_timer_enabled": true, "remote_warehouse_delivery": "ready; zero scientific reports expected before checkpoint", "plan": "61_RECIPE_NATIVE_SAC_QUEUE.md"},
   "scientific_campaign_started": true,
   "review": {"satoshi_return_received": true, "weekly_first_80_run_proposal_adopted": false, "closed_in_new_path": ["action/fill/reward transition", "entry-bar commission and leveraged capital reconciliation", "undefined checkpoint scores", "explicit analytical financing debit", "native Trade lifecycle after direct settlement", "zero-net trade accounting", "long/short repeated-close and nonzero-slippage analytical ledger"], "open_findings": ["broker-specific financing and actual execution costs", "raw fractional enlargement mask (not selected for curated baseline)", "alternate margin and full environment accounting acceptance"]},
-  "next_allowed_actions": ["diagnose conditional direction and early-close learning before any new financial fit", "preserve and label completed financial results as behavioral-failure diagnostics, not accepted strategy evidence", "preserve frozen inputs and business rules; no TEST or expert demonstrations"],
+  "next_allowed_actions": ["deploy finite v2 GPU conditional qualification and automatic financial successor only upon pass", "preserve and label old completed financial results as behavioral-failure diagnostics, not accepted strategy evidence", "preserve frozen inputs and business rules; no TEST or expert demonstrations"],
   "deferred": ["frequency sweep", "DOIN", "forecasting", "NEAT"],
   "daily_entry_cap_baseline": 1,
   "daily_entry_cap_proposed_contrast": [1, 2, 4]

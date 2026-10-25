@@ -50,8 +50,11 @@ def test_categorical_learner_conditions_direction_on_observed_signal():
             self.n+=1;self.signal=int(self.np_random.integers(-1,2))
             return self.obs(),reward,self.n==32,False,{'elapsed_bars':1}
     e=Signal()
-    model=make_model(e,recipe(),7,'cpu',False,n_steps=64,n_epochs=5)
-    model.learn(16384,callback=callback(None,'conditional_synthetic',0))
+    # New declared architecture/budget. Legacy failure remains retained in
+    # the directional report; this is not a claim of budget-matched repair.
+    model=make_model(e,recipe(),7,'cpu',False,n_steps=64,n_epochs=5,
+                     policy_family='grouped_sequence_v1')
+    model.learn(65536,callback=callback(None,'conditional_synthetic',0))
     for signal,best in [(-1,2),(0,0),(1,1)]:
         e.signal=signal;obs=e.obs()
         assert int(model.predict(obs,deterministic=True)[0][0])==best

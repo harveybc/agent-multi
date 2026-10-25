@@ -32,6 +32,24 @@ def test_authenticated_refuses_changed_native_and_missing_checkpoint(tmp_path):
     with pytest.raises(ValueError): q.authenticated(p,'pin')
 
 
+def test_direction_and_mandatory_exit_are_required_for_behavior_eligibility():
+    counts={n:1 for n in ('NOP','CLOSE_LONG','CLOSE_SHORT','HOLD_LONG','HOLD_SHORT')}
+    assert q.business_behavior(dict(n_long=1,n_short=1),counts)['business_behavior_eligible']
+    assert not q.business_behavior(dict(n_long=100,n_short=0),counts)['business_behavior_eligible']
+    counts['CLOSE_SHORT']=0
+    assert not q.business_behavior(dict(n_long=1,n_short=1),counts)['business_behavior_eligible']
+
+
+def test_failed_learning_qualification_does_not_launch_financial_worker(tmp_path,monkeypatch):
+    q.write(tmp_path/'SPEC.private.json',{'test':True})
+    monkeypatch.setattr(q,'verify',lambda root:dict(qualification={'test':True},units=['CAT_FIXED_s7']))
+    monkeypatch.setattr(q,'admission',lambda root:True)
+    monkeypatch.setattr(q,'qualify',lambda *a:False)
+    monkeypatch.setattr(q.subprocess,'run',lambda *a,**kw:pytest.fail('financial worker called'))
+    assert q.run(tmp_path)==0
+    assert q.read(tmp_path/'CLOSE.json')['state']=='QUALIFICATION_FAILED'
+
+
 def test_sequential_recovery_adopts_completed_child_without_refit(tmp_path,monkeypatch):
     q.write(tmp_path/'SPEC.private.json',{'test':True});sha=file_sha(tmp_path/'SPEC.private.json')
     q.write(tmp_path/'GPU_ADMISSION.json',{'state':'PASS','spec_sha256':sha})

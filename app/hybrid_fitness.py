@@ -33,7 +33,7 @@ def compare(rows):
         group=[r for r in rows if r['arm']==arm]
         if len(group)!=6 or {(r['seed'],r['period']) for r in group}!={(s,p) for s in (7,19,43) for p in ('TRAIN','INNER_A')}:
             continue
-        if not all(activity(r)['activity_eligible'] for r in group): continue
+        if not all(activity(r)['activity_eligible'] and r.get('business_behavior_eligible',True) for r in group): continue
         cs=[components(r) for r in group]
         if not all(v is not None and math.isfinite(v) for c in cs for v in c.values()): continue
         inner=[score(components(r)) for r in group if r['period']=='INNER_A']

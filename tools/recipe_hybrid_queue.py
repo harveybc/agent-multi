@@ -15,7 +15,12 @@ from tools.recipe_sac_queue import (ROOT, read, write, now, clean, software, sou
 DESIGN=dict(total_timesteps=102400,n_steps=512,batch_size=256,n_epochs=5,
             learning_rate=.0003,gamma=.99,gae_lambda=.95,ent_coef=.01,
             clip_range=.2,vf_coef=.5,max_grad_norm=.5,early_stopping=False,
-            encoder_dropout_effective=0.,agent_feedback='ROUTING_MASK_ONLY',expert=False)
+            encoder_dropout_effective=0.,agent_feedback='ROUTING_MASK_ONLY',expert=False,
+            policy_family='grouped_sequence_v1',fusion_units=8,
+            representation='selected branches; causal fusion; full sequence; separate pi/vf heads')
+QUALIFICATION=dict(steps=131072,n_steps=64,batch_size=64,
+                   cases=[dict(seed=s,lag=0) for s in (7,19,43)]+[dict(seed=7,lag=6)],
+                   minimum_expected_probability=.6,scope='SYNTHETIC_NOT_FINANCIAL')
 ARMS={
     'CAT_FIXED':dict(learned_risk=False,reward_mode='equity',penalty=0.),
     'HYBRID_EQUITY':dict(learned_risk=True,reward_mode='equity',penalty=0.),
@@ -36,9 +41,9 @@ def prepare(root,parent):
     require(read(parent/'CLOSE.json')['state']=='COMPLETE'
             and read(parent/'IDENTITY.json')['spec_sha256']==sha,'PARENT_COMPLETE')
     require(p['software']==software(),'PARENT_SOFTWARE')
-    spec=dict(schema='recipe_hybrid_queue.v1',inputs=p['inputs'],recipe_sha256=p['recipe_sha256'],
+    spec=dict(schema='recipe_hybrid_queue.v2',inputs=p['inputs'],recipe_sha256=p['recipe_sha256'],
         engine_root=p['engine_root'],agent_root=str(ROOT),software=software(),design=DESIGN,
-        arms=ARMS,seeds=SEEDS,units=[f'{a}_s{s}' for a in ARMS for s in SEEDS],
+        arms=ARMS,seeds=SEEDS,units=[f'{a}_s{s}' for a in ARMS for s in SEEDS],qualification=QUALIFICATION,
         source_parent_sha256=sha,device='cuda',max_attempts=2,task_timeout_seconds=43200,
         code={'agent':source_pins(ROOT,['app','env_plugins','agent_plugins','tools']),
               'engine':p['code']['engine']},
@@ -54,7 +59,8 @@ def prepare(root,parent):
 def verify(root):
     p=read(root/'SPEC.private.json')
     require(file_sha(root/'SPEC.private.json')==read(root/'IDENTITY.json')['spec_sha256'],'SPEC_PIN')
-    require(p['schema']=='recipe_hybrid_queue.v1' and p['design']==DESIGN and p['arms']==ARMS
+    require(p['schema']=='recipe_hybrid_queue.v2' and p['qualification']==QUALIFICATION
+            and p['design']==DESIGN and p['arms']==ARMS
             and p['seeds']==SEEDS and p['units']==[f'{a}_s{s}' for a in ARMS for s in SEEDS], 'DESIGN_PIN')
     require(p['software']==software(),'SOFTWARE_PIN')
     for role,base in [('agent',p['agent_root']),('engine',p['engine_root'])]:
@@ -76,10 +82,13 @@ class Market:
         return HybridOrderEnv(native.engine,native.inputs,gamma=DESIGN['gamma'],**ARMS[self.arm])
 
 
-def make_model(env,recipe,seed,device,learned_risk,n_steps=512,n_epochs=5):
+def make_model(env,recipe,seed,device,learned_risk,n_steps=512,n_epochs=5,policy_family='legacy'):
     from stable_baselines3 import PPO
     from agent_plugins.hybrid_orders import OrderPolicy,ElapsedRolloutBuffer
-    return PPO(OrderPolicy,env,policy_kwargs=dict(recipe=recipe,learned_risk=learned_risk),
+    from agent_plugins.qualified_orders import QualifiedOrderPolicy
+    require(policy_family in ('legacy','grouped_sequence_v1'),'POLICY_FAMILY')
+    policy=OrderPolicy if policy_family=='legacy' else QualifiedOrderPolicy
+    return PPO(policy,env,policy_kwargs=dict(recipe=recipe,learned_risk=learned_risk),
         rollout_buffer_class=ElapsedRolloutBuffer,device=device,seed=seed,
         n_steps=n_steps,n_epochs=n_epochs,batch_size=min(DESIGN['batch_size'],n_steps),
         learning_rate=DESIGN['learning_rate'],gamma=DESIGN['gamma'],gae_lambda=DESIGN['gae_lambda'],
@@ -139,7 +148,7 @@ def admit(root):
     results=[]
     for learned in (False,True):
         env=Synthetic()
-        model=make_model(env,rec,7,'cuda',learned,n_steps=32,n_epochs=2)
+        model=make_model(env,rec,7,'cuda',learned,n_steps=32,n_epochs=2,policy_family=DESIGN['policy_family'])
         model.learn(64,callback=callback(None,'synthetic',time.monotonic()))
         require(all(torch.isfinite(p).all() for p in model.policy.parameters()),'GPU_FINITE_WEIGHTS')
         path=root/f'GPU_ADMISSION_{int(learned)}.zip'
@@ -163,7 +172,11 @@ def worker(root,unit,attempt):
     folder.mkdir(parents=True,exist_ok=False)
     market=Market(spec,arm)
     env=market.env('TRAIN')
-    model=make_model(env,market.recipe,seed,'cuda',ARMS[arm]['learned_risk'])
+    qualification=root/'LEARNING_QUALIFICATION.json'
+    require(qualification.exists() and read(qualification)['state']=='PASS'
+            and read(qualification)['spec_sha256']==file_sha(root/'SPEC.private.json'),'LEARNING_QUALIFICATION_REQUIRED')
+    require(qualify(root,spec,file_sha(root/'SPEC.private.json')),'LEARNING_QUALIFICATION_REQUIRED')
+    model=make_model(env,market.recipe,seed,'cuda',ARMS[arm]['learned_risk'],policy_family=DESIGN['policy_family'])
     if arm!='CAT_FIXED':
         state=read(root/'STATUS.json')
         control=root/state['completed'][f'CAT_FIXED_s{seed}']
@@ -171,6 +184,8 @@ def worker(root,unit,attempt):
         require(read(control.parent/'EFFECTIVE_MODEL.json')['initial_policy_tensor_sha256']==tensor_hash(model),
                 'INITIAL_TENSOR_PARITY')
     write(folder/'EFFECTIVE_MODEL.json',dict(design=DESIGN,arm=ARMS[arm],seed=seed,
+        policy_class=type(model.policy).__name__,parameters=sum(p.numel() for p in model.policy.parameters()),
+        recipe_representation_overridden=True,qualification_sha256=file_sha(qualification),
         initial_policy_tensor_sha256=tensor_hash(model),reward_parameters=spec['reward_parameters'],
         storage_codec='exact integer categorical id plus three Beta parameters; no continuous binning'))
     start=time.monotonic()
@@ -196,6 +211,11 @@ def worker(root,unit,attempt):
         calendar_env=market.env(period)
         business_days={calendar_env.engine.business_day(k) for k in range(calendar_env.engine.first+1,calendar_env.engine.last+1)}
         trades=read(folder/(period+'.trades.json'))
+        counts=read(folder/(period+'.orders.json'))['counts']
+        behavior=business_behavior(report,counts)
+        report.update(behavior)
+        write(folder/(period+'.behavior.json'),dict(**behavior,action_counts=counts,
+            scope='necessary behavior coverage, not evidence of optimal timing'))
         report.update(arm=arm,seed=seed,step=102400,objective=ARMS[arm]['reward_mode'])
         report.update(average_entries_per_business_day=len(trades)/len(business_days),
                       scheduled_business_days=len(business_days))
@@ -226,6 +246,60 @@ def authenticated(path,sha):
     return r
 
 
+def business_behavior(report,counts):
+    reasons=[]
+    if report.get('n_long',0)==0: reasons.append('NO_LONG_TRADES')
+    if report.get('n_short',0)==0: reasons.append('NO_SHORT_TRADES')
+    for name in ('NOP','CLOSE_LONG','CLOSE_SHORT','HOLD_LONG','HOLD_SHORT'):
+        if counts.get(name,0)==0: reasons.append('NO_'+name)
+    return dict(business_behavior_eligible=not reasons,behavior_failures=reasons,
+                voluntary_close_long=counts.get('CLOSE_LONG',0),
+                voluntary_close_short=counts.get('CLOSE_SHORT',0))
+
+
+def qualify(root,spec,sha):
+    """Finite cases, resumable after interruption; failures never start a fit."""
+    receipt=root/'LEARNING_QUALIFICATION.json'
+    if receipt.exists():
+        r=read(receipt)
+        require(r['spec_sha256']==sha,'QUALIFICATION_IDENTITY')
+        require([(c['seed'],c['lag']) for c in r['cases']]==
+                [(c['seed'],c['lag']) for c in spec['qualification']['cases']],'QUALIFICATION_CASES')
+        for name,digest in r['artifacts'].items():
+            require(Path(name).name==name,'QUALIFICATION_PATH')
+            require(file_sha(root/name)==digest,'QUALIFICATION_ARTIFACT')
+        from app.order_qualification import passes
+        require(r['state']==('PASS' if all(passes(c['rows']) and c['reload_exact'] for c in r['cases'])
+                             else 'FAILED'),'QUALIFICATION_VERDICT')
+        return r['state']=='PASS'
+    rows=[]
+    for case in spec['qualification']['cases']:
+        name=f"qualification-s{case['seed']}-lag{case['lag']}"
+        path=root/(name+'.json')
+        if not path.exists():
+            write(root/'PROGRESS.json',dict(state='QUALIFYING',unit=name,heartbeat_at=now(),
+                                          financial_fits=0))
+            with (root/(name+'.log')).open('a') as log:
+                child=subprocess.run([sys.executable,'-m','tools.qualify_order_routes',
+                    '--recipe',spec['inputs']['recipe'],'--output',str(path),'--device','cuda',
+                    '--seed',str(case['seed']),'--lag',str(case['lag']),
+                    '--steps',str(spec['qualification']['steps'])],cwd=ROOT,stdout=log,
+                    stderr=subprocess.STDOUT,timeout=7200)
+            require(child.returncode in (0,2) and path.exists(),'QUALIFICATION_PROCESS_FAILED')
+        r=read(path)
+        require(r['recipe_sha256']==spec['recipe_sha256'] and r['seed']==case['seed']
+                and r['lag']==case['lag'] and r['steps']==spec['qualification']['steps']
+                and r['device']=='cuda','QUALIFICATION_CASE_IDENTITY')
+        require(file_sha(path.with_suffix('.zip'))==r['model_sha256'],'QUALIFICATION_MODEL')
+        from app.order_qualification import passes
+        require(r['passed']==(passes(r['rows']) and r['reload_exact']),'QUALIFICATION_VERDICT')
+        rows.append(r)
+    write(receipt,dict(state='PASS' if all(r['passed'] for r in rows) else 'FAILED',
+        spec_sha256=sha,scope='SYNTHETIC_NOT_FINANCIAL',cases=rows,finished_at=now(),
+        artifacts={p.name:file_sha(p) for p in root.glob('qualification-*') if p.suffix in ('.json','.zip')}))
+    return read(receipt)['state']=='PASS'
+
+
 def run(root):
     spec=verify(root);sha=file_sha(root/'SPEC.private.json')
     with (root/'QUEUE.lock').open('a') as lock:
@@ -234,6 +308,13 @@ def run(root):
         state=read(root/'STATUS.json') if (root/'STATUS.json').exists() else dict(
             spec_sha256=sha,state='PREPARED',attempts={},completed={})
         require(state['spec_sha256']==sha,'QUEUE_IDENTITY')
+        if spec.get('qualification'):
+            if not admission(root):
+                state.update(state='WAIT_RESOURCES',updated_at=now());write(root/'STATUS.json',state);return 75
+            state.update(state='QUALIFYING',updated_at=now());write(root/'STATUS.json',state)
+            if not qualify(root,spec,sha):
+                state.update(state='QUALIFICATION_FAILED',finished_at=now())
+                write(root/'STATUS.json',state);write(root/'CLOSE.json',state);return 0
         for unit in spec['units']:
             if unit in state['completed']:
                 authenticated(root/state['completed'][unit],sha);continue

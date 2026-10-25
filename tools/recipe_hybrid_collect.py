@@ -27,6 +27,8 @@ def request_for(path,spec,sha,report):
             checkpoint='102400',checkpoint_archive_sha256=file_sha(path.parent/'model-102400.zip'),
             policy_tensor_sha256=report['policy_tensor_sha256'],recipe_sha256=spec['recipe_sha256'],
             expert='NONE',feedback='ROUTING_MASK_ONLY',scaling='FROZEN_TRAIN',test='CLOSED',
+            policy_family=spec.get('design',{}).get('policy_family','legacy'),
+            behavior_eligible=str(report.get('business_behavior_eligible','not_measured')),
             costs='ASSUMED_NOT_BROKER_VERIFIED',objective=ARMS[arm]['reward_mode']),
         datasets=[dict(lake='financial-data',resource='shared-feature-store-r3',
             sha256=read(spec['inputs']['recipe'])['store']['sha256'],role=report['period'].lower(),lineage='UNVERIFIED')],
