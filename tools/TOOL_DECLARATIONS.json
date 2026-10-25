@@ -2,6 +2,10 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "hybrid_gradient_audit.py": {
+   "purpose": "Finite authenticated TRAIN-only on-policy actor/critic gradient diagnosis without optimizer updates or TEST; immutable parent evidence",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "static RL comparison"
+  },
   "hybrid_inference_collect.py": {
    "purpose": "Authenticate and mirror sealed inference-only diagnostic reports, publish via the governed existing warehouse outbox without mixing them with training experiments",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "static RL comparison"

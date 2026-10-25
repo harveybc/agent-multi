@@ -80,3 +80,14 @@ def test_duration_returns_match_two_step_analytical_case():
                 np.array([0.]),torch.tensor([0.]),torch.tensor([0.]))
     buf.compute_returns_and_advantage(torch.tensor([0.]),np.array([True]))
     np.testing.assert_array_equal(buf.returns[:,0],[3.,4.])
+
+
+@pytest.mark.parametrize('terminal,expected',[(False,3.),(True,2.)])
+def test_rollout_boundary_bootstrap_vs_true_terminal(terminal,expected):
+    obs=spaces.Dict({'features':spaces.Box(-1,1,(1,),np.float32)})
+    buf=ElapsedRolloutBuffer(1,obs,spaces.Box(0,1,(4,),np.float32),device='cpu',gamma=.5,gae_lambda=.7)
+    buf.pending_duration=np.array([2])
+    buf.add({'features':np.zeros((1,1),np.float32)},np.zeros((1,4)),np.array([2.]),
+            np.array([0.]),torch.tensor([7.]),torch.tensor([0.]))
+    buf.compute_returns_and_advantage(torch.tensor([4.]),np.array([terminal]))
+    assert buf.returns[0,0]==pytest.approx(expected)
