@@ -1,7 +1,17 @@
 {
   "schema": "rl_static_engineering_state.v1",
   "updated_on": "2026-10-25",
-  "current_stage": "FROZEN_ORDER_POLICY_DIAGNOSIS_COMPLETE",
+  "current_stage": "CRITIC_DROPOUT_CONTRAST_DEPLOYING",
+  "critic_dropout_study": {
+    "plan": "65_CRITIC_DROPOUT_CONTRAST.md",
+    "arms": ["CRITIC_BASE", "CRITIC_NODROP"],
+    "critic_dropout": [0.3, 0.0],
+    "actor_dropout": 0.3,
+    "tests_passed": 48,
+    "same_initial_tensors_verified": true,
+    "legacy_base_synthetic_training_exact": true,
+    "next_action": "deploy existing sequential queue and collector; confirm first real progress"
+  },
   "order_policy_diagnosis": {
     "plan": "63_ORDER_POLICY_DIAGNOSIS.md",
     "scope": "ten authenticated TRAIN/INNER checkpoint-period replays; no fit, TEST or checkpoint selection",
@@ -75,7 +85,7 @@
   "sequential_queue": {"code": "2d4aaa99", "tool": "tools/recipe_sac_queue.py", "registered_in_tool_declarations": true, "scope": "DEVELOPMENT", "arms": ["GROUPED", "FLAT"], "steps_per_arm": 100000, "seed": 7, "auto_next_arm": true, "reboot_timer_enabled": true, "restart_policy": "bounded two fresh attempts, no false exact continuation", "collector_timer_enabled": true, "remote_warehouse_delivery": "ready; zero scientific reports expected before checkpoint", "plan": "61_RECIPE_NATIVE_SAC_QUEUE.md"},
   "scientific_campaign_started": true,
   "review": {"satoshi_return_received": true, "weekly_first_80_run_proposal_adopted": false, "closed_in_new_path": ["action/fill/reward transition", "entry-bar commission and leveraged capital reconciliation", "undefined checkpoint scores", "explicit analytical financing debit", "native Trade lifecycle after direct settlement", "zero-net trade accounting", "long/short repeated-close and nonzero-slippage analytical ledger"], "open_findings": ["broker-specific financing and actual execution costs", "raw fractional enlargement mask (not selected for curated baseline)", "alternate margin and full environment accounting acceptance"]},
-  "next_allowed_actions": ["authenticate closed order campaign", "run frozen actor/critic diagnostic on TRAIN and INNER only", "copy diagnostic evidence independently; no fit, TEST or checkpoint selection"],
+  "next_allowed_actions": ["owner authorized sequential fresh CRITIC_BASE then CRITIC_NODROP", "require exact base final policy before treatment", "publish all fixed checkpoints and copy independently; no TEST or checkpoint selection"],
   "deferred": ["frequency sweep", "DOIN", "forecasting", "NEAT"],
   "daily_entry_cap_baseline": 1,
   "daily_entry_cap_proposed_contrast": [1, 2, 4]

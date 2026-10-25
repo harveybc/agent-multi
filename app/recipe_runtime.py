@@ -82,7 +82,7 @@ class RecipeMarket:
         return RecipeNativeEnv(engine, self.inputs, gamma)
 
 
-def build_sac(env, recipe, design, arm, device):
+def build_sac(env, recipe, design, arm, device, critic_dropout=None):
     require(arm in ('GROUPED', 'FLAT'), 'ARM')
     kwargs = dict(net_arch=[recipe['representation']['model']['head']],
                   optimizer_class=torch.optim.AdamW,
@@ -91,7 +91,13 @@ def build_sac(env, recipe, design, arm, device):
     if arm == 'GROUPED':
         kwargs.update(features_extractor_class=RecipeTemporalExtractor,
                       features_extractor_kwargs={'recipe': recipe})
-    return SAC('MultiInputPolicy', env, policy_kwargs=kwargs, device=device,
+    policy = 'MultiInputPolicy'
+    if critic_dropout is not None:
+        from agent_plugins.recipe_features import CriticDropoutSACPolicy
+        require(arm == 'GROUPED' and recipe['regularization']['dropout'] == .3, 'CRITIC_STUDY_RECIPE')
+        policy = CriticDropoutSACPolicy
+        kwargs['critic_dropout'] = critic_dropout
+    return SAC(policy, env, policy_kwargs=kwargs, device=device,
                seed=design['seed'], learning_rate=design['learning_rate'],
                buffer_size=design['buffer_size'], batch_size=design['batch_size'],
                learning_starts=design['learning_starts'], gamma=design['gamma'],

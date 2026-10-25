@@ -44,6 +44,19 @@ m.save(sys.argv[2]+'/model')
 from stable_baselines3 import SAC
 loaded=SAC.load(sys.argv[2]+'/model',device='cpu')
 np.testing.assert_array_equal(before,loaded.predict(obs,deterministic=True)[0])
+from types import SimpleNamespace
+from pathlib import Path
+from tools.recipe_sac_queue import evaluate,tensor_hash,read
+market=SimpleNamespace(recipe={'split':{'periods':{'TRAIN':['2020-01-05','2020-01-11']}}},
+    env=lambda period:OrderContractEnv(BarEnv(bars,cal,np.full(120,.001),np.full(120,.002),
+        ts[0],ts[-1]+pd.Timedelta(hours=1),EnvConfig()),inputs,contract=CONTRACTS['COMMANDS5']))
+out=Path(sys.argv[2])
+rng=torch.get_rng_state().clone()
+plain=evaluate(loaded,market,'TRAIN',out/'plain')
+probed=evaluate(loaded,market,'TRAIN',out/'probed',diagnostic=True)
+assert {k:v for k,v in plain.items() if k!='seconds'}=={k:v for k,v in probed.items() if k!='seconds'}
+assert torch.equal(rng,torch.get_rng_state())
+assert read(out/'probed/TRAIN.probe.json')['policy_tensor_sha256']==tensor_hash(loaded)
 print('ORDER_ALPHA_AND_NATIVE_SAC_PASS')
 '''
     result=subprocess.run([sys.executable,'-c',script,engine,str(tmp_path)],

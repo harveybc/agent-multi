@@ -25,6 +25,7 @@ DESIGN = dict(seed=7, total_timesteps=100000, checkpoint_interval=25000,
               learning_rate=.0003, buffer_size=20000, batch_size=64,
               learning_starts=1000, gamma=.99, tau=.005,
               early_stopping=False, refit=False, expert=False, agent_feedback=False)
+CRITIC_DROPOUT = {'CRITIC_BASE': .3, 'CRITIC_NODROP': 0.}
 
 
 def now():
@@ -52,6 +53,8 @@ def software():
 
 
 def prepare(a):
+    if getattr(a, 'critic_parent', None):
+        return prepare_critic(a)
     root = a.root.resolve()
     require(not root.exists(), 'NEW_CAMPAIGN_REQUIRED')
     engine = a.engine_root.resolve()
@@ -84,6 +87,49 @@ def prepare(a):
     print(json.dumps({'state': 'PREPARED', 'spec_sha256': file_sha(root / 'SPEC.private.json')}))
 
 
+def prepare_critic(a):
+    parent, root = a.critic_parent.resolve(), a.root.resolve()
+    require(not root.exists(), 'NEW_CAMPAIGN_REQUIRED')
+    require(file_sha(parent/'SPEC.private.json') == a.parent_spec_sha, 'PARENT_SPEC')
+    p = read(parent/'SPEC.private.json')
+    closed = read(parent/'CLOSE.json')
+    require(p['schema'] == 'recipe_sac_order_queue.v1' and closed['state'] == 'COMPLETE'
+            and closed['spec_sha256'] == a.parent_spec_sha, 'CRITIC_PARENT')
+    result = parent/closed['completed']['COMMANDS5']
+    authenticated_result(result, a.parent_spec_sha)
+    require(p['software'] == software() and p['design'] == DESIGN, 'CRITIC_PARENT_DESIGN')
+    reg = read(p['inputs']['recipe'])['regularization']
+    require(reg['dropout'] == .3 and reg['wd'] == .01,
+            'CRITIC_PARENT_REGULARIZATION')
+    spec = dict(schema='recipe_sac_critic_queue.v1', recipe_sha256=p['recipe_sha256'],
+        engine_root=p['engine_root'], agent_root=str(ROOT), design=DESIGN,
+        arms=list(CRITIC_DROPOUT), critic_dropout=CRITIC_DROPOUT,
+        device='cuda', max_attempts=2, software=software(), task_timeout_seconds=43200,
+        inputs=p['inputs'], order_contracts={arm:p['order_contracts']['COMMANDS5'] for arm in CRITIC_DROPOUT},
+        critic_parent=dict(root=str(parent), spec_sha256=a.parent_spec_sha,
+                           result=str(result.relative_to(parent)), result_sha256=file_sha(result)),
+        code={'agent':source_pins(ROOT, ['app','env_plugins','agent_plugins','tools']),
+              'engine':p['code']['engine']})
+    root.mkdir(parents=True)
+    write(root/'SPEC.private.json', spec)
+    write(root/'IDENTITY.json', dict(spec_sha256=file_sha(root/'SPEC.private.json'), created_at=now(), state='PREPARED'))
+    print(json.dumps({'state':'PREPARED', 'spec_sha256':file_sha(root/'SPEC.private.json')}))
+
+
+def verify_critic_parent(spec):
+    parent = Path(spec['critic_parent']['root'])
+    pin = spec['critic_parent']
+    require(file_sha(parent/'SPEC.private.json') == pin['spec_sha256'], 'CRITIC_PARENT_SPEC')
+    p = read(parent/'SPEC.private.json')
+    for key in ('recipe_sha256','inputs','design','software','engine_root'):
+        require(spec[key] == p[key], 'CRITIC_PARENT_CHANGED_'+key)
+    require(spec['code']['engine'] == p['code']['engine'], 'CRITIC_ENGINE_CHANGED')
+    result = (parent/pin['result']).resolve()
+    require(result.is_relative_to(parent.resolve()) and file_sha(result) == pin['result_sha256'], 'CRITIC_PARENT_RESULT')
+    authenticated_result(result, pin['spec_sha256'])
+    return result
+
+
 def verify(root):
     spec = read(root / 'SPEC.private.json')
     require(file_sha(root / 'SPEC.private.json') == read(root / 'IDENTITY.json')['spec_sha256'], 'SPEC_PIN')
@@ -91,12 +137,18 @@ def verify(root):
     standard = spec['schema'] == 'recipe_sac_queue.v1' and spec['arms'] == ['GROUPED','FLAT']
     orders = (spec['schema'] == 'recipe_sac_order_queue.v1' and spec['arms'] == ['TARGET','COMMANDS5']
               and spec.get('order_contracts') == CONTRACTS and bool(spec.get('order_parent')))
-    require((standard or orders) and spec['design'] == DESIGN and spec['max_attempts'] == 2
+    critics = (spec['schema'] == 'recipe_sac_critic_queue.v1' and spec['arms'] == list(CRITIC_DROPOUT)
+               and spec.get('critic_dropout') == CRITIC_DROPOUT
+               and spec.get('order_contracts') == {a:CONTRACTS['COMMANDS5'] for a in CRITIC_DROPOUT}
+               and bool(spec.get('critic_parent')))
+    require((standard or orders or critics) and spec['design'] == DESIGN and spec['max_attempts'] == 2
             and spec['device'] == 'cuda', 'DESIGN')
     require(spec['software'] == software(), 'SOFTWARE_PIN')
     for role, path in [('agent', spec['agent_root']), ('engine', spec['engine_root'])]:
         for name, digest in spec['code'][role].items():
             require(file_sha(Path(path) / name) == digest, 'CODE_PIN')
+    if critics:
+        verify_critic_parent(spec)
     return spec
 
 
@@ -141,7 +193,7 @@ def preserve_rng():
             torch.cuda.set_rng_state_all(cs)
 
 
-def evaluate(model, market, period, output):
+def evaluate(model, market, period, output, diagnostic=False):
     import numpy as np
     import torch
     from app.short_horizon.expert_guided.env import summary
@@ -153,7 +205,14 @@ def evaluate(model, market, period, output):
     started = time.monotonic()
     try:
         obs, _ = env.reset()
+        selected = []
+        if diagnostic:
+            from tools.order_policy_diagnosis import sample_indices, policy_probe
+            available = np.flatnonzero(env.valid[env.engine.first:env.engine.last]) + env.engine.first
+            probe_bars = set(available[sample_indices(len(available))].tolist())
         while True:
+            if diagnostic and env.bar in probe_bars:
+                selected.append((env.bar, {k:v.copy() for k,v in obs.items()}))
             action, _ = model.predict(obs, deterministic=True)
             obs, _, done, _, _ = env.step(action)
             if done:
@@ -183,6 +242,14 @@ def evaluate(model, market, period, output):
         write(output / (period + '.json'), clean(report))
         write(output / (period + '.trades.json'), clean(env.engine.trades))
         native['daily_equity'].to_csv(output / (period + '.daily_equity.csv'))
+        if diagnostic:
+            require(len(selected) == len(probe_bars), 'CRITIC_PROBE_SUPPORT')
+            observations = {k:np.stack([r[1][k] for r in selected]) for k in selected[0][1]}
+            probe = policy_probe(model, observations)
+            probe.update(policy_tensor_sha256=before,
+                support_sha256=hashlib.sha256(np.asarray([r[0] for r in selected], np.int64).tobytes()).hexdigest(),
+                scope='DIAGNOSTIC_NOT_FINANCIAL_SCORE')
+            write(output / (period + '.probe.json'), clean(probe))
         return clean(report)
     finally:
         random.setstate(py)
@@ -206,6 +273,7 @@ def outbox_report(root, spec, arm, step, report, checkpoint):
                     'seconds' if k == 'seconds' else 'count' if k.startswith('n_') or k == 'trades' else 'ratio')
             metrics.append(dict(metric=k, value=v, split=period.lower(), horizon=None, unit=unit))
     payload = dict(experiment_key=key, experiment_set_key=(
+                       'recipe-r3-critic-dropout' if 'critic_dropout' in spec else
                        'recipe-r3-order-contract' if 'order_contracts' in spec else 'recipe-r3-native-sac'), actor='musashi',
                    lake='financial-data', lineage='UNVERIFIED', project='agent-multi', phase='DEVELOPMENT',
                    config_sha256=read(root / 'IDENTITY.json')['spec_sha256'],
@@ -220,6 +288,9 @@ def outbox_report(root, spec, arm, step, report, checkpoint):
                                   lineage='UNVERIFIED')], metrics=metrics)
     if 'order_contracts' in spec:
         payload['tags']['order_contract'] = json.dumps(spec['order_contracts'][arm],sort_keys=True)
+    if 'critic_dropout' in spec:
+        payload['tags'].update(actor_dropout='0.3', critic_dropout=str(spec['critic_dropout'][arm]),
+                               weight_decay='0.01', contrast='CRITIC_ONLY_DROPOUT')
     write(root / 'outbox' / (key + '.json'), dict(report=payload, source_unit=key))
 
 
@@ -240,7 +311,20 @@ def worker(root, arm, attempt):
     folder.mkdir(parents=True, exist_ok=False)
     market = RecipeMarket(spec, spec.get('order_contracts', {}).get(arm))
     env = market.env('TRAIN', DESIGN['gamma'])
-    model = build_sac(env, market.recipe, DESIGN, 'GROUPED' if 'order_contracts' in spec else arm, spec['device'])
+    model = build_sac(env, market.recipe, DESIGN, 'GROUPED' if 'order_contracts' in spec else arm, spec['device'],
+                      critic_dropout=spec.get('critic_dropout', {}).get(arm))
+    if 'critic_dropout' in spec:
+        write(folder/'EFFECTIVE_MODEL.json', dict(actor_dropout=model.actor.features_extractor.drop.p,
+            critic_dropout=model.critic.features_extractor.drop.p,
+            target_critic_dropout=model.critic_target.features_extractor.drop.p,
+            weight_decay=model.critic.optimizer.param_groups[0]['weight_decay'],
+            initial_policy_tensor_sha256=tensor_hash(model), design=DESIGN,
+            order_contract=spec['order_contracts'][arm]))
+        if arm == 'CRITIC_NODROP':
+            base = root/read(root/'STATUS.json')['completed']['CRITIC_BASE']
+            authenticated_result(base, file_sha(root/'SPEC.private.json'))
+            require(read(base.parent/'EFFECTIVE_MODEL.json')['initial_policy_tensor_sha256'] == tensor_hash(model),
+                    'CRITIC_INITIAL_PARITY')
     start = time.monotonic()
     progress = dict(state='TRAINING', arm=arm, attempt=attempt, step=0, budget=DESIGN['total_timesteps'],
                     recipe=market.recipe['identity'], device=torch.cuda.get_device_name(),
@@ -280,7 +364,8 @@ def worker(root, arm, attempt):
         for period in ('TRAIN', 'INNER_A', 'OBS_2024'):
             progress.update(state='EVALUATING', step=step, period=period, heartbeat_at=now())
             write(root / 'PROGRESS.json', progress)
-            report = evaluate(model, market, period, checkpoint_dir)
+            report = evaluate(model, market, period, checkpoint_dir,
+                              diagnostic='critic_dropout' in spec and period in ('TRAIN','INNER_A'))
             checkpoint_reports[period] = report
             outbox_report(root, spec, arm, step, report, checkpoint)
             reports.append(dict(step=step, **report))
@@ -302,6 +387,11 @@ def worker(root, arm, attempt):
         parent = Path(spec['order_parent']['root']) / spec['order_parent']['result']
         original = read(parent.parent/'step-100000'/'TRAIN.json')
         require(tensor_hash(model) == original['policy_tensor_sha256'], 'FRESH_CONTROL_POLICY_REPLAY')
+        result['fresh_control_policy_exact'] = True
+    if arm == 'CRITIC_BASE':
+        parent = verify_critic_parent(spec)
+        original = read(parent.parent/'step-100000'/'TRAIN.json')
+        require(tensor_hash(model) == original['policy_tensor_sha256'], 'FRESH_CRITIC_CONTROL_REPLAY')
         result['fresh_control_policy_exact'] = True
     write(folder / 'RESULT.json', result)
     progress.update(state='COMPLETE',period=None,heartbeat_at=now(),eta_arm_seconds=0.)
@@ -373,7 +463,13 @@ def gpu_witness(root):
         with preserve_rng():
             env = Synthetic()
             design = {**DESIGN, 'learning_starts':2, 'batch_size':4, 'buffer_size':32}
-            model = build_sac(env, rec, design, 'GROUPED' if 'order_contracts' in spec else arm, 'cuda')
+            model = build_sac(env, rec, design, 'GROUPED' if 'order_contracts' in spec else arm, 'cuda',
+                              critic_dropout=spec.get('critic_dropout', {}).get(arm))
+            if 'critic_dropout' in spec:
+                with preserve_rng():
+                    legacy = build_sac(env, rec, design, 'GROUPED', 'cuda')
+                    require(tensor_hash(legacy) == tensor_hash(model), 'CRITIC_INITIAL_PARITY')
+                    del legacy
             model.learn(total_timesteps=16)
             obs, _ = env.reset()
             before = model.predict(obs, deterministic=True)[0]
@@ -382,6 +478,11 @@ def gpu_witness(root):
             replay = SAC.load(path, device='cuda')
             require(np.array_equal(before,replay.predict(obs,deterministic=True)[0]), 'GPU_RELOAD')
             require(model._n_updates == 14, 'GPU_UPDATES')
+            if 'critic_dropout' in spec:
+                require(replay.actor.features_extractor.drop.p == .3
+                        and replay.critic.features_extractor.drop.p == spec['critic_dropout'][arm]
+                        and replay.critic_target.features_extractor.drop.p == spec['critic_dropout'][arm],
+                        'GPU_CRITIC_DROPOUT_RELOAD')
             del model, replay
             env.close()
     write(root / 'GPU_ADMISSION.json', dict(state='PASS', scope='SYNTHETIC_ONLY', scientific_fits=0,
@@ -409,7 +510,7 @@ def run(root):
         for path in state['completed'].values():
             authenticated_result(root/path,spec_sha)
         return 0
-    if 'order_contracts' in spec:
+    if spec['schema'] == 'recipe_sac_order_queue.v1':
         if not admission(root):
             state.update(state='WAIT_RESOURCES',updated_at=now())
             write(root/'STATUS.json',state)
@@ -439,7 +540,8 @@ def run(root):
             evidence=read(receipt)
             require(evidence['state']=='PASS' and evidence['spec_sha256']==spec_sha,'ORDER_GATE_IDENTITY')
     for arm in spec['arms']:
-        if arm == 'COMMANDS5' and 'TARGET' not in state['completed']:
+        control = {'COMMANDS5':'TARGET', 'CRITIC_NODROP':'CRITIC_BASE'}.get(arm)
+        if control and control not in state['completed']:
             state.update(state='CONTRAST_CONTROL_FAILED',updated_at=now())
             write(root/'STATUS.json',state)
             return 2
@@ -503,10 +605,25 @@ def run(root):
         for arm,path in state['completed'].items():
             result=authenticated_result(root/path,spec_sha)
             rows.extend(dict(arm=arm,**r) for r in result['reports'] if r['step']==100000)
+        limits = (['single seed','partial observability without agent feedback',
+                   'critic-only dropout contrast','assumed broker costs'] if 'critic_dropout' in spec else
+                  ['single seed','partial observability without agent feedback',
+                   'action package contrast including reversal semantics','assumed broker costs'])
         write(root/'ORDER_COMPARISON.json',dict(spec_sha256=spec_sha,rows=rows,
             selection='NONE_REPORT_ALL_FINAL_100000',finished_at=now(),
-            limits=['single seed','partial observability without agent feedback',
-                    'action package contrast including reversal semantics','assumed broker costs']))
+            limits=limits))
+        if 'critic_dropout' in spec and len(state['completed']) == 2:
+            folders = {a:(root/p).parent for a,p in state['completed'].items()}
+            initial = [read(p/'EFFECTIVE_MODEL.json')['initial_policy_tensor_sha256'] for p in folders.values()]
+            require(len(set(initial)) == 1, 'CRITIC_INITIAL_PARITY')
+            probes = []
+            for step in range(25000,100001,25000):
+                for period in ('TRAIN','INNER_A'):
+                    pair = {a:read(p/f'step-{step}'/(period+'.probe.json')) for a,p in folders.items()}
+                    require(len({r['support_sha256'] for r in pair.values()}) == 1, 'CRITIC_PROBE_UNPAIRED')
+                    probes.append(dict(step=step,period=period,arms=pair))
+            write(root/'CRITIC_DIAGNOSTICS.json', dict(spec_sha256=spec_sha, pairs=probes,
+                selection='NONE', initial_policy_exact=True, scope='FROZEN_PROBES_NOT_TRADING_SCORES'))
     write(root / 'STATUS.json', state)
     write(root / 'CLOSE.json', state)
     return 0
@@ -518,8 +635,9 @@ def main():
     parser.add_argument('--root', type=Path, required=True)
     for name in ('engine-root', 'recipe', 'store', 'manifest', 'bars', 'closures'):
         parser.add_argument('--' + name, type=Path)
-    parser.add_argument('--arm', choices=['GROUPED','FLAT','TARGET','COMMANDS5'])
+    parser.add_argument('--arm', choices=['GROUPED','FLAT','TARGET','COMMANDS5',*CRITIC_DROPOUT])
     parser.add_argument('--order-parent',type=Path)
+    parser.add_argument('--critic-parent',type=Path)
     parser.add_argument('--parent-spec-sha')
     parser.add_argument('--attempt', type=int)
     a = parser.parse_args()

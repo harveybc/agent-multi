@@ -17,7 +17,8 @@ def bind_report(mirror, request):
     report = request['report']
     tags = report['tags']
     arm, step = tags['arm'], int(tags['checkpoint'])
-    require(arm in ('GROUPED','FLAT','TARGET','COMMANDS5') and step in (25000,50000,75000,100000), 'REPORT_ARM_STEP')
+    require(arm in ('GROUPED','FLAT','TARGET','COMMANDS5','CRITIC_BASE','CRITIC_NODROP')
+            and step in (25000,50000,75000,100000), 'REPORT_ARM_STEP')
     candidates = [p for p in (mirror / arm).glob(f'attempt-*/step-{step}/model.zip')
                   if file_sha(p) == tags['checkpoint_archive_sha256']]
     require(len(candidates) == 1, 'REPORT_CHECKPOINT_BINDING')
@@ -25,6 +26,13 @@ def bind_report(mirror, request):
     splits = {m['split'] for m in report['metrics']}
     require(len(splits) == 1 and splits <= {'train','inner_a','obs_2024'}, 'REPORT_SPLIT')
     native = read(checkpoint.parent / (next(iter(splits)).upper() + '.json'))
+    if arm in ('CRITIC_BASE','CRITIC_NODROP'):
+        effective = read(checkpoint.parent.parent/'EFFECTIVE_MODEL.json')
+        expected = .3 if arm == 'CRITIC_BASE' else 0.
+        require(effective['actor_dropout'] == .3 and effective['critic_dropout'] == expected
+                and effective['target_critic_dropout'] == expected and effective['weight_decay'] == .01
+                and tags.get('critic_dropout') == str(expected)
+                and tags.get('actor_dropout') == '0.3', 'REPORT_CRITIC_REGULARIZATION')
     require(native['policy_tensor_sha256'] == tags['policy_tensor_sha256'], 'REPORT_POLICY')
     require(all(m['metric'] in native and native[m['metric']] == m['value'] for m in report['metrics']),
             'REPORT_NATIVE_VALUES')

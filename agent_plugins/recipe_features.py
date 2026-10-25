@@ -6,6 +6,7 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
+from stable_baselines3.sac.policies import SACPolicy
 
 from app.frozen_recipe_inputs import validate_recipe, require
 from agent_plugins.temporal_features import CausalConv1d
@@ -45,3 +46,22 @@ class RecipeTemporalExtractor(BaseFeaturesExtractor):
         for conv in self.core:
             x = F.gelu(conv(x))
         return x[:, :, -1]
+
+
+class CriticDropoutSACPolicy(SACPolicy):
+    """Serialize an explicit critic-only override without changing actor initialization."""
+
+    def __init__(self, *args, critic_dropout, **kwargs):
+        require(critic_dropout in (0., .3), 'CRITIC_DROPOUT')
+        self.critic_dropout = float(critic_dropout)
+        super().__init__(*args, **kwargs)
+
+    def make_critic(self, features_extractor=None):
+        critic = super().make_critic(features_extractor)
+        require(isinstance(critic.features_extractor, RecipeTemporalExtractor), 'CRITIC_RECIPE')
+        require(not self.share_features_extractor, 'CRITIC_MUST_NOT_SHARE_ACTOR')
+        critic.features_extractor.drop.p = self.critic_dropout
+        return critic
+
+    def _get_constructor_parameters(self):
+        return {**super()._get_constructor_parameters(), 'critic_dropout': self.critic_dropout}
