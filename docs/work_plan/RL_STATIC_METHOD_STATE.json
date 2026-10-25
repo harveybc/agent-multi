@@ -1,7 +1,14 @@
 {
   "schema": "rl_static_engineering_state.v1",
   "updated_on": "2026-10-25",
-  "current_stage": "ORDER_CONTRACT_TARGET_TRAINING_AUTOMATED",
+  "current_stage": "FROZEN_ORDER_POLICY_DIAGNOSIS_READY",
+  "order_policy_diagnosis": {
+    "plan": "63_ORDER_POLICY_DIAGNOSIS.md",
+    "scope": "ten authenticated TRAIN/INNER checkpoint-period replays; no fit, TEST or checkpoint selection",
+    "tests_passed": 31,
+    "test_first_red": "new diagnostic test failed to import before implementation",
+    "next_action": "run finite read-only diagnostic on original GPU; independently copy and verify output"
+  },
   "order_contract_study": {
     "plan": "62_ORDER_POLICY_CONTRACT.md",
     "focused_tests_passed": 56,
@@ -10,10 +17,10 @@
     "ordered_stages": ["business alpha", "authenticated fixed-policy diagnostics", "fresh TARGET control", "COMMANDS5", "publication and close"],
     "scientific_code": "b117dce0",
     "spec_sha256": "79c4b87eb64d7285583614afe624a196dbf7c632f0351d2d0f4aa2c4130bfd5e",
-    "next_action": "timers finish fresh TARGET, authenticate its final policy replay, then COMMANDS5",
+    "next_action": "closed; diagnose COMMANDS5 inactive policy without changing parent",
     "feedback": "NONE; position used by harness only, not observation",
     "sizing": "fixed 1.0 of 0.1 balance margin budget; learned sizing deferred",
-    "scientific_results": "alpha16 PASS;8 parent metric replays exact;32 decoder diagnostic cases complete;TARGET fit running",
+    "scientific_results": "COMPLETE;TARGET final policy exact;COMMANDS5 final zero trades;24/24 published and read back",
     "diagnostic_finished_at": "2026-10-25T02:42:00Z",
     "observed_training_decisions": 1750,
     "observed_gradient_updates": 749,
@@ -51,7 +58,7 @@
     "closed_campaign_state": "COMPLETE; 24/24 warehouse reports delivered and read back",
     "final_2024": {"GROUPED": {"profit_usd": -54.358155000019906, "trades": 22, "activity_valid": false}, "FLAT": {"profit_usd": -3694.081583468954, "trades": 257, "activity_valid": true}}
   },
-  "test_design": "62_ORDER_POLICY_CONTRACT.md",
+  "test_design": "63_ORDER_POLICY_DIAGNOSIS.md",
   "data_interface": "44_CURATED_RL_INPUT_INTERFACE.md",
   "design_config": "private SPEC.private.json; sha256 7568df4f3ba7b6e80fb86cce70c42adeb9b4d0b6a227fd947183baa0ba8518cc",
   "verified": ["SAC encoder selection and real CPU gradient smoke", "temporal prefix and origin sensitivity", "policy save/reload", "strict strided window and actual-bar warmup", "daily entry cap in real Backtrader execution", "data receipt and byte/support checks before env construction", "metric collector field transport"],
@@ -61,7 +68,7 @@
   "sequential_queue": {"code": "2d4aaa99", "tool": "tools/recipe_sac_queue.py", "registered_in_tool_declarations": true, "scope": "DEVELOPMENT", "arms": ["GROUPED", "FLAT"], "steps_per_arm": 100000, "seed": 7, "auto_next_arm": true, "reboot_timer_enabled": true, "restart_policy": "bounded two fresh attempts, no false exact continuation", "collector_timer_enabled": true, "remote_warehouse_delivery": "ready; zero scientific reports expected before checkpoint", "plan": "61_RECIPE_NATIVE_SAC_QUEUE.md"},
   "scientific_campaign_started": true,
   "review": {"satoshi_return_received": true, "weekly_first_80_run_proposal_adopted": false, "closed_in_new_path": ["action/fill/reward transition", "entry-bar commission and leveraged capital reconciliation", "undefined checkpoint scores", "explicit analytical financing debit", "native Trade lifecycle after direct settlement", "zero-net trade accounting", "long/short repeated-close and nonzero-slippage analytical ledger"], "open_findings": ["broker-specific financing and actual execution costs", "raw fractional enlargement mask (not selected for curated baseline)", "alternate margin and full environment accounting acceptance"]},
-  "next_allowed_actions": ["deploy order-contract diagnostic and conditional two-arm queue", "verify parent replay and fresh control before dependent contrast", "automatic checkpoint publication and second-machine copy; no TEST or checkpoint selection"],
+  "next_allowed_actions": ["authenticate closed order campaign", "run frozen actor/critic diagnostic on TRAIN and INNER only", "copy diagnostic evidence independently; no fit, TEST or checkpoint selection"],
   "deferred": ["frequency sweep", "DOIN", "forecasting", "NEAT"],
   "daily_entry_cap_baseline": 1,
   "daily_entry_cap_proposed_contrast": [1, 2, 4]
