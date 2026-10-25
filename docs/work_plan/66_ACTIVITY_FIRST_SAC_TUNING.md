@@ -64,3 +64,14 @@ strict activity, malformed/missing counters, inactive and incomplete grids,
 tampering, parent/design identity and finite retry/continuation. Three initial
 reload tests accidentally used stochastic prediction; corrected to explicit
 deterministic inference, matching the production evaluation contract.
+
+## Verified deployment
+
+Scientific producer7373699f; spec853c1ef85e8673c2ea3e650c754ae9cc5a2ae3ac82cfbc280609301ef3c6cb97.
+At2026-10-25T09:09:08Z ACT_ALPHA001 was training on the primary GPU:
+2250 decisions,1249 updates. Initial tensor digest matches the authenticated
+control. GPU admission passed all three arms,14 synthetic updates each.
+Worker recovery and collector timers enabled. First copy/outbox pump succeeded
+with0 expected reports,0 pending and0 discrepancies before the first checkpoint.
+ETA for the full three-arm batch approximately2h based on prior38min/arm.
+No new financial/qualified-activity result exists at this initial check.

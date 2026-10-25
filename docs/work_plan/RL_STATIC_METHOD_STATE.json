@@ -1,7 +1,7 @@
 {
   "schema": "rl_static_engineering_state.v1",
   "updated_on": "2026-10-25",
-  "current_stage": "ACTIVITY_FIRST_TUNING_DEPLOYING",
+  "current_stage": "ACTIVITY_FIRST_TUNING_RUNNING",
   "activity_first_tuning": {
     "plan": "66_ACTIVITY_FIRST_SAC_TUNING.md",
     "arms": ["ACT_ALPHA001", "ACT_ALPHA010", "ACT_ALPHA100"],
@@ -9,7 +9,16 @@
     "activity": "strictly >2 closed trades / all scored weeks separately TRAIN and INNER_A",
     "selection": "eligible final100k only; balanced daily log return; never OBS_2024",
     "tests_passed": 68,
-    "next": "deploy bounded sequential queue and verify real first progress"
+    "next": "automatic three-arm grid, activity qualification, native comparison and verified publication",
+    "scientific_code": "7373699f",
+    "spec_sha256": "853c1ef85e8673c2ea3e650c754ae9cc5a2ae3ac82cfbc280609301ef3c6cb97",
+    "observed_at": "2026-10-25T09:09:08Z",
+    "current_arm": "ACT_ALPHA001",
+    "observed_decisions": 2250,
+    "observed_updates": 1249,
+    "gpu_admission": "PASS; three arms 14 updates each",
+    "timers": "worker and collector enabled",
+    "initial_collection": "COPIED_AND_PUMPED;0 expected reports"
   },
   "critic_dropout_study": {
     "plan": "65_CRITIC_DROPOUT_CONTRAST.md",
