@@ -1,17 +1,22 @@
 {
   "schema": "rl_static_engineering_state.v1",
   "updated_on": "2026-10-25",
-  "current_stage": "ORDER_CONTRACT_ALPHA_VERIFIED_PREPARING_DEPLOYMENT",
+  "current_stage": "ORDER_CONTRACT_DIAGNOSTIC_RUNNING_AUTOMATED",
   "order_contract_study": {
     "plan": "62_ORDER_POLICY_CONTRACT.md",
     "focused_tests_passed": 56,
     "synthetic_engine_scenarios_passed": 16,
     "test_first_red": "test_order_contract.py failed before decoder implementation",
     "ordered_stages": ["business alpha", "authenticated fixed-policy diagnostics", "fresh TARGET control", "COMMANDS5", "publication and close"],
-    "next_action": "deploy pinned queue to primary GPU and verify first diagnostic heartbeat",
+    "scientific_code": "b117dce0",
+    "spec_sha256": "79c4b87eb64d7285583614afe624a196dbf7c632f0351d2d0f4aa2c4130bfd5e",
+    "next_action": "timers finish eight exact replays, then fresh TARGET control and COMMANDS5",
     "feedback": "NONE; position used by harness only, not observation",
     "sizing": "fixed 1.0 of 0.1 balance margin budget; learned sizing deferred",
-    "scientific_results": "not started under new identity"
+    "scientific_results": "no new fit yet; deployed alpha passed16 scenarios, parent25k TRAIN metric replay exact",
+    "reboot_timer_enabled": true,
+    "collector_timer_enabled": true,
+    "observed_at": "2026-10-25T02:37:30Z"
   },
   "current_baseline": {
     "recipe": "recipe_a58261c0fdc0a59d",

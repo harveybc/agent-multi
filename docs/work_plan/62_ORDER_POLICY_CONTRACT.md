@@ -102,3 +102,14 @@ intervals. The truth-table test first failed because the new module did not yet
 exist. Two fixture issues (pandas timestamp unit and read-only synthetic arrays)
 were corrected before the passing engine run; no real data were edited.
 Runtime witnesses are re-executed by the deployed queue before diagnostics.
+
+## Deployment
+
+Scientific code b117dce0, spec
+79c4b87eb64d7285583614afe624a196dbf7c632f0351d2d0f4aa2c4130bfd5e.
+At 2026-10-25T02:37:30Z alpha passed16 scenarios on the deployed environment;
+the 25k TRAIN replay was exact (78.5s including deterministic/stochastic action
+capture). Checkpoint50k TRAIN diagnosis was underway. Sequential reboot and
+collector timers enabled; first copy/pump succeeded with no reports expected.
+The operational collector normalizes the new duration metrics' metadata to
+hours, without changing native values or scientific runtime.

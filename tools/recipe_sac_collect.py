@@ -28,6 +28,9 @@ def bind_report(mirror, request):
     require(native['policy_tensor_sha256'] == tags['policy_tensor_sha256'], 'REPORT_POLICY')
     require(all(m['metric'] in native and native[m['metric']] == m['value'] for m in report['metrics']),
             'REPORT_NATIVE_VALUES')
+    for metric in report['metrics']:
+        if metric['metric'] in ('duration_hours_median','duration_hours_p90'):
+            metric['unit'] = 'hours'
     attempt = checkpoint.parent.parent.name
     tags['attempt'] = attempt
     tags['consumer_scope'] = 'DEVELOPMENT_CHECKPOINT_NOT_FINAL_PROMOTION'
