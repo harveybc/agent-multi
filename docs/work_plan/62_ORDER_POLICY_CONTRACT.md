@@ -113,3 +113,9 @@ capture). Checkpoint50k TRAIN diagnosis was underway. Sequential reboot and
 collector timers enabled; first copy/pump succeeded with no reports expected.
 The operational collector normalizes the new duration metrics' metadata to
 hours, without changing native values or scientific runtime.
+
+Automatic handoff verified 2026-10-25T02:42:24Z: all8 exact parent metric
+replays and32 fixed-decoder cases completed; GPU admission passed; fresh TARGET
+was training at1750 decisions/749 gradient updates. COMMANDS5 is queued after
+the control. No intermediate score determined this dispatch. Native receipts
+and generated status are authoritative for subsequent progress.
