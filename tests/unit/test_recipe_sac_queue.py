@@ -94,3 +94,29 @@ def test_failures_bounded_and_next_arm_runs(tmp_path, monkeypatch):
     assert status['state'] == 'COMPLETE_WITH_FAILURES'
     assert len(status['attempts']['FLAT']) == 2
     assert run(tmp_path) == 0 and len(calls) == 4
+
+
+def test_order_contract_pin_and_failed_gate_never_trains(tmp_path,monkeypatch):
+    from types import SimpleNamespace
+    from env_plugins.order_contract import CONTRACTS
+    spec=spec_root(tmp_path)
+    spec.update(schema='recipe_sac_order_queue.v1',arms=['TARGET','COMMANDS5'],
+                order_contracts=copy.deepcopy(CONTRACTS),order_parent={'root':'parent'})
+    write(tmp_path/'SPEC.private.json',spec)
+    write(tmp_path/'IDENTITY.json',{'spec_sha256':file_sha(tmp_path/'SPEC.private.json')})
+    assert verify(tmp_path)==spec
+    monkeypatch.setattr('tools.recipe_sac_queue.admission',lambda root:True)
+    calls=[]
+    def fail(cmd,**kwargs):
+        calls.append(cmd)
+        return SimpleNamespace(returncode=2)
+    monkeypatch.setattr('tools.recipe_sac_queue.subprocess.run',fail)
+    assert run(tmp_path)==2
+    assert len(calls)==1 and 'witness' in calls[0]
+    assert read(tmp_path/'STATUS.json')['state']=='ORDER_GATE_FAILED'
+    assert run(tmp_path)==2 and len(calls)==1
+    spec['order_contracts']['COMMANDS5']['mode']='target'
+    write(tmp_path/'SPEC.private.json',spec)
+    write(tmp_path/'IDENTITY.json',{'spec_sha256':file_sha(tmp_path/'SPEC.private.json')})
+    with pytest.raises(ValueError,match='DESIGN'):
+        verify(tmp_path)

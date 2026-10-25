@@ -1,7 +1,18 @@
 {
   "schema": "rl_static_engineering_state.v1",
-  "updated_on": "2026-10-24",
-  "current_stage": "RECIPE_R3_NATIVE_SAC_RUNNING_AUTOMATED",
+  "updated_on": "2026-10-25",
+  "current_stage": "ORDER_CONTRACT_ALPHA_VERIFIED_PREPARING_DEPLOYMENT",
+  "order_contract_study": {
+    "plan": "62_ORDER_POLICY_CONTRACT.md",
+    "focused_tests_passed": 56,
+    "synthetic_engine_scenarios_passed": 16,
+    "test_first_red": "test_order_contract.py failed before decoder implementation",
+    "ordered_stages": ["business alpha", "authenticated fixed-policy diagnostics", "fresh TARGET control", "COMMANDS5", "publication and close"],
+    "next_action": "deploy pinned queue to primary GPU and verify first diagnostic heartbeat",
+    "feedback": "NONE; position used by harness only, not observation",
+    "sizing": "fixed 1.0 of 0.1 balance margin budget; learned sizing deferred",
+    "scientific_results": "not started under new identity"
+  },
   "current_baseline": {
     "recipe": "recipe_a58261c0fdc0a59d",
     "recipe_sha256": "a5da300389e0f0684720903eb027294f32efcb1717eee7f7e546ca0c3320f4a6",
@@ -16,8 +27,8 @@
     "actor_and_twin_critic_inputs_exact": true,
     "trunk_same_weights_exact": true,
     "policy_reload_exact": true,
-    "financial_fits_started": 1,
-    "financial_fits_completed": 0,
+    "financial_fits_started": 2,
+    "financial_fits_completed": 2,
     "engine_steps": 8,
     "engine_steps_scope": "real-data CPU HOLD witness, no scientific trading score",
     "synthetic_SAC_training_transitions": 4,
@@ -26,11 +37,13 @@
     "execution_backend": "heuristic-strategy BarEnv pinned 89512e8, no expert loader or policy",
     "missing_observation_policy": "automatic HOLD with all engine bars retained, discounted reward sum and gamma**n replay",
     "scientific_code": "2d4aaa99",
-    "last_measured_step": 5500,
-    "last_measured_gradient_updates": 4499,
-    "measured_at": "2026-10-24T21:42:47Z"
+    "last_measured_step": 100000,
+    "last_measured_gradient_updates": 98999,
+    "measured_at": "2026-10-24T22:25:44Z",
+    "closed_campaign_state": "COMPLETE; 24/24 warehouse reports delivered and read back",
+    "final_2024": {"GROUPED": {"profit_usd": -54.358155000019906, "trades": 22, "activity_valid": false}, "FLAT": {"profit_usd": -3694.081583468954, "trades": 257, "activity_valid": true}}
   },
-  "test_design": "61_RECIPE_NATIVE_SAC_QUEUE.md",
+  "test_design": "62_ORDER_POLICY_CONTRACT.md",
   "data_interface": "44_CURATED_RL_INPUT_INTERFACE.md",
   "design_config": "private SPEC.private.json; sha256 7568df4f3ba7b6e80fb86cce70c42adeb9b4d0b6a227fd947183baa0ba8518cc",
   "verified": ["SAC encoder selection and real CPU gradient smoke", "temporal prefix and origin sensitivity", "policy save/reload", "strict strided window and actual-bar warmup", "daily entry cap in real Backtrader execution", "data receipt and byte/support checks before env construction", "metric collector field transport"],
@@ -40,7 +53,7 @@
   "sequential_queue": {"code": "2d4aaa99", "tool": "tools/recipe_sac_queue.py", "registered_in_tool_declarations": true, "scope": "DEVELOPMENT", "arms": ["GROUPED", "FLAT"], "steps_per_arm": 100000, "seed": 7, "auto_next_arm": true, "reboot_timer_enabled": true, "restart_policy": "bounded two fresh attempts, no false exact continuation", "collector_timer_enabled": true, "remote_warehouse_delivery": "ready; zero scientific reports expected before checkpoint", "plan": "61_RECIPE_NATIVE_SAC_QUEUE.md"},
   "scientific_campaign_started": true,
   "review": {"satoshi_return_received": true, "weekly_first_80_run_proposal_adopted": false, "closed_in_new_path": ["action/fill/reward transition", "entry-bar commission and leveraged capital reconciliation", "undefined checkpoint scores", "explicit analytical financing debit", "native Trade lifecycle after direct settlement", "zero-net trade accounting", "long/short repeated-close and nonzero-slippage analytical ledger"], "open_findings": ["broker-specific financing and actual execution costs", "raw fractional enlargement mask (not selected for curated baseline)", "alternate margin and full environment accounting acceptance"]},
-  "next_allowed_actions": ["automatic fixed-budget training and sparse inference at 25k/50k/75k/100k", "automatic next arm, warehouse readback and second-machine copy", "report all metrics and gaps without intermediate selection or TEST"],
+  "next_allowed_actions": ["deploy order-contract diagnostic and conditional two-arm queue", "verify parent replay and fresh control before dependent contrast", "automatic checkpoint publication and second-machine copy; no TEST or checkpoint selection"],
   "deferred": ["frequency sweep", "DOIN", "forecasting", "NEAT"],
   "daily_entry_cap_baseline": 1,
   "daily_entry_cap_proposed_contrast": [1, 2, 4]

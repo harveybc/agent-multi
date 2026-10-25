@@ -24,8 +24,9 @@ def attach_engine(root):
 
 
 class RecipeMarket:
-    def __init__(self, spec):
+    def __init__(self, spec, order_contract=None):
         self.spec = spec
+        self.order_contract = order_contract
         attach_engine(spec['engine_root'])
         from app.short_horizon.expert_guided.env import EnvConfig
         from app.short_horizon.expert_guided.data import calendar_from_closures
@@ -75,6 +76,9 @@ class RecipeMarket:
         # The split is by availability; the business engine indexes bar starts.
         lo, hi = (pd.Timestamp(t, tz='UTC') - pd.Timedelta(hours=1) for t in (lo, hi))
         engine = BarEnv(self.bars, self.calendar, self.sigma, self.sigma_rule, lo, hi, self.config)
+        if self.order_contract is not None:
+            from env_plugins.order_contract import OrderContractEnv
+            return OrderContractEnv(engine, self.inputs, gamma, self.order_contract)
         return RecipeNativeEnv(engine, self.inputs, gamma)
 
 

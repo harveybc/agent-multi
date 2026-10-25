@@ -64,6 +64,19 @@ def prepare(a):
                         ('recipe', 'store', 'manifest', 'bars', 'closures')},
                 code={'agent': source_pins(ROOT, ['app', 'env_plugins', 'agent_plugins', 'tools']),
                       'engine': source_pins(engine, ['app/short_horizon'])})
+    if getattr(a, 'order_parent', None):
+        from env_plugins.order_contract import CONTRACTS
+        parent = a.order_parent.resolve()
+        require(a.parent_spec_sha and file_sha(parent / 'SPEC.private.json') == a.parent_spec_sha,
+                'PARENT_SPEC')
+        parent_state = read(parent / 'CLOSE.json')
+        require(parent_state['state'] == 'COMPLETE', 'PARENT_NOT_COMPLETE')
+        result_path = parent / parent_state['completed']['GROUPED']
+        authenticated_result(result_path, a.parent_spec_sha)
+        spec.update(schema='recipe_sac_order_queue.v1', arms=['TARGET','COMMANDS5'],
+                    order_contracts=CONTRACTS, order_parent=dict(root=str(parent),
+                        spec_sha256=a.parent_spec_sha, result=str(result_path.relative_to(parent)),
+                        result_sha256=file_sha(result_path)))
     root.mkdir(parents=True)
     write(root / 'SPEC.private.json', spec)
     write(root / 'IDENTITY.json', {'spec_sha256': file_sha(root / 'SPEC.private.json'),
@@ -74,8 +87,11 @@ def prepare(a):
 def verify(root):
     spec = read(root / 'SPEC.private.json')
     require(file_sha(root / 'SPEC.private.json') == read(root / 'IDENTITY.json')['spec_sha256'], 'SPEC_PIN')
-    require(spec['schema'] == 'recipe_sac_queue.v1' and spec['design'] == DESIGN
-            and spec['arms'] == ['GROUPED', 'FLAT'] and spec['max_attempts'] == 2
+    from env_plugins.order_contract import CONTRACTS
+    standard = spec['schema'] == 'recipe_sac_queue.v1' and spec['arms'] == ['GROUPED','FLAT']
+    orders = (spec['schema'] == 'recipe_sac_order_queue.v1' and spec['arms'] == ['TARGET','COMMANDS5']
+              and spec.get('order_contracts') == CONTRACTS and bool(spec.get('order_parent')))
+    require((standard or orders) and spec['design'] == DESIGN and spec['max_attempts'] == 2
             and spec['device'] == 'cuda', 'DESIGN')
     require(spec['software'] == software(), 'SOFTWARE_PIN')
     for role, path in [('agent', spec['agent_root']), ('engine', spec['engine_root'])]:
@@ -156,6 +172,13 @@ def evaluate(model, market, period, output):
                       policy_tensor_sha256=before,
                       undefined_metrics=[k for k, v in report.items()
                                          if isinstance(v, float) and not math.isfinite(v)])
+        if hasattr(env, 'order_counts'):
+            durations = [(t['exit_time']-t['entry_time']).total_seconds()/3600 for t in env.engine.trades]
+            report.update(duration_hours_median=float(np.median(durations)) if durations else None,
+                          duration_hours_p90=float(np.quantile(durations,.9)) if durations else None,
+                          n_long=sum(t['direction']==1 for t in env.engine.trades),
+                          n_short=sum(t['direction']==-1 for t in env.engine.trades))
+            write(output / (period + '.orders.json'), dict(contract=env.contract,counts=env.order_counts))
         require(tensor_hash(model) == before, 'EVAL_CHANGED_WEIGHTS')
         write(output / (period + '.json'), clean(report))
         write(output / (period + '.trades.json'), clean(env.engine.trades))
@@ -182,7 +205,8 @@ def outbox_report(root, spec, arm, step, report, checkpoint):
                     'fraction' if k in ('win_rate', 'weeks_below_min_share', 'exposure_bar_share') else
                     'seconds' if k == 'seconds' else 'count' if k.startswith('n_') or k == 'trades' else 'ratio')
             metrics.append(dict(metric=k, value=v, split=period.lower(), horizon=None, unit=unit))
-    payload = dict(experiment_key=key, experiment_set_key='recipe-r3-native-sac', actor='musashi',
+    payload = dict(experiment_key=key, experiment_set_key=(
+                       'recipe-r3-order-contract' if 'order_contracts' in spec else 'recipe-r3-native-sac'), actor='musashi',
                    lake='financial-data', lineage='UNVERIFIED', project='agent-multi', phase='DEVELOPMENT',
                    config_sha256=read(root / 'IDENTITY.json')['spec_sha256'],
                    tags=dict(recipe_sha256=spec['recipe_sha256'], arm=arm, seed='7',
@@ -194,6 +218,8 @@ def outbox_report(root, spec, arm, step, report, checkpoint):
                    datasets=[dict(lake='financial-data',resource='shared-feature-store-r3',
                                   sha256=read(spec['inputs']['recipe'])['store']['sha256'], role=period.lower(),
                                   lineage='UNVERIFIED')], metrics=metrics)
+    if 'order_contracts' in spec:
+        payload['tags']['order_contract'] = json.dumps(spec['order_contracts'][arm],sort_keys=True)
     write(root / 'outbox' / (key + '.json'), dict(report=payload, source_unit=key))
 
 
@@ -212,9 +238,9 @@ def worker(root, arm, attempt):
     torch.use_deterministic_algorithms(True)
     folder = root / arm / f'attempt-{attempt}'
     folder.mkdir(parents=True, exist_ok=False)
-    market = RecipeMarket(spec)
+    market = RecipeMarket(spec, spec.get('order_contracts', {}).get(arm))
     env = market.env('TRAIN', DESIGN['gamma'])
-    model = build_sac(env, market.recipe, DESIGN, arm, spec['device'])
+    model = build_sac(env, market.recipe, DESIGN, 'GROUPED' if 'order_contracts' in spec else arm, spec['device'])
     start = time.monotonic()
     progress = dict(state='TRAINING', arm=arm, attempt=attempt, step=0, budget=DESIGN['total_timesteps'],
                     recipe=market.recipe['identity'], device=torch.cuda.get_device_name(),
@@ -272,7 +298,14 @@ def worker(root, arm, attempt):
     result = dict(state='COMPLETE', arm=arm, attempt=attempt, spec_sha256=file_sha(root / 'SPEC.private.json'),
                   finished_at=now(), elapsed_seconds=time.monotonic()-start, reports=reports,
                   artifacts={str(p.relative_to(folder)): file_sha(p) for p in folder.rglob('*') if p.is_file()})
+    if arm == 'TARGET':
+        parent = Path(spec['order_parent']['root']) / spec['order_parent']['result']
+        original = read(parent.parent/'step-100000'/'TRAIN.json')
+        require(tensor_hash(model) == original['policy_tensor_sha256'], 'FRESH_CONTROL_POLICY_REPLAY')
+        result['fresh_control_policy_exact'] = True
     write(folder / 'RESULT.json', result)
+    progress.update(state='COMPLETE',period=None,heartbeat_at=now(),eta_arm_seconds=0.)
+    write(root / 'PROGRESS.json', progress)
     env.close()
     return 0
 
@@ -299,7 +332,11 @@ def admission(root):
         return False
     result = subprocess.run(['nvidia-smi', '-i', visible, '--query-gpu=memory.free',
                              '--format=csv,noheader,nounits'], capture_output=True, text=True, timeout=15)
-    return result.returncode == 0 and int(result.stdout.strip()) >= 4096
+    if result.returncode != 0 or int(result.stdout.strip()) < 4096:
+        return False
+    active = subprocess.run(['nvidia-smi','-i',visible,'--query-compute-apps=pid',
+                             '--format=csv,noheader,nounits'],capture_output=True,text=True,timeout=15)
+    return active.returncode == 0 and not active.stdout.strip()
 
 
 def gpu_witness(root):
@@ -336,7 +373,7 @@ def gpu_witness(root):
         with preserve_rng():
             env = Synthetic()
             design = {**DESIGN, 'learning_starts':2, 'batch_size':4, 'buffer_size':32}
-            model = build_sac(env, rec, design, arm, 'cuda')
+            model = build_sac(env, rec, design, 'GROUPED' if 'order_contracts' in spec else arm, 'cuda')
             model.learn(total_timesteps=16)
             obs, _ = env.reset()
             before = model.predict(obs, deterministic=True)[0]
@@ -366,9 +403,46 @@ def run(root):
     state = read(root / 'STATUS.json') if (root / 'STATUS.json').exists() else dict(
         state='PREPARED', spec_sha256=spec_sha, attempts={}, completed={})
     require(state['spec_sha256'] == spec_sha, 'QUEUE_IDENTITY')
-    if state['state'] == 'ADMISSION_FAILED':
+    if state['state'] in ('ADMISSION_FAILED','ORDER_GATE_FAILED','CONTRAST_CONTROL_FAILED'):
         return 2
+    if state['state'] in ('COMPLETE','COMPLETE_WITH_FAILURES'):
+        for path in state['completed'].values():
+            authenticated_result(root/path,spec_sha)
+        return 0
+    if 'order_contracts' in spec:
+        if not admission(root):
+            state.update(state='WAIT_RESOURCES',updated_at=now())
+            write(root/'STATUS.json',state)
+            return 75
+        for mode, name, limit in [('witness','ORDER_ALPHA.json',180),('diagnose','DIAGNOSTIC.json',1800)]:
+            receipt = root/name
+            if receipt.exists():
+                evidence=read(receipt)
+                require(evidence['state']=='PASS' and evidence['spec_sha256']==spec_sha,'ORDER_GATE_IDENTITY')
+                for p,digest in evidence.get('artifacts',{}).items():
+                    require(file_sha(root/'diagnostic'/p)==digest,'DIAGNOSTIC_ARTIFACT')
+                continue
+            state.update(state=mode.upper(),updated_at=now())
+            write(root/'STATUS.json',state)
+            with (root/(mode+'.log')).open('a') as log:
+                try:
+                    gate=subprocess.run([sys.executable,'-m','tools.recipe_sac_queue',mode,'--root',str(root)],
+                        cwd=ROOT,stdout=log,stderr=subprocess.STDOUT,timeout=limit,
+                        env={**os.environ,**({'CUDA_VISIBLE_DEVICES':''} if mode=='witness' else {})})
+                    rc=gate.returncode
+                except subprocess.TimeoutExpired:
+                    rc=124
+            if rc or not receipt.exists():
+                state.update(state='ORDER_GATE_FAILED',gate=mode,returncode=rc,updated_at=now())
+                write(root/'STATUS.json',state)
+                return 2
+            evidence=read(receipt)
+            require(evidence['state']=='PASS' and evidence['spec_sha256']==spec_sha,'ORDER_GATE_IDENTITY')
     for arm in spec['arms']:
+        if arm == 'COMMANDS5' and 'TARGET' not in state['completed']:
+            state.update(state='CONTRAST_CONTROL_FAILED',updated_at=now())
+            write(root/'STATUS.json',state)
+            return 2
         if arm in state['completed']:
             authenticated_result(root / state['completed'][arm], spec_sha)
             continue
@@ -424,6 +498,15 @@ def run(root):
             time.sleep(30)
     state.update(state='COMPLETE' if len(state['completed']) == len(spec['arms']) else 'COMPLETE_WITH_FAILURES',
                  finished_at=now())
+    if 'order_contracts' in spec:
+        rows=[]
+        for arm,path in state['completed'].items():
+            result=authenticated_result(root/path,spec_sha)
+            rows.extend(dict(arm=arm,**r) for r in result['reports'] if r['step']==100000)
+        write(root/'ORDER_COMPARISON.json',dict(spec_sha256=spec_sha,rows=rows,
+            selection='NONE_REPORT_ALL_FINAL_100000',finished_at=now(),
+            limits=['single seed','partial observability without agent feedback',
+                    'action package contrast including reversal semantics','assumed broker costs']))
     write(root / 'STATUS.json', state)
     write(root / 'CLOSE.json', state)
     return 0
@@ -431,11 +514,13 @@ def run(root):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('mode', choices=['prepare', 'run', 'worker', 'status', 'admit'])
+    parser.add_argument('mode', choices=['prepare', 'run', 'worker', 'status', 'admit','witness','diagnose'])
     parser.add_argument('--root', type=Path, required=True)
     for name in ('engine-root', 'recipe', 'store', 'manifest', 'bars', 'closures'):
         parser.add_argument('--' + name, type=Path)
-    parser.add_argument('--arm', choices=['GROUPED','FLAT'])
+    parser.add_argument('--arm', choices=['GROUPED','FLAT','TARGET','COMMANDS5'])
+    parser.add_argument('--order-parent',type=Path)
+    parser.add_argument('--parent-spec-sha')
     parser.add_argument('--attempt', type=int)
     a = parser.parse_args()
     if a.mode == 'prepare':
@@ -449,6 +534,16 @@ def main():
         return worker(a.root.resolve(), a.arm, a.attempt)
     if a.mode == 'admit':
         return gpu_witness(a.root.resolve())
+    if a.mode == 'witness':
+        from tools.order_contract_study import witness
+        spec=verify(a.root)
+        result=witness(spec['engine_root'])
+        result.update(spec_sha256=file_sha(a.root/'SPEC.private.json'),finished_at=now())
+        write(a.root/'ORDER_ALPHA.json',result)
+        return 0
+    if a.mode == 'diagnose':
+        from tools.order_contract_study import diagnose
+        return diagnose(a.root.resolve())
     return run(a.root.resolve())
 
 

@@ -17,7 +17,7 @@ def bind_report(mirror, request):
     report = request['report']
     tags = report['tags']
     arm, step = tags['arm'], int(tags['checkpoint'])
-    require(arm in ('GROUPED','FLAT') and step in (25000,50000,75000,100000), 'REPORT_ARM_STEP')
+    require(arm in ('GROUPED','FLAT','TARGET','COMMANDS5') and step in (25000,50000,75000,100000), 'REPORT_ARM_STEP')
     candidates = [p for p in (mirror / arm).glob(f'attempt-*/step-{step}/model.zip')
                   if file_sha(p) == tags['checkpoint_archive_sha256']]
     require(len(candidates) == 1, 'REPORT_CHECKPOINT_BINDING')
