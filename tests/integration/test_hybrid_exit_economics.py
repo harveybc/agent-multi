@@ -22,6 +22,7 @@ from app.short_horizon.expert_guided.data import calendar_from_closures
 from env_plugins.hybrid_orders import HybridOrderEnv
 from app.frozen_recipe_inputs import FrozenRecipeInputs
 from tests.unit.test_frozen_recipe_inputs import recipe
+from tools.hybrid_behavior_audit import hold_counterfactual
 ts=pd.date_range('2020-01-05T22:00Z',periods=120,freq='h')
 cal=calendar_from_closures([['2020-01-03T22:00Z','2020-01-05T22:00Z'],['2020-01-10T22:00Z','2020-01-12T22:00Z']])
 frame=pd.DataFrame({'timestamp':ts+pd.Timedelta(hours=1),'x':np.sin(np.arange(120)),'y':np.cos(np.arange(120))})
@@ -51,6 +52,14 @@ def outcome(direction,favorable,close,q):
     assert abs(trade['gross_usd']-direction*trade['units']*(trade['exit_price']-trade['entry_price']))<1e-8
     assert abs(trade['net_usd']-(trade['gross_usd']-trade['entry_cost_usd']-trade['exit_cost_usd']))<1e-8
     assert e.engine.counts['levels_clipped']==0
+    if close:
+        import copy
+        before=copy.deepcopy(e.engine.trades)
+        counter=hold_counterfactual(e.engine,trade)
+        assert e.engine.trades==before
+        assert counter['close_replay_exact']
+        assert counter['hold_reason']==('TP' if favorable else 'SL')
+        assert counter['close_minus_hold_net_usd']<0 if favorable else counter['close_minus_hold_net_usd']>0
     return trade
 for direction in (-1,1):
  for favorable in (False,True):

@@ -2,6 +2,14 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "hybrid_inference_audit.py": {
+   "purpose": "Sequential no-fit paired deterministic, timestamp-seeded categorical and TRAIN-marginal blind evaluations of authenticated fixed-risk policies; no TEST",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "static RL comparison"
+  },
+  "hybrid_behavior_audit.py": {
+   "purpose": "Authenticate completed categorical-policy checkpoints, common-support temporal probes and native per-trade early-close versus HOLD diagnostics; no fits or TEST",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "static RL comparison"
+  },
   "qualify_hybrid_learning.py": {
    "purpose": "Non-governing bounded synthetic diagnosis of conditional order learning; explicit controls, no financial data",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "static RL comparison"
