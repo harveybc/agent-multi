@@ -1,7 +1,29 @@
 {
   "schema": "rl_static_engineering_state.v1",
   "updated_on": "2026-10-25",
-  "current_stage": "HYBRID_V2_INFERENCE_DIAGNOSTIC_RUNNING",
+  "current_stage": "HYBRID_ENCODER_CONTRAST_AUTOMATED_QUALIFICATION",
+  "encoder_contrast": {
+    "plan": "75_HYBRID_LEARNING_MECHANISM.md",
+    "code": "e31e7d8d",
+    "spec_sha256": "5e655081d3297f4c0e2c4ee881bd338f4d5ca4ae462ec7a59eb49df29f78c738",
+    "reward_chronology": "native directional costs, swap credit/debit, terminal and automatic HOLD tests pass",
+    "observation_aliasing": "synthetic same tensor and mask with different stops has opposite close/HOLD preference; no feedback added",
+    "gradient_audit": "9 units, 4608 TRAIN decisions, 18 batches, zero updates; 14 negative actor/critic cosines; 12 sealed files independently verified",
+    "interpretation": "measured interference supports a contrast, not a demonstrated cure or universal critic dominance",
+    "focused_tests": "20 passed; instrumented and uninstrumented synthetic training weights exactly equal",
+    "sequence": "four independent-encoder learning controls -> six paired fresh fits -> TRAIN/INNER publication",
+    "observed_at": "2026-10-25T23:57:43Z",
+    "observed_unit": "QUAL_7_0",
+    "observed_steps": 5632,
+    "qualification_budget": 131072,
+    "financial_budget": 102400,
+    "financial_fits_started": 0,
+    "automation": "worker and collector timers enabled; reboot resume, two fresh attempts maximum, immutable completion receipts",
+    "first_collection": "COPIED_AND_PUMPED; 0 reports expected, pending or mismatched",
+    "ETA_minutes_preliminary": [90, 120],
+    "ETA_basis": "current synthetic throughput and parent shared fits about 364 seconds; independent financial arm not measured",
+    "unchanged": "recipe120, window13 stride2, masks/costs/SL/TP/sizing, reward, discount and optimizer; no expert, feedback vector or TEST"
+  },
   "behavior_audit": {
     "plan": "74_HYBRID_V2_BEHAVIOR_AUDIT.md",
     "behavior_source": "211542e7",
@@ -10,12 +32,15 @@
     "native_close_accounting_replays": 12543,
     "independent_files_verified": 75,
     "inference_units": 21,
-    "inference_units_observed_complete": 3,
-    "observed_at": "2026-10-25T20:50:31Z",
+    "inference_units_observed_complete": 21,
+    "observed_at": "2026-10-25T23:19:41Z",
+    "inference_reports_published_readback": 42,
+    "inference_seconds": 586.4253946430108,
+    "conditional_profit_wins_vs_blind": "4/9 INNER pairs; no stable timing advantage demonstrated",
     "first_argmax_replay": "exact trade-file hashes and native metrics in TRAIN and INNER",
     "worker_and_collector": "enabled; sequential autonomous execution and sealed publication",
     "fits": 0,
-    "next": "compare conditional categorical sampling to TRAIN-marginal blind control; no forced trading"
+    "next": "completed; use learning mechanism diagnosis, do not force trading"
   },
   "conditional_repair": {
     "plan": "72_HYBRID_CONDITIONAL_REPAIR.md",
@@ -227,7 +252,7 @@
   "sequential_queue": {"code": "2d4aaa99", "tool": "tools/recipe_sac_queue.py", "registered_in_tool_declarations": true, "scope": "DEVELOPMENT", "arms": ["GROUPED", "FLAT"], "steps_per_arm": 100000, "seed": 7, "auto_next_arm": true, "reboot_timer_enabled": true, "restart_policy": "bounded two fresh attempts, no false exact continuation", "collector_timer_enabled": true, "remote_warehouse_delivery": "ready; zero scientific reports expected before checkpoint", "plan": "61_RECIPE_NATIVE_SAC_QUEUE.md"},
   "scientific_campaign_started": true,
   "review": {"satoshi_return_received": true, "weekly_first_80_run_proposal_adopted": false, "closed_in_new_path": ["action/fill/reward transition", "entry-bar commission and leveraged capital reconciliation", "undefined checkpoint scores", "explicit analytical financing debit", "native Trade lifecycle after direct settlement", "zero-net trade accounting", "long/short repeated-close and nonzero-slippage analytical ledger"], "open_findings": ["broker-specific financing and actual execution costs", "raw fractional enlargement mask (not selected for curated baseline)", "alternate margin and full environment accounting acceptance"]},
-  "next_allowed_actions": ["finish automated no-fit inference diagnostic and sealed publication, interpret all seeds before next training contrast", "preserve completed campaigns and their original metrics", "preserve frozen inputs and business rules; no TEST or expert demonstrations"],
+  "next_allowed_actions": ["complete automated four-control then six-fit encoder contrast; publish TRAIN/INNER and all seed failures", "interpret actor/critic interference without changing reward, discount and architecture width together", "preserve completed campaigns and frozen inputs/business; no TEST or expert demonstrations"],
   "deferred": ["frequency sweep", "DOIN", "forecasting", "NEAT"],
   "daily_entry_cap_baseline": 1,
   "daily_entry_cap_proposed_contrast": [1, 2, 4]

@@ -84,3 +84,18 @@ checkpoint on TRAIN and INNER; no new 2024 read or selection. Instrument trainin
 logs and sparse gradient probes without perturbing RNG, then publish all six.
 Two fresh attempts maximum per unit, durable failures retained, reboot-resumable
 queue; a synthetic failure prevents financial fits. No intermediate human gate.
+
+## Deployment
+
+Code `e31e7d8d`; spec
+`5e655081d3297f4c0e2c4ee881bd338f4d5ca4ae462ec7a59eb49df29f78c738`.
+At 23:57:43 UTC the first synthetic control had reached 5632/131072 decisions
+on the primary GPU, service RAM about 2.5 GB. No financial fit started at that
+observation. Worker and independent copy/publication timers enabled; first copy
+and warehouse pump succeeded (zero scientific reports expected yet).
+20 focused tests pass, including bounded qualification failure before finance,
+receipt corruption rejection and exact instrumented/uninstrumented training.
+Neither repository-wide tests nor a live broker execution is claimed.
+Parent shared financial fits took 363--366 s; new synthetic throughput suggests
+about 45 minutes for four controls. Whole queue estimate 90--120 minutes is
+provisional: independent financial fits have not yet been timed.
