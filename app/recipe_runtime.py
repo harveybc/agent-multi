@@ -82,7 +82,7 @@ class RecipeMarket:
         return RecipeNativeEnv(engine, self.inputs, gamma)
 
 
-def build_sac(env, recipe, design, arm, device, critic_dropout=None):
+def build_sac(env, recipe, design, arm, device, critic_dropout=None, entropy_coefficient=None):
     require(arm in ('GROUPED', 'FLAT'), 'ARM')
     kwargs = dict(net_arch=[recipe['representation']['model']['head']],
                   optimizer_class=torch.optim.AdamW,
@@ -97,9 +97,13 @@ def build_sac(env, recipe, design, arm, device, critic_dropout=None):
         require(arm == 'GROUPED' and recipe['regularization']['dropout'] == .3, 'CRITIC_STUDY_RECIPE')
         policy = CriticDropoutSACPolicy
         kwargs['critic_dropout'] = critic_dropout
+    if entropy_coefficient is not None:
+        require(type(entropy_coefficient) in (int,float) and np.isfinite(entropy_coefficient)
+                and entropy_coefficient > 0, 'ENTROPY_COEFFICIENT')
     return SAC(policy, env, policy_kwargs=kwargs, device=device,
                seed=design['seed'], learning_rate=design['learning_rate'],
                buffer_size=design['buffer_size'], batch_size=design['batch_size'],
                learning_starts=design['learning_starts'], gamma=design['gamma'],
-               tau=design['tau'], train_freq=1, gradient_steps=1, ent_coef='auto',
+               tau=design['tau'], train_freq=1, gradient_steps=1,
+               ent_coef='auto' if entropy_coefficient is None else entropy_coefficient,
                replay_buffer_class=DurationReplayBuffer, verbose=0)

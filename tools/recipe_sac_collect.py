@@ -6,6 +6,7 @@ from pathlib import Path
 import subprocess
 
 from app.frozen_recipe_inputs import file_sha, require
+from app.recipe_activity import ENTROPY_GRID, activity
 from tools.recipe_sac_queue import authenticated_result, now, read, write
 from tools import rl_warehouse
 
@@ -17,7 +18,7 @@ def bind_report(mirror, request):
     report = request['report']
     tags = report['tags']
     arm, step = tags['arm'], int(tags['checkpoint'])
-    require(arm in ('GROUPED','FLAT','TARGET','COMMANDS5','CRITIC_BASE','CRITIC_NODROP')
+    require(arm in ('GROUPED','FLAT','TARGET','COMMANDS5','CRITIC_BASE','CRITIC_NODROP',*ENTROPY_GRID)
             and step in (25000,50000,75000,100000), 'REPORT_ARM_STEP')
     candidates = [p for p in (mirror / arm).glob(f'attempt-*/step-{step}/model.zip')
                   if file_sha(p) == tags['checkpoint_archive_sha256']]
@@ -26,6 +27,13 @@ def bind_report(mirror, request):
     splits = {m['split'] for m in report['metrics']}
     require(len(splits) == 1 and splits <= {'train','inner_a','obs_2024'}, 'REPORT_SPLIT')
     native = read(checkpoint.parent / (next(iter(splits)).upper() + '.json'))
+    if arm in ENTROPY_GRID:
+        effective = read(checkpoint.parent.parent/'EFFECTIVE_MODEL.json')
+        require(effective['entropy_coefficient']==ENTROPY_GRID[arm]
+                and tags.get('entropy_coefficient')==str(ENTROPY_GRID[arm])
+                and effective['actor_dropout']==effective['critic_dropout']==.3
+                and effective['weight_decay']==.01, 'REPORT_ACTIVITY_PARAMETERS')
+        require(all(native.get(k)==v for k,v in activity(native).items()), 'REPORT_ACTIVITY_GATE')
     if arm in ('CRITIC_BASE','CRITIC_NODROP'):
         effective = read(checkpoint.parent.parent/'EFFECTIVE_MODEL.json')
         expected = .3 if arm == 'CRITIC_BASE' else 0.

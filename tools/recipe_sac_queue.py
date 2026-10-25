@@ -18,6 +18,7 @@ import sys
 import time
 
 from app.frozen_recipe_inputs import file_sha, require
+from app.recipe_activity import ENTROPY_GRID, activity, choose
 from tools.verify_rl_static_engineering import save_status
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -53,6 +54,8 @@ def software():
 
 
 def prepare(a):
+    if getattr(a, 'activity_parent', None):
+        return prepare_activity(a)
     if getattr(a, 'critic_parent', None):
         return prepare_critic(a)
     root = a.root.resolve()
@@ -130,6 +133,48 @@ def verify_critic_parent(spec):
     return result
 
 
+def prepare_activity(a):
+    parent,root = a.activity_parent.resolve(),a.root.resolve()
+    require(not root.exists(), 'NEW_CAMPAIGN_REQUIRED')
+    require(file_sha(parent/'SPEC.private.json') == a.parent_spec_sha, 'PARENT_SPEC')
+    p,closed = read(parent/'SPEC.private.json'),read(parent/'CLOSE.json')
+    require(p['schema']=='recipe_sac_critic_queue.v1' and closed['state']=='COMPLETE'
+            and closed['spec_sha256']==a.parent_spec_sha, 'ACTIVITY_PARENT')
+    result = parent/closed['completed']['CRITIC_BASE']
+    authenticated_result(result,a.parent_spec_sha)
+    require(p['software']==software() and p['design']==DESIGN, 'ACTIVITY_PARENT_DESIGN')
+    spec = dict(schema='recipe_sac_activity_queue.v1',recipe_sha256=p['recipe_sha256'],
+        engine_root=p['engine_root'],agent_root=str(ROOT),design=DESIGN,arms=list(ENTROPY_GRID),
+        entropy_coefficients=ENTROPY_GRID,device='cuda',max_attempts=2,software=software(),
+        task_timeout_seconds=43200,inputs=p['inputs'],
+        order_contracts={arm:p['order_contracts']['CRITIC_BASE'] for arm in ENTROPY_GRID},
+        activity_parent=dict(root=str(parent),spec_sha256=a.parent_spec_sha,
+            result=str(result.relative_to(parent)),result_sha256=file_sha(result)),
+        code={'agent':source_pins(ROOT,['app','env_plugins','agent_plugins','tools']),
+              'engine':p['code']['engine']})
+    verify_activity_parent(spec)
+    write(root/'SPEC.private.json',spec)
+    write(root/'IDENTITY.json',dict(spec_sha256=file_sha(root/'SPEC.private.json'),created_at=now(),state='PREPARED'))
+    print(json.dumps({'state':'PREPARED','spec_sha256':file_sha(root/'SPEC.private.json')}))
+
+
+def verify_activity_parent(spec):
+    pin = spec['activity_parent']
+    parent = Path(pin['root']).resolve()
+    require(file_sha(parent/'SPEC.private.json')==pin['spec_sha256'], 'ACTIVITY_PARENT_SPEC')
+    p = read(parent/'SPEC.private.json')
+    for key in ('recipe_sha256','inputs','design','software','engine_root'):
+        require(spec[key]==p[key], 'ACTIVITY_PARENT_CHANGED_'+key)
+    require(spec['code']['engine']==p['code']['engine'], 'ACTIVITY_ENGINE_CHANGED')
+    reg = read(p['inputs']['recipe'])['regularization']
+    require(reg['dropout']==.3 and reg['wd']==.01, 'ACTIVITY_PARENT_REGULARIZATION')
+    result = (parent/pin['result']).resolve()
+    require(result.is_relative_to(parent) and file_sha(result)==pin['result_sha256'], 'ACTIVITY_PARENT_RESULT')
+    evidence = authenticated_result(result,pin['spec_sha256'])
+    require(evidence.get('fresh_control_policy_exact') is True, 'ACTIVITY_CONTROL_NOT_EXACT')
+    return result
+
+
 def verify(root):
     spec = read(root / 'SPEC.private.json')
     require(file_sha(root / 'SPEC.private.json') == read(root / 'IDENTITY.json')['spec_sha256'], 'SPEC_PIN')
@@ -141,7 +186,11 @@ def verify(root):
                and spec.get('critic_dropout') == CRITIC_DROPOUT
                and spec.get('order_contracts') == {a:CONTRACTS['COMMANDS5'] for a in CRITIC_DROPOUT}
                and bool(spec.get('critic_parent')))
-    require((standard or orders or critics) and spec['design'] == DESIGN and spec['max_attempts'] == 2
+    active = (spec['schema']=='recipe_sac_activity_queue.v1' and spec['arms']==list(ENTROPY_GRID)
+              and spec.get('entropy_coefficients')==ENTROPY_GRID
+              and spec.get('order_contracts')=={a:CONTRACTS['COMMANDS5'] for a in ENTROPY_GRID}
+              and bool(spec.get('activity_parent')))
+    require((standard or orders or critics or active) and spec['design'] == DESIGN and spec['max_attempts'] == 2
             and spec['device'] == 'cuda', 'DESIGN')
     require(spec['software'] == software(), 'SOFTWARE_PIN')
     for role, path in [('agent', spec['agent_root']), ('engine', spec['engine_root'])]:
@@ -149,6 +198,8 @@ def verify(root):
             require(file_sha(Path(path) / name) == digest, 'CODE_PIN')
     if critics:
         verify_critic_parent(spec)
+    if active:
+        verify_activity_parent(spec)
     return spec
 
 
@@ -273,6 +324,7 @@ def outbox_report(root, spec, arm, step, report, checkpoint):
                     'seconds' if k == 'seconds' else 'count' if k.startswith('n_') or k == 'trades' else 'ratio')
             metrics.append(dict(metric=k, value=v, split=period.lower(), horizon=None, unit=unit))
     payload = dict(experiment_key=key, experiment_set_key=(
+                       'recipe-r3-activity-tuning' if 'entropy_coefficients' in spec else
                        'recipe-r3-critic-dropout' if 'critic_dropout' in spec else
                        'recipe-r3-order-contract' if 'order_contracts' in spec else 'recipe-r3-native-sac'), actor='musashi',
                    lake='financial-data', lineage='UNVERIFIED', project='agent-multi', phase='DEVELOPMENT',
@@ -291,6 +343,9 @@ def outbox_report(root, spec, arm, step, report, checkpoint):
     if 'critic_dropout' in spec:
         payload['tags'].update(actor_dropout='0.3', critic_dropout=str(spec['critic_dropout'][arm]),
                                weight_decay='0.01', contrast='CRITIC_ONLY_DROPOUT')
+    if 'entropy_coefficients' in spec:
+        payload['tags'].update(entropy_coefficient=str(spec['entropy_coefficients'][arm]),
+            contrast='FIXED_ENTROPY_ACTIVITY_FIRST',activity_rule='STRICTLY_GT_2_PER_WEEK')
     write(root / 'outbox' / (key + '.json'), dict(report=payload, source_unit=key))
 
 
@@ -312,7 +367,17 @@ def worker(root, arm, attempt):
     market = RecipeMarket(spec, spec.get('order_contracts', {}).get(arm))
     env = market.env('TRAIN', DESIGN['gamma'])
     model = build_sac(env, market.recipe, DESIGN, 'GROUPED' if 'order_contracts' in spec else arm, spec['device'],
-                      critic_dropout=spec.get('critic_dropout', {}).get(arm))
+                      critic_dropout=spec.get('critic_dropout', {}).get(arm),
+                      entropy_coefficient=spec.get('entropy_coefficients',{}).get(arm))
+    if 'entropy_coefficients' in spec:
+        parent = verify_activity_parent(spec)
+        require(read(parent.parent/'EFFECTIVE_MODEL.json')['initial_policy_tensor_sha256']==tensor_hash(model),
+                'ACTIVITY_INITIAL_PARITY')
+        write(folder/'EFFECTIVE_MODEL.json',dict(entropy_coefficient=model.ent_coef,
+            actor_dropout=model.actor.features_extractor.drop.p,
+            critic_dropout=model.critic.features_extractor.drop.p,
+            weight_decay=model.critic.optimizer.param_groups[0]['weight_decay'],
+            initial_policy_tensor_sha256=tensor_hash(model),design=DESIGN,order_contract=spec['order_contracts'][arm]))
     if 'critic_dropout' in spec:
         write(folder/'EFFECTIVE_MODEL.json', dict(actor_dropout=model.actor.features_extractor.drop.p,
             critic_dropout=model.critic.features_extractor.drop.p,
@@ -330,8 +395,15 @@ def worker(root, arm, attempt):
                     recipe=market.recipe['identity'], device=torch.cuda.get_device_name(),
                     spec_sha256=file_sha(root / 'SPEC.private.json'), started_at=now())
 
+    rollout_counts = {}
+
     class Heartbeat(BaseCallback):
         def _on_step(self):
+            if 'entropy_coefficients' in spec:
+                for info in self.locals['infos']:
+                    o = info['order_contract']
+                    key = f'{o["position"]}:{o["command"]}:{"INVALID_HOLD" if o["invalid"] else "APPLICABLE"}'
+                    rollout_counts[key] = rollout_counts.get(key,0)+1
             if self.num_timesteps % 250 == 0:
                 progress.update(step=self.num_timesteps, heartbeat_at=now(), elapsed_seconds=time.monotonic()-start,
                                 gradient_updates=self.model._n_updates,
@@ -365,11 +437,22 @@ def worker(root, arm, attempt):
             progress.update(state='EVALUATING', step=step, period=period, heartbeat_at=now())
             write(root / 'PROGRESS.json', progress)
             report = evaluate(model, market, period, checkpoint_dir,
-                              diagnostic='critic_dropout' in spec and period in ('TRAIN','INNER_A'))
+                              diagnostic=('critic_dropout' in spec or 'entropy_coefficients' in spec)
+                              and period in ('TRAIN','INNER_A'))
+            if 'entropy_coefficients' in spec:
+                report.update(activity(report))
+                write(checkpoint_dir/(period+'.json'),report)
             checkpoint_reports[period] = report
             outbox_report(root, spec, arm, step, report, checkpoint)
             reports.append(dict(step=step, **report))
         base = checkpoint_reports['TRAIN']['mean_daily_log_return']
+        if 'entropy_coefficients' in spec:
+            require(sum(rollout_counts.values())==step, 'ROLLOUT_COMMAND_COUNTS')
+            write(checkpoint_dir/'ACTIVITY.json',dict(
+                periods={p:activity(r) for p,r in checkpoint_reports.items()},
+                training_commands=rollout_counts,training_decisions=step,
+                entropy_coefficient=float(model.ent_coef_tensor.detach().cpu()),
+                selection='NONE_CHECKPOINT_DIAGNOSTIC'))
         write(checkpoint_dir / 'GAPS.json', {
             'metric': 'TRAIN minus other mean daily log return (same daily units)',
             'gaps': {period: None if base is None or r['mean_daily_log_return'] is None
@@ -464,8 +547,9 @@ def gpu_witness(root):
             env = Synthetic()
             design = {**DESIGN, 'learning_starts':2, 'batch_size':4, 'buffer_size':32}
             model = build_sac(env, rec, design, 'GROUPED' if 'order_contracts' in spec else arm, 'cuda',
-                              critic_dropout=spec.get('critic_dropout', {}).get(arm))
-            if 'critic_dropout' in spec:
+                              critic_dropout=spec.get('critic_dropout', {}).get(arm),
+                              entropy_coefficient=spec.get('entropy_coefficients',{}).get(arm))
+            if 'critic_dropout' in spec or 'entropy_coefficients' in spec:
                 with preserve_rng():
                     legacy = build_sac(env, rec, design, 'GROUPED', 'cuda')
                     require(tensor_hash(legacy) == tensor_hash(model), 'CRITIC_INITIAL_PARITY')
@@ -478,6 +562,11 @@ def gpu_witness(root):
             replay = SAC.load(path, device='cuda')
             require(np.array_equal(before,replay.predict(obs,deterministic=True)[0]), 'GPU_RELOAD')
             require(model._n_updates == 14, 'GPU_UPDATES')
+            if 'entropy_coefficients' in spec:
+                require(replay.ent_coef==spec['entropy_coefficients'][arm]
+                        and replay.ent_coef_optimizer is None
+                        and replay.actor.features_extractor.drop.p==.3
+                        and replay.critic.features_extractor.drop.p==.3, 'GPU_ENTROPY_RELOAD')
             if 'critic_dropout' in spec:
                 require(replay.actor.features_extractor.drop.p == .3
                         and replay.critic.features_extractor.drop.p == spec['critic_dropout'][arm]
@@ -609,6 +698,15 @@ def run(root):
                    'critic-only dropout contrast','assumed broker costs'] if 'critic_dropout' in spec else
                   ['single seed','partial observability without agent feedback',
                    'action package contrast including reversal semantics','assumed broker costs'])
+        if 'entropy_coefficients' in spec:
+            limits = ['single seed','partial observability without agent feedback',
+                      'entropy coefficient grid; deterministic evaluation','assumed broker costs']
+            decision = choose(rows)
+            decision.update(spec_sha256=spec_sha,finished_at=now(),
+                all_arms_completed=len(state['completed'])==len(spec['arms']))
+            if not decision['all_arms_completed']:
+                decision.update(state='INCOMPLETE_GRID',selected=None)
+            write(root/'ACTIVITY_DECISION.json',decision)
         write(root/'ORDER_COMPARISON.json',dict(spec_sha256=spec_sha,rows=rows,
             selection='NONE_REPORT_ALL_FINAL_100000',finished_at=now(),
             limits=limits))
@@ -635,9 +733,10 @@ def main():
     parser.add_argument('--root', type=Path, required=True)
     for name in ('engine-root', 'recipe', 'store', 'manifest', 'bars', 'closures'):
         parser.add_argument('--' + name, type=Path)
-    parser.add_argument('--arm', choices=['GROUPED','FLAT','TARGET','COMMANDS5',*CRITIC_DROPOUT])
+    parser.add_argument('--arm', choices=['GROUPED','FLAT','TARGET','COMMANDS5',*CRITIC_DROPOUT,*ENTROPY_GRID])
     parser.add_argument('--order-parent',type=Path)
     parser.add_argument('--critic-parent',type=Path)
+    parser.add_argument('--activity-parent',type=Path)
     parser.add_argument('--parent-spec-sha')
     parser.add_argument('--attempt', type=int)
     a = parser.parse_args()
