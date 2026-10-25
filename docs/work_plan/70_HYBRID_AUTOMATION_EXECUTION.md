@@ -109,3 +109,12 @@ The other 23 fits are automatic, subject to the bounded recovery and control
 dependencies above. No early stopping, periodic refit or TEST read is enabled.
 Measured training throughput at that cut is about 331 decisions/second; final
 evaluation costs still need measurement before a complete ETA is established.
+
+Follow-up at 12:28:47 UTC: first unit completed successfully at 12:28:08 and
+CAT_FIXED_s19 started automatically. First-unit end-to-end wall time was
+384.5 seconds (worker measured 379.5); all three native period reports were
+mirrored, delivered to the warehouse and read back, zero pending/mismatched.
+INNER_A: 65 trades, 2.4074/week, win fraction .44615, net -1266.09 USD,
+Sharpe -0.85848, maximum drawdown 30.4268%. This is one seed of the fixed-risk
+control, not a three-seed treatment conclusion. Learned-risk timings are still
+unmeasured; initial full-batch estimate is roughly three hours, provisional.
