@@ -28,6 +28,8 @@ class DurationReplayBuffer(DictReplayBuffer):
 
 
 def equity(engine, bar):
+    if callable(getattr(engine, 'equity_at', None)):
+        return float(engine.equity_at(bar))
     p = engine.pos
     if p is None:
         return float(engine.balance)
