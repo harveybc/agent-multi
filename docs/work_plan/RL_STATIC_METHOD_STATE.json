@@ -1,7 +1,16 @@
 {
   "schema": "rl_static_engineering_state.v1",
-  "updated_on": "2026-10-25",
-  "current_stage": "HYBRID_ENCODER_CONTRAST_AUTOMATED_QUALIFICATION",
+  "updated_on": "2026-10-26",
+  "current_stage": "NATIVE_WRAPPER_AUTOMATED_ON_PRIMARY_GPU",
+  "native_wrapper": {
+    "plan": "80_NATIVE_SUBSET_EXECUTION.md",
+    "model": "categorical PPO, grouped causal branches, residual TCN core, separate policy/value heads",
+    "selector": "feature_selector 0.2.1 backward floating, three seeds, first bounded pass 128 subsets",
+    "focused_tests_passed": 33,
+    "real_data_preflight": "120 features; 31 branches; TRAIN 21221 and INNER_A 2805 common valid origins",
+    "execution": "81_NATIVE_WRAPPER_RUNNING.md; code e18d00d4; enabled sequential service and archive timer; first fit completed training, evaluation in progress",
+    "scope": "native wrapper additional to retained upstream selection; no final RELEASE; TEST closed"
+  },
   "encoder_contrast": {
     "plan": "75_HYBRID_LEARNING_MECHANISM.md",
     "code": "e31e7d8d",
