@@ -4,7 +4,32 @@ The owner authorized execution without intermediate approvals. This is the
 additional native-model feature-selection phase from plan 80, not a declaration
 that the full selection is finished.
 
-## Pinned release
+## Current successor
+
+The active successor uses agent `7bfb1047`, unchanged corrected engine and
+selector versions, and spec
+`05c06cb508b3e7bb9e1c33064c9dda4cd524671db62dd78d7defc5539da20f4d`.
+It started at 08:35:40 UTC; observed at 08:36:04 UTC with 6,656 financial
+training steps completed. Thirty-five focused agent tests pass.
+
+The original deployment below completed one full control (training, both
+periods, crossed costs, exact reload and authenticated receipt). It exposed a
+missing application-level eligibility check: sufficient activity alone admitted
+a policy with no short trades or early closes in INNER_A. The old business rule
+from `recipe_hybrid_queue.business_behavior` is now applied to authenticated
+order-count artifacts in TRAIN and INNER_A. This changes eligibility, never the
+measured score or the policy's training. No orders are forced.
+
+The first control's INNER_A Sharpe remains -0.8649941479172091, with 65 orders
+and 2.4074 orders/week; the behavior check rejects it. It is one diagnostic seed,
+not the final multi-seed control or a verdict about input information. The second
+original control was interrupted, no subset search ran, and neither its partial
+weights nor the first control were adopted into the successor. Both original
+attempts remain documented. The successor uses fresh fits and a separate root;
+the service and archival timer point there. No original scientific artifact was
+rewritten.
+
+## Original launch record
 
 - Agent evaluator/queue: `e18d00d4`.
 - Corrected business engine: `cd6489f`, accounting `event_costs_v2`.
