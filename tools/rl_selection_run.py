@@ -21,6 +21,7 @@ BUDGET = dict(total_timesteps=102400, n_steps=512, batch_size=256, n_epochs=5,
 SEARCH = dict(min_features=20, max_evaluations=128, tolerance=0.)
 CONSTRAINTS = dict(agent_state='none', scaling='fixed_train', clipping=False,
                    fit_scope='train_only', test_access=False)
+BUSINESS_GATE = 'both_directions_nop_hold_and_voluntary_close_each_side_v1'
 
 
 def prepare(a):
@@ -46,6 +47,7 @@ def prepare(a):
         for k in ('store','manifest','bars','closures')}, engine_root=str(a.engine_root.resolve()),
         agent_root=str(ROOT), selector_root=str(a.selector_root.resolve()), device='cuda',
         budget=BUDGET, search=SEARCH, seeds=[7,19,43], software=software(), max_attempts=2,
+        business_gate=BUSINESS_GATE,
         task_timeout_seconds=43200, created_at=now(),
         code=dict(agent=source_pins(ROOT,['app','env_plugins','agent_plugins','tools']),
                   engine=source_pins(a.engine_root,['app']),
@@ -75,7 +77,7 @@ def prepare(a):
 def verify(root):
     spec = read(root / 'SPEC.private.json')
     require(file_sha(root / 'SPEC.private.json') == read(root / 'IDENTITY.json')['spec_sha256'], 'SPEC_PIN')
-    require(spec['schema'] == 'native_rl_selection.v1' and spec['budget'] == BUDGET
+    require(spec['schema'] == 'native_rl_selection.v1' and spec['business_gate'] == BUSINESS_GATE and spec['budget'] == BUDGET
             and spec['search'] == SEARCH and spec['software'] == software(), 'RUNTIME_PIN')
     for role in ('agent','engine','selector'):
         base = Path(spec[role + '_root'])
@@ -106,7 +108,26 @@ def task_for(spec, columns, seed, mode, family, cross):
 
 def authenticate(path, task):
     from feature_selector.evaluators import RLModelEvaluator
-    return RLModelEvaluator().verify(read(path),task['request'],task['params'],path.parent)
+    receipt = read(path)
+    score = RLModelEvaluator().verify(receipt,task['request'],task['params'],path.parent)
+    declared = {str(Path(a['path']).resolve()) for a in receipt['artifacts']}
+    counts = {}
+    for split, period in [('train','TRAIN'),('selection','INNER_A')]:
+        orders = path.parent / (period + '.orders.json')
+        require(str(orders.resolve()) in declared, 'BEHAVIOR_RECEIPT_REQUIRED')
+        counts[split] = read(orders)['counts']
+    return apply_business_gate(score, counts)
+
+
+def apply_business_gate(score, counts):
+    from tools.recipe_hybrid_queue import business_behavior
+    behavior = {}
+    for split in ('train','selection'):
+        metrics = score['native']['metrics'][split]
+        behavior[split] = business_behavior(
+            dict(n_long=metrics['buy_orders'],n_short=metrics['sell_orders']),counts[split])
+    return {**score, 'business_behavior':behavior,
+            'eligible':score['eligible'] and all(v['business_behavior_eligible'] for v in behavior.values())}
 
 
 def execute_task(root, spec, task):
@@ -158,7 +179,8 @@ def aggregate(rows):
         gap=statistics.mean(r['gap'] for r in rows) if measured else None,
         eligible=measured and all(r['eligible'] for r in rows),
         seeds=[dict(seed=r['native']['seed'],score=r['score'],train_score=r['train_score'],gap=r['gap'],
-                    eligible=r['eligible'],metrics=r['native']['metrics'],request_sha256=r['native']['request_sha256']) for r in rows])
+                    eligible=r['eligible'],business_behavior=r.get('business_behavior'),
+                    metrics=r['native']['metrics'],request_sha256=r['native']['request_sha256']) for r in rows])
 
 
 def admit(root, spec):

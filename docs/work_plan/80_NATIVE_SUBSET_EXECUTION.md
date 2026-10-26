@@ -62,3 +62,12 @@ The search is an additional native wrapper phase, not a substitute for the
 existing causal/profile/encoding stages. Completion of this bounded pass does
 not issue a global release or certify independent generalization. Undefined
 Sharpe or insufficient activity cannot win selection.
+
+The inherited business-behavior rule is also required in TRAIN and INNER_A:
+both directions, NOP, HOLD in each direction, and voluntary close in each
+direction. It is evaluated from authenticated native order counts; no orders
+are forced and the score itself is never changed. During the first end-to-end
+control, the bridge's generic activity rule alone admitted a one-sided policy.
+That missing application-specific rule is corrected before the subset search,
+with a fresh campaign identity. The first control remains diagnostic evidence;
+its completed result is not silently rescored or imported as a new run.

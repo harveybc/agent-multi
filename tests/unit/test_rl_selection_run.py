@@ -5,7 +5,7 @@ import pytest
 
 from app.rl_subset import digest
 from tools.recipe_sac_queue import write, read
-from tools.rl_selection_run import aggregate, execute_task
+from tools.rl_selection_run import aggregate, execute_task, apply_business_gate
 
 
 def test_aggregate_never_turns_no_orders_into_a_score():
@@ -46,3 +46,23 @@ def test_all_seeds_must_pass_activity():
                native=dict(seed=s,metrics={},request_sha256=str(s)*64)) for s,e in [(7,True),(9,False)]]
     result=aggregate(rows)
     assert result['score']==1 and not result['eligible']
+
+
+def test_activity_does_not_qualify_one_sided_policy():
+    row=dict(score=-.8,gap=0.,eligible=True,native=dict(metrics={
+        p:dict(buy_orders=65,sell_orders=0) for p in ('train','selection')}))
+    counts={p:dict(NOP=3,CLOSE_LONG=0,CLOSE_SHORT=0,HOLD_LONG=5,HOLD_SHORT=0)
+            for p in ('train','selection')}
+    checked=apply_business_gate(row,counts)
+    assert checked['score']==-.8 and not checked['eligible']
+    assert 'NO_SHORT_TRADES' in checked['business_behavior']['selection']['behavior_failures']
+
+
+def test_business_gate_preserves_score_and_requires_all_routes():
+    row=dict(score=1.,gap=0.,eligible=True,native=dict(metrics={
+        p:dict(buy_orders=5,sell_orders=6) for p in ('train','selection')}))
+    counts={p:dict(NOP=3,CLOSE_LONG=2,CLOSE_SHORT=1,HOLD_LONG=5,HOLD_SHORT=4)
+            for p in ('train','selection')}
+    assert apply_business_gate(row,counts)['eligible']
+    counts['selection']['CLOSE_SHORT']=0
+    assert not apply_business_gate(row,counts)['eligible']
