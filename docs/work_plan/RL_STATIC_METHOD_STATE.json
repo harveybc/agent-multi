@@ -32,7 +32,8 @@
       "financial_admission": false,
       "extension_tests_passed": 7,
       "deap_design": "87_DEAP_OUTPUT_CALIBRATION_DESIGN.md",
-      "deap_state": "OWNER_REQUESTED_PAIRED_THREE_OBJECTIVE_COMPARISON_PREPARING_AUTOMATED_RUN",
+      "deap_state": "RUNNING_PAIRED_THREE_OBJECTIVE_COMPARISON_AUTOMATED_CPU",
+      "deap_launch": "88_DEAP_OUTPUT_COMPARISON_RUNNING.md",
       "deap_objectives": ["Sharpe", "Sharpe + net_return", "Sharpe + net_return + orders_per_business_day"],
       "deap_search": {"population": 20, "generations": 100, "patience": 10, "relative_threshold": 1e-8, "seeds": [7,19,43]},
       "prefilter": "hard rejects for defects/constants/exact duplicates; weak proxy, drift and approximate redundancy reversible; fit-only, paired support, downstream model"

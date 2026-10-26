@@ -14,6 +14,11 @@ Ampliacion ejecutada: 162 simulaciones del grid sobre salidas artificiales mas
 seis de confirmacion sintetica, seccion9.4 del informe. Son otra identidad y
 otro objetivo, no un reemplazo del resultado negativo sobre politicas reales.
 
+La comparacion DEAP solicitada por el propietario tiene protocolo87 y ejecucion
+88. Su informe automatico se incorpora cuando exista su CLOSE.json; no confundir
+el lanzamiento con resultados. El lector puede auditar ya el contrato y los
+estudios cerrados sin aprobar la seleccion financiera.
+
 Prioridad: intentar refutar el contrato y los resultados con contraejemplos
 ejecutables. No sustituir esa tarea por una opinion sobre la dificultad del
 trading ni por una recomendacion de abandonar los datos o TCN.
@@ -37,6 +42,7 @@ trading ni por una recomendacion de abandonar los datos o TCN.
 | O13 | Informacion de posicion | Reproducir el testigo de observaciones iguales con stops distintos; evaluar su impacto sin agregar estado por iniciativa propia |
 | O14 | Artefactos y numeros | Verificar hashes y todas las tablas; alterar un recibo y exigir rechazo; probar reanudacion sin repetir resultados completos |
 | O15 | Calibracion sintetica | Recalcular18 elegibles de27, ganador segun regla y empate de SL; C solo confirma; no confundir mayor Sharpe con mayor profit ni grid con DEAP |
+| O16 | Fitness DEAP | Comparar F1/F2/F3, componentes y semillas; comprobar q=0, riesgo por direccion, restricciones antes del score, checkpoint RNG y confirmacion D/E posterior a las nueve busquedas |
 
 ## Puntos que no deben pasar inadvertidos
 
@@ -75,7 +81,7 @@ El resumen publico permite verificar los numeros sin acceso a credenciales.
 
 ## Formato del dictamen
 
-1. Tabla O01-O15: verificado, refutado o fuera del alcance demostrado, con
+1. Tabla O01-O16: verificado, refutado o fuera del alcance demostrado, con
    archivo/funcion, comando ejecutado y evidencia propia.
 2. Hallazgos por gravedad, con contraejemplo minimo. Separar defecto ejecutable,
    discrepancia documental, supuesto de negocio y limite estadistico.
