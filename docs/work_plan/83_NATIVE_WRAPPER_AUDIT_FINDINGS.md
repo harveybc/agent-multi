@@ -69,3 +69,18 @@ feedback feature, rolling scaler, clipping, or TEST access is introduced.
 Private `IDENTITY.json`, per-unit `AUDIT.json`, replay trade/equity files and
 `SUMMARY.json` retain the source receipt, code, checkpoint and artifact hashes.
 Public documentation intentionally omits private paths and machine identities.
+
+## Deployment verification
+
+Audit implementation `99de55f5` is exported into an isolated runtime; the
+training runtime remains unchanged. The enabled user timer completed its first
+round on 29 receipts, then a manual second tick authenticated the cached
+evidence and the next receipt: 30 audited, exit 0 at 12:02 UTC. Second-tick peak
+memory was 1,422,274,560 bytes and CPU time 4.12 seconds. Its next tick is
+scheduled 15 minutes after completion. The first snapshot's files remain
+separate from this corrected audit identity.
+
+At that check, training was active with no service restart, 30 completed fits
+and eight complete subset summaries (including the full control). These are
+progress counts, not a final selected feature/group count. The audit performs
+no fits, accesses no TEST data, and writes only to its separate evidence tree.
