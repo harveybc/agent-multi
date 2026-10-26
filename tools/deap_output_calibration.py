@@ -31,13 +31,13 @@ def tuple_tree(x):
     return tuple(tuple_tree(v) for v in x) if isinstance(x,list) else x
 
 
-def evolve(folder,seed,evaluator,cfg,identity,stop_after=None):
+def evolve(folder,seed,evaluator,cfg,identity,stop_after=None,objective_name='test_fixture'):
     if not hasattr(creator,'SyntheticOutputFitness'):
         creator.create('SyntheticOutputFitness',base.Fitness,weights=(1.,))
         creator.create('SyntheticOutputIndividual',list,fitness=creator.SyntheticOutputFitness)
     individual=creator.SyntheticOutputIndividual
     path=folder/'STATE.json'
-    state_identity=dict(parent=identity,search=cfg,seed=seed)
+    state_identity=dict(parent=identity,search=cfg,seed=seed,objective=objective_name)
     if path.exists():
         state=unseal(path,state_identity)
         if state['stop_reason']:return state
@@ -102,7 +102,7 @@ def run(a):
     config=EnvConfig(**c);shape=(13,recipe['list']['n'])
     cfg=dict(population=20,generations=100,patience=10,tolerance=1e-8)
     names=['sharpe','sharpe_return','sharpe_return_activity']
-    identity=dict(schema='deap_output_calibration.v1',deap=deap.__version__,software=software(),
+    identity=dict(schema='deap_output_calibration.v2',deap=deap.__version__,software=software(),
         recipe_sha256=file_sha(a.root/'RECIPE.json'),spec_sha256=file_sha(a.root/'SPEC.private.json'),
         source_hashes={n:file_sha(here/n) for n in ('app/directional_risk_calibration.py',
             'tools/deap_output_calibration.py','tools/native_strategy_contract_study.py',
@@ -148,7 +148,7 @@ def run(a):
                 value=calibration(genes)
                 return objective(name,value['components'],value['report']['eligible'],value['report']['reasons'])
             print('START',current,flush=True)
-            state=evolve(folder,seed,evaluator,cfg,identity)
+            state=evolve(folder,seed,evaluator,cfg,identity,objective_name=name)
             best=calibration(state['best'])
             result=dict(id=current,objective=name,seed=seed,genes=state['best'],fitness=state['best_score'],
                 generation=state['generation'],stop_reason=state['stop_reason'],evaluations=state['evaluations'],

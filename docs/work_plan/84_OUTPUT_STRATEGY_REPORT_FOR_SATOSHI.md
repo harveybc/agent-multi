@@ -444,6 +444,20 @@ La comparacion automatica genera su propia identidad y resultados; no modifica
 ninguna conclusion de los grids ya cerrados ni se presenta como terminada
 antes de su CLOSE.json.
 
+### 9.5 DEAP terminado y re-auditado
+
+Las nueve busquedas ya cerraron:3611 genomas,21666 simulaciones de calibracion
+y66 de confirmacion. El [informe89](89_DEAP_OUTPUT_RESULTS_AND_EXECUTION_AUDIT.md)
+contiene resultados, parametros, alcance y la correccion de una debilidad de
+identidad al reanudar. Las nueve trayectorias geneticas y las66 simulaciones
+finales se reprodujeron exactamente;56 pruebas focales pasaron.
+
+En D/E sinteticos, Sharpe+retorno dio Sharpe8.94266 y neto medioUSD1094.65,
+frente a8.85595 yUSD885.33 de Sharpe solo. Agregar actividad no cambio los
+resultados: era constante en los candidatos evaluados. No es evidencia de que
+ese termino no sirva en RL ni de rentabilidad aprendida. Los niveles de SL
+que no se alcanzan tampoco quedan identificados como un optimo unico.
+
 ## 10. Hallazgos y disposicion
 
 1. **Compuerta de cierres:** la version del wrapper congelado cuenta comandos

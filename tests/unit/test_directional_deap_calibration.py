@@ -45,3 +45,29 @@ def test_deap_resume_and_complete_adoption(tmp_path):
     n=len(calls)
     assert evolve(tmp_path/'a',7,score,cfg,{'test':1})==b
     assert len(calls)==n
+
+
+def test_checkpoint_cannot_be_adopted_by_another_objective(tmp_path):
+    from tools.deap_output_calibration import evolve
+    cfg=dict(population=20,generations=4,patience=10,tolerance=1e-8)
+    score=lambda x:sum(x)
+    evolve(tmp_path,7,score,cfg,{'test':1},stop_after=0,objective_name='sharpe')
+    with pytest.raises(ValueError,match='ARTIFACT_IDENTITY'):
+        evolve(tmp_path,7,score,cfg,{'test':1},objective_name='sharpe_return')
+
+
+def test_failure_during_generation_resumes_exactly(tmp_path):
+    from tools.deap_output_calibration import evolve
+    cfg=dict(population=20,generations=5,patience=10,tolerance=1e-8)
+    count=0
+    def flaky(x):
+        nonlocal count
+        count+=1
+        if count==45:raise RuntimeError('PROCESS_INTERRUPTED')
+        return -sum((v-.3)**2 for v in x)
+    with pytest.raises(RuntimeError,match='PROCESS_INTERRUPTED'):
+        evolve(tmp_path/'interrupted',7,flaky,cfg,{'test':1},objective_name='sharpe')
+    score=lambda x:-sum((v-.3)**2 for v in x)
+    resumed=evolve(tmp_path/'interrupted',7,score,cfg,{'test':1},objective_name='sharpe')
+    uninterrupted=evolve(tmp_path/'reference',7,score,cfg,{'test':1},objective_name='sharpe')
+    assert resumed==uninterrupted
