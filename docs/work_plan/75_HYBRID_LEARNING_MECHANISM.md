@@ -99,3 +99,23 @@ Neither repository-wide tests nor a live broker execution is claimed.
 Parent shared financial fits took 363--366 s; new synthetic throughput suggests
 about 45 minutes for four controls. Whole queue estimate 90--120 minutes is
 provisional: independent financial fits have not yet been timed.
+
+## Mandatory trading breakdown
+
+Owner requests per-direction trading evidence, not just aggregate profit. The
+read-only `tools/trading_ledger_report.py` authenticates stored receipts and emits
+run, direction, exit-reason and ledger-check CSVs. Count a completed trade once;
+BUY/SELL shares use all trades; each directional win percentage uses only that
+direction and strictly positive NET P&L, including all costs. No trades means
+undefined win percentage, never zero accuracy. Keep every seed and split apart.
+Include gross/net, four cost components, win/loss size, profit factor, expectancy,
+durations, streaks, protective/voluntary exits, SL/TP distances and sizing ranges.
+Native Sharpe/DD retain their original definitions. Original CAT_FIXED and the
+exact ARGMAX replay are explicitly duplicates, not independent observations.
+
+The first report covered 114 stored period reports (72 original, 42 inference),
+with zero detected arithmetic/protection/count/position-overlap discrepancies.
+This is NOT independent calendar/data or broker-cost certification. Behavioral
+limitations remain: fixed-risk seed 43 is long-only with zero voluntary exits;
+seed 19 misses the mean weekly activity requirement on INNER. No metric or
+strategy is silently redefined to make those runs eligible.
