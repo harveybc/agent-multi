@@ -70,3 +70,20 @@ parameters and support SHA256
 `eec922b5f42dc38559678c326c23088c3a70b3bc1e4b3155bff13301ed8eb8cd`.
 This preflight performed zero training steps. Deployment and measured progress
 are recorded separately; no launch or success is inferred from this document.
+
+## Verified launch
+
+At 2026-10-26 23:42 UTC, code `e3498b48` was running the first unit
+`planted_s7` on the available RTX 5070 Ti. The actual progress receipt showed
+14848 / 102400 steps after 46.44 seconds; the enabled service had zero restarts.
+The GPU process was present and the service used approximately 2.75 GiB host
+RAM, below its 4 GiB high / 5 GiB hard limits. The original 5090 campaign was
+not modified. A five-minute archive timer copies the diagnostic artifacts to
+the separate archive volume and verifies closure hashes before stopping itself.
+
+Campaign spec SHA256:
+`586338f9af88c65b7da2c653c0896c5738411fc37ee5e2e39f5e22c0e4871dcb`.
+Both local and deployed real-data preflights passed with identical support.
+No completed learning result exists at this observation. The next action is
+the automatic sequence, native evaluations and terminal diagnostic decision;
+no additional Satoshi task or owner approval is required for this queue.
