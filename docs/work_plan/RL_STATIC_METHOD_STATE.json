@@ -7,6 +7,7 @@
     "model": "categorical PPO, grouped causal branches, residual TCN core, separate policy/value heads",
     "selector": "feature_selector 0.2.1 backward floating, three seeds, first bounded pass 128 subsets",
     "focused_tests_passed": 35,
+    "ongoing_audit": "82_NATIVE_WRAPPER_SENSITIVITY_AUDIT.md; findings 83_NATIVE_WRAPPER_AUDIT_FINDINGS.md: first 28 receipts authenticated, fixed-rule equivalence demonstrated, no TCN saturation, no feature release; incremental CPU audit separate from unchanged training",
     "real_data_preflight": "120 features; 31 branches; TRAIN 21221 and INNER_A 2805 common valid origins",
     "execution": "81_NATIVE_WRAPPER_RUNNING.md; code 7bfb1047; enabled sequential service and archive timer; fresh successor running after inherited behavior gate restoration",
     "scope": "native wrapper additional to retained upstream selection; no final RELEASE; TEST closed"
