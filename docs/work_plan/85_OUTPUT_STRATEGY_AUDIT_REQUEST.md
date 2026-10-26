@@ -10,6 +10,10 @@ El estudio ejecuto 22 testigos, seis simulaciones de ondas y 81 replays de
 calibracion TRAIN. El resultado del barrido es `NO_FEASIBLE_CANDIDATE`.
 No se pide aprobar rentabilidad ni certificar una seleccion final.
 
+Ampliacion ejecutada: 162 simulaciones del grid sobre salidas artificiales mas
+seis de confirmacion sintetica, seccion9.4 del informe. Son otra identidad y
+otro objetivo, no un reemplazo del resultado negativo sobre politicas reales.
+
 Prioridad: intentar refutar el contrato y los resultados con contraejemplos
 ejecutables. No sustituir esa tarea por una opinion sobre la dificultad del
 trading ni por una recomendacion de abandonar los datos o TCN.
@@ -32,6 +36,7 @@ trading ni por una recomendacion de abandonar los datos o TCN.
 | O12 | Score y elegibilidad | Media de Sharpe INNER_A; brecha como desempate, no limite; todas las semillas; no confundir TRAIN de calibracion con validation |
 | O13 | Informacion de posicion | Reproducir el testigo de observaciones iguales con stops distintos; evaluar su impacto sin agregar estado por iniciativa propia |
 | O14 | Artefactos y numeros | Verificar hashes y todas las tablas; alterar un recibo y exigir rechazo; probar reanudacion sin repetir resultados completos |
+| O15 | Calibracion sintetica | Recalcular18 elegibles de27, ganador segun regla y empate de SL; C solo confirma; no confundir mayor Sharpe con mayor profit ni grid con DEAP |
 
 ## Puntos que no deben pasar inadvertidos
 
@@ -70,7 +75,7 @@ El resumen publico permite verificar los numeros sin acceso a credenciales.
 
 ## Formato del dictamen
 
-1. Tabla O01-O14: verificado, refutado o fuera del alcance demostrado, con
+1. Tabla O01-O15: verificado, refutado o fuera del alcance demostrado, con
    archivo/funcion, comando ejecutado y evidencia propia.
 2. Hallazgos por gravedad, con contraejemplo minimo. Separar defecto ejecutable,
    discrepancia documental, supuesto de negocio y limite estadistico.

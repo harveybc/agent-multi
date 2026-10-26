@@ -107,7 +107,7 @@ def witnesses(config,shape):
     return cases
 
 
-def oracle(config,shape,amplitude,weeks,phase):
+def oracle(config,shape,amplitude,weeks,phase,parameters=RiskParameters()):
     """Known synthetic future drives only the diagnostic action generator."""
     import pandas as pd
     from app.short_horizon.expert_guided.env import BarEnv
@@ -124,7 +124,7 @@ def oracle(config,shape,amplitude,weeks,phase):
     reports=[]
     for mode in ('ideal','inverted','nop'):
         engine=BarEnv(bars,cal,causal_sigma(bars),causal_range_sigma(bars),ts[0],ts[-1]+pd.Timedelta(hours=1),config)
-        env=CalibratedOrders(engine,synthetic_inputs(ts,shape))
+        env=CalibratedOrders(engine,synthetic_inputs(ts,shape),parameters)
         obs,_=env.reset()
         while not env.finished:
             b=env.bar;k=b+1;future=min(k+4,engine.last)

@@ -21,6 +21,20 @@
       "strict_close_rule": "executed AGENT_CLOSE by side in the isolated study, not requested CLOSE counters",
       "live_run_mutated": false
     },
+    "synthetic_output_calibration": {
+      "design": "86_SYNTHETIC_OUTPUT_CALIBRATION.md",
+      "state": "COMPLETE_SYNTHETIC_ONLY",
+      "calibration_simulations": 162,
+      "confirmation_simulations": 6,
+      "eligible_configurations": 18,
+      "total_configurations": 27,
+      "selected": {"tp_fraction": 0.75, "sl_fraction": 0.25, "order_fraction": 0.2},
+      "financial_admission": false,
+      "extension_tests_passed": 7,
+      "deap_design": "87_DEAP_OUTPUT_CALIBRATION_DESIGN.md",
+      "deap_state": "FITNESS_EXPRESSION_REQUESTED_FROM_OWNER_NOT_EXECUTED",
+      "prefilter": "hard rejects for defects/constants/exact duplicates; weak proxy, drift and approximate redundancy reversible; fit-only, paired support, downstream model"
+    },
     "ongoing_audit": "82_NATIVE_WRAPPER_SENSITIVITY_AUDIT.md; findings 83_NATIVE_WRAPPER_AUDIT_FINDINGS.md: first 28 receipts authenticated, fixed-rule equivalence demonstrated, no TCN saturation, no feature release; incremental CPU audit separate from unchanged training",
     "real_data_preflight": "120 features; 31 branches; TRAIN 21221 and INNER_A 2805 common valid origins",
     "execution": "81_NATIVE_WRAPPER_RUNNING.md; code 7bfb1047; enabled sequential service and archive timer; fresh successor running after inherited behavior gate restoration",

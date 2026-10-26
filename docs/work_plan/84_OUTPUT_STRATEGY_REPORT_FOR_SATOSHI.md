@@ -15,6 +15,8 @@ el cierre, la contabilidad, la recompensa y el score del wrapper. Se ejecutaron:
 - Un barrido exhaustivo de 27 configuraciones de TP, SL y volumen sobre las
   tres politicas TCN congeladas: 81 simulaciones de TRAIN, sin ajustes de pesos.
 - Reproduccion exacta de trades y equity diaria de los tres controles.
+- Ampliacion: 162 simulaciones de calibracion sobre salidas artificiales y
+  seis comprobaciones en un tercer mercado sintetico, descritas en 9.4.
 - 100 pruebas focales en CPU: 43 del adaptador y 57 del motor. El cierre contiene 329 archivos autenticados;
   una lectura posterior verifico todos sus hashes.
 
@@ -211,6 +213,11 @@ siempre 1.625 o 1.75. Los niveles se construyen respecto del cierre de b:
 ```text
 TP = close[b] + direccion * multiplicador_TP * sigma
 SL = close[b] - direccion * multiplicador_SL * sigma
+
+COMPRA: TP = close[b] + multiplicador_TP * sigma
+        SL = close[b] - multiplicador_SL * sigma
+VENTA:  TP = close[b] - multiplicador_TP * sigma
+        SL = close[b] + multiplicador_SL * sigma
 ```
 
 Tras conocer la apertura siguiente, el motor rechaza la entrada si el precio
@@ -231,6 +238,11 @@ La comprobacion previa usa el cierre disponible; el calculo de unidades se
 realiza al precio de ejecucion. Se rechaza si no alcanza el minimo o excede
 el margen. El control no aprende riesgo: usa fraccion 1.0. El barrido cerrado
 de esta entrega explora 0.2, 0.5 y 1.0 sin tocar `rel_volume` ni apalancamiento.
+Por ejemplo, balance USD10,000 y q=1 destinan como maximo USD1,000 al margen;
+q=.2 destina USD200, antes del redondeo de unidades. No es el porcentaje de
+perdida maxima al SL. El contrato actual de una orden positiva admite q en
+(0,1]; abstencion usa NOP. La peticion nueva de admitir q=0 explicitamente
+requiere que signifique no abrir, nunca subirlo automaticamente al minimo.
 
 ## 7. Costes, recompensa y metricas
 
@@ -377,6 +389,55 @@ eleccion exige primero elegibilidad de las tres semillas y solo despues
 maximiza Sharpe medio, desempata por menor DD y menor volumen. Ningun punto
 pasa; `selected=null`. Se conservaron los 81 resultados, no solo el mejor.
 No se utilizo INNER_A ni 2024 para escoger parametros de este barrido.
+
+### 9.4 Calibracion adicional con salidas simuladas
+
+Diseno declarado antes de ejecutar:
+[86_SYNTHETIC_OUTPUT_CALIBRATION.md](86_SYNTHETIC_OUTPUT_CALIBRATION.md).
+Se evaluaron los 27 puntos sobre A y B, con ideal/invertida/NOP: 162
+simulaciones. Se exigen beneficio ideal positivo, actividad y ambas direcciones
+en cada mercado, inversion peor y NOP sin operaciones. Los cierres AGENT_CLOSE
+en ambos sentidos se exigen sobre el conjunto A+B. Pasaron 18 de 27; los otros
+nueve no ejercitaron cierre anticipado de cortos. No se modifico la regla tras
+ver esos resultados.
+
+Entre los elegibles se maximizo el Sharpe ideal medio, con desempates por menor
+DD, menor q y finalmente orden lexicografico TP/SL. El resultado es TP=.75,
+SL=.25 y q=.2, fracciones dentro de las bandas factibles, no distancias en pips.
+El Sharpe medio pasa de 12.10657 a 13.85428; el profit medio baja de USD1423.20
+a USD321.95. No se optimizo una suma Sharpe+profit+actividad en este estudio.
+El SL no esta identificado: las tres fracciones empatan en la combinacion
+ganadora. .25 proviene del desempate declarado, no de superioridad demostrada.
+
+Un tercer mercado C (amplitud .0018, siete semanas, fase7) se leyo despues de
+elegir. No decidio los parametros. Balance inicial USD10,000, mismos costes:
+
+| C / salida | TP,SL,q | Neto USD | Sharpe | DD % | Compras/ventas | Aciertos |
+|---|---|---:|---:|---:|---:|---:|
+| Elegida / ideal | .75,.25,.2 | +922.51 | 22.38477 | .01811 | 6/24 | 100% |
+| Control / ideal | .5,.5,1 | +4219.83 | 22.32588 | .11373 | 6/24 | 100% |
+| Elegida / invertida | .75,.25,.2 | -590.40 | -22.86348 | 5.90395 | 25/5 | 0% |
+| Control / invertida | .5,.5,1 | -3665.82 | -22.56379 | 36.65818 | 24/6 | 0% |
+| Ambas / NOP | respectivas | 0 | 0 contable | 0 | 0/0 | no aplica |
+
+La ideal elegida cierra las30 operaciones por AGENT_CLOSE; el control las30
+por TP. Ambas respetan una entrada/dia y promedian3.75 ordenes/semana. La menor
+ganancia monetaria con q=.2 es un intercambio con exposicion, no un fracaso
+de contabilidad. El generador conoce el futuro: no son resultados de una red.
+
+[Evidencia completa resumida](../audits/evidence/synthetic_output_calibration_20261026/SUMMARY.json).
+Cierre sha256: `ff642c2c5c9be017fca9fdcd0cad8e1721d8b674eced0e34fac20d940f8aaff3`.
+Se verificaron31 archivos y una segunda invocacion termino sin repetir celdas.
+La extension paso siete pruebas focales, incluyendo cambio real de unidades,
+TP/SL y rechazo de recibos alterados; no sustituye las100 pruebas anteriores.
+La regresion ampliada posterior paso47 pruebas de agent-multi sin fallos;
+el motor no cambio respecto de las57 pruebas de la entrega anterior.
+
+Esta calibracion discreta queda como control. La solicitud posterior del
+propietario exige DEAP y un fitness compuesto: ese protocolo es distinto y no
+se presenta este grid como si hubiera sido una busqueda genetica. Las formulas
+propuestas anteriormente incluian variantes con y sin actividad; se solicito
+fijar la expresion antes de lanzar la optimizacion que la use.
 
 ## 10. Hallazgos y disposicion
 

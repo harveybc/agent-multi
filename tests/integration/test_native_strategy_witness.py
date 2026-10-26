@@ -18,6 +18,7 @@ attach_engine(sys.argv[1])
 from app.short_horizon.expert_guided.env import EnvConfig
 from app.short_horizon.execution import Sizing,RealisticProfile,OrderRules
 from tools.native_strategy_contract_study import witnesses,oracle
+from app.native_strategy_contract import RiskParameters
 r=json.loads((Path(sys.argv[2])/'RECIPE.json').read_text())
 c=dict(r['business']['evaluation_and_policy'])
 c.update(sizing=Sizing(**c['sizing']),profile=RealisticProfile(**c['profile']),rules=OrderRules(**c['rules']))
@@ -31,6 +32,13 @@ for amplitude,weeks,phase in ((.002,8,0),(.0015,6,3)):
  assert waves[1]['metrics']['net_profit_usd']<0
  assert waves[2]['metrics']['trades']==0
  assert waves[0]['metrics']['n_long']>0 and waves[0]['metrics']['n_short']>0
+baseline=oracle(cfg,(13,r['list']['n']),.002,8,0)[0]['trades'][0]
+changed=oracle(cfg,(13,r['list']['n']),.002,8,0,RiskParameters(.75,.25,.2))[0]['trades'][0]
+assert changed['entry_time']==baseline['entry_time']
+assert changed['units']<baseline['units']
+assert changed['percentual_order_size']==.2
+assert changed['stop_loss']!=baseline['stop_loss']
+assert changed['take_profit']!=baseline['take_profit']
 print('EXACT_CONFIG_22_SCENARIOS_AND_TWO_ORACLE_CONTROLS_PASS')
 '''
     p=subprocess.run([sys.executable,'-c',script,root,campaign],cwd=Path(__file__).resolve().parents[2],
