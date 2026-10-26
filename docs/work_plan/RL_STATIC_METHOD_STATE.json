@@ -19,6 +19,7 @@
       "tests_passed": 100,
       "selection_decision": "NO_FEASIBLE_CANDIDATE; no final feature release",
       "strict_close_rule": "executed AGENT_CLOSE by side in the isolated study, not requested CLOSE counters",
+      "input_validation_audit": {"report": "90_EXECUTED_BEHAVIOR_INPUT_AUDIT.md", "tests_passed": 32, "financial_decisions_unchanged": 81, "synthetic_records_checked": 21732, "new_fits": 0, "state": "TYPED_INPUTS_CHECKED_NO_RESULT_CHANGE"},
       "live_run_mutated": false
     },
     "synthetic_output_calibration": {

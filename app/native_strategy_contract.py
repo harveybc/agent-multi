@@ -1,6 +1,7 @@
 """Isolated execution-parameter contrast; never changes a frozen campaign."""
 from dataclasses import dataclass, replace, asdict
 import math
+from numbers import Integral, Real
 
 from env_plugins.hybrid_orders import HybridOrderEnv
 
@@ -41,6 +42,15 @@ class CalibratedOrders(HybridOrderEnv):
 
 
 def executed_behavior(trades,counts,report):
+    activity = report.get('orders_per_week')
+    if (isinstance(activity, bool) or not isinstance(activity, Real)
+            or not math.isfinite(activity) or activity < 0):
+        raise ValueError('INVALID_ACTIVITY_MEASUREMENT')
+    if type(report.get('valid')) is not bool:
+        raise ValueError('INVALID_NATIVE_VALIDITY')
+    for name, count in counts.items():
+        if isinstance(count, bool) or not isinstance(count, Integral) or count < 0:
+            raise ValueError('INVALID_ACTION_COUNT:' + name)
     reasons=[]
     for side,name in ((1,'LONG'),(-1,'SHORT')):
         if not any(t['direction']==side for t in trades): reasons.append('NO_'+name+'_TRADES')
@@ -48,6 +58,6 @@ def executed_behavior(trades,counts,report):
             reasons.append('NO_EXECUTED_CLOSE_'+name)
     for name in ('NOP','HOLD_LONG','HOLD_SHORT'):
         if not counts.get(name,0): reasons.append('NO_'+name)
-    if report['orders_per_week']<2: reasons.append('ACTIVITY_BELOW_TWO')
+    if activity<2: reasons.append('ACTIVITY_BELOW_TWO')
     if not report['valid']: reasons.append('NATIVE_INVALID')
     return dict(eligible=not reasons,reasons=reasons)

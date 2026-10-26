@@ -97,3 +97,8 @@ El resumen publico permite verificar los numeros sin acceso a credenciales.
 
 No se requiere que el dictamen sea favorable. Se requiere que se apoye en el
 codigo y los artefactos, y que no confunda beneficios ideales con aprendizaje.
+
+Anexo de revision: [validacion de entradas de elegibilidad](90_EXECUTED_BEHAVIOR_INPUT_AUDIT.md).
+Rechaza NaN, validez no booleana y contadores mal tipados. Las81 decisiones
+financieras guardadas no cambian y las21732 trayectorias DEAP pasan la
+validacion de entradas; no se repitieron fits ni se cambio la corrida sellada.

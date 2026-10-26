@@ -82,6 +82,10 @@ Execution AUDIT sha256:
 
 The auditor writes only to a separate output directory:
 
+For this historical exact replay, run from auditor commit `29506fbc` with the
+frozen producer. Later input-validation changes intentionally have a different
+source digest; see [the follow-up audit](90_EXECUTED_BEHAVIOR_INPUT_AUDIT.md).
+
 ```bash
 CUDA_VISIBLE_DEVICES='' OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
 python -m tools.audit_deap_output_calibration \
