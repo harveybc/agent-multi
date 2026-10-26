@@ -434,10 +434,15 @@ La regresion ampliada posterior paso47 pruebas de agent-multi sin fallos;
 el motor no cambio respecto de las57 pruebas de la entrega anterior.
 
 Esta calibracion discreta queda como control. La solicitud posterior del
-propietario exige DEAP y un fitness compuesto: ese protocolo es distinto y no
-se presenta este grid como si hubiera sido una busqueda genetica. Las formulas
-propuestas anteriormente incluian variantes con y sin actividad; se solicito
-fijar la expresion antes de lanzar la optimizacion que la use.
+propietario exige DEAP y comparar las variantes de fitness: ese protocolo es
+distinto y no se presenta este grid como si hubiera sido una busqueda genetica.
+Su respuesta fija tres brazos emparejados: Sharpe, Sharpe+retorno neto y
+Sharpe+retorno neto+ordenes/dia; tres semillas por brazo. El protocolo exacto,
+incluyendo formulas direccionales, q=0 y restricciones no optimizables, esta en
+[87_DEAP_OUTPUT_CALIBRATION_DESIGN.md](87_DEAP_OUTPUT_CALIBRATION_DESIGN.md).
+La comparacion automatica genera su propia identidad y resultados; no modifica
+ninguna conclusion de los grids ya cerrados ni se presenta como terminada
+antes de su CLOSE.json.
 
 ## 10. Hallazgos y disposicion
 

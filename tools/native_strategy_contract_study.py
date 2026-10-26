@@ -107,7 +107,8 @@ def witnesses(config,shape):
     return cases
 
 
-def oracle(config,shape,amplitude,weeks,phase,parameters=RiskParameters()):
+def oracle(config,shape,amplitude,weeks,phase,parameters=RiskParameters(),
+           env_type=CalibratedOrders,verify_controls=True):
     """Known synthetic future drives only the diagnostic action generator."""
     import pandas as pd
     from app.short_horizon.expert_guided.env import BarEnv
@@ -124,7 +125,7 @@ def oracle(config,shape,amplitude,weeks,phase,parameters=RiskParameters()):
     reports=[]
     for mode in ('ideal','inverted','nop'):
         engine=BarEnv(bars,cal,causal_sigma(bars),causal_range_sigma(bars),ts[0],ts[-1]+pd.Timedelta(hours=1),config)
-        env=CalibratedOrders(engine,synthetic_inputs(ts,shape),parameters)
+        env=env_type(engine,synthetic_inputs(ts,shape),parameters)
         obs,_=env.reset()
         while not env.finished:
             b=env.bar;k=b+1;future=min(k+4,engine.last)
@@ -140,7 +141,8 @@ def oracle(config,shape,amplitude,weeks,phase,parameters=RiskParameters()):
             obs,*_=env.step([cmd,.5,.5,.5])
         reports.append(dict(mode=mode,amplitude=amplitude,weeks=weeks,phase=phase,**summary_env(env)))
     require(reports[2]['metrics']['trades']==0 and reports[2]['metrics']['net_profit_usd']==0,'NOP_CASH')
-    require(reports[0]['metrics']['net_profit_usd']>reports[1]['metrics']['net_profit_usd'],'ORACLE_CONTROL_ORDERING')
+    if verify_controls:
+        require(reports[0]['metrics']['net_profit_usd']>reports[1]['metrics']['net_profit_usd'],'ORACLE_CONTROL_ORDERING')
     return reports
 
 

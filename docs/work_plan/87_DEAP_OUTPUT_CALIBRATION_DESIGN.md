@@ -1,6 +1,6 @@
 # DEAP output calibration: scope and exact formulas
 
-Date: 2026-10-26. This is a design, not an executed DEAP result.
+Date: 2026-10-26. Protocol fixed before genetic evaluation.
 The completed grids in report84 remain controls with their original fitness.
 
 ## Fixed business envelope
@@ -54,15 +54,59 @@ directions across the diagnostic suite, legal actions/levels, activity and
 correct net accounting. Ideal/inverted/NOP controls remain separate. A held-out
 synthetic scenario does not participate in candidate selection.
 
-## Fitness clarification requested
+## Owner decision: compare fitness alternatives
 
-The owner previously proposed several alternatives, not one uniquely frozen
-expression: Sharpe + net_profit/initial_balance, optionally adding average
-orders/day, with possible coefficients. A question was sent asking which
-expression governs this run. No genetic run or optimality claim has been made.
+The owner instructed comparison rather than picking one expression in advance.
+Three objectives, each repeated with seeds7,19,43 (nine sequential searches):
 
-Do not optimize the fitness coefficients on the same candidate scores: that
-changes the objective instead of optimizing the strategy. Once specified,
-record coefficients, aggregation across markets, activity denominator, treatment
-of zero-trade/zero-variance cases and eligibility before the first evaluation.
-Do not substitute the earlier Sharpe-only grid for the requested DEAP run.
+```text
+S = mean(ideal Sharpe on A, ideal Sharpe on B)
+R = mean(ideal net_profit / initial_balance on A and B)
+A = mean(ideal trades / (5 * number_of_weeks) on A and B)
+F1 = S
+F2 = S + R
+F3 = S + R + A
+```
+
+Each synthetic120h session contains five24h business days. All of them count
+in the activity denominator, including warmup/no-trade days; a candidate cannot
+shrink its denominator. Coefficients are1 as in the owner's proposed examples;
+publish component magnitudes rather than claim they are equally scaled. No
+joint optimization of fitness coefficients. Zero-trade candidates fail activity;
+undefined/non-finite fitness fails closed, never becomes a profitable score.
+
+Identical initial populations per seed, scenarios, eligibility, genetic budget
+and operators: tournament3, bounded simulated-binary crossover eta20/p=.8,
+bounded polynomial mutation eta20/p=.2 with per-gene probability1/6, one elite.
+Each generation scores the population before testing patience. Relative progress
+is measured against the last patience-reset best with denominator
+max(abs(best),1e-12); threshold1e-8, patience10, maximum100 generations after
+initial population20. Cache repeated genomes with all source/recipe identities.
+Save population, fitness, RNG state and progress after every generation.
+
+Actual diagnostic categorical commands exercise opening, discretionary closing
+and NOP; six genes set TP/SL/q by direction. This does not claim to calibrate
+inactive Beta-head distributions. q endpoints and asymmetric directions receive
+explicit behavioral tests on the real adapter before launch.
+
+Wave C was already observed in the previous grid. Report it only as historical
+comparison, not new confirmation. Fresh synthetic D (.0012,9,2) and
+E (.0024,7,11), in the same amplitude/weeks/phase notation, are evaluated only
+after ALL nine optimizations finish, without tuning on their scores. They remain
+same-generator synthetic stress checks, not real-market validation. Evaluate
+each final genome plus midpoint/grid controls with ideal/inverted/NOP outputs.
+
+Report all seeds, stop reason, generations, unique evaluations, all3 fitness
+components, trading counts/directions/win rates, costs, net profit, Sharpe,
+drawdown and exit reasons. No financial RELEASE or best-feature claim follows.
+
+## Test and automation acceptance
+
+- q=0 makes no order/fee; q=1 uses at most rel_volume*current balance as margin.
+- Independent buy/sell coefficients reach the actual stop, target and sizing.
+- Domain endpoints work; illegal commands and non-finite parameters reject.
+- Fitness uses net profit and the fixed day denominator; eligibility precedes score.
+- Replaying a completed generation adopts the same RNG/population and result;
+  corrupted cache/state is rejected by identity/hash.
+- A single sequential CPU supervisor runs all nine searches, confirmations and
+  final table; completed units are never silently overwritten.
