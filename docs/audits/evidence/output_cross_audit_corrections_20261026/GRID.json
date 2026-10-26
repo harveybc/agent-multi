@@ -1,0 +1,2167 @@
+{
+  "source_close": "6e395fb29f5594d062a18539dfd50142a6795196835d2480d94ec728ad1da160",
+  "rows": [
+    {
+      "cell": "s19_014f9c611b50a60a",
+      "seed": 19,
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.75,
+        "order_fraction": 0.5
+      },
+      "trades": 427,
+      "mean_tp_pips": 67.70859572023113,
+      "mean_sl_pips": 98.29457856827491,
+      "ratio_of_mean_distances": 0.688833470842963,
+      "mean_cost_pips": 3.239461358313817,
+      "binary_break_even_reference": 0.6116391470329786,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 164,
+      "realized_win_rate": 0.5269320843091335,
+      "net_profit_usd": -3812.5009561708985,
+      "financing_usd": 1302.70175,
+      "other_costs_usd": 1259.00712,
+      "exit_counts": {
+        "FORCED_FLAT": 164,
+        "SL": 101,
+        "TP": 162
+      }
+    },
+    {
+      "cell": "s19_055a778f37b7c400",
+      "seed": 19,
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.25,
+        "order_fraction": 1.0
+      },
+      "trades": 512,
+      "mean_tp_pips": 95.68378279254509,
+      "mean_sl_pips": 49.98213436370318,
+      "ratio_of_mean_distances": 1.9143596809269163,
+      "mean_cost_pips": 3.087890625,
+      "binary_break_even_reference": 0.3643269889398885,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 158,
+      "realized_win_rate": 0.390625,
+      "net_profit_usd": -5512.916411103399,
+      "financing_usd": 1957.08093,
+      "other_costs_usd": 3022.488165,
+      "exit_counts": {
+        "SL": 251,
+        "FORCED_FLAT": 158,
+        "TP": 103
+      }
+    },
+    {
+      "cell": "s19_19c28b294008d565",
+      "seed": 19,
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.75,
+        "order_fraction": 1.0
+      },
+      "trades": 563,
+      "mean_tp_pips": 40.128753733761975,
+      "mean_sl_pips": 97.8589625863816,
+      "ratio_of_mean_distances": 0.41006723015625385,
+      "mean_cost_pips": 2.82335701598579,
+      "binary_break_even_reference": 0.7296469735666586,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 152,
+      "realized_win_rate": 0.6287744227353463,
+      "net_profit_usd": -5610.390292757838,
+      "financing_usd": 1958.16453,
+      "other_costs_usd": 3666.60131,
+      "exit_counts": {
+        "TP": 312,
+        "SL": 99,
+        "FORCED_FLAT": 152
+      }
+    },
+    {
+      "cell": "s19_1f0531cddaaee769",
+      "seed": 19,
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.25,
+        "order_fraction": 0.2
+      },
+      "trades": 512,
+      "mean_tp_pips": 95.68378279254509,
+      "mean_sl_pips": 49.98213436370318,
+      "ratio_of_mean_distances": 1.9143596809269163,
+      "mean_cost_pips": 3.087890625,
+      "binary_break_even_reference": 0.3643269889398885,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 158,
+      "realized_win_rate": 0.390625,
+      "net_profit_usd": -1206.2810463362546,
+      "financing_usd": 530.60896,
+      "other_costs_usd": 798.92783,
+      "exit_counts": {
+        "SL": 251,
+        "FORCED_FLAT": 158,
+        "TP": 103
+      }
+    },
+    {
+      "cell": "s19_3f722f851e76ef43",
+      "seed": 19,
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.75,
+        "order_fraction": 0.2
+      },
+      "trades": 563,
+      "mean_tp_pips": 40.128753733761975,
+      "mean_sl_pips": 97.8589625863816,
+      "ratio_of_mean_distances": 0.41006723015625385,
+      "mean_cost_pips": 2.82335701598579,
+      "binary_break_even_reference": 0.7296469735666586,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 152,
+      "realized_win_rate": 0.6287744227353463,
+      "net_profit_usd": -1257.4122439997957,
+      "financing_usd": 475.65868,
+      "other_costs_usd": 884.88342,
+      "exit_counts": {
+        "TP": 312,
+        "SL": 99,
+        "FORCED_FLAT": 152
+      }
+    },
+    {
+      "cell": "s19_50643eca54d4127f",
+      "seed": 19,
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.75,
+        "order_fraction": 0.5
+      },
+      "trades": 563,
+      "mean_tp_pips": 40.128753733761975,
+      "mean_sl_pips": 97.8589625863816,
+      "ratio_of_mean_distances": 0.41006723015625385,
+      "mean_cost_pips": 2.82335701598579,
+      "binary_break_even_reference": 0.7296469735666586,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 152,
+      "realized_win_rate": 0.6287744227353463,
+      "net_profit_usd": -3051.3854909784623,
+      "financing_usd": 1108.31511,
+      "other_costs_usd": 2066.962655,
+      "exit_counts": {
+        "TP": 312,
+        "SL": 99,
+        "FORCED_FLAT": 152
+      }
+    },
+    {
+      "cell": "s19_52fd3768085be58f",
+      "seed": 19,
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.25,
+        "order_fraction": 0.2
+      },
+      "trades": 771,
+      "mean_tp_pips": 40.38504974440675,
+      "mean_sl_pips": 49.64943028449979,
+      "ratio_of_mean_distances": 0.8134040917084738,
+      "mean_cost_pips": 2.564526588845655,
+      "binary_break_even_reference": 0.5799328974475289,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 138,
+      "realized_win_rate": 0.5369649805447471,
+      "net_profit_usd": -1390.0135189050486,
+      "financing_usd": 277.95712,
+      "other_costs_usd": 1388.58543,
+      "exit_counts": {
+        "TP": 354,
+        "SL": 279,
+        "FORCED_FLAT": 138
+      }
+    },
+    {
+      "cell": "s19_58bc070b994ffb39",
+      "seed": 19,
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.75,
+        "order_fraction": 0.5
+      },
+      "trades": 350,
+      "mean_tp_pips": 96.25595953541261,
+      "mean_sl_pips": 99.44341064790147,
+      "ratio_of_mean_distances": 0.9679470857674558,
+      "mean_cost_pips": 3.624428571428571,
+      "binary_break_even_reference": 0.5266641334756728,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 170,
+      "realized_win_rate": 0.4828571428571429,
+      "net_profit_usd": -3377.3803653184873,
+      "financing_usd": 1336.65385,
+      "other_costs_usd": 1017.233095,
+      "exit_counts": {
+        "FORCED_FLAT": 170,
+        "SL": 92,
+        "TP": 88
+      }
+    },
+    {
+      "cell": "s19_6bb5d01806d1738c",
+      "seed": 19,
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.5,
+        "order_fraction": 1.0
+      },
+      "trades": 656,
+      "mean_tp_pips": 40.34501845738456,
+      "mean_sl_pips": 73.97955417825584,
+      "ratio_of_mean_distances": 0.5453536305473279,
+      "mean_cost_pips": 2.676295731707317,
+      "binary_break_even_reference": 0.6705107059903049,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 150,
+      "realized_win_rate": 0.5914634146341463,
+      "net_profit_usd": -6046.806115463043,
+      "financing_usd": 1650.26715,
+      "other_costs_usd": 4406.303125,
+      "exit_counts": {
+        "TP": 342,
+        "SL": 164,
+        "FORCED_FLAT": 150
+      }
+    },
+    {
+      "cell": "s19_6ed43d376652c23e",
+      "seed": 19,
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.25,
+        "order_fraction": 0.2
+      },
+      "trades": 609,
+      "mean_tp_pips": 67.56130433638667,
+      "mean_sl_pips": 49.543052952967834,
+      "ratio_of_mean_distances": 1.3636887577461951,
+      "mean_cost_pips": 2.8413793103448275,
+      "binary_break_even_reference": 0.44733119651453584,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 153,
+      "realized_win_rate": 0.4466338259441708,
+      "net_profit_usd": -1351.211647102919,
+      "financing_usd": 495.8303,
+      "other_costs_usd": 974.0134400000001,
+      "exit_counts": {
+        "SL": 270,
+        "FORCED_FLAT": 153,
+        "TP": 186
+      }
+    },
+    {
+      "cell": "s19_7800b1048f6c2292",
+      "seed": 19,
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.25,
+        "order_fraction": 0.5
+      },
+      "trades": 512,
+      "mean_tp_pips": 95.68378279254509,
+      "mean_sl_pips": 49.98213436370318,
+      "ratio_of_mean_distances": 1.9143596809269163,
+      "mean_cost_pips": 3.087890625,
+      "binary_break_even_reference": 0.3643269889398885,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 158,
+      "realized_win_rate": 0.390625,
+      "net_profit_usd": -2962.0654923070297,
+      "financing_usd": 1190.31843,
+      "other_costs_usd": 1807.58732,
+      "exit_counts": {
+        "SL": 251,
+        "FORCED_FLAT": 158,
+        "TP": 103
+      }
+    },
+    {
+      "cell": "s19_82e506e38d10e379",
+      "seed": 19,
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.5,
+        "order_fraction": 0.2
+      },
+      "trades": 656,
+      "mean_tp_pips": 40.34501845738456,
+      "mean_sl_pips": 73.97955417825584,
+      "ratio_of_mean_distances": 0.5453536305473279,
+      "mean_cost_pips": 2.676295731707317,
+      "binary_break_even_reference": 0.6705107059903049,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 150,
+      "realized_win_rate": 0.5914634146341463,
+      "net_profit_usd": -1451.097529112463,
+      "financing_usd": 409.60178,
+      "other_costs_usd": 1081.65649,
+      "exit_counts": {
+        "TP": 342,
+        "SL": 164,
+        "FORCED_FLAT": 150
+      }
+    },
+    {
+      "cell": "s19_831ea41bd94ffc06",
+      "seed": 19,
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.5,
+        "order_fraction": 0.2
+      },
+      "trades": 493,
+      "mean_tp_pips": 67.79353713487049,
+      "mean_sl_pips": 74.0458237578363,
+      "ratio_of_mean_distances": 0.9155619276596388,
+      "mean_cost_pips": 3.0609533468559835,
+      "binary_break_even_reference": 0.5436204493548097,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 159,
+      "realized_win_rate": 0.5030425963488844,
+      "net_profit_usd": -1192.3345419223751,
+      "financing_usd": 566.87645,
+      "other_costs_usd": 716.99805,
+      "exit_counts": {
+        "SL": 156,
+        "FORCED_FLAT": 159,
+        "TP": 178
+      }
+    },
+    {
+      "cell": "s19_843fe1eefa710e5a",
+      "seed": 19,
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.25,
+        "order_fraction": 1.0
+      },
+      "trades": 771,
+      "mean_tp_pips": 40.38504974440675,
+      "mean_sl_pips": 49.64943028449979,
+      "ratio_of_mean_distances": 0.8134040917084738,
+      "mean_cost_pips": 2.564526588845655,
+      "binary_break_even_reference": 0.5799328974475289,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 138,
+      "realized_win_rate": 0.5369649805447471,
+      "net_profit_usd": -5803.130672437674,
+      "financing_usd": 1067.62971,
+      "other_costs_usd": 5399.68588,
+      "exit_counts": {
+        "TP": 354,
+        "SL": 279,
+        "FORCED_FLAT": 138
+      }
+    },
+    {
+      "cell": "s19_8552ff94e31d09ba",
+      "seed": 19,
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.75,
+        "order_fraction": 1.0
+      },
+      "trades": 350,
+      "mean_tp_pips": 96.25595953541261,
+      "mean_sl_pips": 99.44341064790147,
+      "ratio_of_mean_distances": 0.9679470857674558,
+      "mean_cost_pips": 3.624428571428572,
+      "binary_break_even_reference": 0.5266641334756728,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 170,
+      "realized_win_rate": 0.4828571428571429,
+      "net_profit_usd": -6095.7309036975375,
+      "financing_usd": 2178.82217,
+      "other_costs_usd": 1666.5435400000001,
+      "exit_counts": {
+        "FORCED_FLAT": 170,
+        "SL": 92,
+        "TP": 88
+      }
+    },
+    {
+      "cell": "s19_9682046ae2564284",
+      "seed": 19,
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.5,
+        "order_fraction": 0.5
+      },
+      "trades": 392,
+      "mean_tp_pips": 95.53226211463952,
+      "mean_sl_pips": 74.32010256091445,
+      "ratio_of_mean_distances": 1.2854161770880106,
+      "mean_cost_pips": 3.433928571428571,
+      "binary_break_even_reference": 0.4577742045620974,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 168,
+      "realized_win_rate": 0.44642857142857145,
+      "net_profit_usd": -2867.0358886447843,
+      "financing_usd": 1338.98786,
+      "other_costs_usd": 1231.267895,
+      "exit_counts": {
+        "SL": 134,
+        "FORCED_FLAT": 168,
+        "TP": 90
+      }
+    },
+    {
+      "cell": "s19_a28705c703d84a33",
+      "seed": 19,
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.5,
+        "order_fraction": 0.2
+      },
+      "trades": 392,
+      "mean_tp_pips": 95.53226211463952,
+      "mean_sl_pips": 74.32010256091445,
+      "ratio_of_mean_distances": 1.2854161770880106,
+      "mean_cost_pips": 3.433928571428571,
+      "binary_break_even_reference": 0.4577742045620974,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 168,
+      "realized_win_rate": 0.44642857142857145,
+      "net_profit_usd": -1154.1710476231917,
+      "financing_usd": 591.7177,
+      "other_costs_usd": 543.109615,
+      "exit_counts": {
+        "SL": 134,
+        "FORCED_FLAT": 168,
+        "TP": 90
+      }
+    },
+    {
+      "cell": "s19_aaeed716b46622bf",
+      "seed": 19,
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.25,
+        "order_fraction": 1.0
+      },
+      "trades": 609,
+      "mean_tp_pips": 67.56130433638667,
+      "mean_sl_pips": 49.543052952967834,
+      "ratio_of_mean_distances": 1.3636887577461951,
+      "mean_cost_pips": 2.8413793103448275,
+      "binary_break_even_reference": 0.44733119651453584,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 153,
+      "realized_win_rate": 0.4466338259441708,
+      "net_profit_usd": -5809.119029200433,
+      "financing_usd": 1929.655,
+      "other_costs_usd": 3905.405215,
+      "exit_counts": {
+        "SL": 270,
+        "FORCED_FLAT": 153,
+        "TP": 186
+      }
+    },
+    {
+      "cell": "s19_c9cde0fe140ce00a",
+      "seed": 19,
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.25,
+        "order_fraction": 0.5
+      },
+      "trades": 609,
+      "mean_tp_pips": 67.56130433638667,
+      "mean_sl_pips": 49.543052952967834,
+      "ratio_of_mean_distances": 1.3636887577461951,
+      "mean_cost_pips": 2.841379310344827,
+      "binary_break_even_reference": 0.44733119651453584,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 153,
+      "realized_win_rate": 0.4466338259441708,
+      "net_profit_usd": -3228.9499906351657,
+      "financing_usd": 1131.77568,
+      "other_costs_usd": 2247.20291,
+      "exit_counts": {
+        "SL": 270,
+        "FORCED_FLAT": 153,
+        "TP": 186
+      }
+    },
+    {
+      "cell": "s19_d5450870a3786afa",
+      "seed": 19,
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.75,
+        "order_fraction": 0.2
+      },
+      "trades": 350,
+      "mean_tp_pips": 96.25595953541261,
+      "mean_sl_pips": 99.44341064790147,
+      "ratio_of_mean_distances": 0.9679470857674558,
+      "mean_cost_pips": 3.624428571428572,
+      "binary_break_even_reference": 0.5266641334756728,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 170,
+      "realized_win_rate": 0.4828571428571429,
+      "net_profit_usd": -1401.059627380466,
+      "financing_usd": 600.72145,
+      "other_costs_usd": 456.19389,
+      "exit_counts": {
+        "FORCED_FLAT": 170,
+        "SL": 92,
+        "TP": 88
+      }
+    },
+    {
+      "cell": "s19_d8e94f9f73b0b219",
+      "seed": 19,
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.75,
+        "order_fraction": 1.0
+      },
+      "trades": 427,
+      "mean_tp_pips": 67.70859572023113,
+      "mean_sl_pips": 98.29457856827491,
+      "ratio_of_mean_distances": 0.688833470842963,
+      "mean_cost_pips": 3.2394613583138168,
+      "binary_break_even_reference": 0.6116391470329786,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 164,
+      "realized_win_rate": 0.5269320843091335,
+      "net_profit_usd": -6577.258380880971,
+      "financing_usd": 2131.85525,
+      "other_costs_usd": 2083.74218,
+      "exit_counts": {
+        "FORCED_FLAT": 164,
+        "SL": 101,
+        "TP": 162
+      }
+    },
+    {
+      "cell": "s19_dd1aa081625dc55f",
+      "seed": 19,
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.5,
+        "order_fraction": 1.0
+      },
+      "trades": 493,
+      "mean_tp_pips": 67.79353713487049,
+      "mean_sl_pips": 74.0458237578363,
+      "ratio_of_mean_distances": 0.9155619276596388,
+      "mean_cost_pips": 3.0609533468559835,
+      "binary_break_even_reference": 0.5436204493548097,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 159,
+      "realized_win_rate": 0.5030425963488844,
+      "net_profit_usd": -5507.8261488331445,
+      "financing_usd": 2242.41136,
+      "other_costs_usd": 2852.50015,
+      "exit_counts": {
+        "SL": 156,
+        "FORCED_FLAT": 159,
+        "TP": 178
+      }
+    },
+    {
+      "cell": "s19_e1f4f6986c8601e9",
+      "seed": 19,
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.5,
+        "order_fraction": 1.0
+      },
+      "trades": 392,
+      "mean_tp_pips": 95.53226211463952,
+      "mean_sl_pips": 74.32010256091445,
+      "ratio_of_mean_distances": 1.2854161770880106,
+      "mean_cost_pips": 3.433928571428571,
+      "binary_break_even_reference": 0.4577742045620974,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 168,
+      "realized_win_rate": 0.44642857142857145,
+      "net_profit_usd": -5414.47101050091,
+      "financing_usd": 2243.95458,
+      "other_costs_usd": 2071.232505,
+      "exit_counts": {
+        "SL": 134,
+        "FORCED_FLAT": 168,
+        "TP": 90
+      }
+    },
+    {
+      "cell": "s19_e40003f116f2cce9",
+      "seed": 19,
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.25,
+        "order_fraction": 0.5
+      },
+      "trades": 771,
+      "mean_tp_pips": 40.38504974440675,
+      "mean_sl_pips": 49.64943028449979,
+      "ratio_of_mean_distances": 0.8134040917084738,
+      "mean_cost_pips": 2.564526588845655,
+      "binary_break_even_reference": 0.5799328974475289,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 138,
+      "realized_win_rate": 0.5369649805447471,
+      "net_profit_usd": -3273.842400564035,
+      "financing_usd": 630.31626,
+      "other_costs_usd": 3162.97886,
+      "exit_counts": {
+        "TP": 354,
+        "SL": 279,
+        "FORCED_FLAT": 138
+      }
+    },
+    {
+      "cell": "s19_e63cb6042e8ba4ba",
+      "seed": 19,
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.5,
+        "order_fraction": 0.5
+      },
+      "trades": 493,
+      "mean_tp_pips": 67.79353713487049,
+      "mean_sl_pips": 74.0458237578363,
+      "ratio_of_mean_distances": 0.9155619276596388,
+      "mean_cost_pips": 3.0609533468559835,
+      "binary_break_even_reference": 0.5436204493548097,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 159,
+      "realized_win_rate": 0.5030425963488844,
+      "net_profit_usd": -2941.3464368302766,
+      "financing_usd": 1302.44527,
+      "other_costs_usd": 1650.79311,
+      "exit_counts": {
+        "SL": 156,
+        "FORCED_FLAT": 159,
+        "TP": 178
+      }
+    },
+    {
+      "cell": "s19_eb460ad3310c0b0e",
+      "seed": 19,
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.75,
+        "order_fraction": 0.2
+      },
+      "trades": 427,
+      "mean_tp_pips": 67.70859572023113,
+      "mean_sl_pips": 98.29457856827491,
+      "ratio_of_mean_distances": 0.688833470842963,
+      "mean_cost_pips": 3.239461358313817,
+      "binary_break_even_reference": 0.6116391470329786,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 164,
+      "realized_win_rate": 0.5269320843091335,
+      "net_profit_usd": -1636.5997823181224,
+      "financing_usd": 586.19813,
+      "other_costs_usd": 563.292665,
+      "exit_counts": {
+        "FORCED_FLAT": 164,
+        "SL": 101,
+        "TP": 162
+      }
+    },
+    {
+      "cell": "s19_f675849aceee0b54",
+      "seed": 19,
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.5,
+        "order_fraction": 0.5
+      },
+      "trades": 656,
+      "mean_tp_pips": 40.34501845738456,
+      "mean_sl_pips": 73.97955417825584,
+      "ratio_of_mean_distances": 0.5453536305473279,
+      "mean_cost_pips": 2.676295731707317,
+      "binary_break_even_reference": 0.6705107059903049,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 150,
+      "realized_win_rate": 0.5914634146341463,
+      "net_profit_usd": -3421.6698618661003,
+      "financing_usd": 943.69121,
+      "other_costs_usd": 2502.03143,
+      "exit_counts": {
+        "TP": 342,
+        "SL": 164,
+        "FORCED_FLAT": 150
+      }
+    },
+    {
+      "cell": "s43_014f9c611b50a60a",
+      "seed": 43,
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.75,
+        "order_fraction": 0.5
+      },
+      "trades": 427,
+      "mean_tp_pips": 67.709532488381,
+      "mean_sl_pips": 98.29364180012504,
+      "ratio_of_mean_distances": 0.6888495659369787,
+      "mean_cost_pips": 3.240046838407494,
+      "binary_break_even_reference": 0.6116370308803346,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 166,
+      "realized_win_rate": 0.5269320843091335,
+      "net_profit_usd": -3897.4185484999553,
+      "financing_usd": 1285.51402,
+      "other_costs_usd": 1244.131485,
+      "exit_counts": {
+        "FORCED_FLAT": 164,
+        "SL": 100,
+        "TP": 161,
+        "AGENT_CLOSE": 2
+      }
+    },
+    {
+      "cell": "s43_055a778f37b7c400",
+      "seed": 43,
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.25,
+        "order_fraction": 1.0
+      },
+      "trades": 512,
+      "mean_tp_pips": 95.68456404254509,
+      "mean_sl_pips": 49.98135311370318,
+      "ratio_of_mean_distances": 1.9144052347856835,
+      "mean_cost_pips": 3.08857421875,
+      "binary_break_even_reference": 0.36432631852740005,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 158,
+      "realized_win_rate": 0.390625,
+      "net_profit_usd": -5646.346843687504,
+      "financing_usd": 1901.32229,
+      "other_costs_usd": 2944.523295,
+      "exit_counts": {
+        "SL": 251,
+        "FORCED_FLAT": 157,
+        "TP": 103,
+        "AGENT_CLOSE": 1
+      }
+    },
+    {
+      "cell": "s43_19c28b294008d565",
+      "seed": 43,
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.75,
+        "order_fraction": 1.0
+      },
+      "trades": 563,
+      "mean_tp_pips": 40.12946421333569,
+      "mean_sl_pips": 97.85825210680788,
+      "ratio_of_mean_distances": 0.4100774676573641,
+      "mean_cost_pips": 2.824067495559502,
+      "binary_break_even_reference": 0.7296469735666586,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 153,
+      "realized_win_rate": 0.6287744227353463,
+      "net_profit_usd": -5686.740967291572,
+      "financing_usd": 1925.48104,
+      "other_costs_usd": 3609.63774,
+      "exit_counts": {
+        "TP": 311,
+        "SL": 99,
+        "FORCED_FLAT": 152,
+        "AGENT_CLOSE": 1
+      }
+    },
+    {
+      "cell": "s43_1f0531cddaaee769",
+      "seed": 43,
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.25,
+        "order_fraction": 0.2
+      },
+      "trades": 512,
+      "mean_tp_pips": 95.68456404254509,
+      "mean_sl_pips": 49.98135311370318,
+      "ratio_of_mean_distances": 1.9144052347856835,
+      "mean_cost_pips": 3.08857421875,
+      "binary_break_even_reference": 0.36432631852740005,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 158,
+      "realized_win_rate": 0.390625,
+      "net_profit_usd": -1260.3327457078835,
+      "financing_usd": 527.45686,
+      "other_costs_usd": 794.80499,
+      "exit_counts": {
+        "SL": 251,
+        "FORCED_FLAT": 157,
+        "TP": 103,
+        "AGENT_CLOSE": 1
+      }
+    },
+    {
+      "cell": "s43_3f722f851e76ef43",
+      "seed": 43,
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.75,
+        "order_fraction": 0.2
+      },
+      "trades": 563,
+      "mean_tp_pips": 40.12946421333569,
+      "mean_sl_pips": 97.85825210680788,
+      "ratio_of_mean_distances": 0.4100774676573641,
+      "mean_cost_pips": 2.824067495559502,
+      "binary_break_even_reference": 0.7296469735666586,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 153,
+      "realized_win_rate": 0.6287744227353463,
+      "net_profit_usd": -1288.618628538495,
+      "financing_usd": 474.02341,
+      "other_costs_usd": 882.32556,
+      "exit_counts": {
+        "TP": 311,
+        "SL": 99,
+        "FORCED_FLAT": 152,
+        "AGENT_CLOSE": 1
+      }
+    },
+    {
+      "cell": "s43_50643eca54d4127f",
+      "seed": 43,
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.75,
+        "order_fraction": 0.5
+      },
+      "trades": 563,
+      "mean_tp_pips": 40.12946421333569,
+      "mean_sl_pips": 97.85825210680788,
+      "ratio_of_mean_distances": 0.4100774676573641,
+      "mean_cost_pips": 2.824067495559502,
+      "binary_break_even_reference": 0.7296469735666586,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 153,
+      "realized_win_rate": 0.6287744227353463,
+      "net_profit_usd": -3112.7161657736947,
+      "financing_usd": 1098.89178,
+      "other_costs_usd": 2050.98427,
+      "exit_counts": {
+        "TP": 311,
+        "SL": 99,
+        "FORCED_FLAT": 152,
+        "AGENT_CLOSE": 1
+      }
+    },
+    {
+      "cell": "s43_52fd3768085be58f",
+      "seed": 43,
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.25,
+        "order_fraction": 0.2
+      },
+      "trades": 771,
+      "mean_tp_pips": 40.38556855115124,
+      "mean_sl_pips": 49.64891147775531,
+      "ratio_of_mean_distances": 0.813423040890747,
+      "mean_cost_pips": 2.565045395590143,
+      "binary_break_even_reference": 0.5799328974475289,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 139,
+      "realized_win_rate": 0.5369649805447471,
+      "net_profit_usd": -1420.638389805146,
+      "financing_usd": 277.00099,
+      "other_costs_usd": 1384.3399299999999,
+      "exit_counts": {
+        "TP": 353,
+        "SL": 279,
+        "FORCED_FLAT": 138,
+        "AGENT_CLOSE": 1
+      }
+    },
+    {
+      "cell": "s43_58bc070b994ffb39",
+      "seed": 43,
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.75,
+        "order_fraction": 0.5
+      },
+      "trades": 350,
+      "mean_tp_pips": 96.25710239255547,
+      "mean_sl_pips": 99.4422677907586,
+      "ratio_of_mean_distances": 0.967969702733397,
+      "mean_cost_pips": 3.624571428571428,
+      "binary_break_even_reference": 0.5266590235971941,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 171,
+      "realized_win_rate": 0.4828571428571429,
+      "net_profit_usd": -3440.2597321814965,
+      "financing_usd": 1324.52845,
+      "other_costs_usd": 1008.8768200000001,
+      "exit_counts": {
+        "FORCED_FLAT": 169,
+        "SL": 91,
+        "TP": 88,
+        "AGENT_CLOSE": 2
+      }
+    },
+    {
+      "cell": "s43_6bb5d01806d1738c",
+      "seed": 43,
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.5,
+        "order_fraction": 1.0
+      },
+      "trades": 656,
+      "mean_tp_pips": 40.34562821348212,
+      "mean_sl_pips": 73.97894442215826,
+      "ratio_of_mean_distances": 0.5453663678039417,
+      "mean_cost_pips": 2.676905487804878,
+      "binary_break_even_reference": 0.670510705990305,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 151,
+      "realized_win_rate": 0.5914634146341463,
+      "net_profit_usd": -6115.5305206513585,
+      "financing_usd": 1622.92298,
+      "other_costs_usd": 4337.365495,
+      "exit_counts": {
+        "TP": 341,
+        "SL": 164,
+        "FORCED_FLAT": 150,
+        "AGENT_CLOSE": 1
+      }
+    },
+    {
+      "cell": "s43_6ed43d376652c23e",
+      "seed": 43,
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.25,
+        "order_fraction": 0.2
+      },
+      "trades": 609,
+      "mean_tp_pips": 67.56196115083658,
+      "mean_sl_pips": 49.54239613851792,
+      "ratio_of_mean_distances": 1.363720094642514,
+      "mean_cost_pips": 2.8422824302134644,
+      "binary_break_even_reference": 0.44733329981303327,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 154,
+      "realized_win_rate": 0.4466338259441708,
+      "net_profit_usd": -1419.395394345219,
+      "financing_usd": 492.03728,
+      "other_costs_usd": 967.47046,
+      "exit_counts": {
+        "SL": 270,
+        "FORCED_FLAT": 153,
+        "TP": 185,
+        "AGENT_CLOSE": 1
+      }
+    },
+    {
+      "cell": "s43_7800b1048f6c2292",
+      "seed": 43,
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.25,
+        "order_fraction": 0.5
+      },
+      "trades": 512,
+      "mean_tp_pips": 95.68456404254509,
+      "mean_sl_pips": 49.98135311370318,
+      "ratio_of_mean_distances": 1.9144052347856835,
+      "mean_cost_pips": 3.08857421875,
+      "binary_break_even_reference": 0.36432631852740005,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 158,
+      "realized_win_rate": 0.390625,
+      "net_profit_usd": -3068.9649376545403,
+      "financing_usd": 1172.89081,
+      "other_costs_usd": 1783.710525,
+      "exit_counts": {
+        "SL": 251,
+        "FORCED_FLAT": 157,
+        "TP": 103,
+        "AGENT_CLOSE": 1
+      }
+    },
+    {
+      "cell": "s43_82e506e38d10e379",
+      "seed": 43,
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.5,
+        "order_fraction": 0.2
+      },
+      "trades": 656,
+      "mean_tp_pips": 40.34562821348212,
+      "mean_sl_pips": 73.97894442215826,
+      "ratio_of_mean_distances": 0.5453663678039417,
+      "mean_cost_pips": 2.6769054878048775,
+      "binary_break_even_reference": 0.670510705990305,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 151,
+      "realized_win_rate": 0.5914634146341463,
+      "net_profit_usd": -1481.540275123797,
+      "financing_usd": 408.2022,
+      "other_costs_usd": 1078.434895,
+      "exit_counts": {
+        "TP": 341,
+        "SL": 164,
+        "FORCED_FLAT": 150,
+        "AGENT_CLOSE": 1
+      }
+    },
+    {
+      "cell": "s43_831ea41bd94ffc06",
+      "seed": 43,
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.5,
+        "order_fraction": 0.2
+      },
+      "trades": 493,
+      "mean_tp_pips": 67.79434849389685,
+      "mean_sl_pips": 74.04501239880994,
+      "ratio_of_mean_distances": 0.9155829177089373,
+      "mean_cost_pips": 3.0620689655172413,
+      "binary_break_even_reference": 0.5436225944549637,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 160,
+      "realized_win_rate": 0.5030425963488844,
+      "net_profit_usd": -1261.642659197364,
+      "financing_usd": 562.57306,
+      "other_costs_usd": 712.341995,
+      "exit_counts": {
+        "SL": 156,
+        "FORCED_FLAT": 159,
+        "TP": 177,
+        "AGENT_CLOSE": 1
+      }
+    },
+    {
+      "cell": "s43_843fe1eefa710e5a",
+      "seed": 43,
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.25,
+        "order_fraction": 1.0
+      },
+      "trades": 771,
+      "mean_tp_pips": 40.38556855115124,
+      "mean_sl_pips": 49.64891147775531,
+      "ratio_of_mean_distances": 0.813423040890747,
+      "mean_cost_pips": 2.565045395590143,
+      "binary_break_even_reference": 0.5799328974475289,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 139,
+      "realized_win_rate": 0.5369649805447471,
+      "net_profit_usd": -5876.113861233638,
+      "financing_usd": 1049.84201,
+      "other_costs_usd": 5314.985725,
+      "exit_counts": {
+        "TP": 353,
+        "SL": 279,
+        "FORCED_FLAT": 138,
+        "AGENT_CLOSE": 1
+      }
+    },
+    {
+      "cell": "s43_8552ff94e31d09ba",
+      "seed": 43,
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.75,
+        "order_fraction": 1.0
+      },
+      "trades": 350,
+      "mean_tp_pips": 96.25710239255547,
+      "mean_sl_pips": 99.4422677907586,
+      "ratio_of_mean_distances": 0.967969702733397,
+      "mean_cost_pips": 3.624571428571428,
+      "binary_break_even_reference": 0.5266590235971941,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 171,
+      "realized_win_rate": 0.4828571428571429,
+      "net_profit_usd": -6166.310715259537,
+      "financing_usd": 2141.4953,
+      "other_costs_usd": 1640.883955,
+      "exit_counts": {
+        "FORCED_FLAT": 169,
+        "SL": 91,
+        "TP": 88,
+        "AGENT_CLOSE": 2
+      }
+    },
+    {
+      "cell": "s43_9682046ae2564284",
+      "seed": 43,
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.5,
+        "order_fraction": 0.5
+      },
+      "trades": 392,
+      "mean_tp_pips": 95.53328252280279,
+      "mean_sl_pips": 74.31908215275118,
+      "ratio_of_mean_distances": 1.2854475560724656,
+      "mean_cost_pips": 3.4348214285714285,
+      "binary_break_even_reference": 0.457773453609818,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 168,
+      "realized_win_rate": 0.44642857142857145,
+      "net_profit_usd": -2975.3179269135853,
+      "financing_usd": 1319.54046,
+      "other_costs_usd": 1215.4765,
+      "exit_counts": {
+        "SL": 134,
+        "FORCED_FLAT": 167,
+        "TP": 90,
+        "AGENT_CLOSE": 1
+      }
+    },
+    {
+      "cell": "s43_a28705c703d84a33",
+      "seed": 43,
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.5,
+        "order_fraction": 0.2
+      },
+      "trades": 392,
+      "mean_tp_pips": 95.53328252280279,
+      "mean_sl_pips": 74.31908215275118,
+      "ratio_of_mean_distances": 1.2854475560724656,
+      "mean_cost_pips": 3.4348214285714285,
+      "binary_break_even_reference": 0.457773453609818,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 168,
+      "realized_win_rate": 0.44642857142857145,
+      "net_profit_usd": -1208.5637444097372,
+      "financing_usd": 588.22575,
+      "other_costs_usd": 540.44488,
+      "exit_counts": {
+        "SL": 134,
+        "FORCED_FLAT": 167,
+        "TP": 90,
+        "AGENT_CLOSE": 1
+      }
+    },
+    {
+      "cell": "s43_aaeed716b46622bf",
+      "seed": 43,
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.25,
+        "order_fraction": 1.0
+      },
+      "trades": 609,
+      "mean_tp_pips": 67.56196115083658,
+      "mean_sl_pips": 49.54239613851792,
+      "ratio_of_mean_distances": 1.363720094642514,
+      "mean_cost_pips": 2.8422824302134644,
+      "binary_break_even_reference": 0.44733329981303327,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 154,
+      "realized_win_rate": 0.4466338259441708,
+      "net_profit_usd": -5967.634314963817,
+      "financing_usd": 1859.22884,
+      "other_costs_usd": 3774.039875,
+      "exit_counts": {
+        "SL": 270,
+        "FORCED_FLAT": 153,
+        "TP": 185,
+        "AGENT_CLOSE": 1
+      }
+    },
+    {
+      "cell": "s43_c9cde0fe140ce00a",
+      "seed": 43,
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.25,
+        "order_fraction": 0.5
+      },
+      "trades": 609,
+      "mean_tp_pips": 67.56196115083658,
+      "mean_sl_pips": 49.54239613851792,
+      "ratio_of_mean_distances": 1.363720094642514,
+      "mean_cost_pips": 2.8422824302134644,
+      "binary_break_even_reference": 0.44733329981303327,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 154,
+      "realized_win_rate": 0.4466338259441708,
+      "net_profit_usd": -3360.3049358589997,
+      "financing_usd": 1110.50597,
+      "other_costs_usd": 2208.59158,
+      "exit_counts": {
+        "SL": 270,
+        "FORCED_FLAT": 153,
+        "TP": 185,
+        "AGENT_CLOSE": 1
+      }
+    },
+    {
+      "cell": "s43_d5450870a3786afa",
+      "seed": 43,
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.75,
+        "order_fraction": 0.2
+      },
+      "trades": 350,
+      "mean_tp_pips": 96.25710239255547,
+      "mean_sl_pips": 99.4422677907586,
+      "ratio_of_mean_distances": 0.967969702733397,
+      "mean_cost_pips": 3.624571428571429,
+      "binary_break_even_reference": 0.5266590235971941,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 171,
+      "realized_win_rate": 0.4828571428571429,
+      "net_profit_usd": -1434.6913543684125,
+      "financing_usd": 598.46906,
+      "other_costs_usd": 454.663045,
+      "exit_counts": {
+        "FORCED_FLAT": 169,
+        "SL": 91,
+        "TP": 88,
+        "AGENT_CLOSE": 2
+      }
+    },
+    {
+      "cell": "s43_d8e94f9f73b0b219",
+      "seed": 43,
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.75,
+        "order_fraction": 1.0
+      },
+      "trades": 427,
+      "mean_tp_pips": 67.709532488381,
+      "mean_sl_pips": 98.29364180012504,
+      "ratio_of_mean_distances": 0.6888495659369787,
+      "mean_cost_pips": 3.2400468384074936,
+      "binary_break_even_reference": 0.6116370308803346,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 166,
+      "realized_win_rate": 0.5269320843091335,
+      "net_profit_usd": -6667.259927955678,
+      "financing_usd": 2078.40759,
+      "other_costs_usd": 2036.756455,
+      "exit_counts": {
+        "FORCED_FLAT": 164,
+        "SL": 100,
+        "TP": 161,
+        "AGENT_CLOSE": 2
+      }
+    },
+    {
+      "cell": "s43_dd1aa081625dc55f",
+      "seed": 43,
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.5,
+        "order_fraction": 1.0
+      },
+      "trades": 493,
+      "mean_tp_pips": 67.79434849389685,
+      "mean_sl_pips": 74.04501239880994,
+      "ratio_of_mean_distances": 0.9155829177089373,
+      "mean_cost_pips": 3.0620689655172413,
+      "binary_break_even_reference": 0.5436225944549637,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 160,
+      "realized_win_rate": 0.5030425963488844,
+      "net_profit_usd": -5677.711049699668,
+      "financing_usd": 2161.16628,
+      "other_costs_usd": 2757.83744,
+      "exit_counts": {
+        "SL": 156,
+        "FORCED_FLAT": 159,
+        "TP": 177,
+        "AGENT_CLOSE": 1
+      }
+    },
+    {
+      "cell": "s43_e1f4f6986c8601e9",
+      "seed": 43,
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.5,
+        "order_fraction": 1.0
+      },
+      "trades": 392,
+      "mean_tp_pips": 95.53328252280279,
+      "mean_sl_pips": 74.31908215275118,
+      "ratio_of_mean_distances": 1.2854475560724656,
+      "mean_cost_pips": 3.4348214285714285,
+      "binary_break_even_reference": 0.457773453609818,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 168,
+      "realized_win_rate": 0.44642857142857145,
+      "net_profit_usd": -5550.81324022411,
+      "financing_usd": 2180.58204,
+      "other_costs_usd": 2019.07789,
+      "exit_counts": {
+        "SL": 134,
+        "FORCED_FLAT": 167,
+        "TP": 90,
+        "AGENT_CLOSE": 1
+      }
+    },
+    {
+      "cell": "s43_e40003f116f2cce9",
+      "seed": 43,
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.25,
+        "order_fraction": 0.5
+      },
+      "trades": 771,
+      "mean_tp_pips": 40.38556855115124,
+      "mean_sl_pips": 49.64891147775531,
+      "ratio_of_mean_distances": 0.813423040890747,
+      "mean_cost_pips": 2.565045395590143,
+      "binary_break_even_reference": 0.5799328974475289,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 139,
+      "realized_win_rate": 0.5369649805447471,
+      "net_profit_usd": -3333.213599938264,
+      "financing_usd": 624.95797,
+      "other_costs_usd": 3137.941815,
+      "exit_counts": {
+        "TP": 353,
+        "SL": 279,
+        "FORCED_FLAT": 138,
+        "AGENT_CLOSE": 1
+      }
+    },
+    {
+      "cell": "s43_e63cb6042e8ba4ba",
+      "seed": 43,
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.5,
+        "order_fraction": 0.5
+      },
+      "trades": 493,
+      "mean_tp_pips": 67.79434849389685,
+      "mean_sl_pips": 74.04501239880994,
+      "ratio_of_mean_distances": 0.9155829177089373,
+      "mean_cost_pips": 3.0620689655172413,
+      "binary_break_even_reference": 0.5436225944549637,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 160,
+      "realized_win_rate": 0.5030425963488844,
+      "net_profit_usd": -3078.2598860101616,
+      "financing_usd": 1278.14561,
+      "other_costs_usd": 1622.923685,
+      "exit_counts": {
+        "SL": 156,
+        "FORCED_FLAT": 159,
+        "TP": 177,
+        "AGENT_CLOSE": 1
+      }
+    },
+    {
+      "cell": "s43_eb460ad3310c0b0e",
+      "seed": 43,
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.75,
+        "order_fraction": 0.2
+      },
+      "trades": 427,
+      "mean_tp_pips": 67.709532488381,
+      "mean_sl_pips": 98.29364180012504,
+      "ratio_of_mean_distances": 0.6888495659369787,
+      "mean_cost_pips": 3.240046838407494,
+      "binary_break_even_reference": 0.6116370308803346,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 166,
+      "realized_win_rate": 0.5269320843091335,
+      "net_profit_usd": -1683.7294857818283,
+      "financing_usd": 583.01551,
+      "other_costs_usd": 560.666465,
+      "exit_counts": {
+        "FORCED_FLAT": 164,
+        "SL": 100,
+        "TP": 161,
+        "AGENT_CLOSE": 2
+      }
+    },
+    {
+      "cell": "s43_f675849aceee0b54",
+      "seed": 43,
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.5,
+        "order_fraction": 0.5
+      },
+      "trades": 656,
+      "mean_tp_pips": 40.34562821348212,
+      "mean_sl_pips": 73.97894442215826,
+      "ratio_of_mean_distances": 0.5453663678039417,
+      "mean_cost_pips": 2.6769054878048775,
+      "binary_break_even_reference": 0.670510705990305,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 151,
+      "realized_win_rate": 0.5914634146341463,
+      "net_profit_usd": -3479.6076023559153,
+      "financing_usd": 935.72185,
+      "other_costs_usd": 2482.45444,
+      "exit_counts": {
+        "TP": 341,
+        "SL": 164,
+        "FORCED_FLAT": 150,
+        "AGENT_CLOSE": 1
+      }
+    },
+    {
+      "cell": "s7_014f9c611b50a60a",
+      "seed": 7,
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.75,
+        "order_fraction": 0.5
+      },
+      "trades": 431,
+      "mean_tp_pips": 68.13436161990221,
+      "mean_sl_pips": 98.95825152871086,
+      "ratio_of_mean_distances": 0.6885162234311942,
+      "mean_cost_pips": 3.232830626450115,
+      "binary_break_even_reference": 0.6115834819356837,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 173,
+      "realized_win_rate": 0.5174013921113689,
+      "net_profit_usd": -4051.29847687445,
+      "financing_usd": 1265.97128,
+      "other_costs_usd": 1263.6908,
+      "exit_counts": {
+        "FORCED_FLAT": 162,
+        "SL": 99,
+        "TP": 159,
+        "AGENT_CLOSE": 11
+      }
+    },
+    {
+      "cell": "s7_055a778f37b7c400",
+      "seed": 7,
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.25,
+        "order_fraction": 1.0
+      },
+      "trades": 515,
+      "mean_tp_pips": 96.05831531071124,
+      "mean_sl_pips": 50.18892453696493,
+      "ratio_of_mean_distances": 1.9139345223459168,
+      "mean_cost_pips": 3.0835922330097087,
+      "binary_break_even_reference": 0.3642633996064517,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 169,
+      "realized_win_rate": 0.39223300970873787,
+      "net_profit_usd": -5796.444501881227,
+      "financing_usd": 1878.37678,
+      "other_costs_usd": 2967.499255,
+      "exit_counts": {
+        "SL": 247,
+        "FORCED_FLAT": 156,
+        "TP": 99,
+        "AGENT_CLOSE": 13
+      }
+    },
+    {
+      "cell": "s7_19c28b294008d565",
+      "seed": 7,
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.75,
+        "order_fraction": 1.0
+      },
+      "trades": 564,
+      "mean_tp_pips": 40.13825542974701,
+      "mean_sl_pips": 97.934685898855,
+      "ratio_of_mean_distances": 0.40984718602356074,
+      "mean_cost_pips": 2.824468085106383,
+      "binary_break_even_reference": 0.729753078441076,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 158,
+      "realized_win_rate": 0.6223404255319149,
+      "net_profit_usd": -5851.260539703638,
+      "financing_usd": 1874.44439,
+      "other_costs_usd": 3544.482755,
+      "exit_counts": {
+        "TP": 308,
+        "SL": 98,
+        "FORCED_FLAT": 150,
+        "AGENT_CLOSE": 8
+      }
+    },
+    {
+      "cell": "s7_1f0531cddaaee769",
+      "seed": 7,
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.25,
+        "order_fraction": 0.2
+      },
+      "trades": 515,
+      "mean_tp_pips": 96.05831531071124,
+      "mean_sl_pips": 50.18892453696493,
+      "ratio_of_mean_distances": 1.9139345223459168,
+      "mean_cost_pips": 3.0835922330097087,
+      "binary_break_even_reference": 0.3642633996064517,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 169,
+      "realized_win_rate": 0.39223300970873787,
+      "net_profit_usd": -1335.7004767432488,
+      "financing_usd": 521.53325,
+      "other_costs_usd": 804.0728,
+      "exit_counts": {
+        "SL": 247,
+        "FORCED_FLAT": 156,
+        "TP": 99,
+        "AGENT_CLOSE": 13
+      }
+    },
+    {
+      "cell": "s7_3f722f851e76ef43",
+      "seed": 7,
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.75,
+        "order_fraction": 0.2
+      },
+      "trades": 564,
+      "mean_tp_pips": 40.13825542974701,
+      "mean_sl_pips": 97.934685898855,
+      "ratio_of_mean_distances": 0.40984718602356074,
+      "mean_cost_pips": 2.824468085106383,
+      "binary_break_even_reference": 0.729753078441076,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 158,
+      "realized_win_rate": 0.6223404255319149,
+      "net_profit_usd": -1363.1665855022559,
+      "financing_usd": 469.32382,
+      "other_costs_usd": 883.092995,
+      "exit_counts": {
+        "TP": 308,
+        "SL": 98,
+        "FORCED_FLAT": 150,
+        "AGENT_CLOSE": 8
+      }
+    },
+    {
+      "cell": "s7_50643eca54d4127f",
+      "seed": 7,
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.75,
+        "order_fraction": 0.5
+      },
+      "trades": 564,
+      "mean_tp_pips": 40.13825542974701,
+      "mean_sl_pips": 97.934685898855,
+      "ratio_of_mean_distances": 0.40984718602356074,
+      "mean_cost_pips": 2.824468085106383,
+      "binary_break_even_reference": 0.729753078441076,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 158,
+      "realized_win_rate": 0.6223404255319149,
+      "net_profit_usd": -3254.1628731030464,
+      "financing_usd": 1080.98893,
+      "other_costs_usd": 2037.682295,
+      "exit_counts": {
+        "TP": 308,
+        "SL": 98,
+        "FORCED_FLAT": 150,
+        "AGENT_CLOSE": 8
+      }
+    },
+    {
+      "cell": "s7_52fd3768085be58f",
+      "seed": 7,
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.25,
+        "order_fraction": 0.2
+      },
+      "trades": 771,
+      "mean_tp_pips": 40.370263752188855,
+      "mean_sl_pips": 49.66421627671768,
+      "ratio_of_mean_distances": 0.8128642064389974,
+      "mean_cost_pips": 2.566083009079118,
+      "binary_break_even_reference": 0.5801144102684628,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 144,
+      "realized_win_rate": 0.5343709468223087,
+      "net_profit_usd": -1414.6945600543984,
+      "financing_usd": 276.14902,
+      "other_costs_usd": 1380.6219449999999,
+      "exit_counts": {
+        "TP": 351,
+        "SL": 276,
+        "FORCED_FLAT": 136,
+        "AGENT_CLOSE": 8
+      }
+    },
+    {
+      "cell": "s7_58bc070b994ffb39",
+      "seed": 7,
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.75,
+        "order_fraction": 0.5
+      },
+      "trades": 356,
+      "mean_tp_pips": 97.26470700527965,
+      "mean_sl_pips": 100.5050011086427,
+      "ratio_of_mean_distances": 0.9677598719703471,
+      "mean_cost_pips": 3.6029494382022476,
+      "binary_break_even_reference": 0.5264099924083171,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 180,
+      "realized_win_rate": 0.4803370786516854,
+      "net_profit_usd": -3578.7351968711273,
+      "financing_usd": 1309.07133,
+      "other_costs_usd": 1040.967575,
+      "exit_counts": {
+        "FORCED_FLAT": 168,
+        "SL": 91,
+        "TP": 85,
+        "AGENT_CLOSE": 12
+      }
+    },
+    {
+      "cell": "s7_6bb5d01806d1738c",
+      "seed": 7,
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.5,
+        "order_fraction": 1.0
+      },
+      "trades": 656,
+      "mean_tp_pips": 40.32764040860408,
+      "mean_sl_pips": 73.99693222703631,
+      "ratio_of_mean_distances": 0.5449907069778434,
+      "mean_cost_pips": 2.678887195121951,
+      "binary_break_even_reference": 0.6706853798310615,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 156,
+      "realized_win_rate": 0.586890243902439,
+      "net_profit_usd": -6230.27202928299,
+      "financing_usd": 1587.8202899999999,
+      "other_costs_usd": 4248.747975,
+      "exit_counts": {
+        "TP": 338,
+        "SL": 162,
+        "FORCED_FLAT": 148,
+        "AGENT_CLOSE": 8
+      }
+    },
+    {
+      "cell": "s7_6ed43d376652c23e",
+      "seed": 7,
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.25,
+        "order_fraction": 0.2
+      },
+      "trades": 612,
+      "mean_tp_pips": 67.82418270355713,
+      "mean_sl_pips": 49.76177116412199,
+      "ratio_of_mean_distances": 1.3629776657238049,
+      "mean_cost_pips": 2.8415032679738563,
+      "binary_break_even_reference": 0.4473601880313948,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 162,
+      "realized_win_rate": 0.4444444444444444,
+      "net_profit_usd": -1444.0176556031258,
+      "financing_usd": 487.42617,
+      "other_costs_usd": 978.42831,
+      "exit_counts": {
+        "SL": 267,
+        "FORCED_FLAT": 150,
+        "TP": 183,
+        "AGENT_CLOSE": 12
+      }
+    },
+    {
+      "cell": "s7_7800b1048f6c2292",
+      "seed": 7,
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.25,
+        "order_fraction": 0.5
+      },
+      "trades": 515,
+      "mean_tp_pips": 96.05831531071124,
+      "mean_sl_pips": 50.18892453696493,
+      "ratio_of_mean_distances": 1.9139345223459168,
+      "mean_cost_pips": 3.0835922330097087,
+      "binary_break_even_reference": 0.3642633996064517,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 169,
+      "realized_win_rate": 0.39223300970873787,
+      "net_profit_usd": -3206.8632667300117,
+      "financing_usd": 1158.28937,
+      "other_costs_usd": 1800.154955,
+      "exit_counts": {
+        "SL": 247,
+        "FORCED_FLAT": 156,
+        "TP": 99,
+        "AGENT_CLOSE": 13
+      }
+    },
+    {
+      "cell": "s7_82e506e38d10e379",
+      "seed": 7,
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.5,
+        "order_fraction": 0.2
+      },
+      "trades": 656,
+      "mean_tp_pips": 40.32764040860408,
+      "mean_sl_pips": 73.99693222703631,
+      "ratio_of_mean_distances": 0.5449907069778434,
+      "mean_cost_pips": 2.678887195121951,
+      "binary_break_even_reference": 0.6706853798310615,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 156,
+      "realized_win_rate": 0.586890243902439,
+      "net_profit_usd": -1538.069944299944,
+      "financing_usd": 406.43526,
+      "other_costs_usd": 1074.91703,
+      "exit_counts": {
+        "TP": 338,
+        "SL": 162,
+        "FORCED_FLAT": 148,
+        "AGENT_CLOSE": 8
+      }
+    },
+    {
+      "cell": "s7_831ea41bd94ffc06",
+      "seed": 7,
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.5,
+        "order_fraction": 0.2
+      },
+      "trades": 497,
+      "mean_tp_pips": 68.18664129278311,
+      "mean_sl_pips": 74.51346662427923,
+      "ratio_of_mean_distances": 0.9150915181090956,
+      "mean_cost_pips": 3.057344064386318,
+      "binary_break_even_reference": 0.5435932167181675,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 168,
+      "realized_win_rate": 0.5010060362173038,
+      "net_profit_usd": -1346.330142749469,
+      "financing_usd": 557.3568,
+      "other_costs_usd": 724.32725,
+      "exit_counts": {
+        "SL": 154,
+        "FORCED_FLAT": 156,
+        "TP": 175,
+        "AGENT_CLOSE": 12
+      }
+    },
+    {
+      "cell": "s7_843fe1eefa710e5a",
+      "seed": 7,
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.25,
+        "order_fraction": 1.0
+      },
+      "trades": 771,
+      "mean_tp_pips": 40.370263752188855,
+      "mean_sl_pips": 49.66421627671768,
+      "ratio_of_mean_distances": 0.8128642064389974,
+      "mean_cost_pips": 2.566083009079118,
+      "binary_break_even_reference": 0.5801144102684628,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 144,
+      "realized_win_rate": 0.5343709468223087,
+      "net_profit_usd": -5851.986611609141,
+      "financing_usd": 1031.11029,
+      "other_costs_usd": 5223.525255,
+      "exit_counts": {
+        "TP": 351,
+        "SL": 276,
+        "FORCED_FLAT": 136,
+        "AGENT_CLOSE": 8
+      }
+    },
+    {
+      "cell": "s7_8552ff94e31d09ba",
+      "seed": 7,
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.75,
+        "order_fraction": 1.0
+      },
+      "trades": 356,
+      "mean_tp_pips": 97.26470700527965,
+      "mean_sl_pips": 100.5050011086427,
+      "ratio_of_mean_distances": 0.9677598719703471,
+      "mean_cost_pips": 3.6029494382022476,
+      "binary_break_even_reference": 0.5264099924083171,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 180,
+      "realized_win_rate": 0.4803370786516854,
+      "net_profit_usd": -6310.196742787597,
+      "financing_usd": 2116.48962,
+      "other_costs_usd": 1685.148275,
+      "exit_counts": {
+        "FORCED_FLAT": 168,
+        "SL": 91,
+        "TP": 85,
+        "AGENT_CLOSE": 12
+      }
+    },
+    {
+      "cell": "s7_9682046ae2564284",
+      "seed": 7,
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.5,
+        "order_fraction": 0.5
+      },
+      "trades": 398,
+      "mean_tp_pips": 96.48838098761516,
+      "mean_sl_pips": 75.08041684125826,
+      "ratio_of_mean_distances": 1.2851337944968997,
+      "mean_cost_pips": 3.4155778894472366,
+      "binary_break_even_reference": 0.4575190578009363,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 179,
+      "realized_win_rate": 0.4472361809045226,
+      "net_profit_usd": -3087.9130960892244,
+      "financing_usd": 1312.19235,
+      "other_costs_usd": 1250.8858500000001,
+      "exit_counts": {
+        "SL": 132,
+        "FORCED_FLAT": 166,
+        "TP": 87,
+        "AGENT_CLOSE": 13
+      }
+    },
+    {
+      "cell": "s7_a28705c703d84a33",
+      "seed": 7,
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.5,
+        "order_fraction": 0.2
+      },
+      "trades": 398,
+      "mean_tp_pips": 96.48838098761516,
+      "mean_sl_pips": 75.08041684125826,
+      "ratio_of_mean_distances": 1.2851337944968997,
+      "mean_cost_pips": 3.4155778894472366,
+      "binary_break_even_reference": 0.4575190578009363,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 179,
+      "realized_win_rate": 0.4472361809045226,
+      "net_profit_usd": -1269.675215268692,
+      "financing_usd": 583.68163,
+      "other_costs_usd": 556.6701850000001,
+      "exit_counts": {
+        "SL": 132,
+        "FORCED_FLAT": 166,
+        "TP": 87,
+        "AGENT_CLOSE": 13
+      }
+    },
+    {
+      "cell": "s7_aaeed716b46622bf",
+      "seed": 7,
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.25,
+        "order_fraction": 1.0
+      },
+      "trades": 612,
+      "mean_tp_pips": 67.82418270355713,
+      "mean_sl_pips": 49.76177116412199,
+      "ratio_of_mean_distances": 1.3629776657238049,
+      "mean_cost_pips": 2.8415032679738563,
+      "binary_break_even_reference": 0.4473601880313948,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 162,
+      "realized_win_rate": 0.4444444444444444,
+      "net_profit_usd": -6013.824278514328,
+      "financing_usd": 1840.49733,
+      "other_costs_usd": 3810.038145,
+      "exit_counts": {
+        "SL": 267,
+        "FORCED_FLAT": 150,
+        "TP": 183,
+        "AGENT_CLOSE": 12
+      }
+    },
+    {
+      "cell": "s7_c9cde0fe140ce00a",
+      "seed": 7,
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.25,
+        "order_fraction": 0.5
+      },
+      "trades": 612,
+      "mean_tp_pips": 67.82418270355713,
+      "mean_sl_pips": 49.76177116412199,
+      "ratio_of_mean_distances": 1.3629776657238049,
+      "mean_cost_pips": 2.8415032679738563,
+      "binary_break_even_reference": 0.4473601880313948,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 162,
+      "realized_win_rate": 0.4444444444444444,
+      "net_profit_usd": -3404.3488090712467,
+      "financing_usd": 1099.7546,
+      "other_costs_usd": 2231.712615,
+      "exit_counts": {
+        "SL": 267,
+        "FORCED_FLAT": 150,
+        "TP": 183,
+        "AGENT_CLOSE": 12
+      }
+    },
+    {
+      "cell": "s7_d5450870a3786afa",
+      "seed": 7,
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.75,
+        "order_fraction": 0.2
+      },
+      "trades": 356,
+      "mean_tp_pips": 97.26470700527965,
+      "mean_sl_pips": 100.5050011086427,
+      "ratio_of_mean_distances": 0.9677598719703471,
+      "mean_cost_pips": 3.6029494382022476,
+      "binary_break_even_reference": 0.5264099924083171,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 180,
+      "realized_win_rate": 0.4803370786516854,
+      "net_profit_usd": -1511.9919641290883,
+      "financing_usd": 592.11124,
+      "other_costs_usd": 471.09624,
+      "exit_counts": {
+        "FORCED_FLAT": 168,
+        "SL": 91,
+        "TP": 85,
+        "AGENT_CLOSE": 12
+      }
+    },
+    {
+      "cell": "s7_d8e94f9f73b0b219",
+      "seed": 7,
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.75,
+        "order_fraction": 1.0
+      },
+      "trades": 431,
+      "mean_tp_pips": 68.13436161990221,
+      "mean_sl_pips": 98.95825152871086,
+      "ratio_of_mean_distances": 0.6885162234311942,
+      "mean_cost_pips": 3.2328306264501157,
+      "binary_break_even_reference": 0.6115834819356837,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 173,
+      "realized_win_rate": 0.5174013921113689,
+      "net_profit_usd": -6825.479610342254,
+      "financing_usd": 2035.20324,
+      "other_costs_usd": 2055.06602,
+      "exit_counts": {
+        "FORCED_FLAT": 162,
+        "SL": 99,
+        "TP": 159,
+        "AGENT_CLOSE": 11
+      }
+    },
+    {
+      "cell": "s7_dd1aa081625dc55f",
+      "seed": 7,
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.5,
+        "order_fraction": 1.0
+      },
+      "trades": 497,
+      "mean_tp_pips": 68.18664129278311,
+      "mean_sl_pips": 74.51346662427923,
+      "ratio_of_mean_distances": 0.9150915181090956,
+      "mean_cost_pips": 3.057344064386318,
+      "binary_break_even_reference": 0.5435932167181675,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 168,
+      "realized_win_rate": 0.5010060362173038,
+      "net_profit_usd": -5869.585051565554,
+      "financing_usd": 2135.75817,
+      "other_costs_usd": 2791.060285,
+      "exit_counts": {
+        "SL": 154,
+        "FORCED_FLAT": 156,
+        "TP": 175,
+        "AGENT_CLOSE": 12
+      }
+    },
+    {
+      "cell": "s7_e1f4f6986c8601e9",
+      "seed": 7,
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.5,
+        "order_fraction": 1.0
+      },
+      "trades": 398,
+      "mean_tp_pips": 96.48838098761516,
+      "mean_sl_pips": 75.08041684125826,
+      "ratio_of_mean_distances": 1.2851337944968997,
+      "mean_cost_pips": 3.4155778894472366,
+      "binary_break_even_reference": 0.4575190578009363,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 179,
+      "realized_win_rate": 0.4472361809045226,
+      "net_profit_usd": -5674.586136591027,
+      "financing_usd": 2179.97864,
+      "other_costs_usd": 2079.641655,
+      "exit_counts": {
+        "SL": 132,
+        "FORCED_FLAT": 166,
+        "TP": 87,
+        "AGENT_CLOSE": 13
+      }
+    },
+    {
+      "cell": "s7_e40003f116f2cce9",
+      "seed": 7,
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.25,
+        "order_fraction": 0.5
+      },
+      "trades": 771,
+      "mean_tp_pips": 40.370263752188855,
+      "mean_sl_pips": 49.66421627671768,
+      "ratio_of_mean_distances": 0.8128642064389974,
+      "mean_cost_pips": 2.566083009079118,
+      "binary_break_even_reference": 0.5801144102684628,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 144,
+      "realized_win_rate": 0.5343709468223087,
+      "net_profit_usd": -3318.6467484839127,
+      "financing_usd": 619.86708,
+      "other_costs_usd": 3113.47207,
+      "exit_counts": {
+        "TP": 351,
+        "SL": 276,
+        "FORCED_FLAT": 136,
+        "AGENT_CLOSE": 8
+      }
+    },
+    {
+      "cell": "s7_e63cb6042e8ba4ba",
+      "seed": 7,
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.5,
+        "order_fraction": 0.5
+      },
+      "trades": 497,
+      "mean_tp_pips": 68.18664129278311,
+      "mean_sl_pips": 74.51346662427923,
+      "ratio_of_mean_distances": 0.9150915181090956,
+      "mean_cost_pips": 3.057344064386318,
+      "binary_break_even_reference": 0.5435932167181675,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 168,
+      "realized_win_rate": 0.5010060362173038,
+      "net_profit_usd": -3240.444787198958,
+      "financing_usd": 1264.52011,
+      "other_costs_usd": 1646.34767,
+      "exit_counts": {
+        "SL": 154,
+        "FORCED_FLAT": 156,
+        "TP": 175,
+        "AGENT_CLOSE": 12
+      }
+    },
+    {
+      "cell": "s7_eb460ad3310c0b0e",
+      "seed": 7,
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.75,
+        "order_fraction": 0.2
+      },
+      "trades": 431,
+      "mean_tp_pips": 68.13436161990221,
+      "mean_sl_pips": 98.95825152871086,
+      "ratio_of_mean_distances": 0.6885162234311942,
+      "mean_cost_pips": 3.2328306264501157,
+      "binary_break_even_reference": 0.6115834819356837,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 173,
+      "realized_win_rate": 0.5174013921113689,
+      "net_profit_usd": -1770.6384139973138,
+      "financing_usd": 576.37538,
+      "other_costs_usd": 572.13841,
+      "exit_counts": {
+        "FORCED_FLAT": 162,
+        "SL": 99,
+        "TP": 159,
+        "AGENT_CLOSE": 11
+      }
+    },
+    {
+      "cell": "s7_f675849aceee0b54",
+      "seed": 7,
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.5,
+        "order_fraction": 0.5
+      },
+      "trades": 656,
+      "mean_tp_pips": 40.32764040860408,
+      "mean_sl_pips": 73.99693222703631,
+      "ratio_of_mean_distances": 0.5449907069778434,
+      "mean_cost_pips": 2.678887195121951,
+      "binary_break_even_reference": 0.6706853798310615,
+      "binary_model_applies_to_all_exits": false,
+      "non_barrier_exits": 156,
+      "realized_win_rate": 0.586890243902439,
+      "net_profit_usd": -3583.3616034604147,
+      "financing_usd": 925.6268699999999,
+      "other_costs_usd": 2458.286895,
+      "exit_counts": {
+        "TP": 338,
+        "SL": 162,
+        "FORCED_FLAT": 148,
+        "AGENT_CLOSE": 8
+      }
+    }
+  ],
+  "scope": "derived TRAIN ledger diagnostics, no change to original eligibility",
+  "caveat": "Binary break-even is a reference, not an exact model of variable size, early exits, gaps or financing."
+}

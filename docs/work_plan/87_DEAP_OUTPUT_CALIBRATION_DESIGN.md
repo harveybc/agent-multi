@@ -12,8 +12,9 @@ weights. No financial validation or TEST is read.
 
 At completed bar b, let p=close[b], sigma be causal volatility and rho the
 causal range scale. For TP and SL intersect the declared sigma-multiple bounds
-with [min_distance/sigma, effectiveness_c*rho/sigma], retaining the engine's
-float-safe margins. Denote the resulting bounds L_T,U_T,L_S,U_S.
+with [min_distance/sigma, effectiveness_c*rho/sigma]. The adapter uses its own
+2e-9 safety margins; the engine checks with 1e-9. Denote the resulting bounds
+L_T,U_T,L_S,U_S.
 
 For direction d in {long,short}:
 
@@ -43,7 +44,8 @@ These endpoint semantics require tests before executing this new adapter.
 ## Search protocol
 
 DEAP installed:1.4. Proposed population20, maximum100 generations,
-patience10 generations, relative improvement1e-8, fixed random seed20261026.
+patience10 generations, relative improvement1e-8, seeds7,19,43 as executed
+under the owner's three-objective extension below (not seed20261026).
 Sequential CPU; persistent evaluated-genome cache, generation checkpoint and
 RNG state. Same synthetic tapes for every candidate. Include midpoint and grid
 control genomes; do not seed exclusively with one winning point. Preserve one

@@ -2,6 +2,10 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "output_audit_corrections.py": {
+   "purpose": "Isolated no-fit C1-C3/M2 corrections: per-trade economics, authenticated blind-rule comparisons and regating, DEAP controls and SL sensitivity; no source mutation or financial admission",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "static RL comparison"
+  },
   "audit_deap_output_calibration.py": {
    "purpose": "Read-only source, ledger, objective and exact cached-search replay audit; writes isolated evidence and guards DEAP resume and completion",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "static RL comparison"

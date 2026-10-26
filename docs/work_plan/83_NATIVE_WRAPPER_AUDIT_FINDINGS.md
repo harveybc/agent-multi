@@ -19,8 +19,12 @@ Parent spec SHA256:
 2. The configured-cost TCN control (seed 7) is reproduced on INNER_A by an
    input-blind long/HOLD rule, retaining the same automatic SL/TP and calendar
    exits. Exact trades, equity and metrics: 65 long orders, USD -1265.28753,
-   Sharpe -0.86499415. TRAIN is not identical; do not extend the equivalence
-   beyond the measured period.
+   Sharpe -0.86499415. That original seed-7 TRAIN replay was not identical.
+   Satoshi's later authenticated sample extends the result: 55/59 configured
+   TCN receipts are exactly LONG_HOLD on TRAIN, 58/59 on INNER_A. Do not read
+   the original narrow scope as evidence against widespread collapse. INNER_A
+   is a reused selection block, not an independent confirmation period.
+   See report91 for the larger follow-up snapshot and mandatory blind controls.
 3. The TCN is NOT a dead or saturated encoder. Across the first 28 receipts,
    input sensitivity is measurable and weights differ between fits. TCN
    actor Tanh saturation fraction is zero on the sampled windows. For the

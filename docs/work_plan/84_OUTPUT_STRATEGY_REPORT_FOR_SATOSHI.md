@@ -3,6 +3,12 @@
 Fecha: 2026-10-26. Autor: Musashi. Destinatario: Satoshi y propietario.
 Entrega: estudio ejecutado y cerrado; no es una declaracion de rentabilidad.
 
+**Dictamen independiente recibido:** contrato y reproducibilidad aceptados;
+uso de DEAP y de los subconjuntos para decidir utilidad/calibracion rechazado.
+Ver [dictamen de Satoshi](../audits/SATOSHI_AUDIT_VERDICT_MUSASHI_OUTPUT_STRATEGY_2026_10_26.md)
+y [correcciones y plan de cualificacion](91_CROSS_AUDIT_CORRECTIONS_AND_LEARNING_CONTROL.md).
+No usar estos numeros para ordenar la poda ni escoger el fitness o los SL.
+
 ## 1. Dictamen y alcance
 
 Se reconstruyo el recorrido completo desde la salida neuronal hasta la orden,
@@ -253,6 +259,7 @@ broker. Spread por hora desde el rollover de la sesion:
 Se carga medio spread por fill, slippage 0.00002 en mercado y 0.00005 en stop,
 comision USD 3.5 por lado y lote de 100,000 unidades. TP requiere atravesar el
 nivel en 0.0001; esto permanece tambien en el control sin tasas.
+El fill de TP tiene slippage cero; el cierre por margen usa el cargo de stop.
 
 Swap: largo -7 y corto +2.5 USD/lote/rollover, triple en el indice 3 de la
 sesion. El signo positivo del corto puede dar un credito. Se devenga mientras
@@ -453,10 +460,13 @@ identidad al reanudar. Las nueve trayectorias geneticas y las66 simulaciones
 finales se reprodujeron exactamente;56 pruebas focales pasaron.
 
 En D/E sinteticos, Sharpe+retorno dio Sharpe8.94266 y neto medioUSD1094.65,
-frente a8.85595 yUSD885.33 de Sharpe solo. Agregar actividad no cambio los
-resultados: era constante en los candidatos evaluados. No es evidencia de que
-ese termino no sirva en RL ni de rentabilidad aprendida. Los niveles de SL
-que no se alcanzan tampoco quedan identificados como un optimo unico.
+frente a8.85595 yUSD885.33 de Sharpe solo. Esta comparacion omitio los controles:
+midpoint dio12.77731 yUSD2086.34; grid dio12.49450 yUSD370.35 con menor volumen.
+Todos los finalistas DEAP pierden en Sharpe frente a ambos controles y en
+beneficio frente a midpoint, no frente al grid de menor exposicion. No hay
+base para preferir un fitness para RL. Actividad constante y cero toques de
+SL en las ondas ideales impiden identificar esos efectos. Los SL no son
+parametros calibrados y estos genomas no se promueven a la seleccion.
 
 ## 10. Hallazgos y disposicion
 
@@ -469,18 +479,27 @@ que no se alcanzan tampoco quedan identificados como un optimo unico.
    dentro de los recibos historicos.
 2. **Colapso de acciones:** el TCN sin tasas seed7 coincide exactamente con
    abrir largo y cerrar en la siguiente decision, tanto TRAIN como INNER_A.
-   El TCN con costes seed7 coincide en INNER_A con long/HOLD. No es saturacion
+   El TCN con costes seed7 coincide en INNER_A con long/HOLD. La auditoria
+   independiente amplio la muestra:55/59 recibos TCN coinciden en TRAIN y
+   58/59 en INNER_A. El limite anterior a seed7 no describia todo el carril.
+   INNER_A es bloque reutilizado de seleccion, no confirmacion independiente.
+   No es saturacion
    del encoder: probabilidades y gradientes cambian. Ver
    [auditoria de sensibilidad](83_NATIVE_WRAPPER_AUDIT_FINDINGS.md).
-3. **Informacion de la posicion:** hay un testigo ejecutado donde iguales
-   entradas/mascara, pero diferentes stops, requieren decisiones de cierre
-   opuestas. Es una limitacion demostrada de observabilidad bajo la restriccion
-   sin vector de estado; no una prueba de que falte senal en los datos. No se
-   anadio realimentacion para ocultarla.
+3. **Informacion de la posicion (O13 refutado):** el testigo mantiene iguales
+   entradas, mascara Y stops; cambia la barra futura e inyecta CLOSE/HOLD sin
+   invocar la red. No demuestra ceguera a la distancia al stop. El contrato no
+   incluye distancia, edad ni PnL en la observacion, pero atribuirle el fracaso
+   exige otro experimento: mismo futuro, posiciones distintas, paso por la red.
+   Se retira la afirmacion anterior; no se anadio realimentacion.
 4. **Riesgo fijo:** TP/SL/volumen de la corrida original no eran parametros
    aprendidos ni optimizados. Ahora existe el contraste completo descrito,
-   cuyo resultado es que esos cambios no resuelven el comportamiento de las
-   politicas examinadas. No se promueve una configuracion invalida.
+   cuyo resultado es que ninguna celda cumple toda la conducta exigida. El
+   midpoint no es simetrico: las bandas TP/SL tienen limites inferiores distintos.
+   El nuevo GRID derivado informa RR, costes, financiacion y equilibrio binario
+   de referencia; ese modelo binario no describe exactamente cierres anticipados,
+   forced-flat, gaps ni tamanos variables. No demuestra imposibilidad universal
+   de beneficio ni ausencia de senal. No se promueve una configuracion invalida.
 5. **Versiones:** el testigo historico ORDER_ALPHA de 16 casos pertenece a un
    adaptador anterior de comandos continuos. Se conserva como historia, pero
    no se usa como certificacion de la interfaz categorica actual. Los 22 casos

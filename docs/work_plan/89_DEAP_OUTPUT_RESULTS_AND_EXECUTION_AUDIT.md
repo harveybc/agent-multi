@@ -1,5 +1,10 @@
 # DEAP output comparison: results and execution audit
 
+**Independent disposition: NOT ADMITTED as a basis for fitness, SL calibration
+or feature selection.** Contract and reproducibility were accepted; see the
+[verdict](../audits/SATOSHI_AUDIT_VERDICT_MUSASHI_OUTPUT_STRATEGY_2026_10_26.md)
+and [corrections](91_CROSS_AUDIT_CORRECTIONS_AND_LEARNING_CONTROL.md).
+
 Closed2026-10-26 at09:13:46 America/Bogota; audit completed09:17:59.
 Producer `e35c2af4`, nine searches, no process restarts, exit0. Peak cgroup
 memory1.10GB below the2GiB limit. The completed service was disabled after audit;
@@ -19,6 +24,8 @@ Means over the three seeds and the two ideal-output confirmation markets D/E:
 | Sharpe | 8.85595 | 885.33 | 8.85330 | .17418 | .87302 |
 | Sharpe + net return | 8.94266 | 1094.65 | 10.94648 | .20701 | .87302 |
 | Sharpe + net return + activity | 8.94266 | 1094.65 | 10.94648 | .20701 | .87302 |
+| Fixed midpoint control | 12.77731 | 2086.34 | 20.86336 | .10937 | .87302 |
+| Previous grid control | 12.49450 | 370.35 | 3.70348 | .02192 | .87302 |
 
 Each synthetic market starts with USD10000, with the same costs and business
 rules. D has40 orders (32 buys/8 sells,22.5% profitable); E has30 (6 buys/24
@@ -27,9 +34,18 @@ with deliberate future knowledge, not a trained policy's validation results.
 Per-side win rates, exit reasons, fees and every final genome are in the
 [mechanical summary](../audits/evidence/deap_output_calibration_20261026/SUMMARY.json).
 
-Adding return changed the chosen exposure and delivered higher synthetic profit
-with slightly higher drawdown. This is an observed tradeoff, not universal
-superiority or proof of real-market profitability. No winner is selected on D/E.
+The optimized finalists are worse in Sharpe than both controls and worse in
+profit than midpoint on D/E. They earn more than the lower-exposure grid
+control, so "worse than both" must specify the metric. The F2/F1 difference
+does not justify preferring a fitness for learned policies. The synthetic
+exposure tuning overfit A/B. No winner is selected on D/E.
+
+Calibration means: F1 S=14.97902, R=.10903, A=.85417; F2 S=14.95644,
+R=.13365, A=.85417. DeltaS=-.02258 and deltaR=+.02462. The unit coefficients
+do not make the terms comparable in magnitude. This is exposure/TP adjustment
+to an oracle with saturated entries, not identification of six risk genes.
+Across the3611 x2 ideal calibration tapes, SL executions total zero. Neither
+directional SL is calibrated; the floating selector must not adopt them as such.
 
 ### Activity contrast has no discriminating variation here
 
@@ -67,6 +83,11 @@ Rather than repeat numerical experiments, the execution audit:
 5. Executed the66 final confirmation simulations again: all outputs and trade
    records matched exactly. Recomputed the comparison table and verified3645
    sealed artifact hashes.
+
+"Exact search replay" above recomputes evolution from authenticated cached
+scores, not all21666 calibration simulations. Satoshi additionally regenerated
+three cached genomes (18 trajectories) independently. Sharpe here uses daily
+calendar equity, sample standard deviation and sqrt365 annualization.
 
 Result: PASS. The weakness did not contaminate these results; there is no
 numerical basis to discard or retrain these studies. Future searches use v2;
