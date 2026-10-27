@@ -77,3 +77,45 @@ behavior expectations and the separate learning qualification are reviewed.
 - The reference gain/risk threshold is explicit in JSON (`minimum_gain_risk=1`),
   not an unrecorded business change or a secretly optimized acceptance threshold.
 - No C4 retraining, final strategy selection or financial fitting is claimed.
+
+## Execution receipt, 2026-10-27 09:00 UTC
+
+Both code revisions are published: engine `842320a`, consumer `972fb7aa`.
+The service executes exported snapshots, not either editable checkout. Its own
+128-case deterministic sample completed with zero failures at 08:55:32 UTC;
+identity `8df3849b29832afefc40ec4c60453277b1853d77c051ff32d655f33c12f0db93`.
+
+The full grid is running automatically: 12,064 / 1,312,200 completed at 09:00 UTC,
+zero recorded failures. Six CPU workers, 6 GiB soft / 8 GiB hard RAM limits,
+2.8 GiB measured use. Compressed batches retain decisions, transactions and
+metrics. The service is enabled for restart, with bounded process retries;
+completed batches are authenticated before reuse. An assertion failure never
+becomes a passing cell or silently changes the expected behavior.
+
+Measured remaining estimate at this observation: 27,839 seconds, about 7 h 44 m.
+This is an engineering-grid ETA only, not an ETA for repaired learning,
+reoptimization, superiority confirmation or independent final approval.
+
+### What this execution does not do
+
+- The fixed symmetric six-parameter reference is not a DEAP winner.
+- The full grid uses ideal diagnostic outputs. NOP and inverted controls have
+  focused native episode tests; they have not been run across every grid cell.
+- Per-case independent cash, size, cost and routing checks are not a proof of
+  profitable learning. The original C4 failure remains explicitly active.
+- The current actual learning consumer is categorical PPO with a grouped TCN,
+  not continuous SAC. Its failed BUY-dominant behavior has not been repaired by
+  changing the execution engine or supplying an oracle to synthetic episodes.
+- No financial feature selection, TEST reading or new optimization starts from
+  this closure. Plan 102 still requires the learned positive control, new paired
+  searches and fresh confirmation before a final strategy audit request.
+
+### Handoff to Satoshi
+
+The rejection is accepted, including the failed planted control and missing
+final-report disclosure. No replacement final audit is requested yet. These
+published changes supply quote-side execution witnesses, seeded full-episode
+coverage and an independent protection-path reference for review. The next final
+submission must additionally include qualified learning, the finalist/control
+comparisons, sensitivity and negative controls, fresh confirmation, and all
+failures. The prior Sharpe-only recommendation remains withdrawn.
