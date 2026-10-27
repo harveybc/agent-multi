@@ -75,3 +75,51 @@ def test_broker_witnesses_use_candidate_directional_parameters(runtime):
     for case in cases:
         trade=case['trades'][0]
         assert trade['percentual_order_size']==(.2 if case['direction']==1 else .4)
+
+
+@pytest.mark.parametrize('horizon',[1,4,12,24,48,72])
+@pytest.mark.parametrize('side',[-1,1])
+def test_multiscale_horizons_execute_native_commands(runtime,horizon,side):
+    r,c,_=runtime
+    cell=dict(drift_before=side*.00015,drift_after=side*.00015,
+        vol_before=0.,vol_after=0.,switch=32,period=24,phase=0,cost='zero_cost',
+        transition_bars=12,horizon=horizon,target_bars=240)
+    result=run_cell(cell,c,r,None,constant_sigma=True)
+    assert result['prescribed']
+    for row in result['comparisons']:
+        assert row['horizon']==horizon
+        if row['state']=='FLAT':assert row['chosen']==(1 if side==1 else 2)
+
+
+def test_independent_prescribed_checks_detect_wrong_sell_decoder(runtime,monkeypatch):
+    from app.directional_risk_calibration import DirectionalOrders,DirectionalRisk
+    from tools.systematic_strategy_matrix import prescribed_execution
+    r,c,_=runtime
+    env=environment(list(cells())[-1],c,(13,r['list']['n']),parameters=DirectionalRisk((.5,.5,1)*2))
+    while env.bar<WARMUP+30:step(env,0)
+    original=DirectionalOrders.decode
+    def mutant(self,action):
+        cmd,tp,sl,label=original(self,action)
+        return (1 if cmd==2 else cmd),tp,sl,label
+    monkeypatch.setattr(DirectionalOrders,'decode',mutant)
+    with pytest.raises(ValueError,match='PRESCRIBED_'):
+        prescribed_execution(env,[2],env.parameters)
+
+
+def test_independent_cost_check_detects_removed_spread(runtime):
+    from tools.systematic_strategy_matrix import outcome,check_costs
+    r,c,_=runtime;env=environment({**list(cells())[-1],'cost':'configured'},c,(13,r['list']['n']))
+    while env.bar<WARMUP+30:step(env,0)
+    _,end=outcome(env,1,24,True)
+    t=end.engine.trades[0];assert t['spread_usd']>0
+    with pytest.raises(ValueError,match='INDEPENDENT_spread_usd'):
+        check_costs({**t,'spread_usd':0},end.engine)
+
+
+def test_invalid_output_is_rejected_without_state_change(runtime):
+    r,c,_=runtime;env=environment(list(cells())[-1],c,(13,r['list']['n']))
+    while env.bar<WARMUP+30:step(env,0)
+    for action in ([1.2,.5,.5,.5],[np.nan,.5,.5,.5],[3,.5,.5,.5],[1,2,.5,.5]):
+        before=(env.bar,env.engine.balance,len(env.engine.trades),dict(env.order_counts))
+        with pytest.raises(ValueError):env.step(action)
+        assert (env.bar,env.engine.balance,len(env.engine.trades),env.order_counts)==before
