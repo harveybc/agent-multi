@@ -9,7 +9,11 @@ import pytest
 
 @pytest.mark.parametrize('direction', [1, -1])
 @pytest.mark.parametrize('continuation', ['stop', 'target'])
-def test_ideal_head_closes_before_stop_and_holds_before_target(direction, continuation):
+@pytest.mark.parametrize('pnl_fraction', [-.5, 0., .5])
+@pytest.mark.parametrize('horizon', [4, 24, 72])
+@pytest.mark.parametrize('spread_factor', [1., 3.])
+def test_ideal_head_closes_before_stop_and_holds_before_target(
+        direction, continuation, pnl_fraction, horizon, spread_factor):
     engine = os.environ.get('QUOTE_ENGINE_ROOT')
     recipe = os.environ.get('PINNED_RECIPE_PATH')
     if not engine or not recipe:
@@ -27,6 +31,10 @@ from app.strategy_scenario_matrix import check_trade
 
 rec,cfg=setup(Path(sys.argv[1]),Path(sys.argv[2]))
 d=int(sys.argv[3]); continuation=sys.argv[4]
+fraction=float(sys.argv[5]);horizon=int(sys.argv[6]);factor=float(sys.argv[7])
+cfg=replace(cfg,profile=replace(cfg.profile,
+    spread_schedule=tuple((a,b,v*factor) for a,b,v in cfg.profile.spread_schedule),
+    weekly_open_spread=cfg.profile.weekly_open_spread*factor))
 cfg=replace(cfg,execution_price_mode='bid_ask_v3')
 cell=panel('calibration')[0]
 cell.update(drift_before=0.,drift_after=0.,vol_before=0.,vol_after=0.)
@@ -39,33 +47,35 @@ env.step(np.array([opening,.5,.5,.5]))
 e=env.engine
 assert e.pos is not None and e.pos.direction==d and not e.trades
 p=e.pos;k=env.bar+1
-assert e.v[k+1]+3600*10**9<e.ff[e.seg_of[k]]
+last=k+horizon-1
+assert e.v[last]+3600*10**9<e.ff[e.seg_of[k]]
 
 # Literal synthetic future: safe first bar, then only the specified barrier.
 # Construct executable liquidation OHLC and translate to midpoint inputs.
 for name in ('o','h','l','c'):
     setattr(e,name,getattr(e,name).copy())
-centre=p.entry_price
+centre=p.entry_price+d*fraction*min(abs(p.entry_price-p.tp),abs(p.entry_price-p.sl))
 span=min(abs(centre-p.tp),abs(centre-p.sl))*.1
-for j in (k,k+1):
+for j in range(k,last+1):
     spread=e.cfg.profile.spread_at(int(e.v[j]),int(e.mo[e.seg_of[j]]))
-    end=centre if j==k else (p.sl-d*.0002 if continuation=='stop' else p.tp+d*.0002)
+    end=centre if j<last else (p.sl-d*.0002 if continuation=='stop' else p.tp+d*.0002)
     e.o[j]=centre+d*spread/2
     e.h[j]=max(centre+span,end)+d*spread/2
     e.l[j]=min(centre-span,end)+d*spread/2
     e.c[j]=end+d*spread/2
 
-chosen,reference=ideal_command(env,2)
+chosen,reference=ideal_command(env,horizon)
 expected=(3 if d==1 else 4) if continuation=='stop' else 0
 assert chosen==expected, (chosen,expected,reference)
 assert (reference['close_net']>reference['hold_net'])==(continuation=='stop')
 assert reference['reference']['reason']==('SL' if continuation=='stop' else 'TP')
-assert reference['reference']['exit_bar']==k+1
+assert reference['reference']['exit_bar']==last
 
 # Execute BOTH alternatives on the identical path, not just reference arithmetic.
 hold=clone(env)
-hold.step(np.array([0,.5,.5,.5]))
-assert hold.engine.pos is not None and not hold.engine.trades
+for _ in range(horizon-1):
+    hold.step(np.array([0,.5,.5,.5]))
+    assert hold.engine.pos is not None and not hold.engine.trades
 hold.step(np.array([0,.5,.5,.5]))
 assert hold.engine.pos is None and len(hold.engine.trades)==1
 held=hold.engine.trades[0]
@@ -96,7 +106,8 @@ for t,eng in ((closed,close.engine),(held,hold.engine)):
 print('LITERAL_EARLY_CLOSE_PASS', d, continuation)
 '''
     result = subprocess.run(
-        [sys.executable, '-c', script, recipe, engine, str(direction), continuation],
+        [sys.executable, '-c', script, recipe, engine, str(direction), continuation,
+         str(pnl_fraction), str(horizon), str(spread_factor)],
         cwd=Path(__file__).resolve().parents[2], capture_output=True, text=True, timeout=60,
         env={**os.environ, 'CUDA_VISIBLE_DEVICES': '', 'OMP_NUM_THREADS': '1',
              'OPENBLAS_NUM_THREADS': '1'},

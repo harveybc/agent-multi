@@ -57,6 +57,19 @@ def batch(task):
 
 
 def run(a):
+    predecessor=None
+    if getattr(a,'after_grid',None):
+        write(a.output/'WAITING.json',dict(state='WAITING_FOR_PREDECESSOR',at=now(),financial_admission=False))
+        while not (a.after_grid/'CLOSE.json').exists():
+            state=read(a.after_grid/'STATUS.json')
+            require(state.get('failures',0)==0 and state['state']!='FAILED','PREDECESSOR_GRID_FAILED')
+            time.sleep(30)
+        closed=read(a.after_grid/'CLOSE.json')
+        original=read(a.after_grid/'IDENTITY.json')
+        require(closed['state']=='ENGINEERING_GRID_COMPLETE_NOT_STRATEGY_RELEASE' and
+                closed['failures']==0 and closed['identity']==digest(original) and
+                closed['completed']==original['target_cases'],'PREDECESSOR_GRID_NOT_COMPLETE')
+        predecessor=file_sha(a.after_grid/'CLOSE.json')
     config=read(a.design)
     total=math.prod(len(v) for v in config['axes'].values())
     require(1<=a.workers<=6 and 1<=a.batch_size<=128,'QUOTE_GRID_WORKERS')
@@ -73,6 +86,7 @@ def run(a):
         effective_business={**read(a.recipe)['business']['evaluation_and_policy'],
                             'execution_price_mode':'bid_ask_v3'},
         per_case_overrides=['profile spread_schedule and weekly_open_spread multiplied by spread_factor'])
+    if predecessor:identity['predecessor_close_sha256']=predecessor
     a.output.mkdir(parents=True,exist_ok=True)
     with (a.output/'RUN.lock').open('a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
@@ -119,6 +133,7 @@ def run(a):
                 estimated_remaining_seconds=(identity['target_cases']-completed)*per_case/a.workers if per_case else None,
                 workers=a.workers,financial_admission=False,at=now()))
         status('STARTING')
+        if (a.output/'WAITING.json').exists():(a.output/'WAITING.json').unlink()
         with ProcessPoolExecutor(max_workers=a.workers,mp_context=multiprocessing.get_context('spawn'),
                 initializer=initialize,initargs=(a.recipe,a.engine_root)) as pool:
             active={}
@@ -162,4 +177,5 @@ if __name__=='__main__':
     p.add_argument('--limit',type=int)
     p.add_argument('--sample',type=int)
     p.add_argument('--storage-reserve-gib',type=float,default=20.)
+    p.add_argument('--after-grid',type=Path)
     run(p.parse_args())

@@ -94,7 +94,7 @@ def run_episode(spec,config,shape,genes=(.5,.5,.2)*2,horizon=24,mode='ideal',spr
     from tools.native_strategy_contract_study import synthetic_inputs
     from tools.systematic_strategy_matrix import action_from_head,check_costs
     from tools.recipe_sac_queue import clean
-    require(mode in ('ideal','nop','inverted'),'REPAIR_OUTPUT_MODE')
+    require(mode in ('ideal','nop','inverted','position_long','position_short'),'REPAIR_OUTPUT_MODE')
     require(type(horizon) is int and 0<horizon<=72,'REPAIR_HORIZON')
     require(spread_factor in (1.,3.),'REPAIR_SPREAD_FACTOR')
     require(math.isfinite(minimum_gain_risk) and minimum_gain_risk>=0,'REPAIR_GAIN_RISK')
@@ -111,9 +111,15 @@ def run_episode(spec,config,shape,genes=(.5,.5,.2)*2,horizon=24,mode='ideal',spr
     engine=BarEnv(bars,cal,causal_sigma(bars),causal_range_sigma(bars),ts[WARMUP],
                   ts[-1]+pd.Timedelta(hours=1),cfg)
     env=DirectionalOrders(engine,synthetic_inputs(ts,shape),DirectionalRisk(tuple(genes)))
-    env.reset();decisions=[]
+    env.reset();decisions=[];probe_entry=False
     while not env.finished:
         cmd,expected=ideal_command(env,horizon,minimum_gain_risk)
+        # Forced synthetic entry isolates position management from oracle entry selection.
+        if mode in ('position_long','position_short') and not probe_entry:
+            opening=1 if mode=='position_long' else 2
+            if env.mask()[opening]:
+                cmd=opening
+                expected=dict(reason='FORCED_SYNTHETIC_POSITION_PROBE')
         if mode=='nop':cmd=0
         elif mode=='inverted':
             if engine.pos is None:cmd={0:0,1:2,2:1}[cmd]
@@ -123,6 +129,8 @@ def run_episode(spec,config,shape,genes=(.5,.5,.2)*2,horizon=24,mode='ideal',spr
         require(int(action[0])==cmd,'REPAIR_HEAD_ROUTING')
         b=env.bar
         _,_,_,_,info=env.step(action)
+        if mode in ('position_long','position_short') and info['engine_last_event'].get('entry'):
+            probe_entry=True
         decisions.append(dict(bar=b,command=cmd,expected=expected,event=clean(info['engine_last_event'])))
     result=engine.result();balance=cfg.capital
     for t in engine.trades:
@@ -135,6 +143,7 @@ def run_episode(spec,config,shape,genes=(.5,.5,.2)*2,horizon=24,mode='ideal',spr
     require(all(n<=cfg.max_entries_per_day for n in engine.entries_day.values()),'REPAIR_DAILY_CAP')
     return dict(scope='SYNTHETIC_ORACLE_ENGINEERING_ONLY',spec=spec,genes=list(genes),horizon=horizon,
         mode=mode,spread_factor=spread_factor,minimum_gain_risk=minimum_gain_risk,
+        position_probe_entry=probe_entry if mode.startswith('position_') else None,
         oracle_version='synthetic_protection_reference.v1',decisions=decisions,trades=clean(engine.trades),
         metrics=clean({k:v for k,v in result.items() if k not in ('equity','daily_equity')}),
         financial_admission=False,learning_qualified=False)

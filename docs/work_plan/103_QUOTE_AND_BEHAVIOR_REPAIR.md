@@ -119,3 +119,7 @@ coverage and an independent protection-path reference for review. The next final
 submission must additionally include qualified learning, the finalist/control
 comparisons, sensitivity and negative controls, fresh confirmation, and all
 failures. The prior Sharpe-only recommendation remains withdrawn.
+
+The owner-requested position-management extension and per-opportunity auditing
+are specified in plan 106. They do not mutate this running grid or turn its
+no-trade/no-close-opportunity cells into early-close coverage.

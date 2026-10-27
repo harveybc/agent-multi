@@ -42,11 +42,16 @@ print('NATIVE_QUOTE_BRIDGE_PASS')
 from app.strategy_repair_episode import run_episode
 spec=dict(seed=7,drift_before=.0001,drift_after=-.0001,vol_before=.0001,
     vol_after=.0004,switch=60,transition=8,overlay=.00005,noise='clustered',shock='gap',mirror=False)
-for mode in ('ideal','nop','inverted'):
+for mode in ('ideal','nop','inverted','position_long','position_short'):
     row=run_episode(spec,cfg,(13,rec['list']['n']),mode=mode)
     assert len(row['decisions'])==239
     if mode=='nop':assert not row['trades'] and row['metrics']['net_profit_usd']==0
     assert row['financial_admission'] is False and row['learning_qualified'] is False
+    if mode.startswith('position_'):
+        from app.early_close_audit import audit_episode
+        assert row['position_probe_entry'] and row['trades']
+        assert row['trades'][0]['direction']==(1 if mode=='position_long' else -1)
+        assert not audit_episode(row)['failures']
     if mode=='ideal':
         for decision in row['decisions']:
             if decision['command'] in (3,4):
