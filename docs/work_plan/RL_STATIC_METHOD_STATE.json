@@ -1,7 +1,18 @@
 {
   "schema": "rl_static_engineering_state.v1",
-  "updated_on": "2026-10-26",
-  "current_stage": "EXECUTION_MATRIX_PASSED_LEARNING_QUALIFICATION_FAILED",
+  "updated_on": "2026-10-27",
+  "current_stage": "FINAL_STRATEGY_AUDIT_REJECTED_LEARNING_QUALIFICATION_FAILED",
+  "final_strategy_audit": {
+    "commit": "5814d113",
+    "disposition": "EXECUTION_ACCEPTED_OPTIMIZATION_REJECTED_CONFIRMATION_REQUIRES_CORRECTIONS",
+    "plan": "102_FINAL_STRATEGY_AUDIT_CORRECTIONS.md",
+    "recommended": null,
+    "financial_selection_admitted": false,
+    "bootstrap_replay_exact": true,
+    "reporting_regression_tests_passed": 15,
+    "next_allowed_actions": ["follow plan 102 before older launch instructions", "new behavioral and quote-side PRE/POST tests", "repair and qualify planted learning control", "new optimization only after those witnesses pass"],
+    "sealed_artifacts_modified": false
+  },
   "native_wrapper": {
     "plan": "80_NATIVE_SUBSET_EXECUTION.md",
     "model": "categorical PPO, grouped causal branches, residual TCN core, separate policy/value heads",

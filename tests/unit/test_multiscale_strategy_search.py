@@ -66,3 +66,35 @@ def test_no_final_audit_file_is_emitted_before_complete_evidence(tmp_path):
     with pytest.raises(ValueError):emit_final(tmp_path,{},[],[],[],[],[],{})
     assert not (tmp_path/'FINAL_AUDIT_REQUEST.md').exists()
     assert not (tmp_path/'FINAL_REPORT.md').exists()
+
+
+def test_contract_success_cannot_select_a_fitness_or_qualify_learning(tmp_path):
+    import json
+    from app.rl_subset import digest
+    from tools.multiscale_deap_strategy import emit_final
+    report=dict(components=dict(sharpe=20.,return_fraction=.1,orders_per_day=.5),
+        eligible=True,mean_drawdown_pct=1.,worst_drawdown_pct=2.,
+        orders_per_week=2.5,mean_profit_usd=1000.,win_rate=.8,
+        sides={'1':{'trades':10},'-1':{'trades':10}})
+    searches=[dict(id=f'{name}{seed}',objective=name,genes=[.5,.5,1.]*2,
+        fitness=1.,generation=100,stop_reason='MAX_GENERATIONS',report=report)
+        for name in ('sharpe','sharpe_return','sharpe_return_activity')
+        for seed in (7,19,43)]
+    confirmation=[dict(id=r['id'],report=report) for r in searches]
+    matrices=[dict(genome_sha256=digest(searches[0]['genes']),terminal=True,
+        cells=47628,state='VERIFIED',failures=0)]
+    emit_final(tmp_path,{},searches,confirmation,matrices,[],[],{})
+    decision=json.loads((tmp_path/'DECISION.json').read_text())
+    assert decision['recommended'] is None
+    assert decision['state']=='STUDY_COMPLETE_OPTIMIZATION_UNQUALIFIED'
+    assert decision['matrix_scope']=='EXECUTION_CONTRACT_ONLY'
+    assert decision['learning_qualification']=='NOT_EVALUATED_BY_THIS_STUDY'
+    assert not decision['financial_admission']
+    assert not decision['learned_policy_admission']
+    text=(tmp_path/'FINAL_REPORT.md').read_text()
+    for required in ('LEARNING_QUALIFICATION_FAILED', 'deterministic',
+                     'midpoint', 'bid/ask', 'not financial annualized performance'):
+        assert required in text
+    assert 'all-scenario verification' not in text
+    request=(tmp_path/'FINAL_AUDIT_REQUEST.md').read_text()
+    assert 'not a final optimized-strategy acceptance request' in request

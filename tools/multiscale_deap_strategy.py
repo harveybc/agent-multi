@@ -39,16 +39,17 @@ def emit_final(out,identity,searches,confirmation,matrices,controls,sensitivity,
     selected=finalists(searches)
     passed={m['genome_sha256'] for m in matrices if m['state']=='VERIFIED'}
     accepted=[r for r in selected if digest(r['genes']) in passed and r['report']['eligible']]
-    # Confirmation is reported but never chooses the strategy.
-    recommendation=min(accepted,key=lambda r:(-r['report']['components']['sharpe'],
-        -r['report']['components']['return_fraction'],r['report']['mean_drawdown_pct'],r['genes'])) if accepted else None
-    decision=dict(schema='synthetic_strategy_final_decision.v1',identity_sha256=digest(identity),
-        state='FINAL_SYNTHETIC_STRATEGY_READY_FOR_AUDIT' if recommendation else 'STUDY_COMPLETE_NO_ACCEPTABLE_FINALIST',
-        recommended= recommendation,financial_admission=False,learned_policy_admission=False,
+    # A contract matrix cannot establish economic superiority or choose a fitness.
+    decision=dict(schema='synthetic_strategy_final_decision.v2',identity_sha256=digest(identity),
+        state='STUDY_COMPLETE_OPTIMIZATION_UNQUALIFIED' if accepted else 'STUDY_COMPLETE_NO_ACCEPTABLE_FINALIST',
+        recommended=None,matrix_scope='EXECUTION_CONTRACT_ONLY',
+        learning_qualification='NOT_EVALUATED_BY_THIS_STUDY',
+        financial_admission=False,learned_policy_admission=False,
         independent_audit_approved=False,finalists=selected,matrices=matrices,scales=scales)
     write(out/'DECISION.json',decision)
-    lines=['# Final synthetic strategy optimization report','',
-        'DEAP and full finalist execution are complete. This is not learned-market performance.',
+    lines=['# Completed synthetic search and execution-contract report','',
+        'DEAP and contract matrices are complete, not a qualified final optimized strategy.',
+        'This is not learned-market performance. No objective is selected as superior.',
         'Commands, oracle tapes and business rules were fixed before search; only six risk fractions were genes.',
         'Tapes depend on the synthetic future only, never on a candidate genome. No financial observations were read.',
         'S = pooled daily-return Sharpe (sqrt(365)); R = mean net return / initial balance; A = orders/business day.',
@@ -56,7 +57,21 @@ def emit_final(out,identity,searches,confirmation,matrices,controls,sensitivity,
         'Population 20, 100 maximum generations, patience 10, relative tolerance 1e-8, seeds 7/19/43.',
         'Initial controls enter each population; eligible-control elitism is checked on closure.',
         'Calibration chooses one finalist per objective, before confirmation. Confirmation never selects or retunes.',
-        '', '| Search | Generations | Stop | Calibration S | R | Orders/week | Mean profit USD | Long/short | Win rate | Worst DD % |',
+        '', '## Mandatory scope and limitations', '',
+        'The 24 calibration and 24 confirmation tapes are deterministic drift/sinusoid paths, not stochastic volatility.',
+        'They omit exact mirror pairs, multiscale trend superposition, stochastic shocks and market gaps.',
+        'The matrix checks routing/accounting at anchors; it does not execute a complete trading episode per cell.',
+        'Ranking simulator-derived scores verifies routing, not independent expected economic behavior.',
+        'The sqrt(365) pooled statistic over separate short tapes is not financial annualized performance.',
+        'No paired confidence intervals or superiority against controls are established by this exporter.',
+        'Sharpe is exposure-insensitive; selecting the Sharpe objective by calibration Sharpe would be circular.',
+        'Endpoint sensitivity and inverted/NOP controls below concern the midpoint only, not all finalists.',
+        'An activity component may be saturated by the daily cap; a nonzero range does not prove useful optimization.',
+        'Mean TP/SL ratios can be dominated by minimum stops. The pinned engine does not use bid/ask stop triggers.',
+        'The terminal-direction tape is not an oracle of SL-before-TP or a risk-adjusted entry decision.',
+        'Historical C4 status is LEARNING_QUALIFICATION_FAILED (plan 94); this study does not repair or rerun it.',
+        'See audit 5814d113 and correction plan 102 for the rejected historical interpretation.',
+        '', '| Search | Last generation index (0-based) | Stop | Calibration S | R | Orders/week | Mean profit USD | Long/short | Win rate | Worst DD % |',
         '|---|---:|---|---:|---:|---:|---:|---|---:|---:|']
     def row(label,r,generation='-',stop='-'):
         c=r['components'];s=r['sides'];number=lambda x:'undefined' if x is None else f'{x:.8f}'
@@ -74,18 +89,19 @@ def emit_final(out,identity,searches,confirmation,matrices,controls,sensitivity,
     for i in range(6):
         pair=[r for r in sensitivity if r['gene']==i]
         lines.append('- Gene '+str(i)+': '+json.dumps(pair,sort_keys=True))
-    lines+=['','## Finalists and all-scenario verification','']
+    lines+=['','## Finalists and execution-contract coverage','']
     for r in selected:
         m=next(x for x in matrices if x['genome_sha256']==digest(r['genes']))
         lines.append('- '+r['id']+': genes='+json.dumps(r['genes'])+'; matrix='+json.dumps(m,sort_keys=True))
     lines+=['','## Decision','',decision['state'],
-        'Recommended calibration arm: '+(recommendation['id'] if recommendation else 'none'),
+        'Recommended strategy: none; contract success is insufficient for optimization acceptance.',
         'Risk/reward, barrier break-even, realized costs, funding, directional win rates and exit reasons are in the JSON reports.',
         'The tapes provide ideal terminal-direction guidance, not clairvoyant optimal control with every intrabar path known.',
         'A constant activity term or unchanged stop sensitivity is reported as unidentifiable, never as evidence of optimization.',
         'Complete calibrated ledgers are sealed in cache; finalist matrices retain every case and independent coverage checks.','']
     (out/'FINAL_REPORT.md').write_text('\n'.join(lines))
-    request=['# Final audit request for Satoshi','',
+    request=['# Completed-study audit request for Satoshi','',
+        'This is not a final optimized-strategy acceptance request. Optimization and learning remain unqualified.',
         'Audit FINAL_REPORT.md, DECISION.json, all searches, controls, sensitivity, confirmation and complete finalist matrices.',
         'This replaces the prematurely issued request 100. Do not substitute midpoint evidence for optimized-finalist evidence.',
         'Recompute each objective from ledgers and frozen scales; verify exact DEAP resume and seeded replay.',
