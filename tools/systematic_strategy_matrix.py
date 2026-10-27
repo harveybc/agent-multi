@@ -150,6 +150,13 @@ def outcome(source,command,horizon=4,holding_clock=False):
     return float(env.engine.balance-source.engine.balance),env
 
 
+def rank_scores(values):
+    scores=np.full(5,-1e5,dtype=float)
+    ordered=sorted(set(values.values()))
+    for command,value in values.items():scores[command]=1+ordered.index(value)
+    return scores
+
+
 def compare(source,model,commands,label,horizon=4,holding_clock=False):
     values={};results={}
     for command in commands:
@@ -159,6 +166,10 @@ def compare(source,model,commands,label,horizon=4,holding_clock=False):
     # better one must still win. NOP is index zero and wins exact flat ties.
     low=min(values.values());span=max(max(values.values())-low,1.)
     for command,value in values.items():logits[command]=1+(value-low)/span
+    if holding_clock:
+        # Preserve the exact expected ranking when injecting diagnostic scores
+        # into float32 heads, including near-equal counterfactual monetary values.
+        logits=rank_scores(values)
     obs=source._observe();chosen=None
     for scale in (1e-4,1.,10.):
         action=action_from_head(model,obs,logits,scale)

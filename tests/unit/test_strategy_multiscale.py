@@ -51,3 +51,21 @@ def test_prescribed_commands_use_literal_expected_answers():
 
 def test_original_grid_remains_unchanged():
     assert len(list(cells())) == 5832
+
+
+def test_ideal_rank_encoding_preserves_expected_winner_after_float32_cast():
+    from tools.systematic_strategy_matrix import rank_scores,action_from_head
+    values={0:0.,1:7.276e-12,2:-7.276e-12}
+    scores=rank_scores(values)
+    for scale in (1e-4,1.,10.):
+        action=action_from_head(None,{'action_mask':np.array([1,1,1,0,0],np.float32)},scores,scale)
+        assert int(action[0])==1
+
+
+def test_deterministic_head_does_not_erase_representable_score_difference():
+    import torch
+    from agent_plugins.hybrid_orders import OrderDistribution
+    logits=torch.tensor([[0.,1e-8,0.,0.,0.]])
+    mask=torch.tensor([[True,True,True,False,False]])
+    dist=OrderDistribution(logits,torch.zeros(1,2,6),mask,False)
+    assert int(dist.get_actions(True)[0,0])==1

@@ -19,14 +19,17 @@ class OrderDistribution:
     def __init__(self, logits, raw, mask, learned=True):
         if not mask.any(-1).all() or mask.shape != logits.shape:
             raise ValueError('EMPTY_ACTION_MASK')
-        self.cat = Categorical(logits=logits.masked_fill(~mask.bool(), -torch.inf))
+        self.masked_logits = logits.masked_fill(~mask.bool(), -torch.inf)
+        self.cat = Categorical(logits=self.masked_logits)
         self.mask = mask.bool()
         concentration = 1 + nn.functional.softplus(raw)
         self.risk = Beta(concentration[...,:3], concentration[...,3:])
         self.learned = learned
 
     def get_actions(self, deterministic=False):
-        cmd = self.cat.probs.argmax(-1) if deterministic else self.cat.sample()
+        # Softmax can round distinct float32 scores into equal probabilities.
+        # Deterministic routing must retain the ordering of the supplied logits.
+        cmd = self.masked_logits.argmax(-1) if deterministic else self.cat.sample()
         risks = self.risk.mean if deterministic else self.risk.sample()
         row = torch.arange(len(cmd), device=cmd.device)
         selected = risks[row, (cmd-1).clamp(0,1)]

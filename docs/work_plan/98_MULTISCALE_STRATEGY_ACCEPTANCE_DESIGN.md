@@ -48,3 +48,17 @@ This tests the configured directional coefficients, not a claim of universal
 optimality. It does not rehabilitate the rejected historical DEAP selection.
 An optimizer cannot change business constraints or the expected test outcomes.
 Parameter search and learner qualification remain separately reported evidence.
+
+## Counterexamples discovered during execution
+
+The first extended run exposed numeric ranking loss. At one case the expected
+values encoded scores 1.000000000007276 / 1.000000000014552 / 1.0; float32
+injection collapsed them into equality. The corrected diagnostic encodes their
+unchanged ordering as integer ranks. It does not change the winning command
+or relax the economic comparison tolerance. Exact ties retain equal ranks.
+
+A separate regression exposed deterministic routing through softmax: logits
+0 / 1e-8 / 0 are distinct in float32, but their probabilities round to equality.
+Deterministic routing now takes argmax of masked original logits; stochastic
+sampling and log-probabilities are unchanged. The old counterexample fails
+before the correction. No active worker or historical prediction is rewritten.
