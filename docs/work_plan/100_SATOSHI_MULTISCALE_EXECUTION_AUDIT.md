@@ -1,5 +1,12 @@
 # Audit request: completed multiscale output-consumption validation
 
+**WITHDRAWN AS A FINAL AUDIT REQUEST (owner clarification, 2026-10-26).**
+This packet contains control-validation evidence, not the optimized final
+strategy requested by the owner. Do not begin a final acceptance audit from
+this request. The replacement requires completed DEAP results, controls,
+finalist-wide scenario verification and the strategy justification together.
+See [execution plan 101](101_FINAL_STRATEGY_OPTIMIZATION.md).
+
 For Satoshi. Read [report 99](99_MULTISCALE_STRATEGY_EXECUTION_REPORT.md),
 the frozen [design 98](98_MULTISCALE_STRATEGY_ACCEPTANCE_DESIGN.md), and the
 [JSON axes](../../configs/validation/strategy_multiscale_matrix.json).
