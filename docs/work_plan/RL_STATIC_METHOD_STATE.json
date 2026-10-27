@@ -11,6 +11,7 @@
       "independent_verdict": "CONTRACT_AND_REPRODUCTION_ACCEPTED_DECISION_USE_REJECTED",
       "independent_audit_commit": "2fd4eeda",
       "correction_report": "91_CROSS_AUDIT_CORRECTIONS_AND_LEARNING_CONTROL.md",
+      "simulation_reaudit": "report 96 and request 97: R01-R14; full matrix provenance reverified; trend-strength and comparison-horizon coverage gaps explicit; no optimized strategy submitted for acceptance",
       "systematic_market_matrix": "plan 93: 5832/5832 cells, zero failed assertions, 5837 artifacts hash-verified; 880 unreachable positioned states reported separately; no fitting or financial admission; JSON interface and 48 CPU tests in plan 95",
       "next_qualification": "C4 complete 9/9, LEARNING_QUALIFICATION_FAILED for all planted seeds; investigate learning mechanism, not data absence; routing localization in plan 94; no new financial selection admission",
       "report": "84_OUTPUT_STRATEGY_REPORT_FOR_SATOSHI.md",
