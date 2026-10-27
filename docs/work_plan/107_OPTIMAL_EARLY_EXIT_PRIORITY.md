@@ -124,3 +124,26 @@ Keep these versioned GitHub documents as the current source of truth. A wiki or
 documentation site can later index them without creating a conflicting second
 specification. Final audit must retain known failures and distinguish engineering
 execution, exit calibration, synthetic learning and financial generalization.
+
+## Deployment receipt
+
+Exported code `61c3e88e`, quote engine `842320a`. The frozen producer completed
+its own smoke at 18:59:04 UTC on 2026-10-27, then the full corpus and baselines.
+At 18:59:12 UTC (13:59:12 Bogota) the complete study was executing DEAP objective
+negative_exit_regret, seed 7. Smoke had only 512 learning steps and no learned
+control pass; it certifies wiring, not learning. The full budgets above remain.
+
+Three enabled user services provide the study, the dependent management grid
+and its read-only producer follower. The study is a sequential oneshot job;
+the grid start job waits for its successful completion. Failed engineering
+execution does not silently admit a successor. Negative scientific results are
+retained as completed diagnostic results, never financial promotion.
+
+Study CPU quota 2 cores, memory soft/hard 4/6 GiB; subsequent grid quota 6 cores,
+memory 6/8 GiB; auditor quota 1 core, memory 1/2 GiB. All are CPU-only synthetic
+engineering work. The study and large grid do not run simultaneously. Original
+sealed experiments and the completed earlier grid remain unchanged.
+
+No measured full-study ETA was available at first launch. Its current stage,
+training progress and per-unit elapsed times are retained automatically. Do not
+extrapolate the small smoke as if it were a full-budget learned result.

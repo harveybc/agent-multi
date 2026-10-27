@@ -14,7 +14,12 @@
     "deap_generation_cap": 100,
     "deap_patience": 10,
     "deap_relative_tolerance": 1e-8,
-    "full_study_state": "PREPARING_FROZEN_DEPLOYMENT",
+    "full_study_state": "RUNNING_DEAP_FIRST_OBJECTIVE",
+    "deployed_code": "61c3e88e",
+    "deployed_engine": "842320a",
+    "observed_at": "2026-10-27T18:59:12Z",
+    "automatic_successor": "874800 full-position optimal-exit probes after study completion",
+    "background_opportunity_auditor": "enabled, waits for new producer identity",
     "learning_qualified": false,
     "financial_selection_admitted": false,
     "entry_and_exit_targets_separate": true
