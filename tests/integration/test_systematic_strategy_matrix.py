@@ -55,3 +55,23 @@ def test_causal_scales_have_warmup_and_ignore_future_regime(runtime):
     end=WARMUP+a['switch']+1
     np.testing.assert_array_equal(left.engine.sigma[:end],right.engine.sigma[:end])
     np.testing.assert_array_equal(left.engine.sigma_rule[:end],right.engine.sigma_rule[:end])
+
+
+def test_explicit_json_midpoint_matches_existing_execution(runtime):
+    from app.directional_risk_calibration import DirectionalRisk
+    r,c,m=runtime
+    config=Path(__file__).resolve().parents[2]/'configs/validation/directional_strategy_midpoint.json'
+    params=DirectionalRisk.from_json(config)
+    cell=list(cells())[-1]
+    assert run_cell(cell,c,r,m)==run_cell(cell,c,r,m,parameters=params)
+
+
+def test_broker_witnesses_use_candidate_directional_parameters(runtime):
+    from app.directional_risk_calibration import DirectionalRisk,DirectionalOrders
+    from tools.native_strategy_contract_study import witnesses
+    r,c,_=runtime;params=DirectionalRisk((.25,.75,.2,.75,.25,.4))
+    cases=witnesses(c,(13,r['list']['n']),lambda engine,inputs:DirectionalOrders(engine,inputs,params))
+    assert len(cases)==22
+    for case in cases:
+        trade=case['trades'][0]
+        assert trade['percentual_order_size']==(.2 if case['direction']==1 else .4)

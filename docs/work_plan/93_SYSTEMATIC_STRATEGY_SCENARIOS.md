@@ -1,5 +1,33 @@
 # Systematic strategy scenarios: bounded execution qualification
 
+## Governing rule
+
+Requirements and expected behavior determine the tests; observed strategy
+outputs must not redefine their expected results. A failed case is retained
+and requires an implementation correction, not a relaxed threshold, removed
+scenario or relabelled success. A demonstrated defect in the test itself must
+be documented separately with its counterexample and a new evidence identity;
+the original failure remains visible. Numerical tolerances are engineering
+precision rules, never parameters tuned to improve financial acceptance.
+
+| Requirement | Expected behavior fixed before full execution | Evidence |
+|---|---|---|
+| No directional first-match bias | highest legal categorical score wins even when both directions are positive | head-order tests and all cell score comparisons |
+| Correct direction semantics | BUY gains / SELL loses on a noiseless rise; converse on a fall, without costs | independent monotonic fixtures through actual policy and engine |
+| Legal abstention | flat NOP creates no order; exact flat tie chooses NOP | categorical tests and zero-order counterfactual |
+| Correct exit semantics | current-side CLOSE executes at next open unless broker protection takes precedence | 22 broker-event witnesses plus reachable long/short comparisons |
+| Accounting | signed units times price change minus itemized costs equals net; balance reconciles | independent arithmetic on every emitted trade |
+| Business constraints | both sides obey calendar, daily cap, required SL/TP and maximum margin allocation | native-engine witnesses and per-cell assertions |
+| Causal risk scales | no synthetic evaluation before scale warmup; future regime cannot alter earlier scales | prefix perturbation integration test |
+| Systematic coverage | all 5832 cells present; missing/failing cells cannot yield full PASS | Cartesian uniqueness test, receipt count and final coverage |
+
+This is a domain acceptance hierarchy, not a requirement to imitate software
+organizational layers. The market generator and scenario expectations are
+versioned independently of policy weights. The monotonic and accounting
+oracles are independent checks. Four-bar alternative payoffs use the native
+simulator itself: their ranking tests arbitration consistency, NOT independent
+correctness of every simulator outcome or global strategy optimality.
+
 ## Correction of scope
 
 The earlier 22 execution cases and fixed-frequency sinusoidal controls do NOT
@@ -96,3 +124,23 @@ All five commands won at least once (29 NOP/HOLD, 10 BUY, 7 SELL, 12 CLOSE_LONG,
 SELL on falls with the correct independent profit signs. These are diagnostic
 injected-head outputs, not trained model results. Full-grid execution is
 required separately; smoke success is not a full-grid verdict.
+
+## Completed full grid
+
+The pinned `e3468172` execution closed at 2026-10-27 00:39:32 UTC after
+528.86 seconds on CPU: 5832/5832 cells, zero failed assertions, verdict
+`PASS_DECLARED_GRID`. The 5837 closure artifacts were independently read back
+and matched their hashes. Closure SHA256:
+`807acf36d7b3e8fb1fef83ae69eadbeaf6ae30385c22b2f750c8c24c9c3959a0`.
+
+There were 11664 flat-state, 11224 long-state and 11224 short-state comparisons.
+880 open-position comparisons were unreachable because the entry/protection
+path had already removed the position; they are explicitly reported, not
+counted as successful comparisons. All five commands won:
+12667 NOP/HOLD, 4859 BUY, 5184 SELL, 6031 CLOSE_LONG and 5371 CLOSE_SHORT.
+The new traceability assertions were not loosened after inspecting results.
+
+Public aggregate: `docs/audits/evidence/systematic_strategy_matrix_20261026/SUMMARY.json`.
+This is execution/arbitration evidence for the declared baseline grid. It is
+not evidence that a trained policy learns the injected decisions, nor a DEAP
+optimum. C4 separately failed learning qualification on all three seeds.

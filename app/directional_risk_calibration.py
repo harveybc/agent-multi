@@ -10,6 +10,19 @@ from env_plugins.hybrid_orders import HybridOrderEnv
 class DirectionalRisk:
     genes: tuple
 
+    @classmethod
+    def from_json(cls,path):
+        import json
+        from pathlib import Path
+        value=json.loads(Path(path).read_text())
+        require(isinstance(value,dict) and set(value)=={'schema','long','short'},'STRATEGY_CONFIG_KEYS')
+        require(value['schema']=='directional_strategy_parameters.v1','STRATEGY_CONFIG_SCHEMA')
+        names=('tp_fraction','sl_fraction','order_fraction')
+        for side in ('long','short'):
+            require(isinstance(value[side],dict) and set(value[side])==set(names),'STRATEGY_SIDE_KEYS')
+            require(all(type(value[side][name]) in (int,float) for name in names),'STRATEGY_NUMERIC_PARAMETER')
+        return cls(tuple(float(value[side][name]) for side in ('long','short') for name in names))
+
     def __post_init__(self):
         require(len(self.genes)==6 and all(math.isfinite(x) and 0<=x<=1 for x in self.genes),
                 'DIRECTIONAL_RISK_DOMAIN')

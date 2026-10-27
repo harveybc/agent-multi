@@ -33,7 +33,7 @@ def setup(recipe_path,engine_root):
     return recipe,EnvConfig(**cfg)
 
 
-def environment(cell,config,shape,constant_sigma=False):
+def environment(cell,config,shape,constant_sigma=False,parameters=None):
     from app.short_horizon.expert_guided.env import BarEnv
     from app.short_horizon.expert_guided.data import calendar_from_closures
     from app.short_horizon.zigzag import causal_sigma,causal_range_sigma
@@ -47,7 +47,12 @@ def environment(cell,config,shape,constant_sigma=False):
     require(np.isfinite(sigma[WARMUP:]).all() and np.isfinite(rule[WARMUP:]).all(),'SYNTHETIC_WARMUP')
     engine=BarEnv(bars,cal,sigma,rule,ts[WARMUP],ts[-1]+pd.Timedelta(hours=1),
                   replace(config,cost_mode=cell['cost']))
-    env=HybridOrderEnv(engine,synthetic_inputs(ts,shape),learned_risk=False)
+    inputs=synthetic_inputs(ts,shape)
+    if parameters is None:
+        env=HybridOrderEnv(engine,inputs,learned_risk=False)
+    else:
+        from app.directional_risk_calibration import DirectionalOrders
+        env=DirectionalOrders(engine,inputs,parameters)
     env.reset();return env
 
 
@@ -113,11 +118,11 @@ def compare(source,model,commands,label):
                         for t in expected.engine.trades])
 
 
-def run_cell(cell,config,recipe,model,constant_sigma=False):
+def run_cell(cell,config,recipe,model,constant_sigma=False,parameters=None):
     shape=(recipe['tensor']['window']['observations'],recipe['list']['n'])
     results=[];absent=[]
     for anchor in (WARMUP+cell['switch']-2,WARMUP+cell['switch']+2):
-        source=environment(cell,config,shape,constant_sigma)
+        source=environment(cell,config,shape,constant_sigma,parameters)
         while source.bar<anchor:step(source,0)
         mask=source.mask()
         require(mask[1]==mask[2],'ASYMMETRIC_ENTRY_MASK')
@@ -148,15 +153,27 @@ def run(a):
     for name,sha in parent['code']['engine'].items():
         require(file_sha(a.engine_root/name)==sha,'ENGINE_SOURCE_PIN:'+name)
     recipe,config=setup(a.recipe,a.engine_root)
+    parameters=None
+    if a.strategy_config is not None:
+        from app.directional_risk_calibration import DirectionalRisk
+        parameters=DirectionalRisk.from_json(a.strategy_config)
     source=dict(agent=source_pins(ROOT,('app','agent_plugins','env_plugins','tools')),
                 engine=source_pins(a.engine_root,('app',)))
     identity=dict(schema='systematic_strategy_matrix.v1',recipe_sha256=file_sha(a.recipe),
         sources=source,expected_cells=5832,limit=a.limit,financial_admission=False,
-        actual_training_steps=0,oracle='four-bar finite alternatives, diagnostic lookahead')
+        actual_training_steps=0,oracle='four-bar finite alternatives, diagnostic lookahead',
+        strategy_config_sha256=file_sha(a.strategy_config) if a.strategy_config else None,
+        strategy_genes=list(parameters.genes) if parameters else None)
     a.output.mkdir(parents=True,exist_ok=True)
     lock=(a.output/'RUN.lock').open('a');fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
     if (a.output/'IDENTITY.json').exists():require(read(a.output/'IDENTITY.json')==identity,'MATRIX_IDENTITY')
     else:write(a.output/'IDENTITY.json',identity)
+    if (a.output/'CLOSE.json').exists():
+        close=read(a.output/'CLOSE.json')
+        for name,sha in close['artifacts'].items():
+            path=(a.output/name).resolve()
+            require(path.is_relative_to(a.output.resolve()) and file_sha(path)==sha,'MATRIX_CLOSE_HASH')
+        print(json.dumps(close['summary']),flush=True);return
     from tools.rl_subset_bridge import build_model
     shape=(recipe['tensor']['window']['observations'],recipe['list']['n'])
     model=build_model(environment(next(cells()),config,shape),recipe,7,'cpu',
@@ -164,14 +181,18 @@ def run(a):
     monotonic=[]
     for side in (-1,1):
         cell=dict(before=side,after=side,vol_before=0.,vol_after=0.,switch=60,period=24,phase=0,cost='zero_cost')
-        result=run_cell(cell,config,recipe,model,constant_sigma=True)
+        result=run_cell(cell,config,recipe,model,constant_sigma=True,parameters=parameters)
         flats=[r for r in result['comparisons'] if r['state']=='FLAT']
         require(len(flats)==2 and all(r['chosen']==(1 if side==1 else 2) for r in flats),'MONOTONIC_DIRECTION')
         require(all(r['values'][str(1 if side==1 else 2)]>0 and
                     r['values'][str(2 if side==1 else 1)]<0 for r in flats),'MONOTONIC_PROFIT_SIGN')
         monotonic.append(result)
     write(a.output/'MONOTONIC.json',monotonic)
-    write(a.output/'BROKER_EVENTS.json',witnesses(config,shape))
+    factory=None
+    if parameters is not None:
+        from app.directional_risk_calibration import DirectionalOrders
+        factory=lambda engine,inputs:DirectionalOrders(engine,inputs,parameters)
+    write(a.output/'BROKER_EVENTS.json',witnesses(config,shape,factory))
     rows=[];started=time.monotonic();matrix=list(cells())
     if a.limit is not None:
         require(0<a.limit<=len(matrix),'SMOKE_LIMIT')
@@ -182,7 +203,7 @@ def run(a):
             r=read(path);require(r['identity_sha256']==digest(identity) and r['cell']==cell,'CELL_IDENTITY')
         else:
             try:
-                r=dict(state='PASS',**run_cell(cell,config,recipe,model))
+                r=dict(state='PASS',**run_cell(cell,config,recipe,model,parameters=parameters))
             except Exception as error:
                 r=dict(state='FAIL',cell=cell,error_type=type(error).__name__,error=str(error))
             r.update(identity_sha256=digest(identity));write(path,r)
@@ -209,5 +230,6 @@ if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--recipe',type=Path,required=True);p.add_argument('--engine-root',type=Path,required=True)
     p.add_argument('--source-spec',type=Path,required=True)
+    p.add_argument('--strategy-config',type=Path)
     p.add_argument('--output',type=Path,required=True);p.add_argument('--limit',type=int)
     run(p.parse_args())

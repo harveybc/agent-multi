@@ -32,7 +32,7 @@ def summary_env(env):
     return dict(metrics=report,commands=env.order_counts,trades=clean(env.engine.trades))
 
 
-def witnesses(config,shape):
+def witnesses(config,shape,env_factory=None):
     import pandas as pd
     from app.short_horizon.expert_guided.env import BarEnv
     from app.short_horizon.expert_guided.data import calendar_from_closures
@@ -47,7 +47,9 @@ def witnesses(config,shape):
             bars=pd.DataFrame(dict(OPEN=1.1,HIGH=1.10001,LOW=1.09999,CLOSE=1.1),index=ts)
             engine=BarEnv(bars,cal,np.full(120,.001),np.full(120,.002),ts[0],
                           ts[-1]+pd.Timedelta(hours=1),config)
-            env=HybridOrderEnv(engine,synthetic_inputs(ts,shape),gamma=.99,learned_risk=False)
+            inputs=synthetic_inputs(ts,shape)
+            env=(HybridOrderEnv(engine,inputs,gamma=.99,learned_risk=False) if env_factory is None
+                 else env_factory(engine,inputs))
             obs,_=env.reset()
             require(not obs['action_mask'][1],'REOPEN_DELAY')
             def step(cmd):return env.step([cmd,.5,.5,.5])
@@ -56,7 +58,7 @@ def witnesses(config,shape):
             obs,*_=step(1 if side==1 else 2)
             pos=engine.pos
             require(pos is not None and pos.entry_bar==before+1,'NEXT_OPEN')
-            require(pos.units==config.sizing.order_units(config.capital,1.1,1.),'ACTUAL_SIZING')
+            require(pos.units==config.sizing.order_units(config.capital,1.1,env.engine.cfg.percentual_order_size),'ACTUAL_SIZING')
             require(not obs['action_mask'][1] and not obs['action_mask'][2],'NO_PYRAMID_OR_REVERSE')
             k=env.bar+1
             if scenario in ('SL','TP','both','gap','close_before_SL','close_before_TP'):

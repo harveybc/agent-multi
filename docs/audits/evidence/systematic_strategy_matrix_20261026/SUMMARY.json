@@ -1,0 +1,23 @@
+{
+  "state": "PASS_DECLARED_GRID",
+  "cells": 5832,
+  "failures": 0,
+  "comparisons": {
+    "FLAT": 11664,
+    "FLAT_NOP_ONLY": 0,
+    "LONG": 11224,
+    "SHORT": 11224
+  },
+  "chosen": {
+    "0": 12667,
+    "1": 4859,
+    "2": 5184,
+    "3": 6031,
+    "4": 5371
+  },
+  "unreachable": 880,
+  "seconds": 528.8564803970003,
+  "financial_admission": false,
+  "training_steps": 0,
+  "finished_at": "2026-10-27T00:39:32.325818+00:00"
+}

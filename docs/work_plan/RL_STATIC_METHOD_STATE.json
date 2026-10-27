@@ -1,7 +1,7 @@
 {
   "schema": "rl_static_engineering_state.v1",
   "updated_on": "2026-10-26",
-  "current_stage": "C4_LEARNING_QUALIFICATION_RUNNING_NO_FINANCIAL_ADMISSION",
+  "current_stage": "EXECUTION_MATRIX_PASSED_LEARNING_QUALIFICATION_FAILED",
   "native_wrapper": {
     "plan": "80_NATIVE_SUBSET_EXECUTION.md",
     "model": "categorical PPO, grouped causal branches, residual TCN core, separate policy/value heads",
@@ -11,8 +11,8 @@
       "independent_verdict": "CONTRACT_AND_REPRODUCTION_ACCEPTED_DECISION_USE_REJECTED",
       "independent_audit_commit": "2fd4eeda",
       "correction_report": "91_CROSS_AUDIT_CORRECTIONS_AND_LEARNING_CONTROL.md",
-      "systematic_market_matrix": "plan 93: 5832 crossed market/cost cells, actual categorical head and native engine; 37 CPU tests and 12-cell smoke passed; no fitting or financial admission",
-      "next_qualification": "C4 running at e3498b48: planted_s7 actual CUDA progress verified; nine sequential units, 26 tests and both real-data preflights passed; plan 92; no new financial selection admission",
+      "systematic_market_matrix": "plan 93: 5832/5832 cells, zero failed assertions, 5837 artifacts hash-verified; 880 unreachable positioned states reported separately; no fitting or financial admission; JSON interface and 48 CPU tests in plan 95",
+      "next_qualification": "C4 complete 9/9, LEARNING_QUALIFICATION_FAILED for all planted seeds; investigate learning mechanism, not data absence; routing localization in plan 94; no new financial selection admission",
       "report": "84_OUTPUT_STRATEGY_REPORT_FOR_SATOSHI.md",
       "cross_audit": "85_OUTPUT_STRATEGY_AUDIT_REQUEST.md",
       "state": "COMPLETED_CONTRACT_WITNESSES_AND_CALIBRATION_NO_FEASIBLE_POLICY",

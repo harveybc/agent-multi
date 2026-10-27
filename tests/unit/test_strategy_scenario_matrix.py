@@ -49,3 +49,19 @@ def test_signed_profit_check_rejects_short_accounted_as_long():
     check_trade(t)
     with pytest.raises(ValueError,match='SIGNED_GROSS'):
         check_trade({**t,'gross_usd':-10.})
+
+
+def test_json_parameters_map_by_name_and_cannot_override_business(tmp_path):
+    import json
+    from app.directional_risk_calibration import DirectionalRisk
+    payload=dict(schema='directional_strategy_parameters.v1',
+        long=dict(tp_fraction=.2,sl_fraction=.3,order_fraction=.4),
+        short=dict(tp_fraction=.7,sl_fraction=.8,order_fraction=.9))
+    path=tmp_path/'parameters.json';path.write_text(json.dumps(payload))
+    r=DirectionalRisk.from_json(path)
+    assert r.for_command(1)==(.2,.3,.4) and r.for_command(2)==(.7,.8,.9)
+    payload['max_entries_per_day']=999;path.write_text(json.dumps(payload))
+    with pytest.raises(ValueError,match='STRATEGY_CONFIG_KEYS'):DirectionalRisk.from_json(path)
+    del payload['max_entries_per_day'];payload['long']['order_fraction']=True
+    path.write_text(json.dumps(payload))
+    with pytest.raises(ValueError,match='STRATEGY_NUMERIC_PARAMETER'):DirectionalRisk.from_json(path)
