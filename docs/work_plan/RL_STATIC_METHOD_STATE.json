@@ -11,7 +11,7 @@
       "independent_verdict": "CONTRACT_AND_REPRODUCTION_ACCEPTED_DECISION_USE_REJECTED",
       "independent_audit_commit": "2fd4eeda",
       "correction_report": "91_CROSS_AUDIT_CORRECTIONS_AND_LEARNING_CONTROL.md",
-      "simulation_reaudit": "report 99 and request 100 supersede the missing-dimension statement: 47628/47628 multistrength, transition-speed, volatility and multihorizon cells pass; 656736 prescribed checks; 47634 artifacts independently verified; producer d7ede10e; 103 tests; no optimized strategy or learned-policy acceptance",
+      "simulation_reaudit": "request 100 withdrawn as premature for final audit; report 99 is CONTROL evidence only (47628 cells, 656736 checks); plan 101 and producer c1e98368 now execute nine DEAP searches, fixed-tape controls, confirmation and complete optimized-finalist matrices sequentially; final report/audit emitted only after terminal evidence; no financial admission",
       "systematic_market_matrix": "plan 93: 5832/5832 cells, zero failed assertions, 5837 artifacts hash-verified; 880 unreachable positioned states reported separately; no fitting or financial admission; JSON interface and 48 CPU tests in plan 95",
       "next_qualification": "C4 complete 9/9, LEARNING_QUALIFICATION_FAILED for all planted seeds; investigate learning mechanism, not data absence; routing localization in plan 94; no new financial selection admission",
       "report": "84_OUTPUT_STRATEGY_REPORT_FOR_SATOSHI.md",
