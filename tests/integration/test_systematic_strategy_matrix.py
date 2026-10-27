@@ -123,3 +123,33 @@ def test_invalid_output_is_rejected_without_state_change(runtime):
         before=(env.bar,env.engine.balance,len(env.engine.trades),dict(env.order_counts))
         with pytest.raises(ValueError):env.step(action)
         assert (env.bar,env.engine.balance,len(env.engine.trades),env.order_counts)==before
+
+
+@pytest.mark.parametrize('mutation',['ignored_close','ignored_stop','calendar_bypass'])
+def test_broker_contract_kills_execution_mutants(runtime,monkeypatch,mutation):
+    from app.short_horizon.expert_guided.env import BarEnv
+    from tools.native_strategy_contract_study import witnesses
+    r,c,_=runtime
+    if mutation=='ignored_close':
+        original=BarEnv.step
+        def step_mutant(self,b,action,*args,**kw):
+            return original(self,b,0 if action==3 else action,*args,**kw)
+        monkeypatch.setattr(BarEnv,'step',step_mutant)
+    elif mutation=='ignored_stop':
+        original=BarEnv._risk_hit
+        def stop_mutant(self,*args,**kw):
+            hit=original(self,*args,**kw)
+            return None if hit is not None and hit[0]=='SL' else hit
+        monkeypatch.setattr(BarEnv,'_risk_hit',stop_mutant)
+    else:
+        monkeypatch.setattr(BarEnv,'entry_gate',lambda *args:(True,'OK'))
+    with pytest.raises(ValueError):witnesses(c,(13,r['list']['n']))
+
+
+def test_removed_costs_in_engine_are_detected(runtime,monkeypatch):
+    from app.short_horizon.expert_guided.env import BarEnv
+    from tools.systematic_strategy_matrix import outcome
+    r,c,_=runtime;env=environment({**list(cells())[-1],'cost':'configured'},c,(13,r['list']['n']))
+    while env.bar<WARMUP+30:step(env,0)
+    monkeypatch.setattr(BarEnv,'_fill_cost',lambda *args,**kw:dict(spread=0.,slippage=0.,commission=0.))
+    with pytest.raises(ValueError,match='INDEPENDENT_'):outcome(env,1,4,True)

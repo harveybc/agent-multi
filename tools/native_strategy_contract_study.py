@@ -88,7 +88,7 @@ def witnesses(config,shape,env_factory=None):
             if scenario=='missing_window':env.valid[env.bar+1:env.bar+4]=False
             if scenario in ('close','daily_cap','close_before_SL','close_before_TP'):
                 obs,*_=step(close)
-                require(engine.trades[-1]['close_reason']=='AGENT_CLOSE','DISCRETIONARY_CLOSE')
+                require(bool(engine.trades) and engine.trades[-1]['close_reason']=='AGENT_CLOSE','DISCRETIONARY_CLOSE')
                 if scenario=='daily_cap':require(obs['action_mask'].tolist()==[1,0,0,0,0],'DAILY_CAP')
             else:
                 _,_,_,_,info=step(0)
