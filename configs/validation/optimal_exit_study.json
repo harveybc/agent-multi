@@ -1,0 +1,13 @@
+{
+  "schema": "optimal_exit_study.v1",
+  "scope": "SYNTHETIC_NATIVE_EXIT_QUALIFICATION_NOT_FINANCIAL",
+  "seeds": [7, 19, 43],
+  "deap": {"population": 20, "generations": 100, "patience": 10, "tolerance": 1e-8},
+  "objectives": ["negative_exit_regret", "sharpe", "sharpe_return"],
+  "head_bias_bounds": [-2.0, 2.0],
+  "reward_modes": ["dense_regret", "terminal_regret"],
+  "learning": {"total_timesteps": 32768, "n_steps": 256, "batch_size": 128, "n_epochs": 5, "gamma": 1.0},
+  "corpus": {"train_cases": 144, "confirmation_cases": 64, "window": 13, "stride": 2},
+  "risk_parameters": "frozen; six directional fractions [0.5,0.5,0.2] repeated",
+  "financial_admission": false
+}

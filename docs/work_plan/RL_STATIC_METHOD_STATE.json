@@ -1,7 +1,24 @@
 {
   "schema": "rl_static_engineering_state.v1",
   "updated_on": "2026-10-27",
-  "current_stage": "FINAL_STRATEGY_AUDIT_REJECTED_LEARNING_QUALIFICATION_FAILED",
+  "current_stage": "OPTIMAL_EARLY_EXIT_QUALIFICATION_PRIORITY",
+  "optimal_early_exit": {
+    "plan": "107_OPTIMAL_EARLY_EXIT_PRIORITY.md",
+    "scope": "existing-position exit optimum, not entry/pivot selection",
+    "focused_tests_passed": 30,
+    "native_cases_checked": 208,
+    "native_executable_exits_checked": 6840,
+    "cases_with_early_exit_optimum": 193,
+    "sequence": ["native corpus and blind controls", "nine DEAP close-bias searches", "six synthetic PPO reward controls", "evaluation and immutable close"],
+    "deap_population": 20,
+    "deap_generation_cap": 100,
+    "deap_patience": 10,
+    "deap_relative_tolerance": 1e-8,
+    "full_study_state": "PREPARING_FROZEN_DEPLOYMENT",
+    "learning_qualified": false,
+    "financial_selection_admitted": false,
+    "entry_and_exit_targets_separate": true
+  },
   "quote_behavior_repair": {
     "plan": "103_QUOTE_AND_BEHAVIOR_REPAIR.md",
     "engine_commit": "842320a",

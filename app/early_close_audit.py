@@ -7,7 +7,7 @@ import math
 
 
 def audit_episode(row):
-    if row['mode'] not in ('ideal','position_long','position_short'):
+    if row['mode'] not in ('ideal','position_long','position_short','position_optimal_long','position_optimal_short'):
         raise ValueError('IDEAL_ONLY')
     counts = Counter()
     failures = []
@@ -44,7 +44,7 @@ def audit_episode(row):
         if not all(math.isfinite(x) for x in (close, hold)):
             failures.append([b, 'NONFINITE_REFERENCE'])
             continue
-        required = close > hold
+        required = close >= hold if expected.get('tie_policy')=='EARLIEST_CLOSE' else close > hold
         if not required:
             counts[f'{side}.hold_preferred'] += 1
             if cmd != 0:
