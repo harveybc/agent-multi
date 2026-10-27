@@ -1,0 +1,236 @@
+{
+ "calibration/sharpe_s7": {
+  "agent_closes": 52,
+  "outcomes": {
+   "TP|hold_better": 13,
+   "FORCED_FLAT|hold_better": 17,
+   "FORCED_FLAT|close_better": 9,
+   "SL|close_better": 13
+  },
+  "close_minus_hold_pips": 109.43940504583138,
+  "opens_by_gain_vs_risk": {
+   "gain>=risk": 142,
+   "gain<risk": 58
+  },
+  "net_usd_by_gain_vs_risk": {
+   "gain>=risk": 6206.74,
+   "gain<risk": 1510.18
+  }
+ },
+ "calibration/sharpe_return_s7": {
+  "agent_closes": 51,
+  "outcomes": {
+   "TP|hold_better": 12,
+   "FORCED_FLAT|hold_better": 18,
+   "FORCED_FLAT|close_better": 11,
+   "SL|close_better": 10
+  },
+  "close_minus_hold_pips": 108.10377047413833,
+  "opens_by_gain_vs_risk": {
+   "gain<risk": 79,
+   "gain>=risk": 115
+  },
+  "net_usd_by_gain_vs_risk": {
+   "gain<risk": 7857.13,
+   "gain>=risk": 18760.73
+  }
+ },
+ "calibration/sharpe_return_activity_s43": {
+  "agent_closes": 51,
+  "outcomes": {
+   "TP|hold_better": 12,
+   "FORCED_FLAT|hold_better": 18,
+   "FORCED_FLAT|close_better": 11,
+   "SL|close_better": 10
+  },
+  "close_minus_hold_pips": 89.38074747537495,
+  "opens_by_gain_vs_risk": {
+   "gain>=risk": 133,
+   "gain<risk": 63
+  },
+  "net_usd_by_gain_vs_risk": {
+   "gain>=risk": 20726.7,
+   "gain<risk": 5711.48
+  }
+ },
+ "calibration/control_0": {
+  "agent_closes": 44,
+  "outcomes": {
+   "TP|hold_better": 17,
+   "FORCED_FLAT|hold_better": 16,
+   "SL|close_better": 4,
+   "FORCED_FLAT|close_better": 7
+  },
+  "close_minus_hold_pips": -102.63140256437374,
+  "opens_by_gain_vs_risk": {
+   "gain<risk": 100,
+   "gain>=risk": 101
+  },
+  "net_usd_by_gain_vs_risk": {
+   "gain<risk": 5149.85,
+   "gain>=risk": 10322.25
+  }
+ },
+ "calibration/control_1": {
+  "agent_closes": 49,
+  "outcomes": {
+   "TP|hold_better": 14,
+   "FORCED_FLAT|hold_better": 18,
+   "FORCED_FLAT|close_better": 10,
+   "SL|close_better": 7
+  },
+  "close_minus_hold_pips": 14.011370637413386,
+  "opens_by_gain_vs_risk": {
+   "gain<risk": 82,
+   "gain>=risk": 116
+  },
+  "net_usd_by_gain_vs_risk": {
+   "gain<risk": 1059.53,
+   "gain>=risk": 3071.21
+  }
+ },
+ "calibration/control_2": {
+  "agent_closes": 49,
+  "outcomes": {
+   "TP|hold_better": 14,
+   "FORCED_FLAT|hold_better": 18,
+   "FORCED_FLAT|close_better": 10,
+   "SL|close_better": 7
+  },
+  "close_minus_hold_pips": 14.011370637413386,
+  "opens_by_gain_vs_risk": {
+   "gain<risk": 82,
+   "gain>=risk": 116
+  },
+  "net_usd_by_gain_vs_risk": {
+   "gain<risk": 5433.0,
+   "gain>=risk": 16653.8
+  }
+ },
+ "confirmation/sharpe_s7": {
+  "agent_closes": 65,
+  "outcomes": {
+   "TP|hold_better": 13,
+   "SL|close_better": 21,
+   "FORCED_FLAT|hold_better": 17,
+   "FORCED_FLAT|close_better": 14
+  },
+  "close_minus_hold_pips": 62.85475300556783,
+  "opens_by_gain_vs_risk": {
+   "gain<risk": 61,
+   "gain>=risk": 158
+  },
+  "net_usd_by_gain_vs_risk": {
+   "gain<risk": 810.14,
+   "gain>=risk": 7206.94
+  }
+ },
+ "confirmation/sharpe_return_s7": {
+  "agent_closes": 75,
+  "outcomes": {
+   "TP|hold_better": 17,
+   "FORCED_FLAT|hold_better": 23,
+   "SL|close_better": 18,
+   "FORCED_FLAT|close_better": 17
+  },
+  "close_minus_hold_pips": 108.60092157501936,
+  "opens_by_gain_vs_risk": {
+   "gain<risk": 75,
+   "gain>=risk": 137
+  },
+  "net_usd_by_gain_vs_risk": {
+   "gain<risk": 3821.11,
+   "gain>=risk": 22713.19
+  }
+ },
+ "confirmation/sharpe_return_activity_s43": {
+  "agent_closes": 74,
+  "outcomes": {
+   "TP|hold_better": 14,
+   "SL|close_better": 22,
+   "FORCED_FLAT|hold_better": 21,
+   "FORCED_FLAT|close_better": 17
+  },
+  "close_minus_hold_pips": 161.80557999566628,
+  "opens_by_gain_vs_risk": {
+   "gain<risk": 63,
+   "gain>=risk": 150
+  },
+  "net_usd_by_gain_vs_risk": {
+   "gain<risk": 2422.35,
+   "gain>=risk": 23786.52
+  }
+ },
+ "confirmation/control_0": {
+  "agent_closes": 61,
+  "outcomes": {
+   "TP|hold_better": 22,
+   "FORCED_FLAT|hold_better": 18,
+   "SL|close_better": 12,
+   "FORCED_FLAT|close_better": 9
+  },
+  "close_minus_hold_pips": 62.86388728506623,
+  "opens_by_gain_vs_risk": {
+   "gain<risk": 98,
+   "gain>=risk": 123
+  },
+  "net_usd_by_gain_vs_risk": {
+   "gain<risk": 4412.36,
+   "gain>=risk": 11220.67
+  }
+ },
+ "confirmation/control_1": {
+  "agent_closes": 69,
+  "outcomes": {
+   "TP|hold_better": 13,
+   "FORCED_FLAT|hold_better": 20,
+   "SL|close_better": 17,
+   "FORCED_FLAT|close_better": 19
+  },
+  "close_minus_hold_pips": 205.12778495575526,
+  "opens_by_gain_vs_risk": {
+   "gain<risk": 74,
+   "gain>=risk": 143
+  },
+  "net_usd_by_gain_vs_risk": {
+   "gain<risk": 629.31,
+   "gain>=risk": 3531.32
+  }
+ },
+ "confirmation/control_2": {
+  "agent_closes": 69,
+  "outcomes": {
+   "TP|hold_better": 13,
+   "FORCED_FLAT|hold_better": 20,
+   "SL|close_better": 17,
+   "FORCED_FLAT|close_better": 19
+  },
+  "close_minus_hold_pips": 205.12778495575526,
+  "opens_by_gain_vs_risk": {
+   "gain<risk": 74,
+   "gain>=risk": 143
+  },
+  "net_usd_by_gain_vs_risk": {
+   "gain<risk": 3248.14,
+   "gain>=risk": 18638.65
+  }
+ },
+ "confirmation/midpoint_inverted": {
+  "agent_closes": 64,
+  "outcomes": {
+   "SL|close_better": 25,
+   "TP|hold_better": 12,
+   "FORCED_FLAT|close_better": 17,
+   "FORCED_FLAT|hold_better": 10
+  },
+  "close_minus_hold_pips": -14.207516862567743,
+  "opens_by_gain_vs_risk": {
+   "gain<risk": 219,
+   "gain>=risk": 2
+  },
+  "net_usd_by_gain_vs_risk": {
+   "gain<risk": -19814.93,
+   "gain>=risk": -146.51
+  }
+ }
+}

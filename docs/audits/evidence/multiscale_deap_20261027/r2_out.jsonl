@@ -1,0 +1,12 @@
+{"id": "sharpe_s7", "state_file_equal": true, "payload_digest_equal": true, "best": true, "generation": 100, "stop": "MAX_GENERATIONS"}
+{"id": "sharpe_return_s7", "state_file_equal": true, "payload_digest_equal": true, "best": true, "generation": 100, "stop": "MAX_GENERATIONS"}
+{"id": "sharpe_return_activity_s7", "state_file_equal": true, "payload_digest_equal": true, "best": true, "generation": 100, "stop": "MAX_GENERATIONS"}
+{"id": "sharpe_s19", "state_file_equal": true, "payload_digest_equal": true, "best": true, "generation": 83, "stop": "PATIENCE"}
+{"id": "sharpe_return_s19", "state_file_equal": true, "payload_digest_equal": true, "best": true, "generation": 100, "stop": "MAX_GENERATIONS"}
+{"id": "sharpe_return_activity_s19", "state_file_equal": true, "payload_digest_equal": true, "best": true, "generation": 100, "stop": "MAX_GENERATIONS"}
+{"id": "sharpe_s43", "state_file_equal": true, "payload_digest_equal": true, "best": true, "generation": 69, "stop": "PATIENCE"}
+{"id": "sharpe_return_s43", "state_file_equal": true, "payload_digest_equal": true, "best": true, "generation": 100, "stop": "MAX_GENERATIONS"}
+{"id": "sharpe_return_activity_s43", "state_file_equal": true, "payload_digest_equal": true, "best": true, "generation": 100, "stop": "MAX_GENERATIONS"}
+{"resume": "sharpe_s7", "stopped_at": 37, "payload_digest_equal": true}
+{"resume": "sharpe_return_activity_s43", "stopped_at": 37, "payload_digest_equal": true}
+{"cache_hits": 16328, "cache_misses": 0}

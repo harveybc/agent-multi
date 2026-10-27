@@ -1,0 +1,6 @@
+{"id": "sharpe_s7", "verify_equal_stored": true, "genes_bound": true, "strategy_sha_bound": true, "agent_sources_equal_identity": true, "engine_sources_equal_identity": true, "seconds": 47.68371629714966, "tamper": "REJECTED:SUMMARY_COUNTS"}
+{"id": "sharpe_return_s7", "verify_equal_stored": true, "genes_bound": true, "strategy_sha_bound": true, "agent_sources_equal_identity": true, "engine_sources_equal_identity": true, "seconds": 53.010688066482544, "tamper": "REJECTED:SUMMARY_COUNTS"}
+{"id": "sharpe_return_activity_s43", "verify_equal_stored": true, "genes_bound": true, "strategy_sha_bound": true, "agent_sources_equal_identity": true, "engine_sources_equal_identity": true, "seconds": 51.60451531410217, "tamper": "REJECTED:SUMMARY_COUNTS"}
+{"id": "sharpe_s7", "resimulated": 40, "identical": 40, "diffs": [], "seconds": 1.7831566333770752}
+{"id": "sharpe_return_s7", "resimulated": 40, "identical": 40, "diffs": [], "seconds": 1.8326835632324219}
+{"id": "sharpe_return_activity_s43", "resimulated": 40, "identical": 40, "diffs": [], "seconds": 1.836756706237793}
