@@ -69,6 +69,9 @@ def check_trade(trade):
     t=trade;d=t['direction'];u=t['units']
     require(d in (-1,1) and u>0,'SIDE_AND_UNITS')
     expected=d*u*(t['exit_price']-t['entry_price'])
+    if t.get('execution_price_mode')=='bid_ask_v3':
+        require(math.isclose(t['quote_gross_usd'],expected,rel_tol=1e-10,abs_tol=1e-8),'QUOTE_GROSS')
+        expected+=t['spread_usd']
     require(math.isclose(t['gross_usd'],expected,rel_tol=1e-10,abs_tol=1e-8),'SIGNED_GROSS')
     costs=sum(t[k] for k in ('spread_usd','slippage_usd','commission_usd','financing_usd'))
     require(math.isclose(t['net_usd'],expected-costs,rel_tol=1e-10,abs_tol=1e-8),'NET_ACCOUNTING')

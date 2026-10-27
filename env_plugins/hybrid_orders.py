@@ -101,7 +101,9 @@ class HybridOrderEnv(RecipeNativeEnv):
             before=equity(self.engine,self.bar)
             cfg=self.engine.cfg
             if cmd in (1,2):
-                self.engine.cfg=replace(cfg,sizing=FillSizing(cfg.sizing,self.engine.o[self.bar+1]))
+                price=(self.engine.entry_fill_price(self.bar+1,1 if cmd==1 else -1)
+                       if hasattr(self.engine,'entry_fill_price') else self.engine.o[self.bar+1])
+                self.engine.cfg=replace(cfg,sizing=FillSizing(cfg.sizing,price))
             try:
                 executed=self.engine.step(self.bar,cmd,tp,sl)
             finally:
