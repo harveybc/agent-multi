@@ -324,21 +324,31 @@ def run(a):
     shape=(recipe['tensor']['window']['observations'],recipe['list']['n'])
     model=build_model(environment(next(cells()),config,shape),recipe,7,'cpu',
                        dict(n_steps=8,batch_size=8,n_epochs=1))
-    monotonic=[]
+    monotonic=[];preflight_failures=[]
     for side in (-1,1):
         cell=dict(before=side,after=side,vol_before=0.,vol_after=0.,switch=60,period=24,phase=0,cost='zero_cost')
-        result=run_cell(cell,config,recipe,model,constant_sigma=True,parameters=parameters)
-        flats=[r for r in result['comparisons'] if r['state']=='FLAT']
-        require(len(flats)==2 and all(r['chosen']==(1 if side==1 else 2) for r in flats),'MONOTONIC_DIRECTION')
-        require(all(r['values'][str(1 if side==1 else 2)]>0 and
-                    r['values'][str(2 if side==1 else 1)]<0 for r in flats),'MONOTONIC_PROFIT_SIGN')
-        monotonic.append(result)
+        try:
+            result=run_cell(cell,config,recipe,model,constant_sigma=True,parameters=parameters)
+            flats=[r for r in result['comparisons'] if r['state']=='FLAT']
+            require(len(flats)==2 and all(r['chosen']==(1 if side==1 else 2) for r in flats),'MONOTONIC_DIRECTION')
+            require(all(r['values'][str(1 if side==1 else 2)]>0 and
+                        r['values'][str(2 if side==1 else 1)]<0 for r in flats),'MONOTONIC_PROFIT_SIGN')
+            monotonic.append(result)
+        except ValueError as error:
+            if design is None:raise
+            preflight_failures.append(dict(scope='monotonic',side=side,error=str(error)))
     write(a.output/'MONOTONIC.json',monotonic)
     factory=None
     if parameters is not None:
         from app.directional_risk_calibration import DirectionalOrders
         factory=lambda engine,inputs:DirectionalOrders(engine,inputs,parameters)
-    write(a.output/'BROKER_EVENTS.json',witnesses(config,shape,factory))
+    try:
+        write(a.output/'BROKER_EVENTS.json',witnesses(config,shape,factory))
+    except ValueError as error:
+        if design is None:raise
+        preflight_failures.append(dict(scope='broker_events',error=str(error)))
+        write(a.output/'BROKER_EVENTS.json',dict(state='FAIL',error=str(error)))
+    write(a.output/'PREFLIGHT_FAILURES.json',preflight_failures)
     write(a.output/'PRESCRIBED_HEADS.json',dict(checks=prescribed_head_checks(),failures=0))
     rows=[];started=time.monotonic()
     if a.limit is not None:
@@ -368,13 +378,14 @@ def run(a):
             write(a.output/'STATUS.json',dict(state='RUNNING',complete=len(rows),total=a.limit or expected_cells,
                 failed=sum(x['state']=='FAIL' for x in rows),seconds=time.monotonic()-started,at=now()))
     if pool is not None:pool.shutdown(wait=True)
-    failures=[r for r in rows if r['state']=='FAIL']
+    failures=[r for r in rows if r['state']=='FAIL']+preflight_failures
     counts={s:sum(x['state']==s for r in rows for x in r.get('comparisons',[])) for s in ('FLAT','FLAT_NOP_ONLY','LONG','SHORT')}
     wins={str(cmd):sum(x['chosen']==cmd for r in rows for x in r.get('comparisons',[])) for cmd in range(5)}
     full=len(rows)==expected_cells and a.limit is None
     coverage=all(counts[s]>0 for s in ('FLAT','LONG','SHORT')) and all(wins[str(cmd)]>0 for cmd in range(5))
     state='PASS_DECLARED_GRID' if full and not failures and coverage else 'SMOKE_ONLY' if not full and not failures else 'FAIL'
     summary=dict(state=state,cells=len(rows),failures=len(failures),comparisons=counts,chosen=wins,
+        preflight_failures=len(preflight_failures),
         prescribed_checks=sum(len(r.get('prescribed',[])) for r in rows),
         axes=design['axes'] if design else None,
         unreachable=sum(len(r.get('unreachable',[])) for r in rows),seconds=time.monotonic()-started,

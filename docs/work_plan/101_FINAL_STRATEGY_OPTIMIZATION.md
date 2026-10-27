@@ -29,8 +29,12 @@ that purpose. Control run d7ede10e remains evidence, not final acceptance.
 6. Measure one-gene endpoint sensitivity, stop/target/agent-close counts, order
    counts, effective RR, realized costs per trade and barrier break-even rate.
    Never label a numerically inactive gene or constant objective term identified.
-7. Finish all nine searches; compare calibration winners to controls. Freeze
-   finalists BEFORE confirmation. Report confirmation without retuning.
+7. Finish all nine searches; compare calibration winners to controls. The
+   highest calibration fitness seed per objective is its finalist (ties: lower
+   drawdown, then lexicographic genes). Freeze those three BEFORE confirmation.
+   Report all nine confirmation runs without retuning or choosing on them.
+   Among contract-valid finalists, the synthetic recommendation uses calibration
+   Sharpe, then return, then lower drawdown and lexicographic genes; not confirmation.
 8. Run every distinct finalist through the complete 47,628-case acceptance
    matrix with that finalist's JSON (not the midpoint JSON), broker witnesses,
    endpoint controls and independent receipt verification. A finalist failing

@@ -2,6 +2,10 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "multiscale_deap_strategy.py": {
+   "purpose": "Sequential synthetic DEAP objective comparison, immutable output tapes, controls, confirmation, complete finalist scenario verification and terminal-only final audit packet; no financial fitting",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "static RL comparison"
+  },
   "systematic_strategy_matrix.py": {
    "purpose": "CPU synthetic Cartesian trend/volatility/state/action qualification with actual categorical output path, pinned engine and non-financial bounded counterfactual oracle",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "static RL comparison"

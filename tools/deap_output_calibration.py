@@ -46,7 +46,8 @@ def evolve(folder,seed,evaluator,cfg,identity,stop_after=None,objective_name='te
         for ind,value in zip(pop,state['scores']):ind.fitness.values=(value,)
     else:
         random.seed(seed)
-        initial=[[.5,.5,1]*2,[.75,.25,.2]*2,[.75,.25,1]*2]
+        initial=cfg.get('initial_controls',[[.5,.5,1]*2,[.75,.25,.2]*2,[.75,.25,1]*2])
+        require(0<len(initial)<=cfg['population'],'INITIAL_CONTROL_COUNT')
         pop=[individual(x) for x in initial]
         pop.extend(individual(random.random() for _ in range(6)) for _ in range(cfg['population']-len(pop)))
         state=dict(generation=-1,anchor=None,patience=0,evaluations=0,history=[],stop_reason=None)
