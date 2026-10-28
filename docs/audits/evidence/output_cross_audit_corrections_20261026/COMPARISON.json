@@ -1,0 +1,123 @@
+{
+  "rows": [
+    {
+      "objective": "sharpe",
+      "seeds": 3,
+      "calibration": {
+        "sharpe": 14.979020480961276,
+        "return_fraction": 0.1090299393489762,
+        "orders_per_day": 0.8541666666666666
+      },
+      "confirmation": {
+        "sharpe": 8.855950864359485,
+        "return_fraction": 0.08853302963176048,
+        "orders_per_day": 0.873015873015873
+      },
+      "confirmation_eligible": 3
+    },
+    {
+      "objective": "sharpe_return",
+      "seeds": 3,
+      "calibration": {
+        "sharpe": 14.956444150251826,
+        "return_fraction": 0.1336479663722395,
+        "orders_per_day": 0.8541666666666666
+      },
+      "confirmation": {
+        "sharpe": 8.94265945767179,
+        "return_fraction": 0.10946484992803722,
+        "orders_per_day": 0.873015873015873
+      },
+      "confirmation_eligible": 3
+    },
+    {
+      "objective": "sharpe_return_activity",
+      "seeds": 3,
+      "calibration": {
+        "sharpe": 14.956444150251826,
+        "return_fraction": 0.1336479663722395,
+        "orders_per_day": 0.8541666666666666
+      },
+      "confirmation": {
+        "sharpe": 8.94265945767179,
+        "return_fraction": 0.10946484992803722,
+        "orders_per_day": 0.873015873015873
+      },
+      "confirmation_eligible": 3
+    }
+  ],
+  "searches": 9,
+  "unique_genomes": 3611,
+  "calibration_simulations": 21666,
+  "confirmation_simulations": 66,
+  "financial_admission": false,
+  "controls": [
+    {
+      "id": "midpoint",
+      "genes": [
+        0.5,
+        0.5,
+        1,
+        0.5,
+        0.5,
+        1
+      ],
+      "report": {
+        "parameters": {
+          "genes": [
+            0.5,
+            0.5,
+            1,
+            0.5,
+            0.5,
+            1
+          ]
+        },
+        "eligible": true,
+        "reasons": [],
+        "mean_sharpe": 12.777314909849562,
+        "mean_drawdown_pct": 0.10937389914178243,
+        "mean_profit_usd": 2086.335994908396
+      },
+      "components": {
+        "sharpe": 12.777314909849562,
+        "return_fraction": 0.2086335994908396,
+        "orders_per_day": 0.873015873015873
+      }
+    },
+    {
+      "id": "grid_control",
+      "genes": [
+        0.75,
+        0.25,
+        0.2,
+        0.75,
+        0.25,
+        0.2
+      ],
+      "report": {
+        "parameters": {
+          "genes": [
+            0.75,
+            0.25,
+            0.2,
+            0.75,
+            0.25,
+            0.2
+          ]
+        },
+        "eligible": true,
+        "reasons": [],
+        "mean_sharpe": 12.494497546383835,
+        "mean_drawdown_pct": 0.021918437599085194,
+        "mean_profit_usd": 370.3481496074919
+      },
+      "components": {
+        "sharpe": 12.494497546383835,
+        "return_fraction": 0.03703481496074919,
+        "orders_per_day": 0.873015873015873
+      }
+    }
+  ],
+  "scientific_disposition": "NOT_ADMITTED_FOR_FITNESS_OR_RISK_SELECTION"
+}

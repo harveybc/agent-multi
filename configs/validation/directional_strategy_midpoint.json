@@ -1,0 +1,5 @@
+{
+  "schema": "directional_strategy_parameters.v1",
+  "long": {"tp_fraction": 0.5, "sl_fraction": 0.5, "order_fraction": 1.0},
+  "short": {"tp_fraction": 0.5, "sl_fraction": 0.5, "order_fraction": 1.0}
+}

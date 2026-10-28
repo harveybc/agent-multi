@@ -148,6 +148,13 @@ class Plugin:
         "target_entropy": "auto",
         "use_sde": False,
         "net_arch": (256, 256),
+        "observation_encoder": "flat",
+        "shared_recipe": None,
+        "sac_regularization": None,
+        "temporal_branch_filters": 4,
+        "temporal_core_filters": 8,
+        "temporal_core_layers": 1,
+        "temporal_kernel_size": 3,
         "device": "auto",
         "agent_verbose": 0,
         "train_seed": 0,
@@ -196,9 +203,38 @@ class Plugin:
         self._require_continuous(env)
         p = self._resolve(config)
         policy_kwargs = {"net_arch": list(p["net_arch"])}
+        encoder = p["observation_encoder"]
+        if encoder not in {"flat", "per_feature_conv1d", "shared_recipe"}:
+            raise ValueError("UNKNOWN_SAC_OBSERVATION_ENCODER")
+        policy = "MlpPolicy"
+        if encoder == "per_feature_conv1d":
+            from agent_plugins.temporal_features import PerFeatureTemporalExtractor
+            policy = "MultiInputPolicy"
+            policy_kwargs.update(
+                features_extractor_class=PerFeatureTemporalExtractor,
+                features_extractor_kwargs={
+                    "branch_filters": p["temporal_branch_filters"],
+                    "core_filters": p["temporal_core_filters"],
+                    "core_layers": p["temporal_core_layers"],
+                    "kernel_size": p["temporal_kernel_size"],
+                },
+            )
+        if encoder == "shared_recipe":
+            from agent_plugins.recipe_features import RecipeTemporalExtractor
+            if p["oracle_behavior_pretrain_enabled"] or p["oracle_behavior_labels_file"]:
+                raise ValueError("SHARED_RECIPE_SAC_NO_EXPERT")
+            policy = "MultiInputPolicy"
+            policy_kwargs.update(features_extractor_class=RecipeTemporalExtractor,
+                                 features_extractor_kwargs={"recipe": p["shared_recipe"]})
+        if p.get('sac_regularization') is not None:
+            from agent_plugins.sac_regularization import RegularizedSACPolicy, validate_profile
+            if encoder != 'flat':
+                raise ValueError('SAC_REGULARIZATION_FLAT_ONLY')
+            policy=RegularizedSACPolicy
+            policy_kwargs['regularization']=validate_profile(p['sac_regularization'])
         seed = int(p["train_seed"])
         model = SAC(
-            policy="MlpPolicy",
+            policy=policy,
             env=env,
             learning_rate=float(p["learning_rate"]),
             buffer_size=int(p["buffer_size"]),
@@ -232,6 +268,10 @@ class Plugin:
         p = self._resolve(config)
         total_timesteps = int(p["total_timesteps"])
         callback = make_progress_callback({**config, **p}, total_timesteps)
+        if config.get('paired_early_stopping'):
+            from stable_baselines3.common.callbacks import CallbackList
+            from .paired_early_stopping import make_callback
+            callback = CallbackList([c for c in (callback, make_callback(config)) if c is not None])
         model.learn(total_timesteps=total_timesteps, callback=callback)
         return model
 
@@ -518,7 +558,15 @@ class Plugin:
         return target
 
     def wrap_env(self, env, config: Dict[str, Any] | None = None):
-        """Called by the pipeline before build/load — SAC needs flat obs."""
+        """Keep the temporal Dict layout only for the explicitly selected encoder."""
+        encoder = self._resolve(config or {})["observation_encoder"]
+        if encoder in {"per_feature_conv1d", "shared_recipe"}:
+            from gymnasium import spaces
+            if not isinstance(env.observation_space, spaces.Dict):
+                raise ValueError("TEMPORAL_DICT_OBSERVATION_REQUIRED")
+            return env
+        if encoder != "flat":
+            raise ValueError("UNKNOWN_SAC_OBSERVATION_ENCODER")
         return self._flatten_if_dict(env)
 
     def fitness(self, summary: Dict[str, Any], config: Dict[str, Any]) -> float:

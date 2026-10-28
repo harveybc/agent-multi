@@ -1,0 +1,27 @@
+{
+  "ideal_sl_touches": 0,
+  "probes": [
+    {
+      "gene": "sl_long",
+      "endpoint": 0.0,
+      "ideal_trajectory_exact": true
+    },
+    {
+      "gene": "sl_long",
+      "endpoint": 1.0,
+      "ideal_trajectory_exact": true
+    },
+    {
+      "gene": "sl_short",
+      "endpoint": 0.0,
+      "ideal_trajectory_exact": true
+    },
+    {
+      "gene": "sl_short",
+      "endpoint": 1.0,
+      "ideal_trajectory_exact": true
+    }
+  ],
+  "calibrated_sl": false,
+  "activity_identified": false
+}

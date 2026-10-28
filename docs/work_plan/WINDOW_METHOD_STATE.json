@@ -1,0 +1,13 @@
+{
+  "schema": "research_method_state.v1",
+  "initiative": "fixed_stride_window_study",
+  "current_stage": "closed_no_promotion",
+  "authority": "owner_2026_10_21_dale",
+  "test_design": "55_FIXED_STRIDE_WINDOW_STUDY.md#test-design-and-traceability",
+  "constraints": ["native_SAC_unchanged", "DOIN_unchanged", "stride_2", "windows_7_25_control_13", "fixed_100000", "no_early_stopping", "TRAIN_2020_2023", "VALIDATION_2024", "TEST_closed"],
+  "support_limit": "Native warmup is13/25/49 observed bars, not256; origins at the beginning differ and are reported, not imputed.",
+  "evidence": ["PRE:5 expected failures before implementation", "POST:124 focused regressions passed", "POST:77 selected checks including native WINDOW7/WINDOW25 frozen-monitor integration passed;61 deselected, not a full-suite result", "POST:128 final focused unit checks passed including automatic window queue and actual-shape prefix probes"],
+  "deployment": {"runtime": "0286775c2dc03ce5c3924cec246ddd279a037e1c", "spec_sha256": "6b407f7e298d44fa5d3244ac2d6d7e25abc8c2766d4bfcfd7fe40222f8c3a1a3", "contract_sha256": "e031cac44f0ecd63fa47ef12434206c40743d6cbd139ab0f1217eaf93aaedddd", "verified_steps": 35000, "budget": 100000, "worker_tests_passed": 51, "early_stopping": false, "retired_attempt": "NO_FITS_EXPIRED_GPU_READINESS_RECEIPT"},
+  "closure": {"completed": 2, "failed": 0, "control_validation_return_pct": -7.278253, "window7_validation_return_pct": -18.032508, "window25_validation_return_pct": -22.389432, "confirmation": "NOT_NEEDED_NO_PROMOTION", "independent_copies": 3},
+  "next_allowed_actions": ["analyse_closed_results", "owner_authorized_fine_search_in_COMPONENT_METHOD_STATE"]
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "quote_repair_grid.v1",
+  "axes": {
+    "drift_before": [-0.0004, -0.0001, 0.0, 0.0001, 0.0004],
+    "drift_after": [-0.0004, -0.0001, 0.0, 0.0001, 0.0004],
+    "vol_before": [0.00002, 0.00015, 0.0006],
+    "vol_after": [0.00002, 0.00015, 0.0006],
+    "switch": [40, 120, 180],
+    "transition": [0, 8, 24],
+    "overlay": [0.0, 0.00005],
+    "noise": ["gaussian", "student", "clustered"],
+    "shock": ["none", "gap", "jump"],
+    "seed": [7, 19, 43],
+    "mirror": [false, true],
+    "horizon": [4, 24, 72],
+    "spread_factor": [1.0, 3.0],
+    "mode": ["ideal"]
+  },
+  "genes": [0.5, 0.5, 0.2, 0.5, 0.5, 0.2],
+  "minimum_gain_risk": 1.0,
+  "scope": "ENGINEERING_REFERENCE_CONTROL_NOT_OPTIMIZED_STRATEGY"
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "sac_minimal_temporal_method.v1",
+  "current_stage": "STOPPED_PARTIAL_SUPERSEDED_BY_OWNER_FIXED_BUDGET",
+  "design": "../50_MINIMAL_TEMPORAL_SAC.md",
+  "authority": "OWNER_IMMEDIATE_CONTRAST_2026_10_20_RELEASES_TEMPORAL_PAUSE",
+  "stages_passed": ["DISCOVERY", "REQUIREMENTS", "ACCEPTANCE_TEST_DESIGN", "ARCHITECTURE", "SYSTEM_COMPONENT_UNIT_TEST_DESIGN", "UNIT_IMPLEMENTATION", "INTEGRATION_VERIFICATION", "REAL_ENGINE_CPU_ACCEPTANCE", "GPU_SYNTHETIC_ADMISSION"],
+  "verification": {
+    "local_tests_passed": 166,
+    "worker_tests_passed": 29,
+    "worker_real_temporal_monitor_passed": true,
+    "prefix_causality_and_origin_sensitivity": true,
+    "gpu_smoke_updates": 16,
+    "gpu_smoke_attempt": 1,
+    "gpu_smoke_reload_equal": true,
+    "runtime": "96e19edb",
+    "contract_sha256": "9cae5a6fb9f0b348efc42767bd05237dcd626450f76704a8ff4ac180b1aee10f",
+    "arm": "SAC_PER_FEATURE_CONV1D",
+    "real_transitions_at_followup": 5000,
+    "training_seconds_before_first_pair": 109.0488,
+    "real_checkpoint_actor_parameters": 1062,
+    "real_checkpoint_critic_parameters": 1638,
+    "real_checkpoint_target_critic_parameters": 1638,
+    "scientific_financial_result_at_start_check": "NOT_YET_COMPLETE",
+    "flat_capacity_stopped": true,
+    "flat_complete_partial_pairs_retained": 6
+  },
+  "replacement": {
+    "design": "../51_FIXED_BUDGET_TEMPORAL_SAC.md",
+    "complete_pairs_retained": 5,
+    "scientific_completion": false,
+    "physical_copy_checksum_verified": true,
+    "new_contract_sha256": "fc9c0c532d43d541df4023ab2eeeda8fa63396ea80b938476c84da53da62d68f"
+  },
+  "next_allowed_actions": ["preserve and report partial evidence", "execute newly identified fixed-budget protocol under its own method state"],
+  "blocked_actions": ["TEST for tuning", "silent flat substitution", "mix regularizers or alter early stopping", "resume stopped flat sweep as though priority had not changed", "reuse interrupted flat donor weights"],
+  "history": ["Owner released temporal pause and prioritized a minimal temporal contrast", "New temporal request tests failed before implementation", "Existing causal extractor reused without architecture rewrite", "Monitor and publication arm binding extended and tested", "Flat sweep stopped; its six complete pairs retained and mirrored", "Fresh GPU synthetic admission passed and scientific temporal worker started"]
+}

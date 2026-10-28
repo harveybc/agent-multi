@@ -1,0 +1,11 @@
+{
+  "schema": "multiscale_deap_search.v1",
+  "population": 20,
+  "generations": 100,
+  "patience": 10,
+  "tolerance": 1e-8,
+  "seeds": [7, 19, 43],
+  "objectives": ["sharpe", "sharpe_return", "sharpe_return_activity"],
+  "controls": [[0.5, 0.5, 1.0, 0.5, 0.5, 1.0], [0.75, 0.25, 0.2, 0.75, 0.25, 0.2], [0.75, 0.25, 1.0, 0.75, 0.25, 1.0]],
+  "normalizer_floors": {"sharpe": 1.0, "return_fraction": 0.01, "orders_per_day": 0.1}
+}

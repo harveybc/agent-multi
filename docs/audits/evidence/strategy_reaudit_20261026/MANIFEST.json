@@ -1,0 +1,42 @@
+{
+  "schema": "strategy_simulation_reaudit.v1",
+  "financial_admission": false,
+  "report": "docs/work_plan/96_STRATEGY_SIMULATION_REAUDIT_REPORT.md",
+  "request": "docs/work_plan/97_SATOSHI_STRATEGY_SIMULATION_REAUDIT_REQUEST.md",
+  "matrix": {
+    "code": "e3468172",
+    "cells": 5832,
+    "failed_assertions": 0,
+    "artifacts_verified": 5837,
+    "close_sha256": "807acf36d7b3e8fb1fef83ae69eadbeaf6ae30385c22b2f750c8c24c9c3959a0",
+    "unreachable_after_entry": {"SL": 764, "TP": 116, "long": 440, "short": 440},
+    "multi_strength_trend_tested": false,
+    "multiple_comparison_horizons_tested": false,
+    "comparison_horizon_bars": 4
+  },
+  "json_interface": {
+    "code": "87252b92",
+    "tests": 48,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "test_receipt_sha256": "8fdedfec7275342ac3db08619b33b124094b5e189e7f946c3b692b5a4c6849d0",
+    "pinned_smoke_cells": 12,
+    "pinned_smoke_artifacts_verified": 17,
+    "pinned_smoke_close_sha256": "ca79aa805981b71c24bb96f8bfeaa4aa2d774f2b9b4ebfd1fb1017e6e2619eeb"
+  },
+  "c4": {
+    "code": "e3498b48",
+    "units": 9,
+    "decision": "LEARNING_QUALIFICATION_FAILED",
+    "artifacts_verified": 133,
+    "close_sha256": "f6bd960dec982b250e6b4dfbe680a7e1520f208885ce70a700662fe7516896dc"
+  },
+  "direction_probe": {
+    "artifacts_verified": 5,
+    "close_sha256": "9699d6397a3b05bfe7c23849993fb454e927be775cb6fbb3df354d80fad9f5e7"
+  },
+  "engine_code": "cd6489f",
+  "new_deap_search_completed": false,
+  "optimized_strategy_accepted": false
+}

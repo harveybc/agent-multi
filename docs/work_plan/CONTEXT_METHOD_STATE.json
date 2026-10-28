@@ -1,0 +1,12 @@
+{
+  "schema": "research_method_state.v1",
+  "initiative": "fixed_budget_temporal_context",
+  "current_stage": "operating_verified_native_training",
+  "authority": "owner_2026_10_20",
+  "problem": "Poor validation generalization has not been attributed to overtraining; compare context without changing tensor capacity.",
+  "constraints": ["native_SAC_unchanged", "no_DOIN_changes", "fixed_100000", "no_expensive_early_stopping", "TRAIN_2020_2023", "VALIDATION_2024", "TEST_closed", "one_heavy_GPU_process"],
+  "test_design": "54_FIXED_BUDGET_CONTEXT_STUDY.md#traceability--test-design",
+  "evidence": ["125 focused regressions passed including native real-engine monitor integration", "120 focused CPU checks passed including three real-preprocessor context/prefix probes", "16 final context tests and 35 worker tests passed", "PRE: three intended context contract failures before implementation", "runtime 9aa461dd717a3a305f196b6ee6977ac076ef2f7c", "spec faab4d09ef98d4e1cf1fed8613fc79cbd16e06a61a81b15a2c8a8926736b8861", "worker/publication/independent-collection timers enabled; first dispatch WAIT_PREDECESSOR"],
+  "launch_evidence": {"predecessor_closed": 10, "predecessor_failed": 0, "first_stride": 1, "observed_transitions": 1000, "total_transitions": 100000, "elapsed_seconds": 12.4763, "early_stopping": false, "contract_sha256": "eaeb5fd40805100db8343bbca8ecf16203fce5d6f7fdfbec39e73382519c8112", "receipt": "LAUNCH_VERIFIED.json"},
+  "next_allowed_actions": ["execute_finite_context_queue", "publish_and_collect", "analyse_closed_context_results"]
+}

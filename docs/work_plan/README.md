@@ -56,6 +56,27 @@ trading domain.
 
 ## Document Map
 
+Current2026-10-22 follow-up: [shared selection and independent SAC consumption](59_SHARED_SELECTION_RL_HANDOFF.md).
+The repaired v3 selection is aggregated; final consumer/audit and fixed-scaler
+integration precede a fresh SAC sequence. The old window queue remains held.
+Previous2026-10-21 follow-up: [fine window and component optimization](56_COMPONENT_OPTIMIZATION.md).
+New planned successor after that window grid: [incremental feature subsets](57_INCREMENTAL_FEATURE_SUBSETS.md),
+before extractor/capacity refinements, without modifying the active queue.
+Weekly adaptation LAST; per-feature Dense requires a matched comparison, not
+automatic reuse of differently configured historical flat SAC results.
+The [coarse window study](55_FIXED_STRIDE_WINDOW_STUDY.md) closed2/2, no promotion:
+window7=-18.03%,13=-7.28%,25=-22.39% in VALIDATION2024.
+The prior [stride contrast](54_FIXED_BUDGET_CONTEXT_STUDY.md) closed2/2 with no
+promotion: validation stride1=-8.96%,stride2=-7.28%,stride4=-26.08%.
+Native SAC stays fixed-budget; the separate finite BC/DAgger monitor contrast
+does not authorize expensive native early stopping or additional monitor sweeps.
+Previous side study: [controlled modular specialists](53_MODULAR_SPECIALISTS_FOLLOWUP.md).
+Previous sequence closed: [gradual temporal capacity](52_TEMPORAL_CAPACITY_SWEEP.md).
+Its completed baseline is [fixed-budget minimal temporal SAC](51_FIXED_BUDGET_TEMPORAL_SAC.md).
+This owner-approved stage supersedes the interrupted frequent-monitor temporal
+run without changing its historical evidence. Older roadmap states below are
+not assertions that the paused campaigns are still running.
+
 | Document | Purpose |
 | --- | --- |
 | [01 Architecture](01_SYSTEM_ARCHITECTURE.md) | System boundaries, repositories, decision layers, clocks, and ownership |

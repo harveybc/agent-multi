@@ -48,7 +48,13 @@ METRIC_KEYS = ["wall_seconds", "requested_timesteps", "observed_timesteps",
                "compute_minimum_training_transitions", "compute_evaluation_transitions",
                "compute_evaluation_transition_cap", "compute_cap_respected",
                "compute_evaluation_cap_respected", "compute_partial_rollout",
-               "compute_timestep_counter_was_reset"]
+               "compute_timestep_counter_was_reset",
+               "initial_cash", "final_equity", "net_profit", "total_return",
+               "max_drawdown_pct", "max_drawdown_money", "sharpe_ratio",
+               "trades_total", "trades_closed", "trades_won", "trades_lost",
+               "win_rate_pct", "avg_trade_pnl", "profit_factor", "trade_costs_total",
+               "entry_submissions", "filled_entries", "max_entries_filled_in_day",
+               "daily_entry_limit"]
 
 
 def _governed_exec():

@@ -1,0 +1,2809 @@
+{
+  "identity": {
+    "schema": "deap_output_calibration.v1",
+    "deap": "1.4",
+    "software": {
+      "torch": "2.13.0",
+      "stable-baselines3": "2.9.0",
+      "gymnasium": "1.3.0",
+      "numpy": "2.5.1",
+      "pandas": "3.0.3",
+      "pyarrow": "25.0.0"
+    },
+    "recipe_sha256": "de4d8cae55de01fb90ddc7334206c7bf6251be671f2b2476859dcd6a76aac924",
+    "spec_sha256": "05c06cb508b3e7bb9e1c33064c9dda4cd524671db62dd78d7defc5539da20f4d",
+    "source_hashes": {
+      "app/directional_risk_calibration.py": "568177a4b4e0f5d4ecbe5ab23905050cba99fe22dd85c699382103df567efb28",
+      "tools/deap_output_calibration.py": "cb09354cc61b604f65d8a43bb6c97b61c4667a21368f1ddbc88a76fd2a2d198b",
+      "tools/native_strategy_contract_study.py": "6263bcd5b9bd4796654330c51504fa7f68da73f00e75143856de736b39d7c10d",
+      "tools/synthetic_output_calibration.py": "90d89ff84648fc2b1a70f7352dfd43bb7bd634714987dbf4ec7b0d2f70ea857d",
+      "tools/native_wrapper_audit.py": "d7405815e93d73f156a17d120e6736bbf285dc9c0cc0408e326757acb8cb1dc2",
+      "app/native_strategy_contract.py": "f7df77b794f1bacc04e638ea62baa930806b4d9c42f5f76d7566ac2f6404b58a",
+      "tools/recipe_sac_queue.py": "7f6b9150d40b7a79bc9792de215f0cd7f27ed70a0d9fff6f4899416668005758"
+    },
+    "search": {
+      "population": 20,
+      "generations": 100,
+      "patience": 10,
+      "tolerance": 1e-8
+    },
+    "seeds": [
+      7,
+      19,
+      43
+    ],
+    "objectives": [
+      "sharpe",
+      "sharpe_return",
+      "sharpe_return_activity"
+    ],
+    "coefficients": [
+      1,
+      1,
+      1
+    ],
+    "calibration": [
+      [
+        0.002,
+        8,
+        0
+      ],
+      [
+        0.0015,
+        6,
+        3
+      ]
+    ],
+    "confirmation": [
+      [
+        0.0012,
+        9,
+        2
+      ],
+      [
+        0.0024,
+        7,
+        11
+      ]
+    ],
+    "capital": 10000,
+    "financial_data_read": false,
+    "training": false
+  },
+  "comparison": {
+    "rows": [
+      {
+        "objective": "sharpe",
+        "seeds": 3,
+        "calibration": {
+          "sharpe": 14.979020480961276,
+          "return_fraction": 0.1090299393489762,
+          "orders_per_day": 0.8541666666666666
+        },
+        "confirmation": {
+          "sharpe": 8.855950864359485,
+          "return_fraction": 0.08853302963176048,
+          "orders_per_day": 0.873015873015873
+        },
+        "confirmation_eligible": 3
+      },
+      {
+        "objective": "sharpe_return",
+        "seeds": 3,
+        "calibration": {
+          "sharpe": 14.956444150251826,
+          "return_fraction": 0.1336479663722395,
+          "orders_per_day": 0.8541666666666666
+        },
+        "confirmation": {
+          "sharpe": 8.94265945767179,
+          "return_fraction": 0.10946484992803722,
+          "orders_per_day": 0.873015873015873
+        },
+        "confirmation_eligible": 3
+      },
+      {
+        "objective": "sharpe_return_activity",
+        "seeds": 3,
+        "calibration": {
+          "sharpe": 14.956444150251826,
+          "return_fraction": 0.1336479663722395,
+          "orders_per_day": 0.8541666666666666
+        },
+        "confirmation": {
+          "sharpe": 8.94265945767179,
+          "return_fraction": 0.10946484992803722,
+          "orders_per_day": 0.873015873015873
+        },
+        "confirmation_eligible": 3
+      }
+    ],
+    "searches": 9,
+    "unique_genomes": 3611,
+    "calibration_simulations": 21666,
+    "confirmation_simulations": 66,
+    "financial_admission": false
+  },
+  "search_results": [
+    {
+      "id": "sharpe_s7",
+      "objective": "sharpe",
+      "seed": 7,
+      "genes": [
+        0.6799796439540023,
+        0.25459713619507135,
+        0.6549535026656328,
+        0.5766829132637676,
+        0.6000462273743419,
+        0.3009134170819617
+      ],
+      "fitness": 14.935375237118748,
+      "generation": 50,
+      "stop_reason": "PATIENCE",
+      "evaluations": 827,
+      "components": {
+        "sharpe": 14.935375237118748,
+        "return_fraction": 0.08620917650522178,
+        "orders_per_day": 0.8541666666666667
+      },
+      "report": {
+        "parameters": {
+          "genes": [
+            0.6799796439540023,
+            0.25459713619507135,
+            0.6549535026656328,
+            0.5766829132637676,
+            0.6000462273743419,
+            0.3009134170819617
+          ]
+        },
+        "eligible": true,
+        "reasons": [],
+        "mean_sharpe": 14.935375237118748,
+        "mean_drawdown_pct": 0.16798464693010207,
+        "mean_profit_usd": 862.0917650522179
+      }
+    },
+    {
+      "id": "sharpe_return_s7",
+      "objective": "sharpe_return",
+      "seed": 7,
+      "genes": [
+        0.5327366823658557,
+        0.9599164860709443,
+        0.9999832775398547,
+        0.8484976345662275,
+        0.42390910494499356,
+        0.4474560228821723
+      ],
+      "fitness": 15.112131052399823,
+      "generation": 66,
+      "stop_reason": "PATIENCE",
+      "evaluations": 1049,
+      "components": {
+        "sharpe": 14.979404226229384,
+        "return_fraction": 0.13272682617043802,
+        "orders_per_day": 0.8541666666666667
+      },
+      "report": {
+        "parameters": {
+          "genes": [
+            0.5327366823658557,
+            0.9599164860709443,
+            0.9999832775398547,
+            0.8484976345662275,
+            0.42390910494499356,
+            0.4474560228821723
+          ]
+        },
+        "eligible": true,
+        "reasons": [],
+        "mean_sharpe": 14.979404226229384,
+        "mean_drawdown_pct": 0.25701430001174,
+        "mean_profit_usd": 1327.2682617043802
+      }
+    },
+    {
+      "id": "sharpe_return_activity_s7",
+      "objective": "sharpe_return_activity",
+      "seed": 7,
+      "genes": [
+        0.5327366823658557,
+        0.9599164860709443,
+        0.9999832775398547,
+        0.8484976345662275,
+        0.42390910494499356,
+        0.4474560228821723
+      ],
+      "fitness": 15.966297719066489,
+      "generation": 66,
+      "stop_reason": "PATIENCE",
+      "evaluations": 1049,
+      "components": {
+        "sharpe": 14.979404226229384,
+        "return_fraction": 0.13272682617043802,
+        "orders_per_day": 0.8541666666666667
+      },
+      "report": {
+        "parameters": {
+          "genes": [
+            0.5327366823658557,
+            0.9599164860709443,
+            0.9999832775398547,
+            0.8484976345662275,
+            0.42390910494499356,
+            0.4474560228821723
+          ]
+        },
+        "eligible": true,
+        "reasons": [],
+        "mean_sharpe": 14.979404226229384,
+        "mean_drawdown_pct": 0.25701430001174,
+        "mean_profit_usd": 1327.2682617043802
+      }
+    },
+    {
+      "id": "sharpe_s19",
+      "objective": "sharpe",
+      "seed": 19,
+      "genes": [
+        0.5223780344454536,
+        0.9901205839644381,
+        0.9997790359560369,
+        0.5754736385422853,
+        0.5915918242211308,
+        0.452980955297633
+      ],
+      "fitness": 15.020647733425236,
+      "generation": 48,
+      "stop_reason": "PATIENCE",
+      "evaluations": 734,
+      "components": {
+        "sharpe": 15.020647733425236,
+        "return_fraction": 0.13305914067676194,
+        "orders_per_day": 0.8541666666666667
+      },
+      "report": {
+        "parameters": {
+          "genes": [
+            0.5223780344454536,
+            0.9901205839644381,
+            0.9997790359560369,
+            0.5754736385422853,
+            0.5915918242211308,
+            0.452980955297633
+          ]
+        },
+        "eligible": true,
+        "reasons": [],
+        "mean_sharpe": 15.020647733425236,
+        "mean_drawdown_pct": 0.25555996380650625,
+        "mean_profit_usd": 1330.5914067676194
+      }
+    },
+    {
+      "id": "sharpe_return_s19",
+      "objective": "sharpe_return",
+      "seed": 19,
+      "genes": [
+        0.5416826877957263,
+        0.9802451171478185,
+        0.9980390277570911,
+        0.549336447170093,
+        0.5888019690482588,
+        0.4794760181493321
+      ],
+      "fitness": 15.045934492773322,
+      "generation": 42,
+      "stop_reason": "PATIENCE",
+      "evaluations": 681,
+      "components": {
+        "sharpe": 14.910526949946878,
+        "return_fraction": 0.13540754282644357,
+        "orders_per_day": 0.8541666666666667
+      },
+      "report": {
+        "parameters": {
+          "genes": [
+            0.5416826877957263,
+            0.9802451171478185,
+            0.9980390277570911,
+            0.549336447170093,
+            0.5888019690482588,
+            0.4794760181493321
+          ]
+        },
+        "eligible": true,
+        "reasons": [],
+        "mean_sharpe": 14.910526949946878,
+        "mean_drawdown_pct": 0.25270220710522384,
+        "mean_profit_usd": 1354.0754282644357
+      }
+    },
+    {
+      "id": "sharpe_return_activity_s19",
+      "objective": "sharpe_return_activity",
+      "seed": 19,
+      "genes": [
+        0.5416826877957263,
+        0.9802451171478185,
+        0.9980390277570911,
+        0.549336447170093,
+        0.5888019690482588,
+        0.4794760181493321
+      ],
+      "fitness": 15.900101159439988,
+      "generation": 42,
+      "stop_reason": "PATIENCE",
+      "evaluations": 681,
+      "components": {
+        "sharpe": 14.910526949946878,
+        "return_fraction": 0.13540754282644357,
+        "orders_per_day": 0.8541666666666667
+      },
+      "report": {
+        "parameters": {
+          "genes": [
+            0.5416826877957263,
+            0.9802451171478185,
+            0.9980390277570911,
+            0.549336447170093,
+            0.5888019690482588,
+            0.4794760181493321
+          ]
+        },
+        "eligible": true,
+        "reasons": [],
+        "mean_sharpe": 14.910526949946878,
+        "mean_drawdown_pct": 0.25270220710522384,
+        "mean_profit_usd": 1354.0754282644357
+      }
+    },
+    {
+      "id": "sharpe_s43",
+      "objective": "sharpe",
+      "seed": 43,
+      "genes": [
+        0.5116993114181606,
+        0.17546114825683373,
+        0.8248795891884011,
+        0.912519703553247,
+        0.24311911482634901,
+        0.36750778256122063
+      ],
+      "fitness": 14.981038472339847,
+      "generation": 40,
+      "stop_reason": "PATIENCE",
+      "evaluations": 632,
+      "components": {
+        "sharpe": 14.981038472339847,
+        "return_fraction": 0.10782150086494485,
+        "orders_per_day": 0.8541666666666667
+      },
+      "report": {
+        "parameters": {
+          "genes": [
+            0.5116993114181606,
+            0.17546114825683373,
+            0.8248795891884011,
+            0.912519703553247,
+            0.24311911482634901,
+            0.36750778256122063
+          ]
+        },
+        "eligible": true,
+        "reasons": [],
+        "mean_sharpe": 14.981038472339847,
+        "mean_drawdown_pct": 0.2119017467075201,
+        "mean_profit_usd": 1078.2150086494485
+      }
+    },
+    {
+      "id": "sharpe_return_s43",
+      "objective": "sharpe_return",
+      "seed": 43,
+      "genes": [
+        0.5359984440782896,
+        0.2742505639075124,
+        0.9998899373210931,
+        0.921791499452987,
+        0.5466187433342953,
+        0.44702535459752846
+      ],
+      "fitness": 15.112210804699052,
+      "generation": 71,
+      "stop_reason": "PATIENCE",
+      "evaluations": 1103,
+      "components": {
+        "sharpe": 14.979401274579216,
+        "return_fraction": 0.13280953011983684,
+        "orders_per_day": 0.8541666666666667
+      },
+      "report": {
+        "parameters": {
+          "genes": [
+            0.5359984440782896,
+            0.2742505639075124,
+            0.9998899373210931,
+            0.921791499452987,
+            0.5466187433342953,
+            0.44702535459752846
+          ]
+        },
+        "eligible": true,
+        "reasons": [],
+        "mean_sharpe": 14.979401274579216,
+        "mean_drawdown_pct": 0.2569427871407274,
+        "mean_profit_usd": 1328.0953011983684
+      }
+    },
+    {
+      "id": "sharpe_return_activity_s43",
+      "objective": "sharpe_return_activity",
+      "seed": 43,
+      "genes": [
+        0.5359984440782896,
+        0.2742505639075124,
+        0.9998899373210931,
+        0.921791499452987,
+        0.5466187433342953,
+        0.44702535459752846
+      ],
+      "fitness": 15.966377471365718,
+      "generation": 71,
+      "stop_reason": "PATIENCE",
+      "evaluations": 1103,
+      "components": {
+        "sharpe": 14.979401274579216,
+        "return_fraction": 0.13280953011983684,
+        "orders_per_day": 0.8541666666666667
+      },
+      "report": {
+        "parameters": {
+          "genes": [
+            0.5359984440782896,
+            0.2742505639075124,
+            0.9998899373210931,
+            0.921791499452987,
+            0.5466187433342953,
+            0.44702535459752846
+          ]
+        },
+        "eligible": true,
+        "reasons": [],
+        "mean_sharpe": 14.979401274579216,
+        "mean_drawdown_pct": 0.2569427871407274,
+        "mean_profit_usd": 1328.0953011983684
+      }
+    }
+  ],
+  "confirmation": [
+    {
+      "id": "grid_control",
+      "genes": [
+        0.75,
+        0.25,
+        0.2,
+        0.75,
+        0.25,
+        0.2
+      ],
+      "report": {
+        "parameters": {
+          "genes": [
+            0.75,
+            0.25,
+            0.2,
+            0.75,
+            0.25,
+            0.2
+          ]
+        },
+        "eligible": true,
+        "reasons": [],
+        "mean_sharpe": 12.494497546383835,
+        "mean_drawdown_pct": 0.021918437599085194,
+        "mean_profit_usd": 370.3481496074919
+      },
+      "components": {
+        "sharpe": 12.494497546383835,
+        "return_fraction": 0.03703481496074919,
+        "orders_per_day": 0.873015873015873
+      },
+      "waves": [
+        {
+          "mode": "ideal",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": 30.67969674496635,
+            "sharpe_daily_sqrt365": 3.5367970167258913,
+            "max_drawdown_pct": 0.03613002863248809,
+            "trades": 40,
+            "win_rate": 0.225,
+            "n_long": 32,
+            "n_short": 8,
+            "orders_per_week": 4,
+            "cost_spread_usd": 59.93257,
+            "cost_slippage_usd": 14.574000000000002,
+            "cost_commission_usd": 25.5045,
+            "cost_financing_usd": 0.63609,
+            "n_close_AGENT_CLOSE": 40,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": true,
+            "buy_wins": 1,
+            "buy_win_rate": 0.03125,
+            "sell_wins": 8,
+            "sell_win_rate": 1
+          }
+        },
+        {
+          "mode": "inverted",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": -220.3685853354491,
+            "sharpe_daily_sqrt365": -17.943973316419385,
+            "max_drawdown_pct": 2.2036858533544907,
+            "trades": 40,
+            "win_rate": 0,
+            "n_long": 8,
+            "n_short": 32,
+            "orders_per_week": 4,
+            "cost_spread_usd": 59.086825,
+            "cost_slippage_usd": 14.646960000000002,
+            "cost_commission_usd": 25.15569,
+            "cost_financing_usd": -0.227175,
+            "n_close_AGENT_CLOSE": 39,
+            "n_close_SL": 1,
+            "n_close_TP": 0,
+            "valid": true,
+            "buy_wins": 0,
+            "buy_win_rate": 0,
+            "sell_wins": 0,
+            "sell_win_rate": 0
+          }
+        },
+        {
+          "mode": "nop",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": 0,
+            "sharpe_daily_sqrt365": 0,
+            "max_drawdown_pct": 0,
+            "trades": 0,
+            "win_rate": 0,
+            "n_long": 0,
+            "n_short": 0,
+            "orders_per_week": 0,
+            "cost_spread_usd": 0,
+            "cost_slippage_usd": 0,
+            "cost_commission_usd": 0,
+            "cost_financing_usd": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": false,
+            "buy_wins": 0,
+            "buy_win_rate": null,
+            "sell_wins": 0,
+            "sell_win_rate": null
+          }
+        },
+        {
+          "mode": "ideal",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": 710.0166024700175,
+            "sharpe_daily_sqrt365": 21.45219807604178,
+            "max_drawdown_pct": 0.007706846565682296,
+            "trades": 30,
+            "win_rate": 1,
+            "n_long": 6,
+            "n_short": 24,
+            "orders_per_week": 3.75,
+            "cost_spread_usd": 41.815275,
+            "cost_slippage_usd": 11.288760000000002,
+            "cost_commission_usd": 19.75533,
+            "cost_financing_usd": -0.22705,
+            "n_close_AGENT_CLOSE": 30,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": true,
+            "buy_wins": 6,
+            "buy_win_rate": 1,
+            "sell_wins": 24,
+            "sell_win_rate": 1
+          }
+        },
+        {
+          "mode": "inverted",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": -762.5023570777412,
+            "sharpe_daily_sqrt365": -23.068387822101137,
+            "max_drawdown_pct": 7.625023570777412,
+            "trades": 30,
+            "win_rate": 0,
+            "n_long": 24,
+            "n_short": 6,
+            "orders_per_week": 3.75,
+            "cost_spread_usd": 38.784344999999995,
+            "cost_slippage_usd": 18.37528,
+            "cost_commission_usd": 18.37528,
+            "cost_financing_usd": 0.63574,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_SL": 30,
+            "n_close_TP": 0,
+            "valid": true,
+            "buy_wins": 0,
+            "buy_win_rate": 0,
+            "sell_wins": 0,
+            "sell_win_rate": 0
+          }
+        },
+        {
+          "mode": "nop",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": 0,
+            "sharpe_daily_sqrt365": 0,
+            "max_drawdown_pct": 0,
+            "trades": 0,
+            "win_rate": 0,
+            "n_long": 0,
+            "n_short": 0,
+            "orders_per_week": 0,
+            "cost_spread_usd": 0,
+            "cost_slippage_usd": 0,
+            "cost_commission_usd": 0,
+            "cost_financing_usd": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": false,
+            "buy_wins": 0,
+            "buy_win_rate": null,
+            "sell_wins": 0,
+            "sell_win_rate": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "midpoint",
+      "genes": [
+        0.5,
+        0.5,
+        1,
+        0.5,
+        0.5,
+        1
+      ],
+      "report": {
+        "parameters": {
+          "genes": [
+            0.5,
+            0.5,
+            1,
+            0.5,
+            0.5,
+            1
+          ]
+        },
+        "eligible": true,
+        "reasons": [],
+        "mean_sharpe": 12.777314909849562,
+        "mean_drawdown_pct": 0.10937389914178243,
+        "mean_profit_usd": 2086.335994908396
+      },
+      "components": {
+        "sharpe": 12.777314909849562,
+        "return_fraction": 0.2086335994908396,
+        "orders_per_day": 0.873015873015873
+      },
+      "waves": [
+        {
+          "mode": "ideal",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": 141.29047709704355,
+            "sharpe_daily_sqrt365": 3.597877089425504,
+            "max_drawdown_pct": 0.1805588560795,
+            "trades": 40,
+            "win_rate": 0.225,
+            "n_long": 32,
+            "n_short": 8,
+            "orders_per_week": 4,
+            "cost_spread_usd": 302.39529,
+            "cost_slippage_usd": 72.59818,
+            "cost_commission_usd": 128.63774,
+            "cost_financing_usd": 3.18059,
+            "n_close_AGENT_CLOSE": 39,
+            "n_close_SL": 0,
+            "n_close_TP": 1,
+            "valid": true,
+            "buy_wins": 1,
+            "buy_win_rate": 0.03125,
+            "sell_wins": 8,
+            "sell_win_rate": 1
+          }
+        },
+        {
+          "mode": "inverted",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": -1085.277966305548,
+            "sharpe_daily_sqrt365": -16.421988456698898,
+            "max_drawdown_pct": 10.85277966305548,
+            "trades": 40,
+            "win_rate": 0,
+            "n_long": 8,
+            "n_short": 32,
+            "orders_per_week": 4,
+            "cost_spread_usd": 281.171025,
+            "cost_slippage_usd": 69.86132,
+            "cost_commission_usd": 119.88116,
+            "cost_financing_usd": -1.135925,
+            "n_close_AGENT_CLOSE": 39,
+            "n_close_SL": 1,
+            "n_close_TP": 0,
+            "valid": true,
+            "buy_wins": 0,
+            "buy_win_rate": 0,
+            "sell_wins": 0,
+            "sell_win_rate": 0
+          }
+        },
+        {
+          "mode": "nop",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": 0,
+            "sharpe_daily_sqrt365": 0,
+            "max_drawdown_pct": 0,
+            "trades": 0,
+            "win_rate": 0,
+            "n_long": 0,
+            "n_short": 0,
+            "orders_per_week": 0,
+            "cost_spread_usd": 0,
+            "cost_slippage_usd": 0,
+            "cost_commission_usd": 0,
+            "cost_financing_usd": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": false,
+            "buy_wins": 0,
+            "buy_win_rate": null,
+            "sell_wins": 0,
+            "sell_win_rate": null
+          }
+        },
+        {
+          "mode": "ideal",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": 4031.3815127197486,
+            "sharpe_daily_sqrt365": 21.95675273027362,
+            "max_drawdown_pct": 0.03818894220406486,
+            "trades": 30,
+            "win_rate": 1,
+            "n_long": 6,
+            "n_short": 24,
+            "orders_per_week": 3.75,
+            "cost_spread_usd": 241.21372499999998,
+            "cost_slippage_usd": 63.865480000000005,
+            "cost_commission_usd": 113.38152,
+            "cost_financing_usd": -1.135325,
+            "n_close_AGENT_CLOSE": 29,
+            "n_close_SL": 0,
+            "n_close_TP": 1,
+            "valid": true,
+            "buy_wins": 6,
+            "buy_win_rate": 1,
+            "sell_wins": 24,
+            "sell_win_rate": 1
+          }
+        },
+        {
+          "mode": "inverted",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": -3399.5837548348945,
+            "sharpe_daily_sqrt365": -21.957549774577966,
+            "max_drawdown_pct": 33.995837548348945,
+            "trades": 30,
+            "win_rate": 0,
+            "n_long": 24,
+            "n_short": 6,
+            "orders_per_week": 3.75,
+            "cost_spread_usd": 164.20355999999998,
+            "cost_slippage_usd": 46.09499,
+            "cost_commission_usd": 78.31313,
+            "cost_financing_usd": 3.17891,
+            "n_close_AGENT_CLOSE": 29,
+            "n_close_SL": 1,
+            "n_close_TP": 0,
+            "valid": true,
+            "buy_wins": 0,
+            "buy_win_rate": 0,
+            "sell_wins": 0,
+            "sell_win_rate": 0
+          }
+        },
+        {
+          "mode": "nop",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": 0,
+            "sharpe_daily_sqrt365": 0,
+            "max_drawdown_pct": 0,
+            "trades": 0,
+            "win_rate": 0,
+            "n_long": 0,
+            "n_short": 0,
+            "orders_per_week": 0,
+            "cost_spread_usd": 0,
+            "cost_slippage_usd": 0,
+            "cost_commission_usd": 0,
+            "cost_financing_usd": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": false,
+            "buy_wins": 0,
+            "buy_win_rate": null,
+            "sell_wins": 0,
+            "sell_win_rate": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "sharpe_return_activity_s19",
+      "genes": [
+        0.5416826877957263,
+        0.9802451171478185,
+        0.9980390277570911,
+        0.549336447170093,
+        0.5888019690482588,
+        0.4794760181493321
+      ],
+      "report": {
+        "parameters": {
+          "genes": [
+            0.5416826877957263,
+            0.9802451171478185,
+            0.9980390277570911,
+            0.549336447170093,
+            0.5888019690482588,
+            0.4794760181493321
+          ]
+        },
+        "eligible": true,
+        "reasons": [],
+        "mean_sharpe": 9.183406798370717,
+        "mean_drawdown_pct": 0.19057981575659055,
+        "mean_profit_usd": 1131.4080343148153
+      },
+      "components": {
+        "sharpe": 9.183406798370717,
+        "return_fraction": 0.11314080343148153,
+        "orders_per_day": 0.873015873015873
+      },
+      "waves": [
+        {
+          "mode": "ideal",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": 18.160039088668782,
+            "sharpe_daily_sqrt365": 0.9094839576847605,
+            "max_drawdown_pct": 0.34975496078584,
+            "trades": 40,
+            "win_rate": 0.225,
+            "n_long": 32,
+            "n_short": 8,
+            "orders_per_week": 4,
+            "cost_spread_usd": 293.384215,
+            "cost_slippage_usd": 64.80208,
+            "cost_commission_usd": 114.16643,
+            "cost_financing_usd": 3.17429,
+            "n_close_AGENT_CLOSE": 39,
+            "n_close_SL": 0,
+            "n_close_TP": 1,
+            "valid": true,
+            "buy_wins": 1,
+            "buy_win_rate": 0.03125,
+            "sell_wins": 8,
+            "sell_win_rate": 1
+          }
+        },
+        {
+          "mode": "inverted",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": -712.7261313900781,
+            "sharpe_daily_sqrt365": -12.020643549390455,
+            "max_drawdown_pct": 7.127261313900781,
+            "trades": 40,
+            "win_rate": 0,
+            "n_long": 8,
+            "n_short": 32,
+            "orders_per_week": 4,
+            "cost_spread_usd": 143.29083,
+            "cost_slippage_usd": 40.75936,
+            "cost_commission_usd": 71.32888,
+            "cost_financing_usd": -0.544625,
+            "n_close_AGENT_CLOSE": 40,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": true,
+            "buy_wins": 0,
+            "buy_win_rate": 0,
+            "sell_wins": 0,
+            "sell_win_rate": 0
+          }
+        },
+        {
+          "mode": "nop",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": 0,
+            "sharpe_daily_sqrt365": 0,
+            "max_drawdown_pct": 0,
+            "trades": 0,
+            "win_rate": 0,
+            "n_long": 0,
+            "n_short": 0,
+            "orders_per_week": 0,
+            "cost_spread_usd": 0,
+            "cost_slippage_usd": 0,
+            "cost_commission_usd": 0,
+            "cost_financing_usd": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": false,
+            "buy_wins": 0,
+            "buy_win_rate": null,
+            "sell_wins": 0,
+            "sell_win_rate": null
+          }
+        },
+        {
+          "mode": "ideal",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": 2244.6560295409618,
+            "sharpe_daily_sqrt365": 17.457329639056674,
+            "max_drawdown_pct": 0.03140467072734107,
+            "trades": 30,
+            "win_rate": 1,
+            "n_long": 6,
+            "n_short": 24,
+            "orders_per_week": 3.75,
+            "cost_spread_usd": 112.950195,
+            "cost_slippage_usd": 34.33386,
+            "cost_commission_usd": 61.68638,
+            "cost_financing_usd": -0.54435,
+            "n_close_AGENT_CLOSE": 29,
+            "n_close_SL": 0,
+            "n_close_TP": 1,
+            "valid": true,
+            "buy_wins": 6,
+            "buy_win_rate": 1,
+            "sell_wins": 24,
+            "sell_win_rate": 1
+          }
+        },
+        {
+          "mode": "inverted",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": -3101.5243196916654,
+            "sharpe_daily_sqrt365": -22.69416036379033,
+            "max_drawdown_pct": 31.015243196916654,
+            "trades": 30,
+            "win_rate": 0,
+            "n_long": 24,
+            "n_short": 6,
+            "orders_per_week": 3.75,
+            "cost_spread_usd": 164.07524999999998,
+            "cost_slippage_usd": 40.88188,
+            "cost_commission_usd": 71.54329,
+            "cost_financing_usd": 3.17261,
+            "n_close_AGENT_CLOSE": 30,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": true,
+            "buy_wins": 0,
+            "buy_win_rate": 0,
+            "sell_wins": 0,
+            "sell_win_rate": 0
+          }
+        },
+        {
+          "mode": "nop",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": 0,
+            "sharpe_daily_sqrt365": 0,
+            "max_drawdown_pct": 0,
+            "trades": 0,
+            "win_rate": 0,
+            "n_long": 0,
+            "n_short": 0,
+            "orders_per_week": 0,
+            "cost_spread_usd": 0,
+            "cost_slippage_usd": 0,
+            "cost_commission_usd": 0,
+            "cost_financing_usd": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": false,
+            "buy_wins": 0,
+            "buy_win_rate": null,
+            "sell_wins": 0,
+            "sell_win_rate": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "sharpe_return_activity_s43",
+      "genes": [
+        0.5359984440782896,
+        0.2742505639075124,
+        0.9998899373210931,
+        0.921791499452987,
+        0.5466187433342953,
+        0.44702535459752846
+      ],
+      "report": {
+        "parameters": {
+          "genes": [
+            0.5359984440782896,
+            0.2742505639075124,
+            0.9998899373210931,
+            0.921791499452987,
+            0.5466187433342953,
+            0.44702535459752846
+          ]
+        },
+        "eligible": true,
+        "reasons": [],
+        "mean_sharpe": 8.814072726079164,
+        "mean_drawdown_pct": 0.21536695781048518,
+        "mean_profit_usd": 1076.1572096127775
+      },
+      "components": {
+        "sharpe": 8.814072726079164,
+        "return_fraction": 0.10761572096127775,
+        "orders_per_day": 0.873015873015873
+      },
+      "waves": [
+        {
+          "mode": "ideal",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": 12.607264071961254,
+            "sharpe_daily_sqrt365": 0.6456191708620501,
+            "max_drawdown_pct": 0.3992720454995986,
+            "trades": 40,
+            "win_rate": 0.225,
+            "n_long": 32,
+            "n_short": 8,
+            "orders_per_week": 4,
+            "cost_spread_usd": 293.45509,
+            "cost_slippage_usd": 64.85424,
+            "cost_commission_usd": 113.49492,
+            "cost_financing_usd": 3.18017,
+            "n_close_AGENT_CLOSE": 40,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": true,
+            "buy_wins": 1,
+            "buy_win_rate": 0.03125,
+            "sell_wins": 8,
+            "sell_win_rate": 1
+          }
+        },
+        {
+          "mode": "inverted",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": -655.527175406045,
+            "sharpe_daily_sqrt365": -13.215545692317315,
+            "max_drawdown_pct": 6.55527175406045,
+            "trades": 40,
+            "win_rate": 0,
+            "n_long": 8,
+            "n_short": 32,
+            "orders_per_week": 4,
+            "cost_spread_usd": 135.005075,
+            "cost_slippage_usd": 40.51314,
+            "cost_commission_usd": 68.51775,
+            "cost_financing_usd": -0.507775,
+            "n_close_AGENT_CLOSE": 39,
+            "n_close_SL": 1,
+            "n_close_TP": 0,
+            "valid": true,
+            "buy_wins": 0,
+            "buy_win_rate": 0,
+            "sell_wins": 0,
+            "sell_win_rate": 0
+          }
+        },
+        {
+          "mode": "nop",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": 0,
+            "sharpe_daily_sqrt365": 0,
+            "max_drawdown_pct": 0,
+            "trades": 0,
+            "win_rate": 0,
+            "n_long": 0,
+            "n_short": 0,
+            "orders_per_week": 0,
+            "cost_spread_usd": 0,
+            "cost_slippage_usd": 0,
+            "cost_commission_usd": 0,
+            "cost_financing_usd": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": false,
+            "buy_wins": 0,
+            "buy_win_rate": null,
+            "sell_wins": 0,
+            "sell_win_rate": null
+          }
+        },
+        {
+          "mode": "ideal",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": 2139.7071551535937,
+            "sharpe_daily_sqrt365": 16.982526281296277,
+            "max_drawdown_pct": 0.03146187012137177,
+            "trades": 30,
+            "win_rate": 1,
+            "n_long": 6,
+            "n_short": 24,
+            "orders_per_week": 3.75,
+            "cost_spread_usd": 105.51308999999999,
+            "cost_slippage_usd": 32.634800000000006,
+            "cost_commission_usd": 58.71523,
+            "cost_financing_usd": -0.5075,
+            "n_close_AGENT_CLOSE": 29,
+            "n_close_SL": 0,
+            "n_close_TP": 1,
+            "valid": true,
+            "buy_wins": 6,
+            "buy_win_rate": 1,
+            "sell_wins": 24,
+            "sell_win_rate": 1
+          }
+        },
+        {
+          "mode": "inverted",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": -3067.362814681015,
+            "sharpe_daily_sqrt365": -22.94564902690428,
+            "max_drawdown_pct": 30.67362814681015,
+            "trades": 30,
+            "win_rate": 0,
+            "n_long": 24,
+            "n_short": 6,
+            "orders_per_week": 3.75,
+            "cost_spread_usd": 164.788875,
+            "cost_slippage_usd": 42.168400000000005,
+            "cost_commission_usd": 71.41078,
+            "cost_financing_usd": 3.17856,
+            "n_close_AGENT_CLOSE": 29,
+            "n_close_SL": 1,
+            "n_close_TP": 0,
+            "valid": true,
+            "buy_wins": 0,
+            "buy_win_rate": 0,
+            "sell_wins": 0,
+            "sell_win_rate": 0
+          }
+        },
+        {
+          "mode": "nop",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": 0,
+            "sharpe_daily_sqrt365": 0,
+            "max_drawdown_pct": 0,
+            "trades": 0,
+            "win_rate": 0,
+            "n_long": 0,
+            "n_short": 0,
+            "orders_per_week": 0,
+            "cost_spread_usd": 0,
+            "cost_slippage_usd": 0,
+            "cost_commission_usd": 0,
+            "cost_financing_usd": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": false,
+            "buy_wins": 0,
+            "buy_win_rate": null,
+            "sell_wins": 0,
+            "sell_win_rate": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "sharpe_return_activity_s7",
+      "genes": [
+        0.5327366823658557,
+        0.9599164860709443,
+        0.9999832775398547,
+        0.8484976345662275,
+        0.42390910494499356,
+        0.4474560228821723
+      ],
+      "report": {
+        "parameters": {
+          "genes": [
+            0.5327366823658557,
+            0.9599164860709443,
+            0.9999832775398547,
+            0.8484976345662275,
+            0.42390910494499356,
+            0.4474560228821723
+          ]
+        },
+        "eligible": true,
+        "reasons": [],
+        "mean_sharpe": 8.830498848565485,
+        "mean_drawdown_pct": 0.21508819702843546,
+        "mean_profit_usd": 1076.380253913524
+      },
+      "components": {
+        "sharpe": 8.830498848565485,
+        "return_fraction": 0.1076380253913524,
+        "orders_per_day": 0.873015873015873
+      },
+      "waves": [
+        {
+          "mode": "ideal",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": 12.706800593545267,
+            "sharpe_daily_sqrt365": 0.6500799207282325,
+            "max_drawdown_pct": 0.3987113677065142,
+            "trades": 40,
+            "win_rate": 0.225,
+            "n_long": 32,
+            "n_short": 8,
+            "orders_per_week": 4,
+            "cost_spread_usd": 293.493585,
+            "cost_slippage_usd": 64.86736,
+            "cost_commission_usd": 113.51788,
+            "cost_financing_usd": 3.18052,
+            "n_close_AGENT_CLOSE": 40,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": true,
+            "buy_wins": 1,
+            "buy_win_rate": 0.03125,
+            "sell_wins": 8,
+            "sell_win_rate": 1
+          }
+        },
+        {
+          "mode": "inverted",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": -689.6640037466095,
+            "sharpe_daily_sqrt365": -11.689226839201647,
+            "max_drawdown_pct": 6.896640037466096,
+            "trades": 40,
+            "win_rate": 0,
+            "n_long": 8,
+            "n_short": 32,
+            "orders_per_week": 4,
+            "cost_spread_usd": 134.651285,
+            "cost_slippage_usd": 39.045640000000006,
+            "cost_commission_usd": 68.32987,
+            "cost_financing_usd": -0.508275,
+            "n_close_AGENT_CLOSE": 40,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": true,
+            "buy_wins": 0,
+            "buy_win_rate": 0,
+            "sell_wins": 0,
+            "sell_win_rate": 0
+          }
+        },
+        {
+          "mode": "nop",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": 0,
+            "sharpe_daily_sqrt365": 0,
+            "max_drawdown_pct": 0,
+            "trades": 0,
+            "win_rate": 0,
+            "n_long": 0,
+            "n_short": 0,
+            "orders_per_week": 0,
+            "cost_spread_usd": 0,
+            "cost_slippage_usd": 0,
+            "cost_commission_usd": 0,
+            "cost_financing_usd": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": false,
+            "buy_wins": 0,
+            "buy_win_rate": null,
+            "sell_wins": 0,
+            "sell_win_rate": null
+          }
+        },
+        {
+          "mode": "ideal",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": 2140.053707233503,
+            "sharpe_daily_sqrt365": 17.01091777640274,
+            "max_drawdown_pct": 0.031465026350356716,
+            "trades": 30,
+            "win_rate": 1,
+            "n_long": 6,
+            "n_short": 24,
+            "orders_per_week": 3.75,
+            "cost_spread_usd": 105.60347999999999,
+            "cost_slippage_usd": 32.65588,
+            "cost_commission_usd": 58.75233,
+            "cost_financing_usd": -0.508,
+            "n_close_AGENT_CLOSE": 29,
+            "n_close_SL": 0,
+            "n_close_TP": 1,
+            "valid": true,
+            "buy_wins": 6,
+            "buy_win_rate": 1,
+            "sell_wins": 24,
+            "sell_win_rate": 1
+          }
+        },
+        {
+          "mode": "inverted",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": -3076.440256248825,
+            "sharpe_daily_sqrt365": -22.830039133523588,
+            "max_drawdown_pct": 30.764402562488247,
+            "trades": 30,
+            "win_rate": 0,
+            "n_long": 24,
+            "n_short": 6,
+            "orders_per_week": 3.75,
+            "cost_spread_usd": 164.601675,
+            "cost_slippage_usd": 41.364650000000005,
+            "cost_commission_usd": 71.33525,
+            "cost_financing_usd": 3.17884,
+            "n_close_AGENT_CLOSE": 29,
+            "n_close_SL": 1,
+            "n_close_TP": 0,
+            "valid": true,
+            "buy_wins": 0,
+            "buy_win_rate": 0,
+            "sell_wins": 0,
+            "sell_win_rate": 0
+          }
+        },
+        {
+          "mode": "nop",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": 0,
+            "sharpe_daily_sqrt365": 0,
+            "max_drawdown_pct": 0,
+            "trades": 0,
+            "win_rate": 0,
+            "n_long": 0,
+            "n_short": 0,
+            "orders_per_week": 0,
+            "cost_spread_usd": 0,
+            "cost_slippage_usd": 0,
+            "cost_commission_usd": 0,
+            "cost_financing_usd": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": false,
+            "buy_wins": 0,
+            "buy_win_rate": null,
+            "sell_wins": 0,
+            "sell_win_rate": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "sharpe_return_s19",
+      "genes": [
+        0.5416826877957263,
+        0.9802451171478185,
+        0.9980390277570911,
+        0.549336447170093,
+        0.5888019690482588,
+        0.4794760181493321
+      ],
+      "report": {
+        "parameters": {
+          "genes": [
+            0.5416826877957263,
+            0.9802451171478185,
+            0.9980390277570911,
+            0.549336447170093,
+            0.5888019690482588,
+            0.4794760181493321
+          ]
+        },
+        "eligible": true,
+        "reasons": [],
+        "mean_sharpe": 9.183406798370717,
+        "mean_drawdown_pct": 0.19057981575659055,
+        "mean_profit_usd": 1131.4080343148153
+      },
+      "components": {
+        "sharpe": 9.183406798370717,
+        "return_fraction": 0.11314080343148153,
+        "orders_per_day": 0.873015873015873
+      },
+      "waves": [
+        {
+          "mode": "ideal",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": 18.160039088668782,
+            "sharpe_daily_sqrt365": 0.9094839576847605,
+            "max_drawdown_pct": 0.34975496078584,
+            "trades": 40,
+            "win_rate": 0.225,
+            "n_long": 32,
+            "n_short": 8,
+            "orders_per_week": 4,
+            "cost_spread_usd": 293.384215,
+            "cost_slippage_usd": 64.80208,
+            "cost_commission_usd": 114.16643,
+            "cost_financing_usd": 3.17429,
+            "n_close_AGENT_CLOSE": 39,
+            "n_close_SL": 0,
+            "n_close_TP": 1,
+            "valid": true,
+            "buy_wins": 1,
+            "buy_win_rate": 0.03125,
+            "sell_wins": 8,
+            "sell_win_rate": 1
+          }
+        },
+        {
+          "mode": "inverted",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": -712.7261313900781,
+            "sharpe_daily_sqrt365": -12.020643549390455,
+            "max_drawdown_pct": 7.127261313900781,
+            "trades": 40,
+            "win_rate": 0,
+            "n_long": 8,
+            "n_short": 32,
+            "orders_per_week": 4,
+            "cost_spread_usd": 143.29083,
+            "cost_slippage_usd": 40.75936,
+            "cost_commission_usd": 71.32888,
+            "cost_financing_usd": -0.544625,
+            "n_close_AGENT_CLOSE": 40,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": true,
+            "buy_wins": 0,
+            "buy_win_rate": 0,
+            "sell_wins": 0,
+            "sell_win_rate": 0
+          }
+        },
+        {
+          "mode": "nop",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": 0,
+            "sharpe_daily_sqrt365": 0,
+            "max_drawdown_pct": 0,
+            "trades": 0,
+            "win_rate": 0,
+            "n_long": 0,
+            "n_short": 0,
+            "orders_per_week": 0,
+            "cost_spread_usd": 0,
+            "cost_slippage_usd": 0,
+            "cost_commission_usd": 0,
+            "cost_financing_usd": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": false,
+            "buy_wins": 0,
+            "buy_win_rate": null,
+            "sell_wins": 0,
+            "sell_win_rate": null
+          }
+        },
+        {
+          "mode": "ideal",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": 2244.6560295409618,
+            "sharpe_daily_sqrt365": 17.457329639056674,
+            "max_drawdown_pct": 0.03140467072734107,
+            "trades": 30,
+            "win_rate": 1,
+            "n_long": 6,
+            "n_short": 24,
+            "orders_per_week": 3.75,
+            "cost_spread_usd": 112.950195,
+            "cost_slippage_usd": 34.33386,
+            "cost_commission_usd": 61.68638,
+            "cost_financing_usd": -0.54435,
+            "n_close_AGENT_CLOSE": 29,
+            "n_close_SL": 0,
+            "n_close_TP": 1,
+            "valid": true,
+            "buy_wins": 6,
+            "buy_win_rate": 1,
+            "sell_wins": 24,
+            "sell_win_rate": 1
+          }
+        },
+        {
+          "mode": "inverted",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": -3101.5243196916654,
+            "sharpe_daily_sqrt365": -22.69416036379033,
+            "max_drawdown_pct": 31.015243196916654,
+            "trades": 30,
+            "win_rate": 0,
+            "n_long": 24,
+            "n_short": 6,
+            "orders_per_week": 3.75,
+            "cost_spread_usd": 164.07524999999998,
+            "cost_slippage_usd": 40.88188,
+            "cost_commission_usd": 71.54329,
+            "cost_financing_usd": 3.17261,
+            "n_close_AGENT_CLOSE": 30,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": true,
+            "buy_wins": 0,
+            "buy_win_rate": 0,
+            "sell_wins": 0,
+            "sell_win_rate": 0
+          }
+        },
+        {
+          "mode": "nop",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": 0,
+            "sharpe_daily_sqrt365": 0,
+            "max_drawdown_pct": 0,
+            "trades": 0,
+            "win_rate": 0,
+            "n_long": 0,
+            "n_short": 0,
+            "orders_per_week": 0,
+            "cost_spread_usd": 0,
+            "cost_slippage_usd": 0,
+            "cost_commission_usd": 0,
+            "cost_financing_usd": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": false,
+            "buy_wins": 0,
+            "buy_win_rate": null,
+            "sell_wins": 0,
+            "sell_win_rate": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "sharpe_return_s43",
+      "genes": [
+        0.5359984440782896,
+        0.2742505639075124,
+        0.9998899373210931,
+        0.921791499452987,
+        0.5466187433342953,
+        0.44702535459752846
+      ],
+      "report": {
+        "parameters": {
+          "genes": [
+            0.5359984440782896,
+            0.2742505639075124,
+            0.9998899373210931,
+            0.921791499452987,
+            0.5466187433342953,
+            0.44702535459752846
+          ]
+        },
+        "eligible": true,
+        "reasons": [],
+        "mean_sharpe": 8.814072726079164,
+        "mean_drawdown_pct": 0.21536695781048518,
+        "mean_profit_usd": 1076.1572096127775
+      },
+      "components": {
+        "sharpe": 8.814072726079164,
+        "return_fraction": 0.10761572096127775,
+        "orders_per_day": 0.873015873015873
+      },
+      "waves": [
+        {
+          "mode": "ideal",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": 12.607264071961254,
+            "sharpe_daily_sqrt365": 0.6456191708620501,
+            "max_drawdown_pct": 0.3992720454995986,
+            "trades": 40,
+            "win_rate": 0.225,
+            "n_long": 32,
+            "n_short": 8,
+            "orders_per_week": 4,
+            "cost_spread_usd": 293.45509,
+            "cost_slippage_usd": 64.85424,
+            "cost_commission_usd": 113.49492,
+            "cost_financing_usd": 3.18017,
+            "n_close_AGENT_CLOSE": 40,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": true,
+            "buy_wins": 1,
+            "buy_win_rate": 0.03125,
+            "sell_wins": 8,
+            "sell_win_rate": 1
+          }
+        },
+        {
+          "mode": "inverted",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": -655.527175406045,
+            "sharpe_daily_sqrt365": -13.215545692317315,
+            "max_drawdown_pct": 6.55527175406045,
+            "trades": 40,
+            "win_rate": 0,
+            "n_long": 8,
+            "n_short": 32,
+            "orders_per_week": 4,
+            "cost_spread_usd": 135.005075,
+            "cost_slippage_usd": 40.51314,
+            "cost_commission_usd": 68.51775,
+            "cost_financing_usd": -0.507775,
+            "n_close_AGENT_CLOSE": 39,
+            "n_close_SL": 1,
+            "n_close_TP": 0,
+            "valid": true,
+            "buy_wins": 0,
+            "buy_win_rate": 0,
+            "sell_wins": 0,
+            "sell_win_rate": 0
+          }
+        },
+        {
+          "mode": "nop",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": 0,
+            "sharpe_daily_sqrt365": 0,
+            "max_drawdown_pct": 0,
+            "trades": 0,
+            "win_rate": 0,
+            "n_long": 0,
+            "n_short": 0,
+            "orders_per_week": 0,
+            "cost_spread_usd": 0,
+            "cost_slippage_usd": 0,
+            "cost_commission_usd": 0,
+            "cost_financing_usd": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": false,
+            "buy_wins": 0,
+            "buy_win_rate": null,
+            "sell_wins": 0,
+            "sell_win_rate": null
+          }
+        },
+        {
+          "mode": "ideal",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": 2139.7071551535937,
+            "sharpe_daily_sqrt365": 16.982526281296277,
+            "max_drawdown_pct": 0.03146187012137177,
+            "trades": 30,
+            "win_rate": 1,
+            "n_long": 6,
+            "n_short": 24,
+            "orders_per_week": 3.75,
+            "cost_spread_usd": 105.51308999999999,
+            "cost_slippage_usd": 32.634800000000006,
+            "cost_commission_usd": 58.71523,
+            "cost_financing_usd": -0.5075,
+            "n_close_AGENT_CLOSE": 29,
+            "n_close_SL": 0,
+            "n_close_TP": 1,
+            "valid": true,
+            "buy_wins": 6,
+            "buy_win_rate": 1,
+            "sell_wins": 24,
+            "sell_win_rate": 1
+          }
+        },
+        {
+          "mode": "inverted",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": -3067.362814681015,
+            "sharpe_daily_sqrt365": -22.94564902690428,
+            "max_drawdown_pct": 30.67362814681015,
+            "trades": 30,
+            "win_rate": 0,
+            "n_long": 24,
+            "n_short": 6,
+            "orders_per_week": 3.75,
+            "cost_spread_usd": 164.788875,
+            "cost_slippage_usd": 42.168400000000005,
+            "cost_commission_usd": 71.41078,
+            "cost_financing_usd": 3.17856,
+            "n_close_AGENT_CLOSE": 29,
+            "n_close_SL": 1,
+            "n_close_TP": 0,
+            "valid": true,
+            "buy_wins": 0,
+            "buy_win_rate": 0,
+            "sell_wins": 0,
+            "sell_win_rate": 0
+          }
+        },
+        {
+          "mode": "nop",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": 0,
+            "sharpe_daily_sqrt365": 0,
+            "max_drawdown_pct": 0,
+            "trades": 0,
+            "win_rate": 0,
+            "n_long": 0,
+            "n_short": 0,
+            "orders_per_week": 0,
+            "cost_spread_usd": 0,
+            "cost_slippage_usd": 0,
+            "cost_commission_usd": 0,
+            "cost_financing_usd": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": false,
+            "buy_wins": 0,
+            "buy_win_rate": null,
+            "sell_wins": 0,
+            "sell_win_rate": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "sharpe_return_s7",
+      "genes": [
+        0.5327366823658557,
+        0.9599164860709443,
+        0.9999832775398547,
+        0.8484976345662275,
+        0.42390910494499356,
+        0.4474560228821723
+      ],
+      "report": {
+        "parameters": {
+          "genes": [
+            0.5327366823658557,
+            0.9599164860709443,
+            0.9999832775398547,
+            0.8484976345662275,
+            0.42390910494499356,
+            0.4474560228821723
+          ]
+        },
+        "eligible": true,
+        "reasons": [],
+        "mean_sharpe": 8.830498848565485,
+        "mean_drawdown_pct": 0.21508819702843546,
+        "mean_profit_usd": 1076.380253913524
+      },
+      "components": {
+        "sharpe": 8.830498848565485,
+        "return_fraction": 0.1076380253913524,
+        "orders_per_day": 0.873015873015873
+      },
+      "waves": [
+        {
+          "mode": "ideal",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": 12.706800593545267,
+            "sharpe_daily_sqrt365": 0.6500799207282325,
+            "max_drawdown_pct": 0.3987113677065142,
+            "trades": 40,
+            "win_rate": 0.225,
+            "n_long": 32,
+            "n_short": 8,
+            "orders_per_week": 4,
+            "cost_spread_usd": 293.493585,
+            "cost_slippage_usd": 64.86736,
+            "cost_commission_usd": 113.51788,
+            "cost_financing_usd": 3.18052,
+            "n_close_AGENT_CLOSE": 40,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": true,
+            "buy_wins": 1,
+            "buy_win_rate": 0.03125,
+            "sell_wins": 8,
+            "sell_win_rate": 1
+          }
+        },
+        {
+          "mode": "inverted",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": -689.6640037466095,
+            "sharpe_daily_sqrt365": -11.689226839201647,
+            "max_drawdown_pct": 6.896640037466096,
+            "trades": 40,
+            "win_rate": 0,
+            "n_long": 8,
+            "n_short": 32,
+            "orders_per_week": 4,
+            "cost_spread_usd": 134.651285,
+            "cost_slippage_usd": 39.045640000000006,
+            "cost_commission_usd": 68.32987,
+            "cost_financing_usd": -0.508275,
+            "n_close_AGENT_CLOSE": 40,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": true,
+            "buy_wins": 0,
+            "buy_win_rate": 0,
+            "sell_wins": 0,
+            "sell_win_rate": 0
+          }
+        },
+        {
+          "mode": "nop",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": 0,
+            "sharpe_daily_sqrt365": 0,
+            "max_drawdown_pct": 0,
+            "trades": 0,
+            "win_rate": 0,
+            "n_long": 0,
+            "n_short": 0,
+            "orders_per_week": 0,
+            "cost_spread_usd": 0,
+            "cost_slippage_usd": 0,
+            "cost_commission_usd": 0,
+            "cost_financing_usd": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": false,
+            "buy_wins": 0,
+            "buy_win_rate": null,
+            "sell_wins": 0,
+            "sell_win_rate": null
+          }
+        },
+        {
+          "mode": "ideal",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": 2140.053707233503,
+            "sharpe_daily_sqrt365": 17.01091777640274,
+            "max_drawdown_pct": 0.031465026350356716,
+            "trades": 30,
+            "win_rate": 1,
+            "n_long": 6,
+            "n_short": 24,
+            "orders_per_week": 3.75,
+            "cost_spread_usd": 105.60347999999999,
+            "cost_slippage_usd": 32.65588,
+            "cost_commission_usd": 58.75233,
+            "cost_financing_usd": -0.508,
+            "n_close_AGENT_CLOSE": 29,
+            "n_close_SL": 0,
+            "n_close_TP": 1,
+            "valid": true,
+            "buy_wins": 6,
+            "buy_win_rate": 1,
+            "sell_wins": 24,
+            "sell_win_rate": 1
+          }
+        },
+        {
+          "mode": "inverted",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": -3076.440256248825,
+            "sharpe_daily_sqrt365": -22.830039133523588,
+            "max_drawdown_pct": 30.764402562488247,
+            "trades": 30,
+            "win_rate": 0,
+            "n_long": 24,
+            "n_short": 6,
+            "orders_per_week": 3.75,
+            "cost_spread_usd": 164.601675,
+            "cost_slippage_usd": 41.364650000000005,
+            "cost_commission_usd": 71.33525,
+            "cost_financing_usd": 3.17884,
+            "n_close_AGENT_CLOSE": 29,
+            "n_close_SL": 1,
+            "n_close_TP": 0,
+            "valid": true,
+            "buy_wins": 0,
+            "buy_win_rate": 0,
+            "sell_wins": 0,
+            "sell_win_rate": 0
+          }
+        },
+        {
+          "mode": "nop",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": 0,
+            "sharpe_daily_sqrt365": 0,
+            "max_drawdown_pct": 0,
+            "trades": 0,
+            "win_rate": 0,
+            "n_long": 0,
+            "n_short": 0,
+            "orders_per_week": 0,
+            "cost_spread_usd": 0,
+            "cost_slippage_usd": 0,
+            "cost_commission_usd": 0,
+            "cost_financing_usd": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": false,
+            "buy_wins": 0,
+            "buy_win_rate": null,
+            "sell_wins": 0,
+            "sell_win_rate": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "sharpe_s19",
+      "genes": [
+        0.5223780344454536,
+        0.9901205839644381,
+        0.9997790359560369,
+        0.5754736385422853,
+        0.5915918242211308,
+        0.452980955297633
+      ],
+      "report": {
+        "parameters": {
+          "genes": [
+            0.5223780344454536,
+            0.9901205839644381,
+            0.9997790359560369,
+            0.5754736385422853,
+            0.5915918242211308,
+            0.452980955297633
+          ]
+        },
+        "eligible": true,
+        "reasons": [],
+        "mean_sharpe": 8.942773873596776,
+        "mean_drawdown_pct": 0.20944788605125148,
+        "mean_profit_usd": 1084.6765555617148
+      },
+      "components": {
+        "sharpe": 8.942773873596776,
+        "return_fraction": 0.1084676555561715,
+        "orders_per_day": 0.873015873015873
+      },
+      "waves": [
+        {
+          "mode": "ideal",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": 14.5407225522722,
+            "sharpe_daily_sqrt365": 0.7297826960012235,
+            "max_drawdown_pct": 0.3874370600792848,
+            "trades": 40,
+            "win_rate": 0.225,
+            "n_long": 32,
+            "n_short": 8,
+            "orders_per_week": 4,
+            "cost_spread_usd": 293.53463,
+            "cost_slippage_usd": 64.53192,
+            "cost_commission_usd": 113.65151,
+            "cost_financing_usd": 3.17982,
+            "n_close_AGENT_CLOSE": 39,
+            "n_close_SL": 0,
+            "n_close_TP": 1,
+            "valid": true,
+            "buy_wins": 1,
+            "buy_win_rate": 0.03125,
+            "sell_wins": 8,
+            "sell_win_rate": 1
+          }
+        },
+        {
+          "mode": "inverted",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": -693.6875257810461,
+            "sharpe_daily_sqrt365": -11.746395178437522,
+            "max_drawdown_pct": 6.9368752578104615,
+            "trades": 40,
+            "win_rate": 0,
+            "n_long": 8,
+            "n_short": 32,
+            "orders_per_week": 4,
+            "cost_spread_usd": 136.143725,
+            "cost_slippage_usd": 39.3432,
+            "cost_commission_usd": 68.8506,
+            "cost_financing_usd": -0.51455,
+            "n_close_AGENT_CLOSE": 40,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": true,
+            "buy_wins": 0,
+            "buy_win_rate": 0,
+            "sell_wins": 0,
+            "sell_win_rate": 0
+          }
+        },
+        {
+          "mode": "nop",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": 0,
+            "sharpe_daily_sqrt365": 0,
+            "max_drawdown_pct": 0,
+            "trades": 0,
+            "win_rate": 0,
+            "n_long": 0,
+            "n_short": 0,
+            "orders_per_week": 0,
+            "cost_spread_usd": 0,
+            "cost_slippage_usd": 0,
+            "cost_commission_usd": 0,
+            "cost_financing_usd": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": false,
+            "buy_wins": 0,
+            "buy_win_rate": null,
+            "sell_wins": 0,
+            "sell_win_rate": null
+          }
+        },
+        {
+          "mode": "ideal",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": 2154.8123885711575,
+            "sharpe_daily_sqrt365": 17.15576505119233,
+            "max_drawdown_pct": 0.03145871202321816,
+            "trades": 30,
+            "win_rate": 1,
+            "n_long": 6,
+            "n_short": 24,
+            "orders_per_week": 3.75,
+            "cost_spread_usd": 106.84017,
+            "cost_slippage_usd": 32.937380000000005,
+            "cost_commission_usd": 59.24471,
+            "cost_financing_usd": -0.514275,
+            "n_close_AGENT_CLOSE": 29,
+            "n_close_SL": 0,
+            "n_close_TP": 1,
+            "valid": true,
+            "buy_wins": 6,
+            "buy_win_rate": 1,
+            "sell_wins": 24,
+            "sell_win_rate": 1
+          }
+        },
+        {
+          "mode": "inverted",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": -3089.7952606415174,
+            "sharpe_daily_sqrt365": -22.674599147286255,
+            "max_drawdown_pct": 30.897952606415174,
+            "trades": 30,
+            "win_rate": 0,
+            "n_long": 24,
+            "n_short": 6,
+            "orders_per_week": 3.75,
+            "cost_spread_usd": 164.32735499999998,
+            "cost_slippage_usd": 40.73928,
+            "cost_commission_usd": 71.29374,
+            "cost_financing_usd": 3.17814,
+            "n_close_AGENT_CLOSE": 30,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": true,
+            "buy_wins": 0,
+            "buy_win_rate": 0,
+            "sell_wins": 0,
+            "sell_win_rate": 0
+          }
+        },
+        {
+          "mode": "nop",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": 0,
+            "sharpe_daily_sqrt365": 0,
+            "max_drawdown_pct": 0,
+            "trades": 0,
+            "win_rate": 0,
+            "n_long": 0,
+            "n_short": 0,
+            "orders_per_week": 0,
+            "cost_spread_usd": 0,
+            "cost_slippage_usd": 0,
+            "cost_commission_usd": 0,
+            "cost_financing_usd": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": false,
+            "buy_wins": 0,
+            "buy_win_rate": null,
+            "sell_wins": 0,
+            "sell_win_rate": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "sharpe_s43",
+      "genes": [
+        0.5116993114181606,
+        0.17546114825683373,
+        0.8248795891884011,
+        0.912519703553247,
+        0.24311911482634901,
+        0.36750778256122063
+      ],
+      "report": {
+        "parameters": {
+          "genes": [
+            0.5116993114181606,
+            0.17546114825683373,
+            0.8248795891884011,
+            0.912519703553247,
+            0.24311911482634901,
+            0.36750778256122063
+          ]
+        },
+        "eligible": true,
+        "reasons": [],
+        "mean_sharpe": 8.83333684463758,
+        "mean_drawdown_pct": 0.17873331033461348,
+        "mean_profit_usd": 869.4661488223137
+      },
+      "components": {
+        "sharpe": 8.83333684463758,
+        "return_fraction": 0.08694661488223138,
+        "orders_per_day": 0.873015873015873
+      },
+      "waves": [
+        {
+          "mode": "ideal",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": 10.095719449156604,
+            "sharpe_daily_sqrt365": 0.6278986718271433,
+            "max_drawdown_pct": 0.3314574763668676,
+            "trades": 40,
+            "win_rate": 0.225,
+            "n_long": 32,
+            "n_short": 8,
+            "orders_per_week": 4,
+            "cost_spread_usd": 241.93004,
+            "cost_slippage_usd": 53.45264,
+            "cost_commission_usd": 93.54212,
+            "cost_financing_usd": 2.6236,
+            "n_close_AGENT_CLOSE": 40,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": true,
+            "buy_wins": 1,
+            "buy_win_rate": 0.03125,
+            "sell_wins": 8,
+            "sell_win_rate": 1
+          }
+        },
+        {
+          "mode": "inverted",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": -532.6614967413807,
+            "sharpe_daily_sqrt365": -13.724743489594097,
+            "max_drawdown_pct": 5.326614967413807,
+            "trades": 40,
+            "win_rate": 0,
+            "n_long": 8,
+            "n_short": 32,
+            "orders_per_week": 4,
+            "cost_spread_usd": 111.85372,
+            "cost_slippage_usd": 33.5812,
+            "cost_commission_usd": 56.80297,
+            "cost_financing_usd": -0.41745,
+            "n_close_AGENT_CLOSE": 39,
+            "n_close_SL": 1,
+            "n_close_TP": 0,
+            "valid": true,
+            "buy_wins": 0,
+            "buy_win_rate": 0,
+            "sell_wins": 0,
+            "sell_win_rate": 0
+          }
+        },
+        {
+          "mode": "nop",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": 0,
+            "sharpe_daily_sqrt365": 0,
+            "max_drawdown_pct": 0,
+            "trades": 0,
+            "win_rate": 0,
+            "n_long": 0,
+            "n_short": 0,
+            "orders_per_week": 0,
+            "cost_spread_usd": 0,
+            "cost_slippage_usd": 0,
+            "cost_commission_usd": 0,
+            "cost_financing_usd": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": false,
+            "buy_wins": 0,
+            "buy_win_rate": null,
+            "sell_wins": 0,
+            "sell_win_rate": null
+          }
+        },
+        {
+          "mode": "ideal",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": 1728.8365781954708,
+            "sharpe_daily_sqrt365": 17.038775017448017,
+            "max_drawdown_pct": 0.02600914430235935,
+            "trades": 30,
+            "win_rate": 1,
+            "n_long": 6,
+            "n_short": 24,
+            "orders_per_week": 3.75,
+            "cost_spread_usd": 85.15760999999999,
+            "cost_slippage_usd": 26.37646,
+            "cost_commission_usd": 47.48086,
+            "cost_financing_usd": -0.417225,
+            "n_close_AGENT_CLOSE": 29,
+            "n_close_SL": 0,
+            "n_close_TP": 1,
+            "valid": true,
+            "buy_wins": 6,
+            "buy_win_rate": 1,
+            "sell_wins": 24,
+            "sell_win_rate": 1
+          }
+        },
+        {
+          "mode": "inverted",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": -2240.524628119574,
+            "sharpe_daily_sqrt365": -23.467496057490816,
+            "max_drawdown_pct": 22.40524628119574,
+            "trades": 30,
+            "win_rate": 0,
+            "n_long": 24,
+            "n_short": 6,
+            "orders_per_week": 3.75,
+            "cost_spread_usd": 143.525655,
+            "cost_slippage_usd": 62.081390000000006,
+            "cost_commission_usd": 62.08139,
+            "cost_financing_usd": 2.6222,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_SL": 30,
+            "n_close_TP": 0,
+            "valid": true,
+            "buy_wins": 0,
+            "buy_win_rate": 0,
+            "sell_wins": 0,
+            "sell_win_rate": 0
+          }
+        },
+        {
+          "mode": "nop",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": 0,
+            "sharpe_daily_sqrt365": 0,
+            "max_drawdown_pct": 0,
+            "trades": 0,
+            "win_rate": 0,
+            "n_long": 0,
+            "n_short": 0,
+            "orders_per_week": 0,
+            "cost_spread_usd": 0,
+            "cost_slippage_usd": 0,
+            "cost_commission_usd": 0,
+            "cost_financing_usd": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": false,
+            "buy_wins": 0,
+            "buy_win_rate": null,
+            "sell_wins": 0,
+            "sell_win_rate": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "sharpe_s7",
+      "genes": [
+        0.6799796439540023,
+        0.25459713619507135,
+        0.6549535026656328,
+        0.5766829132637676,
+        0.6000462273743419,
+        0.3009134170819617
+      ],
+      "report": {
+        "parameters": {
+          "genes": [
+            0.6799796439540023,
+            0.25459713619507135,
+            0.6549535026656328,
+            0.5766829132637676,
+            0.6000462273743419,
+            0.3009134170819617
+          ]
+        },
+        "eligible": true,
+        "reasons": [],
+        "mean_sharpe": 8.7917418748441,
+        "mean_drawdown_pct": 0.13437336677493147,
+        "mean_profit_usd": 701.8481845687857
+      },
+      "components": {
+        "sharpe": 8.7917418748441,
+        "return_fraction": 0.07018481845687857,
+        "orders_per_day": 0.873015873015873
+      },
+      "waves": [
+        {
+          "mode": "ideal",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": 10.619373560346503,
+            "sharpe_daily_sqrt365": 0.8005652915792096,
+            "max_drawdown_pct": 0.24805388493383124,
+            "trades": 40,
+            "win_rate": 0.225,
+            "n_long": 32,
+            "n_short": 8,
+            "orders_per_week": 4,
+            "cost_spread_usd": 192.12293,
+            "cost_slippage_usd": 42.28466,
+            "cost_commission_usd": 74.47671,
+            "cost_financing_usd": 2.08313,
+            "n_close_AGENT_CLOSE": 39,
+            "n_close_SL": 0,
+            "n_close_TP": 1,
+            "valid": true,
+            "buy_wins": 1,
+            "buy_win_rate": 0.03125,
+            "sell_wins": 8,
+            "sell_win_rate": 1
+          }
+        },
+        {
+          "mode": "inverted",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": -438.72488576198157,
+            "sharpe_daily_sqrt365": -13.46244448895295,
+            "max_drawdown_pct": 4.387248857619816,
+            "trades": 40,
+            "win_rate": 0,
+            "n_long": 8,
+            "n_short": 32,
+            "orders_per_week": 4,
+            "cost_spread_usd": 91.807085,
+            "cost_slippage_usd": 27.30205,
+            "cost_commission_usd": 46.21876,
+            "cost_financing_usd": -0.3418,
+            "n_close_AGENT_CLOSE": 39,
+            "n_close_SL": 1,
+            "n_close_TP": 0,
+            "valid": true,
+            "buy_wins": 0,
+            "buy_win_rate": 0,
+            "sell_wins": 0,
+            "sell_win_rate": 0
+          }
+        },
+        {
+          "mode": "nop",
+          "amplitude": 0.0012,
+          "weeks": 9,
+          "phase": 2,
+          "metrics": {
+            "net_profit_usd": 0,
+            "sharpe_daily_sqrt365": 0,
+            "max_drawdown_pct": 0,
+            "trades": 0,
+            "win_rate": 0,
+            "n_long": 0,
+            "n_short": 0,
+            "orders_per_week": 0,
+            "cost_spread_usd": 0,
+            "cost_slippage_usd": 0,
+            "cost_commission_usd": 0,
+            "cost_financing_usd": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": false,
+            "buy_wins": 0,
+            "buy_win_rate": null,
+            "sell_wins": 0,
+            "sell_win_rate": null
+          }
+        },
+        {
+          "mode": "ideal",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": 1393.0769955772248,
+            "sharpe_daily_sqrt365": 16.782918458108988,
+            "max_drawdown_pct": 0.02069284861603173,
+            "trades": 30,
+            "win_rate": 1,
+            "n_long": 6,
+            "n_short": 24,
+            "orders_per_week": 3.75,
+            "cost_spread_usd": 68.48134499999999,
+            "cost_slippage_usd": 21.66268,
+            "cost_commission_usd": 37.90969,
+            "cost_financing_usd": -0.341625,
+            "n_close_AGENT_CLOSE": 30,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": true,
+            "buy_wins": 6,
+            "buy_win_rate": 1,
+            "sell_wins": 24,
+            "sell_win_rate": 1
+          }
+        },
+        {
+          "mode": "inverted",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": -2116.479970406692,
+            "sharpe_daily_sqrt365": -23.011821175195116,
+            "max_drawdown_pct": 21.164799704066915,
+            "trades": 30,
+            "win_rate": 0,
+            "n_long": 24,
+            "n_short": 6,
+            "orders_per_week": 3.75,
+            "cost_spread_usd": 114.80870999999999,
+            "cost_slippage_usd": 47.543580000000006,
+            "cost_commission_usd": 49.775040000000004,
+            "cost_financing_usd": 2.08201,
+            "n_close_AGENT_CLOSE": 6,
+            "n_close_SL": 24,
+            "n_close_TP": 0,
+            "valid": true,
+            "buy_wins": 0,
+            "buy_win_rate": 0,
+            "sell_wins": 0,
+            "sell_win_rate": 0
+          }
+        },
+        {
+          "mode": "nop",
+          "amplitude": 0.0024,
+          "weeks": 7,
+          "phase": 11,
+          "metrics": {
+            "net_profit_usd": 0,
+            "sharpe_daily_sqrt365": 0,
+            "max_drawdown_pct": 0,
+            "trades": 0,
+            "win_rate": 0,
+            "n_long": 0,
+            "n_short": 0,
+            "orders_per_week": 0,
+            "cost_spread_usd": 0,
+            "cost_slippage_usd": 0,
+            "cost_commission_usd": 0,
+            "cost_financing_usd": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_SL": 0,
+            "n_close_TP": 0,
+            "valid": false,
+            "buy_wins": 0,
+            "buy_win_rate": null,
+            "sell_wins": 0,
+            "sell_win_rate": null
+          }
+        }
+      ]
+    }
+  ],
+  "execution_audit": {
+    "state": "PASS",
+    "closed": true,
+    "identity_sha256": "c5623a6b2730250aae30330fa31ab3be4782b19c0f8d40063e02862204471308",
+    "auditor_sha256": "0c35508ce3d461c27330028b2181e2f6fe739ba2c3017d36088ae0dcbb4600b6",
+    "cache_files_in_snapshot": 3611,
+    "genomes_verified": 3611,
+    "trades_checked": 433320,
+    "searches": [
+      {
+        "id": "sharpe_return_activity_s19",
+        "generation": 42,
+        "stop_reason": "PATIENCE",
+        "state_payload_sha256": "2c44b2837e48d1519e090035b7461b4007123af9f44d882c9db35c65cdfad0bf",
+        "objective": "sharpe_return_activity",
+        "replay_exact": true
+      },
+      {
+        "id": "sharpe_return_activity_s43",
+        "generation": 71,
+        "stop_reason": "PATIENCE",
+        "state_payload_sha256": "21b466fef727fef5275b4df97fdded5cbab6d4a820d161ecaf9c419d68078bf1",
+        "objective": "sharpe_return_activity",
+        "replay_exact": true
+      },
+      {
+        "id": "sharpe_return_activity_s7",
+        "generation": 66,
+        "stop_reason": "PATIENCE",
+        "state_payload_sha256": "049c0c7cf5c167c7fb82c572d03952458b53461f0595dcab7b18daf25bbd3bb1",
+        "objective": "sharpe_return_activity",
+        "replay_exact": true
+      },
+      {
+        "id": "sharpe_return_s19",
+        "generation": 42,
+        "stop_reason": "PATIENCE",
+        "state_payload_sha256": "9fd409af4023c8c32cb5b7737ce3e835dcc635c8ccab7045c16ac656d0e78895",
+        "objective": "sharpe_return",
+        "replay_exact": true
+      },
+      {
+        "id": "sharpe_return_s43",
+        "generation": 71,
+        "stop_reason": "PATIENCE",
+        "state_payload_sha256": "068ee74d76fd183989b3c16bdd59f9be489d9a5f42845e1e21625a821dbfa43e",
+        "objective": "sharpe_return",
+        "replay_exact": true
+      },
+      {
+        "id": "sharpe_return_s7",
+        "generation": 66,
+        "stop_reason": "PATIENCE",
+        "state_payload_sha256": "61e62cc1bef5976fef7927d6a555fb970e654c34990f853f341e002198cb2026",
+        "objective": "sharpe_return",
+        "replay_exact": true
+      },
+      {
+        "id": "sharpe_s19",
+        "generation": 48,
+        "stop_reason": "PATIENCE",
+        "state_payload_sha256": "4e28aeac37fd519e18f6a80770df77d46423d57c59d7859ad90d01050cb3a2ee",
+        "objective": "sharpe",
+        "replay_exact": true
+      },
+      {
+        "id": "sharpe_s43",
+        "generation": 40,
+        "stop_reason": "PATIENCE",
+        "state_payload_sha256": "37dc8b8879aa7de2f5e36ace529895f79e60466ab67a4270cafbaf8d199f351d",
+        "objective": "sharpe",
+        "replay_exact": true
+      },
+      {
+        "id": "sharpe_s7",
+        "generation": 50,
+        "stop_reason": "PATIENCE",
+        "state_payload_sha256": "68f22377c45c0cfdd8b52af27948aa036849bc579c7bce5e17c27166196c4f58",
+        "objective": "sharpe",
+        "replay_exact": true
+      }
+    ],
+    "legacy_objective_verified_by_recomputation": true,
+    "confirmation_simulations_replayed": 66,
+    "activity_levels_in_cache": [
+      0.8541666666666667
+    ],
+    "source_pins_verified": true,
+    "source_mutations": false,
+    "at": "2026-10-26T14:17:59.369716+00:00"
+  },
+  "close_sha256": "a4709827e15d03539a3459d9980870d75b0dd8e53ddb1d552881a9fda0f58d78",
+  "audit_sha256": "28a34c36eb93e515789964208107cf0a7c4d57fca47b091698338c5dabbc9f1d",
+  "closed_artifact_count": 3645
+}

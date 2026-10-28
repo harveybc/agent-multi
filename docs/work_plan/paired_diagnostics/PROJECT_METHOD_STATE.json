@@ -1,0 +1,22 @@
+{
+  "schema": "paired_checkpoint_diagnostics_method.v1",
+  "current_stage": "S14_READ_ONLY_DIAGNOSTIC_RELEASE_COMPLETE",
+  "design": "../48_PAIRED_CHECKPOINT_DIAGNOSTICS.md",
+  "stages_passed": ["DISCOVERY", "REQUIREMENTS", "ACCEPTANCE_TEST_DESIGN", "ARCHITECTURE", "SYSTEM_COMPONENT_UNIT_TEST_DESIGN", "UNIT_IMPLEMENTATION", "INTEGRATION_VERIFICATION", "REAL_ARTIFACT_ALPHA"],
+  "verification": {
+    "tests_passed": 17,
+    "real_checkpoint_pairs": 48,
+    "full_support_recomputed": true,
+    "official_objective_and_patience_replayed": true,
+    "new_fits": 0,
+    "reports_delivered_and_readback": 48,
+    "pending": 0,
+    "mismatch": 0,
+    "second_machine_content_checksum_comparison": "IDENTICAL",
+    "l2_snapshot": "PARTIAL_8_PAIRS_THROUGH_40000",
+    "publication_key_initial_failure": "INVALID_EXPERIMENT_KEY_FIXED_BEFORE_ANY_PUBLICATION"
+  },
+  "next_allowed_actions": ["apply identical diagnostic to later completed regularization checkpoints", "report descriptive findings without replacing official checkpoints", "plan targeted follow-ups from evidence"],
+  "blocked_actions": ["change TRAIN VALIDATION TEST periods", "select a favorable validation subset", "modify active scientific runtime", "claim observational trade-off proves overtraining", "new temporal fits while paused"],
+  "history": ["2026-10-19: owner approved full-year frozen-support checkpoint analysis", "Tests failed before missing implementation; checksum/support/decision counterexamples then passed", "Baseline and dropout closed; L2 retained as a partial snapshot; all reports published via existing governed outbox and mirrored"]
+}

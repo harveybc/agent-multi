@@ -1,0 +1,4050 @@
+{
+  "schema": "native_strategy_audit_public.v1",
+  "scope": "SYNTHETIC_WITNESSES_AND_TRAIN_ONLY_CALIBRATION",
+  "close_sha256": "6e395fb29f5594d062a18539dfd50142a6795196835d2480d94ec728ad1da160",
+  "closed_files": 329,
+  "identity": {
+    "parent_spec_sha256": "05c06cb508b3e7bb9e1c33064c9dda4cd524671db62dd78d7defc5539da20f4d",
+    "tool_sha256": "3f7d4a81c407fb86552ca10df83b1c2e39bb2c934a577608e6b81e3bd09af356",
+    "contract_sha256": "f7df77b794f1bacc04e638ea62baa930806b4d9c42f5f76d7566ac2f6404b58a",
+    "grid": [
+      {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.5,
+        "order_fraction": 1
+      },
+      {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.25,
+        "order_fraction": 0.2
+      },
+      {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.25,
+        "order_fraction": 0.5
+      },
+      {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.25,
+        "order_fraction": 1
+      },
+      {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.5,
+        "order_fraction": 0.2
+      },
+      {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.5,
+        "order_fraction": 0.5
+      },
+      {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.5,
+        "order_fraction": 1
+      },
+      {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.75,
+        "order_fraction": 0.2
+      },
+      {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.75,
+        "order_fraction": 0.5
+      },
+      {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.75,
+        "order_fraction": 1
+      },
+      {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.25,
+        "order_fraction": 0.2
+      },
+      {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.25,
+        "order_fraction": 0.5
+      },
+      {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.25,
+        "order_fraction": 1
+      },
+      {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.5,
+        "order_fraction": 0.2
+      },
+      {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.5,
+        "order_fraction": 0.5
+      },
+      {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.75,
+        "order_fraction": 0.2
+      },
+      {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.75,
+        "order_fraction": 0.5
+      },
+      {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.75,
+        "order_fraction": 1
+      },
+      {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.25,
+        "order_fraction": 0.2
+      },
+      {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.25,
+        "order_fraction": 0.5
+      },
+      {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.25,
+        "order_fraction": 1
+      },
+      {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.5,
+        "order_fraction": 0.2
+      },
+      {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.5,
+        "order_fraction": 0.5
+      },
+      {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.5,
+        "order_fraction": 1
+      },
+      {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.75,
+        "order_fraction": 0.2
+      },
+      {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.75,
+        "order_fraction": 0.5
+      },
+      {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.75,
+        "order_fraction": 1
+      }
+    ],
+    "seeds": [
+      7,
+      19,
+      43
+    ],
+    "period": "TRAIN",
+    "fits": 0,
+    "test_access": false,
+    "selection": "all three seeds executed behavior and native valid; mean TRAIN Sharpe, then smaller DD and size"
+  },
+  "decision": {
+    "state": "NO_FEASIBLE_CANDIDATE",
+    "selected": null,
+    "total_candidates": 27,
+    "completed_replays": 81,
+    "test_access": false,
+    "financial_validation_read": false
+  },
+  "scenarios": [
+    {
+      "direction": 1,
+      "scenario": "close",
+      "metrics": {
+        "net_profit_usd": -6.363559999999779,
+        "sharpe_daily_sqrt365": -7.799572637865061,
+        "max_drawdown_pct": 0.0636355999999978,
+        "trades": 1,
+        "win_rate": 0,
+        "orders_per_week": 0.5,
+        "n_long": 1,
+        "n_short": 0,
+        "n_close_AGENT_CLOSE": 1,
+        "n_close_TP": 0,
+        "n_close_SL": 0,
+        "n_close_FORCED_FLAT": 0,
+        "n_close_MARGIN_CLOSEOUT": 0,
+        "max_entries_per_day": 1,
+        "valid": false,
+        "gross_usd": 0,
+        "cost_spread_usd": 1.36362,
+        "cost_slippage_usd": 1.8181600000000002,
+        "cost_commission_usd": 3.18178,
+        "cost_financing_usd": 0
+      },
+      "commands": {
+        "NOP": 117,
+        "OPEN_LONG": 1,
+        "CLOSE_LONG": 1
+      }
+    },
+    {
+      "direction": 1,
+      "scenario": "SL",
+      "metrics": {
+        "net_profit_usd": -87.27167986364293,
+        "sharpe_daily_sqrt365": -7.79957263786506,
+        "max_drawdown_pct": 0.8727167986364294,
+        "trades": 1,
+        "win_rate": 0,
+        "orders_per_week": 0.5,
+        "n_long": 1,
+        "n_short": 0,
+        "n_close_AGENT_CLOSE": 0,
+        "n_close_TP": 0,
+        "n_close_SL": 1,
+        "n_close_FORCED_FLAT": 0,
+        "n_close_MARGIN_CLOSEOUT": 0,
+        "max_entries_per_day": 1,
+        "valid": false,
+        "gross_usd": -79.54449986364234,
+        "cost_spread_usd": 1.36362,
+        "cost_slippage_usd": 3.18178,
+        "cost_commission_usd": 3.18178,
+        "cost_financing_usd": 0
+      },
+      "commands": {
+        "NOP": 117,
+        "OPEN_LONG": 1,
+        "HOLD_LONG": 1
+      }
+    },
+    {
+      "direction": 1,
+      "scenario": "TP",
+      "metrics": {
+        "net_profit_usd": 68.40826986363572,
+        "sharpe_daily_sqrt365": 7.799572637865059,
+        "max_drawdown_pct": 0.031817800000007994,
+        "trades": 1,
+        "win_rate": 1,
+        "orders_per_week": 0.5,
+        "n_long": 1,
+        "n_short": 0,
+        "n_close_AGENT_CLOSE": 0,
+        "n_close_TP": 1,
+        "n_close_SL": 0,
+        "n_close_FORCED_FLAT": 0,
+        "n_close_MARGIN_CLOSEOUT": 0,
+        "max_entries_per_day": 1,
+        "valid": false,
+        "gross_usd": 73.8627498636354,
+        "cost_spread_usd": 1.36362,
+        "cost_slippage_usd": 0.9090800000000001,
+        "cost_commission_usd": 3.18178,
+        "cost_financing_usd": 0
+      },
+      "commands": {
+        "NOP": 117,
+        "OPEN_LONG": 1,
+        "HOLD_LONG": 1
+      }
+    },
+    {
+      "direction": 1,
+      "scenario": "both",
+      "metrics": {
+        "net_profit_usd": -87.27167986364293,
+        "sharpe_daily_sqrt365": -7.79957263786506,
+        "max_drawdown_pct": 0.8727167986364294,
+        "trades": 1,
+        "win_rate": 0,
+        "orders_per_week": 0.5,
+        "n_long": 1,
+        "n_short": 0,
+        "n_close_AGENT_CLOSE": 0,
+        "n_close_TP": 0,
+        "n_close_SL": 1,
+        "n_close_FORCED_FLAT": 0,
+        "n_close_MARGIN_CLOSEOUT": 0,
+        "max_entries_per_day": 1,
+        "valid": false,
+        "gross_usd": -79.54449986364234,
+        "cost_spread_usd": 1.36362,
+        "cost_slippage_usd": 3.18178,
+        "cost_commission_usd": 3.18178,
+        "cost_financing_usd": 0
+      },
+      "commands": {
+        "NOP": 117,
+        "OPEN_LONG": 1,
+        "HOLD_LONG": 1
+      }
+    },
+    {
+      "direction": 1,
+      "scenario": "gap",
+      "metrics": {
+        "net_profit_usd": -132.7256798636372,
+        "sharpe_daily_sqrt365": -7.79957263786506,
+        "max_drawdown_pct": 1.327256798636372,
+        "trades": 1,
+        "win_rate": 0,
+        "orders_per_week": 0.5,
+        "n_long": 1,
+        "n_short": 0,
+        "n_close_AGENT_CLOSE": 0,
+        "n_close_TP": 0,
+        "n_close_SL": 1,
+        "n_close_FORCED_FLAT": 0,
+        "n_close_MARGIN_CLOSEOUT": 0,
+        "max_entries_per_day": 1,
+        "valid": false,
+        "gross_usd": -124.99849986363735,
+        "cost_spread_usd": 1.36362,
+        "cost_slippage_usd": 3.18178,
+        "cost_commission_usd": 3.18178,
+        "cost_financing_usd": 0
+      },
+      "commands": {
+        "NOP": 117,
+        "OPEN_LONG": 1,
+        "HOLD_LONG": 1
+      }
+    },
+    {
+      "direction": 1,
+      "scenario": "forced",
+      "metrics": {
+        "net_profit_usd": -25.454239999999118,
+        "sharpe_daily_sqrt365": -24.67325379071881,
+        "max_drawdown_pct": 0.2545423999999912,
+        "trades": 1,
+        "win_rate": 0,
+        "orders_per_week": 0.5,
+        "n_long": 1,
+        "n_short": 0,
+        "n_close_AGENT_CLOSE": 0,
+        "n_close_TP": 0,
+        "n_close_SL": 0,
+        "n_close_FORCED_FLAT": 1,
+        "n_close_MARGIN_CLOSEOUT": 0,
+        "max_entries_per_day": 1,
+        "valid": false,
+        "gross_usd": 0,
+        "cost_spread_usd": 1.36362,
+        "cost_slippage_usd": 1.8181600000000002,
+        "cost_commission_usd": 3.18178,
+        "cost_financing_usd": 19.09068
+      },
+      "commands": {
+        "NOP": 23,
+        "OPEN_LONG": 1,
+        "HOLD_LONG": 95
+      }
+    },
+    {
+      "direction": 1,
+      "scenario": "daily_cap",
+      "metrics": {
+        "net_profit_usd": -6.363559999999779,
+        "sharpe_daily_sqrt365": -7.799572637865061,
+        "max_drawdown_pct": 0.0636355999999978,
+        "trades": 1,
+        "win_rate": 0,
+        "orders_per_week": 0.5,
+        "n_long": 1,
+        "n_short": 0,
+        "n_close_AGENT_CLOSE": 1,
+        "n_close_TP": 0,
+        "n_close_SL": 0,
+        "n_close_FORCED_FLAT": 0,
+        "n_close_MARGIN_CLOSEOUT": 0,
+        "max_entries_per_day": 1,
+        "valid": false,
+        "gross_usd": 0,
+        "cost_spread_usd": 1.36362,
+        "cost_slippage_usd": 1.8181600000000002,
+        "cost_commission_usd": 3.18178,
+        "cost_financing_usd": 0
+      },
+      "commands": {
+        "NOP": 117,
+        "OPEN_LONG": 1,
+        "CLOSE_LONG": 1
+      }
+    },
+    {
+      "direction": 1,
+      "scenario": "invalid",
+      "metrics": {
+        "net_profit_usd": -25.454239999999118,
+        "sharpe_daily_sqrt365": -24.67325379071881,
+        "max_drawdown_pct": 0.2545423999999912,
+        "trades": 1,
+        "win_rate": 0,
+        "orders_per_week": 0.5,
+        "n_long": 1,
+        "n_short": 0,
+        "n_close_AGENT_CLOSE": 0,
+        "n_close_TP": 0,
+        "n_close_SL": 0,
+        "n_close_FORCED_FLAT": 1,
+        "n_close_MARGIN_CLOSEOUT": 0,
+        "max_entries_per_day": 1,
+        "valid": false,
+        "gross_usd": 0,
+        "cost_spread_usd": 1.36362,
+        "cost_slippage_usd": 1.8181600000000002,
+        "cost_commission_usd": 3.18178,
+        "cost_financing_usd": 19.09068
+      },
+      "commands": {
+        "NOP": 23,
+        "OPEN_LONG": 1,
+        "HOLD_LONG": 95
+      }
+    },
+    {
+      "direction": 1,
+      "scenario": "missing_window",
+      "metrics": {
+        "net_profit_usd": -25.454239999999118,
+        "sharpe_daily_sqrt365": -24.67325379071881,
+        "max_drawdown_pct": 0.2545423999999912,
+        "trades": 1,
+        "win_rate": 0,
+        "orders_per_week": 0.5,
+        "n_long": 1,
+        "n_short": 0,
+        "n_close_AGENT_CLOSE": 0,
+        "n_close_TP": 0,
+        "n_close_SL": 0,
+        "n_close_FORCED_FLAT": 1,
+        "n_close_MARGIN_CLOSEOUT": 0,
+        "max_entries_per_day": 1,
+        "valid": false,
+        "gross_usd": 0,
+        "cost_spread_usd": 1.36362,
+        "cost_slippage_usd": 1.8181600000000002,
+        "cost_commission_usd": 3.18178,
+        "cost_financing_usd": 19.09068
+      },
+      "commands": {
+        "NOP": 23,
+        "OPEN_LONG": 1,
+        "HOLD_LONG": 92
+      }
+    },
+    {
+      "direction": 1,
+      "scenario": "close_before_SL",
+      "metrics": {
+        "net_profit_usd": -6.363559999999779,
+        "sharpe_daily_sqrt365": -7.799572637865061,
+        "max_drawdown_pct": 0.0636355999999978,
+        "trades": 1,
+        "win_rate": 0,
+        "orders_per_week": 0.5,
+        "n_long": 1,
+        "n_short": 0,
+        "n_close_AGENT_CLOSE": 1,
+        "n_close_TP": 0,
+        "n_close_SL": 0,
+        "n_close_FORCED_FLAT": 0,
+        "n_close_MARGIN_CLOSEOUT": 0,
+        "max_entries_per_day": 1,
+        "valid": false,
+        "gross_usd": 0,
+        "cost_spread_usd": 1.36362,
+        "cost_slippage_usd": 1.8181600000000002,
+        "cost_commission_usd": 3.18178,
+        "cost_financing_usd": 0
+      },
+      "commands": {
+        "NOP": 117,
+        "OPEN_LONG": 1,
+        "CLOSE_LONG": 1
+      }
+    },
+    {
+      "direction": 1,
+      "scenario": "close_before_TP",
+      "metrics": {
+        "net_profit_usd": -6.363559999999779,
+        "sharpe_daily_sqrt365": -7.799572637865061,
+        "max_drawdown_pct": 0.0636355999999978,
+        "trades": 1,
+        "win_rate": 0,
+        "orders_per_week": 0.5,
+        "n_long": 1,
+        "n_short": 0,
+        "n_close_AGENT_CLOSE": 1,
+        "n_close_TP": 0,
+        "n_close_SL": 0,
+        "n_close_FORCED_FLAT": 0,
+        "n_close_MARGIN_CLOSEOUT": 0,
+        "max_entries_per_day": 1,
+        "valid": false,
+        "gross_usd": 0,
+        "cost_spread_usd": 1.36362,
+        "cost_slippage_usd": 1.8181600000000002,
+        "cost_commission_usd": 3.18178,
+        "cost_financing_usd": 0
+      },
+      "commands": {
+        "NOP": 117,
+        "OPEN_LONG": 1,
+        "CLOSE_LONG": 1
+      }
+    },
+    {
+      "direction": -1,
+      "scenario": "close",
+      "metrics": {
+        "net_profit_usd": -6.363559999999779,
+        "sharpe_daily_sqrt365": -7.799572637865061,
+        "max_drawdown_pct": 0.0636355999999978,
+        "trades": 1,
+        "win_rate": 0,
+        "orders_per_week": 0.5,
+        "n_long": 0,
+        "n_short": 1,
+        "n_close_AGENT_CLOSE": 1,
+        "n_close_TP": 0,
+        "n_close_SL": 0,
+        "n_close_FORCED_FLAT": 0,
+        "n_close_MARGIN_CLOSEOUT": 0,
+        "max_entries_per_day": 1,
+        "valid": false,
+        "gross_usd": 0,
+        "cost_spread_usd": 1.36362,
+        "cost_slippage_usd": 1.8181600000000002,
+        "cost_commission_usd": 3.18178,
+        "cost_financing_usd": 0
+      },
+      "commands": {
+        "NOP": 117,
+        "OPEN_SHORT": 1,
+        "CLOSE_SHORT": 1
+      }
+    },
+    {
+      "direction": -1,
+      "scenario": "SL",
+      "metrics": {
+        "net_profit_usd": -87.27167986364293,
+        "sharpe_daily_sqrt365": -7.79957263786506,
+        "max_drawdown_pct": 0.8727167986364294,
+        "trades": 1,
+        "win_rate": 0,
+        "orders_per_week": 0.5,
+        "n_long": 0,
+        "n_short": 1,
+        "n_close_AGENT_CLOSE": 0,
+        "n_close_TP": 0,
+        "n_close_SL": 1,
+        "n_close_FORCED_FLAT": 0,
+        "n_close_MARGIN_CLOSEOUT": 0,
+        "max_entries_per_day": 1,
+        "valid": false,
+        "gross_usd": -79.54449986364234,
+        "cost_spread_usd": 1.36362,
+        "cost_slippage_usd": 3.18178,
+        "cost_commission_usd": 3.18178,
+        "cost_financing_usd": 0
+      },
+      "commands": {
+        "NOP": 117,
+        "OPEN_SHORT": 1,
+        "HOLD_SHORT": 1
+      }
+    },
+    {
+      "direction": -1,
+      "scenario": "TP",
+      "metrics": {
+        "net_profit_usd": 68.40826986363572,
+        "sharpe_daily_sqrt365": 7.799572637865059,
+        "max_drawdown_pct": 0.031817800000007994,
+        "trades": 1,
+        "win_rate": 1,
+        "orders_per_week": 0.5,
+        "n_long": 0,
+        "n_short": 1,
+        "n_close_AGENT_CLOSE": 0,
+        "n_close_TP": 1,
+        "n_close_SL": 0,
+        "n_close_FORCED_FLAT": 0,
+        "n_close_MARGIN_CLOSEOUT": 0,
+        "max_entries_per_day": 1,
+        "valid": false,
+        "gross_usd": 73.8627498636354,
+        "cost_spread_usd": 1.36362,
+        "cost_slippage_usd": 0.9090800000000001,
+        "cost_commission_usd": 3.18178,
+        "cost_financing_usd": 0
+      },
+      "commands": {
+        "NOP": 117,
+        "OPEN_SHORT": 1,
+        "HOLD_SHORT": 1
+      }
+    },
+    {
+      "direction": -1,
+      "scenario": "both",
+      "metrics": {
+        "net_profit_usd": -87.27167986364293,
+        "sharpe_daily_sqrt365": -7.79957263786506,
+        "max_drawdown_pct": 0.8727167986364294,
+        "trades": 1,
+        "win_rate": 0,
+        "orders_per_week": 0.5,
+        "n_long": 0,
+        "n_short": 1,
+        "n_close_AGENT_CLOSE": 0,
+        "n_close_TP": 0,
+        "n_close_SL": 1,
+        "n_close_FORCED_FLAT": 0,
+        "n_close_MARGIN_CLOSEOUT": 0,
+        "max_entries_per_day": 1,
+        "valid": false,
+        "gross_usd": -79.54449986364234,
+        "cost_spread_usd": 1.36362,
+        "cost_slippage_usd": 3.18178,
+        "cost_commission_usd": 3.18178,
+        "cost_financing_usd": 0
+      },
+      "commands": {
+        "NOP": 117,
+        "OPEN_SHORT": 1,
+        "HOLD_SHORT": 1
+      }
+    },
+    {
+      "direction": -1,
+      "scenario": "gap",
+      "metrics": {
+        "net_profit_usd": -132.7256798636372,
+        "sharpe_daily_sqrt365": -7.79957263786506,
+        "max_drawdown_pct": 1.327256798636372,
+        "trades": 1,
+        "win_rate": 0,
+        "orders_per_week": 0.5,
+        "n_long": 0,
+        "n_short": 1,
+        "n_close_AGENT_CLOSE": 0,
+        "n_close_TP": 0,
+        "n_close_SL": 1,
+        "n_close_FORCED_FLAT": 0,
+        "n_close_MARGIN_CLOSEOUT": 0,
+        "max_entries_per_day": 1,
+        "valid": false,
+        "gross_usd": -124.99849986363735,
+        "cost_spread_usd": 1.36362,
+        "cost_slippage_usd": 3.18178,
+        "cost_commission_usd": 3.18178,
+        "cost_financing_usd": 0
+      },
+      "commands": {
+        "NOP": 117,
+        "OPEN_SHORT": 1,
+        "HOLD_SHORT": 1
+      }
+    },
+    {
+      "direction": -1,
+      "scenario": "forced",
+      "metrics": {
+        "net_profit_usd": 0.4545400000006339,
+        "sharpe_daily_sqrt365": 0.608408737259425,
+        "max_drawdown_pct": 0.031817800000007994,
+        "trades": 1,
+        "win_rate": 1,
+        "orders_per_week": 0.5,
+        "n_long": 0,
+        "n_short": 1,
+        "n_close_AGENT_CLOSE": 0,
+        "n_close_TP": 0,
+        "n_close_SL": 0,
+        "n_close_FORCED_FLAT": 1,
+        "n_close_MARGIN_CLOSEOUT": 0,
+        "max_entries_per_day": 1,
+        "valid": false,
+        "gross_usd": 0,
+        "cost_spread_usd": 1.36362,
+        "cost_slippage_usd": 1.8181600000000002,
+        "cost_commission_usd": 3.18178,
+        "cost_financing_usd": -6.818099999999999
+      },
+      "commands": {
+        "NOP": 23,
+        "OPEN_SHORT": 1,
+        "HOLD_SHORT": 95
+      }
+    },
+    {
+      "direction": -1,
+      "scenario": "daily_cap",
+      "metrics": {
+        "net_profit_usd": -6.363559999999779,
+        "sharpe_daily_sqrt365": -7.799572637865061,
+        "max_drawdown_pct": 0.0636355999999978,
+        "trades": 1,
+        "win_rate": 0,
+        "orders_per_week": 0.5,
+        "n_long": 0,
+        "n_short": 1,
+        "n_close_AGENT_CLOSE": 1,
+        "n_close_TP": 0,
+        "n_close_SL": 0,
+        "n_close_FORCED_FLAT": 0,
+        "n_close_MARGIN_CLOSEOUT": 0,
+        "max_entries_per_day": 1,
+        "valid": false,
+        "gross_usd": 0,
+        "cost_spread_usd": 1.36362,
+        "cost_slippage_usd": 1.8181600000000002,
+        "cost_commission_usd": 3.18178,
+        "cost_financing_usd": 0
+      },
+      "commands": {
+        "NOP": 117,
+        "OPEN_SHORT": 1,
+        "CLOSE_SHORT": 1
+      }
+    },
+    {
+      "direction": -1,
+      "scenario": "invalid",
+      "metrics": {
+        "net_profit_usd": 0.4545400000006339,
+        "sharpe_daily_sqrt365": 0.608408737259425,
+        "max_drawdown_pct": 0.031817800000007994,
+        "trades": 1,
+        "win_rate": 1,
+        "orders_per_week": 0.5,
+        "n_long": 0,
+        "n_short": 1,
+        "n_close_AGENT_CLOSE": 0,
+        "n_close_TP": 0,
+        "n_close_SL": 0,
+        "n_close_FORCED_FLAT": 1,
+        "n_close_MARGIN_CLOSEOUT": 0,
+        "max_entries_per_day": 1,
+        "valid": false,
+        "gross_usd": 0,
+        "cost_spread_usd": 1.36362,
+        "cost_slippage_usd": 1.8181600000000002,
+        "cost_commission_usd": 3.18178,
+        "cost_financing_usd": -6.818099999999999
+      },
+      "commands": {
+        "NOP": 23,
+        "OPEN_SHORT": 1,
+        "HOLD_SHORT": 95
+      }
+    },
+    {
+      "direction": -1,
+      "scenario": "missing_window",
+      "metrics": {
+        "net_profit_usd": 0.4545400000006339,
+        "sharpe_daily_sqrt365": 0.608408737259425,
+        "max_drawdown_pct": 0.031817800000007994,
+        "trades": 1,
+        "win_rate": 1,
+        "orders_per_week": 0.5,
+        "n_long": 0,
+        "n_short": 1,
+        "n_close_AGENT_CLOSE": 0,
+        "n_close_TP": 0,
+        "n_close_SL": 0,
+        "n_close_FORCED_FLAT": 1,
+        "n_close_MARGIN_CLOSEOUT": 0,
+        "max_entries_per_day": 1,
+        "valid": false,
+        "gross_usd": 0,
+        "cost_spread_usd": 1.36362,
+        "cost_slippage_usd": 1.8181600000000002,
+        "cost_commission_usd": 3.18178,
+        "cost_financing_usd": -6.818099999999999
+      },
+      "commands": {
+        "NOP": 23,
+        "OPEN_SHORT": 1,
+        "HOLD_SHORT": 92
+      }
+    },
+    {
+      "direction": -1,
+      "scenario": "close_before_SL",
+      "metrics": {
+        "net_profit_usd": -6.363559999999779,
+        "sharpe_daily_sqrt365": -7.799572637865061,
+        "max_drawdown_pct": 0.0636355999999978,
+        "trades": 1,
+        "win_rate": 0,
+        "orders_per_week": 0.5,
+        "n_long": 0,
+        "n_short": 1,
+        "n_close_AGENT_CLOSE": 1,
+        "n_close_TP": 0,
+        "n_close_SL": 0,
+        "n_close_FORCED_FLAT": 0,
+        "n_close_MARGIN_CLOSEOUT": 0,
+        "max_entries_per_day": 1,
+        "valid": false,
+        "gross_usd": 0,
+        "cost_spread_usd": 1.36362,
+        "cost_slippage_usd": 1.8181600000000002,
+        "cost_commission_usd": 3.18178,
+        "cost_financing_usd": 0
+      },
+      "commands": {
+        "NOP": 117,
+        "OPEN_SHORT": 1,
+        "CLOSE_SHORT": 1
+      }
+    },
+    {
+      "direction": -1,
+      "scenario": "close_before_TP",
+      "metrics": {
+        "net_profit_usd": -6.363559999999779,
+        "sharpe_daily_sqrt365": -7.799572637865061,
+        "max_drawdown_pct": 0.0636355999999978,
+        "trades": 1,
+        "win_rate": 0,
+        "orders_per_week": 0.5,
+        "n_long": 0,
+        "n_short": 1,
+        "n_close_AGENT_CLOSE": 1,
+        "n_close_TP": 0,
+        "n_close_SL": 0,
+        "n_close_FORCED_FLAT": 0,
+        "n_close_MARGIN_CLOSEOUT": 0,
+        "max_entries_per_day": 1,
+        "valid": false,
+        "gross_usd": 0,
+        "cost_spread_usd": 1.36362,
+        "cost_slippage_usd": 1.8181600000000002,
+        "cost_commission_usd": 3.18178,
+        "cost_financing_usd": 0
+      },
+      "commands": {
+        "NOP": 117,
+        "OPEN_SHORT": 1,
+        "CLOSE_SHORT": 1
+      }
+    }
+  ],
+  "synthetic_waves": [
+    {
+      "mode": "ideal",
+      "amplitude": 0.002,
+      "weeks": 8,
+      "phase": 0,
+      "commands": {
+        "NOP": 777,
+        "OPEN_LONG": 28,
+        "HOLD_LONG": 85,
+        "CLOSE_LONG": 28,
+        "OPEN_SHORT": 7,
+        "HOLD_SHORT": 28,
+        "CLOSE_SHORT": 6
+      },
+      "metrics": {
+        "net_profit_usd": 2533.4032881437834,
+        "sharpe_daily_sqrt365": 19.69365685525599,
+        "max_drawdown_pct": 0.23400875067000937,
+        "trades": 35,
+        "win_rate": 1,
+        "orders_per_week": 3.888888888888889,
+        "n_long": 28,
+        "n_short": 7,
+        "n_close_AGENT_CLOSE": 34,
+        "n_close_TP": 1,
+        "n_close_SL": 0,
+        "n_close_FORCED_FLAT": 0,
+        "n_close_MARGIN_CLOSEOUT": 0,
+        "max_entries_per_day": 1,
+        "valid": true,
+        "gross_usd": 2998.443518143782,
+        "cost_spread_usd": 266.12604,
+        "cost_slippage_usd": 70.59194000000001,
+        "cost_commission_usd": 125.13844,
+        "cost_financing_usd": 3.18381
+      }
+    },
+    {
+      "mode": "inverted",
+      "amplitude": 0.002,
+      "weeks": 8,
+      "phase": 0,
+      "commands": {
+        "NOP": 777,
+        "OPEN_SHORT": 28,
+        "HOLD_SHORT": 85,
+        "CLOSE_SHORT": 28,
+        "OPEN_LONG": 7,
+        "HOLD_LONG": 28,
+        "CLOSE_LONG": 6
+      },
+      "metrics": {
+        "net_profit_usd": -2675.825885746972,
+        "sharpe_daily_sqrt365": -20.332807700709047,
+        "max_drawdown_pct": 26.75825885746972,
+        "trades": 35,
+        "win_rate": 0,
+        "orders_per_week": 3.888888888888889,
+        "n_long": 7,
+        "n_short": 28,
+        "n_close_AGENT_CLOSE": 34,
+        "n_close_TP": 0,
+        "n_close_SL": 1,
+        "n_close_FORCED_FLAT": 0,
+        "n_close_MARGIN_CLOSEOUT": 0,
+        "max_entries_per_day": 1,
+        "valid": true,
+        "gross_usd": -2323.829745746972,
+        "cost_spread_usd": 201.50740499999998,
+        "cost_slippage_usd": 55.99342000000001,
+        "cost_commission_usd": 95.63239,
+        "cost_financing_usd": -1.137075
+      }
+    },
+    {
+      "mode": "nop",
+      "amplitude": 0.002,
+      "weeks": 8,
+      "phase": 0,
+      "commands": {
+        "NOP": 959
+      },
+      "metrics": {
+        "net_profit_usd": 0,
+        "sharpe_daily_sqrt365": 0,
+        "max_drawdown_pct": 0,
+        "trades": 0,
+        "win_rate": 0,
+        "orders_per_week": 0,
+        "n_long": 0,
+        "n_short": 0,
+        "n_close_AGENT_CLOSE": 0,
+        "n_close_TP": 0,
+        "n_close_SL": 0,
+        "n_close_FORCED_FLAT": 0,
+        "n_close_MARGIN_CLOSEOUT": 0,
+        "max_entries_per_day": 0,
+        "valid": false,
+        "gross_usd": 0,
+        "cost_spread_usd": 0,
+        "cost_slippage_usd": 0,
+        "cost_commission_usd": 0,
+        "cost_financing_usd": 0
+      }
+    },
+    {
+      "mode": "ideal",
+      "amplitude": 0.0015,
+      "weeks": 6,
+      "phase": 3,
+      "commands": {
+        "NOP": 623,
+        "OPEN_LONG": 24,
+        "HOLD_LONG": 41,
+        "CLOSE_LONG": 20,
+        "OPEN_SHORT": 1,
+        "HOLD_SHORT": 10
+      },
+      "metrics": {
+        "net_profit_usd": 312.99463983542955,
+        "sharpe_daily_sqrt365": 4.519488195437511,
+        "max_drawdown_pct": 0.5228371681455786,
+        "trades": 25,
+        "win_rate": 0.2,
+        "orders_per_week": 3.5714285714285716,
+        "n_long": 24,
+        "n_short": 1,
+        "n_close_AGENT_CLOSE": 20,
+        "n_close_TP": 5,
+        "n_close_SL": 0,
+        "n_close_FORCED_FLAT": 0,
+        "n_close_MARGIN_CLOSEOUT": 0,
+        "max_entries_per_day": 1,
+        "valid": true,
+        "gross_usd": 653.5227098354304,
+        "cost_spread_usd": 201.65762,
+        "cost_slippage_usd": 41.70058,
+        "cost_commission_usd": 81.04012,
+        "cost_financing_usd": 16.12975
+      }
+    },
+    {
+      "mode": "inverted",
+      "amplitude": 0.0015,
+      "weeks": 6,
+      "phase": 3,
+      "commands": {
+        "NOP": 583,
+        "OPEN_SHORT": 20,
+        "HOLD_SHORT": 45,
+        "CLOSE_SHORT": 16,
+        "OPEN_LONG": 5,
+        "HOLD_LONG": 50
+      },
+      "metrics": {
+        "net_profit_usd": -1352.0104670455548,
+        "sharpe_daily_sqrt365": -12.454050336147775,
+        "max_drawdown_pct": 13.520104670455549,
+        "trades": 25,
+        "win_rate": 0,
+        "orders_per_week": 3.5714285714285716,
+        "n_long": 5,
+        "n_short": 20,
+        "n_close_AGENT_CLOSE": 16,
+        "n_close_TP": 0,
+        "n_close_SL": 9,
+        "n_close_FORCED_FLAT": 0,
+        "n_close_MARGIN_CLOSEOUT": 0,
+        "max_entries_per_day": 1,
+        "valid": true,
+        "gross_usd": -1055.8322620455556,
+        "cost_spread_usd": 173.61631,
+        "cost_slippage_usd": 53.846720000000005,
+        "cost_commission_usd": 74.1083,
+        "cost_financing_usd": -5.393125
+      }
+    },
+    {
+      "mode": "nop",
+      "amplitude": 0.0015,
+      "weeks": 6,
+      "phase": 3,
+      "commands": {
+        "NOP": 719
+      },
+      "metrics": {
+        "net_profit_usd": 0,
+        "sharpe_daily_sqrt365": 0,
+        "max_drawdown_pct": 0,
+        "trades": 0,
+        "win_rate": 0,
+        "orders_per_week": 0,
+        "n_long": 0,
+        "n_short": 0,
+        "n_close_AGENT_CLOSE": 0,
+        "n_close_TP": 0,
+        "n_close_SL": 0,
+        "n_close_FORCED_FLAT": 0,
+        "n_close_MARGIN_CLOSEOUT": 0,
+        "max_entries_per_day": 0,
+        "valid": false,
+        "gross_usd": 0,
+        "cost_spread_usd": 0,
+        "cost_slippage_usd": 0,
+        "cost_commission_usd": 0,
+        "cost_financing_usd": 0
+      }
+    }
+  ],
+  "grid": [
+    {
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.5,
+        "order_fraction": 1
+      },
+      "eligible": false,
+      "mean_sharpe": -0.5493888854264573,
+      "mean_drawdown_pct": 71.9712564791332,
+      "mean_profit_usd": -5685.040750032783,
+      "seeds": [
+        {
+          "seed": 7,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -5869.585051565537,
+            "sharpe_daily_sqrt365": -0.5913480624280073,
+            "max_drawdown_pct": 71.60284459954698,
+            "trades": 497,
+            "win_rate": 0.5010060362173038,
+            "orders_per_week": 2.7158469945355193,
+            "n_long": 494,
+            "n_short": 3,
+            "n_close_AGENT_CLOSE": 12,
+            "n_close_TP": 175,
+            "n_close_SL": 154,
+            "n_close_FORCED_FLAT": 156,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -942.7665965655536,
+            "cost_spread_usd": 983.044005,
+            "cost_slippage_usd": 683.0560800000001,
+            "cost_commission_usd": 1124.9602,
+            "cost_financing_usd": 2135.75817
+          }
+        },
+        {
+          "seed": 19,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_SHORT_TRADES",
+              "NO_EXECUTED_CLOSE_SHORT",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -5507.826148833138,
+            "sharpe_daily_sqrt365": -0.5078757855905959,
+            "max_drawdown_pct": 72.15545242822743,
+            "trades": 493,
+            "win_rate": 0.5030425963488844,
+            "orders_per_week": 2.6939890710382515,
+            "n_long": 493,
+            "n_short": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_TP": 178,
+            "n_close_SL": 156,
+            "n_close_FORCED_FLAT": 159,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -412.9146388331449,
+            "cost_spread_usd": 985.23086,
+            "cost_slippage_usd": 705.18235,
+            "cost_commission_usd": 1162.08694,
+            "cost_financing_usd": 2242.41136
+          }
+        },
+        {
+          "seed": 43,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -5677.7110496996775,
+            "sharpe_daily_sqrt365": -0.5489428082607686,
+            "max_drawdown_pct": 72.1554724096252,
+            "trades": 493,
+            "win_rate": 0.5030425963488844,
+            "orders_per_week": 2.6939890710382515,
+            "n_long": 492,
+            "n_short": 1,
+            "n_close_AGENT_CLOSE": 1,
+            "n_close_TP": 177,
+            "n_close_SL": 156,
+            "n_close_FORCED_FLAT": 159,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -758.7073296996681,
+            "cost_spread_usd": 954.38217,
+            "cost_slippage_usd": 681.68028,
+            "cost_commission_usd": 1121.77499,
+            "cost_financing_usd": 2161.16628
+          }
+        }
+      ]
+    },
+    {
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.25,
+        "order_fraction": 0.2
+      },
+      "eligible": false,
+      "mean_sharpe": -0.7265636245569246,
+      "mean_drawdown_pct": 18.499668207037505,
+      "mean_profit_usd": -1408.448822921532,
+      "seeds": [
+        {
+          "seed": 7,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -1414.6945600543986,
+            "sharpe_daily_sqrt365": -0.735540163463029,
+            "max_drawdown_pct": 17.83625501288607,
+            "trades": 771,
+            "win_rate": 0.5343709468223087,
+            "orders_per_week": 4.213114754098361,
+            "n_long": 768,
+            "n_short": 3,
+            "n_close_AGENT_CLOSE": 8,
+            "n_close_TP": 351,
+            "n_close_SL": 276,
+            "n_close_FORCED_FLAT": 136,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": 242.07640494560167,
+            "cost_spread_usd": 660.051735,
+            "cost_slippage_usd": 268.82514000000003,
+            "cost_commission_usd": 451.74507,
+            "cost_financing_usd": 276.14902
+          }
+        },
+        {
+          "seed": 19,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_SHORT_TRADES",
+              "NO_EXECUTED_CLOSE_SHORT",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -1390.0135189050488,
+            "sharpe_daily_sqrt365": -0.7125691678604429,
+            "max_drawdown_pct": 18.8315347124045,
+            "trades": 771,
+            "win_rate": 0.5369649805447471,
+            "orders_per_week": 4.213114754098361,
+            "n_long": 771,
+            "n_short": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_TP": 354,
+            "n_close_SL": 279,
+            "n_close_FORCED_FLAT": 138,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": 276.52903109495134,
+            "cost_spread_usd": 663.0580299999999,
+            "cost_slippage_usd": 270.81993,
+            "cost_commission_usd": 454.70747,
+            "cost_financing_usd": 277.95712
+          }
+        },
+        {
+          "seed": 43,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -1420.638389805148,
+            "sharpe_daily_sqrt365": -0.7315815423473019,
+            "max_drawdown_pct": 18.831214895821947,
+            "trades": 771,
+            "win_rate": 0.5369649805447471,
+            "orders_per_week": 4.213114754098361,
+            "n_long": 770,
+            "n_short": 1,
+            "n_close_AGENT_CLOSE": 1,
+            "n_close_TP": 353,
+            "n_close_SL": 279,
+            "n_close_FORCED_FLAT": 138,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": 240.7025301948539,
+            "cost_spread_usd": 661.0512699999999,
+            "cost_slippage_usd": 270.1018,
+            "cost_commission_usd": 453.18686,
+            "cost_financing_usd": 277.00099
+          }
+        }
+      ]
+    },
+    {
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.25,
+        "order_fraction": 0.5
+      },
+      "eligible": false,
+      "mean_sharpe": -0.7272643030839743,
+      "mean_drawdown_pct": 40.837151954855635,
+      "mean_profit_usd": -3308.5675829954066,
+      "seeds": [
+        {
+          "seed": 7,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -3318.6467484839122,
+            "sharpe_daily_sqrt365": -0.7362031172823285,
+            "max_drawdown_pct": 39.618964994925356,
+            "trades": 771,
+            "win_rate": 0.5343709468223087,
+            "orders_per_week": 4.213114754098361,
+            "n_long": 768,
+            "n_short": 3,
+            "n_close_AGENT_CLOSE": 8,
+            "n_close_TP": 351,
+            "n_close_SL": 276,
+            "n_close_FORCED_FLAT": 136,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": 414.692401516087,
+            "cost_spread_usd": 1489.98607,
+            "cost_slippage_usd": 606.2236,
+            "cost_commission_usd": 1017.2624,
+            "cost_financing_usd": 619.86708
+          }
+        },
+        {
+          "seed": 19,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_SHORT_TRADES",
+              "NO_EXECUTED_CLOSE_SHORT",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -3273.84240056404,
+            "sharpe_daily_sqrt365": -0.7132526563138036,
+            "max_drawdown_pct": 41.44611479824186,
+            "trades": 771,
+            "win_rate": 0.5369649805447471,
+            "orders_per_week": 4.213114754098361,
+            "n_long": 771,
+            "n_short": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_TP": 354,
+            "n_close_SL": 279,
+            "n_close_FORCED_FLAT": 138,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": 519.4527194359648,
+            "cost_spread_usd": 1511.95915,
+            "cost_slippage_usd": 616.68998,
+            "cost_commission_usd": 1034.32973,
+            "cost_financing_usd": 630.31626
+          }
+        },
+        {
+          "seed": 43,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -3333.213599938268,
+            "sharpe_daily_sqrt365": -0.7323371356557908,
+            "max_drawdown_pct": 41.44637607139969,
+            "trades": 771,
+            "win_rate": 0.5369649805447471,
+            "orders_per_week": 4.213114754098361,
+            "n_long": 770,
+            "n_short": 1,
+            "n_close_AGENT_CLOSE": 1,
+            "n_close_TP": 353,
+            "n_close_SL": 279,
+            "n_close_FORCED_FLAT": 138,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": 429.68618506173584,
+            "cost_spread_usd": 1500.0793749999998,
+            "cost_slippage_usd": 612.0713800000001,
+            "cost_commission_usd": 1025.79106,
+            "cost_financing_usd": 624.95797
+          }
+        }
+      ]
+    },
+    {
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.25,
+        "order_fraction": 1
+      },
+      "eligible": false,
+      "mean_sharpe": -0.7284671421491978,
+      "mean_drawdown_pct": 66.54046763529848,
+      "mean_profit_usd": -5843.743715093488,
+      "seeds": [
+        {
+          "seed": 7,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -5851.986611609156,
+            "sharpe_daily_sqrt365": -0.7373516619842015,
+            "max_drawdown_pct": 65.1354267286331,
+            "trades": 771,
+            "win_rate": 0.5343709468223087,
+            "orders_per_week": 4.213114754098361,
+            "n_long": 768,
+            "n_short": 3,
+            "n_close_AGENT_CLOSE": 8,
+            "n_close_TP": 351,
+            "n_close_SL": 276,
+            "n_close_FORCED_FLAT": 136,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": 402.64893339085955,
+            "cost_spread_usd": 2504.363715,
+            "cost_slippage_usd": 1016.8055700000001,
+            "cost_commission_usd": 1702.35597,
+            "cost_financing_usd": 1031.11029
+          }
+        },
+        {
+          "seed": 19,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_SHORT_TRADES",
+              "NO_EXECUTED_CLOSE_SHORT",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -5803.130672437681,
+            "sharpe_daily_sqrt365": -0.7144470496190507,
+            "max_drawdown_pct": 67.24281511058695,
+            "trades": 771,
+            "win_rate": 0.5369649805447471,
+            "orders_per_week": 4.213114754098361,
+            "n_long": 771,
+            "n_short": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_TP": 354,
+            "n_close_SL": 279,
+            "n_close_FORCED_FLAT": 138,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": 664.1849175623261,
+            "cost_spread_usd": 2586.02972,
+            "cost_slippage_usd": 1051.99584,
+            "cost_commission_usd": 1761.66032,
+            "cost_financing_usd": 1067.62971
+          }
+        },
+        {
+          "seed": 43,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -5876.113861233629,
+            "sharpe_daily_sqrt365": -0.7336027148443414,
+            "max_drawdown_pct": 67.24316106667541,
+            "trades": 771,
+            "win_rate": 0.5369649805447471,
+            "orders_per_week": 4.213114754098361,
+            "n_long": 770,
+            "n_short": 1,
+            "n_close_AGENT_CLOSE": 1,
+            "n_close_TP": 353,
+            "n_close_SL": 279,
+            "n_close_FORCED_FLAT": 138,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": 488.7138737663614,
+            "cost_spread_usd": 2545.7462649999998,
+            "cost_slippage_usd": 1035.9838100000002,
+            "cost_commission_usd": 1733.25565,
+            "cost_financing_usd": 1049.84201
+          }
+        }
+      ]
+    },
+    {
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.5,
+        "order_fraction": 0.2
+      },
+      "eligible": false,
+      "mean_sharpe": -0.7175377184005193,
+      "mean_drawdown_pct": 21.72206324833219,
+      "mean_profit_usd": -1490.235916178736,
+      "seeds": [
+        {
+          "seed": 7,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -1538.069944299943,
+            "sharpe_daily_sqrt365": -0.7515200745277575,
+            "max_drawdown_pct": 21.46962214008513,
+            "trades": 656,
+            "win_rate": 0.586890243902439,
+            "orders_per_week": 3.5846994535519126,
+            "n_long": 653,
+            "n_short": 3,
+            "n_close_AGENT_CLOSE": 8,
+            "n_close_TP": 338,
+            "n_close_SL": 162,
+            "n_close_FORCED_FLAT": 148,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -56.717654299943995,
+            "cost_spread_usd": 482.5974,
+            "cost_slippage_usd": 205.31091,
+            "cost_commission_usd": 387.00872,
+            "cost_financing_usd": 406.43526
+          }
+        },
+        {
+          "seed": 19,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_SHORT_TRADES",
+              "NO_EXECUTED_CLOSE_SHORT",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -1451.0975291124669,
+            "sharpe_daily_sqrt365": -0.6917472790076068,
+            "max_drawdown_pct": 21.848422252754645,
+            "trades": 656,
+            "win_rate": 0.5914634146341463,
+            "orders_per_week": 3.5846994535519126,
+            "n_long": 656,
+            "n_short": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_TP": 342,
+            "n_close_SL": 164,
+            "n_close_FORCED_FLAT": 150,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": 40.16074088753675,
+            "cost_spread_usd": 485.00356999999997,
+            "cost_slippage_usd": 206.66969,
+            "cost_commission_usd": 389.98323,
+            "cost_financing_usd": 409.60178
+          }
+        },
+        {
+          "seed": 43,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -1481.540275123798,
+            "sharpe_daily_sqrt365": -0.709345801666194,
+            "max_drawdown_pct": 21.848145352156795,
+            "trades": 656,
+            "win_rate": 0.5914634146341463,
+            "orders_per_week": 3.5846994535519126,
+            "n_long": 655,
+            "n_short": 1,
+            "n_close_AGENT_CLOSE": 1,
+            "n_close_TP": 341,
+            "n_close_SL": 164,
+            "n_close_FORCED_FLAT": 150,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": 5.096819876202806,
+            "cost_spread_usd": 483.58908499999995,
+            "cost_slippage_usd": 206.16528000000002,
+            "cost_commission_usd": 388.68053,
+            "cost_financing_usd": 408.2022
+          }
+        }
+      ]
+    },
+    {
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.5,
+        "order_fraction": 0.5
+      },
+      "eligible": false,
+      "mean_sharpe": -0.7194284081162468,
+      "mean_drawdown_pct": 46.58514189606649,
+      "mean_profit_usd": -3494.8796892274745,
+      "seeds": [
+        {
+          "seed": 7,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -3583.361603460413,
+            "sharpe_daily_sqrt365": -0.7535390802091538,
+            "max_drawdown_pct": 46.138515667174545,
+            "trades": 656,
+            "win_rate": 0.586890243902439,
+            "orders_per_week": 3.5846994535519126,
+            "n_long": 653,
+            "n_short": 3,
+            "n_close_AGENT_CLOSE": 8,
+            "n_close_TP": 338,
+            "n_close_SL": 162,
+            "n_close_FORCED_FLAT": 148,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -199.4478384604149,
+            "cost_spread_usd": 1105.351725,
+            "cost_slippage_usd": 469.30228000000005,
+            "cost_commission_usd": 883.63289,
+            "cost_financing_usd": 925.6268699999999
+          }
+        },
+        {
+          "seed": 19,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_SHORT_TRADES",
+              "NO_EXECUTED_CLOSE_SHORT",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -3421.6698618660994,
+            "sharpe_daily_sqrt365": -0.6935751042887861,
+            "max_drawdown_pct": 46.80869943020669,
+            "trades": 656,
+            "win_rate": 0.5914634146341463,
+            "orders_per_week": 3.5846994535519126,
+            "n_long": 656,
+            "n_short": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_TP": 342,
+            "n_close_SL": 164,
+            "n_close_FORCED_FLAT": 150,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": 24.05277813389949,
+            "cost_spread_usd": 1123.7334899999998,
+            "cost_slippage_usd": 477.69817000000006,
+            "cost_commission_usd": 900.59977,
+            "cost_financing_usd": 943.69121
+          }
+        },
+        {
+          "seed": 43,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -3479.607602355911,
+            "sharpe_daily_sqrt365": -0.7111710398508001,
+            "max_drawdown_pct": 46.80821059081825,
+            "trades": 656,
+            "win_rate": 0.5914634146341463,
+            "orders_per_week": 3.5846994535519126,
+            "n_long": 655,
+            "n_short": 1,
+            "n_close_AGENT_CLOSE": 1,
+            "n_close_TP": 341,
+            "n_close_SL": 164,
+            "n_close_FORCED_FLAT": 150,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -61.43131235591536,
+            "cost_spread_usd": 1115.04943,
+            "cost_slippage_usd": 474.2237,
+            "cost_commission_usd": 893.18131,
+            "cost_financing_usd": 935.72185
+          }
+        }
+      ]
+    },
+    {
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.5,
+        "order_fraction": 1
+      },
+      "eligible": false,
+      "mean_sharpe": -0.7226424393883345,
+      "mean_drawdown_pct": 72.86010918752321,
+      "mean_profit_usd": -6130.869555132459,
+      "seeds": [
+        {
+          "seed": 7,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -6230.272029282982,
+            "sharpe_daily_sqrt365": -0.7569548296792435,
+            "max_drawdown_pct": 72.37783557883559,
+            "trades": 656,
+            "win_rate": 0.586890243902439,
+            "orders_per_week": 3.5846994535519126,
+            "n_long": 653,
+            "n_short": 3,
+            "n_close_AGENT_CLOSE": 8,
+            "n_close_TP": 338,
+            "n_close_SL": 162,
+            "n_close_FORCED_FLAT": 148,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -393.7037642829903,
+            "cost_spread_usd": 1915.718255,
+            "cost_slippage_usd": 809.9672,
+            "cost_commission_usd": 1523.06252,
+            "cost_financing_usd": 1587.8202899999999
+          }
+        },
+        {
+          "seed": 19,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_SHORT_TRADES",
+              "NO_EXECUTED_CLOSE_SHORT",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -6046.80611546303,
+            "sharpe_daily_sqrt365": -0.6966494263321898,
+            "max_drawdown_pct": 73.1012742903319,
+            "trades": 656,
+            "win_rate": 0.5914634146341463,
+            "orders_per_week": 3.5846994535519126,
+            "n_long": 656,
+            "n_short": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_TP": 342,
+            "n_close_SL": 164,
+            "n_close_FORCED_FLAT": 150,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": 9.764159536957195,
+            "cost_spread_usd": 1984.790585,
+            "cost_slippage_usd": 839.74256,
+            "cost_commission_usd": 1581.76998,
+            "cost_financing_usd": 1650.26715
+          }
+        },
+        {
+          "seed": 43,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -6115.530520651362,
+            "sharpe_daily_sqrt365": -0.71432306215357,
+            "max_drawdown_pct": 73.10121769340213,
+            "trades": 656,
+            "win_rate": 0.5914634146341463,
+            "orders_per_week": 3.5846994535519126,
+            "n_long": 655,
+            "n_short": 1,
+            "n_close_AGENT_CLOSE": 1,
+            "n_close_TP": 341,
+            "n_close_SL": 164,
+            "n_close_FORCED_FLAT": 150,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -155.24204565135884,
+            "cost_spread_usd": 1954.0384849999998,
+            "cost_slippage_usd": 827.0938000000001,
+            "cost_commission_usd": 1556.23321,
+            "cost_financing_usd": 1622.92298
+          }
+        }
+      ]
+    },
+    {
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.75,
+        "order_fraction": 0.2
+      },
+      "eligible": false,
+      "mean_sharpe": -0.5931243474832265,
+      "mean_drawdown_pct": 21.107441444035526,
+      "mean_profit_usd": -1303.0658193468491,
+      "seeds": [
+        {
+          "seed": 7,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -1363.1665855022547,
+            "sharpe_daily_sqrt365": -0.628988042552372,
+            "max_drawdown_pct": 20.95540918233969,
+            "trades": 564,
+            "win_rate": 0.6223404255319149,
+            "orders_per_week": 3.081967213114754,
+            "n_long": 561,
+            "n_short": 3,
+            "n_close_AGENT_CLOSE": 8,
+            "n_close_TP": 308,
+            "n_close_SL": 98,
+            "n_close_FORCED_FLAT": 150,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -10.74977050225588,
+            "cost_spread_usd": 383.569645,
+            "cost_slippage_usd": 164.39758,
+            "cost_commission_usd": 335.12577,
+            "cost_financing_usd": 469.32382
+          }
+        },
+        {
+          "seed": 19,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_SHORT_TRADES",
+              "NO_EXECUTED_CLOSE_SHORT",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -1257.4122439997973,
+            "sharpe_daily_sqrt365": -0.5667749011597014,
+            "max_drawdown_pct": 21.183135120735244,
+            "trades": 563,
+            "win_rate": 0.6287744227353463,
+            "orders_per_week": 3.0765027322404372,
+            "n_long": 563,
+            "n_short": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_TP": 312,
+            "n_close_SL": 99,
+            "n_close_FORCED_FLAT": 152,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": 103.1298560002043,
+            "cost_spread_usd": 382.66533,
+            "cost_slippage_usd": 164.93268,
+            "cost_commission_usd": 337.28541,
+            "cost_financing_usd": 475.65868
+          }
+        },
+        {
+          "seed": 43,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -1288.6186285384956,
+            "sharpe_daily_sqrt365": -0.5836100987376059,
+            "max_drawdown_pct": 21.183780029031645,
+            "trades": 563,
+            "win_rate": 0.6287744227353463,
+            "orders_per_week": 3.0765027322404372,
+            "n_long": 562,
+            "n_short": 1,
+            "n_close_AGENT_CLOSE": 1,
+            "n_close_TP": 311,
+            "n_close_SL": 99,
+            "n_close_FORCED_FLAT": 152,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": 67.730341461505,
+            "cost_spread_usd": 381.59689,
+            "cost_slippage_usd": 164.56746,
+            "cost_commission_usd": 336.16121,
+            "cost_financing_usd": 474.02341
+          }
+        }
+      ]
+    },
+    {
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.75,
+        "order_fraction": 0.5
+      },
+      "eligible": false,
+      "mean_sharpe": -0.5931854321267408,
+      "mean_drawdown_pct": 45.5462111066005,
+      "mean_profit_usd": -3139.4215099517314,
+      "seeds": [
+        {
+          "seed": 7,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -3254.1628731030487,
+            "sharpe_daily_sqrt365": -0.6287403078253819,
+            "max_drawdown_pct": 45.26258297283794,
+            "trades": 564,
+            "win_rate": 0.6223404255319149,
+            "orders_per_week": 3.081967213114754,
+            "n_long": 561,
+            "n_short": 3,
+            "n_close_AGENT_CLOSE": 8,
+            "n_close_TP": 308,
+            "n_close_SL": 98,
+            "n_close_FORCED_FLAT": 150,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -135.49164810304637,
+            "cost_spread_usd": 885.4629749999999,
+            "cost_slippage_usd": 379.44879000000003,
+            "cost_commission_usd": 772.77053,
+            "cost_financing_usd": 1080.98893
+          }
+        },
+        {
+          "seed": 19,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_SHORT_TRADES",
+              "NO_EXECUTED_CLOSE_SHORT",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -3051.3854909784586,
+            "sharpe_daily_sqrt365": -0.5670027597870765,
+            "max_drawdown_pct": 45.68791990980824,
+            "trades": 563,
+            "win_rate": 0.6287744227353463,
+            "orders_per_week": 3.0765027322404372,
+            "n_long": 563,
+            "n_short": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_TP": 312,
+            "n_close_SL": 99,
+            "n_close_FORCED_FLAT": 152,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": 123.89227402153792,
+            "cost_spread_usd": 894.6314249999999,
+            "cost_slippage_usd": 385.19649000000004,
+            "cost_commission_usd": 787.13474,
+            "cost_financing_usd": 1108.31511
+          }
+        },
+        {
+          "seed": 43,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -3112.716165773688,
+            "sharpe_daily_sqrt365": -0.5838132287677639,
+            "max_drawdown_pct": 45.688130437155316,
+            "trades": 563,
+            "win_rate": 0.6287744227353463,
+            "orders_per_week": 3.0765027322404372,
+            "n_long": 562,
+            "n_short": 1,
+            "n_close_AGENT_CLOSE": 1,
+            "n_close_TP": 311,
+            "n_close_SL": 99,
+            "n_close_FORCED_FLAT": 152,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": 37.15988422630576,
+            "cost_spread_usd": 887.85104,
+            "cost_slippage_usd": 382.47699,
+            "cost_commission_usd": 780.65624,
+            "cost_financing_usd": 1098.89178
+          }
+        }
+      ]
+    },
+    {
+      "parameters": {
+        "tp_fraction": 0.25,
+        "sl_fraction": 0.75,
+        "order_fraction": 1
+      },
+      "eligible": false,
+      "mean_sharpe": -0.5933161959864388,
+      "mean_drawdown_pct": 71.83155320379471,
+      "mean_profit_usd": -5716.130599917681,
+      "seeds": [
+        {
+          "seed": 7,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -5851.260539703635,
+            "sharpe_daily_sqrt365": -0.6282955448772714,
+            "max_drawdown_pct": 71.49980008188174,
+            "trades": 564,
+            "win_rate": 0.6223404255319149,
+            "orders_per_week": 3.081967213114754,
+            "n_long": 561,
+            "n_short": 3,
+            "n_close_AGENT_CLOSE": 8,
+            "n_close_TP": 308,
+            "n_close_SL": 98,
+            "n_close_FORCED_FLAT": 150,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -432.3333947036371,
+            "cost_spread_usd": 1541.6924749999998,
+            "cost_slippage_usd": 660.0295600000001,
+            "cost_commission_usd": 1342.76072,
+            "cost_financing_usd": 1874.44439
+          }
+        },
+        {
+          "seed": 19,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_SHORT_TRADES",
+              "NO_EXECUTED_CLOSE_SHORT",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -5610.390292757828,
+            "sharpe_daily_sqrt365": -0.5674158269140406,
+            "max_drawdown_pct": 71.99743425260353,
+            "trades": 563,
+            "win_rate": 0.6287744227353463,
+            "orders_per_week": 3.0765027322404372,
+            "n_long": 563,
+            "n_short": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_TP": 312,
+            "n_close_SL": 99,
+            "n_close_FORCED_FLAT": 152,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": 14.375547242161742,
+            "cost_spread_usd": 1589.4258599999998,
+            "cost_slippage_usd": 682.83131,
+            "cost_commission_usd": 1394.34414,
+            "cost_financing_usd": 1958.16453
+          }
+        },
+        {
+          "seed": 43,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -5686.740967291582,
+            "sharpe_daily_sqrt365": -0.5842372161680045,
+            "max_drawdown_pct": 71.99742527689887,
+            "trades": 563,
+            "win_rate": 0.6287744227353463,
+            "orders_per_week": 3.0765027322404372,
+            "n_long": 562,
+            "n_short": 1,
+            "n_close_AGENT_CLOSE": 1,
+            "n_close_TP": 311,
+            "n_close_SL": 99,
+            "n_close_FORCED_FLAT": 152,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -151.62218729157195,
+            "cost_spread_usd": 1565.1089299999999,
+            "cost_slippage_usd": 672.6840000000001,
+            "cost_commission_usd": 1371.84481,
+            "cost_financing_usd": 1925.48104
+          }
+        }
+      ]
+    },
+    {
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.25,
+        "order_fraction": 0.2
+      },
+      "eligible": false,
+      "mean_sharpe": -0.6569624774683109,
+      "mean_drawdown_pct": 19.60845100533761,
+      "mean_profit_usd": -1404.8748990170868,
+      "seeds": [
+        {
+          "seed": 7,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -1444.0176556031256,
+            "sharpe_daily_sqrt365": -0.6815127931331454,
+            "max_drawdown_pct": 19.56862046653339,
+            "trades": 612,
+            "win_rate": 0.4444444444444444,
+            "orders_per_week": 3.3442622950819674,
+            "n_long": 609,
+            "n_short": 3,
+            "n_close_AGENT_CLOSE": 12,
+            "n_close_TP": 183,
+            "n_close_SL": 267,
+            "n_close_FORCED_FLAT": 150,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": 21.836824396874103,
+            "cost_spread_usd": 373.89936,
+            "cost_slippage_usd": 243.22024000000002,
+            "cost_commission_usd": 361.30871,
+            "cost_financing_usd": 487.42617
+          }
+        },
+        {
+          "seed": 19,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_SHORT_TRADES",
+              "NO_EXECUTED_CLOSE_SHORT",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -1351.2116471029167,
+            "sharpe_daily_sqrt365": -0.6232898641088392,
+            "max_drawdown_pct": 19.628117036439498,
+            "trades": 609,
+            "win_rate": 0.4466338259441708,
+            "orders_per_week": 3.3278688524590163,
+            "n_long": 609,
+            "n_short": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_TP": 186,
+            "n_close_SL": 270,
+            "n_close_FORCED_FLAT": 153,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": 118.63209289708104,
+            "cost_spread_usd": 367.40052,
+            "cost_slippage_usd": 244.31504,
+            "cost_commission_usd": 362.29788,
+            "cost_financing_usd": 495.8303
+          }
+        },
+        {
+          "seed": 43,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -1419.395394345218,
+            "sharpe_daily_sqrt365": -0.6660847751629482,
+            "max_drawdown_pct": 19.628615513039943,
+            "trades": 609,
+            "win_rate": 0.4466338259441708,
+            "orders_per_week": 3.3278688524590163,
+            "n_long": 608,
+            "n_short": 1,
+            "n_close_AGENT_CLOSE": 1,
+            "n_close_TP": 185,
+            "n_close_SL": 270,
+            "n_close_FORCED_FLAT": 153,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": 40.11234565478082,
+            "cost_spread_usd": 365.125,
+            "cost_slippage_usd": 242.71038000000001,
+            "cost_commission_usd": 359.63508,
+            "cost_financing_usd": 492.03728
+          }
+        }
+      ]
+    },
+    {
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.25,
+        "order_fraction": 0.5
+      },
+      "eligible": false,
+      "mean_sharpe": -0.6586725456680856,
+      "mean_drawdown_pct": 42.82451460457411,
+      "mean_profit_usd": -3331.201245188466,
+      "seeds": [
+        {
+          "seed": 7,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -3404.348809071247,
+            "sharpe_daily_sqrt365": -0.682949783184684,
+            "max_drawdown_pct": 42.74731241817082,
+            "trades": 612,
+            "win_rate": 0.4444444444444444,
+            "orders_per_week": 3.3442622950819674,
+            "n_long": 609,
+            "n_short": 3,
+            "n_close_AGENT_CLOSE": 12,
+            "n_close_TP": 183,
+            "n_close_SL": 267,
+            "n_close_FORCED_FLAT": 150,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -72.88159407124712,
+            "cost_spread_usd": 855.419665,
+            "cost_slippage_usd": 554.08051,
+            "cost_commission_usd": 822.21244,
+            "cost_financing_usd": 1099.7546
+          }
+        },
+        {
+          "seed": 19,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_SHORT_TRADES",
+              "NO_EXECUTED_CLOSE_SHORT",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -3228.949990635154,
+            "sharpe_daily_sqrt365": -0.6248406337333396,
+            "max_drawdown_pct": 42.86317187453674,
+            "trades": 609,
+            "win_rate": 0.4466338259441708,
+            "orders_per_week": 3.3278688524590163,
+            "n_long": 609,
+            "n_short": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_TP": 186,
+            "n_close_SL": 270,
+            "n_close_FORCED_FLAT": 153,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": 150.02859936483432,
+            "cost_spread_usd": 850.42865,
+            "cost_slippage_usd": 562.80721,
+            "cost_commission_usd": 833.96705,
+            "cost_financing_usd": 1131.77568
+          }
+        },
+        {
+          "seed": 43,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -3360.304935858998,
+            "sharpe_daily_sqrt365": -0.6682272200862331,
+            "max_drawdown_pct": 42.86305952101477,
+            "trades": 609,
+            "win_rate": 0.4466338259441708,
+            "orders_per_week": 3.3278688524590163,
+            "n_long": 608,
+            "n_short": 1,
+            "n_close_AGENT_CLOSE": 1,
+            "n_close_TP": 185,
+            "n_close_SL": 270,
+            "n_close_FORCED_FLAT": 153,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -41.207385858999444,
+            "cost_spread_usd": 836.4940799999999,
+            "cost_slippage_usd": 553.15665,
+            "cost_commission_usd": 818.94085,
+            "cost_financing_usd": 1110.50597
+          }
+        }
+      ]
+    },
+    {
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.25,
+        "order_fraction": 1
+      },
+      "eligible": false,
+      "mean_sharpe": -0.6614920644476782,
+      "mean_drawdown_pct": 68.73661928888833,
+      "mean_profit_usd": -5930.192540892858,
+      "seeds": [
+        {
+          "seed": 7,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -6013.824278514317,
+            "sharpe_daily_sqrt365": -0.6852901031353789,
+            "max_drawdown_pct": 68.64047741580185,
+            "trades": 612,
+            "win_rate": 0.4444444444444444,
+            "orders_per_week": 3.3442622950819674,
+            "n_long": 609,
+            "n_short": 3,
+            "n_close_AGENT_CLOSE": 12,
+            "n_close_TP": 183,
+            "n_close_SL": 267,
+            "n_close_FORCED_FLAT": 150,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -363.2888035143279,
+            "cost_spread_usd": 1468.827805,
+            "cost_slippage_usd": 943.4224800000001,
+            "cost_commission_usd": 1397.78786,
+            "cost_financing_usd": 1840.49733
+          }
+        },
+        {
+          "seed": 19,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_SHORT_TRADES",
+              "NO_EXECUTED_CLOSE_SHORT",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -5809.119029200432,
+            "sharpe_daily_sqrt365": -0.6273991315663314,
+            "max_drawdown_pct": 68.78475163959402,
+            "trades": 609,
+            "win_rate": 0.4466338259441708,
+            "orders_per_week": 3.3278688524590163,
+            "n_long": 609,
+            "n_short": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_TP": 186,
+            "n_close_SL": 270,
+            "n_close_FORCED_FLAT": 153,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": 25.941185799566597,
+            "cost_spread_usd": 1486.630575,
+            "cost_slippage_usd": 975.2155300000001,
+            "cost_commission_usd": 1443.55911,
+            "cost_financing_usd": 1929.655
+          }
+        },
+        {
+          "seed": 43,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -5967.634314963827,
+            "sharpe_daily_sqrt365": -0.6717869586413243,
+            "max_drawdown_pct": 68.78462881126913,
+            "trades": 609,
+            "win_rate": 0.4466338259441708,
+            "orders_per_week": 3.3278688524590163,
+            "n_long": 608,
+            "n_short": 1,
+            "n_close_AGENT_CLOSE": 1,
+            "n_close_TP": 185,
+            "n_close_SL": 270,
+            "n_close_FORCED_FLAT": 153,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -334.3655999638175,
+            "cost_spread_usd": 1438.530065,
+            "cost_slippage_usd": 942.2517200000001,
+            "cost_commission_usd": 1393.25809,
+            "cost_financing_usd": 1859.22884
+          }
+        }
+      ]
+    },
+    {
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.5,
+        "order_fraction": 0.2
+      },
+      "eligible": false,
+      "mean_sharpe": -0.5446528495191582,
+      "mean_drawdown_pct": 21.325755580661752,
+      "mean_profit_usd": -1266.76911462307,
+      "seeds": [
+        {
+          "seed": 7,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -1346.3301427494698,
+            "sharpe_daily_sqrt365": -0.5871809579546224,
+            "max_drawdown_pct": 21.13398501916664,
+            "trades": 497,
+            "win_rate": 0.5010060362173038,
+            "orders_per_week": 2.7158469945355193,
+            "n_long": 494,
+            "n_short": 3,
+            "n_close_AGENT_CLOSE": 12,
+            "n_close_TP": 175,
+            "n_close_SL": 154,
+            "n_close_FORCED_FLAT": 156,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -64.6460927494687,
+            "cost_spread_usd": 253.53609,
+            "cost_slippage_usd": 177.26513,
+            "cost_commission_usd": 293.52603,
+            "cost_financing_usd": 557.3568
+          }
+        },
+        {
+          "seed": 19,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_SHORT_TRADES",
+              "NO_EXECUTED_CLOSE_SHORT",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -1192.3345419223751,
+            "sharpe_daily_sqrt365": -0.5037181596420907,
+            "max_drawdown_pct": 21.42191914150553,
+            "trades": 493,
+            "win_rate": 0.5030425963488844,
+            "orders_per_week": 2.6939890710382515,
+            "n_long": 493,
+            "n_short": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_TP": 178,
+            "n_close_SL": 156,
+            "n_close_FORCED_FLAT": 159,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": 91.53995807762499,
+            "cost_spread_usd": 245.96811,
+            "cost_slippage_usd": 177.37868,
+            "cost_commission_usd": 293.65126,
+            "cost_financing_usd": 566.87645
+          }
+        },
+        {
+          "seed": 43,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -1261.642659197365,
+            "sharpe_daily_sqrt365": -0.5430594309607615,
+            "max_drawdown_pct": 21.421362581313094,
+            "trades": 493,
+            "win_rate": 0.5030425963488844,
+            "orders_per_week": 2.6939890710382515,
+            "n_long": 492,
+            "n_short": 1,
+            "n_close_AGENT_CLOSE": 1,
+            "n_close_TP": 177,
+            "n_close_SL": 156,
+            "n_close_FORCED_FLAT": 159,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": 13.272395802635916,
+            "cost_spread_usd": 244.572445,
+            "cost_slippage_usd": 176.26813,
+            "cost_commission_usd": 291.50142,
+            "cost_financing_usd": 562.57306
+          }
+        }
+      ]
+    },
+    {
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.5,
+        "order_fraction": 0.5
+      },
+      "eligible": false,
+      "mean_sharpe": -0.5463836380990205,
+      "mean_drawdown_pct": 45.83841571318239,
+      "mean_profit_usd": -3086.683703346467,
+      "seeds": [
+        {
+          "seed": 7,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -3240.4447871989605,
+            "sharpe_daily_sqrt365": -0.5886848537021996,
+            "max_drawdown_pct": 45.498473063484845,
+            "trades": 497,
+            "win_rate": 0.5010060362173038,
+            "orders_per_week": 2.7158469945355193,
+            "n_long": 494,
+            "n_short": 3,
+            "n_close_AGENT_CLOSE": 12,
+            "n_close_TP": 175,
+            "n_close_SL": 154,
+            "n_close_FORCED_FLAT": 156,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -329.57700719895774,
+            "cost_spread_usd": 577.4998899999999,
+            "cost_slippage_usd": 402.99301,
+            "cost_commission_usd": 665.85477,
+            "cost_financing_usd": 1264.52011
+          }
+        },
+        {
+          "seed": 19,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_SHORT_TRADES",
+              "NO_EXECUTED_CLOSE_SHORT",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -2941.346436830271,
+            "sharpe_daily_sqrt365": -0.5052233468709415,
+            "max_drawdown_pct": 46.00815518073485,
+            "trades": 493,
+            "win_rate": 0.5030425963488844,
+            "orders_per_week": 2.6939890710382515,
+            "n_long": 493,
+            "n_short": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_TP": 178,
+            "n_close_SL": 156,
+            "n_close_FORCED_FLAT": 159,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": 11.891943169723628,
+            "cost_spread_usd": 567.72465,
+            "cost_slippage_usd": 408.32565000000005,
+            "cost_commission_usd": 674.74281,
+            "cost_financing_usd": 1302.44527
+          }
+        },
+        {
+          "seed": 43,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -3078.25988601017,
+            "sharpe_daily_sqrt365": -0.5452427137239202,
+            "max_drawdown_pct": 46.008618895327466,
+            "trades": 493,
+            "win_rate": 0.5030425963488844,
+            "orders_per_week": 2.6939890710382515,
+            "n_long": 492,
+            "n_short": 1,
+            "n_close_AGENT_CLOSE": 1,
+            "n_close_TP": 177,
+            "n_close_SL": 156,
+            "n_close_FORCED_FLAT": 159,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -177.19059101016197,
+            "cost_spread_usd": 558.817135,
+            "cost_slippage_usd": 401.47304,
+            "cost_commission_usd": 662.63351,
+            "cost_financing_usd": 1278.14561
+          }
+        }
+      ]
+    },
+    {
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.75,
+        "order_fraction": 0.2
+      },
+      "eligible": false,
+      "mean_sharpe": -0.7568599600216365,
+      "mean_drawdown_pct": 22.791363069294988,
+      "mean_profit_usd": -1696.9892273657563,
+      "seeds": [
+        {
+          "seed": 7,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -1770.638413997316,
+            "sharpe_daily_sqrt365": -0.7993849803497634,
+            "max_drawdown_pct": 22.54523636705978,
+            "trades": 431,
+            "win_rate": 0.5174013921113689,
+            "orders_per_week": 2.3551912568306013,
+            "n_long": 428,
+            "n_short": 3,
+            "n_close_AGENT_CLOSE": 11,
+            "n_close_TP": 159,
+            "n_close_SL": 99,
+            "n_close_FORCED_FLAT": 162,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -622.124623997314,
+            "cost_spread_usd": 182.65075,
+            "cost_slippage_usd": 140.579,
+            "cost_commission_usd": 248.90866,
+            "cost_financing_usd": 576.37538
+          }
+        },
+        {
+          "seed": 19,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_SHORT_TRADES",
+              "NO_EXECUTED_CLOSE_SHORT",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -1636.599782318126,
+            "sharpe_daily_sqrt365": -0.7186139199133801,
+            "max_drawdown_pct": 22.914317129700876,
+            "trades": 427,
+            "win_rate": 0.5269320843091335,
+            "orders_per_week": 2.3333333333333335,
+            "n_long": 427,
+            "n_short": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_TP": 162,
+            "n_close_SL": 101,
+            "n_close_FORCED_FLAT": 164,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -487.1089873181225,
+            "cost_spread_usd": 174.354585,
+            "cost_slippage_usd": 140.34631000000002,
+            "cost_commission_usd": 248.59177,
+            "cost_financing_usd": 586.19813
+          }
+        },
+        {
+          "seed": 43,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -1683.729485781827,
+            "sharpe_daily_sqrt365": -0.7525809798017659,
+            "max_drawdown_pct": 22.91453571112431,
+            "trades": 427,
+            "win_rate": 0.5269320843091335,
+            "orders_per_week": 2.3333333333333335,
+            "n_long": 426,
+            "n_short": 1,
+            "n_close_AGENT_CLOSE": 2,
+            "n_close_TP": 161,
+            "n_close_SL": 100,
+            "n_close_FORCED_FLAT": 164,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -540.0475107818284,
+            "cost_spread_usd": 173.831675,
+            "cost_slippage_usd": 139.53648,
+            "cost_commission_usd": 247.29831,
+            "cost_financing_usd": 583.01551
+          }
+        }
+      ]
+    },
+    {
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.75,
+        "order_fraction": 0.5
+      },
+      "eligible": false,
+      "mean_sharpe": -0.7610981239221517,
+      "mean_drawdown_pct": 48.35386538319383,
+      "mean_profit_usd": -3920.405993848439,
+      "seeds": [
+        {
+          "seed": 7,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -4051.298476874439,
+            "sharpe_daily_sqrt365": -0.8032444616849366,
+            "max_drawdown_pct": 47.92874121781769,
+            "trades": 431,
+            "win_rate": 0.5174013921113689,
+            "orders_per_week": 2.3551912568306013,
+            "n_long": 428,
+            "n_short": 3,
+            "n_close_AGENT_CLOSE": 11,
+            "n_close_TP": 159,
+            "n_close_SL": 99,
+            "n_close_FORCED_FLAT": 162,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -1521.63639687445,
+            "cost_spread_usd": 405.12086,
+            "cost_slippage_usd": 310.16544000000005,
+            "cost_commission_usd": 548.4045,
+            "cost_financing_usd": 1265.97128
+          }
+        },
+        {
+          "seed": 19,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_SHORT_TRADES",
+              "NO_EXECUTED_CLOSE_SHORT",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -3812.500956170904,
+            "sharpe_daily_sqrt365": -0.722693496413826,
+            "max_drawdown_pct": 48.566521813735605,
+            "trades": 427,
+            "win_rate": 0.5269320843091335,
+            "orders_per_week": 2.3333333333333335,
+            "n_long": 427,
+            "n_short": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_TP": 162,
+            "n_close_SL": 101,
+            "n_close_FORCED_FLAT": 164,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -1250.7920861708985,
+            "cost_spread_usd": 391.57241999999997,
+            "cost_slippage_usd": 313.21817000000004,
+            "cost_commission_usd": 554.21653,
+            "cost_financing_usd": 1302.70175
+          }
+        },
+        {
+          "seed": 43,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -3897.4185484999743,
+            "sharpe_daily_sqrt365": -0.7573564136676926,
+            "max_drawdown_pct": 48.566333118028176,
+            "trades": 427,
+            "win_rate": 0.5269320843091335,
+            "orders_per_week": 2.3333333333333335,
+            "n_long": 426,
+            "n_short": 1,
+            "n_close_AGENT_CLOSE": 2,
+            "n_close_TP": 161,
+            "n_close_SL": 100,
+            "n_close_FORCED_FLAT": 164,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -1367.7730434999553,
+            "cost_spread_usd": 387.786995,
+            "cost_slippage_usd": 309.1057,
+            "cost_commission_usd": 547.23879,
+            "cost_financing_usd": 1285.51402
+          }
+        }
+      ]
+    },
+    {
+      "parameters": {
+        "tp_fraction": 0.5,
+        "sl_fraction": 0.75,
+        "order_fraction": 1
+      },
+      "eligible": false,
+      "mean_sharpe": -0.768278054173695,
+      "mean_drawdown_pct": 74.56905896672505,
+      "mean_profit_usd": -6689.999306392972,
+      "seeds": [
+        {
+          "seed": 7,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -6825.479610342258,
+            "sharpe_daily_sqrt365": -0.8097939166622096,
+            "max_drawdown_pct": 74.1280093736955,
+            "trades": 431,
+            "win_rate": 0.5174013921113689,
+            "orders_per_week": 2.3551912568306013,
+            "n_long": 428,
+            "n_short": 3,
+            "n_close_AGENT_CLOSE": 11,
+            "n_close_TP": 159,
+            "n_close_SL": 99,
+            "n_close_FORCED_FLAT": 162,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -2735.2103503422545,
+            "cost_spread_usd": 664.64345,
+            "cost_slippage_usd": 502.89922,
+            "cost_commission_usd": 887.52335,
+            "cost_financing_usd": 2035.20324
+          }
+        },
+        {
+          "seed": 19,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_SHORT_TRADES",
+              "NO_EXECUTED_CLOSE_SHORT",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -6577.258380880964,
+            "sharpe_daily_sqrt365": -0.7295966967717215,
+            "max_drawdown_pct": 74.78953215347507,
+            "trades": 427,
+            "win_rate": 0.5269320843091335,
+            "orders_per_week": 2.3333333333333335,
+            "n_long": 427,
+            "n_short": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_TP": 162,
+            "n_close_SL": 101,
+            "n_close_FORCED_FLAT": 164,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -2361.6609508809715,
+            "cost_spread_usd": 654.19769,
+            "cost_slippage_usd": 516.6126800000001,
+            "cost_commission_usd": 912.93181,
+            "cost_financing_usd": 2131.85525
+          }
+        },
+        {
+          "seed": 43,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -6667.259927955698,
+            "sharpe_daily_sqrt365": -0.7654435490871542,
+            "max_drawdown_pct": 74.78963537300461,
+            "trades": 427,
+            "win_rate": 0.5269320843091335,
+            "orders_per_week": 2.3333333333333335,
+            "n_long": 426,
+            "n_short": 1,
+            "n_close_AGENT_CLOSE": 2,
+            "n_close_TP": 161,
+            "n_close_SL": 100,
+            "n_close_FORCED_FLAT": 164,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -2552.0958829556785,
+            "cost_spread_usd": 641.4247349999999,
+            "cost_slippage_usd": 504.09214000000003,
+            "cost_commission_usd": 891.23958,
+            "cost_financing_usd": 2078.40759
+          }
+        }
+      ]
+    },
+    {
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.25,
+        "order_fraction": 0.2
+      },
+      "eligible": false,
+      "mean_sharpe": -0.5540954375179045,
+      "mean_drawdown_pct": 19.41870497370613,
+      "mean_profit_usd": -1267.4380895957947,
+      "seeds": [
+        {
+          "seed": 7,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -1335.7004767432481,
+            "sharpe_daily_sqrt365": -0.593589733675911,
+            "max_drawdown_pct": 19.214443740446264,
+            "trades": 515,
+            "win_rate": 0.39223300970873787,
+            "orders_per_week": 2.814207650273224,
+            "n_long": 512,
+            "n_short": 3,
+            "n_close_AGENT_CLOSE": 13,
+            "n_close_TP": 99,
+            "n_close_SL": 247,
+            "n_close_FORCED_FLAT": 156,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -10.094426743248889,
+            "cost_spread_usd": 285.59575,
+            "cost_slippage_usd": 217.42098000000001,
+            "cost_commission_usd": 301.05607,
+            "cost_financing_usd": 521.53325
+          }
+        },
+        {
+          "seed": 19,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_SHORT_TRADES",
+              "NO_EXECUTED_CLOSE_SHORT",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -1206.281046336253,
+            "sharpe_daily_sqrt365": -0.5188375343286328,
+            "max_drawdown_pct": 19.52082352233812,
+            "trades": 512,
+            "win_rate": 0.390625,
+            "orders_per_week": 2.797814207650273,
+            "n_long": 512,
+            "n_short": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_TP": 103,
+            "n_close_SL": 251,
+            "n_close_FORCED_FLAT": 158,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": 123.25574366374543,
+            "cost_spread_usd": 279.09889,
+            "cost_slippage_usd": 218.3248,
+            "cost_commission_usd": 301.50414,
+            "cost_financing_usd": 530.60896
+          }
+        },
+        {
+          "seed": 43,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -1260.332745707883,
+            "sharpe_daily_sqrt365": -0.5498590445491699,
+            "max_drawdown_pct": 19.520847658334016,
+            "trades": 512,
+            "win_rate": 0.390625,
+            "orders_per_week": 2.797814207650273,
+            "n_long": 511,
+            "n_short": 1,
+            "n_close_AGENT_CLOSE": 1,
+            "n_close_TP": 103,
+            "n_close_SL": 251,
+            "n_close_FORCED_FLAT": 157,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": 61.92910429211652,
+            "cost_spread_usd": 277.90859,
+            "cost_slippage_usd": 217.09921000000003,
+            "cost_commission_usd": 299.79719,
+            "cost_financing_usd": 527.45686
+          }
+        }
+      ]
+    },
+    {
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.25,
+        "order_fraction": 0.5
+      },
+      "eligible": false,
+      "mean_sharpe": -0.5566367761499312,
+      "mean_drawdown_pct": 42.41533242235844,
+      "mean_profit_usd": -3079.2978988971918,
+      "seeds": [
+        {
+          "seed": 7,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -3206.8632667300117,
+            "sharpe_daily_sqrt365": -0.5951102683038859,
+            "max_drawdown_pct": 42.04814261934577,
+            "trades": 515,
+            "win_rate": 0.39223300970873787,
+            "orders_per_week": 2.814207650273224,
+            "n_long": 512,
+            "n_short": 3,
+            "n_close_AGENT_CLOSE": 13,
+            "n_close_TP": 99,
+            "n_close_SL": 247,
+            "n_close_FORCED_FLAT": 156,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -248.41894173001188,
+            "cost_spread_usd": 640.954495,
+            "cost_slippage_usd": 486.63101000000006,
+            "cost_commission_usd": 672.56945,
+            "cost_financing_usd": 1158.28937
+          }
+        },
+        {
+          "seed": 19,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_SHORT_TRADES",
+              "NO_EXECUTED_CLOSE_SHORT",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -2962.065492307025,
+            "sharpe_daily_sqrt365": -0.5215764806763885,
+            "max_drawdown_pct": 42.598959950919316,
+            "trades": 512,
+            "win_rate": 0.390625,
+            "orders_per_week": 2.797814207650273,
+            "n_long": 512,
+            "n_short": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_TP": 103,
+            "n_close_SL": 251,
+            "n_close_FORCED_FLAT": 158,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": 35.84025769297019,
+            "cost_spread_usd": 633.2873,
+            "cost_slippage_usd": 493.61820000000006,
+            "cost_commission_usd": 680.68182,
+            "cost_financing_usd": 1190.31843
+          }
+        },
+        {
+          "seed": 43,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -3068.9649376545385,
+            "sharpe_daily_sqrt365": -0.5532235794695193,
+            "max_drawdown_pct": 42.598894696810255,
+            "trades": 512,
+            "win_rate": 0.390625,
+            "orders_per_week": 2.797814207650273,
+            "n_long": 511,
+            "n_short": 1,
+            "n_close_AGENT_CLOSE": 1,
+            "n_close_TP": 103,
+            "n_close_SL": 251,
+            "n_close_FORCED_FLAT": 157,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -112.36360265454076,
+            "cost_spread_usd": 625.670175,
+            "cost_slippage_usd": 486.82015,
+            "cost_commission_usd": 671.2202,
+            "cost_financing_usd": 1172.89081
+          }
+        }
+      ]
+    },
+    {
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.25,
+        "order_fraction": 1
+      },
+      "eligible": false,
+      "mean_sharpe": -0.5609527893853035,
+      "mean_drawdown_pct": 68.35174332666092,
+      "mean_profit_usd": -5651.902585557382,
+      "seeds": [
+        {
+          "seed": 7,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -5796.444501881231,
+            "sharpe_daily_sqrt365": -0.5976555502838274,
+            "max_drawdown_pct": 68.09632109019958,
+            "trades": 515,
+            "win_rate": 0.39223300970873787,
+            "orders_per_week": 2.814207650273224,
+            "n_long": 512,
+            "n_short": 3,
+            "n_close_AGENT_CLOSE": 13,
+            "n_close_TP": 99,
+            "n_close_SL": 247,
+            "n_close_FORCED_FLAT": 156,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -950.568466881227,
+            "cost_spread_usd": 1062.215215,
+            "cost_slippage_usd": 801.22185,
+            "cost_commission_usd": 1104.06219,
+            "cost_financing_usd": 1878.37678
+          }
+        },
+        {
+          "seed": 19,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_SHORT_TRADES",
+              "NO_EXECUTED_CLOSE_SHORT",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -5512.916411103405,
+            "sharpe_daily_sqrt365": -0.5262881536511812,
+            "max_drawdown_pct": 68.35538197234122,
+            "trades": 512,
+            "win_rate": 0.390625,
+            "orders_per_week": 2.797814207650273,
+            "n_long": 512,
+            "n_short": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_TP": 103,
+            "n_close_SL": 251,
+            "n_close_FORCED_FLAT": 158,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -533.3473161033992,
+            "cost_spread_usd": 1065.049245,
+            "cost_slippage_usd": 823.96049,
+            "cost_commission_usd": 1133.4784300000001,
+            "cost_financing_usd": 1957.08093
+          }
+        },
+        {
+          "seed": 43,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -5646.346843687508,
+            "sharpe_daily_sqrt365": -0.5589146642209017,
+            "max_drawdown_pct": 68.60352691744195,
+            "trades": 512,
+            "win_rate": 0.390625,
+            "orders_per_week": 2.797814207650273,
+            "n_long": 511,
+            "n_short": 1,
+            "n_close_AGENT_CLOSE": 1,
+            "n_close_TP": 103,
+            "n_close_SL": 251,
+            "n_close_FORCED_FLAT": 157,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -800.5012586875038,
+            "cost_spread_usd": 1039.406745,
+            "cost_slippage_usd": 802.07321,
+            "cost_commission_usd": 1103.04334,
+            "cost_financing_usd": 1901.32229
+          }
+        }
+      ]
+    },
+    {
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.5,
+        "order_fraction": 0.2
+      },
+      "eligible": false,
+      "mean_sharpe": -0.5017044601312454,
+      "mean_drawdown_pct": 21.296417968569816,
+      "mean_profit_usd": -1210.8033357672048,
+      "seeds": [
+        {
+          "seed": 7,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -1269.6752152686895,
+            "sharpe_daily_sqrt365": -0.5337769629276,
+            "max_drawdown_pct": 20.94986741090049,
+            "trades": 398,
+            "win_rate": 0.4472361809045226,
+            "orders_per_week": 2.1748633879781423,
+            "n_long": 395,
+            "n_short": 3,
+            "n_close_AGENT_CLOSE": 13,
+            "n_close_TP": 87,
+            "n_close_SL": 132,
+            "n_close_FORCED_FLAT": 166,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -129.32340026869204,
+            "cost_spread_usd": 170.414895,
+            "cost_slippage_usd": 152.37367,
+            "cost_commission_usd": 233.88162,
+            "cost_financing_usd": 583.68163
+          }
+        },
+        {
+          "seed": 19,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_SHORT_TRADES",
+              "NO_EXECUTED_CLOSE_SHORT",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -1154.1710476231892,
+            "sharpe_daily_sqrt365": -0.47072354087915236,
+            "max_drawdown_pct": 21.46965374000179,
+            "trades": 392,
+            "win_rate": 0.44642857142857145,
+            "orders_per_week": 2.1420765027322406,
+            "n_long": 392,
+            "n_short": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_TP": 90,
+            "n_close_SL": 134,
+            "n_close_FORCED_FLAT": 168,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -19.34373262319177,
+            "cost_spread_usd": 160.599065,
+            "cost_slippage_usd": 151.03959,
+            "cost_commission_usd": 231.47096,
+            "cost_financing_usd": 591.7177
+          }
+        },
+        {
+          "seed": 43,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -1208.5637444097356,
+            "sharpe_daily_sqrt365": -0.5006128765869837,
+            "max_drawdown_pct": 21.469732754807165,
+            "trades": 392,
+            "win_rate": 0.44642857142857145,
+            "orders_per_week": 2.1420765027322406,
+            "n_long": 391,
+            "n_short": 1,
+            "n_close_AGENT_CLOSE": 1,
+            "n_close_TP": 90,
+            "n_close_SL": 134,
+            "n_close_FORCED_FLAT": 167,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -79.89311440973702,
+            "cost_spread_usd": 160.06783,
+            "cost_slippage_usd": 150.20305000000002,
+            "cost_commission_usd": 230.174,
+            "cost_financing_usd": 588.22575
+          }
+        }
+      ]
+    },
+    {
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.5,
+        "order_fraction": 0.5
+      },
+      "eligible": false,
+      "mean_sharpe": -0.5017133101749933,
+      "mean_drawdown_pct": 45.73982511422013,
+      "mean_profit_usd": -2976.755637215863,
+      "seeds": [
+        {
+          "seed": 7,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -3087.9130960892226,
+            "sharpe_daily_sqrt365": -0.5330753189467948,
+            "max_drawdown_pct": 45.13562696989369,
+            "trades": 398,
+            "win_rate": 0.4472361809045226,
+            "orders_per_week": 2.1748633879781423,
+            "n_long": 395,
+            "n_short": 3,
+            "n_close_AGENT_CLOSE": 13,
+            "n_close_TP": 87,
+            "n_close_SL": 132,
+            "n_close_FORCED_FLAT": 166,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -524.8348960892242,
+            "cost_spread_usd": 382.82002,
+            "cost_slippage_usd": 342.99436000000003,
+            "cost_commission_usd": 525.07147,
+            "cost_financing_usd": 1312.19235
+          }
+        },
+        {
+          "seed": 19,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_SHORT_TRADES",
+              "NO_EXECUTED_CLOSE_SHORT",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -2867.035888644781,
+            "sharpe_daily_sqrt365": -0.4707788633585695,
+            "max_drawdown_pct": 46.04188865598932,
+            "trades": 392,
+            "win_rate": 0.44642857142857145,
+            "orders_per_week": 2.1420765027322406,
+            "n_long": 392,
+            "n_short": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_TP": 90,
+            "n_close_SL": 134,
+            "n_close_FORCED_FLAT": 168,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -296.78013364478466,
+            "cost_spread_usd": 364.699855,
+            "cost_slippage_usd": 342.58934000000005,
+            "cost_commission_usd": 523.9787,
+            "cost_financing_usd": 1338.98786
+          }
+        },
+        {
+          "seed": 43,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -2975.3179269135853,
+            "sharpe_daily_sqrt365": -0.5012857482196157,
+            "max_drawdown_pct": 46.04195971677738,
+            "trades": 392,
+            "win_rate": 0.44642857142857145,
+            "orders_per_week": 2.1420765027322406,
+            "n_long": 391,
+            "n_short": 1,
+            "n_close_AGENT_CLOSE": 1,
+            "n_close_TP": 90,
+            "n_close_SL": 134,
+            "n_close_FORCED_FLAT": 167,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -440.30096691358534,
+            "cost_spread_usd": 360.75045,
+            "cost_slippage_usd": 337.94328,
+            "cost_commission_usd": 516.78277,
+            "cost_financing_usd": 1319.54046
+          }
+        }
+      ]
+    },
+    {
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.5,
+        "order_fraction": 1
+      },
+      "eligible": false,
+      "mean_sharpe": -0.5017882375629019,
+      "mean_drawdown_pct": 71.78102994969682,
+      "mean_profit_usd": -5546.623462438685,
+      "seeds": [
+        {
+          "seed": 7,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -5674.586136591025,
+            "sharpe_daily_sqrt365": -0.5320362443025864,
+            "max_drawdown_pct": 71.14178803900428,
+            "trades": 398,
+            "win_rate": 0.4472361809045226,
+            "orders_per_week": 2.1748633879781423,
+            "n_long": 395,
+            "n_short": 3,
+            "n_close_AGENT_CLOSE": 13,
+            "n_close_TP": 87,
+            "n_close_SL": 132,
+            "n_close_FORCED_FLAT": 166,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -1414.9658415910267,
+            "cost_spread_usd": 636.758285,
+            "cost_slippage_usd": 571.5979900000001,
+            "cost_commission_usd": 871.28538,
+            "cost_financing_usd": 2179.97864
+          }
+        },
+        {
+          "seed": 19,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_SHORT_TRADES",
+              "NO_EXECUTED_CLOSE_SHORT",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -5414.471010500914,
+            "sharpe_daily_sqrt365": -0.4708989142352822,
+            "max_drawdown_pct": 72.10062338076054,
+            "trades": 392,
+            "win_rate": 0.44642857142857145,
+            "orders_per_week": 2.1420765027322406,
+            "n_long": 392,
+            "n_short": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_TP": 90,
+            "n_close_SL": 134,
+            "n_close_FORCED_FLAT": 168,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -1099.2839255009103,
+            "cost_spread_usd": 615.409105,
+            "cost_slippage_usd": 576.7071900000001,
+            "cost_commission_usd": 879.11621,
+            "cost_financing_usd": 2243.95458
+          }
+        },
+        {
+          "seed": 43,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_HOLD_SHORT"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -5550.813240224115,
+            "sharpe_daily_sqrt365": -0.5024295541508372,
+            "max_drawdown_pct": 72.1006784293256,
+            "trades": 392,
+            "win_rate": 0.44642857142857145,
+            "orders_per_week": 2.1420765027322406,
+            "n_long": 391,
+            "n_short": 1,
+            "n_close_AGENT_CLOSE": 1,
+            "n_close_TP": 90,
+            "n_close_SL": 134,
+            "n_close_FORCED_FLAT": 167,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": true,
+            "gross_usd": -1351.1533102241099,
+            "cost_spread_usd": 601.6046699999999,
+            "cost_slippage_usd": 561.64615,
+            "cost_commission_usd": 855.82707,
+            "cost_financing_usd": 2180.58204
+          }
+        }
+      ]
+    },
+    {
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.75,
+        "order_fraction": 0.2
+      },
+      "eligible": false,
+      "mean_sharpe": -0.6093245225055665,
+      "mean_drawdown_pct": 22.410641761425158,
+      "mean_profit_usd": -1449.2476486259893,
+      "seeds": [
+        {
+          "seed": 7,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT",
+              "ACTIVITY_BELOW_TWO",
+              "NATIVE_INVALID"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -1511.991964129089,
+            "sharpe_daily_sqrt365": -0.6440053276895688,
+            "max_drawdown_pct": 22.109884946967572,
+            "trades": 356,
+            "win_rate": 0.4803370786516854,
+            "orders_per_week": 1.9453551912568305,
+            "n_long": 353,
+            "n_short": 3,
+            "n_close_AGENT_CLOSE": 12,
+            "n_close_TP": 85,
+            "n_close_SL": 91,
+            "n_close_FORCED_FLAT": 168,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": false,
+            "gross_usd": -448.7844841290885,
+            "cost_spread_usd": 137.39605,
+            "cost_slippage_usd": 126.87476000000001,
+            "cost_commission_usd": 206.82543,
+            "cost_financing_usd": 592.11124
+          }
+        },
+        {
+          "seed": 19,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_SHORT_TRADES",
+              "NO_EXECUTED_CLOSE_SHORT",
+              "NO_HOLD_SHORT",
+              "ACTIVITY_BELOW_TWO",
+              "NATIVE_INVALID"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -1401.0596273804622,
+            "sharpe_daily_sqrt365": -0.580513734190448,
+            "max_drawdown_pct": 22.56074183913814,
+            "trades": 350,
+            "win_rate": 0.4828571428571429,
+            "orders_per_week": 1.9125683060109289,
+            "n_long": 350,
+            "n_short": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_TP": 88,
+            "n_close_SL": 92,
+            "n_close_FORCED_FLAT": 170,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": false,
+            "gross_usd": -344.1442873804662,
+            "cost_spread_usd": 126.61156,
+            "cost_slippage_usd": 125.22055,
+            "cost_commission_usd": 204.36178,
+            "cost_financing_usd": 600.72145
+          }
+        },
+        {
+          "seed": 43,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT",
+              "ACTIVITY_BELOW_TWO",
+              "NATIVE_INVALID"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -1434.6913543684168,
+            "sharpe_daily_sqrt365": -0.6034545056366825,
+            "max_drawdown_pct": 22.56129849816976,
+            "trades": 350,
+            "win_rate": 0.4828571428571429,
+            "orders_per_week": 1.9125683060109289,
+            "n_long": 349,
+            "n_short": 1,
+            "n_close_AGENT_CLOSE": 2,
+            "n_close_TP": 88,
+            "n_close_SL": 91,
+            "n_close_FORCED_FLAT": 169,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": false,
+            "gross_usd": -381.55924936841245,
+            "cost_spread_usd": 126.506355,
+            "cost_slippage_usd": 124.52172000000002,
+            "cost_commission_usd": 203.63497,
+            "cost_financing_usd": 598.46906
+          }
+        }
+      ]
+    },
+    {
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.75,
+        "order_fraction": 0.5
+      },
+      "eligible": false,
+      "mean_sharpe": -0.6133027794244991,
+      "mean_drawdown_pct": 47.708659104047506,
+      "mean_profit_usd": -3465.4584314570325,
+      "seeds": [
+        {
+          "seed": 7,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT",
+              "ACTIVITY_BELOW_TWO",
+              "NATIVE_INVALID"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -3578.735196871119,
+            "sharpe_daily_sqrt365": -0.6471128974591587,
+            "max_drawdown_pct": 47.19518453147159,
+            "trades": 356,
+            "win_rate": 0.4803370786516854,
+            "orders_per_week": 1.9453551912568305,
+            "n_long": 353,
+            "n_short": 3,
+            "n_close_AGENT_CLOSE": 12,
+            "n_close_TP": 85,
+            "n_close_SL": 91,
+            "n_close_FORCED_FLAT": 168,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": false,
+            "gross_usd": -1228.696291871127,
+            "cost_spread_usd": 303.475065,
+            "cost_slippage_usd": 280.96679,
+            "cost_commission_usd": 456.52572,
+            "cost_financing_usd": 1309.07133
+          }
+        },
+        {
+          "seed": 19,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_SHORT_TRADES",
+              "NO_EXECUTED_CLOSE_SHORT",
+              "NO_HOLD_SHORT",
+              "ACTIVITY_BELOW_TWO",
+              "NATIVE_INVALID"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -3377.3803653184877,
+            "sharpe_daily_sqrt365": -0.5845922866974493,
+            "max_drawdown_pct": 47.96545574158535,
+            "trades": 350,
+            "win_rate": 0.4828571428571429,
+            "orders_per_week": 1.9125683060109289,
+            "n_long": 350,
+            "n_short": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_TP": 88,
+            "n_close_SL": 92,
+            "n_close_FORCED_FLAT": 170,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": false,
+            "gross_usd": -1023.493420318487,
+            "cost_spread_usd": 283.066865,
+            "cost_slippage_usd": 279.4148,
+            "cost_commission_usd": 454.75143,
+            "cost_financing_usd": 1336.65385
+          }
+        },
+        {
+          "seed": 43,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT",
+              "ACTIVITY_BELOW_TWO",
+              "NATIVE_INVALID"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -3440.25973218149,
+            "sharpe_daily_sqrt365": -0.6082031541168892,
+            "max_drawdown_pct": 47.96533703908557,
+            "trades": 350,
+            "win_rate": 0.4828571428571429,
+            "orders_per_week": 1.9125683060109289,
+            "n_long": 349,
+            "n_short": 1,
+            "n_close_AGENT_CLOSE": 2,
+            "n_close_TP": 88,
+            "n_close_SL": 91,
+            "n_close_FORCED_FLAT": 169,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": false,
+            "gross_usd": -1106.854462181496,
+            "cost_spread_usd": 281.55825,
+            "cost_slippage_usd": 276.46194,
+            "cost_commission_usd": 450.85663,
+            "cost_financing_usd": 1324.52845
+          }
+        }
+      ]
+    },
+    {
+      "parameters": {
+        "tp_fraction": 0.75,
+        "sl_fraction": 0.75,
+        "order_fraction": 1
+      },
+      "eligible": false,
+      "mean_sharpe": -0.6200387619089766,
+      "mean_drawdown_pct": 73.92350290519992,
+      "mean_profit_usd": -6190.746120581553,
+      "seeds": [
+        {
+          "seed": 7,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT",
+              "ACTIVITY_BELOW_TWO",
+              "NATIVE_INVALID"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -6310.196742787598,
+            "sharpe_daily_sqrt365": -0.652396915360666,
+            "max_drawdown_pct": 73.39979628918081,
+            "trades": 356,
+            "win_rate": 0.4803370786516854,
+            "orders_per_week": 1.9453551912568305,
+            "n_long": 353,
+            "n_short": 3,
+            "n_close_AGENT_CLOSE": 12,
+            "n_close_TP": 85,
+            "n_close_SL": 91,
+            "n_close_FORCED_FLAT": 168,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": false,
+            "gross_usd": -2508.5588477875967,
+            "cost_spread_usd": 491.733655,
+            "cost_slippage_usd": 456.06850000000003,
+            "cost_commission_usd": 737.34612,
+            "cost_financing_usd": 2116.48962
+          }
+        },
+        {
+          "seed": 19,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_EXECUTED_CLOSE_LONG",
+              "NO_SHORT_TRADES",
+              "NO_EXECUTED_CLOSE_SHORT",
+              "NO_HOLD_SHORT",
+              "ACTIVITY_BELOW_TWO",
+              "NATIVE_INVALID"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -6095.730903697526,
+            "sharpe_daily_sqrt365": -0.5914842952618433,
+            "max_drawdown_pct": 74.18551915904055,
+            "trades": 350,
+            "win_rate": 0.4828571428571429,
+            "orders_per_week": 1.9125683060109289,
+            "n_long": 350,
+            "n_short": 0,
+            "n_close_AGENT_CLOSE": 0,
+            "n_close_TP": 88,
+            "n_close_SL": 92,
+            "n_close_FORCED_FLAT": 170,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": false,
+            "gross_usd": -2250.365193697537,
+            "cost_spread_usd": 466.22236,
+            "cost_slippage_usd": 458.04839000000004,
+            "cost_commission_usd": 742.27279,
+            "cost_financing_usd": 2178.82217
+          }
+        },
+        {
+          "seed": 43,
+          "behavior": {
+            "eligible": false,
+            "reasons": [
+              "NO_HOLD_SHORT",
+              "ACTIVITY_BELOW_TWO",
+              "NATIVE_INVALID"
+            ]
+          },
+          "metrics": {
+            "net_profit_usd": -6166.310715259537,
+            "sharpe_daily_sqrt365": -0.6162350751044203,
+            "max_drawdown_pct": 74.18519326737841,
+            "trades": 350,
+            "win_rate": 0.4828571428571429,
+            "orders_per_week": 1.9125683060109289,
+            "n_long": 349,
+            "n_short": 1,
+            "n_close_AGENT_CLOSE": 2,
+            "n_close_TP": 88,
+            "n_close_SL": 91,
+            "n_close_FORCED_FLAT": 169,
+            "n_close_MARGIN_CLOSEOUT": 0,
+            "max_entries_per_day": 1,
+            "valid": false,
+            "gross_usd": -2383.9314602595364,
+            "cost_spread_usd": 460.697315,
+            "cost_slippage_usd": 449.80874000000006,
+            "cost_commission_usd": 730.3779,
+            "cost_financing_usd": 2141.4953
+          }
+        }
+      ]
+    }
+  ],
+  "artifacts_sha256": {
+    "IDENTITY.json": "3fa1fc3511250451759b335641c471a973bb57a2c2845c74d27cf3ef5b8169a1",
+    "SCENARIOS.json": "000f7e919ab0376d66c3d1478f0f05c3e8b3b549700d4ea61086f00f2aa05e4f",
+    "IDEAL_WAVES.json": "a1aa0f7b95b2e9fa476598bc9a5331219248125bcb6aef71364e4a6e448f4def",
+    "GRID.json": "555a5dba1864ac32bef97e55faa1943620ae18c9a65d5d3152b988cf7a0bfaac",
+    "DECISION.json": "10e36e64e9a7707d968d158e64c14ba8b53f9ad5dc4ed0dce1bf4723751288cc"
+  }
+}

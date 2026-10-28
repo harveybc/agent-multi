@@ -1,0 +1,44 @@
+{
+  "finished_at": "2026-10-26T23:05:37.309108+00:00",
+  "source_closures": {
+    "study_close": "6e395fb29f5594d062a18539dfd50142a6795196835d2480d94ec728ad1da160",
+    "deap_close": "a4709827e15d03539a3459d9980870d75b0dd8e53ddb1d552881a9fda0f58d78"
+  },
+  "receipts": 130,
+  "tcn_configured": 124,
+  "long_hold_exact": {
+    "TRAIN": 107,
+    "INNER_A": 114
+  },
+  "regate_changes": {
+    "TRAIN": 0,
+    "INNER_A": 0
+  },
+  "ideal_sl_touches": 0,
+  "sl_sensitivity": [
+    {
+      "gene": "sl_long",
+      "endpoint": 0.0,
+      "ideal_trajectory_exact": true
+    },
+    {
+      "gene": "sl_long",
+      "endpoint": 1.0,
+      "ideal_trajectory_exact": true
+    },
+    {
+      "gene": "sl_short",
+      "endpoint": 0.0,
+      "ideal_trajectory_exact": true
+    },
+    {
+      "gene": "sl_short",
+      "endpoint": 1.0,
+      "ideal_trajectory_exact": true
+    }
+  ],
+  "financial_admission": false,
+  "new_fits": 0,
+  "positive_learning_control": "NOT_EXECUTED",
+  "selection_scope": "INNER_A is reused selection, not independent confirmation"
+}

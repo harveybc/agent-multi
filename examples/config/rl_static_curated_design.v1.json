@@ -1,0 +1,45 @@
+{
+  "schema": "rl_static_curated_design.v1",
+  "status": "ENGINEERING_ONLY_NOT_A_LAUNCH_CONFIG",
+  "data_admission_complete": false,
+  "feature_selection_complete": false,
+  "refit_cadence": "NONE",
+  "validation_weight_updates": false,
+  "initial_cash": 10000.0,
+  "execution_transition": "next_open_v2",
+  "execution_max_delay_hours": 1.0,
+  "strategy_plugin": "shared_execution_envelope",
+  "common_observation": {
+    "window_size": 13,
+    "observation_stride_bars": 2,
+    "require_full_observation_window": true,
+    "require_curated_rl_input": true,
+    "include_price_window": false,
+    "include_agent_state": true,
+    "agent_state_contract": "live_stationary_v2",
+    "feature_scaling": "rolling_zscore",
+    "feature_scaling_window": 256
+  },
+  "arms": [
+    {"agent_plugin": "sac_agent", "observation_encoder": "flat", "net_arch": [32, 32]},
+    {"agent_plugin": "sac_agent", "observation_encoder": "per_feature_conv1d", "temporal_branch_filters": 4, "temporal_core_filters": 8, "temporal_kernel_size": 3, "net_arch": [32, 32]}
+  ],
+  "daily_entries": {
+    "baseline_max_entries_per_day": 1,
+    "entry_day_timezone": "America/New_York",
+    "proposed_contrast_limits": [1, 2, 4],
+    "contrast_status": "PROPOSED_NOT_SILENTLY_ACTIVATED",
+    "minimum_required_entries": 0,
+    "max_concurrent_positions": 1,
+    "exits_unrestricted_by_entry_quota": true,
+    "risk_budget_held_constant_across_caps": true
+  },
+  "pending_launch_inputs": [
+    "admitted prepared data and ordered selection for each split",
+    "verified calendar, source availability and actual prepared monthly coverage",
+    "instrument execution costs and business session contract",
+    "sealed training budget, seeds, stopping rule and evaluation protocol",
+    "real-path static evaluation, session and accounting acceptance",
+    "autonomous run manifest with warehouse readback and physical mirrors"
+  ]
+}

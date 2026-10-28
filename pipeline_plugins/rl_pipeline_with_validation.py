@@ -239,29 +239,34 @@ def _drawdown_fraction(summary: Dict[str, Any]) -> float:
     deliberately conservative.
     """
     raw_pct = _safe_float(summary.get("max_drawdown_pct"))
-    if not math.isnan(raw_pct):
-        return max(0.0, raw_pct / 100.0)
+    if "max_drawdown_pct" in summary:
+        return raw_pct / 100.0 if math.isfinite(raw_pct) and raw_pct >= 0 else float("nan")
     raw_fraction = _safe_float(summary.get("max_drawdown"))
-    if not math.isnan(raw_fraction):
+    if math.isfinite(raw_fraction):
         return abs(raw_fraction)
-    return 0.0
+    return float("nan")
 
 
 def _risk_adjusted_return(summary: Dict[str, Any], risk_lambda: float) -> float:
     ret = _safe_float(summary.get("total_return"))
-    if math.isnan(ret):
-        ret = 0.0
-    return ret - float(risk_lambda) * _drawdown_fraction(summary)
+    drawdown = _drawdown_fraction(summary)
+    penalty = float(risk_lambda)
+    if not all(math.isfinite(v) for v in (ret, drawdown, penalty)) or penalty < 0:
+        raise ValueError("risk-adjusted selection requires finite return, drawdown and nonnegative penalty")
+    return ret - penalty * drawdown
 
 
 def _annotate_risk_adjusted(summary: Dict[str, Any], risk_lambda: float) -> None:
     drawdown = _drawdown_fraction(summary)
     ret = _safe_float(summary.get("total_return"))
-    if math.isnan(ret):
-        ret = 0.0
-    summary["max_drawdown_fraction"] = drawdown
-    summary["risk_penalty_lambda"] = float(risk_lambda)
-    summary["risk_adjusted_total_return"] = ret - float(risk_lambda) * drawdown
+    penalty = float(risk_lambda)
+    if not math.isfinite(penalty) or penalty < 0:
+        raise ValueError("risk penalty must be finite and nonnegative")
+    summary["max_drawdown_fraction"] = drawdown if math.isfinite(drawdown) else None
+    summary["risk_penalty_lambda"] = penalty
+    summary["risk_adjusted_total_return"] = (
+        ret - penalty * drawdown if math.isfinite(ret) and math.isfinite(drawdown) else None
+    )
 
 
 def _resolve_l1_min_checkpoint_timesteps(
@@ -390,13 +395,15 @@ def _selection_value(summary: Dict[str, Any], *, selection_metric: str, risk_lam
         "execution_curriculum_robust_fitness",
     }:
         value = _safe_float(summary.get("robust_weekly_rap_fitness"))
-        if math.isnan(value):
+        if not math.isfinite(value):
             raise ValueError("robust validation summary is missing finite fitness")
         return value
     if metric in {"risk_adjusted_return", "risk_adjusted_total_return", "rap"}:
         return _risk_adjusted_return(summary, risk_lambda)
     ret = _safe_float(summary.get("total_return"))
-    return 0.0 if math.isnan(ret) else ret
+    if not math.isfinite(ret):
+        raise ValueError("selection requires a finite total_return")
+    return ret
 
 
 def _selection_pair_details(
@@ -457,10 +464,8 @@ def _early_stop_composite(
 ) -> Tuple[float, float, bool, float, float, int, int]:
     train_tail_ret = _safe_float(train_tail_summary.get("total_return"))
     val_ret = _safe_float(val_summary.get("total_return"))
-    if math.isnan(train_tail_ret):
-        train_tail_ret = 0.0
-    if math.isnan(val_ret):
-        val_ret = 0.0
+    if not math.isfinite(train_tail_ret) or not math.isfinite(val_ret):
+        raise ValueError("early stopping requires finite TRAIN and VALIDATION returns")
     details = _selection_pair_details(
         train_tail_summary,
         val_summary,
@@ -2093,10 +2098,8 @@ class PipelinePlugin:
             risk_lambda=risk_lambda,
             gap_penalty_beta=l1_gap_beta,
         )
-        risk_adjusted_mean = 0.5 * (
-            float(train_tail_summary.get("risk_adjusted_total_return") or 0.0)
-            + float(val_summary.get("risk_adjusted_total_return") or 0.0)
-        )
+        risk_values = [s.get("risk_adjusted_total_return") for s in (train_tail_summary, val_summary)]
+        risk_adjusted_mean = 0.5 * sum(risk_values) if all(v is not None for v in risk_values) else None
 
         rows = [
             ("Train", train_summary),

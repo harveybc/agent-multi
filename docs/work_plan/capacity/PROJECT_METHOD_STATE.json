@@ -1,0 +1,27 @@
+{
+  "schema": "sac_capacity_diagnostics_method.v1",
+  "current_stage": "OPERATOR_STOPPED_FOR_IMMEDIATE_TEMPORAL_CONTRAST",
+  "design": "../49_SAC_CAPACITY_AND_GENERALIZATION.md",
+  "stages_passed": ["DISCOVERY", "REQUIREMENTS", "ACCEPTANCE_TEST_DESIGN", "ARCHITECTURE", "SYSTEM_COMPONENT_UNIT_TEST_DESIGN", "UNIT_IMPLEMENTATION", "INTEGRATION_VERIFICATION", "REAL_ARTIFACT_ALPHA", "GPU_SYNTHETIC_ADMISSION"],
+  "verification": {
+    "worker_environment_tests_passed": 132,
+    "historical_checkpoint_pairs_authenticated": 91,
+    "diagnostic_reports_expected": 5,
+    "diagnostic_reports_readback": 5,
+    "pending": 0,
+    "mismatch": 0,
+    "diagnostic_second_machine_checksum_comparison": "IDENTICAL",
+    "capacity_scientific_common_config_delta": ["net_arch"],
+    "capacity_runtime": "dad7294c",
+    "first_arm": [8],
+    "first_arm_steps_at_start_check": 5000,
+    "first_arm_status": "FIRST_PAIRED_VALIDATION_INFERENCE",
+    "capacity_scientific_results_available": false,
+    "completed_partial_checkpoint_pairs": 6,
+    "flat_successor_timers_enabled": false,
+    "replacement": "../50_MINIMAL_TEMPORAL_SAC.md"
+  },
+  "next_allowed_actions": ["preserve interrupted flat artifacts with partial scope", "execute newly approved minimal temporal contrast", "publish metrics with readback and closed-copy collection", "investigate remaining hypotheses without inventing missing telemetry"],
+  "blocked_actions": ["resume flat sweep without reconciling the new priority", "change TRAIN VALIDATION TEST years", "claim tested regularization strengths exclude their whole families", "silently replace early-stopping objective", "claim chronological panels prove a regime cause"],
+  "history": ["Owner authorized remaining-cause investigation on2026-10-20", "New tests were written and failed before implementation", "Native CPU and actual worker tests passed before deployment", "Fresh GPU admission and first scientific progress confirmed; no capacity outcome claimed"]
+}
