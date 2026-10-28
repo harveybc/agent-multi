@@ -1,0 +1,133 @@
+{
+  "mathematical_witnesses": {
+    "gap": {
+      "entry": 100,
+      "first_executable_quote": 95,
+      "planned_stop_loss": 1,
+      "realized_loss_before_fees": 5,
+      "stop": 99,
+      "units": 1
+    },
+    "negative_optimum": {
+      "best": -10,
+      "best_is_rejected": true,
+      "threshold": -9
+    },
+    "negative_regression_weight": {
+      "predictions": [
+        1,
+        10
+      ],
+      "target": 0,
+      "weight": -1,
+      "weighted_squared_losses": [
+        -1,
+        -100
+      ]
+    },
+    "shapley_incentive": {
+      "account": [
+        4,
+        3
+      ],
+      "deviation": [
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "player_1_shapley": [
+        "2",
+        "13/2"
+      ],
+      "potential_table_rows_player_1_columns_player_2": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          10,
+          3
+        ]
+      ]
+    },
+    "translation": {
+      "best": 10,
+      "candidate": 9,
+      "passes": true,
+      "shift": -10,
+      "shifted_candidate_passes": false
+    }
+  },
+  "schema": "guided_mechanism.design_audit_witnesses.v1",
+  "scope": "Bounded design counterexamples; no training or market-matrix replay",
+  "source_verifier": {
+    "commit": "b4b19ed3dc3ed69da8e1e388043fb375c700c6cc",
+    "conflicting_controls": {
+      "PASS": true,
+      "defects": [
+        "W"
+      ],
+      "failing": [],
+      "per_witness": {
+        "W": {
+          "control_events": {
+            "O*": 1,
+            "hold_oracle": 1
+          },
+          "failed_by": [
+            "hold_oracle"
+          ],
+          "governing_form": "W_v2",
+          "pass": true,
+          "status": "DEFECT",
+          "validated_by": [
+            "O*"
+          ]
+        }
+      },
+      "replay_conflicts": [],
+      "unvalidated": []
+    },
+    "empty": {
+      "PASS": true,
+      "defects": [],
+      "failing": [],
+      "per_witness": {},
+      "replay_conflicts": [],
+      "unvalidated": []
+    },
+    "function_first_line": 1768,
+    "source": "tools/strategy_behaviour_matrix.py",
+    "source_sha256": "f03fc452694e09c455757ba81ba6ddbdf9c145276a387c48a2bda1c4b6550086",
+    "vacuous": {
+      "PASS": true,
+      "defects": [],
+      "failing": [],
+      "per_witness": {
+        "W": {
+          "control_events": {
+            "hold_oracle": 0
+          },
+          "failed_by": [],
+          "governing_form": "W_v2",
+          "pass": true,
+          "status": "SEALED_UNVALIDATED",
+          "validated_by": []
+        }
+      },
+      "replay_conflicts": [],
+      "unvalidated": [
+        "W"
+      ]
+    }
+  }
+}
