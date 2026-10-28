@@ -135,7 +135,35 @@ unchanged.
 Focused verification before publication: heuristic-strategy58 passed;
 predictor42 passed; feature_selector38 passed/4 skipped (legacy pinned
 integration checks); agent-multi91 passed including native quote/corpus
-integration against the merged engine; gym-fx118 passed; financial-data15
-passed. The feature-eng integration branch already equals its remote master.
+integration against the merged engine; gym-fx118 passed; financial-data60
+passed across availability/feed and curation tests; feature-eng82 passed/1
+skipped. The latest phase-one feature-eng branch was already on master; its
+separate TRAIN-only metrics/calendar changes have also been merged and tested.
 These are targeted checks, not a
 full-suite certification of every historical research branch.
+
+### Published integration receipts
+
+All entries below were pushed normally to remote `master`, not merely left
+on integration branches. The agent-multi row names the audit-code commit;
+this documentation receipt is a subsequent descendant. Integration preserves
+existing master work and committed source histories, including superseded
+research reports with their existing qualifications. It does not promote
+every archived experiment or unfinished local edit into an accepted result.
+
+| Repository | Remote master integration commit |
+|---|---|
+| heuristic-strategy | b6c20debd30b960c33a7b210453ced1f890daf74 |
+| agent-multi | 42478d194e58085a9856b04793b8b20f3a715b86 |
+| predictor | 372c87920fbd0e0ee8aaa3e380551e29d86297bb |
+| feature_selector | bec66cca0ab3367a856ec1d70c8783c9919d8704 |
+| gym-fx | 92da3cd621a67e98a76344e0f807eb3ffdeed7ee |
+| financial-data | 974b29e3f (curation plus availability/feed line) |
+| feature-eng | 61aacf14a8a318f28d159a2bbc09acfbdc90c742 |
+
+The financial-data documentation conflicts preserve current master wording;
+the inventory merge retains the explicit retrospective-archive delivery path
+with UNKNOWN availability and no date-range claims, exercised by its tests.
+The agent-multi pre-push sensitivity gate scanned125 outgoing commits CLEAN;
+financial-data's publication scans also reported no leaks. Unrelated dirty
+working trees and the existing interrupted predictor merge were not altered.
