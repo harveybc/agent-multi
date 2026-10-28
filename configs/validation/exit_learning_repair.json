@@ -16,6 +16,6 @@
     "bootstrap_replicates": 2000
   },
   "evaluation": "deterministic_argmax_original_first_decision",
-  "qualification": "both_directions_both_splits_better_than_passive_immediate_and_train_constant_hazard",
+  "qualification": "both_directions_both_splits_better_than_passive_immediate_train_constant_hazard_and_train_selected_fixed_delay",
   "financial_admission": false
 }

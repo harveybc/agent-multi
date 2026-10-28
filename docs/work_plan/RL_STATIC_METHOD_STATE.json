@@ -1,8 +1,17 @@
 {
   "schema": "rl_static_engineering_state.v1",
   "updated_on": "2026-10-28",
-  "current_stage": "EXIT_REPAIR_CLOSED_FIXED_DELAY_COUNTEREXAMPLE",
-  "latest_review": "110_EXIT_REPAIR_CLOSED_FIXED_DELAY_FINDING.md",
+  "current_stage": "FIXED_DELAY_ACCEPTANCE_REPAIRED_CAUSAL_CONTROL_DESIGN_NEXT",
+  "latest_review": "111_MULTISCALE_INPUT_PROPOSAL.md",
+  "multiscale_proposal": {
+    "plan": "111_MULTISCALE_INPUT_PROPOSAL.md",
+    "state": "DISCUSSION_NOT_DEPLOYED",
+    "baseline_observations": 13,
+    "baseline_stride_observed_h1_rows": 2,
+    "proposed_strides": [1, 2, 6, 12, 24],
+    "feature_recomputation_distinct_from_subsampling": true,
+    "no_change_to_current_inputs": true
+  },
   "exit_learning_repair": {
     "code": "7e5bbe33",
     "campaign": "exit-learning-repair-20261028",
@@ -18,6 +27,13 @@
     "original_gate_qualified": ["first_128k_43"],
     "review_qualified_for_learned_timing": [],
     "missing_control": "TRAIN-selected fixed delay 6 beats the candidate on TRAIN and exactly matches confirmation",
+    "fixed_delay_gate_repaired": true,
+    "fixed_delay_rescore_units": 13,
+    "fixed_delay_rescore_new_fits": 0,
+    "fixed_delay_rescore_qualified_pure_rl": [],
+    "fixed_delay_rescore_tool": "tools/rescore_exit_delay.py",
+    "fixed_delay_focused_tests_passed": 35,
+    "fixed_delay_rescore_sha256": "da335eaedd9769a6366f7c46ea7f050ac1caf8c4b71299581d6121a529475b71",
     "step_budget": 131072,
     "pure_rl_fits_planned": 12,
     "separate_capacity_controls_planned": 1,
@@ -394,7 +410,7 @@
   "sequential_queue": {"code": "2d4aaa99", "tool": "tools/recipe_sac_queue.py", "registered_in_tool_declarations": true, "scope": "DEVELOPMENT", "arms": ["GROUPED", "FLAT"], "steps_per_arm": 100000, "seed": 7, "auto_next_arm": true, "reboot_timer_enabled": true, "restart_policy": "bounded two fresh attempts, no false exact continuation", "collector_timer_enabled": true, "remote_warehouse_delivery": "ready; zero scientific reports expected before checkpoint", "plan": "61_RECIPE_NATIVE_SAC_QUEUE.md"},
   "scientific_campaign_started": true,
   "review": {"satoshi_return_received": true, "weekly_first_80_run_proposal_adopted": false, "closed_in_new_path": ["action/fill/reward transition", "entry-bar commission and leveraged capital reconciliation", "undefined checkpoint scores", "explicit analytical financing debit", "native Trade lifecycle after direct settlement", "zero-net trade accounting", "long/short repeated-close and nonzero-slippage analytical ledger"], "open_findings": ["broker-specific financing and actual execution costs", "raw fractional enlargement mask (not selected for curated baseline)", "alternate margin and full environment accounting acceptance"]},
-  "next_allowed_actions": ["follow plan 110: add TRAIN-only fixed-delay comparator and regression", "re-score sealed checkpoints without retraining or changing original receipts", "diagnose state-dependent learning and credit assignment before a new training design", "preserve closed evidence; no financial selection or full-strategy promotion from these controls"],
+  "next_allowed_actions": ["design paired synthetic controls with causal cues independent of episode age and explicit HOLD cases", "test observation sufficiency before matched actor/critic and exploration contrasts", "keep the multiscale input proposal separate from the exit-learning repair until its causal alignment and controls are tested", "preserve closed evidence; no financial selection or full-strategy promotion from these controls"],
   "deferred": ["frequency sweep", "DOIN", "forecasting", "NEAT"],
   "daily_entry_cap_baseline": 1,
   "daily_entry_cap_proposed_contrast": [1, 2, 4]

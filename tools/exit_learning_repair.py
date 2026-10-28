@@ -9,6 +9,7 @@ import numpy as np
 
 from app.frozen_recipe_inputs import file_sha, require
 from app.optimal_exit import targets
+from app.exit_delay_control import fit_delay, evaluate_delay
 from app.rl_subset import digest
 from tools.recipe_sac_queue import read, write, source_pins, software, now, tensor_hash
 from tools.optimal_exit_study import evaluate
@@ -53,7 +54,7 @@ def alias_audit(cases, arrays):
                 scope='Exact byte collisions only; does not prove full observation sufficiency')
 
 
-def policy_report(model,cases,arrays,constants=None):
+def policy_report(model,cases,arrays,constants=None,fixed_delay=None):
     import torch
     from env_plugins.optimal_exit_diagnostic import OptimalExitDiagnostic
     data,_=tensor_dataset(cases,arrays)
@@ -63,6 +64,8 @@ def policy_report(model,cases,arrays,constants=None):
         probability=(p[:,3]+p[:,4]).cpu().numpy()
     if constants is None:
         constants={str(d):float(probability[data['action_mask'][:,3 if d==1 else 4].bool().numpy()].mean()) for d in (1,-1)}
+        if fixed_delay is None:fixed_delay=fit_delay(cases)
+    require(fixed_delay is not None,'FIXED_DELAY_TRAIN_CONTROL_REQUIRED_FOR_CONFIRMATION')
     sampled,blind=[],[];at=0
     for case,x in zip(cases,arrays):
         sampled.append(dict(direction=case['direction'],**expectation(case,probability[at:at+len(x)])))
@@ -73,6 +76,7 @@ def policy_report(model,cases,arrays,constants=None):
                        for k in ('regret_risk','mean_net_usd','early_close_probability')} for d in (1,-1)}
     return dict(deterministic=evaluate(model,OptimalExitDiagnostic(cases,arrays)),
                 constants_from_train=constants,sampled=means(sampled),constant_hazard=means(blind),
+                fixed_delay_control=fixed_delay,fixed_delay=evaluate_delay(cases,fixed_delay),
                 probability_min=float(probability.min()),probability_max=float(probability.max()))
 
 
@@ -95,6 +99,8 @@ def replay_all_decisions(model,loaded,cases,arrays):
 
 def qualifies(report, cases):
     from app.optimal_exit import outcome
+    require('fixed_delay_control' in report,'FIXED_DELAY_CONTROL_REQUIRED')
+    fixed=evaluate_delay(cases,report['fixed_delay_control'])
     for d in (1,-1):
         selected=[case for case in cases if case['direction']==d]
         controls=[]
@@ -106,7 +112,8 @@ def qualifies(report, cases):
                 rows.append(outcome(case,actions))
             controls.append(float(np.mean([r['regret_risk'] for r in rows])))
         det=report['deterministic']['summary']['by_direction'][str(d)]['mean_regret_risk']
-        if not det < min(*controls,report['constant_hazard'][str(d)]['regret_risk']):return False
+        if not det < min(*controls,report['constant_hazard'][str(d)]['regret_risk'],
+                         fixed['by_direction'][str(d)]['mean_regret_risk']):return False
     return True
 
 
@@ -237,7 +244,8 @@ def run(a):
             for result in results:
                 status('CONFIRMATION',unit=result['unit'])
                 model=PPO.load(a.output/'fits'/result['unit']/'model.zip',device='cpu')
-                report=policy_report(model,cc,xx,result['train']['constants_from_train'])
+                report=policy_report(model,cc,xx,result['train']['constants_from_train'],
+                                     result['train']['fixed_delay_control'])
                 confirmation.append(dict(unit=result['unit'],report=report,
                     qualified=result['train_qualified'] and qualifies(report,cc),
                     scope=result['definition']['kind']))
