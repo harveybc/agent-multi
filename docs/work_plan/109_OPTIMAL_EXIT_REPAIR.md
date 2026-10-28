@@ -98,3 +98,29 @@ If no arm qualifies, the chain closes with an explicit failed-control result,
 not a strategy release. In either outcome, full-strategy optimization and its
 cross-audit remain distinct from this two-bias exit subproblem; no financial
 floating selection is launched by this diagnostic.
+
+## Execution receipt
+
+Code `7e5bbe33` is published on master and exported to an immutable runtime.
+The new sequential service started at 06:16:24 UTC on October 28. At 06:18:47,
+the capacity diagnostic had completed and `uniform_128k_7` had executed 34816
+of 131072 transitions. Resident memory was approximately 641 MiB. Limits are
+one CPU core, MemoryHigh 4 GiB and MemoryMax 6 GiB; no GPU is occupied.
+
+The user service has a boot timer and two bounded abnormal-termination starts
+per hour. A typed integrity error stops with a failure receipt; it is not
+retried as a successful unit. Completed units are authenticated before reuse;
+an interrupted unsealed unit starts fresh with its original seed. STATUS and
+PROGRESS both receive the terminal state. It does not require chat turns to
+advance through the declared units or the conditional DEAP step.
+
+Verification at the deployed source: 64 focused tests passed, including actual
+native-engine integration, CLI execution/resume, changed-checkpoint rejection,
+all-action gradient witnesses and conditional optimizer replay. Targeted Ruff
+correctness checks and `git diff --check` passed. This is not a full historical
+repository-suite claim.
+
+At the start, measured 32768-step controls took 86-94 seconds each. The new
+learning queue is estimated at 45-55 minutes including evaluation; this is an
+extrapolation, not a completion guarantee. The previous nine exit searches
+took 36 seconds; wider bounds and paired intervals may increase that cost.
