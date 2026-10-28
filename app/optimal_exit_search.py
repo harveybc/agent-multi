@@ -47,21 +47,48 @@ class Genome(list):
         super().__init__(values);self.fitness=Fitness()
 
 
-def search(rows,objective,seed,population=20,generations=100,patience=10,tolerance=1e-8):
+def objective_scales(controls):
+    """Freeze RMS scales from declared calibration controls, never confirmation."""
+    scales={key:float(np.sqrt(np.mean([m[key]**2 for m in controls])))
+            for key in ('sharpe_episode_unannualized','mean_return_fraction')}
+    if any(not math.isfinite(v) or v<=0 for v in scales.values()):
+        raise ValueError('EXIT_OBJECTIVE_SCALE')
+    return scales
+
+
+def objective_value(metrics,objective,scales=None):
+    if objective not in ('negative_exit_regret','sharpe','sharpe_return'):
+        raise ValueError('EXIT_OBJECTIVE')
+    if metrics['max_ideal_regret']>1e-10:
+        return -1e9-metrics['max_ideal_regret']
+    if objective=='negative_exit_regret':return -metrics['mean_regret_risk']
+    value=metrics['sharpe_episode_unannualized']
+    if objective=='sharpe_return':
+        if scales is None:
+            # Legacy replay only. New designs supply calibration-only scales.
+            return value+metrics['mean_return_fraction']
+        if any(not math.isfinite(v) or v<=0 for v in scales.values()):
+            raise ValueError('EXIT_OBJECTIVE_SCALE')
+        value=value/scales['sharpe_episode_unannualized']+metrics['mean_return_fraction']/scales['mean_return_fraction']
+    return value
+
+
+def search(rows,objective,seed,population=20,generations=100,patience=10,tolerance=1e-8,
+           scales=None,bounds=(-2.,2.)):
     if objective not in ('negative_exit_regret','sharpe','sharpe_return'):raise ValueError('EXIT_OBJECTIVE')
+    if population<3 or len(bounds)!=2 or not bounds[0]<=-1.<1.<=bounds[1]:
+        raise ValueError('EXIT_SEARCH_CONFIGURATION')
     rng_state=random.getstate();random.seed(seed)
     history=[];evaluated={};best=None;stale=0
     def evaluate(g):
         key=tuple(g)
         if key not in evaluated:evaluated[key]=score(g,rows)
         m=evaluated[key]
-        value=-m['mean_regret_risk'] if objective=='negative_exit_regret' else m['sharpe_episode_unannualized']
-        if objective=='sharpe_return':value+=m['mean_return_fraction']
-        if m['max_ideal_regret']>1e-10:value=-1e9-m['max_ideal_regret']
+        value=objective_value(m,objective,scales)
         g.fitness.values=(value,)
     try:
         pop=[Genome([0.,0.]),Genome([1.,1.]),Genome([-1.,-1.])]
-        pop += [Genome([random.uniform(-2,2),random.uniform(-2,2)]) for _ in range(population-len(pop))]
+        pop += [Genome([random.uniform(*bounds),random.uniform(*bounds)]) for _ in range(population-len(pop))]
         for generation in range(generations+1):
             for g in pop:
                 if not g.fitness.valid:evaluate(g)
@@ -76,12 +103,12 @@ def search(rows,objective,seed,population=20,generations=100,patience=10,toleran
                 if random.random()<.7:tools.cxBlend(children[i],children[i+1],alpha=.3)
             for g in children:
                 if random.random()<.3:tools.mutGaussian(g,mu=0,sigma=.3,indpb=.5)
-                g[:]=[max(-2.,min(2.,v)) for v in g]
+                g[:]=[max(bounds[0],min(bounds[1],v)) for v in g]
                 del g.fitness.values
             pop=[copy.deepcopy(best)]+children
         return dict(objective=objective,seed=seed,genes=list(best),calibration=score(best,rows),
             stop_reason='PATIENCE' if stale>=patience else 'GENERATION_CAP',history=history,
             evaluated=[dict(genes=list(g),metrics=m) for g,m in evaluated.items()],
-            bound_hits=[abs(v)>=2 for v in best],population=population,generation_cap=generations,
+            bound_hits=[v<=bounds[0] or v>=bounds[1] for v in best],population=population,generation_cap=generations,
             patience_limit=patience,relative_tolerance=tolerance)
     finally:random.setstate(rng_state)

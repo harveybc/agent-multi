@@ -148,6 +148,7 @@ def run(a):
             learned_controls_passed=sum(r['better_than_both_blind_controls_both_sides'] for r in fits),
             financial_admission=False,artifacts=manifest,at=now())
         write(a.output/'CLOSE.json',final);status(state,**{k:v for k,v in final.items() if k not in ('state','at','artifacts','financial_admission')})
+        write(a.output/'PROGRESS.json',read(a.output/'STATUS.json'))
 
 
 if __name__=='__main__':

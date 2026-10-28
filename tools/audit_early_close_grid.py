@@ -15,6 +15,16 @@ from tools.recipe_sac_queue import read, write, now
 ROOT=Path(__file__).resolve().parents[1]
 
 
+def reference_scope(identity):
+    modes=set(identity.get('design',{}).get('axes',{}).get('mode',[]))
+    full={'position_optimal_long','position_optimal_short'}
+    if modes and modes<=full:
+        return 'CAPTURE_UNDER_FULL_REMAINING_EXECUTABLE_POSITION_REFERENCE_NOT_LEARNING'
+    if modes & full:
+        return 'MIXED_POSITION_AND_FINITE_HORIZON_REFERENCES_NOT_LEARNING'
+    return 'CAPTURE_UNDER_RETAINED_FINITE_HORIZON_REFERENCE_NOT_GLOBAL_OPTIMALITY'
+
+
 def tick(source, output, max_batches=256):
     identity=read(source/'IDENTITY.json')
     pin=dict(source_identity=digest(identity),code={n:file_sha(ROOT/n) for n in
@@ -60,7 +70,7 @@ def tick(source, output, max_batches=256):
         report=dict(state=state,counts=dict(counts),failure_count=len(failures),failures=failures[:20],
             capture_rate=counts['captured']/counts['opportunities'] if counts['opportunities'] else None,
             early_close_trade_share=counts['early_closes']/counts['trades'] if counts['trades'] else None,
-            scope='CAPTURE_UNDER_RETAINED_FINITE_HORIZON_REFERENCE_NOT_GLOBAL_OPTIMALITY',
+            scope=reference_scope(identity),
             target_early_close_share=None,financial_admission=False,learning_qualified=False,at=now())
         write(output/'STATUS.json',report)
         require(not failures,'EARLY_CLOSE_CAPTURE_FAILED_SEE_STATUS')

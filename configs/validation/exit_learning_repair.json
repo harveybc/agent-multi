@@ -1,0 +1,21 @@
+{
+  "schema": "exit_learning_repair.v1",
+  "seeds": [7, 19, 43],
+  "capacity_epochs": 100,
+  "learning": {"n_steps": 256, "batch_size": 128, "n_epochs": 5},
+  "arms": [
+    {"name": "uniform_128k", "kind": "pure_rl", "start": "uniform", "steps": 131072},
+    {"name": "first_128k", "kind": "pure_rl", "start": "first", "steps": 131072},
+    {"name": "first_32k", "kind": "pure_rl", "start": "first", "steps": 32768},
+    {"name": "uniform_32k", "kind": "pure_rl", "start": "uniform", "steps": 32768}
+  ],
+  "deap": {
+    "population": 20, "generations": 100, "patience": 10, "tolerance": 1e-8,
+    "objectives": ["negative_exit_regret", "sharpe", "sharpe_return"],
+    "bounds": [-5.0, 5.0], "controls": [[0.0, 0.0], [1.0, 1.0], [-1.0, -1.0]],
+    "bootstrap_replicates": 2000
+  },
+  "evaluation": "deterministic_argmax_original_first_decision",
+  "qualification": "both_directions_both_splits_better_than_passive_immediate_and_train_constant_hazard",
+  "financial_admission": false
+}
