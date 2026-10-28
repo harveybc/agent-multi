@@ -2,6 +2,10 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "audit_optimal_exit_outcomes.py": {
+   "purpose": "Authenticate sealed synthetic checkpoints and compare exact sampled-policy exit expectations with deterministic outcomes; CPU inference only, no fit or promotion",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "static RL comparison"
+  },
   "optimal_exit_study.py": {
    "purpose": "Synthetic native optimal-exit corpus, DEAP close-bias comparisons and isolated CPU PPO regret-learning controls; no financial data, promotion or live trades",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "static RL comparison"

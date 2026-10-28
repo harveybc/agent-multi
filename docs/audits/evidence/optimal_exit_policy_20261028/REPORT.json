@@ -1,0 +1,610 @@
+{
+  "schema": "optimal_exit.policy_outcome_audit.v1",
+  "source_close_sha256": "4b2581ec49a0a6daf0c13023db51862f47e281dba66f4049f407259024781c5d",
+  "source_identity": "923537763a61b4e402a432f7fd469876198655bfa131de941cf099d676e2cc3e",
+  "training": false,
+  "financial_admission": false,
+  "scope": "Exact memoryless sampled-policy expectations, not a change of evaluation policy or a promotion",
+  "rows": [
+    {
+      "unit": "dense_regret_19",
+      "split": "train",
+      "cases": 144,
+      "decision_rows": 4274,
+      "close_probability_min": 0.14782927930355072,
+      "close_probability_max": 0.18892845511436462,
+      "command_counts": [
+        4274,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actor_tanh_saturation_fraction": 0,
+      "critic_tanh_saturation_fraction": 0,
+      "stochastic_expectation": {
+        "mean_net_usd": 1.3906130172134392,
+        "regret_risk": 0.262730003655631,
+        "early_close_probability": 0.9386202128937478
+      },
+      "constant_probability_from_train": {
+        "1": 0.18821962177753448,
+        "-1": 0.14858193695545197
+      },
+      "constant_hazard_expectation": {
+        "mean_net_usd": 1.3908614599592335,
+        "regret_risk": 0.2627157605073111,
+        "early_close_probability": 0.9386304534114992
+      },
+      "deterministic": {
+        "cases": 144,
+        "mean_regret_risk": 1.164651895127002,
+        "median_regret_risk": 1.3154069764821719,
+        "p90_regret_risk": 1.5914503979785442,
+        "early_close_share": 0,
+        "mean_net_usd": -14.349959343604061,
+        "exact_optimal_share": 0.10416666666666667,
+        "by_direction": {
+          "1": {
+            "cases": 72,
+            "mean_regret_risk": 1.1924925931019548
+          },
+          "-1": {
+            "cases": 72,
+            "mean_regret_risk": 1.1368111971520494
+          }
+        }
+      }
+    },
+    {
+      "unit": "dense_regret_19",
+      "split": "confirmation",
+      "cases": 64,
+      "decision_rows": 2566,
+      "close_probability_min": 0.14782986044883728,
+      "close_probability_max": 0.18891407549381256,
+      "command_counts": [
+        2566,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actor_tanh_saturation_fraction": 0,
+      "critic_tanh_saturation_fraction": 0,
+      "stochastic_expectation": {
+        "mean_net_usd": 1.3593162161322905,
+        "regret_risk": 0.25025125640525026,
+        "early_close_probability": 0.9873499531827772
+      },
+      "constant_probability_from_train": {
+        "1": 0.18821962177753448,
+        "-1": 0.14858193695545197
+      },
+      "constant_hazard_expectation": {
+        "mean_net_usd": 1.359496403878993,
+        "regret_risk": 0.25024092128202585,
+        "early_close_probability": 0.9873560078433217
+      },
+      "deterministic": {
+        "cases": 64,
+        "mean_regret_risk": 1.35592483793728,
+        "median_regret_risk": 1.3464395712697437,
+        "p90_regret_risk": 1.607519989932016,
+        "early_close_share": 0,
+        "mean_net_usd": -17.937039325884786,
+        "exact_optimal_share": 0,
+        "by_direction": {
+          "1": {
+            "cases": 32,
+            "mean_regret_risk": 1.3992217514721474
+          },
+          "-1": {
+            "cases": 32,
+            "mean_regret_risk": 1.3126279244024124
+          }
+        }
+      }
+    },
+    {
+      "unit": "dense_regret_43",
+      "split": "train",
+      "cases": 144,
+      "decision_rows": 4274,
+      "close_probability_min": 0.20369155704975128,
+      "close_probability_max": 0.2456408143043518,
+      "command_counts": [
+        4274,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actor_tanh_saturation_fraction": 0,
+      "critic_tanh_saturation_fraction": 0,
+      "stochastic_expectation": {
+        "mean_net_usd": 1.4117065557000492,
+        "regret_risk": 0.2615323544263383,
+        "early_close_probability": 0.9655863567969034
+      },
+      "constant_probability_from_train": {
+        "1": 0.2440059930086136,
+        "-1": 0.20422041416168213
+      },
+      "constant_hazard_expectation": {
+        "mean_net_usd": 1.4096485646876502,
+        "regret_risk": 0.26165032590132586,
+        "early_close_probability": 0.9655681082868143
+      },
+      "deterministic": {
+        "cases": 144,
+        "mean_regret_risk": 1.164651895127002,
+        "median_regret_risk": 1.3154069764821719,
+        "p90_regret_risk": 1.5914503979785442,
+        "early_close_share": 0,
+        "mean_net_usd": -14.349959343604061,
+        "exact_optimal_share": 0.10416666666666667,
+        "by_direction": {
+          "1": {
+            "cases": 72,
+            "mean_regret_risk": 1.1924925931019548
+          },
+          "-1": {
+            "cases": 72,
+            "mean_regret_risk": 1.1368111971520494
+          }
+        }
+      }
+    },
+    {
+      "unit": "dense_regret_43",
+      "split": "confirmation",
+      "cases": 64,
+      "decision_rows": 2566,
+      "close_probability_min": 0.20372368395328522,
+      "close_probability_max": 0.24547411501407623,
+      "command_counts": [
+        2566,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actor_tanh_saturation_fraction": 0,
+      "critic_tanh_saturation_fraction": 0,
+      "stochastic_expectation": {
+        "mean_net_usd": 1.2054315891939118,
+        "regret_risk": 0.2590817549704659,
+        "early_close_probability": 0.996417283300391
+      },
+      "constant_probability_from_train": {
+        "1": 0.2440059930086136,
+        "-1": 0.20422041416168213
+      },
+      "constant_hazard_expectation": {
+        "mean_net_usd": 1.2030809044325435,
+        "regret_risk": 0.2592165008295329,
+        "early_close_probability": 0.9964086032648098
+      },
+      "deterministic": {
+        "cases": 64,
+        "mean_regret_risk": 1.35592483793728,
+        "median_regret_risk": 1.3464395712697437,
+        "p90_regret_risk": 1.607519989932016,
+        "early_close_share": 0,
+        "mean_net_usd": -17.937039325884786,
+        "exact_optimal_share": 0,
+        "by_direction": {
+          "1": {
+            "cases": 32,
+            "mean_regret_risk": 1.3992217514721474
+          },
+          "-1": {
+            "cases": 32,
+            "mean_regret_risk": 1.3126279244024124
+          }
+        }
+      }
+    },
+    {
+      "unit": "dense_regret_7",
+      "split": "train",
+      "cases": 144,
+      "decision_rows": 4274,
+      "close_probability_min": 0.15124446153640747,
+      "close_probability_max": 0.16454359889030457,
+      "command_counts": [
+        4274,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actor_tanh_saturation_fraction": 0,
+      "critic_tanh_saturation_fraction": 0,
+      "stochastic_expectation": {
+        "mean_net_usd": 1.3654497659541263,
+        "regret_risk": 0.264169754105797,
+        "early_close_probability": 0.9327949852823293
+      },
+      "constant_probability_from_train": {
+        "1": 0.16394314169883728,
+        "-1": 0.15179060399532318
+      },
+      "constant_hazard_expectation": {
+        "mean_net_usd": 1.3648892709541778,
+        "regret_risk": 0.264201885840312,
+        "early_close_probability": 0.9327892176963961
+      },
+      "deterministic": {
+        "cases": 144,
+        "mean_regret_risk": 1.164651895127002,
+        "median_regret_risk": 1.3154069764821719,
+        "p90_regret_risk": 1.5914503979785442,
+        "early_close_share": 0,
+        "mean_net_usd": -14.349959343604061,
+        "exact_optimal_share": 0.10416666666666667,
+        "by_direction": {
+          "1": {
+            "cases": 72,
+            "mean_regret_risk": 1.1924925931019548
+          },
+          "-1": {
+            "cases": 72,
+            "mean_regret_risk": 1.1368111971520494
+          }
+        }
+      }
+    },
+    {
+      "unit": "dense_regret_7",
+      "split": "confirmation",
+      "cases": 64,
+      "decision_rows": 2566,
+      "close_probability_min": 0.15128110349178314,
+      "close_probability_max": 0.16455088555812836,
+      "command_counts": [
+        2566,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actor_tanh_saturation_fraction": 0,
+      "critic_tanh_saturation_fraction": 0,
+      "stochastic_expectation": {
+        "mean_net_usd": 1.3706895941901747,
+        "regret_risk": 0.24959687035455494,
+        "early_close_probability": 0.9853155790111165
+      },
+      "constant_probability_from_train": {
+        "1": 0.16394314169883728,
+        "-1": 0.15179060399532318
+      },
+      "constant_hazard_expectation": {
+        "mean_net_usd": 1.3700087061487578,
+        "regret_risk": 0.24963589969009362,
+        "early_close_probability": 0.9853099638940719
+      },
+      "deterministic": {
+        "cases": 64,
+        "mean_regret_risk": 1.35592483793728,
+        "median_regret_risk": 1.3464395712697437,
+        "p90_regret_risk": 1.607519989932016,
+        "early_close_share": 0,
+        "mean_net_usd": -17.937039325884786,
+        "exact_optimal_share": 0,
+        "by_direction": {
+          "1": {
+            "cases": 32,
+            "mean_regret_risk": 1.3992217514721474
+          },
+          "-1": {
+            "cases": 32,
+            "mean_regret_risk": 1.3126279244024124
+          }
+        }
+      }
+    },
+    {
+      "unit": "terminal_regret_19",
+      "split": "train",
+      "cases": 144,
+      "decision_rows": 4274,
+      "close_probability_min": 0.1743624061346054,
+      "close_probability_max": 0.18942052125930786,
+      "command_counts": [
+        4274,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actor_tanh_saturation_fraction": 0,
+      "critic_tanh_saturation_fraction": 0,
+      "stochastic_expectation": {
+        "mean_net_usd": 1.445118913637132,
+        "regret_risk": 0.25960995519456365,
+        "early_close_probability": 0.9485215541443502
+      },
+      "constant_probability_from_train": {
+        "1": 0.18724028766155243,
+        "-1": 0.17686647176742554
+      },
+      "constant_hazard_expectation": {
+        "mean_net_usd": 1.4454564386843936,
+        "regret_risk": 0.25959058187509493,
+        "early_close_probability": 0.9485020734943406
+      },
+      "deterministic": {
+        "cases": 144,
+        "mean_regret_risk": 1.164651895127002,
+        "median_regret_risk": 1.3154069764821719,
+        "p90_regret_risk": 1.5914503979785442,
+        "early_close_share": 0,
+        "mean_net_usd": -14.349959343604061,
+        "exact_optimal_share": 0.10416666666666667,
+        "by_direction": {
+          "1": {
+            "cases": 72,
+            "mean_regret_risk": 1.1924925931019548
+          },
+          "-1": {
+            "cases": 72,
+            "mean_regret_risk": 1.1368111971520494
+          }
+        }
+      }
+    },
+    {
+      "unit": "terminal_regret_19",
+      "split": "confirmation",
+      "cases": 64,
+      "decision_rows": 2566,
+      "close_probability_min": 0.1743137091398239,
+      "close_probability_max": 0.18938715755939484,
+      "command_counts": [
+        2566,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actor_tanh_saturation_fraction": 0,
+      "critic_tanh_saturation_fraction": 0,
+      "stochastic_expectation": {
+        "mean_net_usd": 1.3567279312065015,
+        "regret_risk": 0.2504031234520714,
+        "early_close_probability": 0.9914855952043948
+      },
+      "constant_probability_from_train": {
+        "1": 0.18724028766155243,
+        "-1": 0.17686647176742554
+      },
+      "constant_hazard_expectation": {
+        "mean_net_usd": 1.3574059656134625,
+        "regret_risk": 0.25036422858409557,
+        "early_close_probability": 0.9914848785180448
+      },
+      "deterministic": {
+        "cases": 64,
+        "mean_regret_risk": 1.35592483793728,
+        "median_regret_risk": 1.3464395712697437,
+        "p90_regret_risk": 1.607519989932016,
+        "early_close_share": 0,
+        "mean_net_usd": -17.937039325884786,
+        "exact_optimal_share": 0,
+        "by_direction": {
+          "1": {
+            "cases": 32,
+            "mean_regret_risk": 1.3992217514721474
+          },
+          "-1": {
+            "cases": 32,
+            "mean_regret_risk": 1.3126279244024124
+          }
+        }
+      }
+    },
+    {
+      "unit": "terminal_regret_43",
+      "split": "train",
+      "cases": 144,
+      "decision_rows": 4274,
+      "close_probability_min": 0.22596445679664612,
+      "close_probability_max": 0.2643232047557831,
+      "command_counts": [
+        4274,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actor_tanh_saturation_fraction": 0,
+      "critic_tanh_saturation_fraction": 0,
+      "stochastic_expectation": {
+        "mean_net_usd": 1.3639518646295465,
+        "regret_risk": 0.26427189637935733,
+        "early_close_probability": 0.9718458413047125
+      },
+      "constant_probability_from_train": {
+        "1": 0.25302189588546753,
+        "-1": 0.23472188413143158
+      },
+      "constant_hazard_expectation": {
+        "mean_net_usd": 1.3582909134910057,
+        "regret_risk": 0.2645963862713254,
+        "early_close_probability": 0.9718837930884425
+      },
+      "deterministic": {
+        "cases": 144,
+        "mean_regret_risk": 1.164651895127002,
+        "median_regret_risk": 1.3154069764821719,
+        "p90_regret_risk": 1.5914503979785442,
+        "early_close_share": 0,
+        "mean_net_usd": -14.349959343604061,
+        "exact_optimal_share": 0.10416666666666667,
+        "by_direction": {
+          "1": {
+            "cases": 72,
+            "mean_regret_risk": 1.1924925931019548
+          },
+          "-1": {
+            "cases": 72,
+            "mean_regret_risk": 1.1368111971520494
+          }
+        }
+      }
+    },
+    {
+      "unit": "terminal_regret_43",
+      "split": "confirmation",
+      "cases": 64,
+      "decision_rows": 2566,
+      "close_probability_min": 0.22592924535274506,
+      "close_probability_max": 0.26456785202026367,
+      "command_counts": [
+        2566,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actor_tanh_saturation_fraction": 0,
+      "critic_tanh_saturation_fraction": 0,
+      "stochastic_expectation": {
+        "mean_net_usd": 1.1120058468269798,
+        "regret_risk": 0.2644387159736753,
+        "early_close_probability": 0.997889996946423
+      },
+      "constant_probability_from_train": {
+        "1": 0.25302189588546753,
+        "-1": 0.23472188413143158
+      },
+      "constant_hazard_expectation": {
+        "mean_net_usd": 1.1048103575926436,
+        "regret_risk": 0.264851144492721,
+        "early_close_probability": 0.9978931639569028
+      },
+      "deterministic": {
+        "cases": 64,
+        "mean_regret_risk": 1.35592483793728,
+        "median_regret_risk": 1.3464395712697437,
+        "p90_regret_risk": 1.607519989932016,
+        "early_close_share": 0,
+        "mean_net_usd": -17.937039325884786,
+        "exact_optimal_share": 0,
+        "by_direction": {
+          "1": {
+            "cases": 32,
+            "mean_regret_risk": 1.3992217514721474
+          },
+          "-1": {
+            "cases": 32,
+            "mean_regret_risk": 1.3126279244024124
+          }
+        }
+      }
+    },
+    {
+      "unit": "terminal_regret_7",
+      "split": "train",
+      "cases": 144,
+      "decision_rows": 4274,
+      "close_probability_min": 0.20948278903961182,
+      "close_probability_max": 0.22183704376220703,
+      "command_counts": [
+        4274,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actor_tanh_saturation_fraction": 0,
+      "critic_tanh_saturation_fraction": 0,
+      "stochastic_expectation": {
+        "mean_net_usd": 1.4337453999693284,
+        "regret_risk": 0.260268160379553,
+        "early_close_probability": 0.9634025965658538
+      },
+      "constant_probability_from_train": {
+        "1": 0.22115439176559448,
+        "-1": 0.21022148430347443
+      },
+      "constant_hazard_expectation": {
+        "mean_net_usd": 1.433748631440479,
+        "regret_risk": 0.2602679755512123,
+        "early_close_probability": 0.9634140665383865
+      },
+      "deterministic": {
+        "cases": 144,
+        "mean_regret_risk": 1.164651895127002,
+        "median_regret_risk": 1.3154069764821719,
+        "p90_regret_risk": 1.5914503979785442,
+        "early_close_share": 0,
+        "mean_net_usd": -14.349959343604061,
+        "exact_optimal_share": 0.10416666666666667,
+        "by_direction": {
+          "1": {
+            "cases": 72,
+            "mean_regret_risk": 1.1924925931019548
+          },
+          "-1": {
+            "cases": 72,
+            "mean_regret_risk": 1.1368111971520494
+          }
+        }
+      }
+    },
+    {
+      "unit": "terminal_regret_7",
+      "split": "confirmation",
+      "cases": 64,
+      "decision_rows": 2566,
+      "close_probability_min": 0.209665447473526,
+      "close_probability_max": 0.22169072926044464,
+      "command_counts": [
+        2566,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actor_tanh_saturation_fraction": 0,
+      "critic_tanh_saturation_fraction": 0,
+      "stochastic_expectation": {
+        "mean_net_usd": 1.243065052095877,
+        "regret_risk": 0.25692367340073075,
+        "early_close_probability": 0.9960189360261078
+      },
+      "constant_probability_from_train": {
+        "1": 0.22115439176559448,
+        "-1": 0.21022148430347443
+      },
+      "constant_hazard_expectation": {
+        "mean_net_usd": 1.2430129386372617,
+        "regret_risk": 0.2569266601626463,
+        "early_close_probability": 0.9960203299341374
+      },
+      "deterministic": {
+        "cases": 64,
+        "mean_regret_risk": 1.35592483793728,
+        "median_regret_risk": 1.3464395712697437,
+        "p90_regret_risk": 1.607519989932016,
+        "early_close_share": 0,
+        "mean_net_usd": -17.937039325884786,
+        "exact_optimal_share": 0,
+        "by_direction": {
+          "1": {
+            "cases": 32,
+            "mean_regret_risk": 1.3992217514721474
+          },
+          "-1": {
+            "cases": 32,
+            "mean_regret_risk": 1.3126279244024124
+          }
+        }
+      }
+    }
+  ]
+}
