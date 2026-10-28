@@ -9,6 +9,9 @@
     "method_state": "mechanism_synthesis/PROJECT_METHOD_STATE.json",
     "audit_request": "../audits/SATOSHI_AUDIT_REQUEST_MECHANISM_SYNTHESIS_2026_10_28.md",
     "reviewer": "Satoshi",
+    "business_contract": "mechanism_synthesis/BUSINESS_CONTRACT.json",
+    "max_entries_per_day": null,
+    "business_contract_status": "OWNER_DEFINED_NOT_DEPLOYED; no strategy daily cap; historical campaign limits below unchanged",
     "financial_training_and_floating_selection": "HELD_IN_PLAN_UNTIL_STRATEGY_QUALIFICATION",
     "remote_processes_changed": false
   },

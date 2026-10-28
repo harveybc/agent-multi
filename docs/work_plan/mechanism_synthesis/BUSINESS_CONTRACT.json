@@ -1,0 +1,26 @@
+{
+  "schema": "mechanism_synthesis.business_contract.v1",
+  "status": "OWNER_DEFINED_DESIGN_CONTRACT_NOT_DEPLOYED",
+  "updated_on": "2026-10-28",
+  "authority": "Owner correction after clarification of daily entry limit",
+  "leverage": 50,
+  "rel_volume": 0.1,
+  "max_simultaneous_positions": 1,
+  "max_entries_per_day": null,
+  "daily_limit_semantics": "null means no strategy-imposed daily entry cap; three or more entries are allowed when all other constraints permit",
+  "session_scope": "weekly_market_session",
+  "entry_wait_after_session_open_hours": 12,
+  "forced_flat_before_session_close_hours": 12,
+  "entry_time_rule": "session_open + 12h <= executable_entry_time < session_close - 12h",
+  "forced_flat_rule": "schedule execution so the account is flat by session_close - 12h under declared execution availability; no new entry at or after that cutoff",
+  "early_close": {
+    "enabled": true,
+    "daily_count_limit": null,
+    "independent_of_opener_timeframe": true,
+    "objective": "seek a beneficial executable close before compulsory liquidation when supported by the decision rule; compulsory liquidation remains the backstop"
+  },
+  "mandatory_order_controls": ["stop_loss", "take_profit", "relative_margin_fraction"],
+  "calendar_binding": "Use the admitted versioned market calendar with timezone/DST, closures and actual execution availability; this contract does not invent timestamps",
+  "external_constraints": "Broker/account restrictions remain separately enforced and identified; this is not a legal determination about PDT",
+  "deployment": "No existing runtime or historical result changed by this design contract"
+}

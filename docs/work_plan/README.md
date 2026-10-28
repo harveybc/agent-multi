@@ -11,6 +11,10 @@ model-specific floating selection. The proposal is written, not implemented.
 and [method state](mechanism_synthesis/PROJECT_METHOD_STATE.json) are the active
 handoff. Historical status below is retained as history, not launch authority.
 No remote process was stopped or started by this planning update.
+Owner clarification: [business contract](mechanism_synthesis/BUSINESS_CONTRACT.json)
+allows multiple openings per day without a strategy daily cap, with one position
+at a time, a 12-hour wait after weekly reopening and forced flat 12 hours before
+weekly close. The previous one-entry/day proposal is superseded.
 
 Status: E0-E4 complete; historical ETH M0/N14 evidence preserved; invalid M0 successor quarantined pending acceptance correction; nested L1/L2 curriculum and sparse-feature decision program active; multi-venue Paper and social-trading reality commissioning active
 Plan version: 1.32.0

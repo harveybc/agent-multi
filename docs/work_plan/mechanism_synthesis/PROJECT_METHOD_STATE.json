@@ -9,6 +9,8 @@
   "proposal": "../112_MECHANISM_SYNTHESIS_IMPLEMENTATION_PROPOSAL.md",
   "audit_request": "../../audits/SATOSHI_AUDIT_REQUEST_MECHANISM_SYNTHESIS_2026_10_28.md",
   "traceability": "TRACEABILITY.csv",
+  "business_contract": "BUSINESS_CONTRACT.json",
+  "owner_correction": "No daily entry cap; 12h reopening wait and 12h pre-close forced flat; latest clarification supersedes one entry per day",
   "scope": "Mechanism design, test-guided synthesis, finite-policy Nash checks and account Pareto analysis",
   "implementation_started": false,
   "experiments_started": false,
@@ -35,6 +37,7 @@
   ],
   "operations": "Planning priority only; no remote service changed by this document",
   "history": [
-    {"date": "2026-10-28", "event": "User prioritizes mechanism synthesis and requests detailed implementation proposal plus Satoshi audit"}
+    {"date": "2026-10-28", "event": "User prioritizes mechanism synthesis and requests detailed implementation proposal plus Satoshi audit"},
+    {"date": "2026-10-28", "event": "Owner clarifies daily openings: three or more allowed, no strategy daily cap; contract recorded without runtime change"}
   ]
 }

@@ -4,6 +4,13 @@ Date: 2026-10-28 (America/Bogota)
 Status: DESIGN PROPOSAL FOR INDEPENDENT AUDIT; not implemented or qualified.
 Owner: Musashi. Reviewer: Satoshi.
 
+Owner correction, 2026-10-28: there is NO strategy-imposed daily entry cap.
+Three or more daily openings are allowed if all other constraints permit them.
+The earlier one-entry/day proposal and the brief owner selection of that option
+were superseded after its meaning was clarified. The source is now
+`mechanism_synthesis/BUSINESS_CONTRACT.json`; this is a design correction, not
+a deployed change or a reinterpretation of old experiments.
+
 ## 1. Decision and scope
 
 The user makes strategy definition the highest priority. Design a resource
@@ -73,20 +80,20 @@ never silently equate them across closures. This work does not change input
 windows, scaler constants or feature selection.
 
 Full engine state contains balance, equity, margin, position, side, fills,
-SL/TP, entry quota and calendar. It is available to the controller and resource
+SL/TP and calendar. It is available to the controller and resource
 accounting, not concatenated to the neural market encoder. Whether market-only
 expert signals suffice for position-dependent closing is an explicit test,
 not an assumption. A failure requires a reported design decision, not hidden
 state feedback.
 
 Resources: one occupied position slot; locked margin; allowed planned-loss
-exposure; one entry per configured business day; time during which alternatives
-are unavailable. Margin is released at exit; used daily entry quota is not.
+exposure; time during which alternatives are unavailable. Margin and the slot
+are released at exit. There is no daily entry-quota resource in this base game.
 Profit is an outcome credited once to the common account, not a second resource
 or separate payment to every participating expert.
 
 Baseline constraints: capital 10000 account-currency units, rel_volume 0.1,
-leverage 50, max one position and one entry/day; no entries until 12 hours
+leverage 50, max one simultaneous position and no daily entry cap; no entries until 12 hours
 after weekly reopening, forced flat 12 hours before weekly close. The admitted
 calendar and account conversion rules decide exact times and units. Activity
 of at least two completed trades/week averaged over an eligible period remains
@@ -119,7 +126,9 @@ These are deliberately hypotheses, not claimed solutions. NOP/HOLD have score
 zero. Stable keyed tie-breaking must be independent of expert array order;
 mirrored tests couple the random draw under the direction permutation.
 Legality and forced protection override scores. One decision cannot close and
-reopen; a later hourly decision may open if the daily quota permits it.
+reopen in the first proposed mechanism; a later hourly decision may open if
+the session and resources permit it. This scheduling choice is a mechanism
+variant, not a daily quota or an additional owner-defined business restriction.
 
 Positioned arbitration ignores opener bids. All five matching-side closers can
 propose exit regardless of the opener's scale. Five identical immediate-close
@@ -138,7 +147,7 @@ own causal estimator. It is not silently assumed available for the first build.
 | Arbiter | role-specific uncertainty penalty, score offset, tie policy | outer mechanism search; tie policy fixed initially |
 | Sizing | uncertainty decay kappa | outer search, include kappa=0 control |
 | Measurement | volatility definition/window, uncertainty definition | fixed identities, later separate contrasts |
-| Business | calendar, entry cap, leverage, margin cap, broker constraints | fixed, not search genes |
+| Business | calendar, no daily entry cap, leverage, margin cap, broker constraints | fixed, not search genes |
 
 Do not optimize redundant player thresholds and arbiter offsets simultaneously:
 fix offsets to zero for the initial game. Shared direction profiles yield
@@ -213,7 +222,7 @@ They are not interchangeable, and player utilities from different mechanisms
 are not automatically comparable. Contribution rewards need not sum to PnL.
 
 Opportunity cost is measured by counterfactual full trajectories, including
-blocked opposite-side entries, changed margin, quota and subsequent closes.
+blocked opposite-side entries, changed margin and subsequent closes.
 Do not add the profits of mutually exclusive missed trades as a penalty.
 NOP can avoid losses or miss gains. HOLD can preserve gains or block better
 uses. Neither receives a bonus merely for inactivity. For paired interventions,
@@ -285,7 +294,7 @@ cases where HOLD is strictly better, not an artificial target close percentage.
 Structural and behavioral requirements are mapped in
 `mechanism_synthesis/TRACEABILITY.csv`. No evidence is marked passed yet.
 Mutation requirements include future-price availability, buy-first routing,
-omitted fees, doubled PnL attribution, reused day quota, fixed-delay shortcuts,
+omitted fees, doubled PnL attribution, hidden daily caps, fixed-delay shortcuts,
 oracle-fed scores, confirmation-based threshold fitting and changed restart IDs.
 
 ## 9. Architecture and ownership

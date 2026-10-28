@@ -1,11 +1,11 @@
 requirement,description,test_design,expected_result,stage,evidence_status
 MS01,20 experts and legal state alternatives,Enumerate IDs and flat long short masks,20 IDs and 11 6 6 alternatives,M0,DESIGNED_NOT_RUN
 MS02,Signal and uncertainty contract,Malformed probabilities timestamps scales and missing experts,Typed rejection or declared exclusion without confidence fabrication,M0,DESIGNED_NOT_RUN
-MS03,No illegal resource allocation,Slot margin loss budget lot step and daily quota boundaries,No budget violation and no restored used daily quota,M1,DESIGNED_NOT_RUN
+MS03,No illegal resource allocation,Slot margin loss budget lot step and third plus daily entry witnesses,No budget violation and no strategy-imposed daily entry cap,M1,DESIGNED_NOT_RUN
 MS04,External profile risk not learned prices,Analytical mirrored fill SL TP and volume examples,Correct units and q with minimum lot refusal,M1,DESIGNED_NOT_RUN
 MS05,Early exit across every scale,All 25 opener closer scale pairs in both directions,No opener veto and one physical close,M2,DESIGNED_NOT_RUN
 MS06,Executable optimum rather than entry pivot,Prefix suffix gap and competing TP SL examples,Correct net reachable exit and no post-stop benefit,M2,DESIGNED_NOT_RUN
-MS07,HOLD and NOP economic meaning,Profitable losing and unavailable opportunities,Opportunity cost and avoided losses without inactivity bonus,M2,DESIGNED_NOT_RUN
+MS07,HOLD and NOP economic meaning,Profitable losing and unavailable opportunities,Opportunity cost and avoided losses without inactivity bonus or artificial entry quota,M2,DESIGNED_NOT_RUN
 MS08,No direction or ordering bias,Mirror price side and parameters then permute expert order,Coupled equivalent outcomes and no buy-first priority,M1,DESIGNED_NOT_RUN
 MS09,No future information,Mutate future tape and oracle labels after a decision,Current online proposals and action unchanged,M2,DESIGNED_NOT_RUN
 MS10,Position sufficiency without hidden feedback,Same market different fills stops and positions,Correct controller interpretation or explicit insufficiency finding,M2,DESIGNED_NOT_RUN
