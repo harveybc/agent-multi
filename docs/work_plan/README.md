@@ -1,5 +1,17 @@
 # Adaptive Multi-Asset Trading Work Plan
 
+## Priority override: 2026-10-28
+
+The current strategy-definition priority is
+[test-guided mechanism synthesis](112_MECHANISM_SYNTHESIS_IMPLEMENTATION_PROPOSAL.md).
+The user requests mechanism design, explicit resource competition, account
+Pareto analysis and Nash/deviation checks before further financial training or
+model-specific floating selection. The proposal is written, not implemented.
+[Satoshi's design audit request](../audits/SATOSHI_AUDIT_REQUEST_MECHANISM_SYNTHESIS_2026_10_28.md)
+and [method state](mechanism_synthesis/PROJECT_METHOD_STATE.json) are the active
+handoff. Historical status below is retained as history, not launch authority.
+No remote process was stopped or started by this planning update.
+
 Status: E0-E4 complete; historical ETH M0/N14 evidence preserved; invalid M0 successor quarantined pending acceptance correction; nested L1/L2 curriculum and sparse-feature decision program active; multi-venue Paper and social-trading reality commissioning active
 Plan version: 1.32.0
 Date: 2026-08-08

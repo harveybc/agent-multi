@@ -1,8 +1,17 @@
 {
   "schema": "rl_static_engineering_state.v1",
   "updated_on": "2026-10-28",
-  "current_stage": "FIXED_DELAY_ACCEPTANCE_REPAIRED_CAUSAL_CONTROL_DESIGN_NEXT",
-  "latest_review": "111_MULTISCALE_INPUT_PROPOSAL.md",
+  "current_stage": "PRIORITY_0_MECHANISM_SYNTHESIS_DESIGN_REVIEW",
+  "latest_review": "112_MECHANISM_SYNTHESIS_IMPLEMENTATION_PROPOSAL.md",
+  "mechanism_synthesis": {
+    "priority": 0,
+    "state": "DESIGN_PROPOSED_NOT_IMPLEMENTED",
+    "method_state": "mechanism_synthesis/PROJECT_METHOD_STATE.json",
+    "audit_request": "../audits/SATOSHI_AUDIT_REQUEST_MECHANISM_SYNTHESIS_2026_10_28.md",
+    "reviewer": "Satoshi",
+    "financial_training_and_floating_selection": "HELD_IN_PLAN_UNTIL_STRATEGY_QUALIFICATION",
+    "remote_processes_changed": false
+  },
   "multiscale_proposal": {
     "plan": "111_MULTISCALE_INPUT_PROPOSAL.md",
     "state": "DISCUSSION_NOT_DEPLOYED",
@@ -410,7 +419,7 @@
   "sequential_queue": {"code": "2d4aaa99", "tool": "tools/recipe_sac_queue.py", "registered_in_tool_declarations": true, "scope": "DEVELOPMENT", "arms": ["GROUPED", "FLAT"], "steps_per_arm": 100000, "seed": 7, "auto_next_arm": true, "reboot_timer_enabled": true, "restart_policy": "bounded two fresh attempts, no false exact continuation", "collector_timer_enabled": true, "remote_warehouse_delivery": "ready; zero scientific reports expected before checkpoint", "plan": "61_RECIPE_NATIVE_SAC_QUEUE.md"},
   "scientific_campaign_started": true,
   "review": {"satoshi_return_received": true, "weekly_first_80_run_proposal_adopted": false, "closed_in_new_path": ["action/fill/reward transition", "entry-bar commission and leveraged capital reconciliation", "undefined checkpoint scores", "explicit analytical financing debit", "native Trade lifecycle after direct settlement", "zero-net trade accounting", "long/short repeated-close and nonzero-slippage analytical ledger"], "open_findings": ["broker-specific financing and actual execution costs", "raw fractional enlargement mask (not selected for curated baseline)", "alternate margin and full environment accounting acceptance"]},
-  "next_allowed_actions": ["design paired synthetic controls with causal cues independent of episode age and explicit HOLD cases", "test observation sufficiency before matched actor/critic and exploration contrasts", "keep the multiscale input proposal separate from the exit-learning repair until its causal alignment and controls are tested", "preserve closed evidence; no financial selection or full-strategy promotion from these controls"],
+  "next_allowed_actions": ["obtain Satoshi's independent review of proposal 112 and resolve mathematical and business findings", "finalize exact-game and execution test specifications before mechanism implementation", "implement and verify small finite games before scaled search, then follow M0-M6 in proposal 112", "preserve closed evidence; no new financial selection, training or architecture sweeps before mechanism qualification"],
   "deferred": ["frequency sweep", "DOIN", "forecasting", "NEAT"],
   "daily_entry_cap_baseline": 1,
   "daily_entry_cap_proposed_contrast": [1, 2, 4]
