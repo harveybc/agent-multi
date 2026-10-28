@@ -2,11 +2,17 @@
 
 ## Priority override: 2026-10-28
 
+Current delivery: [theory, audit disposition and exact M0](113_MECHANISM_THEORY_AND_AUDIT_DISPOSITION.md).
+Satoshi's design audit was read; the reciprocal
+[guided-lane verdict](../audits/MUSASHI_VERDICT_SATOSHI_GUIDED_MECHANISM_2026_10_28.md)
+is published. The exact finite-game core passed 35 tests and its sequential
+fixture driver completed. This is not native-strategy or learned-model acceptance.
+
 The current strategy-definition priority is
 [test-guided mechanism synthesis](112_MECHANISM_SYNTHESIS_IMPLEMENTATION_PROPOSAL.md).
 The user requests mechanism design, explicit resource competition, account
 Pareto analysis and Nash/deviation checks before further financial training or
-model-specific floating selection. The proposal is written, not implemented.
+model-specific floating selection. The proposal is supplemented by the M0 core above.
 [Satoshi's design audit request](../audits/SATOSHI_AUDIT_REQUEST_MECHANISM_SYNTHESIS_2026_10_28.md)
 and [method state](mechanism_synthesis/PROJECT_METHOD_STATE.json) are the active
 handoff. Historical status below is retained as history, not launch authority.

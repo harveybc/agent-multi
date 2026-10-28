@@ -3,7 +3,7 @@
   "date": "2026-10-28",
   "timezone": "America/Bogota",
   "priority": 0,
-  "current_stage": "DESIGN_PROPOSAL_AWAITING_INDEPENDENT_REVIEW",
+  "current_stage": "M0_EXACT_MATH_VERIFIED_M1_CONTRACT_REVISION_NEXT",
   "owner": "Musashi",
   "reviewer": "Satoshi",
   "proposal": "../112_MECHANISM_SYNTHESIS_IMPLEMENTATION_PROPOSAL.md",
@@ -12,23 +12,30 @@
   "business_contract": "BUSINESS_CONTRACT.json",
   "owner_correction": "No daily entry cap; 12h reopening wait and 12h pre-close forced flat; latest clarification supersedes one entry per day",
   "scope": "Mechanism design, test-guided synthesis, finite-policy Nash checks and account Pareto analysis",
-  "implementation_started": false,
+  "implementation_started": true,
   "experiments_started": false,
-  "review_received": false,
-  "test_evidence": [],
+  "review_received": true,
+  "review_identity": "Satoshi agent-multi 3326f898: REVISE before M1; M0 allowed",
+  "theory_and_disposition": "../113_MECHANISM_THEORY_AND_AUDIT_DISPOSITION.md",
+  "test_evidence": [
+    "35 focused pytest cases passed: exact games, Pareto, deviations, redundancy, Shapley counterexample and subprocess replay",
+    "../../audits/evidence/mechanism_design_20261028/M0_EXACT_REPORT.json"
+  ],
+  "implementation_scope": "M0 exact arithmetic and bounded reproduction only; no production signal schema or native trading qualification",
   "top_down": {
     "discovery": "DOCUMENTED",
     "requirements_and_use_cases": "PROPOSED",
     "acceptance_design": "PROPOSED",
     "architecture_and_components": "PROPOSED",
     "system_and_integration_tests": "PROPOSED",
-    "unit_tests": "CASES_DESIGNED_NOT_IMPLEMENTED"
+    "unit_tests": "M0_EXACT_CORE_IMPLEMENTED_AND_PASSED; M1-M6_NOT_RUN"
   },
-  "bottom_up": "NOT_STARTED",
+  "bottom_up": "M0_EXACT_CORE_VERIFIED; HIGHER_LAYERS_NOT_QUALIFIED",
   "next_allowed_actions": [
-    "Independent design review and explicit disposition of findings",
-    "Refine game identities, utility conventions, policy libraries and test specifications",
-    "Implement exact small-game tests before governing mechanism code after design review"
+    "Resolve and test position-dependent close report semantics before native M1 strategy execution",
+    "Implement independent oracle-validity and signal/business contract validation with non-vacuous coverage",
+    "Extend paired scenario and policy-library design including persistence and false/true cross-scale reversals",
+    "Measure native rollout cost before outer mechanism optimization; no financial training yet"
   ],
   "held_work": [
     "New financial model training and architecture/input sweeps in this lane",
@@ -38,6 +45,7 @@
   "operations": "Planning priority only; no remote service changed by this document",
   "history": [
     {"date": "2026-10-28", "event": "User prioritizes mechanism synthesis and requests detailed implementation proposal plus Satoshi audit"},
-    {"date": "2026-10-28", "event": "Owner clarifies daily openings: three or more allowed, no strategy daily cap; contract recorded without runtime change"}
+    {"date": "2026-10-28", "event": "Owner clarifies daily openings: three or more allowed, no strategy daily cap; contract recorded without runtime change"},
+    {"date": "2026-10-28", "event": "Read audit 3326f898, published reciprocal guided-lane audit 660511a0, implemented exact M0 core with 35 tests and completed deterministic reproduction"}
   ]
 }

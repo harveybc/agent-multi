@@ -1,0 +1,84 @@
+{
+  "coordination": {
+    "equilibria": [
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        2,
+        2
+      ]
+    ],
+    "pareto": {
+      "dominance_witnesses": {
+        "(0, 0)": [
+          "(1, 1)",
+          "(2, 2)"
+        ],
+        "(1, 1)": [
+          "(2, 2)"
+        ]
+      },
+      "front": [
+        "(2, 2)"
+      ],
+      "scope": "EXACT_FINITE_PANEL_NOT_GLOBAL_FRONTIER"
+    },
+    "values": [
+      "0",
+      "2",
+      "3"
+    ]
+  },
+  "learning_objective_counterexample": {
+    "account_values": [
+      4,
+      3
+    ],
+    "player_shapley": [
+      "2",
+      "13/2"
+    ]
+  },
+  "market_rollouts": 0,
+  "redundancy": {
+    "difference_rewards": [
+      "0",
+      "0",
+      "0",
+      "0",
+      "0"
+    ],
+    "shapley": {
+      "coalitions_evaluated": 32,
+      "group_increment": "10",
+      "scope": "ROLE_CONDITIONAL_ATTRIBUTION_NOT_LEARNING_REWARD",
+      "shares": {
+        "0": "2",
+        "1": "2",
+        "2": "2",
+        "3": "2",
+        "4": "2"
+      }
+    }
+  },
+  "schema": "mechanism_synthesis.m0_exact_fixtures.v1",
+  "source_sha256": {
+    "app/mechanism_games.py": "6b6b47dbcab15b12a0afa2f51443ce9de913e932027f32f661a0c7737ec95573",
+    "docs/work_plan/mechanism_synthesis/BUSINESS_CONTRACT.json": "73f32e43005da04ae44bcfffb576624513e8040aa8df3f06c521be5b7495b036",
+    "tools/mechanism_m0.py": "ae11d9bf7ff4401e39eb7d0dd8d9bc85e2d287a188d476cf6a837ba78cc28a1b"
+  },
+  "status": "EXACT_FIXTURES_PASS_NOT_STRATEGY_RELEASE",
+  "training_runs": 0,
+  "unilateral_20_by_27": {
+    "coverage": "EXHAUSTIVE_DECLARED_UNILATERAL_LIBRARY",
+    "deviations": 520,
+    "distinct_profiles": 521,
+    "epsilon": "1"
+  }
+}

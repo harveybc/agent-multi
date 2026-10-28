@@ -10,10 +10,10 @@ MS08,No direction or ordering bias,Mirror price side and parameters then permute
 MS09,No future information,Mutate future tape and oracle labels after a decision,Current online proposals and action unchanged,M2,DESIGNED_NOT_RUN
 MS10,Position sufficiency without hidden feedback,Same market different fills stops and positions,Correct controller interpretation or explicit insufficiency finding,M2,DESIGNED_NOT_RUN
 MS11,One real ledger and counterfactual branches,Open close intervention and incompatible alternatives,No double credit or sum of mutually exclusive missed profits,M1,DESIGNED_NOT_RUN
-MS12,Exact potential payoff identity,Enumerate unilateral deviations with fixed reference policies,Utility differences equal potential differences,M0,DESIGNED_NOT_RUN
-MS13,Nash not equal global or Pareto optimum,Two-player coordination fixture in proposal,Two pure equilibria and dominated AA identified,M0,DESIGNED_NOT_RUN
-MS14,Honest deviation certificate,Known profitable omitted deviation and heuristic search failure,Restricted certificate cannot claim global epsilon bound,M0,DESIGNED_NOT_RUN
-MS15,Account Pareto correctness,Known dominated equal and incomparable vectors,Exact frontier and dominance witnesses on finite fixture,M0,DESIGNED_NOT_RUN
+MS12,Exact potential payoff identity,tests/unit/test_mechanism_games.py state-changing full-policy fixtures,Utility differences equal potential differences,M0,EXACT_FIXTURE_PASSED
+MS13,Nash not equal global or Pareto optimum,tests/unit/test_mechanism_games.py two-player coordination fixture,Two pure equilibria and dominated AA identified,M0,EXACT_FIXTURE_PASSED
+MS14,Honest deviation certificate,tests/unit/test_mechanism_games.py exhaustive neighbors tiny gain and budget refusal,Restricted certificate cannot claim global epsilon bound,M0,EXACT_FIXTURE_PASSED
+MS15,Account Pareto correctness,tests/unit/test_mechanism_games.py dominated equal and incomparable vectors,Exact frontier and dominance witnesses on finite fixture,M0,EXACT_FIXTURE_PASSED
 MS16,Multiple equilibrium coverage,Multi-start solver on known fixture,Both equilibria reported and no optimistic-only selection,M3,DESIGNED_NOT_RUN
 MS17,Counterfactual paired continuation,Action-dependent random draws and resource transitions,Same keyed exogenous disturbances and fixed continuation policies,M2,DESIGNED_NOT_RUN
 MS18,No timing shortcut,Shift reversals ages and phases versus fixed-delay controls,Clock is a control not evidence of learned pattern recognition,M2,DESIGNED_NOT_RUN

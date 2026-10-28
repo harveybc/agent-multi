@@ -1,11 +1,13 @@
 {
   "schema": "rl_static_engineering_state.v1",
   "updated_on": "2026-10-28",
-  "current_stage": "PRIORITY_0_MECHANISM_SYNTHESIS_DESIGN_REVIEW",
-  "latest_review": "112_MECHANISM_SYNTHESIS_IMPLEMENTATION_PROPOSAL.md",
+  "current_stage": "PRIORITY_0_M0_EXACT_MATH_VERIFIED_M1_DESIGN_REVISION",
+  "latest_review": "113_MECHANISM_THEORY_AND_AUDIT_DISPOSITION.md",
   "mechanism_synthesis": {
     "priority": 0,
-    "state": "DESIGN_PROPOSED_NOT_IMPLEMENTED",
+    "state": "M0_EXACT_CORE_IMPLEMENTED_35_TESTS; TRADING_STRATEGY_NOT_QUALIFIED",
+    "theory": "113_MECHANISM_THEORY_AND_AUDIT_DISPOSITION.md",
+    "guided_lane_audit": "../audits/MUSASHI_VERDICT_SATOSHI_GUIDED_MECHANISM_2026_10_28.md",
     "method_state": "mechanism_synthesis/PROJECT_METHOD_STATE.json",
     "audit_request": "../audits/SATOSHI_AUDIT_REQUEST_MECHANISM_SYNTHESIS_2026_10_28.md",
     "reviewer": "Satoshi",
@@ -422,7 +424,7 @@
   "sequential_queue": {"code": "2d4aaa99", "tool": "tools/recipe_sac_queue.py", "registered_in_tool_declarations": true, "scope": "DEVELOPMENT", "arms": ["GROUPED", "FLAT"], "steps_per_arm": 100000, "seed": 7, "auto_next_arm": true, "reboot_timer_enabled": true, "restart_policy": "bounded two fresh attempts, no false exact continuation", "collector_timer_enabled": true, "remote_warehouse_delivery": "ready; zero scientific reports expected before checkpoint", "plan": "61_RECIPE_NATIVE_SAC_QUEUE.md"},
   "scientific_campaign_started": true,
   "review": {"satoshi_return_received": true, "weekly_first_80_run_proposal_adopted": false, "closed_in_new_path": ["action/fill/reward transition", "entry-bar commission and leveraged capital reconciliation", "undefined checkpoint scores", "explicit analytical financing debit", "native Trade lifecycle after direct settlement", "zero-net trade accounting", "long/short repeated-close and nonzero-slippage analytical ledger"], "open_findings": ["broker-specific financing and actual execution costs", "raw fractional enlargement mask (not selected for curated baseline)", "alternate margin and full environment accounting acceptance"]},
-  "next_allowed_actions": ["obtain Satoshi's independent review of proposal 112 and resolve mathematical and business findings", "finalize exact-game and execution test specifications before mechanism implementation", "implement and verify small finite games before scaled search, then follow M0-M6 in proposal 112", "preserve closed evidence; no new financial selection, training or architecture sweeps before mechanism qualification"],
+  "next_allowed_actions": ["resolve position-dependent close signals and oracle-validity semantics per plan 113 before M1", "implement signal and business contract checks with explicit unsupported-case reporting", "extend policy and scenario tests and measure native rollout cost before scaled search", "preserve closed evidence; no new financial selection, training or architecture sweeps before mechanism qualification"],
   "deferred": ["frequency sweep", "DOIN", "forecasting", "NEAT"],
   "daily_entry_cap_baseline": 1,
   "daily_entry_cap_proposed_contrast": [1, 2, 4]

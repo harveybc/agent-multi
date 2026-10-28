@@ -2,9 +2,13 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "mechanism_m0.py": {
+   "purpose": "Sequential exact finite-policy game fixtures with Pareto, unilateral Nash certificates, redundancy and Shapley counterexample; stdout only, no training or market execution",
+   "lifecycle": "experimental", "mutability": "read_only", "authority_class": "evidence_producer", "owner": "mechanism synthesis"
+  },
   "audit_guided_mechanism_design.py": {
    "purpose": "Read a pinned strategy verifier and execute bounded synthetic design counterexamples; no training, market replay or source mutation",
-   "lifecycle": "experimental", "mutability": "read_only", "authority_class": "diagnostic", "owner": "mechanism synthesis"
+   "lifecycle": "experimental", "mutability": "read_only", "authority_class": "evidence_producer", "owner": "mechanism synthesis"
   },
   "rescore_exit_delay.py": {
    "purpose": "Authenticate closed synthetic exit results and re-score against a TRAIN-selected fixed-delay baseline without fitting or mutating sealed evidence",
