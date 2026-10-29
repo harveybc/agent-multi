@@ -2,6 +2,10 @@
 
 ## Priority override: 2026-10-28
 
+Current correction: [next 2/3 ZigZag events, no timed substitutes](118_ZIGZAG_NEXT_EVENTS_CORRECTION.md).
+This supersedes the endpoint rule of the completed searches below; their
+champions cannot be promoted under the corrected objective.
+
 Current extension: [40 versus 300 generations](116_ZIGZAG_300_GENERATION_CONTRAST.md),
 same population 30, seeds and objective. Automatic search, scalar audit and
 paired comparison; original results stay unchanged.

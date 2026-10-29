@@ -49,14 +49,17 @@ def prepare(args):
     parent = json.loads(args.source_spec.read_text())
     paths = {k:parent['inputs'][k] for k in ('bars','closures','recipe')}
     eng = args.engine_root.resolve()
-    spec = dict(schema='zigzag_opportunity_deap.v1', inputs=paths, engine_root=str(eng),
+    spec = dict(schema='zigzag_opportunity_deap.v2', inputs=paths, engine_root=str(eng),
                 input_sha256={k:sha(v) for k,v in paths.items()},
                 engine_sha256={str(p.relative_to(eng)):sha(p) for p in sorted((eng/'app/short_horizon').glob('*.py'))},
                 code_sha256={p:sha(ROOT/p) for p in ['app/zigzag_opportunities.py','tools/zigzag_opportunity_deap.py',
-                    'docs/work_plan/114_TRAIN_ZIGZAG_OPPORTUNITY_OPTIMIZATION.md']},
+                    'tools/audit_zigzag_opportunity_results.py',
+                    'docs/work_plan/118_ZIGZAG_NEXT_EVENTS_CORRECTION.md']},
                 software={p:importlib.metadata.version(p) for p in ('numpy','pandas','deap','pyarrow')},
                 train=['2020-01-01','2024-01-01'], horizons=[3,6,12,24],
-                budget=dict(population=30,generations=40,seeds=[7,19,43]),
+                future_pivots=args.future_pivots,
+                endpoint_policy='NEXT_K_EVENTS_NO_TIMED_EXIT',
+                budget=dict(population=30,generations=300,seeds=[7,19,43]),
                 bounds=dict(depth=[2,96],deviation_pips=[1,120],backstep=[1,24]),
                 mode='RETROSPECTIVE_TRAIN_OPPORTUNITY_MAP_NOT_STRATEGY_QUALIFICATION')
     ident = identity(spec)
@@ -151,7 +154,9 @@ def run(out):
             if sha(out/row['records_file']) != row['records_sha256']:
                 raise ValueError('FINAL_RECORD_HASH')
             rows.append(row); continue
-        ev=OpportunityEvaluator(tape,z,h)
+        if spec.get('endpoint_policy') != 'NEXT_K_EVENTS_NO_TIMED_EXIT':
+            raise ValueError('NEW_ENDPOINT_PROTOCOL_REQUIRES_NEW_ROOT')
+        ev=OpportunityEvaluator(tape,z,h,future_pivots=spec['future_pivots'])
         cache={}
         ledger=out/f'h{h}_CANDIDATES.jsonl'
         if ledger.exists():
@@ -200,7 +205,15 @@ def run(out):
         records=detail.pop('records')
         file=out/f'h{h}_OPPORTUNITIES.npz'
         np.savez_compressed(file,**records)
-        optimal=schedule(records['origin'],records['release'],records['net'],len(tape.open))
+        # This diagnostic is business-feasible; the oracle objective above is not
+        # truncated at flat. Infeasible intervals are omitted, never repriced.
+        supported=records['pair_valid']
+        orig=records['origin'][supported]
+        rel=records['release'][:,supported]
+        profits=records['net'][:,supported]
+        feasible=rel <= tape.limit[orig][None,:]
+        optimal=schedule(orig,np.where(feasible,rel,orig[None,:]+1),
+                         np.where(feasible,profits,0.0),len(tape.open))
         receipt(out/f'h{h}_INTERVAL_SCHEDULE.json',ident,optimal)
         trades=optimal['trades']
         sensitivity=[ev.evaluate((genes[0],v,genes[2])) for v in (1.,5.,60.,120.)]
@@ -226,6 +239,7 @@ if __name__=='__main__':
     p.add_argument('--out',type=Path,required=True)
     p.add_argument('--source-spec',type=Path)
     p.add_argument('--engine-root',type=Path)
+    p.add_argument('--future-pivots',type=int,choices=[2,3],default=3)
     a=p.parse_args()
     if a.command=='prepare':
         prepare(a)

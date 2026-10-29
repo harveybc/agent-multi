@@ -113,10 +113,16 @@ def load_tape(spec):
 
 
 class OpportunityEvaluator:
-    def __init__(self, tape, zigzag, horizon):
+    def __init__(self, tape, zigzag, horizon, future_pivots=2):
         self.tape, self.z, self.h = tape, zigzag, horizon
         self.origins = np.flatnonzero(tape.allowed)
-        self.max_steps = 4*horizon
+        if future_pivots not in (2, 3):
+            raise ValueError('FUTURE_PIVOTS_MUST_BE_2_OR_3')
+        self.future_pivots = future_pivots
+        self.chunk_end = np.empty(len(tape.open), int)
+        for a, b in tape.chunks:
+            self.chunk_end[a:b] = b
+        self.max_steps = max(b-a-1 for a, b in tape.chunks)
         self.precompute()
 
     def precompute(self):
@@ -151,60 +157,70 @@ class OpportunityEvaluator:
         med = float(np.median(spans)) if spans else None
         eligible = bool(len(spans) >= 100 and self.h/np.sqrt(2) <= med <= self.h*np.sqrt(2))
         o = self.origins
-        limit = np.minimum(t.limit[o], o+self.max_steps)
+        # The oracle sees exactly the next K events, not a horizon-based timer.
+        ix = np.array([i for i, _, _ in pivots] + [n], int)
+        values = np.array([price for _, _, price in pivots] + [0.0])
+        if np.any(np.diff(ix) <= 0):
+            raise ValueError('PIVOTS_NOT_STRICTLY_ORDERED')
+        first = np.searchsorted(ix, o, side='right')
+        event_slots = np.minimum(first[:, None] + np.arange(self.future_pivots), len(ix)-1)
+        event_ends = ix[event_slots]
+        valid_events = event_ends < self.chunk_end[o, None]
+        complete = valid_events.all(axis=1)
+        eligible = eligible and bool(complete.any())
         scores, maes, pns, durations, ends, releases, reasons, targets, draws = [], [], [], [], [], [], [], [], []
         for side, kind in enumerate((1, -1)):
-            selected = [(i, price) for i, typ, price in pivots if typ == kind]
-            ix = np.array([i for i, _ in selected] + [n], int)
-            values = np.array([p for _, p in selected] + [0.0])
-            j = np.searchsorted(ix, o, side='right')
-            pi = ix[j]
-            # Target bar must finish no later than flat; no target after an unobserved gap.
-            pivot_exit = pi < limit
-            end = np.where(pivot_exit, pi, limit)
-            out = np.where(pivot_exit, values[j], t.open[limit])
-            dur = (t.times[end]-t.times[o])/HOUR + pivot_exit.astype(float)
-            path_end = np.where(pivot_exit, end, end-1)
-            offset = path_end-o
-            mae = self.mae[side, o, offset].astype(float)
-            dd = self.dd[side, o, offset].astype(float)
-            # A timed exit at the next open can itself gap beyond the preceding bar.
-            adverse_exit = np.maximum(0, kind*(t.open[o]-out))
-            mae = np.maximum(mae, adverse_exit)
-            # Within contiguous H1 bars next open may gap: conservatively include that
-            # drop from the best high/low attained along the complete held interval.
-            # Full path summaries are used below to capture that case exactly.
-            favorable = self.best[side, o, offset].astype(float)
-            dd = np.maximum(dd, favorable-kind*out)
-            cost = t.fill_cost[o]+t.fill_cost[end]
-            financing = t.financing[side, end]-t.financing[side, o]
-            net = kind*(out-t.open[o])-cost-financing
+            end = np.where(valid_events, event_ends, o[:, None])
+            out = values[event_slots]
+            dur = (t.times[end]-t.times[o, None])/HOUR + 1
+            offset = end-o[:, None]
+            mae = self.mae[side, o[:, None], offset]
+            dd = self.dd[side, o[:, None], offset]
+            cost = t.fill_cost[o, None]+t.fill_cost[end]
+            financing = t.financing[side, end]-t.financing[side, o, None]
+            net = kind*(out-t.open[o, None])-cost-financing
             risk_floor = np.maximum(cost, PIP)
             score = net/(np.maximum(dd, risk_floor)*dur)
             maesc = net/(np.maximum(mae, risk_floor)*dur)
+            ranked = np.where(valid_events, score, -np.inf)
+            selected = np.argmax(ranked, axis=1)  # equal scores: earlier endpoint
+            row = np.arange(len(o))
+            def choose(x):
+                return np.where(complete, x[row, selected], np.nan)
+            score, maesc, net, dur, out, mae, dd = [choose(x) for x in
+                (score, maesc, net, dur, out, mae, dd)]
+            end = np.where(complete, end[row, selected], -1)
+            pivot_exit = complete.copy()
             scores.append(score); maes.append(maesc); pns.append(net); durations.append(dur)
-            ends.append(end); releases.append(end+pivot_exit.astype(int)); reasons.append(pivot_exit)
+            ends.append(end); releases.append(np.where(complete, end+1, -1)); reasons.append(pivot_exit)
             targets.append(out); draws.append((mae, dd))
         s = np.stack(scores)
-        winner = np.argmax(s, axis=0)
-        best = np.maximum(0, s.max(axis=0))
-        take = s.max(axis=0) > 0
+        scored = np.where(complete[None, :], s, 0.0)
+        winner = np.argmax(scored, axis=0)
+        best = np.maximum(0, scored.max(axis=0))
+        take = complete & (scored.max(axis=0) > 0)
         ix = np.arange(len(o))
         chosen_net = np.stack(pns)[winner, ix]
         years = pd.DatetimeIndex(t.times[o], tz='UTC').year
         result = dict(params=dict(depth=int(depth), deviation_pips=float(dev), backstep=int(back)),
                       eligible=eligible, fitness=float(best.mean()), median_pivot_hours=med,
                       pivot_pairs=len(spans), pivots=len(pivots), origins=len(o),
-                      nop_pct=float(100*(~take).mean()), buy_pct=float(100*((winner==0)&take).mean()),
+                      future_pivots=self.future_pivots,
+                      endpoint_policy='NEXT_K_EVENTS_NO_TIMED_EXIT',
+                      complete_origins=int(complete.sum()), censored_origins=int((~complete).sum()),
+                      coverage_pct=float(100*complete.mean()),
+                      nop_pct=float(100*(complete & ~take).mean()), buy_pct=float(100*((winner==0)&take).mean()),
                       sell_pct=float(100*((winner==1)&take).mean()),
                       mean_selected_net_pips=float(chosen_net[take].mean()/PIP) if take.any() else None,
                       mean_selected_duration_hours=float(np.stack(durations)[winner,ix][take].mean()) if take.any() else None,
                       selected_win_pct=float(100*(chosen_net[take]>0).mean()) if take.any() else None,
-                      mae_denominator_fitness=float(np.maximum(0,np.stack(maes).max(axis=0)).mean()),
+                      mae_denominator_fitness=float(np.maximum(0,np.where(complete[None,:],np.stack(maes),0).max(axis=0)).mean()),
                       yearly_fitness={str(y):float(best[years==y].mean()) for y in sorted(set(years))},
                       scope='HINDSIGHT_OPPORTUNITIES_NOT_ACCOUNT_PERFORMANCE')
         if details:
-            result['records'] = dict(origin=o, score=s, net=np.stack(pns), duration=np.stack(durations),
+            result['records'] = dict(origin=o, pair_valid=complete,
+                                     candidate_end=np.where(valid_events,event_ends,-1),
+                                     score=s, net=np.stack(pns), duration=np.stack(durations),
                                      end=np.stack(ends), release=np.stack(releases), pivot_exit=np.stack(reasons),
                                      target=np.stack(targets), mae=np.stack([v[0] for v in draws]),
                                      drawdown=np.stack([v[1] for v in draws]))
