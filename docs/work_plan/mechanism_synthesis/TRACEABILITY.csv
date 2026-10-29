@@ -44,3 +44,8 @@ EC01,Fixed-risk regret improvement and undefined opportunity,tests/unit/test_ear
 EC02,Independent native counterfactual execution,docs/audits/evidence/absolute_early_close_20261029/REPORT.json,1744 positions and 14784 alternatives agree with cash and barrier reference,BEFORE_PHASE2,PASS_SYNTHETIC_COMPONENT
 EC03,Same market different positions,heuristic-strategy tests/test_absolute_order_execution.py,Different stops require different best exits on identical future in both directions,BEFORE_PHASE2,PASS
 EC04,Replay and coverage,docs/audits/evidence/absolute_early_close_20261029/REPLAY.json,Complete matrix and byte-identical second execution,BEFORE_PHASE2,PASS
+CH01,Position-conditioned common-action valuation,tests/unit/test_close_hold_controller.py,Different stops change decisions without mean-path barrier shortcuts or per-sample clairvoyance,BEFORE_PHASE2,PASS
+CH02,Persistence uncertainty urgency and replay,tests/unit/test_close_hold_controller.py,Isolated signals suppressed and urgent bypass explicit with position reset and JSON state replay,BEFORE_PHASE2,PASS
+CH03,Native ideal-report controller,docs/audits/evidence/close_hold_controller_20261029/REPORT.json,1152 helpful closes and zero destructive closes with ideal reports,BEFORE_PHASE2,PASS_SYNTHETIC_COMPONENT_ONLY
+CH04,Prefix causality versus predictive usefulness,docs/audits/evidence/close_hold_controller_20261029/PREFIX_TRACE_AUDIT.json,25 prefix invariance witnesses pass but864 first signals are late and zero exits occur,BEFORE_PHASE2,CAUSALITY_PASS_DIAGNOSTIC_PERFORMANCE_FAIL
+CH05,Full native replay,docs/audits/evidence/close_hold_controller_20261029/REPLAY.json,Two8720-rollout runs reproduce byte-identical artifacts,BEFORE_PHASE2,PASS

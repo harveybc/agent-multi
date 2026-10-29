@@ -2,6 +2,14 @@
 
 ## Priority override: 2026-10-29
 
+Completed: [position-conditioned close/hold controller and five-arm verification](133_CLOSE_HOLD_CONTROLLER_RESULTS.md),
+under [plan132](132_CLOSE_HOLD_CONTROLLER_PLAN.md). 8,720 native rollouts,
+134 tests and exact full replay. Ideal reports eliminate576 destructive closes;
+guard filters delay some good exits; the causal prefix diagnostic fails and is
+not promoted. [Component audit request to Satoshi](../audits/SATOSHI_AUDIT_REQUEST_CLOSE_HOLD_COMPONENT_2026_10_29.md).
+Next: qualify broader report errors and the report adapter, then integrate entry
+arbitration and account optimization. No learned model success is claimed.
+
 Completed: [absolute execution and fixed-position early-close metrics](131_EARLY_CLOSE_COUNTERFACTUAL_RESULTS.md)
 under [plan129](129_ABSOLUTE_ORDERS_EARLY_CLOSE_PLAN.md) and
 [plan130](130_EARLY_CLOSE_COUNTERFACTUAL_METRICS_PLAN.md). 1,744 synthetic

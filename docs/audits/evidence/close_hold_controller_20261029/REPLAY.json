@@ -1,0 +1,15 @@
+{
+  "schema": "close_hold_controller_replay.v1",
+  "identity": "e490dbeb63e09b493e65cd85bc07ae6dd58f69bbb9338a4b66c98a6e48fbbc94",
+  "executions": 2,
+  "manifest_bytes_equal": true,
+  "report_bytes_equal": true,
+  "compressed_cases_bytes_equal": true,
+  "rollouts_per_execution": 8720,
+  "cases_sha256": "8e0d495ea658ccf493dd3d4630b18512a543a79cb7dc211bc0a5677145879d35",
+  "prefix_invariance_witnesses": 25,
+  "focused_tests_passed": 134,
+  "first_elapsed_seconds": 248.04552107301424,
+  "learned_reporter_tested": false,
+  "parameters_optimized": false
+}
