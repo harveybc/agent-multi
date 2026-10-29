@@ -1,0 +1,99 @@
+116_ZIGZAG_300_GENERATION_CONTRAST.md:4:at least 20, and compare with the completed baseline. Keep population 30 so
+116_ZIGZAG_300_GENERATION_CONTRAST.md:5:only generation budget changes. Keep seeds 7/19/43, horizons 3/6/12/24, TRAIN,
+116_ZIGZAG_300_GENERATION_CONTRAST.md:25:No baseline seed/final receipt is adopted as a completed 300-generation unit.
+115_TRAIN_ZIGZAG_DEAP_RESULTS.md:4:Status: 12/12 searches complete; 30 individuals, 40 generations, seeds 7/19/43
+115_TRAIN_ZIGZAG_DEAP_RESULTS.md:39:   3/6/12/24-hour holding durations. Do not silently relabel 17h as 24h.
+115_TRAIN_ZIGZAG_DEAP_RESULTS.md:48:| Nominal h | F seed 7 | F seed 19 | F seed 43 | Unique genomes | F using adverse-excursion denominator |
+docs/handoffs/MUSASHI_TO_SATOSHI_SHARED_ZIGZAG_RISK_2026_10_28.md:10:is authoritative: leverage 50; rel_volume 0.1; one simultaneous position;
+docs/handoffs/MUSASHI_TO_SATOSHI_SHARED_ZIGZAG_RISK_2026_10_28.md:11:no strategy daily entry cap; wait 12h after weekly open; forced flat 12h
+docs/handoffs/MUSASHI_TO_SATOSHI_SHARED_ZIGZAG_RISK_2026_10_28.md:15:margin(t) = q * rel_volume * balance(t),  q in [0,1]
+docs/handoffs/MUSASHI_TO_SATOSHI_SHARED_ZIGZAG_RISK_2026_10_28.md:30:3. K=2,3,4,5 were compared. K=3 retained the main gain with better support
+docs/handoffs/MUSASHI_TO_SATOSHI_SHARED_ZIGZAG_RISK_2026_10_28.md:40:6. DEAP population20, generations300, seeds7/19/43. Compared with corrected
+docs/handoffs/MUSASHI_TO_SATOSHI_SHARED_ZIGZAG_RISK_2026_10_28.md:41:   20x30 runs, all 360 prefix records matched. A separate exhaustive grid of
+docs/handoffs/MUSASHI_TO_SATOSHI_SHARED_ZIGZAG_RISK_2026_10_28.md:53:| 12h | 7 | 25 | 6 | 0.152872027 |
+docs/handoffs/MUSASHI_TO_SATOSHI_SHARED_ZIGZAG_RISK_2026_10_28.md:57:0.1 resolution. The 12h best improves 1.215882% from30 to300 generations;
+docs/handoffs/MUSASHI_TO_SATOSHI_SHARED_ZIGZAG_RISK_2026_10_28.md:111:Sizing integer-unit conversion, leverage50 and margin basis. Loss costs
+docs/handoffs/MUSASHI_TO_SATOSHI_SHARED_ZIGZAG_RISK_2026_10_28.md:183:account objective tests, coefficient optimization (population20/gen300),
+117_ZIGZAG_300_RESULTS_AND_DIRECTION_SEMANTICS.md:4:Completed 12 searches: population 30, 300 generations, seeds 7/19/43.
+117_ZIGZAG_300_RESULTS_AND_DIRECTION_SEMANTICS.md:20:Best-per-horizon fitness is unchanged. Seed 7 at 12h improves by 0.6604%;
+117_ZIGZAG_300_RESULTS_AND_DIRECTION_SEMANTICS.md:21:seed 43 at 24h improves by 3.8159%; neither beats its prior horizon champion.
+113_MECHANISM_THEORY_AND_AUDIT_DISPOSITION.md:32:The engine retains external broker restrictions and weekly 12h/12h boundaries.
+113_MECHANISM_THEORY_AND_AUDIT_DISPOSITION.md:198:| F11 | Resolved by owner clarification: 50, no daily cap, weekly 12h/12h; shared contract ba2af54a |
+114_TRAIN_ZIGZAG_OPPORTUNITY_OPTIMIZATION.md:5:1/2/6/12/24 ladder with the initial 3/6/12/24-hour ladder. No neural input,
+114_TRAIN_ZIGZAG_OPPORTUNITY_OPTIMIZATION.md:11:2. Run four sequential DEAP searches, with three seeds each, population 30,
+114_TRAIN_ZIGZAG_OPPORTUNITY_OPTIMIZATION.md:29:All scales have the same hourly entry grid, after 12h from session open and
+114_TRAIN_ZIGZAG_OPPORTUNITY_OPTIMIZATION.md:30:strictly before forced flat 12h before close. A known opening quote is the
+114_TRAIN_ZIGZAG_OPPORTUNITY_OPTIMIZATION.md:77:p=0.4 and per-gene replacement p=1/3. Seeds 7/19/43. Full candidate ledger,
+125_ZIGZAG_RISK_PROFILE_PLAN.md:1:# TRAIN risk profiles after K=3 refinement
+125_ZIGZAG_RISK_PROFILE_PLAN.md:7:K=3 champions, without rerunning DEAP, modifying the indicator, or reading
+125_ZIGZAG_RISK_PROFILE_PLAN.md:32:7. Margin = q * rel_volume * current balance, q in [0,1], rel_volume=0.1
+125_ZIGZAG_RISK_PROFILE_PLAN.md:63:of 3/6/12/24h, no model fitting. No method-state validator exists in this
+119_ZIGZAG_NEXT_EVENTS_P20_G30_RESULTS.md:1:# Corrected ZigZag: population 20, generations 30
+119_ZIGZAG_NEXT_EVENTS_P20_G30_RESULTS.md:4:two event counts, seeds 7/19/43, population 20 and all 30 generations each.
+119_ZIGZAG_NEXT_EVENTS_P20_G30_RESULTS.md:22:happen to agree between K=2 and K=3. Deviation units are pips; depth/backstep
+119_ZIGZAG_NEXT_EVENTS_P20_G30_RESULTS.md:25:| Horizon | Fitness K=2 | Fitness K=3 | Depth | Deviation | Backstep |
+119_ZIGZAG_NEXT_EVENTS_P20_G30_RESULTS.md:29:| 12 h | 0.171272058 | 0.151035613 | 8 | 21.1 | 5 |
+119_ZIGZAG_NEXT_EVENTS_P20_G30_RESULTS.md:37:| Horizon | Common origins | K=2 mean | K=3 mean | Relative gain | Coverage K=2 / K=3 |
+119_ZIGZAG_NEXT_EVENTS_P20_G30_RESULTS.md:41:| 12 h | 16,233 | 0.184662928 | 0.184958846 | +0.1602% | 94.19% / 81.66% |
+119_ZIGZAG_NEXT_EVENTS_P20_G30_RESULTS.md:44:On identical complete origins K=3 provides a small improvement. Its global
+119_ZIGZAG_NEXT_EVENTS_P20_G30_RESULTS.md:55:| Horizon | K=2 buy / sell | K=3 buy / sell |
+119_ZIGZAG_NEXT_EVENTS_P20_G30_RESULTS.md:59:| 12 h | 47.01% / 47.18% | 40.09% / 41.57% |
+119_ZIGZAG_NEXT_EVENTS_P20_G30_RESULTS.md:69:Before adopting K=3 for risk-profile design, account for its boundary coverage
+120_ZIGZAG_FOUR_FIVE_EVENTS_PLAN.md:3:Owner request, 2026-10-28: test whether K=4 or K=5 reveals useful marginal
+120_ZIGZAG_FOUR_FIVE_EVENTS_PLAN.md:4:improvements or a recognizable pattern beyond K=2/3. This extends 118 without
+120_ZIGZAG_FOUR_FIVE_EVENTS_PLAN.md:10:- K=4 and K=5, nominal horizons 3/6/12/24 h.
+120_ZIGZAG_FOUR_FIVE_EVENTS_PLAN.md:11:- DEAP population 20, generations 30, seeds 7/19/43, 24 new searches.
+120_ZIGZAG_FOUR_FIVE_EVENTS_PLAN.md:15:- Previous K=2/3 champions can be compared only after receipt authentication;
+120_ZIGZAG_FOUR_FIVE_EVENTS_PLAN.md:22:horizon. Also evaluate K=2/3/4/5 holding the K=3 champion genes fixed and use
+120_ZIGZAG_FOUR_FIVE_EVENTS_PLAN.md:34:Regression tests cover both K=4 and K=5, unchanged prefixes when later events
+128_SHARED_RISK_RULES_RESULTS.md:39:All scenarios use synthetic balance 10,000 USD and leverage 50, with
+128_SHARED_RISK_RULES_RESULTS.md:40:rel_volume=0.1 exactly once. The same q semantics applies to every horizon.
+128_SHARED_RISK_RULES_RESULTS.md:83:account currency, leverage, rel_volume and quality baseline are fixed; axes
+128_SHARED_RISK_RULES_RESULTS.md:110:population 20 / 300 generations is recorded as the future DEAP budget. Do
+127_SHARED_RISK_RULES_PLAN.md:16:- RR02: common business constants remain leverage 50, rel_volume 0.1, one
+127_SHARED_RISK_RULES_PLAN.md:17:  position, no daily cap, 12h reopening delay and 12h pre-close liquidation.
+127_SHARED_RISK_RULES_PLAN.md:32:- RR06: R=rho*balance; q=c*min(1,R/L1). rel_volume applies once. Use native
+127_SHARED_RISK_RULES_PLAN.md:50:| horizon | 3, 6, 12, 24h |
+127_SHARED_RISK_RULES_PLAN.md:65:rho [0.001,0.01]. Search budget remains at least population 20 / 300
+127_SHARED_RISK_RULES_PLAN.md:76:rel_volume use, spread handling, invalid values and empty opportunity NOP.
+126_ZIGZAG_RISK_PROFILE_RESULTS.md:5:Plan [125](125_ZIGZAG_RISK_PROFILE_PLAN.md) executed on the four K=3,
+126_ZIGZAG_RISK_PROFILE_RESULTS.md:6:population 20 / 300-generation champions. All four years of TRAIN were used;
+126_ZIGZAG_RISK_PROFILE_RESULTS.md:81:margin(q) = q * rel_volume * balance(t)
+126_ZIGZAG_RISK_PROFILE_RESULTS.md:82:rel_volume = 0.1;  0 <= q <= 1
+126_ZIGZAG_RISK_PROFILE_RESULTS.md:89:estimated loss for margin `rel_volume * balance`, not a second application
+126_ZIGZAG_RISK_PROFILE_RESULTS.md:90:of `rel_volume`. The helper assumes loss scales linearly with size; it is
+123_ZIGZAG_K3_300_RESULTS.md:3:Completed 2026-10-28. Selected K=3 under plan 122. Population 20, seeds
+123_ZIGZAG_K3_300_RESULTS.md:16:| 12 h | 0.151035613 | 0.152872027 | +1.215882% | 7 / 25.0 / 6 |
+123_ZIGZAG_K3_300_RESULTS.md:23:The new 12h champion was found in seed 7 at generation 62. The older champion
+123_ZIGZAG_K3_300_RESULTS.md:29:Five individual seed results improve: 6h/43 +7.6465%, 12h/7 +9.7757%,
+123_ZIGZAG_K3_300_RESULTS.md:30:12h/19 +3.4081%, 24h/19 +26.1667%, 24h/43 +15.0975%. Only the 12h improvement
+123_ZIGZAG_K3_300_RESULTS.md:38:1..min(24,depth-1), with deviation fixed at 5 pips and K=3. The score is
+123_ZIGZAG_K3_300_RESULTS.md:57:Retain K=3 and the new 12h champion as measured design references. Do not call
+121_ZIGZAG_FOUR_FIVE_EVENTS_RESULTS.md:3:Completed 2026-10-28 under plan 120. Population 20, generations 30, seeds
+121_ZIGZAG_FOUR_FIVE_EVENTS_RESULTS.md:4:7/19/43, horizons 3/6/12/24 h, 24 new searches, no reused candidate scores.
+121_ZIGZAG_FOUR_FIVE_EVENTS_RESULTS.md:5:K=4 search runtime 120.896 s; K=5 runtime 123.407 s; total 244.302 s, excluding
+121_ZIGZAG_FOUR_FIVE_EVENTS_RESULTS.md:12:These scores use the K=3 champion genotype for each horizon, fixed across
+121_ZIGZAG_FOUR_FIVE_EVENTS_RESULTS.md:13:K=2/3/4/5. All four probes use their common complete origins. They isolate
+121_ZIGZAG_FOUR_FIVE_EVENTS_RESULTS.md:15:K=2/3 champion fitness and every saved record array reproduced exactly with
+121_ZIGZAG_FOUR_FIVE_EVENTS_RESULTS.md:19:| Horizon | Common origins | K=2 | K=3 | K=4 | K=5 | Gain 4 vs 3 | Gain 5 vs 4 |
+121_ZIGZAG_FOUR_FIVE_EVENTS_RESULTS.md:23:| 12 h | 10,698 | 0.189714539 | 0.190001177 | 0.190033628 | 0.190045443 | +0.017079% | +0.006218% |
+121_ZIGZAG_FOUR_FIVE_EVENTS_RESULTS.md:35:| 12 h | 0.5048% | 0.1963% |
+121_ZIGZAG_FOUR_FIVE_EVENTS_RESULTS.md:48:| Horizon | K=4 fitness | K=5 fitness | K=4 coverage | K=5 coverage | K=4 genes | K=5 genes |
+121_ZIGZAG_FOUR_FIVE_EVENTS_RESULTS.md:52:| 12 h | 0.126518326 | 0.102274066 | 67.50% | 53.82% | 8 / 21.1 / 5 | 8 / 21.1 / 5 |
+121_ZIGZAG_FOUR_FIVE_EVENTS_RESULTS.md:60:At 24 h and K=5, the registered fixed-genotype control (12 / 17.1 / 11)
+121_ZIGZAG_FOUR_FIVE_EVENTS_RESULTS.md:77:Keep K=4/5 as measured oracle alternatives, not discarded because gains are
+121_ZIGZAG_FOUR_FIVE_EVENTS_RESULTS.md:80:gain. In particular, the observed-session boundary strongly restricts K=5 at
+122_ZIGZAG_THREE_EVENTS_300_PLAN.md:4:Select K=3: preserves the first additional-exit gain over K=2 while avoiding
+122_ZIGZAG_THREE_EVENTS_300_PLAN.md:5:much of the complete-origin coverage loss from K=4/5, especially at 24 h.
+122_ZIGZAG_THREE_EVENTS_300_PLAN.md:11:- K=3; horizons 3/6/12/24 h; population 20; seeds 7/19/43.
+122_ZIGZAG_THREE_EVENTS_300_PLAN.md:16:- Current evaluator differs from the baseline revision by allowing K=4/5;
+122_ZIGZAG_THREE_EVENTS_300_PLAN.md:17:  the K=3 evaluator must reproduce all 30 historical generations exactly
+122_ZIGZAG_THREE_EVENTS_300_PLAN.md:18:  for every seed/horizon. A mismatch invalidates the paired comparison.
+122_ZIGZAG_THREE_EVENTS_300_PLAN.md:32:The 24h/K=5 known-control counterexample remains documented in 121. It does
+122_ZIGZAG_THREE_EVENTS_300_PLAN.md:33:not justify silently injecting controls into this otherwise paired K=3 run.
+118_ZIGZAG_NEXT_EVENTS_CORRECTION.md:13:No fourth event is consulted for K=3. No maximum holding time is inferred from
+118_ZIGZAG_NEXT_EVENTS_CORRECTION.md:29:For comparing K=2 and K=3, report common-origin results as well as the fixed
+118_ZIGZAG_NEXT_EVENTS_CORRECTION.md:32:Population 30, generations 300, seeds 7/19/43, horizons 3/6/12/24 remain the
+118_ZIGZAG_NEXT_EVENTS_CORRECTION.md:54:both directions, K=2/3 and all four former champion genotypes: selected scores
+118_ZIGZAG_NEXT_EVENTS_CORRECTION.md:58:| Nominal horizon | K=2 | K=3 |
+118_ZIGZAG_NEXT_EVENTS_CORRECTION.md:62:| 12 h | 18,504 | 16,089 |

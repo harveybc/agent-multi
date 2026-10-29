@@ -1,0 +1,218 @@
+{
+  "status": "PASS",
+  "proposals": 3456,
+  "protection_witnesses": 17280,
+  "counts": {
+    "ORDER": 3456
+  },
+  "rows": [
+    {
+      "horizon": 3,
+      "direction": "buy",
+      "proposals": 432,
+      "orders": 432,
+      "nop": 0,
+      "q_min": 0.0738263892723716,
+      "q_max": 1.0,
+      "max_margin": 999.988,
+      "max_risk_budget_fraction": 0.9999990000000741
+    },
+    {
+      "horizon": 3,
+      "direction": "sell",
+      "proposals": 432,
+      "orders": 432,
+      "nop": 0,
+      "q_min": 0.07119826538242065,
+      "q_max": 1.0,
+      "max_margin": 999.988,
+      "max_risk_budget_fraction": 0.9999995999999095
+    },
+    {
+      "horizon": 6,
+      "direction": "buy",
+      "proposals": 432,
+      "orders": 432,
+      "nop": 0,
+      "q_min": 0.06707397561941184,
+      "q_max": 1.0,
+      "max_margin": 999.988,
+      "max_risk_budget_fraction": 0.9999990000001238
+    },
+    {
+      "horizon": 6,
+      "direction": "sell",
+      "proposals": 432,
+      "orders": 432,
+      "nop": 0,
+      "q_min": 0.06470665883285062,
+      "q_max": 1.0,
+      "max_margin": 999.988,
+      "max_risk_budget_fraction": 0.9999990000000174
+    },
+    {
+      "horizon": 12,
+      "direction": "buy",
+      "proposals": 432,
+      "orders": 432,
+      "nop": 0,
+      "q_min": 0.05301268434498234,
+      "q_max": 1.0,
+      "max_margin": 999.988,
+      "max_risk_budget_fraction": 0.9999968000000456
+    },
+    {
+      "horizon": 12,
+      "direction": "sell",
+      "proposals": 432,
+      "orders": 432,
+      "nop": 0,
+      "q_min": 0.050926537044372215,
+      "q_max": 1.0,
+      "max_margin": 999.988,
+      "max_risk_budget_fraction": 0.9999995999999095
+    },
+    {
+      "horizon": 24,
+      "direction": "buy",
+      "proposals": 432,
+      "orders": 432,
+      "nop": 0,
+      "q_min": 0.044534947374832844,
+      "q_max": 1.0,
+      "max_margin": 999.988,
+      "max_risk_budget_fraction": 0.9999980000000238
+    },
+    {
+      "horizon": 24,
+      "direction": "sell",
+      "proposals": 432,
+      "orders": 432,
+      "nop": 0,
+      "q_min": 0.04391270260113442,
+      "q_max": 1.0,
+      "max_margin": 999.988,
+      "max_risk_budget_fraction": 0.9999990000000022
+    }
+  ],
+  "scope": "SYNTHETIC_SIZING_AND_PROTECTION_PRIMITIVES_NOT_ACCOUNT_OR_EARLY_CLOSE_QUALIFICATION",
+  "additional_controls": [
+    {
+      "direction": 1,
+      "case": "zero_quality",
+      "expected": "NOP",
+      "actual": "NOP"
+    },
+    {
+      "direction": 1,
+      "case": "zero_budget",
+      "expected": "NOP",
+      "actual": "NOP"
+    },
+    {
+      "direction": 1,
+      "case": "eroded_tp",
+      "expected": "NOP",
+      "actual": "NOP"
+    },
+    {
+      "direction": 1,
+      "case": "spread_through_sl",
+      "expected": "NOP",
+      "actual": "NOP"
+    },
+    {
+      "direction": 1,
+      "case": "below_minimum",
+      "expected": "NOP",
+      "actual": "NOP"
+    },
+    {
+      "direction": 1,
+      "case": "zero_mae_unbuffered",
+      "expected": "NOP",
+      "actual": "NOP"
+    },
+    {
+      "direction": 1,
+      "case": "zero_mae_buffered",
+      "expected": "ORDER",
+      "actual": "ORDER"
+    },
+    {
+      "direction": 1,
+      "case": "funding_reduces_q",
+      "q_before": 0.177421483896502,
+      "q_after": 0.1264382988687745
+    },
+    {
+      "direction": 1,
+      "case": "gap_exceeds_nominal_budget_as_expected",
+      "nominal_loss": 9.999360000000813,
+      "gap_loss": 90.63936000000088,
+      "budget": 10.0
+    },
+    {
+      "direction": -1,
+      "case": "zero_quality",
+      "expected": "NOP",
+      "actual": "NOP"
+    },
+    {
+      "direction": -1,
+      "case": "zero_budget",
+      "expected": "NOP",
+      "actual": "NOP"
+    },
+    {
+      "direction": -1,
+      "case": "eroded_tp",
+      "expected": "NOP",
+      "actual": "NOP"
+    },
+    {
+      "direction": -1,
+      "case": "spread_through_sl",
+      "expected": "NOP",
+      "actual": "NOP"
+    },
+    {
+      "direction": -1,
+      "case": "below_minimum",
+      "expected": "NOP",
+      "actual": "NOP"
+    },
+    {
+      "direction": -1,
+      "case": "zero_mae_unbuffered",
+      "expected": "NOP",
+      "actual": "NOP"
+    },
+    {
+      "direction": -1,
+      "case": "zero_mae_buffered",
+      "expected": "ORDER",
+      "actual": "ORDER"
+    },
+    {
+      "direction": -1,
+      "case": "funding_reduces_q",
+      "q_before": 0.17742148389653378,
+      "q_after": 0.12643829886879063
+    },
+    {
+      "direction": -1,
+      "case": "gap_exceeds_nominal_budget_as_expected",
+      "nominal_loss": 9.999359999999022,
+      "gap_loss": 90.63935999999909,
+      "budget": 10.0
+    }
+  ],
+  "config_sha256": "99d7d4dc92f6437c84b8b36de4c29a1ba474489a7c07444899699c00203c3c0e",
+  "cases_sha256": "d5c156e1b6115c32c0ed9f913e16b8e23de2c9d06832c472077fb9b73d1a9030",
+  "engine_execution_sha256": "05179b244b9c095e4b541f5337ee9157b071aea78c8fe002c045f7625c39ff07",
+  "code_sha256": {
+    "app/horizon_risk_rules.py": "89afca8dd1ba12842449989ff2ca940cb461522a816ef779350b597e2062ae31",
+    "tools/verify_horizon_risk_rules.py": "7f0bfdaf46384a2f8b6bae03e7969e84993e763b0ab777c454c1a3b1a3abfaad"
+  }
+}

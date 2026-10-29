@@ -1,0 +1,28 @@
+PROFILES sha256 aa2cb1f8f524db4091f8d3cd3b86b7b0f31af6f2ff71bb5a974f49e9d33d9d96
+schema zigzag_train_risk_profiles.v1 train ['2020-01-01', '2024-01-01'] source_identity d54d51768a5ac257b7428a8e7afc8fb61bd467009dea77e8224a64c9ee824a9e
+top keys ['calendar_subset', 'code_sha256', 'costs_status', 'future_pivots', 'pip_size', 'rows', 'schema', 'scope', 'sl_semantics', 'source_identity', 'source_sha256', 'source_unchanged', 'tp_semantics', 'train', 'uncertainty', 'volume']
+h=3 params={'backstep': 1, 'depth': 3, 'deviation_pips': 5.0} support={'censored': 259, 'complete': 19620, 'complete_nop': 0, 'origins': 19879, 'positive_exact_ties': 0}
+  support table doc126=(19620, 259, 696, 824, 256, 253) json=(19620, 259, 696, 824, 256, 253) OK
+  buy: doc126=(15033, 28.17, 26.03, 20.0, 11.24, 12.16, 7.4, 5, 12)
+        json  =(15033, 28.17, 26.03, 20.0, 11.24, 12.16, 7.4, 5.0, 12.0) OK
+  sell: doc126=(15053, 28.06, 27.73, 19.6, 12.03, 14.01, 7.7, 5, 12)
+        json  =(15053, 28.06, 27.73, 19.6, 12.03, 14.01, 7.7, 5.0, 12.0) OK
+h=6 params={'backstep': 2, 'depth': 4, 'deviation_pips': 5.0} support={'censored': 771, 'complete': 19108, 'complete_nop': 0, 'origins': 19879, 'positive_exact_ties': 0}
+  support table doc126=(19108, 771, 796, 1041, 221, 221) json=(19108, 771, 796, 1041, 221, 221) OK
+  buy: doc126=(14946, 33.47, 30.45, 24.0, 13.05, 14.2, 8.5, 7, 16)
+        json  =(14946, 33.47, 30.45, 24.0, 13.05, 14.2, 8.5, 7.0, 16.0) OK
+  sell: doc126=(14845, 32.75, 30.85, 23.4, 13.53, 14.8, 8.9, 7, 16)
+        json  =(14845, 32.75, 30.85, 23.4, 13.53, 14.8, 8.9, 7.0, 16.0) OK
+h=12 params={'backstep': 6, 'depth': 7, 'deviation_pips': 25.0} support={'censored': 3688, 'complete': 16191, 'complete_nop': 0, 'origins': 19879, 'positive_exact_ties': 0}
+  support table doc126=(16191, 3688, 581, 768, 144, 144) json=(16191, 3688, 581, 768, 144, 144) OK
+  buy: doc126=(12932, 46.52, 37.71, 35.3, 17.64, 17.94, 11.9, 12, 27)
+        json  =(12932, 46.52, 37.71, 35.3, 17.64, 17.94, 11.9, 12.0, 27.0) OK
+  sell: doc126=(13191, 47.86, 40.95, 35.8, 19.22, 20.48, 12.7, 12, 29)
+        json  =(13191, 47.86, 40.95, 35.8, 19.22, 20.48, 12.7, 12.0, 29.0) OK
+h=24 params={'backstep': 11, 'depth': 12, 'deviation_pips': 25.0} support={'censored': 7340, 'complete': 12539, 'complete_nop': 0, 'origins': 19879, 'positive_exact_ties': 0}
+  support table doc126=(12539, 7340, 364, 363, 95, 100) json=(12539, 7340, 364, 363, 95, 100) OK
+  buy: doc126=(10284, 53.9, 41.67, 42.1, 22.06, 20.89, 16.0, 17, 41)
+        json  =(10284, 53.9, 41.67, 42.1, 22.06, 20.89, 16.0, 17.0, 41.0) OK
+  sell: doc126=(10765, 54.52, 44.37, 43.1, 23.51, 24.04, 16.2, 17, 42)
+        json  =(10765, 54.52, 44.37, 43.1, 23.51, 24.04, 16.2, 17.0, 42.0) OK
+ALL_ROWS_MATCH

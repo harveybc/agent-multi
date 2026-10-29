@@ -1,0 +1,32 @@
+zigzag.py sha256 c06592f6478f3887213e985a80de5823dd953d3887ce25bec0272197860affda
+
+depth=3 backstep=1: 67 pivots at deviation=0; first 12 idx=[0, 1, 3, 4, 8, 12, 17, 25, 29, 30, 35, 41]
+  deviation=     0.0: 67 pivots, identical_to_dev0=True, candidate_maps_identical=True
+  deviation=     5.0: 67 pivots, identical_to_dev0=True, candidate_maps_identical=True
+  deviation=    50.0: 67 pivots, identical_to_dev0=True, candidate_maps_identical=True
+  deviation=1000000.0: 67 pivots, identical_to_dev0=True, candidate_maps_identical=True
+  deviation=    -1.0: 0 pivots, identical_to_dev0=False, candidate_maps_identical=False
+
+depth=4 backstep=2: 43 pivots at deviation=0; first 12 idx=[0, 4, 8, 12, 17, 25, 35, 41, 43, 47, 49, 55]
+  deviation=     0.0: 43 pivots, identical_to_dev0=True, candidate_maps_identical=True
+  deviation=     5.0: 43 pivots, identical_to_dev0=True, candidate_maps_identical=True
+  deviation=    50.0: 43 pivots, identical_to_dev0=True, candidate_maps_identical=True
+  deviation=1000000.0: 43 pivots, identical_to_dev0=True, candidate_maps_identical=True
+  deviation=    -1.0: 0 pivots, identical_to_dev0=False, candidate_maps_identical=False
+
+depth=7 backstep=6: 24 pivots at deviation=0; first 12 idx=[4, 8, 12, 17, 25, 35, 41, 43, 55, 69, 76, 82]
+  deviation=     0.0: 24 pivots, identical_to_dev0=True, candidate_maps_identical=True
+  deviation=     5.0: 24 pivots, identical_to_dev0=True, candidate_maps_identical=True
+  deviation=    50.0: 24 pivots, identical_to_dev0=True, candidate_maps_identical=True
+  deviation=1000000.0: 24 pivots, identical_to_dev0=True, candidate_maps_identical=True
+  deviation=    -1.0: 0 pivots, identical_to_dev0=False, candidate_maps_identical=False
+
+depth=12 backstep=11: 12 pivots at deviation=0; first 12 idx=[4, 43, 55, 69, 98, 108, 119, 149, 172, 186, 191, 199]
+  deviation=     0.0: 12 pivots, identical_to_dev0=True, candidate_maps_identical=True
+  deviation=     5.0: 12 pivots, identical_to_dev0=True, candidate_maps_identical=True
+  deviation=    50.0: 12 pivots, identical_to_dev0=True, candidate_maps_identical=True
+  deviation=1000000.0: 12 pivots, identical_to_dev0=True, candidate_maps_identical=True
+  deviation=    -1.0: 0 pivots, identical_to_dev0=False, candidate_maps_identical=False
+
+random brute force: 3000 paths, candidate maps differ for deviation 0 vs 1e9 in 0 paths
+positive control (deviation=-1e9, out of contract): candidate maps differ in 500/500 paths -> the comparison line is live

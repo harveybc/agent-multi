@@ -1,0 +1,65 @@
+top keys ['audit', 'comparison', 'deviation_scale_probe', 'forward_probes', 'integer_grid_control', 'integer_grid_full_sha256', 'paired_origins', 'parameter_diversity', 'results', 'synthetic_deviation_check']
+audit: dict[6]
+  checks: list[4] first={"candidate_paths": 1536, "generations_verified": 900, "horizon": 3, "max_abs_error": 0.0, "scalar_paths": 512, "schedule_nonoverlap": true}
+  identity: "d54d51768a5ac257b7428a8e7afc8fb61bd467009dea77e8224a64c9ee824a9e"
+  results_sha256: "dd9567984b23dc34d40c10c3fffa34b258db2b787b49e114be7c17cb3fe37275"
+  scope: "SCALAR_RECONSTRUCTION_AND_RECEIPTS_NOT_NATIVE_EXECUTION_QUALIFICATION"
+  source_sha256: "ba332540b24b7cd08cc38e3e8290c8efe05462abb926ff552a6bb56a6f649046"
+  status: "PASS"
+comparison: dict[8]
+  baseline_identity: "3c3ae09b0b7cf7e36cc9ec7e611275d368038376be75e7e319db3feb7631e0ba"
+  baseline_seconds: 116.45059542698436
+  baseline_unchanged: true
+  extended_identity: "d54d51768a5ac257b7428a8e7afc8fb61bd467009dea77e8224a64c9ee824a9e"
+  extended_seconds: 839.0406798690092
+  prefix_generations_verified: 360
+  rows: list[4] first={"baseline_fitness": 0.2711769119505867, "baseline_params": {"backstep": 1, "depth": 3, "deviation_pips": 5.0}, "delta": 0.0, "extended_fitness": 0.2711769119505867, "extended_params": {"backstep": 1,
+  state: "COMPLETE_PAIRED"
+deviation_scale_probe: dict[4]
+  rows: list[4] first={"backstep": 1, "depth": 3, "distinct_candidate_maps": 1, "distinct_pivot_series": 1, "probes": [{"deviation_pips": 0.0, "maps_sha256": "19fcf2abb9b8a47b48ea38423da1a1f8962c87930e1c54204ceabd08a83163d
+  status: "COMPLETE"
+  units: "PIPS; internal absolute threshold = deviation_pips * 0.0001"
+  values: list[11] first=0.0
+forward_probes: dict[3]
+  rows: list[4] first={"forwarded_calls": 1672, "horizon": 3, "probes": [{"eligible": true, "fitness": 0.2711769119505867, "genes": [3, 5.0, 1], "pivots": 6159, "pivots_sha256": "b3371f58fcc569f9ba0a5a8cf9480210af88739f042
+  scope: "REAL_ENGINE_FORWARDING_AND_ONE_FACTOR_PERTURBATIONS"
+  status: "PASS"
+integer_grid_control: dict[7]
+  best: dict[4]
+    12: dict[21]
+    24: dict[21]
+    3: dict[21]
+    6: dict[21]
+  count: 2004
+  deviation_fixed: 5.0
+  elapsed_seconds: 151.60553219300346
+  identity: "d54d51768a5ac257b7428a8e7afc8fb61bd467009dea77e8224a64c9ee824a9e"
+  scope: "EXHAUSTIVE_DEPTH_BACKSTEP_WITHIN_DECLARED_BOUNDS_AT_FIXED_DEVIATION_NOT_ALL_DEVIATIONS"
+  status: "COMPLETE"
+integer_grid_full_sha256: "2396c09a80f5b3b98127a671bbac1d4a025e40bc6e030e458440ae82bacb0c04"
+paired_origins: list[4] first={"common_origins": 19620, "coverage_30": 98.69711756124553, "coverage_300": 98.69711756124553, "horizon": 3, "mean_score_30": 0.2747566683315858, "mean_score_300": 0.2747566683315858, "relative_change
+parameter_diversity: list[4] first={"deviation_changed_groups": 0, "deviation_matched_groups": 196, "dimensions": [{"maximum": 96, "minimum": 2, "name": "depth", "smallest_step": 1.0, "unique": 95}, {"maximum": 119.9, "minimum": 1, "na
+results: dict[7]
+  data: dict[10]
+    chunks: 209
+    cost_profile: dict[11]
+    costs_status: "ASSUMED_NOT_BROKER_VERIFIED"
+    end: "2023-12-29 21:00:00+00:00"
+    excluded_origins: 5016
+    origins: 19879
+    rows: 24895
+    start: "2020-01-02 01:00:00+00:00"
+    support_sha256: "e575abb297af4b1937105fffa7a8eefff50db594af999b40c063b2d0d741dbfd"
+    years: dict[4]
+  elapsed_seconds: 839.0406798690092
+  financial_model_runs: 0
+  rows: list[4] first={"buy_pct": 49.750993510739974, "censored_origins": 259, "complete_origins": 19620, "coverage_pct": 98.69711756124553, "deviation_probe": [{"fitness": 0.2711769119505867, "pivots": 6159, "value": 1.0}
+  scope: "RETROSPECTIVE_TRAIN_OPPORTUNITY_MAP_NOT_STRATEGY_QUALIFICATION"
+  test_read: false
+  validation_read: false
+synthetic_deviation_check: dict[5]
+  deviation_values: list[2] first=0
+  legal_cases: 10935
+  mismatches: 0
+  outside_contract_positive_control: null
+  seconds: 1.5718887349939905

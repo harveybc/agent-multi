@@ -1,0 +1,91 @@
+{'buy_pct': 49.750993510739974, 'censored_origins': 259, 'complete_origins': 19620, 'coverage_pct': 98.69711756124553, 'deviation_probe': '<list[4]>', 'eligible': True, 'endpoint_policy': 'NEXT_K_EVENTS_NO_TIMED_EXIT', 'fitness': 0.2711769119505867, 'future_pivots': 3, 'generations': 300, 'horizon': 3, 'interval_buy_pct': 50.36687631027254, 'interval_net_pips': 118181.15000000119, 'interval_trades': 3816, 'interval_win_pct': 100.0, 'mae_denominator_fitness': 1.8672128127681118, 'mean_selected_duration_hours': 5.577573904179409, 'mean_selected_net_pips': 31.44509174311927, 'median_pivot_hours': 3.0, 'nop_pct': 0.0, 'origins': 19879, 'params': '<dict[3]>', 'pivot_pairs': 5950, 'pivots': 6159, 'population': 20, 'records_file': 'h3_OPPORTUNITIES.npz', 'records_sha256': 'd1badaa5710fb445afec23822c46f6af470be091e05361f7a6f5805718dff36c', 'scope': 'HINDSIGHT_OPPORTUNITIES_NOT_ACCOUNT_PERFORMANCE', 'seed': 7, 'seeds': '<list[3]>', 'selected_win_pct': 100.0, 'sell_pct': 48.94612405050556, 'unique_candidates': 2886, 'yearly_fitness': '<dict[4]>'}
+{'buy_pct': 48.458171940238444, 'censored_origins': 771, 'complete_origins': 19108, 'coverage_pct': 96.1215352884954, 'deviation_probe': '<list[4]>', 'eligible': True, 'endpoint_policy': 'NEXT_K_EVENTS_NO_TIMED_EXIT', 'fitness': 0.23767567494201072, 'future_pivots': 3, 'generations': 300, 'horizon': 6, 'interval_buy_pct': 50.85851648351648, 'interval_net_pips': 107099.80000000075, 'interval_trades': 2912, 'interval_win_pct': 100.0, 'mae_denominator_fitness': 1.684359978410893, 'mean_selected_duration_hours': 7.0355871886121, 'mean_selected_net_pips': 36.496195310864564, 'median_pivot_hours': 5.0, 'nop_pct': 0.0, 'origins': 19879, 'params': '<dict[3]>', 'pivot_pairs': 4167, 'pivots': 4376, 'population': 20, 'records_file': 'h6_OPPORTUNITIES.npz', 'records_sha256': '6f4bb6a22981f80336b5ab991e5d44858eff462dd343153d65c64067688e0236', 'scope': 'HINDSIGHT_OPPORTUNITIES_NOT_ACCOUNT_PERFORMANCE', 'seed': 7, 'seeds': '<list[3]>', 'selected_win_pct': 100.0, 'sell_pct': 47.66336334825695, 'unique_candidates': 3133, 'yearly_fitness': '<dict[4]>'}
+{'buy_pct': 40.22335127521505, 'censored_origins': 3688, 'complete_origins': 16191, 'coverage_pct': 81.44775894159666, 'deviation_probe': '<list[4]>', 'eligible': True, 'endpoint_policy': 'NEXT_K_EVENTS_NO_TIMED_EXIT', 'fitness': 0.15287202659022267, 'future_pivots': 3, 'generations': 300, 'horizon': 12, 'interval_buy_pct': 50.88495575221239, 'interval_net_pips': 76558.4000000003, 'interval_trades': 1356, 'interval_win_pct': 100.0, 'mae_denominator_fitness': 1.1436184938401028, 'mean_selected_duration_hours': 12.012537829658452, 'mean_selected_net_pips': 51.089586807485645, 'median_pivot_hours': 9.0, 'nop_pct': 0.0, 'origins': 19879, 'params': '<dict[3]>', 'pivot_pairs': 1973, 'pivots': 2182, 'population': 20, 'records_file': 'h12_OPPORTUNITIES.npz', 'records_sha256': 'b9feef052da5b837979ca7c02f3c648a6db928022f2f1709cab18a08c4c16bff', 'scope': 'HINDSIGHT_OPPORTUNITIES_NOT_ACCOUNT_PERFORMANCE', 'seed': 7, 'seeds': '<list[3]>', 'selected_win_pct': 100.0, 'sell_pct': 41.22440766638161, 'unique_candidates': 3531, 'yearly_fitness': '<dict[4]>'}
+{'buy_pct': 30.056843905629055, 'censored_origins': 7340, 'complete_origins': 12539, 'coverage_pct': 63.07661351174606, 'deviation_probe': '<list[4]>', 'eligible': True, 'endpoint_policy': 'NEXT_K_EVENTS_NO_TIMED_EXIT', 'fitness': 0.09811766668647957, 'future_pivots': 3, 'generations': 300, 'horizon': 24, 'interval_buy_pct': 52.23880597014925, 'interval_net_pips': 53832.700000000106, 'interval_trades': 737, 'interval_win_pct': 100.0, 'mae_denominator_fitness': 0.737343535432873, 'mean_selected_duration_hours': 16.131429938591594, 'mean_selected_net_pips': 58.38652603875908, 'median_pivot_hours': 17.0, 'nop_pct': 0.0, 'origins': 19879, 'params': '<dict[3]>', 'pivot_pairs': 1198, 'pivots': 1407, 'population': 20, 'records_file': 'h24_OPPORTUNITIES.npz', 'records_sha256': 'c531db93a7ba9f3753d533bb173e65200347067a7410e06550ca35e9c4399f7b', 'scope': 'HINDSIGHT_OPPORTUNITIES_NOT_ACCOUNT_PERFORMANCE', 'seed': 7, 'seeds': '<list[3]>', 'selected_win_pct': 100.0, 'sell_pct': 33.019769606117, 'unique_candidates': 3682, 'yearly_fitness': '<dict[4]>'}
+comparison rows:
+  {'baseline_fitness': 0.2711769119505867, 'baseline_params': {'backstep': 1, 'depth': 3, 'deviation_pips': 5.0}, 'delta': 0.0, 'extended_fitness': 0.2711769119505867, 'extended_params': {'backstep': 1, 'depth': 3, 'deviation_pips': 5.0}, 'horizon': 3, 'median_pivot_hours': 3.0, 'relative_improvement_pct': 0.0, 'seeds': [{'baseline_fitness': 0.2711769119505867, 'baseline_params': {'backstep': 1, 'depth': 3, 'deviation_pips': 5.0}, 'delta': 0.0, 'extended_fitness': 0.2711769119505867, 'extended_params': {'backstep': 1, 'depth': 3, 'deviation_pips': 5.0}, 'prefix_generations_verified': 30, 'relative_improvement_pct': 0.0, 'seed': 7}, {'baseline_fitness': 0.2711769119505867, 'baseline_params': {'backstep': 1, 'depth': 3, 'deviation_pips': 5.0}, 'delta': 0.0, 'extended_fitness': 0.2711769119505867, 'extended_params': {'backstep': 1, 'depth': 3, 'deviation_pips': 5.0}, 'prefix_generations_verified': 30, 'relative_improvement_pct': 0.0, 'seed': 19}, {'baseline_fitness': 0.2711769119505867, 'baseline_params': {'backstep': 1, 'depth': 3, 'deviation_pips': 5.0}, 'delta': 0.0, 'extended_fitness': 0.2711769119505867, 'extended_params': {'backstep': 1, 'depth': 3, 'deviation_pips': 5.0}, 'prefix_generations_verified': 30, 'relative_improvement_pct': 0.0, 'seed': 43}]}
+  {'baseline_fitness': 0.23767567494201072, 'baseline_params': {'backstep': 2, 'depth': 4, 'deviation_pips': 5.0}, 'delta': 0.0, 'extended_fitness': 0.23767567494201072, 'extended_params': {'backstep': 2, 'depth': 4, 'deviation_pips': 5.0}, 'horizon': 6, 'median_pivot_hours': 5.0, 'relative_improvement_pct': 0.0, 'seeds': [{'baseline_fitness': 0.23767567494201072, 'baseline_params': {'backstep': 2, 'depth': 4, 'deviation_pips': 5.0}, 'delta': 0.0, 'extended_fitness': 0.23767567494201072, 'extended_params': {'backstep': 2, 'depth': 4, 'deviation_pips': 5.0}, 'prefix_generations_verified': 30, 'relative_improvement_pct': 0.0, 'seed': 7}, {'baseline_fitness': 0.23767567494201072, 'baseline_params': {'backstep': 2, 'depth': 4, 'deviation_pips': 5.0}, 'delta': 0.0, 'extended_fitness': 0.23767567494201072, 'extended_params': {'backstep': 2, 'depth': 4, 'deviation_pips': 5.0}, 'prefix_generations_verified': 30, 'relative_improvement_pct': 0.0, 'seed': 19}, {'baseline_fitness': 0.2207928267952695, 'baseline_params': {'backstep': 1, 'depth': 5, 'deviation_pips': 10.0}, 'delta': 0.016882848146741236, 'extended_fitness': 0.23767567494201072, 'extended_params': {'backstep': 2, 'depth': 4, 'deviation_pips': 10.0}, 'prefix_generations_verified': 30, 'relative_improvement_pct': 7.646465871101826, 'seed': 43}]}
+  {'baseline_fitness': 0.15103561251589645, 'baseline_params': {'backstep': 5, 'depth': 8, 'deviation_pips': 21.1}, 'delta': 0.0018364140743262203, 'extended_fitness': 0.15287202659022267, 'extended_params': {'backstep': 6, 'depth': 7, 'deviation_pips': 25.0}, 'horizon': 12, 'median_pivot_hours': 9.0, 'relative_improvement_pct': 1.215881502207261, 'seeds': [{'baseline_fitness': 0.13925851935760222, 'baseline_params': {'backstep': 2, 'depth': 11, 'deviation_pips': 53.0}, 'delta': 0.013613507232620448, 'extended_fitness': 0.15287202659022267, 'extended_params': {'backstep': 6, 'depth': 7, 'deviation_pips': 25.0}, 'prefix_generations_verified': 30, 'relative_improvement_pct': 9.775708728930477, 'seed': 7}, {'baseline_fitness': 0.14638020743997585, 'baseline_params': {'backstep': 4, 'depth': 9, 'deviation_pips': 5.0}, 'delta': 0.00498880791179987, 'extended_fitness': 0.15136901535177572, 'extended_params': {'backstep': 3, 'depth': 9, 'deviation_pips': 48.1}, 'prefix_generations_verified': 30, 'relative_improvement_pct': 3.408116438040687, 'seed': 19}, {'baseline_fitness': 0.15103561251589645, 'baseline_params': {'backstep': 5, 'depth': 8, 'deviation_pips': 21.1}, 'delta': 0.0, 'extended_fitness': 0.15103561251589645, 'extended_params': {'backstep': 5, 'depth': 8, 'deviation_pips': 57.8}, 'prefix_generations_verified': 30, 'relative_improvement_pct': 0.0, 'seed': 43}]}
+  {'baseline_fitness': 0.09811766668647957, 'baseline_params': {'backstep': 11, 'depth': 12, 'deviation_pips': 17.1}, 'delta': 0.0, 'extended_fitness': 0.09811766668647957, 'extended_params': {'backstep': 11, 'depth': 12, 'deviation_pips': 25.0}, 'horizon': 24, 'median_pivot_hours': 17.0, 'relative_improvement_pct': 0.0, 'seeds': [{'baseline_fitness': 0.09811766668647957, 'baseline_params': {'backstep': 11, 'depth': 12, 'deviation_pips': 17.1}, 'delta': 0.0, 'extended_fitness': 0.09811766668647957, 'extended_params': {'backstep': 11, 'depth': 12, 'deviation_pips': 25.0}, 'prefix_generations_verified': 30, 'relative_improvement_pct': 0.0, 'seed': 7}, {'baseline_fitness': 0.07580594473974431, 'baseline_params': {'backstep': 3, 'depth': 19, 'deviation_pips': 23.7}, 'delta': 0.019835909242583716, 'extended_fitness': 0.09564185398232802, 'extended_params': {'backstep': 10, 'depth': 13, 'deviation_pips': 49.8}, 'prefix_generations_verified': 30, 'relative_improvement_pct': 26.166693536613828, 'seed': 19}, {'baseline_fitness': 0.08524743432447024, 'baseline_params': {'backstep': 6, 'depth': 17, 'deviation_pips': 5.0}, 'delta': 0.012870232362009335, 'extended_fitness': 0.09811766668647957, 'extended_params': {'backstep': 11, 'depth': 12, 'deviation_pips': 37.8}, 'prefix_generations_verified': 30, 'relative_improvement_pct': 15.097501131849246, 'seed': 43}]}
+results keys: {'elapsed_seconds': 839.0406798690092, 'financial_model_runs': 0, 'scope': 'RETROSPECTIVE_TRAIN_OPPORTUNITY_MAP_NOT_STRATEGY_QUALIFICATION', 'test_read': False, 'validation_read': False}
+/audit/checks[0]/generations_verified = 900
+/audit/checks[1]/generations_verified = 900
+/audit/checks[2]/generations_verified = 900
+/audit/results_sha256 = dd9567984b23dc34d40c10c3fffa34b258db2b787b49e114be7c17cb3fe37275
+/audit/source_sha256 = ba332540b24b7cd08cc38e3e8290c8efe05462abb926ff552a6bb56a6f649046
+/comparison/prefix_generations_verified = 360
+/comparison/rows[0]/seeds[0]/prefix_generations_verified = 30
+/comparison/rows[0]/seeds[0]/seed = 7
+/comparison/rows[0]/seeds[1]/prefix_generations_verified = 30
+/comparison/rows[0]/seeds[1]/seed = 19
+/comparison/rows[0]/seeds[2]/prefix_generations_verified = 30
+/comparison/rows[0]/seeds[2]/seed = 43
+/comparison/rows[1]/seeds[0]/prefix_generations_verified = 30
+/comparison/rows[1]/seeds[0]/seed = 7
+/comparison/rows[1]/seeds[1]/prefix_generations_verified = 30
+/comparison/rows[1]/seeds[1]/seed = 19
+/comparison/rows[1]/seeds[2]/prefix_generations_verified = 30
+/comparison/rows[1]/seeds[2]/seed = 43
+/comparison/rows[2]/seeds[0]/prefix_generations_verified = 30
+/comparison/rows[2]/seeds[0]/seed = 7
+/comparison/rows[2]/seeds[1]/prefix_generations_verified = 30
+/comparison/rows[2]/seeds[1]/seed = 19
+/comparison/rows[2]/seeds[2]/prefix_generations_verified = 30
+/comparison/rows[2]/seeds[2]/seed = 43
+/deviation_scale_probe/rows[0]/probes[0]/maps_sha256 = 19fcf2abb9b8a47b48ea38423da1a1f8962c87930e1c54204ceabd08a83163d8
+/deviation_scale_probe/rows[0]/probes[0]/pivots_sha256 = b3371f58fcc569f9ba0a5a8cf9480210af88739f042dd386d9141cd6195e9db6
+/deviation_scale_probe/rows[0]/probes[1]/maps_sha256 = 19fcf2abb9b8a47b48ea38423da1a1f8962c87930e1c54204ceabd08a83163d8
+/deviation_scale_probe/rows[0]/probes[1]/pivots_sha256 = b3371f58fcc569f9ba0a5a8cf9480210af88739f042dd386d9141cd6195e9db6
+/deviation_scale_probe/rows[0]/probes[2]/maps_sha256 = 19fcf2abb9b8a47b48ea38423da1a1f8962c87930e1c54204ceabd08a83163d8
+/deviation_scale_probe/rows[0]/probes[2]/pivots_sha256 = b3371f58fcc569f9ba0a5a8cf9480210af88739f042dd386d9141cd6195e9db6
+/deviation_scale_probe/rows[1]/probes[0]/maps_sha256 = 2694abaa60d01328222e810c03c96bede9963940bd2d4ed4e050fc942864e3e3
+/deviation_scale_probe/rows[1]/probes[0]/pivots_sha256 = e3a54aa9993ba0868901bf092d052f745c52339436bca5264c3bfba4c03d6794
+/deviation_scale_probe/rows[1]/probes[1]/maps_sha256 = 2694abaa60d01328222e810c03c96bede9963940bd2d4ed4e050fc942864e3e3
+/deviation_scale_probe/rows[1]/probes[1]/pivots_sha256 = e3a54aa9993ba0868901bf092d052f745c52339436bca5264c3bfba4c03d6794
+/deviation_scale_probe/rows[1]/probes[2]/maps_sha256 = 2694abaa60d01328222e810c03c96bede9963940bd2d4ed4e050fc942864e3e3
+/deviation_scale_probe/rows[1]/probes[2]/pivots_sha256 = e3a54aa9993ba0868901bf092d052f745c52339436bca5264c3bfba4c03d6794
+/deviation_scale_probe/rows[2]/probes[0]/maps_sha256 = f4ba5f65526064292978575d5b4e98d7d297145c6c9e50cc136904fff00d8d79
+/deviation_scale_probe/rows[2]/probes[0]/pivots_sha256 = f52193237fbdeb4bbc0db83bf3b61efaff69418517cc86ea38c29cc8954e223a
+/deviation_scale_probe/rows[2]/probes[1]/maps_sha256 = f4ba5f65526064292978575d5b4e98d7d297145c6c9e50cc136904fff00d8d79
+/deviation_scale_probe/rows[2]/probes[1]/pivots_sha256 = f52193237fbdeb4bbc0db83bf3b61efaff69418517cc86ea38c29cc8954e223a
+/deviation_scale_probe/rows[2]/probes[2]/maps_sha256 = f4ba5f65526064292978575d5b4e98d7d297145c6c9e50cc136904fff00d8d79
+/deviation_scale_probe/rows[2]/probes[2]/pivots_sha256 = f52193237fbdeb4bbc0db83bf3b61efaff69418517cc86ea38c29cc8954e223a
+/forward_probes/rows[0]/probes[0]/pivots_sha256 = b3371f58fcc569f9ba0a5a8cf9480210af88739f042dd386d9141cd6195e9db6
+/forward_probes/rows[0]/probes[1]/pivots_sha256 = dc6aef98d94683e4b802a42462d944c000735fc1ddfad43d8e48c538d6b40e20
+/forward_probes/rows[0]/probes[2]/pivots_sha256 = 012ae0111405986e19dac033213c74e60cf0236bd69d5962ea52f59ca723a3c4
+/forward_probes/rows[1]/probes[0]/pivots_sha256 = e3a54aa9993ba0868901bf092d052f745c52339436bca5264c3bfba4c03d6794
+/forward_probes/rows[1]/probes[1]/pivots_sha256 = 4c9362051c1dfa3248a0b15f6a76956f4ad62c94827d1bc95fc4066034311fae
+/forward_probes/rows[1]/probes[2]/pivots_sha256 = dc6aef98d94683e4b802a42462d944c000735fc1ddfad43d8e48c538d6b40e20
+/forward_probes/rows[2]/probes[0]/pivots_sha256 = f52193237fbdeb4bbc0db83bf3b61efaff69418517cc86ea38c29cc8954e223a
+/forward_probes/rows[2]/probes[1]/pivots_sha256 = 21b0b85ab24585cdd2826aebfbee5810724d0e4efa4f2b4a93e605b32672b1dc
+/forward_probes/rows[2]/probes[2]/pivots_sha256 = d991837539451cf6385452fb0e4721ff75c73e3b4b805483ba6be1cf038cd3e9
+/integer_grid_control/best/12/future_pivots = 3
+/integer_grid_control/best/24/future_pivots = 3
+/integer_grid_control/best/3/future_pivots = 3
+/integer_grid_control/best/6/future_pivots = 3
+/integer_grid_full_sha256 = 2396c09a80f5b3b98127a671bbac1d4a025e40bc6e030e458440ae82bacb0c04
+/results/data/support_sha256 = e575abb297af4b1937105fffa7a8eefff50db594af999b40c063b2d0d741dbfd
+/results/rows[0]/future_pivots = 3
+/results/rows[0]/generations = 300
+/results/rows[0]/population = 20
+/results/rows[0]/records_sha256 = d1badaa5710fb445afec23822c46f6af470be091e05361f7a6f5805718dff36c
+/results/rows[0]/seed = 7
+/results/rows[0]/seeds[0]/seed = 7
+/results/rows[0]/seeds[1]/seed = 19
+/results/rows[0]/seeds[2]/seed = 43
+/results/rows[1]/future_pivots = 3
+/results/rows[1]/generations = 300
+/results/rows[1]/population = 20
+/results/rows[1]/records_sha256 = 6f4bb6a22981f80336b5ab991e5d44858eff462dd343153d65c64067688e0236
+/results/rows[1]/seed = 7
+/results/rows[1]/seeds[0]/seed = 7
+/results/rows[1]/seeds[1]/seed = 19
+/results/rows[1]/seeds[2]/seed = 43
+/results/rows[2]/future_pivots = 3
+/results/rows[2]/generations = 300
+/results/rows[2]/population = 20
+/results/rows[2]/records_sha256 = b9feef052da5b837979ca7c02f3c648a6db928022f2f1709cab18a08c4c16bff
+/results/rows[2]/seed = 7
+/results/rows[2]/seeds[0]/seed = 7
+/results/rows[2]/seeds[1]/seed = 19
+/results/rows[2]/seeds[2]/seed = 43

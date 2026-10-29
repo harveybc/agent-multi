@@ -1,0 +1,8 @@
+paths per horizon [{'max_abs_error': 0.0, 'paths': 39240}, {'max_abs_error': 0.0, 'paths': 38216}, {'max_abs_error': 0.0, 'paths': 32382}, {'max_abs_error': 0.0, 'paths': 25078}] sum 134916
+PROFILES.source_sha256[RESULTS.json] dd9567984b23dc34d40c10c3fffa34b258db2b787b49e114be7c17cb3fe37275
+committed k3 RESULTS.json sha         d12b57cb23de266e98cb9c135be84b3acf3ac8ba017460e4517073234409bb62
+PROFILES.code_sha256 {'app/zigzag_risk_profiles.py': '19c329fc172421b1ed1bf152ee4ee56b4b0a9576e20f199855db3528fd25bab1', 'tools/zigzag_risk_profiles.py': '1074268f417056907f42b633afb0ec9f2f6c2dabf6a83ef563184a08ed05309f'}
+CONFIG row 3 buy 15033 {'median': {'mae_pips': 7.399999999999629, 'tp_pips': 20.000000000000018}, 'p75': {'mae_pips': 15.099999999999003, 'tp_pips': 35.89999999999982}}
+CONFIG row 3 sell 15053 {'median': {'mae_pips': 7.700000000000484, 'tp_pips': 19.600000000000726}, 'p75': {'mae_pips': 15.999999999998238, 'tp_pips': 35.30000000000033}}
+PROFILES h3 buy median/p75 tp 20.000000000000018 35.89999999999982 mae 7.399999999999629 15.099999999999003
+tp_mae_correlation range -0.020464197628297466 0.0694583860735918

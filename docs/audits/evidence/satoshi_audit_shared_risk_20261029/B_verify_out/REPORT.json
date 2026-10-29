@@ -1,0 +1,218 @@
+{
+  "additional_controls": [
+    {
+      "actual": "NOP",
+      "case": "zero_quality",
+      "direction": 1,
+      "expected": "NOP"
+    },
+    {
+      "actual": "NOP",
+      "case": "zero_budget",
+      "direction": 1,
+      "expected": "NOP"
+    },
+    {
+      "actual": "NOP",
+      "case": "eroded_tp",
+      "direction": 1,
+      "expected": "NOP"
+    },
+    {
+      "actual": "NOP",
+      "case": "spread_through_sl",
+      "direction": 1,
+      "expected": "NOP"
+    },
+    {
+      "actual": "NOP",
+      "case": "below_minimum",
+      "direction": 1,
+      "expected": "NOP"
+    },
+    {
+      "actual": "NOP",
+      "case": "zero_mae_unbuffered",
+      "direction": 1,
+      "expected": "NOP"
+    },
+    {
+      "actual": "ORDER",
+      "case": "zero_mae_buffered",
+      "direction": 1,
+      "expected": "ORDER"
+    },
+    {
+      "case": "funding_reduces_q",
+      "direction": 1,
+      "q_after": 0.1264382988687745,
+      "q_before": 0.177421483896502
+    },
+    {
+      "budget": 10.0,
+      "case": "gap_exceeds_nominal_budget_as_expected",
+      "direction": 1,
+      "gap_loss": 90.63936000000088,
+      "nominal_loss": 9.999360000000813
+    },
+    {
+      "actual": "NOP",
+      "case": "zero_quality",
+      "direction": -1,
+      "expected": "NOP"
+    },
+    {
+      "actual": "NOP",
+      "case": "zero_budget",
+      "direction": -1,
+      "expected": "NOP"
+    },
+    {
+      "actual": "NOP",
+      "case": "eroded_tp",
+      "direction": -1,
+      "expected": "NOP"
+    },
+    {
+      "actual": "NOP",
+      "case": "spread_through_sl",
+      "direction": -1,
+      "expected": "NOP"
+    },
+    {
+      "actual": "NOP",
+      "case": "below_minimum",
+      "direction": -1,
+      "expected": "NOP"
+    },
+    {
+      "actual": "NOP",
+      "case": "zero_mae_unbuffered",
+      "direction": -1,
+      "expected": "NOP"
+    },
+    {
+      "actual": "ORDER",
+      "case": "zero_mae_buffered",
+      "direction": -1,
+      "expected": "ORDER"
+    },
+    {
+      "case": "funding_reduces_q",
+      "direction": -1,
+      "q_after": 0.12643829886879063,
+      "q_before": 0.17742148389653378
+    },
+    {
+      "budget": 10.0,
+      "case": "gap_exceeds_nominal_budget_as_expected",
+      "direction": -1,
+      "gap_loss": 90.63935999999909,
+      "nominal_loss": 9.999359999999022
+    }
+  ],
+  "cases_sha256": "d5c156e1b6115c32c0ed9f913e16b8e23de2c9d06832c472077fb9b73d1a9030",
+  "code_sha256": {
+    "app/horizon_risk_rules.py": "89afca8dd1ba12842449989ff2ca940cb461522a816ef779350b597e2062ae31",
+    "tools/verify_horizon_risk_rules.py": "7f0bfdaf46384a2f8b6bae03e7969e84993e763b0ab777c454c1a3b1a3abfaad"
+  },
+  "config_sha256": "99d7d4dc92f6437c84b8b36de4c29a1ba474489a7c07444899699c00203c3c0e",
+  "counts": {
+    "ORDER": 3456
+  },
+  "engine_execution_sha256": "05179b244b9c095e4b541f5337ee9157b071aea78c8fe002c045f7625c39ff07",
+  "proposals": 3456,
+  "protection_witnesses": 17280,
+  "rows": [
+    {
+      "direction": "buy",
+      "horizon": 3,
+      "max_margin": 999.988,
+      "max_risk_budget_fraction": 0.9999990000000741,
+      "nop": 0,
+      "orders": 432,
+      "proposals": 432,
+      "q_max": 1.0,
+      "q_min": 0.0738263892723716
+    },
+    {
+      "direction": "sell",
+      "horizon": 3,
+      "max_margin": 999.988,
+      "max_risk_budget_fraction": 0.9999995999999095,
+      "nop": 0,
+      "orders": 432,
+      "proposals": 432,
+      "q_max": 1.0,
+      "q_min": 0.07119826538242065
+    },
+    {
+      "direction": "buy",
+      "horizon": 6,
+      "max_margin": 999.988,
+      "max_risk_budget_fraction": 0.9999990000001238,
+      "nop": 0,
+      "orders": 432,
+      "proposals": 432,
+      "q_max": 1.0,
+      "q_min": 0.06707397561941184
+    },
+    {
+      "direction": "sell",
+      "horizon": 6,
+      "max_margin": 999.988,
+      "max_risk_budget_fraction": 0.9999990000000174,
+      "nop": 0,
+      "orders": 432,
+      "proposals": 432,
+      "q_max": 1.0,
+      "q_min": 0.06470665883285062
+    },
+    {
+      "direction": "buy",
+      "horizon": 12,
+      "max_margin": 999.988,
+      "max_risk_budget_fraction": 0.9999968000000456,
+      "nop": 0,
+      "orders": 432,
+      "proposals": 432,
+      "q_max": 1.0,
+      "q_min": 0.05301268434498234
+    },
+    {
+      "direction": "sell",
+      "horizon": 12,
+      "max_margin": 999.988,
+      "max_risk_budget_fraction": 0.9999995999999095,
+      "nop": 0,
+      "orders": 432,
+      "proposals": 432,
+      "q_max": 1.0,
+      "q_min": 0.050926537044372215
+    },
+    {
+      "direction": "buy",
+      "horizon": 24,
+      "max_margin": 999.988,
+      "max_risk_budget_fraction": 0.9999980000000238,
+      "nop": 0,
+      "orders": 432,
+      "proposals": 432,
+      "q_max": 1.0,
+      "q_min": 0.044534947374832844
+    },
+    {
+      "direction": "sell",
+      "horizon": 24,
+      "max_margin": 999.988,
+      "max_risk_budget_fraction": 0.9999990000000022,
+      "nop": 0,
+      "orders": 432,
+      "proposals": 432,
+      "q_max": 1.0,
+      "q_min": 0.04391270260113442
+    }
+  ],
+  "scope": "SYNTHETIC_SIZING_AND_PROTECTION_PRIMITIVES_NOT_ACCOUNT_OR_EARLY_CLOSE_QUALIFICATION",
+  "status": "PASS"
+}

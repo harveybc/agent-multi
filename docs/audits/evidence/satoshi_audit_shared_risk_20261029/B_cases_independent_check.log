@@ -1,0 +1,12 @@
+records 3456 statuses {'NOP': 0, 'ORDER': 3456}
+max margin 999.988 max utilization 0.9999995999999095 budget violations 0 rounding violations 0
+(3, 'buy') q_min 0.073826 q_max 1.000000
+(3, 'sell') q_min 0.071198 q_max 1.000000
+(6, 'buy') q_min 0.067074 q_max 1.000000
+(6, 'sell') q_min 0.064707 q_max 1.000000
+(12, 'buy') q_min 0.053013 q_max 1.000000
+(12, 'sell') q_min 0.050927 q_max 1.000000
+(24, 'buy') q_min 0.044535 q_max 1.000000
+(24, 'sell') q_min 0.043913 q_max 1.000000
+b_sl values {0.25} b_tp values {0.1}
+cells per row 432 = 2*3*3*3*2*2*2 = 432

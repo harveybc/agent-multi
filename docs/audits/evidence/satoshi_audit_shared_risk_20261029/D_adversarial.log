@@ -1,0 +1,59 @@
+== baseline (reference-like h3 buy, median refs, 1 pip spread) ==
+[baseline] -> {'status': 'ORDER', 'q': 1.0, 'units': 45454, 'sl': 1.09916, 'tp': 1.102, 'margin': 999.988, 'estimated_loss': 44.544920000007906, 'risk_budget': 50.0, 'loss_per_unit': 0.0009800000000001739}
+   check: rho*balance = 50.0 ; units*loss_per_unit = 44.544920000007906
+   max units q=1 = 45454 ; margin at q=1 = 999.988
+
+== (i) tiny balance: integer units round to 0 ==
+[balance=1.0] -> {'status': 'ORDER', 'q': 1.0, 'units': 4, 'sl': 1.09916, 'tp': 1.102, 'margin': 0.08800000000000001, 'estimated_loss': 0.0039200000000006955, 'risk_budget': 0.005, 'loss_per_unit': 0.0009800000000001739}
+[balance=0.5] -> {'status': 'ORDER', 'q': 1.0, 'units': 2, 'sl': 1.09916, 'tp': 1.102, 'margin': 0.044000000000000004, 'estimated_loss': 0.0019600000000003477, 'risk_budget': 0.0025, 'loss_per_unit': 0.0009800000000001739}
+[balance=0.2] -> {'status': 'NOP', 'reason': 'BELOW_MINIMUM_UNITS', 'q': 0.0, 'units': 0, 'sl': 1.09916, 'tp': 1.102}
+[balance=0.01] -> {'status': 'NOP', 'reason': 'BELOW_MINIMUM_UNITS', 'q': 0.0, 'units': 0, 'sl': 1.09916, 'tp': 1.102}
+   units_max(balance=0.2, 1.1) = 0 ; units_max(0.5,1.1)= 2
+   q-driven rounding to zero: balance 100, rho .001 -> budget .1 USD; loss_per_unit ~ 0.0009800000000001739
+[balance=100 rho=.001] -> {'status': 'ORDER', 'q': 0.22475950732712008, 'units': 102, 'sl': 1.09916, 'tp': 1.102, 'margin': 2.244, 'estimated_loss': 0.09996000000001773, 'risk_budget': 0.1, 'loss_per_unit': 0.0009800000000001739}
+[balance=30 rho=.001] -> {'status': 'ORDER', 'q': 0.2250900360143658, 'units': 30, 'sl': 1.09916, 'tp': 1.102, 'margin': 0.66, 'estimated_loss': 0.029400000000005217, 'risk_budget': 0.03, 'loss_per_unit': 0.0009800000000001739}
+
+== (ii) spread larger than buffer ==
+[spread=2pips buffer=1] -> {'status': 'ORDER', 'q': 1.0, 'units': 45454, 'sl': 1.09916, 'tp': 1.102, 'margin': 999.988, 'estimated_loss': 44.544920000007906, 'risk_budget': 50.0, 'loss_per_unit': 0.0009800000000001739}
+[spread=5pips buffer=1] -> {'status': 'ORDER', 'q': 1.0, 'units': 45454, 'sl': 1.09916, 'tp': 1.102, 'margin': 999.988, 'estimated_loss': 44.544920000007906, 'risk_budget': 50.0, 'loss_per_unit': 0.0009800000000001739}
+[spread=8pips buffer=1] -> {'status': 'NOP', 'reason': 'LEVELS_NOT_EXECUTABLE', 'q': 0.0, 'units': 0, 'sl': 1.09916, 'tp': 1.102}
+[spread=8.3pips buffer=1] -> {'status': 'NOP', 'reason': 'LEVELS_NOT_EXECUTABLE', 'q': 0.0, 'units': 0, 'sl': 1.09916, 'tp': 1.102}
+[spread=8.4pips buffer=1] -> {'status': 'NOP', 'reason': 'LEVELS_NOT_EXECUTABLE', 'q': 0.0, 'units': 0, 'sl': 1.09916, 'tp': 1.102}
+[spread=9pips buffer=1] -> {'status': 'NOP', 'reason': 'LEVELS_NOT_EXECUTABLE', 'q': 0.0, 'units': 0, 'sl': 1.09916, 'tp': 1.102}
+[spread=20pips buffer=1] -> {'status': 'NOP', 'reason': 'LEVELS_NOT_EXECUTABLE', 'q': 0.0, 'units': 0, 'sl': 1.09916, 'tp': 1.102}
+   MAE=0 with buffer 1 pip and spread 0.5 / 1 / 1.5 pips:
+[mae=0 spread=0.5pips] -> {'status': 'ORDER', 'q': 1.0, 'units': 45454, 'sl': 1.0999, 'tp': 1.102, 'margin': 999.988, 'estimated_loss': 10.9089599999995, 'risk_budget': 50.0, 'loss_per_unit': 0.00023999999999998897}
+[mae=0 spread=0.9pips] -> {'status': 'NOP', 'reason': 'LEVELS_NOT_EXECUTABLE', 'q': 0.0, 'units': 0, 'sl': 1.0999, 'tp': 1.102}
+[mae=0 spread=0.95pips] -> {'status': 'NOP', 'reason': 'LEVELS_NOT_EXECUTABLE', 'q': 0.0, 'units': 0, 'sl': 1.0999, 'tp': 1.102}
+[mae=0 spread=1.0pips] -> {'status': 'NOP', 'reason': 'LEVELS_NOT_EXECUTABLE', 'q': 0.0, 'units': 0, 'sl': 1.0999, 'tp': 1.102}
+[mae=0 spread=1.5pips] -> {'status': 'NOP', 'reason': 'LEVELS_NOT_EXECUTABLE', 'q': 0.0, 'units': 0, 'sl': 1.0999, 'tp': 1.102}
+   buffer=0 and MAE=0, spread 0 (liquidation == entry):
+[mae=0 buffer=0 spread=0] -> {'status': 'NOP', 'reason': 'LEVELS_NOT_EXECUTABLE', 'q': 0.0, 'units': 0, 'sl': 1.1, 'tp': 1.102}
+
+== (iii) negative / NaN / inf sigma ==
+[sigma=-0.0001] -> EXCEPTION ValueError: INVALID_LEVEL_INPUT
+[sigma=nan] -> EXCEPTION ValueError: INVALID_LEVEL_INPUT
+[sigma=inf] -> EXCEPTION ValueError: INVALID_LEVEL_INPUT
+[sigma=-0.0] -> {'status': 'ORDER', 'q': 1.0, 'units': 45454, 'sl': 1.09916, 'tp': 1.102, 'margin': 999.988, 'estimated_loss': 44.544920000007906, 'risk_budget': 50.0, 'loss_per_unit': 0.0009800000000001739}
+   negative b_sl / b_tp genes, nan rho:
+   coefficients(**{'b_sl': -0.1}) -> ValueError: INVALID_RISK_GENE
+   coefficients(**{'b_tp': -0.1}) -> ValueError: INVALID_RISK_GENE
+   coefficients(**{'rho': nan}) -> ValueError: INVALID_RISK_GENE
+   coefficients(**{'rho': 1.5}) -> ValueError: INVALID_RISK_GENE
+   coefficients(**{'a_sl': 0.0}) -> ValueError: INVALID_RISK_GENE
+   large sigma with b_tp=1 erodes TP below zero distance:
+[sigma=.003 b_tp=1] -> {'status': 'NOP', 'reason': 'LEVELS_NOT_EXECUTABLE', 'q': 0.0, 'units': 0, 'sl': 1.09916, 'tp': 1.099}
+   large sigma with b_sl=1 widens SL (q must drop):
+[sigma=.003 b_sl=1] -> {'status': 'ORDER', 'q': 0.27638522617044814, 'units': 12562, 'sl': 1.09616, 'tp': 1.102, 'margin': 276.36400000000003, 'estimated_loss': 49.996760000000826, 'risk_budget': 50.0, 'loss_per_unit': 0.003980000000000066}
+
+== rounding direction check ==
+   dir=1 raw_sl=1.099163 sl=1.099160 (dist 8.430 pips vs raw 8.400) raw_tp=1.102003 tp=1.102000 (dist 19.970 pips vs raw 20.000)
+   dir=-1 raw_sl=1.100843 sl=1.100850 (dist 8.470 pips vs raw 8.400) raw_tp=1.098003 tp=1.098010 (dist 19.930 pips vs raw 20.000)
+
+== budget claim: loss modeled vs. gap; stop slippage already in loss_cost ==
+[budget probe rho=.005] -> {'status': 'ORDER', 'q': 1.0, 'units': 45454, 'sl': 1.09916, 'tp': 1.102, 'margin': 999.988, 'estimated_loss': 44.544920000007906, 'risk_budget': 50.0, 'loss_per_unit': 0.0009800000000001739}
+   native _protect on 100-pip adverse gap -> ('SL', 1.09, True, False) ; realized loss = 460.90356000000037 vs budget 50.0
+   utilization = 0.8908984000001581
+   algebra: units=floor(q*umax) <= q*umax = min(1,budget/(umax*lpu))*umax -> loss=units*lpu <= budget. Holds iff loss linear in units and SL fill at SL (no gap), stop slippage fixed per unit.
+   loss_per_unit uses rounded SL: 0.0009800000000001739 = rounded dist 0.0008400000000001739 + cost 0.00014
+   native order_units(min rounding) with risk_accepts_minimum=False: units for q tiny -> None
