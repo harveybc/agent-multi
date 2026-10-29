@@ -2,6 +2,10 @@
 
 ## Priority override: 2026-10-28
 
+Latest: [four/five-event comparison and search-adequacy witness](121_ZIGZAG_FOUR_FIVE_EVENTS_RESULTS.md).
+24 additional 20x30 searches and audits completed; positive marginal exit gains
+on fixed support, and a known control exceeding the 24h/K=5 search winner.
+
 Completed owner budget: [corrected K=2 versus K=3, population 20 and 30 generations](119_ZIGZAG_NEXT_EVENTS_P20_G30_RESULTS.md).
 24 searches and both scalar audits passed; paired scores and coverage reported.
 

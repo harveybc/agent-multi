@@ -134,6 +134,31 @@ def test_third_endpoint_can_improve_best_opportunity():
         audit_event_choices(t,z,(2,5,1),three,3,[0])
 
 
+@pytest.mark.parametrize('k', [4,5])
+def test_extra_events_only_enlarge_the_allowed_exit_set(k):
+    from tools.audit_zigzag_opportunity_results import audit_event_choices
+    prices=(100,102,100,98,100,105,100,95,100,110,100,90)
+    events=[(1,1,103),(3,-1,97),(5,1,106),(7,-1,94),(9,1,111),(11,-1,89)]
+    t,z=fixture(prices=prices,pivots=events)
+    t.fill_cost[:]=0
+    a=OpportunityEvaluator(t,z,1,k-1).evaluate((2,5,1),True)['records']
+    b=OpportunityEvaluator(t,z,1,k).evaluate((2,5,1),True)['records']
+    assert b['candidate_end'][0].tolist()==[i for i,_,_ in events[:k]]
+    assert np.all(b['score'][:,0]>=a['score'][:,0])
+    assert audit_event_choices(t,z,(2,5,1),b,k,[0])==2*k
+    last=events[k-1][0]
+    t.high[last+1:]=1000; t.low[last+1:]=1
+    z.hindsight_pivots=lambda h,l,p:events[:k]+[(events[k][0],-1,1)]
+    c=OpportunityEvaluator(t,z,1,k).evaluate((2,5,1),True)['records']
+    np.testing.assert_array_equal(b['score'][:,0],c['score'][:,0])
+
+
+def test_future_event_count_outside_registered_sweep_refused():
+    t,z=fixture()
+    with pytest.raises(ValueError,match='FUTURE_PIVOTS_MUST_BE_2_TO_5'):
+        OpportunityEvaluator(t,z,1,6)
+
+
 def test_missing_hour_and_session_not_compressed():
     assert contiguous_bounds(np.array([0,1,3,4,5])*HOUR,np.array([0,0,0,1,1])) == [(0,2),(2,3),(3,5)]
 

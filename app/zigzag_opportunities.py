@@ -116,8 +116,8 @@ class OpportunityEvaluator:
     def __init__(self, tape, zigzag, horizon, future_pivots=2):
         self.tape, self.z, self.h = tape, zigzag, horizon
         self.origins = np.flatnonzero(tape.allowed)
-        if future_pivots not in (2, 3):
-            raise ValueError('FUTURE_PIVOTS_MUST_BE_2_OR_3')
+        if future_pivots not in (2, 3, 4, 5):
+            raise ValueError('FUTURE_PIVOTS_MUST_BE_2_TO_5')
         self.future_pivots = future_pivots
         self.chunk_end = np.empty(len(tape.open), int)
         for a, b in tape.chunks:

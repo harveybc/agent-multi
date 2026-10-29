@@ -1,0 +1,2202 @@
+{
+  "arms": [
+    {
+      "audit": {
+        "checks": [
+          {
+            "candidate_paths": 1024,
+            "generations_verified": 90,
+            "horizon": 3,
+            "max_abs_error": 0.0,
+            "scalar_paths": 512,
+            "schedule_nonoverlap": true
+          },
+          {
+            "candidate_paths": 1024,
+            "generations_verified": 90,
+            "horizon": 6,
+            "max_abs_error": 0.0,
+            "scalar_paths": 512,
+            "schedule_nonoverlap": true
+          },
+          {
+            "candidate_paths": 1024,
+            "generations_verified": 90,
+            "horizon": 12,
+            "max_abs_error": 0.0,
+            "scalar_paths": 512,
+            "schedule_nonoverlap": true
+          },
+          {
+            "candidate_paths": 1024,
+            "generations_verified": 90,
+            "horizon": 24,
+            "max_abs_error": 0.0,
+            "scalar_paths": 512,
+            "schedule_nonoverlap": true
+          }
+        ],
+        "identity": "785c9f9e370848cb4881146a1e02b03a1cf9d42eba30f3ed7680b167e2200c05",
+        "results_sha256": "ebb5dbea88cb7838e73bd55a8cc77fac12843d0e730f3a0f6df94e0737a4f727",
+        "scope": "SCALAR_RECONSTRUCTION_AND_RECEIPTS_NOT_NATIVE_EXECUTION_QUALIFICATION",
+        "source_sha256": "ba332540b24b7cd08cc38e3e8290c8efe05462abb926ff552a6bb56a6f649046",
+        "status": "PASS"
+      },
+      "identity": "785c9f9e370848cb4881146a1e02b03a1cf9d42eba30f3ed7680b167e2200c05",
+      "k": 2,
+      "results": {
+        "data": {
+          "chunks": 209,
+          "cost_profile": {
+            "commission_per_lot_side": 3.5,
+            "entry_delay_bars": 0,
+            "limit_through": 0.0001,
+            "lot_units": 100000.0,
+            "slippage_market": 2e-05,
+            "slippage_stop": 5e-05,
+            "spread_schedule": [
+              [
+                0,
+                1,
+                0.0003
+              ],
+              [
+                1,
+                3,
+                0.0001
+              ],
+              [
+                3,
+                9,
+                6e-05
+              ],
+              [
+                9,
+                21,
+                3e-05
+              ],
+              [
+                21,
+                23,
+                6e-05
+              ],
+              [
+                23,
+                24,
+                0.00015
+              ]
+            ],
+            "swap_long_per_lot": -7.0,
+            "swap_short_per_lot": 2.5,
+            "triple_swap_rollover_index": 3,
+            "weekly_open_spread": 0.0003
+          },
+          "costs_status": "ASSUMED_NOT_BROKER_VERIFIED",
+          "end": "2023-12-29 21:00:00+00:00",
+          "excluded_origins": 5016,
+          "origins": 19879,
+          "rows": 24895,
+          "start": "2020-01-02 01:00:00+00:00",
+          "support_sha256": "e575abb297af4b1937105fffa7a8eefff50db594af999b40c063b2d0d741dbfd",
+          "years": {
+            "2020": 6232,
+            "2021": 6235,
+            "2022": 6231,
+            "2023": 6197
+          }
+        },
+        "elapsed_seconds": 110.34826211698237,
+        "financial_model_runs": 0,
+        "rows": [
+          {
+            "buy_pct": 50.18361084561598,
+            "censored_origins": 62,
+            "complete_origins": 19817,
+            "coverage_pct": 99.68811308415916,
+            "deviation_probe": [
+              {
+                "fitness": 0.2722020798862531,
+                "pivots": 6159,
+                "value": 1.0
+              },
+              {
+                "fitness": 0.2722020798862531,
+                "pivots": 6159,
+                "value": 5.0
+              },
+              {
+                "fitness": 0.2722020798862531,
+                "pivots": 6159,
+                "value": 60.0
+              },
+              {
+                "fitness": 0.2722020798862531,
+                "pivots": 6159,
+                "value": 120.0
+              }
+            ],
+            "eligible": true,
+            "endpoint_policy": "NEXT_K_EVENTS_NO_TIMED_EXIT",
+            "fitness": 0.2722020798862531,
+            "future_pivots": 2,
+            "generations": 30,
+            "horizon": 3,
+            "interval_buy_pct": 50.362131401965854,
+            "interval_net_pips": 118628.1000000012,
+            "interval_trades": 3866,
+            "interval_win_pct": 100.0,
+            "mae_denominator_fitness": 1.8776020073066075,
+            "mean_selected_duration_hours": 5.370166582534074,
+            "mean_selected_net_pips": 30.512688036345292,
+            "median_pivot_hours": 3.0,
+            "nop_pct": 0.0352130388852558,
+            "origins": 19879,
+            "params": {
+              "backstep": 1,
+              "depth": 3,
+              "deviation_pips": 5.0
+            },
+            "pivot_pairs": 5950,
+            "pivots": 6159,
+            "population": 20,
+            "records_file": "h3_OPPORTUNITIES.npz",
+            "records_sha256": "b4e45c5fa08e29f08e79f71a789bf05d61e694b747126930b63568c8abe852e8",
+            "scope": "HINDSIGHT_OPPORTUNITIES_NOT_ACCOUNT_PERFORMANCE",
+            "seed": 7,
+            "seeds": [
+              {
+                "eligible": true,
+                "fitness": 0.2722020798862531,
+                "seed": 7
+              },
+              {
+                "eligible": true,
+                "fitness": 0.2722020798862531,
+                "seed": 19
+              },
+              {
+                "eligible": true,
+                "fitness": 0.2722020798862531,
+                "seed": 43
+              }
+            ],
+            "selected_win_pct": 100.0,
+            "sell_pct": 49.46928919965793,
+            "unique_candidates": 409,
+            "yearly_fitness": {
+              "2020": 0.27299163377992985,
+              "2021": 0.2684390253330305,
+              "2022": 0.28063595044799816,
+              "2023": 0.2667109076767379
+            }
+          },
+          {
+            "buy_pct": 49.96227174405151,
+            "censored_origins": 166,
+            "complete_origins": 19713,
+            "coverage_pct": 99.16494793500678,
+            "deviation_probe": [
+              {
+                "fitness": 0.2431576446977503,
+                "pivots": 4376,
+                "value": 1.0
+              },
+              {
+                "fitness": 0.2431576446977503,
+                "pivots": 4376,
+                "value": 5.0
+              },
+              {
+                "fitness": 0.2431576446977503,
+                "pivots": 4376,
+                "value": 60.0
+              },
+              {
+                "fitness": 0.2431576446977503,
+                "pivots": 4376,
+                "value": 120.0
+              }
+            ],
+            "eligible": true,
+            "endpoint_policy": "NEXT_K_EVENTS_NO_TIMED_EXIT",
+            "fitness": 0.2431576446977503,
+            "future_pivots": 2,
+            "generations": 30,
+            "horizon": 6,
+            "interval_buy_pct": 50.91463414634146,
+            "interval_net_pips": 107880.8500000008,
+            "interval_trades": 2952,
+            "interval_win_pct": 100.0,
+            "mae_denominator_fitness": 1.7351653721861353,
+            "mean_selected_duration_hours": 6.850446428571429,
+            "mean_selected_net_pips": 35.7918653612013,
+            "median_pivot_hours": 5.0,
+            "nop_pct": 0.005030434126465114,
+            "origins": 19879,
+            "params": {
+              "backstep": 2,
+              "depth": 4,
+              "deviation_pips": 5.0
+            },
+            "pivot_pairs": 4167,
+            "pivots": 4376,
+            "population": 20,
+            "records_file": "h6_OPPORTUNITIES.npz",
+            "records_sha256": "c297a4d9e70ba8b430bfc5ee60f72d443d725ded22082c1e9c8c297ca3e7795c",
+            "scope": "HINDSIGHT_OPPORTUNITIES_NOT_ACCOUNT_PERFORMANCE",
+            "seed": 7,
+            "seeds": [
+              {
+                "eligible": true,
+                "fitness": 0.2431576446977503,
+                "seed": 7
+              },
+              {
+                "eligible": true,
+                "fitness": 0.2431576446977503,
+                "seed": 19
+              },
+              {
+                "eligible": true,
+                "fitness": 0.2289381941313081,
+                "seed": 43
+              }
+            ],
+            "selected_win_pct": 100.0,
+            "sell_pct": 49.19764575682881,
+            "unique_candidates": 429,
+            "yearly_fitness": {
+              "2020": 0.24850379317447024,
+              "2021": 0.23761976406582533,
+              "2022": 0.2530892444875535,
+              "2023": 0.23338018511284236
+            }
+          },
+          {
+            "buy_pct": 47.009406911816484,
+            "censored_origins": 1155,
+            "complete_origins": 18724,
+            "coverage_pct": 94.18984858393279,
+            "deviation_probe": [
+              {
+                "fitness": 0.17127205793339306,
+                "pivots": 2207,
+                "value": 1.0
+              },
+              {
+                "fitness": 0.17127205793339306,
+                "pivots": 2207,
+                "value": 5.0
+              },
+              {
+                "fitness": 0.17127205793339306,
+                "pivots": 2207,
+                "value": 60.0
+              },
+              {
+                "fitness": 0.17127205793339306,
+                "pivots": 2207,
+                "value": 120.0
+              }
+            ],
+            "eligible": true,
+            "endpoint_policy": "NEXT_K_EVENTS_NO_TIMED_EXIT",
+            "fitness": 0.17127205793339306,
+            "future_pivots": 2,
+            "generations": 30,
+            "horizon": 12,
+            "interval_buy_pct": 50.683994528043776,
+            "interval_net_pips": 81204.90000000027,
+            "interval_trades": 1462,
+            "interval_win_pct": 100.0,
+            "mae_denominator_fitness": 1.278464886951208,
+            "mean_selected_duration_hours": 11.927793206579791,
+            "mean_selected_net_pips": 49.691425443281354,
+            "median_pivot_hours": 9.0,
+            "nop_pct": 0.0,
+            "origins": 19879,
+            "params": {
+              "backstep": 5,
+              "depth": 8,
+              "deviation_pips": 21.1
+            },
+            "pivot_pairs": 1998,
+            "pivots": 2207,
+            "population": 20,
+            "records_file": "h12_OPPORTUNITIES.npz",
+            "records_sha256": "e593f3d6230c1a6882dcdb7d14c6a7397c9e96e3f440e1cf2453cc05ba85bf0d",
+            "scope": "HINDSIGHT_OPPORTUNITIES_NOT_ACCOUNT_PERFORMANCE",
+            "seed": 43,
+            "seeds": [
+              {
+                "eligible": true,
+                "fitness": 0.16058241111508711,
+                "seed": 7
+              },
+              {
+                "eligible": true,
+                "fitness": 0.16703993089338273,
+                "seed": 19
+              },
+              {
+                "eligible": true,
+                "fitness": 0.17127205793339306,
+                "seed": 43
+              }
+            ],
+            "selected_win_pct": 100.0,
+            "sell_pct": 47.1804416721163,
+            "unique_candidates": 475,
+            "yearly_fitness": {
+              "2020": 0.17668666736652436,
+              "2021": 0.15984402837310227,
+              "2022": 0.17831510222151328,
+              "2023": 0.1702697606897349
+            }
+          },
+          {
+            "buy_pct": 43.74968559786709,
+            "censored_origins": 2555,
+            "complete_origins": 17324,
+            "coverage_pct": 87.14724080688163,
+            "deviation_probe": [
+              {
+                "fitness": 0.12875592598781893,
+                "pivots": 1407,
+                "value": 1.0
+              },
+              {
+                "fitness": 0.12875592598781893,
+                "pivots": 1407,
+                "value": 5.0
+              },
+              {
+                "fitness": 0.12875592598781893,
+                "pivots": 1407,
+                "value": 60.0
+              },
+              {
+                "fitness": 0.12875592598781893,
+                "pivots": 1407,
+                "value": 120.0
+              }
+            ],
+            "eligible": true,
+            "endpoint_policy": "NEXT_K_EVENTS_NO_TIMED_EXIT",
+            "fitness": 0.12875592598781893,
+            "future_pivots": 2,
+            "generations": 30,
+            "horizon": 24,
+            "interval_buy_pct": 50.953984287317624,
+            "interval_net_pips": 63296.25000000012,
+            "interval_trades": 891,
+            "interval_win_pct": 100.0,
+            "mae_denominator_fitness": 0.9730385407322875,
+            "mean_selected_duration_hours": 16.98897483260217,
+            "mean_selected_net_pips": 60.19991630108516,
+            "median_pivot_hours": 17.0,
+            "nop_pct": 0.0,
+            "origins": 19879,
+            "params": {
+              "backstep": 11,
+              "depth": 12,
+              "deviation_pips": 17.1
+            },
+            "pivot_pairs": 1198,
+            "pivots": 1407,
+            "population": 20,
+            "records_file": "h24_OPPORTUNITIES.npz",
+            "records_sha256": "ec4ee227e19b98f74cddfe3a60470cbc6506dfad53585b282668cecfa4d5958a",
+            "scope": "HINDSIGHT_OPPORTUNITIES_NOT_ACCOUNT_PERFORMANCE",
+            "seed": 7,
+            "seeds": [
+              {
+                "eligible": true,
+                "fitness": 0.12875592598781893,
+                "seed": 7
+              },
+              {
+                "eligible": true,
+                "fitness": 0.10900639314797744,
+                "seed": 19
+              },
+              {
+                "eligible": true,
+                "fitness": 0.11702101287764538,
+                "seed": 43
+              }
+            ],
+            "selected_win_pct": 100.0,
+            "sell_pct": 43.39755520901454,
+            "unique_candidates": 525,
+            "yearly_fitness": {
+              "2020": 0.12776484759629633,
+              "2021": 0.12613572572332676,
+              "2022": 0.13403141824120976,
+              "2023": 0.1270777909387844
+            }
+          }
+        ],
+        "scope": "RETROSPECTIVE_TRAIN_OPPORTUNITY_MAP_NOT_STRATEGY_QUALIFICATION",
+        "test_read": false,
+        "validation_read": false
+      }
+    },
+    {
+      "audit": {
+        "checks": [
+          {
+            "candidate_paths": 1536,
+            "generations_verified": 90,
+            "horizon": 3,
+            "max_abs_error": 0.0,
+            "scalar_paths": 512,
+            "schedule_nonoverlap": true
+          },
+          {
+            "candidate_paths": 1536,
+            "generations_verified": 90,
+            "horizon": 6,
+            "max_abs_error": 0.0,
+            "scalar_paths": 512,
+            "schedule_nonoverlap": true
+          },
+          {
+            "candidate_paths": 1536,
+            "generations_verified": 90,
+            "horizon": 12,
+            "max_abs_error": 0.0,
+            "scalar_paths": 512,
+            "schedule_nonoverlap": true
+          },
+          {
+            "candidate_paths": 1536,
+            "generations_verified": 90,
+            "horizon": 24,
+            "max_abs_error": 0.0,
+            "scalar_paths": 512,
+            "schedule_nonoverlap": true
+          }
+        ],
+        "identity": "3c3ae09b0b7cf7e36cc9ec7e611275d368038376be75e7e319db3feb7631e0ba",
+        "results_sha256": "9616ebf4063cc4fe87f5ac99f09fd884f39108db448e6c032d955b4a1589cdd5",
+        "scope": "SCALAR_RECONSTRUCTION_AND_RECEIPTS_NOT_NATIVE_EXECUTION_QUALIFICATION",
+        "source_sha256": "ba332540b24b7cd08cc38e3e8290c8efe05462abb926ff552a6bb56a6f649046",
+        "status": "PASS"
+      },
+      "identity": "3c3ae09b0b7cf7e36cc9ec7e611275d368038376be75e7e319db3feb7631e0ba",
+      "k": 3,
+      "results": {
+        "data": {
+          "chunks": 209,
+          "cost_profile": {
+            "commission_per_lot_side": 3.5,
+            "entry_delay_bars": 0,
+            "limit_through": 0.0001,
+            "lot_units": 100000.0,
+            "slippage_market": 2e-05,
+            "slippage_stop": 5e-05,
+            "spread_schedule": [
+              [
+                0,
+                1,
+                0.0003
+              ],
+              [
+                1,
+                3,
+                0.0001
+              ],
+              [
+                3,
+                9,
+                6e-05
+              ],
+              [
+                9,
+                21,
+                3e-05
+              ],
+              [
+                21,
+                23,
+                6e-05
+              ],
+              [
+                23,
+                24,
+                0.00015
+              ]
+            ],
+            "swap_long_per_lot": -7.0,
+            "swap_short_per_lot": 2.5,
+            "triple_swap_rollover_index": 3,
+            "weekly_open_spread": 0.0003
+          },
+          "costs_status": "ASSUMED_NOT_BROKER_VERIFIED",
+          "end": "2023-12-29 21:00:00+00:00",
+          "excluded_origins": 5016,
+          "origins": 19879,
+          "rows": 24895,
+          "start": "2020-01-02 01:00:00+00:00",
+          "support_sha256": "e575abb297af4b1937105fffa7a8eefff50db594af999b40c063b2d0d741dbfd",
+          "years": {
+            "2020": 6232,
+            "2021": 6235,
+            "2022": 6231,
+            "2023": 6197
+          }
+        },
+        "elapsed_seconds": 116.45059542698436,
+        "financial_model_runs": 0,
+        "rows": [
+          {
+            "buy_pct": 49.750993510739974,
+            "censored_origins": 259,
+            "complete_origins": 19620,
+            "coverage_pct": 98.69711756124553,
+            "deviation_probe": [
+              {
+                "fitness": 0.2711769119505867,
+                "pivots": 6159,
+                "value": 1.0
+              },
+              {
+                "fitness": 0.2711769119505867,
+                "pivots": 6159,
+                "value": 5.0
+              },
+              {
+                "fitness": 0.2711769119505867,
+                "pivots": 6159,
+                "value": 60.0
+              },
+              {
+                "fitness": 0.2711769119505867,
+                "pivots": 6159,
+                "value": 120.0
+              }
+            ],
+            "eligible": true,
+            "endpoint_policy": "NEXT_K_EVENTS_NO_TIMED_EXIT",
+            "fitness": 0.2711769119505867,
+            "future_pivots": 3,
+            "generations": 30,
+            "horizon": 3,
+            "interval_buy_pct": 50.36687631027254,
+            "interval_net_pips": 118181.15000000119,
+            "interval_trades": 3816,
+            "interval_win_pct": 100.0,
+            "mae_denominator_fitness": 1.8672128127681118,
+            "mean_selected_duration_hours": 5.577573904179409,
+            "mean_selected_net_pips": 31.44509174311927,
+            "median_pivot_hours": 3.0,
+            "nop_pct": 0.0,
+            "origins": 19879,
+            "params": {
+              "backstep": 1,
+              "depth": 3,
+              "deviation_pips": 5.0
+            },
+            "pivot_pairs": 5950,
+            "pivots": 6159,
+            "population": 20,
+            "records_file": "h3_OPPORTUNITIES.npz",
+            "records_sha256": "d1badaa5710fb445afec23822c46f6af470be091e05361f7a6f5805718dff36c",
+            "scope": "HINDSIGHT_OPPORTUNITIES_NOT_ACCOUNT_PERFORMANCE",
+            "seed": 7,
+            "seeds": [
+              {
+                "eligible": true,
+                "fitness": 0.2711769119505867,
+                "seed": 7
+              },
+              {
+                "eligible": true,
+                "fitness": 0.2711769119505867,
+                "seed": 19
+              },
+              {
+                "eligible": true,
+                "fitness": 0.2711769119505867,
+                "seed": 43
+              }
+            ],
+            "selected_win_pct": 100.0,
+            "sell_pct": 48.94612405050556,
+            "unique_candidates": 409,
+            "yearly_fitness": {
+              "2020": 0.27170461024254566,
+              "2021": 0.26769542452274236,
+              "2022": 0.2795617571151599,
+              "2023": 0.2657138104794764
+            }
+          },
+          {
+            "buy_pct": 48.458171940238444,
+            "censored_origins": 771,
+            "complete_origins": 19108,
+            "coverage_pct": 96.1215352884954,
+            "deviation_probe": [
+              {
+                "fitness": 0.23767567494201072,
+                "pivots": 4376,
+                "value": 1.0
+              },
+              {
+                "fitness": 0.23767567494201072,
+                "pivots": 4376,
+                "value": 5.0
+              },
+              {
+                "fitness": 0.23767567494201072,
+                "pivots": 4376,
+                "value": 60.0
+              },
+              {
+                "fitness": 0.23767567494201072,
+                "pivots": 4376,
+                "value": 120.0
+              }
+            ],
+            "eligible": true,
+            "endpoint_policy": "NEXT_K_EVENTS_NO_TIMED_EXIT",
+            "fitness": 0.23767567494201072,
+            "future_pivots": 3,
+            "generations": 30,
+            "horizon": 6,
+            "interval_buy_pct": 50.85851648351648,
+            "interval_net_pips": 107099.80000000075,
+            "interval_trades": 2912,
+            "interval_win_pct": 100.0,
+            "mae_denominator_fitness": 1.684359978410893,
+            "mean_selected_duration_hours": 7.0355871886121,
+            "mean_selected_net_pips": 36.496195310864564,
+            "median_pivot_hours": 5.0,
+            "nop_pct": 0.0,
+            "origins": 19879,
+            "params": {
+              "backstep": 2,
+              "depth": 4,
+              "deviation_pips": 5.0
+            },
+            "pivot_pairs": 4167,
+            "pivots": 4376,
+            "population": 20,
+            "records_file": "h6_OPPORTUNITIES.npz",
+            "records_sha256": "6f4bb6a22981f80336b5ab991e5d44858eff462dd343153d65c64067688e0236",
+            "scope": "HINDSIGHT_OPPORTUNITIES_NOT_ACCOUNT_PERFORMANCE",
+            "seed": 7,
+            "seeds": [
+              {
+                "eligible": true,
+                "fitness": 0.23767567494201072,
+                "seed": 7
+              },
+              {
+                "eligible": true,
+                "fitness": 0.23767567494201072,
+                "seed": 19
+              },
+              {
+                "eligible": true,
+                "fitness": 0.2207928267952695,
+                "seed": 43
+              }
+            ],
+            "selected_win_pct": 100.0,
+            "sell_pct": 47.66336334825695,
+            "unique_candidates": 429,
+            "yearly_fitness": {
+              "2020": 0.24209521848962834,
+              "2021": 0.23225364611805116,
+              "2022": 0.24813766927731498,
+              "2023": 0.22817610007356898
+            }
+          },
+          {
+            "buy_pct": 40.092559987926954,
+            "censored_origins": 3646,
+            "complete_origins": 16233,
+            "coverage_pct": 81.6590371749082,
+            "deviation_probe": [
+              {
+                "fitness": 0.15103561251589645,
+                "pivots": 2207,
+                "value": 1.0
+              },
+              {
+                "fitness": 0.15103561251589645,
+                "pivots": 2207,
+                "value": 5.0
+              },
+              {
+                "fitness": 0.15103561251589645,
+                "pivots": 2207,
+                "value": 60.0
+              },
+              {
+                "fitness": 0.15103561251589645,
+                "pivots": 2207,
+                "value": 120.0
+              }
+            ],
+            "eligible": true,
+            "endpoint_policy": "NEXT_K_EVENTS_NO_TIMED_EXIT",
+            "fitness": 0.15103561251589645,
+            "future_pivots": 3,
+            "generations": 30,
+            "horizon": 12,
+            "interval_buy_pct": 50.99778270509978,
+            "interval_net_pips": 76128.65000000027,
+            "interval_trades": 1353,
+            "interval_win_pct": 100.0,
+            "mae_denominator_fitness": 1.120976147895327,
+            "mean_selected_duration_hours": 12.150249491776012,
+            "mean_selected_net_pips": 50.442801700240274,
+            "median_pivot_hours": 9.0,
+            "nop_pct": 0.0,
+            "origins": 19879,
+            "params": {
+              "backstep": 5,
+              "depth": 8,
+              "deviation_pips": 21.1
+            },
+            "pivot_pairs": 1998,
+            "pivots": 2207,
+            "population": 20,
+            "records_file": "h12_OPPORTUNITIES.npz",
+            "records_sha256": "fb024f8df37c0dd2c9676ffaa5ed5d5141cceac056fbd73784dd63f6a5063754",
+            "scope": "HINDSIGHT_OPPORTUNITIES_NOT_ACCOUNT_PERFORMANCE",
+            "seed": 43,
+            "seeds": [
+              {
+                "eligible": true,
+                "fitness": 0.13925851935760222,
+                "seed": 7
+              },
+              {
+                "eligible": true,
+                "fitness": 0.14638020743997585,
+                "seed": 19
+              },
+              {
+                "eligible": true,
+                "fitness": 0.15103561251589645,
+                "seed": 43
+              }
+            ],
+            "selected_win_pct": 100.0,
+            "sell_pct": 41.56647718698124,
+            "unique_candidates": 479,
+            "yearly_fitness": {
+              "2020": 0.15615469009392657,
+              "2021": 0.1389148657857066,
+              "2022": 0.1566165991305296,
+              "2023": 0.15249964218971138
+            }
+          },
+          {
+            "buy_pct": 30.056843905629055,
+            "censored_origins": 7340,
+            "complete_origins": 12539,
+            "coverage_pct": 63.07661351174606,
+            "deviation_probe": [
+              {
+                "fitness": 0.09811766668647957,
+                "pivots": 1407,
+                "value": 1.0
+              },
+              {
+                "fitness": 0.09811766668647957,
+                "pivots": 1407,
+                "value": 5.0
+              },
+              {
+                "fitness": 0.09811766668647957,
+                "pivots": 1407,
+                "value": 60.0
+              },
+              {
+                "fitness": 0.09811766668647957,
+                "pivots": 1407,
+                "value": 120.0
+              }
+            ],
+            "eligible": true,
+            "endpoint_policy": "NEXT_K_EVENTS_NO_TIMED_EXIT",
+            "fitness": 0.09811766668647957,
+            "future_pivots": 3,
+            "generations": 30,
+            "horizon": 24,
+            "interval_buy_pct": 52.23880597014925,
+            "interval_net_pips": 53832.700000000106,
+            "interval_trades": 737,
+            "interval_win_pct": 100.0,
+            "mae_denominator_fitness": 0.737343535432873,
+            "mean_selected_duration_hours": 16.131429938591594,
+            "mean_selected_net_pips": 58.38652603875908,
+            "median_pivot_hours": 17.0,
+            "nop_pct": 0.0,
+            "origins": 19879,
+            "params": {
+              "backstep": 11,
+              "depth": 12,
+              "deviation_pips": 17.1
+            },
+            "pivot_pairs": 1198,
+            "pivots": 1407,
+            "population": 20,
+            "records_file": "h24_OPPORTUNITIES.npz",
+            "records_sha256": "c531db93a7ba9f3753d533bb173e65200347067a7410e06550ca35e9c4399f7b",
+            "scope": "HINDSIGHT_OPPORTUNITIES_NOT_ACCOUNT_PERFORMANCE",
+            "seed": 7,
+            "seeds": [
+              {
+                "eligible": true,
+                "fitness": 0.09811766668647957,
+                "seed": 7
+              },
+              {
+                "eligible": true,
+                "fitness": 0.07580594473974431,
+                "seed": 19
+              },
+              {
+                "eligible": true,
+                "fitness": 0.08524743432447024,
+                "seed": 43
+              }
+            ],
+            "selected_win_pct": 100.0,
+            "sell_pct": 33.019769606117,
+            "unique_candidates": 525,
+            "yearly_fitness": {
+              "2020": 0.09616552383410515,
+              "2021": 0.09777388370098648,
+              "2022": 0.101340572891959,
+              "2023": 0.09717552335944933
+            }
+          }
+        ],
+        "scope": "RETROSPECTIVE_TRAIN_OPPORTUNITY_MAP_NOT_STRATEGY_QUALIFICATION",
+        "test_read": false,
+        "validation_read": false
+      }
+    },
+    {
+      "audit": {
+        "checks": [
+          {
+            "candidate_paths": 2048,
+            "generations_verified": 90,
+            "horizon": 3,
+            "max_abs_error": 0.0,
+            "scalar_paths": 512,
+            "schedule_nonoverlap": true
+          },
+          {
+            "candidate_paths": 2048,
+            "generations_verified": 90,
+            "horizon": 6,
+            "max_abs_error": 0.0,
+            "scalar_paths": 512,
+            "schedule_nonoverlap": true
+          },
+          {
+            "candidate_paths": 2048,
+            "generations_verified": 90,
+            "horizon": 12,
+            "max_abs_error": 0.0,
+            "scalar_paths": 512,
+            "schedule_nonoverlap": true
+          },
+          {
+            "candidate_paths": 2048,
+            "generations_verified": 90,
+            "horizon": 24,
+            "max_abs_error": 0.0,
+            "scalar_paths": 512,
+            "schedule_nonoverlap": true
+          }
+        ],
+        "identity": "087217c2a3e6096d0c105a6a3c70a4b613bf46888cd4bcbd068970a95500e9e3",
+        "results_sha256": "e1dcd1a01fade390c4a0fb72f30e5d138570af0332819d95c9626fa7c6267e45",
+        "scope": "SCALAR_RECONSTRUCTION_AND_RECEIPTS_NOT_NATIVE_EXECUTION_QUALIFICATION",
+        "source_sha256": "ba332540b24b7cd08cc38e3e8290c8efe05462abb926ff552a6bb56a6f649046",
+        "status": "PASS"
+      },
+      "identity": "087217c2a3e6096d0c105a6a3c70a4b613bf46888cd4bcbd068970a95500e9e3",
+      "k": 4,
+      "results": {
+        "data": {
+          "chunks": 209,
+          "cost_profile": {
+            "commission_per_lot_side": 3.5,
+            "entry_delay_bars": 0,
+            "limit_through": 0.0001,
+            "lot_units": 100000.0,
+            "slippage_market": 2e-05,
+            "slippage_stop": 5e-05,
+            "spread_schedule": [
+              [
+                0,
+                1,
+                0.0003
+              ],
+              [
+                1,
+                3,
+                0.0001
+              ],
+              [
+                3,
+                9,
+                6e-05
+              ],
+              [
+                9,
+                21,
+                3e-05
+              ],
+              [
+                21,
+                23,
+                6e-05
+              ],
+              [
+                23,
+                24,
+                0.00015
+              ]
+            ],
+            "swap_long_per_lot": -7.0,
+            "swap_short_per_lot": 2.5,
+            "triple_swap_rollover_index": 3,
+            "weekly_open_spread": 0.0003
+          },
+          "costs_status": "ASSUMED_NOT_BROKER_VERIFIED",
+          "end": "2023-12-29 21:00:00+00:00",
+          "excluded_origins": 5016,
+          "origins": 19879,
+          "rows": 24895,
+          "start": "2020-01-02 01:00:00+00:00",
+          "support_sha256": "e575abb297af4b1937105fffa7a8eefff50db594af999b40c063b2d0d741dbfd",
+          "years": {
+            "2020": 6232,
+            "2021": 6235,
+            "2022": 6231,
+            "2023": 6197
+          }
+        },
+        "elapsed_seconds": 120.89558953201049,
+        "financial_model_runs": 0,
+        "rows": [
+          {
+            "buy_pct": 48.54871975451481,
+            "censored_origins": 794,
+            "complete_origins": 19085,
+            "coverage_pct": 96.0058353035867,
+            "deviation_probe": [
+              {
+                "fitness": 0.26477138551491913,
+                "pivots": 6159,
+                "value": 1.0
+              },
+              {
+                "fitness": 0.26477138551491913,
+                "pivots": 6159,
+                "value": 5.0
+              },
+              {
+                "fitness": 0.26477138551491913,
+                "pivots": 6159,
+                "value": 60.0
+              },
+              {
+                "fitness": 0.26477138551491913,
+                "pivots": 6159,
+                "value": 120.0
+              }
+            ],
+            "eligible": true,
+            "endpoint_policy": "NEXT_K_EVENTS_NO_TIMED_EXIT",
+            "fitness": 0.26477138551491913,
+            "future_pivots": 4,
+            "generations": 30,
+            "horizon": 3,
+            "interval_buy_pct": 50.39808917197452,
+            "interval_net_pips": 117155.35000000116,
+            "interval_trades": 3768,
+            "interval_win_pct": 100.0,
+            "mae_denominator_fitness": 1.823626322437195,
+            "mean_selected_duration_hours": 5.672832067068378,
+            "mean_selected_net_pips": 31.862342153523716,
+            "median_pivot_hours": 3.0,
+            "nop_pct": 0.0,
+            "origins": 19879,
+            "params": {
+              "backstep": 1,
+              "depth": 3,
+              "deviation_pips": 5.0
+            },
+            "pivot_pairs": 5950,
+            "pivots": 6159,
+            "population": 20,
+            "records_file": "h3_OPPORTUNITIES.npz",
+            "records_sha256": "e7b874151d8086dcfa03f070c9ed0759d3e27bddb46582453f964f43f6ea7e1e",
+            "scope": "HINDSIGHT_OPPORTUNITIES_NOT_ACCOUNT_PERFORMANCE",
+            "seed": 7,
+            "seeds": [
+              {
+                "eligible": true,
+                "fitness": 0.26477138551491913,
+                "seed": 7
+              },
+              {
+                "eligible": true,
+                "fitness": 0.26477138551491913,
+                "seed": 19
+              },
+              {
+                "eligible": true,
+                "fitness": 0.26477138551491913,
+                "seed": 43
+              }
+            ],
+            "selected_win_pct": 100.0,
+            "sell_pct": 47.45711554907189,
+            "unique_candidates": 410,
+            "yearly_fitness": {
+              "2020": 0.26417557488679533,
+              "2021": 0.26208408816718304,
+              "2022": 0.27288175619050925,
+              "2023": 0.2599103621793341
+            }
+          },
+          {
+            "buy_pct": 45.80713315559133,
+            "censored_origins": 1887,
+            "complete_origins": 17992,
+            "coverage_pct": 90.50757080336032,
+            "deviation_probe": [
+              {
+                "fitness": 0.22552180074710043,
+                "pivots": 4376,
+                "value": 1.0
+              },
+              {
+                "fitness": 0.22552180074710043,
+                "pivots": 4376,
+                "value": 5.0
+              },
+              {
+                "fitness": 0.22552180074710043,
+                "pivots": 4376,
+                "value": 60.0
+              },
+              {
+                "fitness": 0.22552180074710043,
+                "pivots": 4376,
+                "value": 120.0
+              }
+            ],
+            "eligible": true,
+            "endpoint_policy": "NEXT_K_EVENTS_NO_TIMED_EXIT",
+            "fitness": 0.22552180074710043,
+            "future_pivots": 4,
+            "generations": 30,
+            "horizon": 6,
+            "interval_buy_pct": 50.64102564102564,
+            "interval_net_pips": 104174.80000000069,
+            "interval_trades": 2808,
+            "interval_win_pct": 100.0,
+            "mae_denominator_fitness": 1.5945475577011086,
+            "mean_selected_duration_hours": 7.057358826144953,
+            "mean_selected_net_pips": 36.68114161849711,
+            "median_pivot_hours": 5.0,
+            "nop_pct": 0.0,
+            "origins": 19879,
+            "params": {
+              "backstep": 2,
+              "depth": 4,
+              "deviation_pips": 5.0
+            },
+            "pivot_pairs": 4167,
+            "pivots": 4376,
+            "population": 20,
+            "records_file": "h6_OPPORTUNITIES.npz",
+            "records_sha256": "8422ecf6e0e6ba934cbd3215073c9331f4ed8c9ca1bf090ef9d36d1eeb14f322",
+            "scope": "HINDSIGHT_OPPORTUNITIES_NOT_ACCOUNT_PERFORMANCE",
+            "seed": 7,
+            "seeds": [
+              {
+                "eligible": true,
+                "fitness": 0.22552180074710043,
+                "seed": 7
+              },
+              {
+                "eligible": true,
+                "fitness": 0.22552180074710043,
+                "seed": 19
+              },
+              {
+                "eligible": true,
+                "fitness": 0.2062689955252019,
+                "seed": 43
+              }
+            ],
+            "selected_win_pct": 100.0,
+            "sell_pct": 44.700437647769,
+            "unique_candidates": 430,
+            "yearly_fitness": {
+              "2020": 0.23026585392428772,
+              "2021": 0.22013869667937175,
+              "2022": 0.23524311720051885,
+              "2023": 0.21640353773225507
+            }
+          },
+          {
+            "buy_pct": 32.99461743548468,
+            "censored_origins": 6461,
+            "complete_origins": 13418,
+            "coverage_pct": 67.4983651089089,
+            "deviation_probe": [
+              {
+                "fitness": 0.12651832600796412,
+                "pivots": 2207,
+                "value": 1.0
+              },
+              {
+                "fitness": 0.12651832600796412,
+                "pivots": 2207,
+                "value": 5.0
+              },
+              {
+                "fitness": 0.12651832600796412,
+                "pivots": 2207,
+                "value": 60.0
+              },
+              {
+                "fitness": 0.12651832600796412,
+                "pivots": 2207,
+                "value": 120.0
+              }
+            ],
+            "eligible": true,
+            "endpoint_policy": "NEXT_K_EVENTS_NO_TIMED_EXIT",
+            "fitness": 0.12651832600796412,
+            "future_pivots": 4,
+            "generations": 30,
+            "horizon": 12,
+            "interval_buy_pct": 49.69538729329852,
+            "interval_net_pips": 65478.100000000246,
+            "interval_trades": 1149,
+            "interval_win_pct": 100.0,
+            "mae_denominator_fitness": 0.9362621275170516,
+            "mean_selected_duration_hours": 12.053286629900134,
+            "mean_selected_net_pips": 49.832370696079906,
+            "median_pivot_hours": 9.0,
+            "nop_pct": 0.0,
+            "origins": 19879,
+            "params": {
+              "backstep": 5,
+              "depth": 8,
+              "deviation_pips": 21.1
+            },
+            "pivot_pairs": 1998,
+            "pivots": 2207,
+            "population": 20,
+            "records_file": "h12_OPPORTUNITIES.npz",
+            "records_sha256": "fd68a11afaca8be7c9a1c3750a493d76d88d1be4cd4b98b8fb1938f5659db416",
+            "scope": "HINDSIGHT_OPPORTUNITIES_NOT_ACCOUNT_PERFORMANCE",
+            "seed": 43,
+            "seeds": [
+              {
+                "eligible": true,
+                "fitness": 0.11482064693406674,
+                "seed": 7
+              },
+              {
+                "eligible": true,
+                "fitness": 0.1220351930551279,
+                "seed": 19
+              },
+              {
+                "eligible": true,
+                "fitness": 0.12651832600796412,
+                "seed": 43
+              }
+            ],
+            "selected_win_pct": 100.0,
+            "sell_pct": 34.503747673424215,
+            "unique_candidates": 481,
+            "yearly_fitness": {
+              "2020": 0.1321494518339929,
+              "2021": 0.11410738805877585,
+              "2022": 0.13142788194075203,
+              "2023": 0.1284376321793961
+            }
+          },
+          {
+            "buy_pct": 21.520197193017758,
+            "censored_origins": 11051,
+            "complete_origins": 8828,
+            "coverage_pct": 44.40867246843403,
+            "deviation_probe": [
+              {
+                "fitness": 0.07038487073150805,
+                "pivots": 1407,
+                "value": 1.0
+              },
+              {
+                "fitness": 0.07038487073150805,
+                "pivots": 1407,
+                "value": 5.0
+              },
+              {
+                "fitness": 0.07038487073150805,
+                "pivots": 1407,
+                "value": 60.0
+              },
+              {
+                "fitness": 0.07038487073150805,
+                "pivots": 1407,
+                "value": 120.0
+              }
+            ],
+            "eligible": true,
+            "endpoint_policy": "NEXT_K_EVENTS_NO_TIMED_EXIT",
+            "fitness": 0.07038487073150805,
+            "future_pivots": 4,
+            "generations": 30,
+            "horizon": 24,
+            "interval_buy_pct": 49.24812030075188,
+            "interval_net_pips": 38611.20000000011,
+            "interval_trades": 532,
+            "interval_win_pct": 100.0,
+            "mae_denominator_fitness": 0.5169467671463143,
+            "mean_selected_duration_hours": 16.05980969642048,
+            "mean_selected_net_pips": 55.900000000000034,
+            "median_pivot_hours": 17.0,
+            "nop_pct": 0.0,
+            "origins": 19879,
+            "params": {
+              "backstep": 11,
+              "depth": 12,
+              "deviation_pips": 17.1
+            },
+            "pivot_pairs": 1198,
+            "pivots": 1407,
+            "population": 20,
+            "records_file": "h24_OPPORTUNITIES.npz",
+            "records_sha256": "3b7926324ca36b282db948974009f4a7c14bc8a8c8346c3141855f66ed7aaac5",
+            "scope": "HINDSIGHT_OPPORTUNITIES_NOT_ACCOUNT_PERFORMANCE",
+            "seed": 7,
+            "seeds": [
+              {
+                "eligible": true,
+                "fitness": 0.07038487073150805,
+                "seed": 7
+              },
+              {
+                "eligible": true,
+                "fitness": 0.048828181428176645,
+                "seed": 19
+              },
+              {
+                "eligible": true,
+                "fitness": 0.05739107798058215,
+                "seed": 43
+              }
+            ],
+            "selected_win_pct": 100.0,
+            "sell_pct": 22.88847527541627,
+            "unique_candidates": 526,
+            "yearly_fitness": {
+              "2020": 0.06513419538021825,
+              "2021": 0.07004105580720277,
+              "2022": 0.07413848129832698,
+              "2023": 0.07221427330080474
+            }
+          }
+        ],
+        "scope": "RETROSPECTIVE_TRAIN_OPPORTUNITY_MAP_NOT_STRATEGY_QUALIFICATION",
+        "test_read": false,
+        "validation_read": false
+      }
+    },
+    {
+      "audit": {
+        "checks": [
+          {
+            "candidate_paths": 2560,
+            "generations_verified": 90,
+            "horizon": 3,
+            "max_abs_error": 0.0,
+            "scalar_paths": 512,
+            "schedule_nonoverlap": true
+          },
+          {
+            "candidate_paths": 2560,
+            "generations_verified": 90,
+            "horizon": 6,
+            "max_abs_error": 0.0,
+            "scalar_paths": 512,
+            "schedule_nonoverlap": true
+          },
+          {
+            "candidate_paths": 2560,
+            "generations_verified": 90,
+            "horizon": 12,
+            "max_abs_error": 0.0,
+            "scalar_paths": 512,
+            "schedule_nonoverlap": true
+          },
+          {
+            "candidate_paths": 2560,
+            "generations_verified": 90,
+            "horizon": 24,
+            "max_abs_error": 0.0,
+            "scalar_paths": 512,
+            "schedule_nonoverlap": true
+          }
+        ],
+        "identity": "00b399cb2f2082d49fd656132f75b87aea374e0267b3fbdd77e8a6d3e71fa490",
+        "results_sha256": "2da96c75ee09d34ba594ac071cb70bcee81dee6711f753797c6ce1c8192719d2",
+        "scope": "SCALAR_RECONSTRUCTION_AND_RECEIPTS_NOT_NATIVE_EXECUTION_QUALIFICATION",
+        "source_sha256": "ba332540b24b7cd08cc38e3e8290c8efe05462abb926ff552a6bb56a6f649046",
+        "status": "PASS"
+      },
+      "identity": "00b399cb2f2082d49fd656132f75b87aea374e0267b3fbdd77e8a6d3e71fa490",
+      "k": 5,
+      "results": {
+        "data": {
+          "chunks": 209,
+          "cost_profile": {
+            "commission_per_lot_side": 3.5,
+            "entry_delay_bars": 0,
+            "limit_through": 0.0001,
+            "lot_units": 100000.0,
+            "slippage_market": 2e-05,
+            "slippage_stop": 5e-05,
+            "spread_schedule": [
+              [
+                0,
+                1,
+                0.0003
+              ],
+              [
+                1,
+                3,
+                0.0001
+              ],
+              [
+                3,
+                9,
+                6e-05
+              ],
+              [
+                9,
+                21,
+                3e-05
+              ],
+              [
+                21,
+                23,
+                6e-05
+              ],
+              [
+                23,
+                24,
+                0.00015
+              ]
+            ],
+            "swap_long_per_lot": -7.0,
+            "swap_short_per_lot": 2.5,
+            "triple_swap_rollover_index": 3,
+            "weekly_open_spread": 0.0003
+          },
+          "costs_status": "ASSUMED_NOT_BROKER_VERIFIED",
+          "end": "2023-12-29 21:00:00+00:00",
+          "excluded_origins": 5016,
+          "origins": 19879,
+          "rows": 24895,
+          "start": "2020-01-02 01:00:00+00:00",
+          "support_sha256": "e575abb297af4b1937105fffa7a8eefff50db594af999b40c063b2d0d741dbfd",
+          "years": {
+            "2020": 6232,
+            "2021": 6235,
+            "2022": 6231,
+            "2023": 6197
+          }
+        },
+        "elapsed_seconds": 123.40675918699708,
+        "financial_model_runs": 0,
+        "rows": [
+          {
+            "buy_pct": 46.60697218169928,
+            "censored_origins": 1559,
+            "complete_origins": 18320,
+            "coverage_pct": 92.1575531968409,
+            "deviation_probe": [
+              {
+                "fitness": 0.2548349040396281,
+                "pivots": 6159,
+                "value": 1.0
+              },
+              {
+                "fitness": 0.2548349040396281,
+                "pivots": 6159,
+                "value": 5.0
+              },
+              {
+                "fitness": 0.2548349040396281,
+                "pivots": 6159,
+                "value": 60.0
+              },
+              {
+                "fitness": 0.2548349040396281,
+                "pivots": 6159,
+                "value": 120.0
+              }
+            ],
+            "eligible": true,
+            "endpoint_policy": "NEXT_K_EVENTS_NO_TIMED_EXIT",
+            "fitness": 0.2548349040396281,
+            "future_pivots": 5,
+            "generations": 30,
+            "horizon": 3,
+            "interval_buy_pct": 50.57377049180328,
+            "interval_net_pips": 114725.40000000113,
+            "interval_trades": 3660,
+            "interval_win_pct": 100.0,
+            "mae_denominator_fitness": 1.7537623006781504,
+            "mean_selected_duration_hours": 5.733078602620087,
+            "mean_selected_net_pips": 32.20110807860263,
+            "median_pivot_hours": 3.0,
+            "nop_pct": 0.0,
+            "origins": 19879,
+            "params": {
+              "backstep": 1,
+              "depth": 3,
+              "deviation_pips": 5.0
+            },
+            "pivot_pairs": 5950,
+            "pivots": 6159,
+            "population": 20,
+            "records_file": "h3_OPPORTUNITIES.npz",
+            "records_sha256": "b96f2c87d403371b27eae00ea01bc61dd6e6219a8d32ca1cf4bac694985aeb60",
+            "scope": "HINDSIGHT_OPPORTUNITIES_NOT_ACCOUNT_PERFORMANCE",
+            "seed": 7,
+            "seeds": [
+              {
+                "eligible": true,
+                "fitness": 0.2548349040396281,
+                "seed": 7
+              },
+              {
+                "eligible": true,
+                "fitness": 0.2548349040396281,
+                "seed": 19
+              },
+              {
+                "eligible": true,
+                "fitness": 0.2548349040396281,
+                "seed": 43
+              }
+            ],
+            "selected_win_pct": 100.0,
+            "sell_pct": 45.5505810151416,
+            "unique_candidates": 410,
+            "yearly_fitness": {
+              "2020": 0.2532512028394344,
+              "2021": 0.25439403546034944,
+              "2022": 0.26160289248731583,
+              "2023": 0.2500518939614296
+            }
+          },
+          {
+            "buy_pct": 42.17515971628352,
+            "censored_origins": 3213,
+            "complete_origins": 16666,
+            "coverage_pct": 83.83721515166759,
+            "deviation_probe": [
+              {
+                "fitness": 0.21032089215021063,
+                "pivots": 4376,
+                "value": 1.0
+              },
+              {
+                "fitness": 0.21032089215021063,
+                "pivots": 4376,
+                "value": 5.0
+              },
+              {
+                "fitness": 0.21032089215021063,
+                "pivots": 4376,
+                "value": 60.0
+              },
+              {
+                "fitness": 0.21032089215021063,
+                "pivots": 4376,
+                "value": 120.0
+              }
+            ],
+            "eligible": true,
+            "endpoint_policy": "NEXT_K_EVENTS_NO_TIMED_EXIT",
+            "fitness": 0.21032089215021063,
+            "future_pivots": 5,
+            "generations": 30,
+            "horizon": 6,
+            "interval_buy_pct": 50.682335102350265,
+            "interval_net_pips": 98952.9500000007,
+            "interval_trades": 2638,
+            "interval_win_pct": 100.0,
+            "mae_denominator_fitness": 1.4931411942219956,
+            "mean_selected_duration_hours": 7.050822032881316,
+            "mean_selected_net_pips": 36.861616464658596,
+            "median_pivot_hours": 5.0,
+            "nop_pct": 0.0,
+            "origins": 19879,
+            "params": {
+              "backstep": 2,
+              "depth": 4,
+              "deviation_pips": 5.0
+            },
+            "pivot_pairs": 4167,
+            "pivots": 4376,
+            "population": 20,
+            "records_file": "h6_OPPORTUNITIES.npz",
+            "records_sha256": "db3edae3dd570c86acdd05db918ea9b4fe1532d08f19ae53330769462189a2eb",
+            "scope": "HINDSIGHT_OPPORTUNITIES_NOT_ACCOUNT_PERFORMANCE",
+            "seed": 7,
+            "seeds": [
+              {
+                "eligible": true,
+                "fitness": 0.21032089215021063,
+                "seed": 7
+              },
+              {
+                "eligible": true,
+                "fitness": 0.21032089215021063,
+                "seed": 19
+              },
+              {
+                "eligible": true,
+                "fitness": 0.19046904290144814,
+                "seed": 43
+              }
+            ],
+            "selected_win_pct": 100.0,
+            "sell_pct": 41.66205543538407,
+            "unique_candidates": 430,
+            "yearly_fitness": {
+              "2020": 0.21590094942352073,
+              "2021": 0.20708316836995336,
+              "2022": 0.21863781726153522,
+              "2023": 0.19961695329120785
+            }
+          },
+          {
+            "buy_pct": 26.31923134966548,
+            "censored_origins": 9181,
+            "complete_origins": 10698,
+            "coverage_pct": 53.81558428492379,
+            "deviation_probe": [
+              {
+                "fitness": 0.10227406569244349,
+                "pivots": 2207,
+                "value": 1.0
+              },
+              {
+                "fitness": 0.10227406569244349,
+                "pivots": 2207,
+                "value": 5.0
+              },
+              {
+                "fitness": 0.10227406569244349,
+                "pivots": 2207,
+                "value": 60.0
+              },
+              {
+                "fitness": 0.10227406569244349,
+                "pivots": 2207,
+                "value": 120.0
+              }
+            ],
+            "eligible": true,
+            "endpoint_policy": "NEXT_K_EVENTS_NO_TIMED_EXIT",
+            "fitness": 0.10227406569244349,
+            "future_pivots": 5,
+            "generations": 30,
+            "horizon": 12,
+            "interval_buy_pct": 50.69075451647184,
+            "interval_net_pips": 55173.700000000186,
+            "interval_trades": 941,
+            "interval_win_pct": 100.0,
+            "mae_denominator_fitness": 0.7481457539446816,
+            "mean_selected_duration_hours": 11.723219293325855,
+            "mean_selected_net_pips": 48.22808001495609,
+            "median_pivot_hours": 9.0,
+            "nop_pct": 0.0,
+            "origins": 19879,
+            "params": {
+              "backstep": 5,
+              "depth": 8,
+              "deviation_pips": 21.1
+            },
+            "pivot_pairs": 1998,
+            "pivots": 2207,
+            "population": 20,
+            "records_file": "h12_OPPORTUNITIES.npz",
+            "records_sha256": "8b851fa5395e275ccf034936745f0efcc5d5a749efdbd49522db09237ba8853d",
+            "scope": "HINDSIGHT_OPPORTUNITIES_NOT_ACCOUNT_PERFORMANCE",
+            "seed": 43,
+            "seeds": [
+              {
+                "eligible": true,
+                "fitness": 0.08879384618987282,
+                "seed": 7
+              },
+              {
+                "eligible": true,
+                "fitness": 0.09669774321258659,
+                "seed": 19
+              },
+              {
+                "eligible": true,
+                "fitness": 0.10227406569244349,
+                "seed": 43
+              }
+            ],
+            "selected_win_pct": 100.0,
+            "sell_pct": 27.49635293525831,
+            "unique_candidates": 481,
+            "yearly_fitness": {
+              "2020": 0.10688816116323359,
+              "2021": 0.0909097701666965,
+              "2022": 0.10554550179497808,
+              "2023": 0.10580735770150619
+            }
+          },
+          {
+            "buy_pct": 10.785250767141203,
+            "censored_origins": 15236,
+            "complete_origins": 4643,
+            "coverage_pct": 23.356305649177525,
+            "deviation_probe": [
+              {
+                "fitness": 0.03887537664992691,
+                "pivots": 1406,
+                "value": 1.0
+              },
+              {
+                "fitness": 0.03887537664992691,
+                "pivots": 1406,
+                "value": 5.0
+              },
+              {
+                "fitness": 0.03887537664992691,
+                "pivots": 1406,
+                "value": 60.0
+              },
+              {
+                "fitness": 0.03887537664992691,
+                "pivots": 1406,
+                "value": 120.0
+              }
+            ],
+            "eligible": true,
+            "endpoint_policy": "NEXT_K_EVENTS_NO_TIMED_EXIT",
+            "fitness": 0.03887537664992691,
+            "future_pivots": 5,
+            "generations": 30,
+            "horizon": 24,
+            "interval_buy_pct": 51.401869158878505,
+            "interval_net_pips": 23120.549999999996,
+            "interval_trades": 321,
+            "interval_win_pct": 100.0,
+            "mae_denominator_fitness": 0.27758310545596504,
+            "mean_selected_duration_hours": 14.243377126857634,
+            "mean_selected_net_pips": 51.763353435278994,
+            "median_pivot_hours": 17.0,
+            "nop_pct": 0.0,
+            "origins": 19879,
+            "params": {
+              "backstep": 10,
+              "depth": 13,
+              "deviation_pips": 114.5
+            },
+            "pivot_pairs": 1197,
+            "pivots": 1406,
+            "population": 20,
+            "records_file": "h24_OPPORTUNITIES.npz",
+            "records_sha256": "bcfbc4b004afa17b682e0dd4394437a7e8e0881184b7e9c252652a6abf06913e",
+            "scope": "HINDSIGHT_OPPORTUNITIES_NOT_ACCOUNT_PERFORMANCE",
+            "seed": 7,
+            "seeds": [
+              {
+                "eligible": true,
+                "fitness": 0.03887537664992691,
+                "seed": 7
+              },
+              {
+                "eligible": true,
+                "fitness": 0.02586119541885872,
+                "seed": 19
+              },
+              {
+                "eligible": true,
+                "fitness": 0.031521223116571156,
+                "seed": 43
+              }
+            ],
+            "selected_win_pct": 100.0,
+            "sell_pct": 12.57105488203632,
+            "unique_candidates": 544,
+            "yearly_fitness": {
+              "2020": 0.03524373736739185,
+              "2021": 0.0390462285130826,
+              "2022": 0.0409799507545181,
+              "2023": 0.04022389146840307
+            }
+          }
+        ],
+        "scope": "RETROSPECTIVE_TRAIN_OPPORTUNITY_MAP_NOT_STRATEGY_QUALIFICATION",
+        "test_read": false,
+        "validation_read": false
+      }
+    }
+  ],
+  "fixed_genotype_probes": [
+    {
+      "champion_params": [
+        {
+          "backstep": 1,
+          "depth": 3,
+          "deviation_pips": 5.0
+        },
+        {
+          "backstep": 1,
+          "depth": 3,
+          "deviation_pips": 5.0
+        },
+        {
+          "backstep": 1,
+          "depth": 3,
+          "deviation_pips": 5.0
+        },
+        {
+          "backstep": 1,
+          "depth": 3,
+          "deviation_pips": 5.0
+        }
+      ],
+      "champion_raw_fitness": [
+        0.2722020798862531,
+        0.2711769119505867,
+        0.26477138551491913,
+        0.2548349040396281
+      ],
+      "chosen_exit_ordinal_pct": {
+        "2": {
+          "1": 84.54649702397204,
+          "2": 15.453502976027957
+        },
+        "3": {
+          "1": 81.82314410480349,
+          "2": 14.31768558951965,
+          "3": 3.859170305676856
+        },
+        "4": {
+          "1": 81.3646288209607,
+          "2": 13.384279475982533,
+          "3": 3.6026200873362444,
+          "4": 1.648471615720524
+        },
+        "5": {
+          "1": 81.00982532751091,
+          "2": 13.264192139737991,
+          "3": 3.247816593886463,
+          "4": 1.6048034934497817,
+          "5": 0.8733624454148472
+        }
+      },
+      "common_origins": 18320,
+      "coverage_pct": [
+        99.68811308415916,
+        98.69711756124553,
+        96.0058353035867,
+        92.1575531968409
+      ],
+      "global_probe_fitness": [
+        0.2722020798862531,
+        0.2711769119505867,
+        0.26477138551491913,
+        0.2548349040396281
+      ],
+      "horizon": 3,
+      "incremental_gains": {
+        "3": {
+          "absolute_gain_sum": 23.16966083062264,
+          "improved_origin_pct": 3.853711790393013,
+          "relative_mean_gain_pct": 0.460398732753764
+        },
+        "4": {
+          "absolute_gain_sum": 6.759083048094714,
+          "improved_origin_pct": 1.6484716157205241,
+          "relative_mean_gain_pct": 0.1336925873284711
+        },
+        "5": {
+          "absolute_gain_sum": 3.41376507795537,
+          "improved_origin_pct": 0.8733624454148471,
+          "relative_mean_gain_pct": 0.06743307203351812
+        }
+      },
+      "mean_scores": [
+        0.2747009032995139,
+        0.275965622777168,
+        0.2763345683583959,
+        0.27652090924693057
+      ],
+      "params": {
+        "backstep": 1,
+        "depth": 3,
+        "deviation_pips": 5.0
+      }
+    },
+    {
+      "champion_params": [
+        {
+          "backstep": 2,
+          "depth": 4,
+          "deviation_pips": 5.0
+        },
+        {
+          "backstep": 2,
+          "depth": 4,
+          "deviation_pips": 5.0
+        },
+        {
+          "backstep": 2,
+          "depth": 4,
+          "deviation_pips": 5.0
+        },
+        {
+          "backstep": 2,
+          "depth": 4,
+          "deviation_pips": 5.0
+        }
+      ],
+      "champion_raw_fitness": [
+        0.2431576446977503,
+        0.23767567494201072,
+        0.22552180074710043,
+        0.21032089215021063
+      ],
+      "chosen_exit_ordinal_pct": {
+        "2": {
+          "1": 85.65856585658565,
+          "2": 14.341434143414341
+        },
+        "3": {
+          "1": 83.59534381375255,
+          "2": 13.61454458178327,
+          "3": 2.7901116044641787
+        },
+        "4": {
+          "1": 83.33133325333013,
+          "2": 12.99051962078483,
+          "3": 2.718108724348974,
+          "4": 0.9600384015360615
+        },
+        "5": {
+          "1": 83.09732389295571,
+          "2": 12.882515300612024,
+          "3": 2.5561022440897636,
+          "4": 0.9480379215168607,
+          "5": 0.516020640825633
+        }
+      },
+      "common_origins": 16666,
+      "coverage_pct": [
+        99.16494793500678,
+        96.1215352884954,
+        90.50757080336032,
+        83.83721515166759
+      ],
+      "global_probe_fitness": [
+        0.2431576446977503,
+        0.23767567494201072,
+        0.22552180074710043,
+        0.21032089215021063
+      ],
+      "horizon": 6,
+      "incremental_gains": {
+        "3": {
+          "absolute_gain_sum": 10.615749601718203,
+          "improved_origin_pct": 2.7901116044641787,
+          "relative_mean_gain_pct": 0.2548208021753151
+        },
+        "4": {
+          "absolute_gain_sum": 2.921662087103968,
+          "improved_origin_pct": 0.9600384015360613,
+          "relative_mean_gain_pct": 0.069953416859736
+        },
+        "5": {
+          "absolute_gain_sum": 1.464966774154239,
+          "improved_origin_pct": 0.516020640825633,
+          "relative_mean_gain_pct": 0.035051210795167265
+        }
+      },
+      "mean_scores": [
+        0.2499679969153403,
+        0.25060496737026156,
+        0.2507802741077573,
+        0.2508681756302675
+      ],
+      "params": {
+        "backstep": 2,
+        "depth": 4,
+        "deviation_pips": 5.0
+      }
+    },
+    {
+      "champion_params": [
+        {
+          "backstep": 5,
+          "depth": 8,
+          "deviation_pips": 21.1
+        },
+        {
+          "backstep": 5,
+          "depth": 8,
+          "deviation_pips": 21.1
+        },
+        {
+          "backstep": 5,
+          "depth": 8,
+          "deviation_pips": 21.1
+        },
+        {
+          "backstep": 5,
+          "depth": 8,
+          "deviation_pips": 21.1
+        }
+      ],
+      "champion_raw_fitness": [
+        0.17127205793339306,
+        0.15103561251589645,
+        0.12651832600796412,
+        0.10227406569244349
+      ],
+      "chosen_exit_ordinal_pct": {
+        "2": {
+          "1": 87.38081884464385,
+          "2": 12.619181155356141
+        },
+        "3": {
+          "1": 85.40848756776968,
+          "2": 12.273322116283417,
+          "3": 2.318190315946906
+        },
+        "4": {
+          "1": 85.23088427743504,
+          "2": 11.974200785193494,
+          "3": 2.290147691157226,
+          "4": 0.5047672462142456
+        },
+        "5": {
+          "1": 85.146756403066,
+          "2": 11.927463077210694,
+          "3": 2.224714899981305,
+          "4": 0.5047672462142456,
+          "5": 0.1962983735277622
+        }
+      },
+      "common_origins": 10698,
+      "coverage_pct": [
+        94.18984858393279,
+        81.6590371749082,
+        67.4983651089089,
+        53.81558428492379
+      ],
+      "global_probe_fitness": [
+        0.17127205793339306,
+        0.15103561251589645,
+        0.12651832600796412,
+        0.10227406569244349
+      ],
+      "horizon": 12,
+      "incremental_gains": {
+        "3": {
+          "absolute_gain_sum": 3.0664567596943817,
+          "improved_origin_pct": 2.318190315946906,
+          "relative_mean_gain_pct": 0.15108927469620337
+        },
+        "4": {
+          "absolute_gain_sum": 0.34715477370966225,
+          "improved_origin_pct": 0.5047672462142456,
+          "relative_mean_gain_pct": 0.0170790714634661
+        },
+        "5": {
+          "absolute_gain_sum": 0.12640083773909858,
+          "improved_origin_pct": 0.1962983735277622,
+          "relative_mean_gain_pct": 0.006217515824902264
+        }
+      },
+      "mean_scores": [
+        0.18971453912216685,
+        0.1900011774433198,
+        0.19003362788019676,
+        0.19004544325108283
+      ],
+      "params": {
+        "backstep": 5,
+        "depth": 8,
+        "deviation_pips": 21.1
+      }
+    },
+    {
+      "champion_params": [
+        {
+          "backstep": 11,
+          "depth": 12,
+          "deviation_pips": 17.1
+        },
+        {
+          "backstep": 11,
+          "depth": 12,
+          "deviation_pips": 17.1
+        },
+        {
+          "backstep": 11,
+          "depth": 12,
+          "deviation_pips": 17.1
+        },
+        {
+          "backstep": 10,
+          "depth": 13,
+          "deviation_pips": 114.5
+        }
+      ],
+      "champion_raw_fitness": [
+        0.12875592598781893,
+        0.09811766668647957,
+        0.07038487073150805,
+        0.03887537664992691
+      ],
+      "chosen_exit_ordinal_pct": {
+        "2": {
+          "1": 87.87757551510302,
+          "2": 12.12242448489698
+        },
+        "3": {
+          "1": 86.8373674734947,
+          "2": 11.802360472094419,
+          "3": 1.3602720544108822
+        },
+        "4": {
+          "1": 86.8373674734947,
+          "2": 11.602320464092818,
+          "3": 1.3602720544108822,
+          "4": 0.20004000800160032
+        },
+        "5": {
+          "1": 86.8373674734947,
+          "2": 11.602320464092818,
+          "3": 1.220244048809762,
+          "4": 0.20004000800160032,
+          "5": 0.14002800560112022
+        }
+      },
+      "common_origins": 4999,
+      "coverage_pct": [
+        87.14724080688163,
+        63.07661351174606,
+        44.40867246843403,
+        23.356305649177525
+      ],
+      "global_probe_fitness": [
+        0.12875592598781893,
+        0.09811766668647957,
+        0.07038487073150805,
+        0.041745071964721395
+      ],
+      "horizon": 24,
+      "incremental_gains": {
+        "3": {
+          "absolute_gain_sum": 0.7881845879941209,
+          "improved_origin_pct": 1.3602720544108822,
+          "relative_mean_gain_pct": 0.09507368240218028
+        },
+        "4": {
+          "absolute_gain_sum": 0.021667067783856724,
+          "improved_origin_pct": 0.20004000800160032,
+          "relative_mean_gain_pct": 0.0026110778176713367
+        },
+        "5": {
+          "absolute_gain_sum": 0.015441862395837,
+          "improved_origin_pct": 0.14002800560112022,
+          "relative_mean_gain_pct": 0.0018608356244120827
+        }
+      },
+      "mean_scores": [
+        0.16583816604691395,
+        0.16599583449820302,
+        0.16600016877861587,
+        0.1660032577688931
+      ],
+      "params": {
+        "backstep": 11,
+        "depth": 12,
+        "deviation_pips": 17.1
+      }
+    }
+  ],
+  "paired_champions": [
+    {
+      "champion_mean_scores": [
+        0.2747009032995139,
+        0.275965622777168,
+        0.2763345683583959,
+        0.27652090924693057
+      ],
+      "common_origins": 18320,
+      "horizon": 3
+    },
+    {
+      "champion_mean_scores": [
+        0.2499679969153403,
+        0.25060496737026156,
+        0.2507802741077573,
+        0.2508681756302675
+      ],
+      "common_origins": 16666,
+      "horizon": 6
+    },
+    {
+      "champion_mean_scores": [
+        0.18971453912216685,
+        0.1900011774433198,
+        0.19003362788019676,
+        0.19004544325108283
+      ],
+      "common_origins": 10698,
+      "horizon": 12
+    },
+    {
+      "champion_mean_scores": [
+        0.16488940467160323,
+        0.16506149737640544,
+        0.16506622817723163,
+        0.1665108154381093
+      ],
+      "common_origins": 4580,
+      "horizon": 24
+    }
+  ],
+  "previous_2_3_champion_records_reproduced_exactly": true,
+  "scope": "RETROSPECTIVE_TRAIN_OPPORTUNITIES_NOT_ACCOUNT_PERFORMANCE"
+}

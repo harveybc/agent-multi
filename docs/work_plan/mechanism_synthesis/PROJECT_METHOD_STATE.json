@@ -3,11 +3,13 @@
   "date": "2026-10-28",
   "timezone": "America/Bogota",
   "priority": 0,
-  "current_stage": "TRAIN_ZIGZAG_NEXT_EVENTS_P20_G30_COMPLETE_AUDITED",
+  "current_stage": "TRAIN_ZIGZAG_NEXT4_NEXT5_COMPLETE_AUDITED",
+  "zigzag_four_five_plan": "../120_ZIGZAG_FOUR_FIVE_EVENTS_PLAN.md",
+  "zigzag_four_five_results": "../121_ZIGZAG_FOUR_FIVE_EVENTS_RESULTS.md",
   "zigzag_next_events_results": "../119_ZIGZAG_NEXT_EVENTS_P20_G30_RESULTS.md",
   "zigzag_next_events_budget": {"population": 20, "generations": 30, "seeds": [7, 19, 43]},
   "zigzag_endpoint_correction": "../118_ZIGZAG_NEXT_EVENTS_CORRECTION.md",
-  "zigzag_future_pivots": [2, 3],
+  "zigzag_future_pivots": [2, 3, 4, 5],
   "zigzag_extension_results": "../117_ZIGZAG_300_RESULTS_AND_DIRECTION_SEMANTICS.md",
   "zigzag_extension_plan": "../116_ZIGZAG_300_GENERATION_CONTRAST.md",
   "zigzag_extension_identity": "e11b753e8812aced7d6ea70f77cda458247f34cdac79f3dfb9bf0aa38260f9e6",
@@ -47,7 +49,7 @@
   },
   "bottom_up": "M0_EXACT_CORE_VERIFIED; HIGHER_LAYERS_NOT_QUALIFIED",
   "next_allowed_actions": [
-    "Interpret the completed K=2/K=3 paired comparison and explicit boundary coverage before risk-profile design",
+    "Interpret K=2/3/4/5 marginal gains, boundary coverage and the known control beating the 24h K=5 search winner before risk-profile design",
     "Resolve and test position-dependent close report semantics before native M1 strategy execution",
     "Implement independent oracle-validity and signal/business contract validation with non-vacuous coverage",
     "Extend paired scenario and policy-library design including persistence and false/true cross-scale reversals",
@@ -58,7 +60,7 @@
     "Model-specific sequential floating selection",
     "Promotion of synthetic-oracle results as learned-model evidence"
   ],
-  "operations": "Corrected K=2/K=3 population-20 generation-30 searches and both scalar audits complete; no active job in this subplan",
+  "operations": "K=4/K=5 population-20 generation-30 searches, both scalar audits and fixed-genotype comparison complete; no active job in this subplan",
   "history": [
     {"date": "2026-10-28", "event": "User prioritizes mechanism synthesis and requests detailed implementation proposal plus Satoshi audit"},
     {"date": "2026-10-28", "event": "Owner clarifies daily openings: three or more allowed, no strategy daily cap; contract recorded without runtime change"},

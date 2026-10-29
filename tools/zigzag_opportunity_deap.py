@@ -54,7 +54,8 @@ def prepare(args):
                 engine_sha256={str(p.relative_to(eng)):sha(p) for p in sorted((eng/'app/short_horizon').glob('*.py'))},
                 code_sha256={p:sha(ROOT/p) for p in ['app/zigzag_opportunities.py','tools/zigzag_opportunity_deap.py',
                     'tools/audit_zigzag_opportunity_results.py',
-                    'docs/work_plan/118_ZIGZAG_NEXT_EVENTS_CORRECTION.md']},
+                    'docs/work_plan/118_ZIGZAG_NEXT_EVENTS_CORRECTION.md',
+                    'docs/work_plan/120_ZIGZAG_FOUR_FIVE_EVENTS_PLAN.md']},
                 software={p:importlib.metadata.version(p) for p in ('numpy','pandas','deap','pyarrow')},
                 train=['2020-01-01','2024-01-01'], horizons=[3,6,12,24],
                 future_pivots=args.future_pivots,
@@ -239,7 +240,7 @@ if __name__=='__main__':
     p.add_argument('--out',type=Path,required=True)
     p.add_argument('--source-spec',type=Path)
     p.add_argument('--engine-root',type=Path)
-    p.add_argument('--future-pivots',type=int,choices=[2,3],default=3)
+    p.add_argument('--future-pivots',type=int,choices=[2,3,4,5],default=3)
     p.add_argument('--population',type=int,default=30)
     p.add_argument('--generations',type=int,default=300)
     a=p.parse_args()
