@@ -1,0 +1,795 @@
+{
+  "diagnostic_representative": "18c72e613b22641393b09842fd0bf6cb1a1e85a5c5096ef77d2044774c290940",
+  "elapsed_seconds": 1641.8092327649938,
+  "epsilon_activity_feasible": 0.005858530999302003,
+  "epsilon_on_off": 0.005858530999302003,
+  "frontier_sha256": "116102193d4e1623d2abaabec0be5e5196ebc5ef851694786ba340f8abb71ba4",
+  "frontier_size": 632,
+  "gene_variation": {
+    "close_margin": {
+      "max": 0.195,
+      "min": 0.0,
+      "unique": 132
+    },
+    "close_persistence": {
+      "max": 3,
+      "min": 1,
+      "unique": 3
+    },
+    "entry_threshold": {
+      "max": 0.993,
+      "min": 0.0,
+      "unique": 565
+    },
+    "size_multiplier": {
+      "max": 1.0,
+      "min": 0.25,
+      "unique": 742
+    },
+    "time_weight": {
+      "max": 0.99,
+      "min": 0.0,
+      "unique": 911
+    },
+    "trend_weight": {
+      "max": 0.485,
+      "min": -0.495,
+      "unique": 724
+    },
+    "uncertainty_penalty": {
+      "max": 1.994,
+      "min": 0.0,
+      "unique": 579
+    },
+    "weight_12": {
+      "max": 2.0,
+      "min": 0.251,
+      "unique": 1145
+    },
+    "weight_24": {
+      "max": 1.982,
+      "min": 0.25,
+      "unique": 1089
+    },
+    "weight_3": {
+      "max": 2.0,
+      "min": 0.265,
+      "unique": 1109
+    },
+    "weight_6": {
+      "max": 1.997,
+      "min": 0.266,
+      "unique": 1057
+    }
+  },
+  "global_optimum_certified": false,
+  "identity": "098e871909f0c587b1cbe855cc49b93723ed63a03c74845a52dd9009071a966d",
+  "learned_policy_tested": false,
+  "payoff_matrices": [
+    {
+      "cells": [
+        {
+          "account_objectives": [
+            0.0,
+            -0.0
+          ],
+          "buy": 0,
+          "difference_payoffs": [
+            0.0,
+            0.0
+          ],
+          "sell": 0
+        },
+        {
+          "account_objectives": [
+            1.3627374246564365,
+            -0.39231066034010914
+          ],
+          "buy": 0,
+          "difference_payoffs": [
+            0.0,
+            0.9704267643163274
+          ],
+          "sell": 1
+        },
+        {
+          "account_objectives": [
+            1.15846054799331,
+            -0.3231318376293464
+          ],
+          "buy": 1,
+          "difference_payoffs": [
+            0.8353287103639637,
+            0.0
+          ],
+          "sell": 0
+        },
+        {
+          "account_objectives": [
+            2.2795475283077447,
+            -0.32805805296998564
+          ],
+          "buy": 1,
+          "difference_payoffs": [
+            0.9810627110214316,
+            1.1161607649737952
+          ],
+          "sell": 1
+        }
+      ],
+      "horizon": 3
+    },
+    {
+      "cells": [
+        {
+          "account_objectives": [
+            0.0,
+            -0.0
+          ],
+          "buy": 0,
+          "difference_payoffs": [
+            0.0,
+            0.0
+          ],
+          "sell": 0
+        },
+        {
+          "account_objectives": [
+            1.3244787169993593,
+            -0.33145928002850766
+          ],
+          "buy": 0,
+          "difference_payoffs": [
+            0.0,
+            0.9930194369708516
+          ],
+          "sell": 1
+        },
+        {
+          "account_objectives": [
+            1.081401734228097,
+            -0.28007588010606926
+          ],
+          "buy": 1,
+          "difference_payoffs": [
+            0.8013258541220278,
+            0.0
+          ],
+          "sell": 0
+        },
+        {
+          "account_objectives": [
+            2.2041255277714247,
+            -0.32947665871535736
+          ],
+          "buy": 1,
+          "difference_payoffs": [
+            0.8816294320852156,
+            1.0733230149340394
+          ],
+          "sell": 1
+        }
+      ],
+      "horizon": 6
+    },
+    {
+      "cells": [
+        {
+          "account_objectives": [
+            0.0,
+            -0.0
+          ],
+          "buy": 0,
+          "difference_payoffs": [
+            0.0,
+            0.0
+          ],
+          "sell": 0
+        },
+        {
+          "account_objectives": [
+            0.9046455113294067,
+            -0.5714600298703693
+          ],
+          "buy": 0,
+          "difference_payoffs": [
+            0.0,
+            0.3331854814590375
+          ],
+          "sell": 1
+        },
+        {
+          "account_objectives": [
+            0.8198222090673131,
+            -0.2256604102592037
+          ],
+          "buy": 1,
+          "difference_payoffs": [
+            0.5941617988081094,
+            0.0
+          ],
+          "sell": 0
+        },
+        {
+          "account_objectives": [
+            1.6265085734046112,
+            -0.5724699088951848
+          ],
+          "buy": 1,
+          "difference_payoffs": [
+            0.7208531830503889,
+            0.45987686570131703
+          ],
+          "sell": 1
+        }
+      ],
+      "horizon": 12
+    },
+    {
+      "cells": [
+        {
+          "account_objectives": [
+            0.0,
+            -0.0
+          ],
+          "buy": 0,
+          "difference_payoffs": [
+            0.0,
+            0.0
+          ],
+          "sell": 0
+        },
+        {
+          "account_objectives": [
+            0.1611778931259448,
+            -0.06781727454410595
+          ],
+          "buy": 0,
+          "difference_payoffs": [
+            0.0,
+            0.09336061858183885
+          ],
+          "sell": 1
+        },
+        {
+          "account_objectives": [
+            0.12219989463800411,
+            -0.12157980980367938
+          ],
+          "buy": 1,
+          "difference_payoffs": [
+            0.0006200848343247273,
+            0.0
+          ],
+          "sell": 0
+        },
+        {
+          "account_objectives": [
+            0.28349494500051015,
+            -0.14235276184805115
+          ],
+          "buy": 1,
+          "difference_payoffs": [
+            0.04778156457062015,
+            0.14052209831813428
+          ],
+          "sell": 1
+        }
+      ],
+      "horizon": 24
+    }
+  ],
+  "receipt_tail": "c88f9606099424e4e91f4f74a7003e823c7ca8f6f2c42b38ddf9304057c4f572",
+  "receipts_sha256": "644356dd3829753c598d2ddaaf1a48bd7335604c90372d2b79d99706029f98e1",
+  "replays_sha256": "c19a5998a5cc440043305a3723c3fbe9876e9ff7931b964ad6dc2a8947a0a6c8",
+  "status": "COMPLETE_EMPIRICAL_SYNTHETIC_FRONTIER",
+  "summaries": [
+    {
+      "buy_wins": 0,
+      "buys": 0,
+      "early_closes": 0,
+      "eligible": false,
+      "mean_orders": 0.0,
+      "name": "nop",
+      "objectives": [
+        0.0,
+        -0.0
+      ],
+      "orders": 0,
+      "sell_wins": 0,
+      "sells": 0,
+      "split": "calibration",
+      "wins": 0
+    },
+    {
+      "buy_wins": 0,
+      "buys": 0,
+      "early_closes": 0,
+      "eligible": false,
+      "mean_orders": 0.0,
+      "name": "nop",
+      "objectives": [
+        0.0,
+        -0.0
+      ],
+      "orders": 0,
+      "sell_wins": 0,
+      "sells": 0,
+      "split": "confirmation",
+      "wins": 0
+    },
+    {
+      "buy_wins": 14,
+      "buys": 14,
+      "early_closes": 8,
+      "eligible": false,
+      "mean_orders": 2.6666666666666665,
+      "name": "equal_guarded",
+      "objectives": [
+        1.5019551344752875,
+        -0.6476553942128215
+      ],
+      "orders": 32,
+      "sell_wins": 16,
+      "sells": 18,
+      "split": "calibration",
+      "wins": 30
+    },
+    {
+      "buy_wins": 17,
+      "buys": 18,
+      "early_closes": 6,
+      "eligible": true,
+      "mean_orders": 3.0,
+      "name": "equal_guarded",
+      "objectives": [
+        2.151846533604914,
+        -0.40341182527495834
+      ],
+      "orders": 36,
+      "sell_wins": 17,
+      "sells": 18,
+      "split": "confirmation",
+      "wins": 34
+    },
+    {
+      "buy_wins": 21,
+      "buys": 21,
+      "early_closes": 24,
+      "eligible": true,
+      "mean_orders": 3.5833333333333335,
+      "name": "greedy",
+      "objectives": [
+        2.198800932298702,
+        -0.6189914086616682
+      ],
+      "orders": 43,
+      "sell_wins": 22,
+      "sells": 22,
+      "split": "calibration",
+      "wins": 43
+    },
+    {
+      "buy_wins": 17,
+      "buys": 20,
+      "early_closes": 14,
+      "eligible": true,
+      "mean_orders": 3.3333333333333335,
+      "name": "greedy",
+      "objectives": [
+        2.1911112503952963,
+        -0.40341182527495834
+      ],
+      "orders": 40,
+      "sell_wins": 17,
+      "sells": 20,
+      "split": "confirmation",
+      "wins": 34
+    },
+    {
+      "buy_wins": 36,
+      "buys": 39,
+      "early_closes": 42,
+      "eligible": true,
+      "mean_orders": 6.416666666666667,
+      "name": "only_3",
+      "objectives": [
+        3.0125487651905245,
+        -0.5944663853942075
+      ],
+      "orders": 77,
+      "sell_wins": 36,
+      "sells": 38,
+      "split": "calibration",
+      "wins": 72
+    },
+    {
+      "buy_wins": 29,
+      "buys": 34,
+      "early_closes": 25,
+      "eligible": true,
+      "mean_orders": 5.666666666666667,
+      "name": "only_3",
+      "objectives": [
+        2.961330522298933,
+        -0.554502264068094
+      ],
+      "orders": 68,
+      "sell_wins": 29,
+      "sells": 34,
+      "split": "confirmation",
+      "wins": 58
+    },
+    {
+      "buy_wins": 34,
+      "buys": 37,
+      "early_closes": 48,
+      "eligible": true,
+      "mean_orders": 6.333333333333333,
+      "name": "only_6",
+      "objectives": [
+        2.868549847724383,
+        -0.5767555010880097
+      ],
+      "orders": 76,
+      "sell_wins": 35,
+      "sells": 39,
+      "split": "calibration",
+      "wins": 69
+    },
+    {
+      "buy_wins": 25,
+      "buys": 27,
+      "early_closes": 25,
+      "eligible": true,
+      "mean_orders": 4.583333333333333,
+      "name": "only_6",
+      "objectives": [
+        2.9499491955924104,
+        -0.5378371107907162
+      ],
+      "orders": 55,
+      "sell_wins": 26,
+      "sells": 28,
+      "split": "confirmation",
+      "wins": 51
+    },
+    {
+      "buy_wins": 21,
+      "buys": 24,
+      "early_closes": 29,
+      "eligible": true,
+      "mean_orders": 4.166666666666667,
+      "name": "only_12",
+      "objectives": [
+        2.0484118459853726,
+        -0.7168415985966881
+      ],
+      "orders": 50,
+      "sell_wins": 23,
+      "sells": 26,
+      "split": "calibration",
+      "wins": 44
+    },
+    {
+      "buy_wins": 17,
+      "buys": 20,
+      "early_closes": 16,
+      "eligible": true,
+      "mean_orders": 3.3333333333333335,
+      "name": "only_12",
+      "objectives": [
+        2.0138498876870505,
+        -0.40341182527495834
+      ],
+      "orders": 40,
+      "sell_wins": 17,
+      "sells": 20,
+      "split": "confirmation",
+      "wins": 34
+    },
+    {
+      "buy_wins": 17,
+      "buys": 17,
+      "early_closes": 24,
+      "eligible": false,
+      "mean_orders": 2.8333333333333335,
+      "name": "only_24",
+      "objectives": [
+        1.478616940498345,
+        -0.6189914086616682
+      ],
+      "orders": 34,
+      "sell_wins": 17,
+      "sells": 17,
+      "split": "calibration",
+      "wins": 34
+    },
+    {
+      "buy_wins": 15,
+      "buys": 17,
+      "early_closes": 15,
+      "eligible": false,
+      "mean_orders": 2.9166666666666665,
+      "name": "only_24",
+      "objectives": [
+        1.765982424617955,
+        -0.32792831671825107
+      ],
+      "orders": 35,
+      "sell_wins": 16,
+      "sells": 18,
+      "split": "confirmation",
+      "wins": 31
+    },
+    {
+      "buy_wins": 35,
+      "buys": 35,
+      "early_closes": 35,
+      "eligible": true,
+      "mean_orders": 5.666666666666667,
+      "name": "08fca639649ce453f94aa3697ef13403912ebbaefa327f27dc58069517fc164a",
+      "objectives": [
+        3.1169129210820086,
+        -0.41760661172625835
+      ],
+      "orders": 68,
+      "sell_wins": 33,
+      "sells": 33,
+      "split": "calibration",
+      "wins": 68
+    },
+    {
+      "buy_wins": 26,
+      "buys": 27,
+      "early_closes": 20,
+      "eligible": true,
+      "mean_orders": 4.5,
+      "name": "08fca639649ce453f94aa3697ef13403912ebbaefa327f27dc58069517fc164a",
+      "objectives": [
+        3.011529406565409,
+        -0.5378371107907162
+      ],
+      "orders": 54,
+      "sell_wins": 27,
+      "sells": 27,
+      "split": "confirmation",
+      "wins": 53
+    },
+    {
+      "buy_wins": 30,
+      "buys": 30,
+      "early_closes": 33,
+      "eligible": true,
+      "mean_orders": 5.333333333333333,
+      "name": "7d161591d433ff6961cbb697b9a205254fefd59f31383d1823aedd5bb6c5e94c",
+      "objectives": [
+        2.9290370838235975,
+        -0.33958874641382664
+      ],
+      "orders": 64,
+      "sell_wins": 34,
+      "sells": 34,
+      "split": "calibration",
+      "wins": 64
+    },
+    {
+      "buy_wins": 22,
+      "buys": 24,
+      "early_closes": 20,
+      "eligible": true,
+      "mean_orders": 4.083333333333333,
+      "name": "7d161591d433ff6961cbb697b9a205254fefd59f31383d1823aedd5bb6c5e94c",
+      "objectives": [
+        2.7711905070078924,
+        -0.5378371107907162
+      ],
+      "orders": 49,
+      "sell_wins": 24,
+      "sells": 25,
+      "split": "confirmation",
+      "wins": 46
+    },
+    {
+      "buy_wins": 30,
+      "buys": 30,
+      "early_closes": 33,
+      "eligible": true,
+      "mean_orders": 5.333333333333333,
+      "name": "18c72e613b22641393b09842fd0bf6cb1a1e85a5c5096ef77d2044774c290940",
+      "objectives": [
+        2.1927422294259666,
+        -0.255155904300912
+      ],
+      "orders": 64,
+      "sell_wins": 34,
+      "sells": 34,
+      "split": "calibration",
+      "wins": 64
+    },
+    {
+      "buy_wins": 22,
+      "buys": 24,
+      "early_closes": 20,
+      "eligible": true,
+      "mean_orders": 4.083333333333333,
+      "name": "18c72e613b22641393b09842fd0bf6cb1a1e85a5c5096ef77d2044774c290940",
+      "objectives": [
+        2.0750542011315343,
+        -0.4042661240827124
+      ],
+      "orders": 49,
+      "sell_wins": 24,
+      "sells": 25,
+      "split": "confirmation",
+      "wins": 46
+    },
+    {
+      "buy_wins": 30,
+      "buys": 31,
+      "early_closes": 40,
+      "eligible": true,
+      "mean_orders": 5.5,
+      "name": "0622b2f8d354e2a1d4aea99e5e63167620d7172c43c7ab173f9ef68403f23302",
+      "objectives": [
+        1.2066814846310097,
+        -0.14346522855221563
+      ],
+      "orders": 66,
+      "sell_wins": 33,
+      "sells": 35,
+      "split": "calibration",
+      "wins": 63
+    },
+    {
+      "buy_wins": 23,
+      "buys": 27,
+      "early_closes": 25,
+      "eligible": true,
+      "mean_orders": 4.666666666666667,
+      "name": "0622b2f8d354e2a1d4aea99e5e63167620d7172c43c7ab173f9ef68403f23302",
+      "objectives": [
+        1.2280756075046473,
+        -0.23709804936596118
+      ],
+      "orders": 56,
+      "sell_wins": 25,
+      "sells": 29,
+      "split": "confirmation",
+      "wins": 48
+    },
+    {
+      "buy_wins": 31,
+      "buys": 32,
+      "early_closes": 39,
+      "eligible": true,
+      "mean_orders": 5.583333333333333,
+      "name": "89a4e072655dbe88138fe4a40875d8e1461c5bbc3a0267a701b757a62637b7eb",
+      "objectives": [
+        0.6877412098522161,
+        -0.08154366135901242
+      ],
+      "orders": 67,
+      "sell_wins": 34,
+      "sells": 35,
+      "split": "calibration",
+      "wins": 65
+    },
+    {
+      "buy_wins": 23,
+      "buys": 24,
+      "early_closes": 23,
+      "eligible": true,
+      "mean_orders": 4.166666666666667,
+      "name": "89a4e072655dbe88138fe4a40875d8e1461c5bbc3a0267a701b757a62637b7eb",
+      "objectives": [
+        0.704043479162438,
+        -0.13479894856899177
+      ],
+      "orders": 50,
+      "sell_wins": 25,
+      "sells": 26,
+      "split": "confirmation",
+      "wins": 48
+    }
+  ],
+  "unilateral_deviations": [
+    {
+      "disabled": [
+        3,
+        -1
+      ],
+      "eligible": true,
+      "objectives": [
+        2.155584709957176,
+        -0.5202308478816544
+      ],
+      "unilateral_gain": -0.3022324630495332
+    },
+    {
+      "disabled": [
+        3,
+        1
+      ],
+      "eligible": true,
+      "objectives": [
+        2.1750562459039537,
+        -0.24715695137711818
+      ],
+      "unilateral_gain": -0.00968703059821907
+    },
+    {
+      "disabled": [
+        6,
+        -1
+      ],
+      "eligible": true,
+      "objectives": [
+        2.16026130537708,
+        -0.32805805296998564
+      ],
+      "unilateral_gain": -0.10538307271796055
+    },
+    {
+      "disabled": [
+        6,
+        1
+      ],
+      "eligible": true,
+      "objectives": [
+        2.181758272181185,
+        -0.27015867250574616
+      ],
+      "unilateral_gain": -0.025986725449615777
+    },
+    {
+      "disabled": [
+        12,
+        -1
+      ],
+      "eligible": true,
+      "objectives": [
+        2.2291138031292714,
+        -0.3522224641139135
+      ],
+      "unilateral_gain": -0.060694986109696814
+    },
+    {
+      "disabled": [
+        12,
+        1
+      ],
+      "eligible": true,
+      "objectives": [
+        2.239665689472403,
+        -0.29622083334804644
+      ],
+      "unilateral_gain": 0.005858530999302003
+    },
+    {
+      "disabled": [
+        24,
+        -1
+      ],
+      "eligible": true,
+      "objectives": [
+        2.1927422294259666,
+        -0.255155904300912
+      ],
+      "unilateral_gain": 0.0
+    },
+    {
+      "disabled": [
+        24,
+        1
+      ],
+      "eligible": true,
+      "objectives": [
+        2.1927422294259666,
+        -0.255155904300912
+      ],
+      "unilateral_gain": 0.0
+    }
+  ],
+  "unique_candidates": 17018
+}

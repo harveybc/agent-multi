@@ -1,0 +1,510 @@
+{
+  "algorithm": {
+    "crossover_eta": 15,
+    "crossover_probability": 0.9,
+    "mutation_eta": 20,
+    "mutation_gene_probability": 0.09090909090909091,
+    "selection": "NSGA-II"
+  },
+  "bounds": [
+    [
+      0.25,
+      2.0
+    ],
+    [
+      0.25,
+      2.0
+    ],
+    [
+      0.25,
+      2.0
+    ],
+    [
+      0.25,
+      2.0
+    ],
+    [
+      -0.5,
+      0.5
+    ],
+    [
+      0.0,
+      2.0
+    ],
+    [
+      0.0,
+      1.0
+    ],
+    [
+      0.0,
+      1.0
+    ],
+    [
+      0.25,
+      1.0
+    ],
+    [
+      0.0,
+      0.2
+    ],
+    [
+      1.0,
+      3.0
+    ]
+  ],
+  "calibration": [
+    {
+      "mirror": 1,
+      "pattern": "trend",
+      "seed": 7,
+      "volatility": "increasing"
+    },
+    {
+      "mirror": -1,
+      "pattern": "trend",
+      "seed": 7,
+      "volatility": "increasing"
+    },
+    {
+      "mirror": 1,
+      "pattern": "trend",
+      "seed": 7,
+      "volatility": "decreasing"
+    },
+    {
+      "mirror": -1,
+      "pattern": "trend",
+      "seed": 7,
+      "volatility": "decreasing"
+    },
+    {
+      "mirror": 1,
+      "pattern": "reversal",
+      "seed": 7,
+      "volatility": "increasing"
+    },
+    {
+      "mirror": -1,
+      "pattern": "reversal",
+      "seed": 7,
+      "volatility": "increasing"
+    },
+    {
+      "mirror": 1,
+      "pattern": "reversal",
+      "seed": 7,
+      "volatility": "decreasing"
+    },
+    {
+      "mirror": -1,
+      "pattern": "reversal",
+      "seed": 7,
+      "volatility": "decreasing"
+    },
+    {
+      "mirror": 1,
+      "pattern": "overlap",
+      "seed": 7,
+      "volatility": "increasing"
+    },
+    {
+      "mirror": -1,
+      "pattern": "overlap",
+      "seed": 7,
+      "volatility": "increasing"
+    },
+    {
+      "mirror": 1,
+      "pattern": "overlap",
+      "seed": 7,
+      "volatility": "decreasing"
+    },
+    {
+      "mirror": -1,
+      "pattern": "overlap",
+      "seed": 7,
+      "volatility": "decreasing"
+    }
+  ],
+  "config_sha256": "99d7d4dc92f6437c84b8b36de4c29a1ba474489a7c07444899699c00203c3c0e",
+  "confirmation": [
+    {
+      "mirror": 1,
+      "pattern": "trend",
+      "seed": 43,
+      "volatility": "increasing"
+    },
+    {
+      "mirror": -1,
+      "pattern": "trend",
+      "seed": 43,
+      "volatility": "increasing"
+    },
+    {
+      "mirror": 1,
+      "pattern": "trend",
+      "seed": 43,
+      "volatility": "decreasing"
+    },
+    {
+      "mirror": -1,
+      "pattern": "trend",
+      "seed": 43,
+      "volatility": "decreasing"
+    },
+    {
+      "mirror": 1,
+      "pattern": "reversal",
+      "seed": 43,
+      "volatility": "increasing"
+    },
+    {
+      "mirror": -1,
+      "pattern": "reversal",
+      "seed": 43,
+      "volatility": "increasing"
+    },
+    {
+      "mirror": 1,
+      "pattern": "reversal",
+      "seed": 43,
+      "volatility": "decreasing"
+    },
+    {
+      "mirror": -1,
+      "pattern": "reversal",
+      "seed": 43,
+      "volatility": "decreasing"
+    },
+    {
+      "mirror": 1,
+      "pattern": "overlap",
+      "seed": 43,
+      "volatility": "increasing"
+    },
+    {
+      "mirror": -1,
+      "pattern": "overlap",
+      "seed": 43,
+      "volatility": "increasing"
+    },
+    {
+      "mirror": 1,
+      "pattern": "overlap",
+      "seed": 43,
+      "volatility": "decreasing"
+    },
+    {
+      "mirror": -1,
+      "pattern": "overlap",
+      "seed": 43,
+      "volatility": "decreasing"
+    }
+  ],
+  "confirmation_rule": "up to five evenly spaced return-rank frontier representatives; no retuning",
+  "constraint": "mean_orders_per_120bar_market_week >= 3",
+  "controls": [
+    {
+      "enabled": [],
+      "genes": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        1.0
+      ],
+      "name": "nop"
+    },
+    {
+      "enabled": [
+        [
+          3,
+          -1
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          6,
+          -1
+        ],
+        [
+          6,
+          1
+        ],
+        [
+          12,
+          -1
+        ],
+        [
+          12,
+          1
+        ],
+        [
+          24,
+          -1
+        ],
+        [
+          24,
+          1
+        ]
+      ],
+      "genes": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0,
+        1.0,
+        0.1,
+        0.05,
+        1.0,
+        0.02,
+        2
+      ],
+      "name": "equal_guarded"
+    },
+    {
+      "enabled": [
+        [
+          3,
+          -1
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          6,
+          -1
+        ],
+        [
+          6,
+          1
+        ],
+        [
+          12,
+          -1
+        ],
+        [
+          12,
+          1
+        ],
+        [
+          24,
+          -1
+        ],
+        [
+          24,
+          1
+        ]
+      ],
+      "genes": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        1.0
+      ],
+      "name": "greedy"
+    },
+    {
+      "enabled": [
+        [
+          3,
+          -1
+        ],
+        [
+          3,
+          1
+        ]
+      ],
+      "genes": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        1.0
+      ],
+      "name": "only_3"
+    },
+    {
+      "enabled": [
+        [
+          6,
+          -1
+        ],
+        [
+          6,
+          1
+        ]
+      ],
+      "genes": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        1.0
+      ],
+      "name": "only_6"
+    },
+    {
+      "enabled": [
+        [
+          12,
+          -1
+        ],
+        [
+          12,
+          1
+        ]
+      ],
+      "genes": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        1.0
+      ],
+      "name": "only_12"
+    },
+    {
+      "enabled": [
+        [
+          24,
+          -1
+        ],
+        [
+          24,
+          1
+        ]
+      ],
+      "genes": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        1.0
+      ],
+      "name": "only_24"
+    }
+  ],
+  "generations": 300,
+  "genes": [
+    "weight_3",
+    "weight_6",
+    "weight_12",
+    "weight_24",
+    "trend_weight",
+    "uncertainty_penalty",
+    "time_weight",
+    "entry_threshold",
+    "size_multiplier",
+    "close_margin",
+    "close_persistence"
+  ],
+  "identity": "098e871909f0c587b1cbe855cc49b93723ed63a03c74845a52dd9009071a966d",
+  "objectives": [
+    "mean_account_return_pct",
+    "negative_worst_account_drawdown_pct"
+  ],
+  "population": 20,
+  "scalar_nash_diagnostic": "return_pct - worst_drawdown_pct; only eight on/off deviations",
+  "schema": "dynamic_account_pareto.v1",
+  "seeds": [
+    7,
+    19,
+    43
+  ],
+  "smoke": false,
+  "sources": {
+    "agent_multi": {
+      "app/absolute_exit_corpus.py": "20a5c4fd1cd5b3cc57cdb887125fd8b494307584f853fc5997c7b19e6845eedb",
+      "app/close_hold_controller.py": "2c494d4cbef21ed5ee72473743e6fc28e1ff716007d9e246c20124b3c8c3ce11",
+      "app/dynamic_account_arbiter.py": "3d1c8ae9deb86af40af944bb2b936116cbecb61b79b178a170b9e23f8df19a19",
+      "app/dynamic_account_panel.py": "f4686760e1a7be22a375ff459bb6573141a8f505eeeefa7987dc37021f278a56",
+      "app/early_close_metrics.py": "af3aaf66384a3528488b3837eea4b11fab705832228c4907a305fa5b95ff4e37",
+      "app/horizon_risk_rules.py": "89afca8dd1ba12842449989ff2ca940cb461522a816ef779350b597e2062ae31",
+      "app/optimal_exit.py": "bf51b81f9a8ab940c3a8280eac6dd4a1eaf88c79a707fb3b5048d5fd6d09cde6",
+      "app/protection_reference.py": "6f22267221ae45301661c3d967630f4e887e83ab03df780463d2eeb32699b1a7",
+      "app/zigzag_opportunities.py": "62d698f635a7bb4394decaaebdfadb4f21d77cabf4a8b91630ac501cdc93aee7",
+      "app/zigzag_risk_profiles.py": "19c329fc172421b1ed1bf152ee4ee56b4b0a9576e20f199855db3528fd25bab1",
+      "tools/optimize_dynamic_account.py": "09be5b1154421fe73cd42af5b2484d9b450bd54de2697c3aeb67a0fcd760a74b",
+      "tools/verify_absolute_early_close.py": "18b67c5731545e95518516d7e33352ce6e8ce31af1bacc26717e1dcf78bf37b9"
+    },
+    "heuristic_strategy": {
+      "app/short_horizon/__init__.py": "89c2c3afeb58e820eb64ddfceed715e20d2cc1e8d4ed7ba7902ed56c90305d2b",
+      "app/short_horizon/adapter.py": "9fa2313c3e3ffbbe75d42c6863db0c995e8d75b62a16aa6552deff242cdb5c16",
+      "app/short_horizon/analysis.py": "2265c734d5cc674b0fb00c9e629c55f220f4e65e2580ba6b11edef439954ca5c",
+      "app/short_horizon/bar_source.py": "fab22a4db4ef656f97dcab5f7ba9f8846910ef2dadfa2c9f0515d6de95555a2e",
+      "app/short_horizon/blocks.py": "6bcbf06bd52e942f700d7b7022a61184d5eee8fc62ba7664718d11f339bd59d7",
+      "app/short_horizon/calendar.py": "cf980cbf63308cb5e93a6bec1544e378e8df2e56b65111393df05901badafaf1",
+      "app/short_horizon/clock_identity.py": "0bd000523da23f9c87fd7947b558ca1c55a16a5df47112aa754f2670080a1d2a",
+      "app/short_horizon/data.py": "28d50d2539a99bc0e18af63c49e17bd4b2b6e0245f3e6050bbf328d87836fe5d",
+      "app/short_horizon/events.py": "8b84d59c0be00c9f16f521feb44d26ed356235126648b434ee4cbd442a174055",
+      "app/short_horizon/execution.py": "a0b374d6ff9dc0165c92aa1a9bc8c980b57a6bd2b3d874a3ff9a899237f73ae2",
+      "app/short_horizon/expert_guided/__init__.py": "8080519f546750617743371f2bf23a61f713708beaece7326eb0517b364e849c",
+      "app/short_horizon/expert_guided/absolute.py": "dd498804e24d82dff37e9ee9188e819c323e212c0d032e6f9c500b64f5b55083",
+      "app/short_horizon/expert_guided/actions.py": "70d637d5f0e02e121a6acab24279eabbff6d19c98e6a0806fb404da80dda9141",
+      "app/short_horizon/expert_guided/data.py": "671a7ab8dcde6f4b327f9237d346a1946873da359a081ef11576a6908660682d",
+      "app/short_horizon/expert_guided/env.py": "33216a77d9a889baa38fdf50a5a6d9270ef054e24bd9623326061641991c3b96",
+      "app/short_horizon/expert_guided/learn.py": "87c6708c7be510745c1b72aa1471ea1903986575053fa753175e5f2060ceceec",
+      "app/short_horizon/expert_guided/oracle.py": "e731e227d823db950a8e9a5f7bebed448d97bc260acf5da28f99a78f5d9fb621",
+      "app/short_horizon/expert_guided/sac_demo.py": "d4aaf43d3877bec0f486ceff55925b7efa63d51fa67bd16edc4d5244c11f9d20",
+      "app/short_horizon/expert_guided/scoring.py": "2fcf62bd07eb3383b77eb477be90125e61c5fd0e3c8eaf6f644391f7a51dc3a5",
+      "app/short_horizon/expert_guided/signals.py": "bc8f2bf8b172e78146ec067ccbb5b0d7f4379401f6a4a28584a9530663922ae0",
+      "app/short_horizon/expert_guided/temporal.py": "c536186f4170913ce9c5df7176ad78197ed2283c39d8a71102a5d61c506c6bdd",
+      "app/short_horizon/noise.py": "58f80ab8220f75272edded13ffc1a2174ed4fbca16455f6abca4259fc61f0ea5",
+      "app/short_horizon/predictors.py": "a6318179e62922739cb321d9d3298bde0fd70259c70568148180e7acb518da7d",
+      "app/short_horizon/strategies.py": "22634736134d17b8dff2094b05e12b07a5fdad9a682a494a3b4fbbaf72f8aa08",
+      "app/short_horizon/vol_features.py": "c8a6046d1210a4f79d371ddbc2b9051bdcd8ded78e780d89a7a7100727c1a86e",
+      "app/short_horizon/voltrend.py": "4f8e7629c1acb978ab214f48cbd3f6604a85bff9cf0fc012251f7c888f5d9eab",
+      "app/short_horizon/vstrategies.py": "70786105fe1a5b39d59e44e9938ca950e2c024a3721306593744bbf2ee6534ca",
+      "app/short_horizon/zigzag.py": "fc24c6f22aa4f7696548d1117b1d2cfad42a43eccd116f0bbcffe6a71df1624a",
+      "app/short_horizon/zigzag_opt.py": "dead5eacd7449f21731514417cb604d9a23b0361e151eacecb1825be6323ccb7"
+    }
+  },
+  "synthetic_only": true,
+  "versions": {
+    "deap": "1.4",
+    "numpy": "2.5.1",
+    "pandas": "3.0.3"
+  }
+}

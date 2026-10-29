@@ -54,4 +54,6 @@ AP02,Joint opportunity allocation,tests/unit/test_dynamic_account_arbiter.py,Exa
 AP03,Separate account objectives,app/dynamic_account_arbiter.py,Equity drawdown and duplicate-preserving empirical nondominance,BEFORE_PHASE2,PASS
 AP04,Synthetic cache isolation,tests/unit/test_close_hold_controller.py,Cache refused for causal consumers and direct route equality,BEFORE_PHASE2,PASS
 AP05,Durable sequential search,tests/unit/test_dynamic_account_queue.py,Chained tamper rejection and exact restart with no refits,BEFORE_PHASE2,PASS
-AP06,Full budget and frozen confirmation,tools/optimize_dynamic_account.py,20x300x3 then native replays and finite payoff diagnostics,BEFORE_PHASE2,RUNNING_NOT_FINAL
+AP06,Full budget and frozen confirmation,docs/audits/evidence/dynamic_account_pareto_20261029/VERIFICATION.json,20x300x3 authenticated and288 native accounts exactly reproduced,BEFORE_PHASE2,PASS_BOUNDED_SYNTHETIC_NOT_GLOBAL_OPTIMUM
+AP07,Independent dominance check,tools/verify_dynamic_account_results.py,632 policies match independent frontier of342 distinct objective vectors,BEFORE_PHASE2,PASS
+AP08,Complete audit delivery,docs/audits/SATOSHI_AUDIT_REQUEST_DYNAMIC_ACCOUNT_PARETO_2026_10_29.md,Final artifacts and limitations including control domination and positive unilateral gain,BEFORE_PHASE2,REQUEST_READY_EXTERNAL_VERDICT_NOT_RECEIVED
