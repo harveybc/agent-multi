@@ -1,0 +1,84 @@
+#!/usr/bin/env python3
+"""Independent scalar reconstruction of sampled oracle records and search receipts."""
+import argparse
+import json
+from pathlib import Path
+import sys
+
+import numpy as np
+
+ROOT=Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(ROOT))
+from app.zigzag_opportunities import HOUR, PIP, load_tape, sha
+from tools.zigzag_opportunity_deap import authenticated, identity, write
+
+
+def audit(root):
+    spec=json.loads((root/'SPEC.private.json').read_text())
+    ident=identity(spec)
+    tape=load_tape(spec)
+    report=authenticated(root/'RESULTS.json',ident)
+    assert len(report['rows'])==4
+    checks=[]
+    rng=np.random.default_rng(123)
+    for row in report['rows']:
+        h=row['horizon']
+        for seed in spec['budget']['seeds']:
+            chain=authenticated(root/f'h{h}_seed{seed}.json',ident)
+            assert chain['population']>=15 and chain['generations']>=30
+            assert [r['generation'] for r in chain['history']]==list(range(1,chain['generations']+1))
+        assert sha(root/row['records_file'])==row['records_sha256']
+        r=np.load(root/row['records_file'])
+        assert np.array_equal(r['origin'],np.flatnonzero(tape.allowed))
+        assert np.isfinite(r['score']).all()
+        assert np.isclose(np.maximum(0,r['score'].max(axis=0)).mean(),row['fitness'],rtol=0,atol=1e-14)
+        samples=rng.choice(len(r['origin']),min(256,len(r['origin'])),replace=False)
+        worst=0.
+        for j in samples:
+            i=int(r['origin'][j])
+            for side,sign in enumerate((1,-1)):
+                end=int(r['end'][side,j]); pivot=bool(r['pivot_exit'][side,j])
+                assert i < end <= tape.limit[i]
+                assert end-i<=4*h
+                assert np.all(np.diff(tape.times[i:end+1])==HOUR)
+                assert tape.session[i]==tape.session[end]
+                last=end if pivot else end-1
+                target=float(r['target'][side,j])
+                if pivot:
+                    assert target==(tape.high[end] if side==0 else tape.low[end])
+                    assert end<tape.limit[i]
+                else:
+                    assert target==tape.open[end]
+                top=sign*tape.open[i]; dd=0.; adverse=0.
+                for b in range(i,last+1):
+                    high=sign*(tape.high[b] if side==0 else tape.low[b])
+                    low=sign*(tape.low[b] if side==0 else tape.high[b])
+                    top=max(top,high)
+                    dd=max(dd,top-low)
+                    adverse=max(adverse,sign*tape.open[i]-low)
+                dd=max(dd,top-sign*target)
+                adverse=max(adverse,sign*(tape.open[i]-target))
+                fees=tape.fill_cost[i]+tape.fill_cost[end]
+                net=sign*(target-tape.open[i])-fees-(tape.financing[side,end]-tape.financing[side,i])
+                duration=(tape.times[end]-tape.times[i])/HOUR+int(pivot)
+                score=net/(max(dd,fees,PIP)*duration)
+                for key,val in [('drawdown',dd),('mae',adverse),('net',net),('duration',duration),('score',score)]:
+                    delta=abs(float(r[key][side,j])-val)
+                    worst=max(worst,delta)
+                    assert np.isclose(r[key][side,j],val,rtol=1e-12,atol=1e-12),(h,i,side,key,delta)
+        sch=authenticated(root/f'h{h}_INTERVAL_SCHEDULE.json',ident)
+        trades=sch['trades']
+        assert all(a['release']<=b['origin'] for a,b in zip(trades,trades[1:]))
+        assert np.isclose(sum(t['net_pips'] for t in trades),sch['net_pips'],rtol=1e-12,atol=1e-8)
+        checks.append(dict(horizon=h,scalar_paths=2*len(samples),max_abs_error=worst,
+                           generations_verified=3*spec['budget']['generations'],schedule_nonoverlap=True))
+    return dict(status='PASS',identity=ident,checks=checks,
+                scope='SCALAR_RECONSTRUCTION_AND_RECEIPTS_NOT_NATIVE_EXECUTION_QUALIFICATION',
+                source_sha256=sha(__file__),results_sha256=sha(root/'RESULTS.json'))
+
+
+if __name__=='__main__':
+    p=argparse.ArgumentParser(); p.add_argument('--root',type=Path,required=True)
+    a=p.parse_args(); result=audit(a.root)
+    write(a.root/'AUDIT.json',result)
+    print(json.dumps(result,indent=2))

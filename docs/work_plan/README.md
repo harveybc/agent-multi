@@ -2,6 +2,14 @@
 
 ## Priority override: 2026-10-28
 
+Immediate owner-authorized subplan: [TRAIN ZigZag opportunity optimization](114_TRAIN_ZIGZAG_OPPORTUNITY_OPTIMIZATION.md),
+3/6/12/24 hours, sequential DEAP, population 30 and 40 generations per seed.
+This precedes risk-profile design, strategy qualification and phase 2 floating
+selection. It is an oracle opportunity study, not learned-policy performance.
+The [measured results](115_TRAIN_ZIGZAG_DEAP_RESULTS.md) are complete: 12/12
+searches, 47 focused tests and 2,048 independently reconstructed path records.
+Interpret the neutral deviation gene and lower-band scale choices before profiles.
+
 Current delivery: [theory, audit disposition and exact M0](113_MECHANISM_THEORY_AND_AUDIT_DISPOSITION.md).
 Satoshi's design audit was read; the reciprocal
 [guided-lane verdict](../audits/MUSASHI_VERDICT_SATOSHI_GUIDED_MECHANISM_2026_10_28.md)

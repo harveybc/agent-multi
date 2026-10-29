@@ -22,3 +22,8 @@ MS20,No synthetic confirmation tuning,Alter confirmation outcomes and rerun prep
 MS21,Restart without duplicated tasks,Interrupt claims writes and completed stage adoption,Atomic receipts and no false completed stage,M3,DESIGNED_NOT_RUN
 MS22,Shared contracts separate learning lanes,Inject ZigZag future into pure-RL observation,Rejected and lane identities remain distinct,M4,DESIGNED_NOT_RUN
 MS23,Selection only after strategy qualification,Attempt floating selection on unqualified game identity,No launch and explicit required acceptance evidence,M6,DESIGNED_NOT_RUN
+ZZ01,TRAIN-only oracle opportunity search,tests/unit/test_zigzag_opportunities.py and admitted TRAIN predicate,No validation or test data consumed,BEFORE_PHASE2,COMPLETE_12_OF_12
+ZZ02,Costs duration excursion and mirror semantics,tests/unit/test_zigzag_opportunities.py scalar fixtures,Known net costs and directional symmetry,BEFORE_PHASE2,UNIT_TESTS_PASSED
+ZZ03,DEAP owner minimum budget,tests/unit/test_zigzag_opportunities.py budget and replay,Population at least 15 and at least 30 generations,BEFORE_PHASE2,UNIT_TESTS_PASSED
+ZZ04,No overlap in hindsight schedule,tests/unit/test_zigzag_opportunities.py exhaustive subset comparison,Exact fixed-unit additive interval optimum,BEFORE_PHASE2,UNIT_TESTS_PASSED
+ZZ05,Real-data scalar reconstruction,tools/audit_zigzag_opportunity_results.py,Independent path accounting agrees with retained records,BEFORE_PHASE2,PASS_2048_PATHS_ZERO_ERROR

@@ -1,8 +1,17 @@
 {
   "schema": "rl_static_engineering_state.v1",
   "updated_on": "2026-10-28",
-  "current_stage": "PRIORITY_0_M0_EXACT_MATH_VERIFIED_M1_DESIGN_REVISION",
-  "latest_review": "113_MECHANISM_THEORY_AND_AUDIT_DISPOSITION.md",
+  "current_stage": "PRIORITY_0_TRAIN_ZIGZAG_DEAP_COMPLETE_PROFILE_DISCUSSION_NEXT",
+  "latest_review": "115_TRAIN_ZIGZAG_DEAP_RESULTS.md",
+  "zigzag_subplan": {
+    "state": "COMPLETE_12_OF_12_SCALAR_AUDIT_PASS",
+    "results": "115_TRAIN_ZIGZAG_DEAP_RESULTS.md",
+    "horizons_hours": [3, 6, 12, 24],
+    "population": 30,
+    "generations": 40,
+    "seeds": [7, 19, 43],
+    "scope": "RETROSPECTIVE_TRAIN_OPPORTUNITIES_NOT_RL_PERFORMANCE"
+  },
   "mechanism_synthesis": {
     "priority": 0,
     "state": "M0_EXACT_CORE_IMPLEMENTED_35_TESTS; TRADING_STRATEGY_NOT_QUALIFIED",

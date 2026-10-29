@@ -1,0 +1,492 @@
+{
+  "result": {
+    "identity": "80246f27faf7ed91f76a5575857d422a3fc9801ff33a4b9694323965424151e0",
+    "payload": {
+      "data": {
+        "chunks": 209,
+        "cost_profile": {
+          "commission_per_lot_side": 3.5,
+          "entry_delay_bars": 0,
+          "limit_through": 0.0001,
+          "lot_units": 100000,
+          "slippage_market": 0.00002,
+          "slippage_stop": 0.00005,
+          "spread_schedule": [
+            [
+              0,
+              1,
+              0.0003
+            ],
+            [
+              1,
+              3,
+              0.0001
+            ],
+            [
+              3,
+              9,
+              0.00006
+            ],
+            [
+              9,
+              21,
+              0.00003
+            ],
+            [
+              21,
+              23,
+              0.00006
+            ],
+            [
+              23,
+              24,
+              0.00015
+            ]
+          ],
+          "swap_long_per_lot": -7,
+          "swap_short_per_lot": 2.5,
+          "triple_swap_rollover_index": 3,
+          "weekly_open_spread": 0.0003
+        },
+        "costs_status": "ASSUMED_NOT_BROKER_VERIFIED",
+        "end": "2023-12-29 21:00:00+00:00",
+        "excluded_origins": 5016,
+        "origins": 19879,
+        "rows": 24895,
+        "start": "2020-01-02 01:00:00+00:00",
+        "support_sha256": "e575abb297af4b1937105fffa7a8eefff50db594af999b40c063b2d0d741dbfd",
+        "years": {
+          "2020": 6232,
+          "2021": 6235,
+          "2022": 6231,
+          "2023": 6197
+        }
+      },
+      "elapsed_seconds": 222.9089837539941,
+      "financial_model_runs": 0,
+      "rows": [
+        {
+          "buy_pct": 50.208763016248305,
+          "deviation_probe": [
+            {
+              "fitness": 0.27239644724039774,
+              "pivots": 6159,
+              "value": 1
+            },
+            {
+              "fitness": 0.27239644724039774,
+              "pivots": 6159,
+              "value": 5
+            },
+            {
+              "fitness": 0.27239644724039774,
+              "pivots": 6159,
+              "value": 60
+            },
+            {
+              "fitness": 0.27239644724039774,
+              "pivots": 6159,
+              "value": 120
+            }
+          ],
+          "eligible": true,
+          "fitness": 0.27239644724039774,
+          "generations": 40,
+          "horizon": 3,
+          "interval_buy_pct": 50.31831537708129,
+          "interval_net_pips": 122037.20000000129,
+          "interval_trades": 4084,
+          "interval_win_pct": 100,
+          "mae_denominator_fitness": 1.8829186602121142,
+          "mean_selected_duration_hours": 5.030179157204138,
+          "mean_selected_net_pips": 28.048715619480205,
+          "median_pivot_hours": 3,
+          "nop_pct": 0.3219477840937673,
+          "origins": 19879,
+          "params": {
+            "backstep": 1,
+            "depth": 3,
+            "deviation_pips": 5
+          },
+          "pivot_pairs": 5950,
+          "pivots": 6159,
+          "population": 30,
+          "records_file": "h3_OPPORTUNITIES.npz",
+          "records_sha256": "2d46752d07e2ac7ceb562393f7f214258fcf9813e80907ca4e74f9301ec42db7",
+          "scope": "HINDSIGHT_OPPORTUNITIES_NOT_ACCOUNT_PERFORMANCE",
+          "seed": 7,
+          "seeds": [
+            {
+              "eligible": true,
+              "fitness": 0.27239644724039774,
+              "seed": 7
+            },
+            {
+              "eligible": true,
+              "fitness": 0.27239644724039774,
+              "seed": 19
+            },
+            {
+              "eligible": true,
+              "fitness": 0.27239644724039774,
+              "seed": 43
+            }
+          ],
+          "selected_win_pct": 100,
+          "sell_pct": 49.46928919965793,
+          "unique_candidates": 841,
+          "yearly_fitness": {
+            "2020": 0.27389894076777105,
+            "2021": 0.26964354640338584,
+            "2022": 0.2791238542233413,
+            "2023": 0.2668910278793954
+          }
+        },
+        {
+          "buy_pct": 50.29931083052468,
+          "deviation_probe": [
+            {
+              "fitness": 0.2452171393829972,
+              "pivots": 4376,
+              "value": 1
+            },
+            {
+              "fitness": 0.2452171393829972,
+              "pivots": 4376,
+              "value": 5
+            },
+            {
+              "fitness": 0.2452171393829972,
+              "pivots": 4376,
+              "value": 60
+            },
+            {
+              "fitness": 0.2452171393829972,
+              "pivots": 4376,
+              "value": 120
+            }
+          ],
+          "eligible": true,
+          "fitness": 0.2452171393829972,
+          "generations": 40,
+          "horizon": 6,
+          "interval_buy_pct": 50.36847164370394,
+          "interval_net_pips": 111779.45000000097,
+          "interval_trades": 3121,
+          "interval_win_pct": 100,
+          "mae_denominator_fitness": 1.7500619366891297,
+          "mean_selected_duration_hours": 6.593847705496722,
+          "mean_selected_net_pips": 33.82967473524964,
+          "median_pivot_hours": 5,
+          "nop_pct": 0.24649127219679057,
+          "origins": 19879,
+          "params": {
+            "backstep": 2,
+            "depth": 4,
+            "deviation_pips": 10.7
+          },
+          "pivot_pairs": 4167,
+          "pivots": 4376,
+          "population": 30,
+          "records_file": "h6_OPPORTUNITIES.npz",
+          "records_sha256": "a4e0c3ee7a2fe19973f37e94eef6bb4eaea6ed9d0c89e4bddb3265781a0f7f99",
+          "scope": "HINDSIGHT_OPPORTUNITIES_NOT_ACCOUNT_PERFORMANCE",
+          "seed": 43,
+          "seeds": [
+            {
+              "eligible": true,
+              "fitness": 0.23182210833603367,
+              "seed": 7
+            },
+            {
+              "eligible": true,
+              "fitness": 0.2452171393829972,
+              "seed": 19
+            },
+            {
+              "eligible": true,
+              "fitness": 0.2452171393829972,
+              "seed": 43
+            }
+          ],
+          "selected_win_pct": 100,
+          "sell_pct": 49.45419789727853,
+          "unique_candidates": 930,
+          "yearly_fitness": {
+            "2020": 0.2517396905278272,
+            "2021": 0.24048622183433527,
+            "2022": 0.25345550806771294,
+            "2023": 0.23515236689984523
+          }
+        },
+        {
+          "buy_pct": 49.39886312188742,
+          "deviation_probe": [
+            {
+              "fitness": 0.18087885800038264,
+              "pivots": 2281,
+              "value": 1
+            },
+            {
+              "fitness": 0.18087885800038264,
+              "pivots": 2281,
+              "value": 5
+            },
+            {
+              "fitness": 0.18087885800038264,
+              "pivots": 2281,
+              "value": 60
+            },
+            {
+              "fitness": 0.18087885800038264,
+              "pivots": 2281,
+              "value": 120
+            }
+          ],
+          "eligible": true,
+          "fitness": 0.18087885800038264,
+          "generations": 40,
+          "horizon": 12,
+          "interval_buy_pct": 50.269622528460154,
+          "interval_net_pips": 87842.40000000037,
+          "interval_trades": 1669,
+          "interval_win_pct": 100,
+          "mae_denominator_fitness": 1.3472735186548594,
+          "mean_selected_duration_hours": 11.4553354890865,
+          "mean_selected_net_pips": 45.38812398949072,
+          "median_pivot_hours": 9,
+          "nop_pct": 0.43764776900246494,
+          "origins": 19879,
+          "params": {
+            "backstep": 3,
+            "depth": 9,
+            "deviation_pips": 21.2
+          },
+          "pivot_pairs": 2072,
+          "pivots": 2281,
+          "population": 30,
+          "records_file": "h12_OPPORTUNITIES.npz",
+          "records_sha256": "daa1b2a512c1a0a4792931ea8f7970b742f3785e655553e9881ce40b5098cd23",
+          "scope": "HINDSIGHT_OPPORTUNITIES_NOT_ACCOUNT_PERFORMANCE",
+          "seed": 19,
+          "seeds": [
+            {
+              "eligible": true,
+              "fitness": 0.17951862449535033,
+              "seed": 7
+            },
+            {
+              "eligible": true,
+              "fitness": 0.18087885800038264,
+              "seed": 19
+            },
+            {
+              "eligible": true,
+              "fitness": 0.18087885800038264,
+              "seed": 43
+            }
+          ],
+          "selected_win_pct": 100,
+          "sell_pct": 50.16348910911012,
+          "unique_candidates": 973,
+          "yearly_fitness": {
+            "2020": 0.18447323224831674,
+            "2021": 0.1730775655752813,
+            "2022": 0.1889423600340292,
+            "2023": 0.17701878898049303
+          }
+        },
+        {
+          "buy_pct": 49.33849791236984,
+          "deviation_probe": [
+            {
+              "fitness": 0.14269386775996956,
+              "pivots": 1407,
+              "value": 1
+            },
+            {
+              "fitness": 0.14269386775996956,
+              "pivots": 1407,
+              "value": 5
+            },
+            {
+              "fitness": 0.14269386775996956,
+              "pivots": 1407,
+              "value": 60
+            },
+            {
+              "fitness": 0.14269386775996956,
+              "pivots": 1407,
+              "value": 120
+            }
+          ],
+          "eligible": true,
+          "fitness": 0.14269386775996956,
+          "generations": 40,
+          "horizon": 24,
+          "interval_buy_pct": 49.908088235294116,
+          "interval_net_pips": 73554.85000000014,
+          "interval_trades": 1088,
+          "interval_win_pct": 100,
+          "mae_denominator_fitness": 1.0938672824532938,
+          "mean_selected_duration_hours": 16.27268117044475,
+          "mean_selected_net_pips": 55.166686951670954,
+          "median_pivot_hours": 17,
+          "nop_pct": 0.8048694602344182,
+          "origins": 19879,
+          "params": {
+            "backstep": 11,
+            "depth": 12,
+            "deviation_pips": 21.2
+          },
+          "pivot_pairs": 1198,
+          "pivots": 1407,
+          "population": 30,
+          "records_file": "h24_OPPORTUNITIES.npz",
+          "records_sha256": "c5092156a9418be97e6d37e7bf8e42916b3c9ab2c2a9bf70d222f30f3dddf586",
+          "scope": "HINDSIGHT_OPPORTUNITIES_NOT_ACCOUNT_PERFORMANCE",
+          "seed": 19,
+          "seeds": [
+            {
+              "eligible": true,
+              "fitness": 0.13808760544992435,
+              "seed": 7
+            },
+            {
+              "eligible": true,
+              "fitness": 0.14269386775996956,
+              "seed": 19
+            },
+            {
+              "eligible": true,
+              "fitness": 0.1330119436881486,
+              "seed": 43
+            }
+          ],
+          "selected_win_pct": 100,
+          "sell_pct": 49.85663262739574,
+          "unique_candidates": 1013,
+          "yearly_fitness": {
+            "2020": 0.1424053805754315,
+            "2021": 0.13969246094319648,
+            "2022": 0.1490320187144173,
+            "2023": 0.13962575420663415
+          }
+        }
+      ],
+      "scope": "RETROSPECTIVE_TRAIN_OPPORTUNITY_MAP_NOT_STRATEGY_QUALIFICATION",
+      "test_read": false,
+      "validation_read": false
+    },
+    "sha256": "59c9dc0de6ee7f43272c91332d563c52dd8dbbca6a8afb013ab6b5f76dd01983"
+  },
+  "audit": {
+    "checks": [
+      {
+        "generations_verified": 120,
+        "horizon": 3,
+        "max_abs_error": 0,
+        "scalar_paths": 512,
+        "schedule_nonoverlap": true
+      },
+      {
+        "generations_verified": 120,
+        "horizon": 6,
+        "max_abs_error": 0,
+        "scalar_paths": 512,
+        "schedule_nonoverlap": true
+      },
+      {
+        "generations_verified": 120,
+        "horizon": 12,
+        "max_abs_error": 0,
+        "scalar_paths": 512,
+        "schedule_nonoverlap": true
+      },
+      {
+        "generations_verified": 120,
+        "horizon": 24,
+        "max_abs_error": 0,
+        "scalar_paths": 512,
+        "schedule_nonoverlap": true
+      }
+    ],
+    "identity": "80246f27faf7ed91f76a5575857d422a3fc9801ff33a4b9694323965424151e0",
+    "results_sha256": "e2b46c1b39924b08184a6db8d10e04f1a1c4c50e1fdebc5c8c36b2116ec2ff77",
+    "scope": "SCALAR_RECONSTRUCTION_AND_RECEIPTS_NOT_NATIVE_EXECUTION_QUALIFICATION",
+    "source_sha256": "17bc2737cef575ed1b4f932dad7cb5e30b603f8b420d7b74f49bf3bde48089b3",
+    "status": "PASS"
+  },
+  "provenance": {
+    "train": [
+      "2020-01-01",
+      "2024-01-01"
+    ],
+    "horizons": [
+      3,
+      6,
+      12,
+      24
+    ],
+    "budget": {
+      "generations": 40,
+      "population": 30,
+      "seeds": [
+        7,
+        19,
+        43
+      ]
+    },
+    "bounds": {
+      "backstep": [
+        1,
+        24
+      ],
+      "depth": [
+        2,
+        96
+      ],
+      "deviation_pips": [
+        1,
+        120
+      ]
+    },
+    "input_sha256": {
+      "bars": "c80847bb149c7af1ad50e42301b5cd70608e6c37702ce8cc6a7b9eb70f36d2ca",
+      "closures": "71078e8f9a95c4438405a9fa3dafdffdc0f44183bbf27ba828168c18065e8350",
+      "recipe": "de4d8cae55de01fb90ddc7334206c7bf6251be671f2b2476859dcd6a76aac924"
+    },
+    "engine_sha256": {
+      "app/short_horizon/__init__.py": "89c2c3afeb58e820eb64ddfceed715e20d2cc1e8d4ed7ba7902ed56c90305d2b",
+      "app/short_horizon/adapter.py": "9fa2313c3e3ffbbe75d42c6863db0c995e8d75b62a16aa6552deff242cdb5c16",
+      "app/short_horizon/analysis.py": "2265c734d5cc674b0fb00c9e629c55f220f4e65e2580ba6b11edef439954ca5c",
+      "app/short_horizon/bar_source.py": "fab22a4db4ef656f97dcab5f7ba9f8846910ef2dadfa2c9f0515d6de95555a2e",
+      "app/short_horizon/blocks.py": "6bcbf06bd52e942f700d7b7022a61184d5eee8fc62ba7664718d11f339bd59d7",
+      "app/short_horizon/calendar.py": "cf980cbf63308cb5e93a6bec1544e378e8df2e56b65111393df05901badafaf1",
+      "app/short_horizon/clock_identity.py": "0bd000523da23f9c87fd7947b558ca1c55a16a5df47112aa754f2670080a1d2a",
+      "app/short_horizon/data.py": "28d50d2539a99bc0e18af63c49e17bd4b2b6e0245f3e6050bbf328d87836fe5d",
+      "app/short_horizon/events.py": "8b84d59c0be00c9f16f521feb44d26ed356235126648b434ee4cbd442a174055",
+      "app/short_horizon/execution.py": "05179b244b9c095e4b541f5337ee9157b071aea78c8fe002c045f7625c39ff07",
+      "app/short_horizon/noise.py": "58f80ab8220f75272edded13ffc1a2174ed4fbca16455f6abca4259fc61f0ea5",
+      "app/short_horizon/predictors.py": "a6318179e62922739cb321d9d3298bde0fd70259c70568148180e7acb518da7d",
+      "app/short_horizon/strategies.py": "22634736134d17b8dff2094b05e12b07a5fdad9a682a494a3b4fbbaf72f8aa08",
+      "app/short_horizon/vol_features.py": "c8a6046d1210a4f79d371ddbc2b9051bdcd8ded78e780d89a7a7100727c1a86e",
+      "app/short_horizon/voltrend.py": "4f8e7629c1acb978ab214f48cbd3f6604a85bff9cf0fc012251f7c888f5d9eab",
+      "app/short_horizon/vstrategies.py": "70786105fe1a5b39d59e44e9938ca950e2c024a3721306593744bbf2ee6534ca",
+      "app/short_horizon/zigzag.py": "c06592f6478f3887213e985a80de5823dd953d3887ce25bec0272197860affda",
+      "app/short_horizon/zigzag_opt.py": "dead5eacd7449f21731514417cb604d9a23b0361e151eacecb1825be6323ccb7"
+    },
+    "code_sha256": {
+      "app/zigzag_opportunities.py": "a80452b4244358650f613392c6c8add6a48e7f2456b72c6f5d0df545b9cd2b73",
+      "docs/work_plan/114_TRAIN_ZIGZAG_OPPORTUNITY_OPTIMIZATION.md": "acc9adf7a9d7f4c9059736c2ccc4ce20499969d785c4d1974ad93e9e0267e6c2",
+      "tools/zigzag_opportunity_deap.py": "fd2611476ed5a4e68dc48f10a5e54be16658fdc1fb820ab816fa724607dc9727"
+    },
+    "software": {
+      "deap": "1.4.4",
+      "numpy": "2.5.1",
+      "pandas": "3.0.3",
+      "pyarrow": "25.0.0"
+    },
+    "mode": "RETROSPECTIVE_TRAIN_OPPORTUNITY_MAP_NOT_STRATEGY_QUALIFICATION"
+  }
+}
