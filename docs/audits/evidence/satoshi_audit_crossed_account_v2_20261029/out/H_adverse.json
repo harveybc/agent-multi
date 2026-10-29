@@ -1,0 +1,361 @@
+{
+ "correlated": {
+  "by": {
+   "mirror=-1": {
+    "accounts": 180,
+    "agent": 1036,
+    "greedy_mean_return": 2.4504059146375505,
+    "losing_accounts": 3,
+    "mean_return": 3.431861323144655,
+    "orders": 1563,
+    "sl": 65,
+    "tp": 430,
+    "worst_dd": 1.7788684363776557
+   },
+   "mirror=1": {
+    "accounts": 180,
+    "agent": 1067,
+    "greedy_mean_return": 2.320420103876987,
+    "losing_accounts": 4,
+    "mean_return": 3.2175229978884214,
+    "orders": 1593,
+    "sl": 67,
+    "tp": 428,
+    "worst_dd": 1.7183322882439793
+   },
+   "pattern=overlap": {
+    "accounts": 120,
+    "agent": 711,
+    "greedy_mean_return": 5.287064171219585,
+    "losing_accounts": 0,
+    "mean_return": 6.623346032576499,
+    "orders": 1400,
+    "sl": 76,
+    "tp": 585,
+    "worst_dd": 1.7788684363776557
+   },
+   "pattern=reversal": {
+    "accounts": 120,
+    "agent": 673,
+    "greedy_mean_return": 0.9558906572604333,
+    "losing_accounts": 4,
+    "mean_return": 1.7239869500886098,
+    "orders": 859,
+    "sl": 35,
+    "tp": 139,
+    "worst_dd": 1.4614686450852488
+   },
+   "pattern=trend": {
+    "accounts": 120,
+    "agent": 719,
+    "greedy_mean_return": 0.9132841992917876,
+    "losing_accounts": 3,
+    "mean_return": 1.6267434988845082,
+    "orders": 897,
+    "sl": 21,
+    "tp": 134,
+    "worst_dd": 1.7183322882439793
+   },
+   "spread_pips=0.5": {
+    "accounts": 180,
+    "agent": 1091,
+    "greedy_mean_return": 2.940458641340639,
+    "losing_accounts": 1,
+    "mean_return": 3.8771806293436843,
+    "orders": 1649,
+    "sl": 44,
+    "tp": 476,
+    "worst_dd": 1.491456283773727
+   },
+   "spread_pips=3.0": {
+    "accounts": 180,
+    "agent": 1012,
+    "greedy_mean_return": 1.8303673771738984,
+    "losing_accounts": 6,
+    "mean_return": 2.7722036916893935,
+    "orders": 1507,
+    "sl": 88,
+    "tp": 382,
+    "worst_dd": 1.7788684363776557
+   },
+   "volatility=constant": {
+    "accounts": 120,
+    "agent": 666,
+    "greedy_mean_return": 2.3040098370666624,
+    "losing_accounts": 4,
+    "mean_return": 3.2955811566569255,
+    "orders": 1021,
+    "sl": 39,
+    "tp": 301,
+    "worst_dd": 1.7183322882439793
+   },
+   "volatility=decreasing": {
+    "accounts": 120,
+    "agent": 714,
+    "greedy_mean_return": 2.3427588706974762,
+    "losing_accounts": 1,
+    "mean_return": 3.284322630965709,
+    "orders": 1068,
+    "sl": 43,
+    "tp": 281,
+    "worst_dd": 1.4614686450852488
+   },
+   "volatility=increasing": {
+    "accounts": 120,
+    "agent": 723,
+    "greedy_mean_return": 2.509470320007668,
+    "losing_accounts": 2,
+    "mean_return": 3.394172693926982,
+    "orders": 1067,
+    "sl": 50,
+    "tp": 276,
+    "worst_dd": 1.7788684363776557
+   }
+  },
+  "horizons": {
+   "3": 65,
+   "6": 3090,
+   "12": 1,
+   "24": 0
+  },
+  "losing_accounts": 7,
+  "mean_holding": 7.465462610899873,
+  "orders": 3156,
+  "reasons": {
+   "AGENT_CLOSE": 2103,
+   "FORCED_FLAT": 63,
+   "SL": 132,
+   "TP": 858
+  },
+  "worst_account": {
+   "bank": "confirmation",
+   "mirror": -1,
+   "pattern": "overlap",
+   "quality": "correlated",
+   "seed": 60109,
+   "spread_pips": 3.0,
+   "volatility": "increasing"
+  }
+ },
+ "omitted_reversal": {
+  "by": {
+   "mirror=-1": {
+    "accounts": 180,
+    "agent": 640,
+    "greedy_mean_return": -1.9527491640409071,
+    "losing_accounts": 92,
+    "mean_return": -1.6058380996422554,
+    "orders": 1661,
+    "sl": 832,
+    "tp": 160,
+    "worst_dd": 14.297115662506984
+   },
+   "mirror=1": {
+    "accounts": 180,
+    "agent": 637,
+    "greedy_mean_return": -2.110051478904667,
+    "losing_accounts": 112,
+    "mean_return": -2.0187220000350425,
+    "orders": 1652,
+    "sl": 868,
+    "tp": 118,
+    "worst_dd": 15.12536528129467
+   },
+   "pattern=overlap": {
+    "accounts": 120,
+    "agent": 602,
+    "greedy_mean_return": -6.030951154865818,
+    "losing_accounts": 114,
+    "mean_return": -6.011443004493314,
+    "orders": 2155,
+    "sl": 1456,
+    "tp": 75,
+    "worst_dd": 15.12536528129467
+   },
+   "pattern=reversal": {
+    "accounts": 120,
+    "agent": 273,
+    "greedy_mean_return": 0.25821354173283345,
+    "losing_accounts": 45,
+    "mean_return": 0.34627775409833095,
+    "orders": 596,
+    "sl": 156,
+    "tp": 139,
+    "worst_dd": 3.108201641903131
+   },
+   "pattern=trend": {
+    "accounts": 120,
+    "agent": 402,
+    "greedy_mean_return": -0.321463351285376,
+    "losing_accounts": 45,
+    "mean_return": 0.22832510087903574,
+    "orders": 562,
+    "sl": 88,
+    "tp": 64,
+    "worst_dd": 2.657206805698461
+   },
+   "spread_pips=0.5": {
+    "accounts": 180,
+    "agent": 694,
+    "greedy_mean_return": -1.4689228760203608,
+    "losing_accounts": 91,
+    "mean_return": -1.3665222017269567,
+    "orders": 1626,
+    "sl": 732,
+    "tp": 161,
+    "worst_dd": 12.566188623150392
+   },
+   "spread_pips=3.0": {
+    "accounts": 180,
+    "agent": 583,
+    "greedy_mean_return": -2.593877766925213,
+    "losing_accounts": 113,
+    "mean_return": -2.258037897950341,
+    "orders": 1687,
+    "sl": 968,
+    "tp": 117,
+    "worst_dd": 15.12536528129467
+   },
+   "volatility=constant": {
+    "accounts": 120,
+    "agent": 431,
+    "greedy_mean_return": -2.082340546020459,
+    "losing_accounts": 66,
+    "mean_return": -1.8291909958888235,
+    "orders": 1094,
+    "sl": 561,
+    "tp": 90,
+    "worst_dd": 14.297115662506984
+   },
+   "volatility=decreasing": {
+    "accounts": 120,
+    "agent": 426,
+    "greedy_mean_return": -2.0377037357667587,
+    "losing_accounts": 67,
+    "mean_return": -1.777781017026644,
+    "orders": 1128,
+    "sl": 576,
+    "tp": 101,
+    "worst_dd": 14.235702761194593
+   },
+   "volatility=increasing": {
+    "accounts": 120,
+    "agent": 420,
+    "greedy_mean_return": -1.9741566826311432,
+    "losing_accounts": 71,
+    "mean_return": -1.8298681366004794,
+    "orders": 1091,
+    "sl": 563,
+    "tp": 87,
+    "worst_dd": 15.12536528129467
+   }
+  },
+  "horizons": {
+   "3": 0,
+   "6": 3313,
+   "12": 0,
+   "24": 0
+  },
+  "losing_accounts": 204,
+  "mean_holding": 6.237549049200121,
+  "orders": 3313,
+  "reasons": {
+   "AGENT_CLOSE": 1277,
+   "FORCED_FLAT": 58,
+   "SL": 1700,
+   "TP": 278
+  },
+  "worst_account": {
+   "bank": "confirmation",
+   "mirror": 1,
+   "pattern": "overlap",
+   "quality": "omitted_reversal",
+   "seed": 60101,
+   "spread_pips": 3.0,
+   "volatility": "increasing"
+  }
+ },
+ "track_record_signal": {
+  "correlated": {
+   "auc_err_predicts_loss": 0.5233399651011011,
+   "auc_signed_error_predicts_loss": 0.614106411826209,
+   "auc_z_predicts_SL": 0.530403238736572,
+   "auc_z_predicts_loss": 0.5096477313441736,
+   "by_pattern": {
+    "overlap": {
+     "loss_share": 0.16142857142857142,
+     "median_z": 1.3567651436980919,
+     "n": 1400
+    },
+    "reversal": {
+     "loss_share": 0.3410942956926659,
+     "median_z": 1.2901775745499622,
+     "n": 859
+    },
+    "trend": {
+     "loss_share": 0.3835005574136009,
+     "median_z": 1.2763445345742888,
+     "n": 897
+    }
+   },
+   "median_err_pips": 5.07498408264806,
+   "median_z": 1.3202143412925633,
+   "p90_z": 2.229182397103009,
+   "trades": 3156
+  },
+  "delayed": {
+   "auc_err_predicts_loss": 0.7768759493670886,
+   "auc_signed_error_predicts_loss": 0.7855594936708861,
+   "auc_z_predicts_SL": 0.8101061692969871,
+   "auc_z_predicts_loss": 0.7675679324894514,
+   "by_pattern": {
+    "overlap": {
+     "loss_share": 0.3642143505903724,
+     "median_z": 31.477742826669935,
+     "n": 1101
+    },
+    "reversal": {
+     "loss_share": 0.1798780487804878,
+     "median_z": 8.397225579716793,
+     "n": 328
+    },
+    "trend": {
+     "loss_share": 0.15625,
+     "median_z": 7.377457683271606,
+     "n": 256
+    }
+   },
+   "median_err_pips": 12.575890256060946,
+   "median_z": 21.404348567345956,
+   "p90_z": 50.75360181090676,
+   "trades": 1685
+  },
+  "omitted_reversal": {
+   "auc_err_predicts_loss": 0.7534752698993914,
+   "auc_signed_error_predicts_loss": 0.46241757502745084,
+   "auc_z_predicts_SL": 0.710123627876445,
+   "auc_z_predicts_loss": 0.7469717120161029,
+   "by_pattern": {
+    "overlap": {
+     "loss_share": 0.9225058004640371,
+     "median_z": 63.334553771527624,
+     "n": 2155
+    },
+    "reversal": {
+     "loss_share": 0.6073825503355704,
+     "median_z": 19.372335931797508,
+     "n": 596
+    },
+    "trend": {
+     "loss_share": 0.5622775800711743,
+     "median_z": 19.193242671158025,
+     "n": 562
+    }
+   },
+   "median_err_pips": 13.647328486700399,
+   "median_z": 47.55556402348231,
+   "p90_z": 106.62908992831298,
+   "trades": 3313
+  }
+ }
+}

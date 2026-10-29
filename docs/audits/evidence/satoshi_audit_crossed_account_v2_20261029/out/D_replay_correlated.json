@@ -1,0 +1,80 @@
+{
+ "accounts": 5760,
+ "acct_err": {
+  "bars": 0,
+  "cost": 0,
+  "dd": 0,
+  "entry": 0,
+  "exitpx": 0,
+  "fin": 0,
+  "gate": 0,
+  "ledger": 0,
+  "margin": 0,
+  "net": 0,
+  "overlap": 0,
+  "path": 0,
+  "ret": 0,
+  "units": 0
+ },
+ "cold_checked": 576,
+ "cold_mismatch": 0,
+ "max_entries_per_day": 9,
+ "per_policy_mismatch": {},
+ "quality": "correlated",
+ "report_bad": {
+  "clock": 0,
+  "deadline": 0,
+  "spreads": 0,
+  "support": 0,
+  "terminal": 0
+ },
+ "report_identity_warm_vs_cold_mismatch": 0,
+ "reports_checked": 38520,
+ "seconds": 371.3591914176941,
+ "size_traces": {
+  "P3": {
+   "dd_ratio_worst": 0.7997307513370648,
+   "mean_q": 0.5532203649086066,
+   "mean_q_size1": 0.6932585052563488,
+   "mean_ret": 2.004586632654751,
+   "mean_ret_size1": 2.5206868783478864,
+   "mean_unit_ratio": 0.7964072521120261,
+   "ret_ratio": 0.7952541229431087,
+   "seq_equal": 360,
+   "trace_equal": 360,
+   "worlds": 360,
+   "worst_dd": 1.3359713845481274,
+   "worst_dd_size1": 1.67052646445635
+  },
+  "P4": {
+   "dd_ratio_worst": 0.450669329885241,
+   "mean_q": 0.311945466305867,
+   "mean_q_size1": 0.6963066859656981,
+   "mean_ret": 1.1287678094977804,
+   "mean_ret_size1": 2.543983900747853,
+   "mean_unit_ratio": 0.44550289317514435,
+   "ret_ratio": 0.44370084620659644,
+   "seq_equal": 360,
+   "trace_equal": 360,
+   "worlds": 360,
+   "worst_dd": 0.7528550422921041,
+   "worst_dd_size1": 1.67052646445635
+  },
+  "P5": {
+   "dd_ratio_worst": 0.2520204903447551,
+   "mean_q": 0.18305180701424847,
+   "mean_q_size1": 0.7322072150792845,
+   "mean_ret": 0.5455180578075268,
+   "mean_ret_size1": 2.205850840650446,
+   "mean_unit_ratio": 0.24841438968632193,
+   "ret_ratio": 0.24730505243349465,
+   "seq_equal": 360,
+   "trace_equal": 360,
+   "worlds": 360,
+   "worst_dd": 0.4209983084556071,
+   "worst_dd_size1": 1.6704923789319523
+  }
+ },
+ "terminal_discriminating_reports": 0,
+ "warm_mismatch": 0
+}

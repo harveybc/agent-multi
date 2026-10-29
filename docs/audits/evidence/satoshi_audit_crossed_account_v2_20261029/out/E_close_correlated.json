@@ -1,0 +1,248 @@
+{
+ "accounts": 360,
+ "all": {
+  "destructive": 867,
+  "executed_equals_ostar": 637,
+  "helpful": 1220,
+  "hold_outcome": {
+   "FORCED_FLAT": 507,
+   "SL": 997,
+   "TP": 599
+  },
+  "mean_delta_R": 0.22555488648000738,
+  "median_delta_R": 0.3857104313832978,
+  "n": 2103,
+  "neutral": 16,
+  "ostar_is_hold_share": 0.2724679029957204,
+  "regret_R_mean": 0.5859012055319626,
+  "regret_R_median": 0.2624869376497306,
+  "regret_R_p90": 1.696290171250691,
+  "regret_zero_share": 0.30290061816452685,
+  "share_destructive": 0.4122681883024251,
+  "share_helpful": 0.5801236329053733,
+  "sum_delta_vs_hold_pct_of_total_capital": 0.6778589852675183,
+  "sum_delta_vs_hold_usd": 24402.92346963066
+ },
+ "by_hold_outcome": {
+  "FORCED_FLAT": {
+   "destructive": 273,
+   "executed_equals_ostar": 101,
+   "helpful": 220,
+   "hold_outcome": {
+    "FORCED_FLAT": 507,
+    "SL": 0,
+    "TP": 0
+   },
+   "mean_delta_R": -0.04801299357114914,
+   "median_delta_R": -0.08854036286219831,
+   "n": 507,
+   "neutral": 14,
+   "ostar_is_hold_share": 0.2603550295857988,
+   "regret_R_mean": 0.531223747264457,
+   "regret_R_median": 0.3608687373565895,
+   "regret_R_p90": 1.31744039610446,
+   "regret_zero_share": 0.1992110453648915,
+   "share_destructive": 0.5384615384615384,
+   "share_helpful": 0.4339250493096647,
+   "sum_delta_vs_hold_pct_of_total_capital": -0.032763862858185056,
+   "sum_delta_vs_hold_usd": -1179.4990628946618
+  },
+  "SL": {
+   "destructive": 0,
+   "executed_equals_ostar": 531,
+   "helpful": 997,
+   "hold_outcome": {
+    "FORCED_FLAT": 0,
+    "SL": 997,
+    "TP": 0
+   },
+   "mean_delta_R": 1.2680761572257537,
+   "median_delta_R": 1.2074069644780887,
+   "n": 997,
+   "neutral": 0,
+   "ostar_is_hold_share": 0.0,
+   "regret_R_mean": 0.1973586816919619,
+   "regret_R_median": 0.0,
+   "regret_R_p90": 0.6953587831068981,
+   "regret_zero_share": 0.5325977933801405,
+   "share_destructive": 0.0,
+   "share_helpful": 1.0,
+   "sum_delta_vs_hold_pct_of_total_capital": 1.7830087021336558,
+   "sum_delta_vs_hold_usd": 64188.31327681161
+  },
+  "TP": {
+   "destructive": 594,
+   "executed_equals_ostar": 5,
+   "helpful": 3,
+   "hold_outcome": {
+    "FORCED_FLAT": 0,
+    "SL": 0,
+    "TP": 599
+   },
+   "mean_delta_R": -1.2781092065877269,
+   "median_delta_R": -1.2936993479713572,
+   "n": 599,
+   "neutral": 2,
+   "ostar_is_hold_share": 0.7362270450751253,
+   "regret_R_mean": 1.2788867941965802,
+   "regret_R_median": 1.30193087166287,
+   "regret_R_p90": 2.2348365778108112,
+   "regret_zero_share": 0.008347245409015025,
+   "share_destructive": 0.991652754590985,
+   "share_helpful": 0.005008347245409015,
+   "sum_delta_vs_hold_pct_of_total_capital": -1.0723858540079525,
+   "sum_delta_vs_hold_usd": -38605.89074428629
+  }
+ },
+ "by_pattern": {
+  "overlap": {
+   "destructive": 240,
+   "executed_equals_ostar": 291,
+   "helpful": 470,
+   "hold_outcome": {
+    "FORCED_FLAT": 113,
+    "SL": 392,
+    "TP": 206
+   },
+   "mean_delta_R": 0.623834212268036,
+   "median_delta_R": 0.75696029182144,
+   "n": 711,
+   "neutral": 1,
+   "ostar_is_hold_share": 0.29535864978902954,
+   "regret_R_mean": 0.4578552923565884,
+   "regret_R_median": 0.14971301454561636,
+   "regret_R_p90": 1.4563117144294357,
+   "regret_zero_share": 0.4092827004219409,
+   "share_destructive": 0.33755274261603374,
+   "share_helpful": 0.6610407876230661,
+   "sum_delta_vs_hold_pct_of_total_capital": 0.6339575567492236,
+   "sum_delta_vs_hold_usd": 22822.472042972047
+  },
+  "reversal": {
+   "destructive": 308,
+   "executed_equals_ostar": 211,
+   "helpful": 358,
+   "hold_outcome": {
+    "FORCED_FLAT": 207,
+    "SL": 285,
+    "TP": 181
+   },
+   "mean_delta_R": 0.047908908130628,
+   "median_delta_R": 0.20009166572885553,
+   "n": 673,
+   "neutral": 7,
+   "ostar_is_hold_share": 0.2600297176820208,
+   "regret_R_mean": 0.6193148645648989,
+   "regret_R_median": 0.32417747783902146,
+   "regret_R_p90": 1.7245805903427942,
+   "regret_zero_share": 0.3135215453194651,
+   "share_destructive": 0.4576523031203566,
+   "share_helpful": 0.5319465081723626,
+   "sum_delta_vs_hold_pct_of_total_capital": 0.04550357091688027,
+   "sum_delta_vs_hold_usd": 1638.1285530076898
+  },
+  "trend": {
+   "destructive": 319,
+   "executed_equals_ostar": 135,
+   "helpful": 392,
+   "hold_outcome": {
+    "FORCED_FLAT": 187,
+    "SL": 320,
+    "TP": 212
+   },
+   "mean_delta_R": -0.002012369717706143,
+   "median_delta_R": 0.21954530799813052,
+   "n": 719,
+   "neutral": 8,
+   "ostar_is_hold_share": 0.2614742698191933,
+   "regret_R_mean": 0.6812464791599525,
+   "regret_R_median": 0.4283447456618031,
+   "regret_R_p90": 1.7544555905424488,
+   "regret_zero_share": 0.18776077885952713,
+   "share_destructive": 0.44367176634214184,
+   "share_helpful": 0.545201668984701,
+   "sum_delta_vs_hold_pct_of_total_capital": -0.0016021423985855302,
+   "sum_delta_vs_hold_usd": -57.67712634907909
+  }
+ },
+ "clone_mismatch": 0,
+ "close_actions_preempted_by_native": 11,
+ "early_closes": 2103,
+ "negative_realized": {
+  "destructive": 274,
+  "executed_equals_ostar": 207,
+  "helpful": 441,
+  "hold_outcome": {
+   "FORCED_FLAT": 173,
+   "SL": 408,
+   "TP": 140
+  },
+  "mean_delta_R": -0.17610911598056267,
+  "median_delta_R": 0.32451677664612344,
+  "n": 721,
+  "neutral": 6,
+  "ostar_is_hold_share": 0.217753120665742,
+  "regret_R_mean": 0.7961945703052283,
+  "regret_R_median": 0.4720841393275182,
+  "regret_R_p90": 2.1775498938775737,
+  "regret_zero_share": 0.2871012482662968,
+  "share_destructive": 0.3800277392510402,
+  "share_helpful": 0.6116504854368932,
+  "sum_delta_vs_hold_pct_of_total_capital": -0.18052475836828488,
+  "sum_delta_vs_hold_usd": -6498.891301258256
+ },
+ "nonnegative_realized": {
+  "destructive": 593,
+  "executed_equals_ostar": 430,
+  "helpful": 779,
+  "hold_outcome": {
+   "FORCED_FLAT": 334,
+   "SL": 589,
+   "TP": 459
+  },
+  "mean_delta_R": 0.43510607734402396,
+  "median_delta_R": 0.6238778656268847,
+  "n": 1382,
+  "neutral": 10,
+  "ostar_is_hold_share": 0.30101302460202606,
+  "regret_R_mean": 0.476189544170512,
+  "regret_R_median": 0.23043453140531114,
+  "regret_R_p90": 1.3874660925222688,
+  "regret_zero_share": 0.3111432706222865,
+  "share_destructive": 0.42908827785817655,
+  "share_helpful": 0.5636758321273516,
+  "sum_delta_vs_hold_pct_of_total_capital": 0.8583837436358032,
+  "sum_delta_vs_hold_usd": 30901.814770888916
+ },
+ "p1_total_return_pct_mean": 3.324692160516539,
+ "preempted_reasons": {
+  "SL": 10,
+  "TP": 1
+ },
+ "quality": "correlated",
+ "replay_mismatch_accounts": 0,
+ "seconds": 3.045241355895996,
+ "stratified_sample_300": {
+  "destructive": 118,
+  "executed_equals_ostar": 83,
+  "helpful": 182,
+  "hold_outcome": {
+   "FORCED_FLAT": 66,
+   "SL": 157,
+   "TP": 77
+  },
+  "mean_delta_R": 0.21371823823168484,
+  "median_delta_R": 0.4182198237783889,
+  "n": 300,
+  "neutral": 0,
+  "ostar_is_hold_share": 0.25,
+  "regret_R_mean": 0.6491900380186615,
+  "regret_R_median": 0.29839156560144653,
+  "regret_R_p90": 1.8648642505372681,
+  "regret_zero_share": 0.27666666666666667,
+  "share_destructive": 0.3933333333333333,
+  "share_helpful": 0.6066666666666667,
+  "sum_delta_vs_hold_pct_of_total_capital": 0.09039154190723851,
+  "sum_delta_vs_hold_usd": 3254.0955086605863
+ }
+}

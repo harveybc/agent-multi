@@ -1,0 +1,2138 @@
+{
+ "correlated/P1": {
+  "accounts": 360,
+  "buy_wins": 1089,
+  "buys": 1512,
+  "early_closes": 2103,
+  "eligible": true,
+  "horizons": {
+   "12": 1,
+   "24": 0,
+   "3": 65,
+   "6": 3090
+  },
+  "mean_dd_pct": 0.5972963365667469,
+  "mean_orders": 8.766666666666667,
+  "neg_early": 721,
+  "orders": 3156,
+  "reasons": {
+   "AGENT_CLOSE": 2103,
+   "FORCED_FLAT": 63,
+   "SL": 132,
+   "TP": 858
+  },
+  "ret_from_ledger": 3.324692160516539,
+  "return_pct": 3.324692160516539,
+  "sell_wins": 1204,
+  "sells": 1644,
+  "wins": 2293,
+  "worst_dd_pct": 1.7788684363776557
+ },
+ "correlated/P2": {
+  "accounts": 360,
+  "buy_wins": 876,
+  "buys": 1137,
+  "early_closes": 1955,
+  "eligible": true,
+  "horizons": {
+   "12": 2268,
+   "24": 0,
+   "3": 178,
+   "6": 0
+  },
+  "mean_dd_pct": 0.472683994153325,
+  "mean_orders": 6.794444444444444,
+  "neg_early": 553,
+  "orders": 2446,
+  "reasons": {
+   "AGENT_CLOSE": 1955,
+   "FORCED_FLAT": 56,
+   "SL": 36,
+   "TP": 399
+  },
+  "ret_from_ledger": 2.6933175241222727,
+  "return_pct": 2.6933175241222735,
+  "sell_wins": 977,
+  "sells": 1309,
+  "wins": 1853,
+  "worst_dd_pct": 1.67052646445635
+ },
+ "correlated/P3": {
+  "accounts": 360,
+  "buy_wins": 763,
+  "buys": 949,
+  "early_closes": 1536,
+  "eligible": true,
+  "horizons": {
+   "12": 2004,
+   "24": 0,
+   "3": 1,
+   "6": 0
+  },
+  "mean_dd_pct": 0.34540318052109087,
+  "mean_orders": 5.569444444444445,
+  "neg_early": 376,
+  "orders": 2005,
+  "reasons": {
+   "AGENT_CLOSE": 1536,
+   "FORCED_FLAT": 51,
+   "SL": 32,
+   "TP": 386
+  },
+  "ret_from_ledger": 2.00458663265475,
+  "return_pct": 2.004586632654751,
+  "sell_wins": 830,
+  "sells": 1056,
+  "wins": 1593,
+  "worst_dd_pct": 1.3359713845481274
+ },
+ "correlated/P3_size1": {
+  "accounts": 360,
+  "buy_wins": 763,
+  "buys": 949,
+  "early_closes": 1536,
+  "eligible": true,
+  "horizons": {
+   "12": 2004,
+   "24": 0,
+   "3": 1,
+   "6": 0
+  },
+  "mean_dd_pct": 0.43239964533189645,
+  "mean_orders": 5.569444444444445,
+  "neg_early": 376,
+  "orders": 2005,
+  "reasons": {
+   "AGENT_CLOSE": 1536,
+   "FORCED_FLAT": 51,
+   "SL": 32,
+   "TP": 386
+  },
+  "ret_from_ledger": 2.5206868783478877,
+  "return_pct": 2.5206868783478864,
+  "sell_wins": 830,
+  "sells": 1056,
+  "wins": 1593,
+  "worst_dd_pct": 1.67052646445635
+ },
+ "correlated/P4": {
+  "accounts": 360,
+  "buy_wins": 742,
+  "buys": 900,
+  "early_closes": 1498,
+  "eligible": true,
+  "horizons": {
+   "12": 1946,
+   "24": 0,
+   "3": 11,
+   "6": 0
+  },
+  "mean_dd_pct": 0.1923240016129305,
+  "mean_orders": 5.436111111111111,
+  "neg_early": 343,
+  "orders": 1957,
+  "reasons": {
+   "AGENT_CLOSE": 1498,
+   "FORCED_FLAT": 46,
+   "SL": 28,
+   "TP": 385
+  },
+  "ret_from_ledger": 1.1287678094977798,
+  "return_pct": 1.1287678094977804,
+  "sell_wins": 840,
+  "sells": 1057,
+  "wins": 1582,
+  "worst_dd_pct": 0.7528550422921041
+ },
+ "correlated/P4_size1": {
+  "accounts": 360,
+  "buy_wins": 742,
+  "buys": 900,
+  "early_closes": 1498,
+  "eligible": true,
+  "horizons": {
+   "12": 1946,
+   "24": 0,
+   "3": 11,
+   "6": 0
+  },
+  "mean_dd_pct": 0.4281126481438583,
+  "mean_orders": 5.436111111111111,
+  "neg_early": 343,
+  "orders": 1957,
+  "reasons": {
+   "AGENT_CLOSE": 1498,
+   "FORCED_FLAT": 46,
+   "SL": 28,
+   "TP": 385
+  },
+  "ret_from_ledger": 2.5439839007478535,
+  "return_pct": 2.543983900747853,
+  "sell_wins": 840,
+  "sells": 1057,
+  "wins": 1582,
+  "worst_dd_pct": 1.67052646445635
+ },
+ "correlated/P5": {
+  "accounts": 360,
+  "buy_wins": 517,
+  "buys": 620,
+  "early_closes": 1198,
+  "eligible": true,
+  "horizons": {
+   "12": 1423,
+   "24": 0,
+   "3": 78,
+   "6": 113
+  },
+  "mean_dd_pct": 0.1044124800059349,
+  "mean_orders": 4.483333333333333,
+  "neg_early": 280,
+  "orders": 1614,
+  "reasons": {
+   "AGENT_CLOSE": 1198,
+   "FORCED_FLAT": 31,
+   "SL": 31,
+   "TP": 354
+  },
+  "ret_from_ledger": 0.5455180578075283,
+  "return_pct": 0.5455180578075268,
+  "sell_wins": 784,
+  "sells": 994,
+  "wins": 1301,
+  "worst_dd_pct": 0.4209983084556071
+ },
+ "correlated/P5_size1": {
+  "accounts": 360,
+  "buy_wins": 517,
+  "buys": 620,
+  "early_closes": 1198,
+  "eligible": true,
+  "horizons": {
+   "12": 1423,
+   "24": 0,
+   "3": 78,
+   "6": 113
+  },
+  "mean_dd_pct": 0.41610649699836444,
+  "mean_orders": 4.483333333333333,
+  "neg_early": 280,
+  "orders": 1614,
+  "reasons": {
+   "AGENT_CLOSE": 1198,
+   "FORCED_FLAT": 31,
+   "SL": 31,
+   "TP": 354
+  },
+  "ret_from_ledger": 2.2058508406504456,
+  "return_pct": 2.205850840650446,
+  "sell_wins": 784,
+  "sells": 994,
+  "wins": 1301,
+  "worst_dd_pct": 1.6704923789319523
+ },
+ "correlated/equal_guarded": {
+  "accounts": 360,
+  "buy_wins": 706,
+  "buys": 1085,
+  "early_closes": 1241,
+  "eligible": true,
+  "horizons": {
+   "12": 783,
+   "24": 425,
+   "3": 688,
+   "6": 289
+  },
+  "mean_dd_pct": 0.7823262845236927,
+  "mean_orders": 6.069444444444445,
+  "neg_early": 493,
+  "orders": 2185,
+  "reasons": {
+   "AGENT_CLOSE": 1241,
+   "FORCED_FLAT": 253,
+   "SL": 195,
+   "TP": 496
+  },
+  "ret_from_ledger": 1.9212032971623831,
+  "return_pct": 1.9212032971623847,
+  "sell_wins": 720,
+  "sells": 1100,
+  "wins": 1426,
+  "worst_dd_pct": 1.8799740386085178
+ },
+ "correlated/greedy": {
+  "accounts": 360,
+  "buy_wins": 1195,
+  "buys": 2070,
+  "early_closes": 3485,
+  "eligible": true,
+  "horizons": {
+   "12": 1259,
+   "24": 1035,
+   "3": 1379,
+   "6": 533
+  },
+  "mean_dd_pct": 0.7059122166974005,
+  "mean_orders": 11.683333333333334,
+  "neg_early": 1550,
+  "orders": 4206,
+  "reasons": {
+   "AGENT_CLOSE": 3485,
+   "FORCED_FLAT": 203,
+   "SL": 117,
+   "TP": 401
+  },
+  "ret_from_ledger": 2.3854130092572676,
+  "return_pct": 2.385413009257269,
+  "sell_wins": 1239,
+  "sells": 2136,
+  "wins": 2434,
+  "worst_dd_pct": 2.403983805688197
+ },
+ "correlated/nop": {
+  "accounts": 360,
+  "buy_wins": 0,
+  "buys": 0,
+  "early_closes": 0,
+  "eligible": false,
+  "horizons": {
+   "12": 0,
+   "24": 0,
+   "3": 0,
+   "6": 0
+  },
+  "mean_dd_pct": 0.0,
+  "mean_orders": 0.0,
+  "neg_early": 0,
+  "orders": 0,
+  "reasons": {},
+  "ret_from_ledger": 0.0,
+  "return_pct": 0.0,
+  "sell_wins": 0,
+  "sells": 0,
+  "wins": 0,
+  "worst_dd_pct": 0.0
+ },
+ "correlated/only_12": {
+  "accounts": 360,
+  "buy_wins": 1249,
+  "buys": 2136,
+  "early_closes": 3671,
+  "eligible": true,
+  "horizons": {
+   "12": 4321,
+   "24": 0,
+   "3": 0,
+   "6": 0
+  },
+  "mean_dd_pct": 0.667387750781207,
+  "mean_orders": 12.002777777777778,
+  "neg_early": 1608,
+  "orders": 4321,
+  "reasons": {
+   "AGENT_CLOSE": 3671,
+   "FORCED_FLAT": 217,
+   "SL": 68,
+   "TP": 365
+  },
+  "ret_from_ledger": 2.471957120902109,
+  "return_pct": 2.471957120902108,
+  "sell_wins": 1274,
+  "sells": 2185,
+  "wins": 2523,
+  "worst_dd_pct": 2.274752854064431
+ },
+ "correlated/only_24": {
+  "accounts": 360,
+  "buy_wins": 1070,
+  "buys": 1730,
+  "early_closes": 2991,
+  "eligible": true,
+  "horizons": {
+   "12": 0,
+   "24": 3494,
+   "3": 0,
+   "6": 0
+  },
+  "mean_dd_pct": 0.48940559095731984,
+  "mean_orders": 9.705555555555556,
+  "neg_early": 1201,
+  "orders": 3494,
+  "reasons": {
+   "AGENT_CLOSE": 2991,
+   "FORCED_FLAT": 213,
+   "SL": 18,
+   "TP": 272
+  },
+  "ret_from_ledger": 2.075554921231036,
+  "return_pct": 2.075554921231037,
+  "sell_wins": 1089,
+  "sells": 1764,
+  "wins": 2159,
+  "worst_dd_pct": 1.2019058525814463
+ },
+ "correlated/only_3": {
+  "accounts": 360,
+  "buy_wins": 1649,
+  "buys": 3134,
+  "early_closes": 4736,
+  "eligible": true,
+  "horizons": {
+   "12": 0,
+   "24": 0,
+   "3": 6327,
+   "6": 0
+  },
+  "mean_dd_pct": 1.0747865927894926,
+  "mean_orders": 17.575,
+  "neg_early": 2452,
+  "orders": 6327,
+  "reasons": {
+   "AGENT_CLOSE": 4736,
+   "FORCED_FLAT": 204,
+   "SL": 402,
+   "TP": 985
+  },
+  "ret_from_ledger": 2.5449404871196775,
+  "return_pct": 2.5449404871196766,
+  "sell_wins": 1710,
+  "sells": 3193,
+  "wins": 3359,
+  "worst_dd_pct": 4.286018067965575
+ },
+ "correlated/only_6": {
+  "accounts": 360,
+  "buy_wins": 1526,
+  "buys": 2845,
+  "early_closes": 4529,
+  "eligible": true,
+  "horizons": {
+   "12": 0,
+   "24": 0,
+   "3": 0,
+   "6": 5769
+  },
+  "mean_dd_pct": 0.9905512395008768,
+  "mean_orders": 16.025,
+  "neg_early": 2275,
+  "orders": 5769,
+  "reasons": {
+   "AGENT_CLOSE": 4529,
+   "FORCED_FLAT": 204,
+   "SL": 260,
+   "TP": 776
+  },
+  "ret_from_ledger": 2.667106368907658,
+  "return_pct": 2.6671063689076595,
+  "sell_wins": 1592,
+  "sells": 2924,
+  "wins": 3118,
+  "worst_dd_pct": 4.118158351407916
+ },
+ "delayed/P1": {
+  "accounts": 360,
+  "buy_wins": 519,
+  "buys": 727,
+  "early_closes": 221,
+  "eligible": true,
+  "horizons": {
+   "12": 1,
+   "24": 0,
+   "3": 87,
+   "6": 1597
+  },
+  "mean_dd_pct": 0.7246013744469256,
+  "mean_orders": 4.680555555555555,
+  "neg_early": 63,
+  "orders": 1685,
+  "reasons": {
+   "AGENT_CLOSE": 221,
+   "FORCED_FLAT": 78,
+   "SL": 410,
+   "TP": 976
+  },
+  "ret_from_ledger": 2.317900487991186,
+  "return_pct": 2.3179004879911846,
+  "sell_wins": 666,
+  "sells": 958,
+  "wins": 1185,
+  "worst_dd_pct": 2.7065444902162965
+ },
+ "delayed/P2": {
+  "accounts": 360,
+  "buy_wins": 319,
+  "buys": 369,
+  "early_closes": 320,
+  "eligible": false,
+  "horizons": {
+   "12": 765,
+   "24": 0,
+   "3": 98,
+   "6": 0
+  },
+  "mean_dd_pct": 0.45436687977343615,
+  "mean_orders": 2.397222222222222,
+  "neg_early": 26,
+  "orders": 863,
+  "reasons": {
+   "AGENT_CLOSE": 320,
+   "FORCED_FLAT": 44,
+   "SL": 93,
+   "TP": 406
+  },
+  "ret_from_ledger": 1.738307935466439,
+  "return_pct": 1.7383079354664397,
+  "sell_wins": 415,
+  "sells": 494,
+  "wins": 734,
+  "worst_dd_pct": 2.620071849569587
+ },
+ "delayed/P3": {
+  "accounts": 360,
+  "buy_wins": 150,
+  "buys": 165,
+  "early_closes": 82,
+  "eligible": false,
+  "horizons": {
+   "12": 427,
+   "24": 0,
+   "3": 0,
+   "6": 0
+  },
+  "mean_dd_pct": 0.22802941501131477,
+  "mean_orders": 1.1861111111111111,
+  "neg_early": 10,
+  "orders": 427,
+  "reasons": {
+   "AGENT_CLOSE": 82,
+   "FORCED_FLAT": 14,
+   "SL": 31,
+   "TP": 300
+  },
+  "ret_from_ledger": 0.8736518071074424,
+  "return_pct": 0.8736518071074417,
+  "sell_wins": 236,
+  "sells": 262,
+  "wins": 386,
+  "worst_dd_pct": 1.6708608405426528
+ },
+ "delayed/P3_size1": {
+  "accounts": 360,
+  "buy_wins": 150,
+  "buys": 165,
+  "early_closes": 82,
+  "eligible": false,
+  "horizons": {
+   "12": 427,
+   "24": 0,
+   "3": 0,
+   "6": 0
+  },
+  "mean_dd_pct": 0.285280313843053,
+  "mean_orders": 1.1861111111111111,
+  "neg_early": 10,
+  "orders": 427,
+  "reasons": {
+   "AGENT_CLOSE": 82,
+   "FORCED_FLAT": 14,
+   "SL": 31,
+   "TP": 300
+  },
+  "ret_from_ledger": 1.0974985698746624,
+  "return_pct": 1.0974985698746624,
+  "sell_wins": 236,
+  "sells": 262,
+  "wins": 386,
+  "worst_dd_pct": 2.0889986179902946
+ },
+ "delayed/P4": {
+  "accounts": 360,
+  "buy_wins": 167,
+  "buys": 182,
+  "early_closes": 114,
+  "eligible": false,
+  "horizons": {
+   "12": 457,
+   "24": 0,
+   "3": 1,
+   "6": 0
+  },
+  "mean_dd_pct": 0.12069003068045529,
+  "mean_orders": 1.2722222222222221,
+  "neg_early": 15,
+  "orders": 458,
+  "reasons": {
+   "AGENT_CLOSE": 114,
+   "FORCED_FLAT": 17,
+   "SL": 28,
+   "TP": 299
+  },
+  "ret_from_ledger": 0.515358053001988,
+  "return_pct": 0.515358053001988,
+  "sell_wins": 248,
+  "sells": 276,
+  "wins": 415,
+  "worst_dd_pct": 0.9417639488160585
+ },
+ "delayed/P4_size1": {
+  "accounts": 360,
+  "buy_wins": 167,
+  "buys": 182,
+  "early_closes": 114,
+  "eligible": false,
+  "horizons": {
+   "12": 457,
+   "24": 0,
+   "3": 1,
+   "6": 0
+  },
+  "mean_dd_pct": 0.2681824148159514,
+  "mean_orders": 1.2722222222222221,
+  "neg_early": 15,
+  "orders": 458,
+  "reasons": {
+   "AGENT_CLOSE": 114,
+   "FORCED_FLAT": 17,
+   "SL": 28,
+   "TP": 299
+  },
+  "ret_from_ledger": 1.1585141280498676,
+  "return_pct": 1.158514128049868,
+  "sell_wins": 248,
+  "sells": 276,
+  "wins": 415,
+  "worst_dd_pct": 2.0889986179902946
+ },
+ "delayed/P5": {
+  "accounts": 360,
+  "buy_wins": 56,
+  "buys": 69,
+  "early_closes": 28,
+  "eligible": false,
+  "horizons": {
+   "12": 198,
+   "24": 0,
+   "3": 15,
+   "6": 16
+  },
+  "mean_dd_pct": 0.04287269854347657,
+  "mean_orders": 0.6361111111111111,
+  "neg_early": 10,
+  "orders": 229,
+  "reasons": {
+   "AGENT_CLOSE": 28,
+   "FORCED_FLAT": 5,
+   "SL": 20,
+   "TP": 176
+  },
+  "ret_from_ledger": 0.15382392635228856,
+  "return_pct": 0.15382392635228873,
+  "sell_wins": 141,
+  "sells": 160,
+  "wins": 197,
+  "worst_dd_pct": 0.5008666840378739
+ },
+ "delayed/P5_size1": {
+  "accounts": 360,
+  "buy_wins": 56,
+  "buys": 69,
+  "early_closes": 28,
+  "eligible": false,
+  "horizons": {
+   "12": 198,
+   "24": 0,
+   "3": 15,
+   "6": 16
+  },
+  "mean_dd_pct": 0.17035179408052767,
+  "mean_orders": 0.6361111111111111,
+  "neg_early": 10,
+  "orders": 229,
+  "reasons": {
+   "AGENT_CLOSE": 28,
+   "FORCED_FLAT": 5,
+   "SL": 20,
+   "TP": 176
+  },
+  "ret_from_ledger": 0.6197101580808196,
+  "return_pct": 0.6197101580808199,
+  "sell_wins": 141,
+  "sells": 160,
+  "wins": 197,
+  "worst_dd_pct": 1.9854262399578941
+ },
+ "delayed/equal_guarded": {
+  "accounts": 360,
+  "buy_wins": 380,
+  "buys": 685,
+  "early_closes": 74,
+  "eligible": true,
+  "horizons": {
+   "12": 463,
+   "24": 162,
+   "3": 590,
+   "6": 207
+  },
+  "mean_dd_pct": 1.1464425205637716,
+  "mean_orders": 3.95,
+  "neg_early": 22,
+  "orders": 1422,
+  "reasons": {
+   "AGENT_CLOSE": 74,
+   "FORCED_FLAT": 291,
+   "SL": 502,
+   "TP": 555
+  },
+  "ret_from_ledger": 1.138822962554962,
+  "return_pct": 1.138822962554961,
+  "sell_wins": 406,
+  "sells": 737,
+  "wins": 786,
+  "worst_dd_pct": 4.230235738177514
+ },
+ "delayed/greedy": {
+  "accounts": 360,
+  "buy_wins": 604,
+  "buys": 845,
+  "early_closes": 649,
+  "eligible": true,
+  "horizons": {
+   "12": 562,
+   "24": 173,
+   "3": 766,
+   "6": 254
+  },
+  "mean_dd_pct": 0.7533545021756471,
+  "mean_orders": 4.875,
+  "neg_early": 119,
+  "orders": 1755,
+  "reasons": {
+   "AGENT_CLOSE": 649,
+   "FORCED_FLAT": 191,
+   "SL": 261,
+   "TP": 654
+  },
+  "ret_from_ledger": 2.202730321837096,
+  "return_pct": 2.202730321837095,
+  "sell_wins": 638,
+  "sells": 910,
+  "wins": 1242,
+  "worst_dd_pct": 2.769378802991225
+ },
+ "delayed/nop": {
+  "accounts": 360,
+  "buy_wins": 0,
+  "buys": 0,
+  "early_closes": 0,
+  "eligible": false,
+  "horizons": {
+   "12": 0,
+   "24": 0,
+   "3": 0,
+   "6": 0
+  },
+  "mean_dd_pct": 0.0,
+  "mean_orders": 0.0,
+  "neg_early": 0,
+  "orders": 0,
+  "reasons": {},
+  "ret_from_ledger": 0.0,
+  "return_pct": 0.0,
+  "sell_wins": 0,
+  "sells": 0,
+  "wins": 0,
+  "worst_dd_pct": 0.0
+ },
+ "delayed/only_12": {
+  "accounts": 360,
+  "buy_wins": 600,
+  "buys": 846,
+  "early_closes": 820,
+  "eligible": true,
+  "horizons": {
+   "12": 1752,
+   "24": 0,
+   "3": 0,
+   "6": 0
+  },
+  "mean_dd_pct": 0.7444231824244102,
+  "mean_orders": 4.866666666666666,
+  "neg_early": 121,
+  "orders": 1752,
+  "reasons": {
+   "AGENT_CLOSE": 820,
+   "FORCED_FLAT": 226,
+   "SL": 249,
+   "TP": 457
+  },
+  "ret_from_ledger": 1.9301332439261418,
+  "return_pct": 1.9301332439261418,
+  "sell_wins": 626,
+  "sells": 906,
+  "wins": 1226,
+  "worst_dd_pct": 3.0150296217977357
+ },
+ "delayed/only_24": {
+  "accounts": 360,
+  "buy_wins": 518,
+  "buys": 666,
+  "early_closes": 750,
+  "eligible": true,
+  "horizons": {
+   "12": 0,
+   "24": 1369,
+   "3": 0,
+   "6": 0
+  },
+  "mean_dd_pct": 0.5758485983612631,
+  "mean_orders": 3.8027777777777776,
+  "neg_early": 78,
+  "orders": 1369,
+  "reasons": {
+   "AGENT_CLOSE": 750,
+   "FORCED_FLAT": 226,
+   "SL": 70,
+   "TP": 323
+  },
+  "ret_from_ledger": 1.6470095847989537,
+  "return_pct": 1.6470095847989537,
+  "sell_wins": 536,
+  "sells": 703,
+  "wins": 1054,
+  "worst_dd_pct": 2.1058635998381545
+ },
+ "delayed/only_3": {
+  "accounts": 360,
+  "buy_wins": 934,
+  "buys": 1861,
+  "early_closes": 1026,
+  "eligible": true,
+  "horizons": {
+   "12": 0,
+   "24": 0,
+   "3": 3801,
+   "6": 0
+  },
+  "mean_dd_pct": 1.3671633293236058,
+  "mean_orders": 10.558333333333334,
+  "neg_early": 335,
+  "orders": 3801,
+  "reasons": {
+   "AGENT_CLOSE": 1026,
+   "FORCED_FLAT": 190,
+   "SL": 1418,
+   "TP": 1167
+  },
+  "ret_from_ledger": 1.323085520689192,
+  "return_pct": 1.3230855206891932,
+  "sell_wins": 968,
+  "sells": 1940,
+  "wins": 1902,
+  "worst_dd_pct": 5.166837269295453
+ },
+ "delayed/only_6": {
+  "accounts": 360,
+  "buy_wins": 821,
+  "buys": 1437,
+  "early_closes": 907,
+  "eligible": true,
+  "horizons": {
+   "12": 0,
+   "24": 0,
+   "3": 0,
+   "6": 2938
+  },
+  "mean_dd_pct": 1.112841974615581,
+  "mean_orders": 8.161111111111111,
+  "neg_early": 248,
+  "orders": 2938,
+  "reasons": {
+   "AGENT_CLOSE": 907,
+   "FORCED_FLAT": 211,
+   "SL": 852,
+   "TP": 968
+  },
+  "ret_from_ledger": 1.900183708836717,
+  "return_pct": 1.9001837088367166,
+  "sell_wins": 855,
+  "sells": 1501,
+  "wins": 1676,
+  "worst_dd_pct": 3.7999881685111045
+ },
+ "ideal/P1": {
+  "accounts": 360,
+  "buy_wins": 695,
+  "buys": 695,
+  "early_closes": 353,
+  "eligible": true,
+  "horizons": {
+   "12": 0,
+   "24": 0,
+   "3": 6,
+   "6": 1546
+  },
+  "mean_dd_pct": 0.4406454034707897,
+  "mean_orders": 4.311111111111111,
+  "neg_early": 0,
+  "orders": 1552,
+  "reasons": {
+   "AGENT_CLOSE": 353,
+   "FORCED_FLAT": 41,
+   "TP": 1158
+  },
+  "ret_from_ledger": 3.946653368390782,
+  "return_pct": 3.9466533683907823,
+  "sell_wins": 857,
+  "sells": 857,
+  "wins": 1552,
+  "worst_dd_pct": 1.2548685295483626
+ },
+ "ideal/P2": {
+  "accounts": 360,
+  "buy_wins": 395,
+  "buys": 395,
+  "early_closes": 356,
+  "eligible": false,
+  "horizons": {
+   "12": 856,
+   "24": 0,
+   "3": 26,
+   "6": 0
+  },
+  "mean_dd_pct": 0.3083658692708417,
+  "mean_orders": 2.45,
+  "neg_early": 0,
+  "orders": 882,
+  "reasons": {
+   "AGENT_CLOSE": 356,
+   "FORCED_FLAT": 33,
+   "TP": 493
+  },
+  "ret_from_ledger": 2.485292608495871,
+  "return_pct": 2.485292608495871,
+  "sell_wins": 487,
+  "sells": 487,
+  "wins": 882,
+  "worst_dd_pct": 0.9541897886537192
+ },
+ "ideal/P3": {
+  "accounts": 360,
+  "buy_wins": 223,
+  "buys": 223,
+  "early_closes": 157,
+  "eligible": false,
+  "horizons": {
+   "12": 536,
+   "24": 0,
+   "3": 4,
+   "6": 0
+  },
+  "mean_dd_pct": 0.15869541770273324,
+  "mean_orders": 1.5,
+  "neg_early": 0,
+  "orders": 540,
+  "reasons": {
+   "AGENT_CLOSE": 157,
+   "FORCED_FLAT": 15,
+   "TP": 368
+  },
+  "ret_from_ledger": 1.3048994605792694,
+  "return_pct": 1.3048994605792694,
+  "sell_wins": 317,
+  "sells": 317,
+  "wins": 540,
+  "worst_dd_pct": 0.8378178028774074
+ },
+ "ideal/P3_size1": {
+  "accounts": 360,
+  "buy_wins": 223,
+  "buys": 223,
+  "early_closes": 157,
+  "eligible": false,
+  "horizons": {
+   "12": 536,
+   "24": 0,
+   "3": 4,
+   "6": 0
+  },
+  "mean_dd_pct": 0.1986337523065196,
+  "mean_orders": 1.5,
+  "neg_early": 0,
+  "orders": 540,
+  "reasons": {
+   "AGENT_CLOSE": 157,
+   "FORCED_FLAT": 15,
+   "TP": 368
+  },
+  "ret_from_ledger": 1.6415988037631,
+  "return_pct": 1.6415988037631002,
+  "sell_wins": 317,
+  "sells": 317,
+  "wins": 540,
+  "worst_dd_pct": 1.0483732069619407
+ },
+ "ideal/P4": {
+  "accounts": 360,
+  "buy_wins": 230,
+  "buys": 230,
+  "early_closes": 192,
+  "eligible": false,
+  "horizons": {
+   "12": 545,
+   "24": 0,
+   "3": 5,
+   "6": 0
+  },
+  "mean_dd_pct": 0.08757383477984843,
+  "mean_orders": 1.5277777777777777,
+  "neg_early": 0,
+  "orders": 550,
+  "reasons": {
+   "AGENT_CLOSE": 192,
+   "FORCED_FLAT": 16,
+   "TP": 342
+  },
+  "ret_from_ledger": 0.737096646013951,
+  "return_pct": 0.7370966460139502,
+  "sell_wins": 320,
+  "sells": 320,
+  "wins": 550,
+  "worst_dd_pct": 0.4715456821866428
+ },
+ "ideal/P4_size1": {
+  "accounts": 360,
+  "buy_wins": 230,
+  "buys": 230,
+  "early_closes": 192,
+  "eligible": false,
+  "horizons": {
+   "12": 545,
+   "24": 0,
+   "3": 5,
+   "6": 0
+  },
+  "mean_dd_pct": 0.194881974074698,
+  "mean_orders": 1.5277777777777777,
+  "neg_early": 0,
+  "orders": 550,
+  "reasons": {
+   "AGENT_CLOSE": 192,
+   "FORCED_FLAT": 16,
+   "TP": 342
+  },
+  "ret_from_ledger": 1.6639783219794266,
+  "return_pct": 1.6639783219794266,
+  "sell_wins": 320,
+  "sells": 320,
+  "wins": 550,
+  "worst_dd_pct": 1.0483732069619407
+ },
+ "ideal/P5": {
+  "accounts": 360,
+  "buy_wins": 104,
+  "buys": 104,
+  "early_closes": 64,
+  "eligible": false,
+  "horizons": {
+   "12": 265,
+   "24": 0,
+   "3": 21,
+   "6": 20
+  },
+  "mean_dd_pct": 0.026788673946345376,
+  "mean_orders": 0.85,
+  "neg_early": 0,
+  "orders": 306,
+  "reasons": {
+   "AGENT_CLOSE": 64,
+   "FORCED_FLAT": 5,
+   "TP": 237
+  },
+  "ret_from_ledger": 0.25350475981591203,
+  "return_pct": 0.2535047598159125,
+  "sell_wins": 202,
+  "sells": 202,
+  "wins": 306,
+  "worst_dd_pct": 0.26349196035863065
+ },
+ "ideal/P5_size1": {
+  "accounts": 360,
+  "buy_wins": 104,
+  "buys": 104,
+  "early_closes": 64,
+  "eligible": false,
+  "horizons": {
+   "12": 265,
+   "24": 0,
+   "3": 21,
+   "6": 20
+  },
+  "mean_dd_pct": 0.10681643032577234,
+  "mean_orders": 0.85,
+  "neg_early": 0,
+  "orders": 306,
+  "reasons": {
+   "AGENT_CLOSE": 64,
+   "FORCED_FLAT": 5,
+   "TP": 237
+  },
+  "ret_from_ledger": 1.0260074592745836,
+  "return_pct": 1.0260074592745836,
+  "sell_wins": 202,
+  "sells": 202,
+  "wins": 306,
+  "worst_dd_pct": 1.0483661429140947
+ },
+ "ideal/equal_guarded": {
+  "accounts": 360,
+  "buy_wins": 757,
+  "buys": 762,
+  "early_closes": 529,
+  "eligible": true,
+  "horizons": {
+   "12": 561,
+   "24": 101,
+   "3": 622,
+   "6": 271
+  },
+  "mean_dd_pct": 0.5156516212319945,
+  "mean_orders": 4.319444444444445,
+  "neg_early": 5,
+  "orders": 1555,
+  "reasons": {
+   "AGENT_CLOSE": 529,
+   "FORCED_FLAT": 237,
+   "TP": 789
+  },
+  "ret_from_ledger": 3.309615978957302,
+  "return_pct": 3.309615978957302,
+  "sell_wins": 786,
+  "sells": 793,
+  "wins": 1543,
+  "worst_dd_pct": 1.28061591074516
+ },
+ "ideal/greedy": {
+  "accounts": 360,
+  "buy_wins": 804,
+  "buys": 804,
+  "early_closes": 655,
+  "eligible": true,
+  "horizons": {
+   "12": 597,
+   "24": 126,
+   "3": 675,
+   "6": 244
+  },
+  "mean_dd_pct": 0.5097038679928474,
+  "mean_orders": 4.561111111111111,
+  "neg_early": 0,
+  "orders": 1642,
+  "reasons": {
+   "AGENT_CLOSE": 655,
+   "FORCED_FLAT": 205,
+   "TP": 782
+  },
+  "ret_from_ledger": 3.5541674719059104,
+  "return_pct": 3.55416747190591,
+  "sell_wins": 838,
+  "sells": 838,
+  "wins": 1642,
+  "worst_dd_pct": 1.1985360984596536
+ },
+ "ideal/nop": {
+  "accounts": 360,
+  "buy_wins": 0,
+  "buys": 0,
+  "early_closes": 0,
+  "eligible": false,
+  "horizons": {
+   "12": 0,
+   "24": 0,
+   "3": 0,
+   "6": 0
+  },
+  "mean_dd_pct": 0.0,
+  "mean_orders": 0.0,
+  "neg_early": 0,
+  "orders": 0,
+  "reasons": {},
+  "ret_from_ledger": 0.0,
+  "return_pct": 0.0,
+  "sell_wins": 0,
+  "sells": 0,
+  "wins": 0,
+  "worst_dd_pct": 0.0
+ },
+ "ideal/only_12": {
+  "accounts": 360,
+  "buy_wins": 825,
+  "buys": 825,
+  "early_closes": 901,
+  "eligible": true,
+  "horizons": {
+   "12": 1659,
+   "24": 0,
+   "3": 0,
+   "6": 0
+  },
+  "mean_dd_pct": 0.4835182696594462,
+  "mean_orders": 4.608333333333333,
+  "neg_early": 0,
+  "orders": 1659,
+  "reasons": {
+   "AGENT_CLOSE": 901,
+   "FORCED_FLAT": 220,
+   "TP": 538
+  },
+  "ret_from_ledger": 3.2752187863362563,
+  "return_pct": 3.275218786336257,
+  "sell_wins": 834,
+  "sells": 834,
+  "wins": 1659,
+  "worst_dd_pct": 1.2959646417243362
+ },
+ "ideal/only_24": {
+  "accounts": 360,
+  "buy_wins": 704,
+  "buys": 704,
+  "early_closes": 813,
+  "eligible": true,
+  "horizons": {
+   "12": 0,
+   "24": 1413,
+   "3": 0,
+   "6": 0
+  },
+  "mean_dd_pct": 0.40650547201957893,
+  "mean_orders": 3.925,
+  "neg_early": 0,
+  "orders": 1413,
+  "reasons": {
+   "AGENT_CLOSE": 813,
+   "FORCED_FLAT": 231,
+   "TP": 369
+  },
+  "ret_from_ledger": 2.5040937503891305,
+  "return_pct": 2.504093750389131,
+  "sell_wins": 709,
+  "sells": 709,
+  "wins": 1413,
+  "worst_dd_pct": 1.0565337298901707
+ },
+ "ideal/only_3": {
+  "accounts": 360,
+  "buy_wins": 1479,
+  "buys": 1479,
+  "early_closes": 1266,
+  "eligible": true,
+  "horizons": {
+   "12": 0,
+   "24": 0,
+   "3": 2988,
+   "6": 0
+  },
+  "mean_dd_pct": 0.47040484383162195,
+  "mean_orders": 8.3,
+  "neg_early": 0,
+  "orders": 2988,
+  "reasons": {
+   "AGENT_CLOSE": 1266,
+   "FORCED_FLAT": 211,
+   "TP": 1511
+  },
+  "ret_from_ledger": 5.125029573945724,
+  "return_pct": 5.125029573945723,
+  "sell_wins": 1509,
+  "sells": 1509,
+  "wins": 2988,
+  "worst_dd_pct": 1.0066312794536432
+ },
+ "ideal/only_6": {
+  "accounts": 360,
+  "buy_wins": 1210,
+  "buys": 1210,
+  "early_closes": 1046,
+  "eligible": true,
+  "horizons": {
+   "12": 0,
+   "24": 0,
+   "3": 0,
+   "6": 2454
+  },
+  "mean_dd_pct": 0.515032963177411,
+  "mean_orders": 6.816666666666666,
+  "neg_early": 0,
+  "orders": 2454,
+  "reasons": {
+   "AGENT_CLOSE": 1046,
+   "FORCED_FLAT": 215,
+   "TP": 1193
+  },
+  "ret_from_ledger": 4.6766882935049745,
+  "return_pct": 4.6766882935049745,
+  "sell_wins": 1244,
+  "sells": 1244,
+  "wins": 2454,
+  "worst_dd_pct": 1.2754094688339328
+ },
+ "missing/P1": {
+  "accounts": 360,
+  "buy_wins": 974,
+  "buys": 1322,
+  "early_closes": 1756,
+  "eligible": true,
+  "horizons": {
+   "12": 1,
+   "24": 0,
+   "3": 58,
+   "6": 2725
+  },
+  "mean_dd_pct": 0.6034961383815173,
+  "mean_orders": 7.733333333333333,
+  "neg_early": 603,
+  "orders": 2784,
+  "reasons": {
+   "AGENT_CLOSE": 1756,
+   "FORCED_FLAT": 77,
+   "SL": 109,
+   "TP": 842
+  },
+  "ret_from_ledger": 3.1275069352541025,
+  "return_pct": 3.127506935254102,
+  "sell_wins": 1083,
+  "sells": 1462,
+  "wins": 2057,
+  "worst_dd_pct": 1.7421172338425204
+ },
+ "missing/P2": {
+  "accounts": 360,
+  "buy_wins": 773,
+  "buys": 1003,
+  "early_closes": 1651,
+  "eligible": true,
+  "horizons": {
+   "12": 2003,
+   "24": 0,
+   "3": 153,
+   "6": 0
+  },
+  "mean_dd_pct": 0.492547095919659,
+  "mean_orders": 5.988888888888889,
+  "neg_early": 458,
+  "orders": 2156,
+  "reasons": {
+   "AGENT_CLOSE": 1651,
+   "FORCED_FLAT": 61,
+   "SL": 44,
+   "TP": 400
+  },
+  "ret_from_ledger": 2.4927984758782,
+  "return_pct": 2.492798475878199,
+  "sell_wins": 875,
+  "sells": 1153,
+  "wins": 1648,
+  "worst_dd_pct": 1.6705051365460095
+ },
+ "missing/P3": {
+  "accounts": 360,
+  "buy_wins": 680,
+  "buys": 849,
+  "early_closes": 1319,
+  "eligible": true,
+  "horizons": {
+   "12": 1793,
+   "24": 0,
+   "3": 1,
+   "6": 0
+  },
+  "mean_dd_pct": 0.35943518076344305,
+  "mean_orders": 4.983333333333333,
+  "neg_early": 324,
+  "orders": 1794,
+  "reasons": {
+   "AGENT_CLOSE": 1319,
+   "FORCED_FLAT": 53,
+   "SL": 35,
+   "TP": 387
+  },
+  "ret_from_ledger": 1.8707904732874125,
+  "return_pct": 1.8707904732874125,
+  "sell_wins": 749,
+  "sells": 945,
+  "wins": 1429,
+  "worst_dd_pct": 1.335991993528157
+ },
+ "missing/P3_size1": {
+  "accounts": 360,
+  "buy_wins": 680,
+  "buys": 849,
+  "early_closes": 1319,
+  "eligible": true,
+  "horizons": {
+   "12": 1793,
+   "24": 0,
+   "3": 1,
+   "6": 0
+  },
+  "mean_dd_pct": 0.44995563267147737,
+  "mean_orders": 4.983333333333333,
+  "neg_early": 324,
+  "orders": 1794,
+  "reasons": {
+   "AGENT_CLOSE": 1319,
+   "FORCED_FLAT": 53,
+   "SL": 35,
+   "TP": 387
+  },
+  "ret_from_ledger": 2.351539951754797,
+  "return_pct": 2.351539951754798,
+  "sell_wins": 749,
+  "sells": 945,
+  "wins": 1429,
+  "worst_dd_pct": 1.6705051365460095
+ },
+ "missing/P4": {
+  "accounts": 360,
+  "buy_wins": 664,
+  "buys": 812,
+  "early_closes": 1290,
+  "eligible": true,
+  "horizons": {
+   "12": 1752,
+   "24": 0,
+   "3": 7,
+   "6": 0
+  },
+  "mean_dd_pct": 0.20294773273248953,
+  "mean_orders": 4.886111111111111,
+  "neg_early": 301,
+  "orders": 1759,
+  "reasons": {
+   "AGENT_CLOSE": 1290,
+   "FORCED_FLAT": 49,
+   "SL": 34,
+   "TP": 386
+  },
+  "ret_from_ledger": 1.0417390047707922,
+  "return_pct": 1.0417390047707917,
+  "sell_wins": 754,
+  "sells": 947,
+  "wins": 1418,
+  "worst_dd_pct": 0.7528489302079879
+ },
+ "missing/P4_size1": {
+  "accounts": 360,
+  "buy_wins": 664,
+  "buys": 812,
+  "early_closes": 1290,
+  "eligible": true,
+  "horizons": {
+   "12": 1752,
+   "24": 0,
+   "3": 7,
+   "6": 0
+  },
+  "mean_dd_pct": 0.45172539321652133,
+  "mean_orders": 4.886111111111111,
+  "neg_early": 301,
+  "orders": 1759,
+  "reasons": {
+   "AGENT_CLOSE": 1290,
+   "FORCED_FLAT": 49,
+   "SL": 34,
+   "TP": 386
+  },
+  "ret_from_ledger": 2.34512404708573,
+  "return_pct": 2.3451240470857293,
+  "sell_wins": 754,
+  "sells": 947,
+  "wins": 1418,
+  "worst_dd_pct": 1.6705051365460095
+ },
+ "missing/P5": {
+  "accounts": 360,
+  "buy_wins": 463,
+  "buys": 548,
+  "early_closes": 1029,
+  "eligible": true,
+  "horizons": {
+   "12": 1276,
+   "24": 0,
+   "3": 62,
+   "6": 104
+  },
+  "mean_dd_pct": 0.10803492822907405,
+  "mean_orders": 4.0055555555555555,
+  "neg_early": 236,
+  "orders": 1442,
+  "reasons": {
+   "AGENT_CLOSE": 1029,
+   "FORCED_FLAT": 31,
+   "SL": 37,
+   "TP": 345
+  },
+  "ret_from_ledger": 0.5041247130135015,
+  "return_pct": 0.5041247130135009,
+  "sell_wins": 704,
+  "sells": 894,
+  "wins": 1167,
+  "worst_dd_pct": 0.4210002836959693
+ },
+ "missing/P5_size1": {
+  "accounts": 360,
+  "buy_wins": 463,
+  "buys": 548,
+  "early_closes": 1029,
+  "eligible": true,
+  "horizons": {
+   "12": 1276,
+   "24": 0,
+   "3": 62,
+   "6": 104
+  },
+  "mean_dd_pct": 0.43046539545881396,
+  "mean_orders": 4.0055555555555555,
+  "neg_early": 236,
+  "orders": 1442,
+  "reasons": {
+   "AGENT_CLOSE": 1029,
+   "FORCED_FLAT": 31,
+   "SL": 37,
+   "TP": 345
+  },
+  "ret_from_ledger": 2.0358662562919845,
+  "return_pct": 2.0358662562919845,
+  "sell_wins": 704,
+  "sells": 894,
+  "wins": 1167,
+  "worst_dd_pct": 1.6704915870365842
+ },
+ "missing/equal_guarded": {
+  "accounts": 360,
+  "buy_wins": 630,
+  "buys": 983,
+  "early_closes": 1011,
+  "eligible": true,
+  "horizons": {
+   "12": 692,
+   "24": 440,
+   "3": 583,
+   "6": 261
+  },
+  "mean_dd_pct": 0.7881671703499769,
+  "mean_orders": 5.488888888888889,
+  "neg_early": 418,
+  "orders": 1976,
+  "reasons": {
+   "AGENT_CLOSE": 1011,
+   "FORCED_FLAT": 253,
+   "SL": 206,
+   "TP": 506
+  },
+  "ret_from_ledger": 1.7977664794208106,
+  "return_pct": 1.7977664794208095,
+  "sell_wins": 648,
+  "sells": 993,
+  "wins": 1278,
+  "worst_dd_pct": 1.9925043362970973
+ },
+ "missing/greedy": {
+  "accounts": 360,
+  "buy_wins": 1083,
+  "buys": 1840,
+  "early_closes": 2932,
+  "eligible": true,
+  "horizons": {
+   "12": 1156,
+   "24": 855,
+   "3": 1203,
+   "6": 501
+  },
+  "mean_dd_pct": 0.6993341726423258,
+  "mean_orders": 10.319444444444445,
+  "neg_early": 1282,
+  "orders": 3715,
+  "reasons": {
+   "AGENT_CLOSE": 2932,
+   "FORCED_FLAT": 209,
+   "SL": 126,
+   "TP": 448
+  },
+  "ret_from_ledger": 2.2940226494269536,
+  "return_pct": 2.2940226494269544,
+  "sell_wins": 1128,
+  "sells": 1875,
+  "wins": 2211,
+  "worst_dd_pct": 2.333313064051895
+ },
+ "missing/nop": {
+  "accounts": 360,
+  "buy_wins": 0,
+  "buys": 0,
+  "early_closes": 0,
+  "eligible": false,
+  "horizons": {
+   "12": 0,
+   "24": 0,
+   "3": 0,
+   "6": 0
+  },
+  "mean_dd_pct": 0.0,
+  "mean_orders": 0.0,
+  "neg_early": 0,
+  "orders": 0,
+  "reasons": {},
+  "ret_from_ledger": 0.0,
+  "return_pct": 0.0,
+  "sell_wins": 0,
+  "sells": 0,
+  "wins": 0,
+  "worst_dd_pct": 0.0
+ },
+ "missing/only_12": {
+  "accounts": 360,
+  "buy_wins": 1120,
+  "buys": 1890,
+  "early_closes": 3129,
+  "eligible": true,
+  "horizons": {
+   "12": 3806,
+   "24": 0,
+   "3": 0,
+   "6": 0
+  },
+  "mean_dd_pct": 0.671306416833637,
+  "mean_orders": 10.572222222222223,
+  "neg_early": 1350,
+  "orders": 3806,
+  "reasons": {
+   "AGENT_CLOSE": 3129,
+   "FORCED_FLAT": 224,
+   "SL": 89,
+   "TP": 364
+  },
+  "ret_from_ledger": 2.237195166390283,
+  "return_pct": 2.2371951663902836,
+  "sell_wins": 1145,
+  "sells": 1916,
+  "wins": 2265,
+  "worst_dd_pct": 2.9383567665712236
+ },
+ "missing/only_24": {
+  "accounts": 360,
+  "buy_wins": 970,
+  "buys": 1538,
+  "early_closes": 2607,
+  "eligible": true,
+  "horizons": {
+   "12": 0,
+   "24": 3109,
+   "3": 0,
+   "6": 0
+  },
+  "mean_dd_pct": 0.5008990860629603,
+  "mean_orders": 8.636111111111111,
+  "neg_early": 1033,
+  "orders": 3109,
+  "reasons": {
+   "AGENT_CLOSE": 2607,
+   "FORCED_FLAT": 213,
+   "SL": 28,
+   "TP": 261
+  },
+  "ret_from_ledger": 1.9026141055748516,
+  "return_pct": 1.9026141055748518,
+  "sell_wins": 984,
+  "sells": 1571,
+  "wins": 1954,
+  "worst_dd_pct": 1.2287701643673785
+ },
+ "missing/only_3": {
+  "accounts": 360,
+  "buy_wins": 1441,
+  "buys": 2686,
+  "early_closes": 3867,
+  "eligible": true,
+  "horizons": {
+   "12": 0,
+   "24": 0,
+   "3": 5437,
+   "6": 0
+  },
+  "mean_dd_pct": 1.0435195313040986,
+  "mean_orders": 15.102777777777778,
+  "neg_early": 1993,
+  "orders": 5437,
+  "reasons": {
+   "AGENT_CLOSE": 3867,
+   "FORCED_FLAT": 200,
+   "SL": 421,
+   "TP": 949
+  },
+  "ret_from_ledger": 2.302660261121886,
+  "return_pct": 2.3026602611218863,
+  "sell_wins": 1492,
+  "sells": 2751,
+  "wins": 2933,
+  "worst_dd_pct": 4.20628091361318
+ },
+ "missing/only_6": {
+  "accounts": 360,
+  "buy_wins": 1354,
+  "buys": 2439,
+  "early_closes": 3709,
+  "eligible": true,
+  "horizons": {
+   "12": 0,
+   "24": 0,
+   "3": 0,
+   "6": 4949
+  },
+  "mean_dd_pct": 0.9560145830296547,
+  "mean_orders": 13.747222222222222,
+  "neg_early": 1842,
+  "orders": 4949,
+  "reasons": {
+   "AGENT_CLOSE": 3709,
+   "FORCED_FLAT": 204,
+   "SL": 262,
+   "TP": 774
+  },
+  "ret_from_ledger": 2.499415576806101,
+  "return_pct": 2.4994155768061015,
+  "sell_wins": 1398,
+  "sells": 2510,
+  "wins": 2752,
+  "worst_dd_pct": 3.809939671733352
+ },
+ "omitted_reversal/P1": {
+  "accounts": 360,
+  "buy_wins": 267,
+  "buys": 1474,
+  "early_closes": 1277,
+  "eligible": true,
+  "horizons": {
+   "12": 0,
+   "24": 0,
+   "3": 0,
+   "6": 3313
+  },
+  "mean_dd_pct": 2.8372425086949167,
+  "mean_orders": 9.202777777777778,
+  "neg_early": 958,
+  "orders": 3313,
+  "reasons": {
+   "AGENT_CLOSE": 1277,
+   "FORCED_FLAT": 58,
+   "SL": 1700,
+   "TP": 278
+  },
+  "ret_from_ledger": -1.8122800498386482,
+  "return_pct": -1.8122800498386489,
+  "sell_wins": 380,
+  "sells": 1839,
+  "wins": 647,
+  "worst_dd_pct": 15.12536528129467
+ },
+ "omitted_reversal/P2": {
+  "accounts": 360,
+  "buy_wins": 226,
+  "buys": 1119,
+  "early_closes": 1339,
+  "eligible": true,
+  "horizons": {
+   "12": 2412,
+   "24": 0,
+   "3": 0,
+   "6": 0
+  },
+  "mean_dd_pct": 1.9124616043706115,
+  "mean_orders": 6.7,
+  "neg_early": 920,
+  "orders": 2412,
+  "reasons": {
+   "AGENT_CLOSE": 1339,
+   "FORCED_FLAT": 52,
+   "SL": 943,
+   "TP": 78
+  },
+  "ret_from_ledger": -1.126047242293412,
+  "return_pct": -1.1260472422934114,
+  "sell_wins": 321,
+  "sells": 1293,
+  "wins": 547,
+  "worst_dd_pct": 9.942722299678593
+ },
+ "omitted_reversal/P3": {
+  "accounts": 360,
+  "buy_wins": 131,
+  "buys": 724,
+  "early_closes": 890,
+  "eligible": true,
+  "horizons": {
+   "12": 1733,
+   "24": 0,
+   "3": 0,
+   "6": 0
+  },
+  "mean_dd_pct": 1.224695540291781,
+  "mean_orders": 4.813888888888889,
+  "neg_early": 618,
+  "orders": 1733,
+  "reasons": {
+   "AGENT_CLOSE": 890,
+   "FORCED_FLAT": 49,
+   "SL": 733,
+   "TP": 61
+  },
+  "ret_from_ledger": -0.7378800021268137,
+  "return_pct": -0.7378800021268141,
+  "sell_wins": 250,
+  "sells": 1009,
+  "wins": 381,
+  "worst_dd_pct": 6.715867355605696
+ },
+ "omitted_reversal/P3_size1": {
+  "accounts": 360,
+  "buy_wins": 131,
+  "buys": 724,
+  "early_closes": 890,
+  "eligible": true,
+  "horizons": {
+   "12": 1733,
+   "24": 0,
+   "3": 0,
+   "6": 0
+  },
+  "mean_dd_pct": 1.5286595687716877,
+  "mean_orders": 4.813888888888889,
+  "neg_early": 618,
+  "orders": 1733,
+  "reasons": {
+   "AGENT_CLOSE": 890,
+   "FORCED_FLAT": 49,
+   "SL": 733,
+   "TP": 61
+  },
+  "ret_from_ledger": -0.9192286153043443,
+  "return_pct": -0.9192286153043445,
+  "sell_wins": 250,
+  "sells": 1009,
+  "wins": 381,
+  "worst_dd_pct": 8.346782820264707
+ },
+ "omitted_reversal/P4": {
+  "accounts": 360,
+  "buy_wins": 50,
+  "buys": 473,
+  "early_closes": 645,
+  "eligible": true,
+  "horizons": {
+   "12": 1340,
+   "24": 0,
+   "3": 0,
+   "6": 0
+  },
+  "mean_dd_pct": 0.5781895967847076,
+  "mean_orders": 3.7222222222222223,
+  "neg_early": 504,
+  "orders": 1340,
+  "reasons": {
+   "AGENT_CLOSE": 645,
+   "FORCED_FLAT": 27,
+   "SL": 630,
+   "TP": 38
+  },
+  "ret_from_ledger": -0.41499352085434915,
+  "return_pct": -0.41499352085434815,
+  "sell_wins": 156,
+  "sells": 867,
+  "wins": 206,
+  "worst_dd_pct": 3.686463913668734
+ },
+ "omitted_reversal/P4_size1": {
+  "accounts": 360,
+  "buy_wins": 50,
+  "buys": 473,
+  "early_closes": 645,
+  "eligible": true,
+  "horizons": {
+   "12": 1340,
+   "24": 0,
+   "3": 0,
+   "6": 0
+  },
+  "mean_dd_pct": 1.277282824288673,
+  "mean_orders": 3.7222222222222223,
+  "neg_early": 504,
+  "orders": 1340,
+  "reasons": {
+   "AGENT_CLOSE": 645,
+   "FORCED_FLAT": 27,
+   "SL": 630,
+   "TP": 38
+  },
+  "ret_from_ledger": -0.9142271046172975,
+  "return_pct": -0.9142271046172977,
+  "sell_wins": 156,
+  "sells": 867,
+  "wins": 206,
+  "worst_dd_pct": 8.052460833350118
+ },
+ "omitted_reversal/P5": {
+  "accounts": 360,
+  "buy_wins": 40,
+  "buys": 335,
+  "early_closes": 452,
+  "eligible": false,
+  "horizons": {
+   "12": 1040,
+   "24": 0,
+   "3": 0,
+   "6": 0
+  },
+  "mean_dd_pct": 0.26930129866162733,
+  "mean_orders": 2.888888888888889,
+  "neg_early": 340,
+  "orders": 1040,
+  "reasons": {
+   "AGENT_CLOSE": 452,
+   "FORCED_FLAT": 26,
+   "SL": 533,
+   "TP": 29
+  },
+  "ret_from_ledger": -0.1869530537200479,
+  "return_pct": -0.186953053720048,
+  "sell_wins": 127,
+  "sells": 705,
+  "wins": 167,
+  "worst_dd_pct": 1.881096311709516
+ },
+ "omitted_reversal/P5_size1": {
+  "accounts": 360,
+  "buy_wins": 40,
+  "buys": 335,
+  "early_closes": 452,
+  "eligible": false,
+  "horizons": {
+   "12": 1040,
+   "24": 0,
+   "3": 0,
+   "6": 0
+  },
+  "mean_dd_pct": 1.0652454924216588,
+  "mean_orders": 2.888888888888889,
+  "neg_early": 340,
+  "orders": 1040,
+  "reasons": {
+   "AGENT_CLOSE": 452,
+   "FORCED_FLAT": 26,
+   "SL": 533,
+   "TP": 29
+  },
+  "ret_from_ledger": -0.7374610867634898,
+  "return_pct": -0.7374610867634908,
+  "sell_wins": 127,
+  "sells": 705,
+  "wins": 167,
+  "worst_dd_pct": 7.327879730165386
+ },
+ "omitted_reversal/equal_guarded": {
+  "accounts": 360,
+  "buy_wins": 374,
+  "buys": 1622,
+  "early_closes": 1105,
+  "eligible": true,
+  "horizons": {
+   "12": 2134,
+   "24": 1,
+   "3": 794,
+   "6": 307
+  },
+  "mean_dd_pct": 2.682320721017978,
+  "mean_orders": 8.988888888888889,
+  "neg_early": 760,
+  "orders": 3236,
+  "reasons": {
+   "AGENT_CLOSE": 1105,
+   "FORCED_FLAT": 244,
+   "SL": 1654,
+   "TP": 233
+  },
+  "ret_from_ledger": -1.5156652158092536,
+  "return_pct": -1.5156652158092538,
+  "sell_wins": 398,
+  "sells": 1614,
+  "wins": 772,
+  "worst_dd_pct": 13.766018284948093
+ },
+ "omitted_reversal/greedy": {
+  "accounts": 360,
+  "buy_wins": 474,
+  "buys": 2282,
+  "early_closes": 2555,
+  "eligible": true,
+  "horizons": {
+   "12": 2393,
+   "24": 34,
+   "3": 1682,
+   "6": 445
+  },
+  "mean_dd_pct": 3.028949356349496,
+  "mean_orders": 12.65,
+  "neg_early": 1954,
+  "orders": 4554,
+  "reasons": {
+   "AGENT_CLOSE": 2555,
+   "FORCED_FLAT": 185,
+   "SL": 1581,
+   "TP": 233
+  },
+  "ret_from_ledger": -2.031400321472787,
+  "return_pct": -2.031400321472787,
+  "sell_wins": 491,
+  "sells": 2272,
+  "wins": 965,
+  "worst_dd_pct": 14.100255973245154
+ },
+ "omitted_reversal/nop": {
+  "accounts": 360,
+  "buy_wins": 0,
+  "buys": 0,
+  "early_closes": 0,
+  "eligible": false,
+  "horizons": {
+   "12": 0,
+   "24": 0,
+   "3": 0,
+   "6": 0
+  },
+  "mean_dd_pct": 0.0,
+  "mean_orders": 0.0,
+  "neg_early": 0,
+  "orders": 0,
+  "reasons": {},
+  "ret_from_ledger": 0.0,
+  "return_pct": 0.0,
+  "sell_wins": 0,
+  "sells": 0,
+  "wins": 0,
+  "worst_dd_pct": 0.0
+ },
+ "omitted_reversal/only_12": {
+  "accounts": 360,
+  "buy_wins": 452,
+  "buys": 2112,
+  "early_closes": 2669,
+  "eligible": true,
+  "horizons": {
+   "12": 4198,
+   "24": 0,
+   "3": 0,
+   "6": 0
+  },
+  "mean_dd_pct": 2.686278157377127,
+  "mean_orders": 11.661111111111111,
+  "neg_early": 2011,
+  "orders": 4198,
+  "reasons": {
+   "AGENT_CLOSE": 2669,
+   "FORCED_FLAT": 202,
+   "SL": 1217,
+   "TP": 110
+  },
+  "ret_from_ledger": -1.7830490794982166,
+  "return_pct": -1.7830490794982163,
+  "sell_wins": 462,
+  "sells": 2086,
+  "wins": 914,
+  "worst_dd_pct": 13.207925204566843
+ },
+ "omitted_reversal/only_24": {
+  "accounts": 360,
+  "buy_wins": 443,
+  "buys": 1933,
+  "early_closes": 2770,
+  "eligible": true,
+  "horizons": {
+   "12": 0,
+   "24": 3885,
+   "3": 0,
+   "6": 0
+  },
+  "mean_dd_pct": 2.21273306528654,
+  "mean_orders": 10.791666666666666,
+  "neg_early": 2097,
+  "orders": 3885,
+  "reasons": {
+   "AGENT_CLOSE": 2770,
+   "FORCED_FLAT": 208,
+   "SL": 828,
+   "TP": 79
+  },
+  "ret_from_ledger": -1.4691396556400491,
+  "return_pct": -1.4691396556400491,
+  "sell_wins": 453,
+  "sells": 1952,
+  "wins": 896,
+  "worst_dd_pct": 10.879739159171308
+ },
+ "omitted_reversal/only_3": {
+  "accounts": 360,
+  "buy_wins": 535,
+  "buys": 2799,
+  "early_closes": 2286,
+  "eligible": true,
+  "horizons": {
+   "12": 0,
+   "24": 0,
+   "3": 5604,
+   "6": 0
+  },
+  "mean_dd_pct": 3.8027808801041303,
+  "mean_orders": 15.566666666666666,
+  "neg_early": 1854,
+  "orders": 5604,
+  "reasons": {
+   "AGENT_CLOSE": 2286,
+   "FORCED_FLAT": 181,
+   "SL": 2607,
+   "TP": 530
+  },
+  "ret_from_ledger": -2.733545335422424,
+  "return_pct": -2.733545335422424,
+  "sell_wins": 557,
+  "sells": 2805,
+  "wins": 1092,
+  "worst_dd_pct": 18.04078820761651
+ },
+ "omitted_reversal/only_6": {
+  "accounts": 360,
+  "buy_wins": 493,
+  "buys": 2552,
+  "early_closes": 2428,
+  "eligible": true,
+  "horizons": {
+   "12": 0,
+   "24": 0,
+   "3": 0,
+   "6": 5093
+  },
+  "mean_dd_pct": 3.591571243304797,
+  "mean_orders": 14.147222222222222,
+  "neg_early": 1925,
+  "orders": 5093,
+  "reasons": {
+   "AGENT_CLOSE": 2428,
+   "FORCED_FLAT": 187,
+   "SL": 2113,
+   "TP": 365
+  },
+  "ret_from_ledger": -2.5142267875453905,
+  "return_pct": -2.5142267875453923,
+  "sell_wins": 511,
+  "sells": 2541,
+  "wins": 1004,
+  "worst_dd_pct": 16.982636528350646
+ }
+}
