@@ -27,3 +27,7 @@ ZZ02,Costs duration excursion and mirror semantics,tests/unit/test_zigzag_opport
 ZZ03,DEAP owner minimum budget,tests/unit/test_zigzag_opportunities.py budget and replay,Population at least 15 and at least 30 generations,BEFORE_PHASE2,UNIT_TESTS_PASSED
 ZZ04,No overlap in hindsight schedule,tests/unit/test_zigzag_opportunities.py exhaustive subset comparison,Exact fixed-unit additive interval optimum,BEFORE_PHASE2,UNIT_TESTS_PASSED
 ZZ05,Real-data scalar reconstruction,tools/audit_zigzag_opportunity_results.py,Independent path accounting agrees with retained records,BEFORE_PHASE2,PASS_2048_PATHS_ZERO_ERROR
+RP01,Authenticated immutable TRAIN profiles,tools/zigzag_risk_profiles.py and report 126,All 134916 directional paths reconstructed and source hashes unchanged,BEFORE_PHASE2,COMPLETE_ZERO_ERROR
+RP02,MAE versus drawdown and calendar support,tests/unit/test_zigzag_risk_profiles.py,Known mirrored paths boundary censoring empty support and corrupted records,BEFORE_PHASE2,PASSED
+RP03,Normalized volume without double scaling,tests/unit/test_zigzag_risk_profiles.py,Common q times rel_volume times balance and explicit linear loss budget,BEFORE_PHASE2,PASSED_HELPER_NOT_NATIVE_ADAPTER
+RP04,Report reproducibility,docs/audits/evidence/zigzag_risk_profiles_20261028/PROFILES.json,Two independent full report executions same digest,BEFORE_PHASE2,PASS

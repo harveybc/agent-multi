@@ -2,6 +2,13 @@
 
 ## Priority override: 2026-10-28
 
+Completed: [TRAIN SL/TP reference profiles and bounded volume](126_ZIGZAG_RISK_PROFILE_RESULTS.md),
+following [the risk-profile test plan](125_ZIGZAG_RISK_PROFILE_PLAN.md).
+134,916 directional paths reconstructed exactly; deterministic replay;
+47 focused tests passed. Margin uses `q * rel_volume * balance` once.
+Next: joint executable level rules and native early-close qualification;
+these descriptive profiles do not admit a trading strategy or floating selection.
+
 Completed: [K=3, 20x300 results](123_ZIGZAG_K3_300_RESULTS.md) and
 [parameter effect/range audit](124_ZIGZAG_PARAMETER_EFFECT_AUDIT.md).
 12h improves; exact integer-grid control confirms all four scores at fixed

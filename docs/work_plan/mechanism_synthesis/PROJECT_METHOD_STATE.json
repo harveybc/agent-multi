@@ -3,7 +3,11 @@
   "date": "2026-10-28",
   "timezone": "America/Bogota",
   "priority": 0,
-  "current_stage": "TRAIN_ZIGZAG_K3_300_COMPLETE_PARAMETER_AUDITED",
+  "current_stage": "TRAIN_ZIGZAG_RISK_REFERENCES_COMPLETE",
+  "risk_profile_plan": "../125_ZIGZAG_RISK_PROFILE_PLAN.md",
+  "risk_profile_results": "../126_ZIGZAG_RISK_PROFILE_RESULTS.md",
+  "risk_profile_verification": {"paths": 134916, "max_abs_error": 0.0, "focused_tests_passed": 47, "deterministic_replay": true},
+  "volume_semantics": "margin = q * rel_volume * balance; rel_volume=0.1 once; common q in [0,1]; risk budget not yet selected",
   "zigzag_k3_300_results": "../123_ZIGZAG_K3_300_RESULTS.md",
   "zigzag_parameter_audit": "../124_ZIGZAG_PARAMETER_EFFECT_AUDIT.md",
   "zigzag_selected_future_pivots": 3,
@@ -54,7 +58,8 @@
   },
   "bottom_up": "M0_EXACT_CORE_VERIFIED; HIGHER_LAYERS_NOT_QUALIFIED",
   "next_allowed_actions": [
-    "Use completed K=3 champions with explicit deviation-inactivity semantics; no silent reversal-rule changes before risk-profile design",
+    "Construct joint per-horizon SL/TP candidate rules from completed TRAIN references; declare buffer and broker rounding rather than converting MAE directly into a stop",
+    "Compare explicit monetary risk-budget candidates with native loss-at-SL and lot conversion; no automatic size premium for longer horizons",
     "Resolve and test position-dependent close report semantics before native M1 strategy execution",
     "Implement independent oracle-validity and signal/business contract validation with non-vacuous coverage",
     "Extend paired scenario and policy-library design including persistence and false/true cross-scale reversals",
@@ -65,7 +70,7 @@
     "Model-specific sequential floating selection",
     "Promotion of synthetic-oracle results as learned-model evidence"
   ],
-  "operations": "K=3 20x300 search, scalar audit, exact prefix comparison, parameter forwarding/scale probes and finite integer grid are complete; no active jobs",
+  "operations": "K=3 optimization and risk-reference profiles complete; 134916 paths reconstructed, deterministic report replay and 47 focused tests passed; no active jobs",
   "history": [
     {"date": "2026-10-28", "event": "User prioritizes mechanism synthesis and requests detailed implementation proposal plus Satoshi audit"},
     {"date": "2026-10-28", "event": "Owner clarifies daily openings: three or more allowed, no strategy daily cap; contract recorded without runtime change"},
