@@ -2,6 +2,15 @@
 
 ## Priority override: 2026-10-28
 
+Completed: [K=3, 20x300 results](123_ZIGZAG_K3_300_RESULTS.md) and
+[parameter effect/range audit](124_ZIGZAG_PARAMETER_EFFECT_AUDIT.md).
+12h improves; exact integer-grid control confirms all four scores at fixed
+deviation. Deviation reaches the engine but is inactive in the tested domain.
+
+Chosen K=3: [controlled 20x300 refinement](122_ZIGZAG_THREE_EVENTS_300_PLAN.md),
+same seeds and initialization as the corrected 20x30 baseline, fresh replay
+with mandatory equality of the first 30 generations before comparison.
+
 Latest: [four/five-event comparison and search-adequacy witness](121_ZIGZAG_FOUR_FIVE_EVENTS_RESULTS.md).
 24 additional 20x30 searches and audits completed; positive marginal exit gains
 on fixed support, and a known control exceeding the 24h/K=5 search winner.

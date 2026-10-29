@@ -16,6 +16,16 @@ def test_300_generation_extension_keeps_entire_40_generation_prefix():
     assert len(b['history'])==300
 
 
+def test_20_by_300_replays_the_20_by_30_prefix():
+    def evaluate(g):
+        return dict(eligible=g[0]<20,fitness=-abs(g[0]-13),params=g)
+    a=search(evaluate,19,20,30)
+    b=search(evaluate,19,20,300)
+    r=paired(a,b)
+    assert r['prefix_generations_verified']==30
+    assert r['delta']>=0
+
+
 @pytest.mark.parametrize('mutation,reason',[
     ('seed','PAIRED_SEARCH_SETTINGS'),('population','PAIRED_SEARCH_SETTINGS'),
     ('generations','EXTENSION_BUDGET'),('history','GENERATION_PREFIX_MISMATCH'),

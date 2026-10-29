@@ -211,6 +211,28 @@ def test_decode_bounds_and_backstep():
     assert decode([100,200,100])==(96,120,24)
 
 
+def test_decoded_genes_reach_actual_pivot_call_without_substitution():
+    t,z=fixture()
+    original=z.hindsight_pivots
+    calls=[]
+    def spy(high,low,p):
+        calls.append(p)
+        return original(high,low,p)
+    z.hindsight_pivots=spy
+    ev=OpportunityEvaluator(t,z,3,3)
+    for raw in ([3,5.04,1],[3,5.06,2],[4,120,3]):
+        genes=decode(raw)
+        ev.evaluate(genes)
+        assert calls[-1]==genes
+    assert calls==[(3,5.0,1),(3,5.1,2),(4,120,3)]
+
+
+def test_decode_preserves_all_integer_depth_and_backstep_steps():
+    for depth in range(2,97):
+        for backstep in range(1,min(24,depth-1)+1):
+            assert decode([depth,5.1,backstep])==(depth,5.1,backstep)
+
+
 def test_train_loader_predicate_and_pins(tmp_path,monkeypatch):
     import app.zigzag_opportunities as mod
     from pathlib import Path

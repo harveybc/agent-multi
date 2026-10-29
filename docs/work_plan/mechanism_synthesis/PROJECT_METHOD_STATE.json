@@ -3,7 +3,12 @@
   "date": "2026-10-28",
   "timezone": "America/Bogota",
   "priority": 0,
-  "current_stage": "TRAIN_ZIGZAG_NEXT4_NEXT5_COMPLETE_AUDITED",
+  "current_stage": "TRAIN_ZIGZAG_K3_300_COMPLETE_PARAMETER_AUDITED",
+  "zigzag_k3_300_results": "../123_ZIGZAG_K3_300_RESULTS.md",
+  "zigzag_parameter_audit": "../124_ZIGZAG_PARAMETER_EFFECT_AUDIT.md",
+  "zigzag_selected_future_pivots": 3,
+  "zigzag_k3_300_plan": "../122_ZIGZAG_THREE_EVENTS_300_PLAN.md",
+  "zigzag_k3_300_budget": {"population": 20, "generations": 300, "seeds": [7, 19, 43]},
   "zigzag_four_five_plan": "../120_ZIGZAG_FOUR_FIVE_EVENTS_PLAN.md",
   "zigzag_four_five_results": "../121_ZIGZAG_FOUR_FIVE_EVENTS_RESULTS.md",
   "zigzag_next_events_results": "../119_ZIGZAG_NEXT_EVENTS_P20_G30_RESULTS.md",
@@ -49,7 +54,7 @@
   },
   "bottom_up": "M0_EXACT_CORE_VERIFIED; HIGHER_LAYERS_NOT_QUALIFIED",
   "next_allowed_actions": [
-    "Interpret K=2/3/4/5 marginal gains, boundary coverage and the known control beating the 24h K=5 search winner before risk-profile design",
+    "Use completed K=3 champions with explicit deviation-inactivity semantics; no silent reversal-rule changes before risk-profile design",
     "Resolve and test position-dependent close report semantics before native M1 strategy execution",
     "Implement independent oracle-validity and signal/business contract validation with non-vacuous coverage",
     "Extend paired scenario and policy-library design including persistence and false/true cross-scale reversals",
@@ -60,7 +65,7 @@
     "Model-specific sequential floating selection",
     "Promotion of synthetic-oracle results as learned-model evidence"
   ],
-  "operations": "K=4/K=5 population-20 generation-30 searches, both scalar audits and fixed-genotype comparison complete; no active job in this subplan",
+  "operations": "K=3 20x300 search, scalar audit, exact prefix comparison, parameter forwarding/scale probes and finite integer grid are complete; no active jobs",
   "history": [
     {"date": "2026-10-28", "event": "User prioritizes mechanism synthesis and requests detailed implementation proposal plus Satoshi audit"},
     {"date": "2026-10-28", "event": "Owner clarifies daily openings: three or more allowed, no strategy daily cap; contract recorded without runtime change"},
