@@ -1,0 +1,5 @@
+cmd (broad family): pytest -q tests/unit/test_absolute_exit_corpus.py tests/unit/test_close_hold_controller.py tests/unit/test_close_hold_reports.py tests/unit/test_close_hold_trace_audit.py tests/unit/test_early_close_audit.py tests/unit/test_early_close_grid_audit.py tests/unit/test_early_close_metrics.py tests/unit/test_horizon_risk_rules.py tests/unit/test_optimal_exit.py tests/unit/test_protection_reference.py tests/integration/test_quote_early_close_expectations.py
+........................................................................ [ 45%]
+..............ssssssssssssssssssssssssssssssssssssssssssssssssssssssssss [ 91%]
+ssssssssssssss                                                           [100%]
+86 passed, 72 skipped in 0.76s

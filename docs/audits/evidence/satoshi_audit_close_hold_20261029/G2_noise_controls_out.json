@@ -1,0 +1,194 @@
+{
+ "sample_positions": 194,
+ "sample_modes": {
+  "gain": 64,
+  "loss": 64,
+  "tp": 64,
+  "gap": 2
+ },
+ "baseline_matches_committed_cases": true,
+ "stats": {
+  "mean_preservation_max_abs": 2.220446049250313e-16,
+  "missing_all_sl_ticks": 0,
+  "missing_partial_ticks": 0,
+  "missing_none_ticks": 0
+ },
+ "table": [
+  {
+   "family": "BIAS_SL_FAV_IDEAL_k0.25",
+   "config": "immediate",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 6,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 0.9995278696835329,
+   "regret_risk_mean": 0.0004999798280361826
+  },
+  {
+   "family": "BIAS_SL_FAV_IDEAL_k0.25",
+   "config": "guarded",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 64,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 0.934772305751246,
+   "regret_risk_mean": 0.06978275818005453
+  },
+  {
+   "family": "BIAS_SL_FAV_IDEAL_k0.5",
+   "config": "immediate",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 7,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 0.9993734585648859,
+   "regret_risk_mean": 0.000663500751195312
+  },
+  {
+   "family": "BIAS_SL_FAV_IDEAL_k0.5",
+   "config": "guarded",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 64,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 0.934772305751246,
+   "regret_risk_mean": 0.06978275818005453
+  },
+  {
+   "family": "BIAS_SL_FAV_NOISY_k0.25",
+   "config": "immediate",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 6,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 0.9995278696835329,
+   "regret_risk_mean": 0.0004999798280361826
+  },
+  {
+   "family": "BIAS_SL_FAV_NOISY_k0.25",
+   "config": "guarded",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 68,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 0.9230931379856997,
+   "regret_risk_mean": 0.08233648954819987
+  },
+  {
+   "family": "BIAS_SL_FAV_NOISY_k0.5",
+   "config": "immediate",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 8,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 0.9983587805541991,
+   "regret_risk_mean": 0.0018279858382051531
+  },
+  {
+   "family": "BIAS_SL_FAV_NOISY_k0.5",
+   "config": "guarded",
+   "positions": 194,
+   "early_closes": 120,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 71,
+   "never_closed_with_opportunity": 8,
+   "captured_improvement": 0.8811786772358786,
+   "regret_risk_mean": 0.1276829163601403
+  },
+  {
+   "family": "BIAS_SL_ADV_IDEAL_k0.25",
+   "config": "immediate",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 6,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 0.9971014169073814,
+   "regret_risk_mean": 0.003069562395998023
+  },
+  {
+   "family": "BIAS_SL_ADV_IDEAL_k0.25",
+   "config": "guarded",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 31,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 0.9784686144345945,
+   "regret_risk_mean": 0.02280128979447415
+  },
+  {
+   "family": "BIAS_SL_ADV_IDEAL_k0.5",
+   "config": "immediate",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 46,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 0.9451706048796437,
+   "regret_risk_mean": 0.05864525665939311
+  },
+  {
+   "family": "BIAS_SL_ADV_IDEAL_k0.5",
+   "config": "guarded",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 32,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 0.9662589523272269,
+   "regret_risk_mean": 0.03594043006773419
+  },
+  {
+   "family": "BIAS_SL_ADV_NOISY_k0.25",
+   "config": "immediate",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 6,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 0.9971014169073814,
+   "regret_risk_mean": 0.003069562395998023
+  },
+  {
+   "family": "BIAS_SL_ADV_NOISY_k0.25",
+   "config": "guarded",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 56,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 0.9505651258127211,
+   "regret_risk_mean": 0.05305833636989336
+  },
+  {
+   "family": "BIAS_SL_ADV_NOISY_k0.5",
+   "config": "immediate",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 46,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 0.9431337858879499,
+   "regret_risk_mean": 0.06085605994005344
+  },
+  {
+   "family": "BIAS_SL_ADV_NOISY_k0.5",
+   "config": "guarded",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 45,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 0.9641647214321686,
+   "regret_risk_mean": 0.038386768187920195
+  }
+ ]
+}

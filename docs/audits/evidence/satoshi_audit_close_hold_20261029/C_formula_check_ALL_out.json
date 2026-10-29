@@ -1,0 +1,10 @@
+{
+ "rows": [],
+ "max_abs_adv_err": 8.881784197001252e-16,
+ "max_abs_close_err": 2.842170943040401e-14,
+ "max_abs_wait_err": 2.842170943040401e-14,
+ "decision_mismatch": 0,
+ "ticks": 62834,
+ "tolerance": 1e-12,
+ "pass": true
+}

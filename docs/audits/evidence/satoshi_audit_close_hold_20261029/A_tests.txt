@@ -1,0 +1,3 @@
+cmd: CUDA_VISIBLE_DEVICES='' OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 <trading-stack-python> -m pytest -q -p no:cacheprovider tests/unit/test_close_hold_controller.py tests/unit/test_close_hold_reports.py tests/unit/test_close_hold_trace_audit.py tests/unit/test_early_close_metrics.py tests/unit/test_absolute_exit_corpus.py
+..................................                                       [100%]
+34 passed in 0.69s

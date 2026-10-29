@@ -1,0 +1,29 @@
+{"status": "RUNNING", "identity": "7f6c0f460a1b8b13d018a9cdacda2c94969f623303795f1e211f1334f382e63d", "completed": 64, "total": 1744, "elapsed_seconds": 0.42900988599285483}
+{"status": "RUNNING", "identity": "7f6c0f460a1b8b13d018a9cdacda2c94969f623303795f1e211f1334f382e63d", "completed": 128, "total": 1744, "elapsed_seconds": 0.8419755899813026}
+{"status": "RUNNING", "identity": "7f6c0f460a1b8b13d018a9cdacda2c94969f623303795f1e211f1334f382e63d", "completed": 192, "total": 1744, "elapsed_seconds": 1.199811350001255}
+{"status": "RUNNING", "identity": "7f6c0f460a1b8b13d018a9cdacda2c94969f623303795f1e211f1334f382e63d", "completed": 256, "total": 1744, "elapsed_seconds": 1.6011714049964212}
+{"status": "RUNNING", "identity": "7f6c0f460a1b8b13d018a9cdacda2c94969f623303795f1e211f1334f382e63d", "completed": 320, "total": 1744, "elapsed_seconds": 2.0505759399966337}
+{"status": "RUNNING", "identity": "7f6c0f460a1b8b13d018a9cdacda2c94969f623303795f1e211f1334f382e63d", "completed": 384, "total": 1744, "elapsed_seconds": 2.4678514339902904}
+{"status": "RUNNING", "identity": "7f6c0f460a1b8b13d018a9cdacda2c94969f623303795f1e211f1334f382e63d", "completed": 448, "total": 1744, "elapsed_seconds": 2.864455055008875}
+{"status": "RUNNING", "identity": "7f6c0f460a1b8b13d018a9cdacda2c94969f623303795f1e211f1334f382e63d", "completed": 512, "total": 1744, "elapsed_seconds": 3.324434632988414}
+{"status": "RUNNING", "identity": "7f6c0f460a1b8b13d018a9cdacda2c94969f623303795f1e211f1334f382e63d", "completed": 576, "total": 1744, "elapsed_seconds": 3.765071670000907}
+{"status": "RUNNING", "identity": "7f6c0f460a1b8b13d018a9cdacda2c94969f623303795f1e211f1334f382e63d", "completed": 640, "total": 1744, "elapsed_seconds": 4.125715945003321}
+{"status": "RUNNING", "identity": "7f6c0f460a1b8b13d018a9cdacda2c94969f623303795f1e211f1334f382e63d", "completed": 704, "total": 1744, "elapsed_seconds": 4.560176344995853}
+{"status": "RUNNING", "identity": "7f6c0f460a1b8b13d018a9cdacda2c94969f623303795f1e211f1334f382e63d", "completed": 768, "total": 1744, "elapsed_seconds": 4.995098198007327}
+{"status": "RUNNING", "identity": "7f6c0f460a1b8b13d018a9cdacda2c94969f623303795f1e211f1334f382e63d", "completed": 832, "total": 1744, "elapsed_seconds": 5.3984657139808405}
+{"status": "RUNNING", "identity": "7f6c0f460a1b8b13d018a9cdacda2c94969f623303795f1e211f1334f382e63d", "completed": 896, "total": 1744, "elapsed_seconds": 5.819944836985087}
+{"status": "RUNNING", "identity": "7f6c0f460a1b8b13d018a9cdacda2c94969f623303795f1e211f1334f382e63d", "completed": 960, "total": 1744, "elapsed_seconds": 6.289290646003792}
+{"status": "RUNNING", "identity": "7f6c0f460a1b8b13d018a9cdacda2c94969f623303795f1e211f1334f382e63d", "completed": 1024, "total": 1744, "elapsed_seconds": 6.722049943986349}
+{"status": "RUNNING", "identity": "7f6c0f460a1b8b13d018a9cdacda2c94969f623303795f1e211f1334f382e63d", "completed": 1088, "total": 1744, "elapsed_seconds": 7.098662537988275}
+{"status": "RUNNING", "identity": "7f6c0f460a1b8b13d018a9cdacda2c94969f623303795f1e211f1334f382e63d", "completed": 1152, "total": 1744, "elapsed_seconds": 7.557532592007192}
+{"status": "RUNNING", "identity": "7f6c0f460a1b8b13d018a9cdacda2c94969f623303795f1e211f1334f382e63d", "completed": 1216, "total": 1744, "elapsed_seconds": 7.979853975994047}
+{"status": "RUNNING", "identity": "7f6c0f460a1b8b13d018a9cdacda2c94969f623303795f1e211f1334f382e63d", "completed": 1280, "total": 1744, "elapsed_seconds": 8.325831349997316}
+{"status": "RUNNING", "identity": "7f6c0f460a1b8b13d018a9cdacda2c94969f623303795f1e211f1334f382e63d", "completed": 1344, "total": 1744, "elapsed_seconds": 8.720038163999561}
+{"status": "RUNNING", "identity": "7f6c0f460a1b8b13d018a9cdacda2c94969f623303795f1e211f1334f382e63d", "completed": 1408, "total": 1744, "elapsed_seconds": 9.142203723982675}
+{"status": "RUNNING", "identity": "7f6c0f460a1b8b13d018a9cdacda2c94969f623303795f1e211f1334f382e63d", "completed": 1472, "total": 1744, "elapsed_seconds": 9.525491565989796}
+{"status": "RUNNING", "identity": "7f6c0f460a1b8b13d018a9cdacda2c94969f623303795f1e211f1334f382e63d", "completed": 1536, "total": 1744, "elapsed_seconds": 9.903227912989678}
+{"status": "RUNNING", "identity": "7f6c0f460a1b8b13d018a9cdacda2c94969f623303795f1e211f1334f382e63d", "completed": 1600, "total": 1744, "elapsed_seconds": 10.338766180007951}
+{"status": "RUNNING", "identity": "7f6c0f460a1b8b13d018a9cdacda2c94969f623303795f1e211f1334f382e63d", "completed": 1664, "total": 1744, "elapsed_seconds": 10.757736436004052}
+{"status": "RUNNING", "identity": "7f6c0f460a1b8b13d018a9cdacda2c94969f623303795f1e211f1334f382e63d", "completed": 1728, "total": 1744, "elapsed_seconds": 11.11117645498598}
+{"status": "PASS", "identity": "7f6c0f460a1b8b13d018a9cdacda2c94969f623303795f1e211f1334f382e63d", "positions": 1744, "native_close_checks": 14784, "native_passive_checks": 1744, "max_cash_error_usd": 2.842170943040401e-14, "cases_sha256": "79035aeb64c99b04447e43b17d6d4df9b7f5126d8bf7447bad0a754c9a23db75", "environment": {"python": "3.12.13", "numpy": "2.5.1", "pandas": "3.0.3"}, "scope": "SYNTHETIC_FIXED_POSITION_EXECUTION_AND_METRICS_NOT_LEARNED_POLICY"}
+EXIT 0

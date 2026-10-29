@@ -1,0 +1,18 @@
+{
+  "schema": "prefix_close_trace_audit.v1",
+  "cases_sha256": "8e0d495ea658ccf493dd3d4630b18512a543a79cb7dc211bc0a5677145879d35",
+  "reference_sha256": "79035aeb64c99b04447e43b17d6d4df9b7f5126d8bf7447bad0a754c9a23db75",
+  "tool_sha256": "e0c1e3289a80ff293a2eaf07af94944979c6c806f14a705a001aa7e4aaaf108d",
+  "result": {
+    "without_persistence": {
+      "first_positive_requests": 864,
+      "executable_early_requests": 0,
+      "no_positive_request": 880
+    },
+    "without_uncertainty_or_persistence": {
+      "first_positive_requests": 864,
+      "executable_early_requests": 0,
+      "no_positive_request": 880
+    }
+  }
+}

@@ -1,0 +1,238 @@
+{
+ "sample_positions": 194,
+ "sample_modes": {
+  "gain": 64,
+  "loss": 64,
+  "tp": 64,
+  "gap": 2
+ },
+ "baseline_matches_committed_cases": true,
+ "stats": {
+  "mean_preservation_max_abs": 2.220446049250313e-16,
+  "missing_all_sl_ticks": 2660,
+  "missing_partial_ticks": 32,
+  "missing_none_ticks": 736
+ },
+ "table": [
+  {
+   "family": "IDEAL",
+   "config": "immediate",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 0,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 1.0,
+   "regret_risk_mean": 2.7836188714611055e-17
+  },
+  {
+   "family": "IDEAL",
+   "config": "guarded",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 62,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 0.9397772644791158,
+   "regret_risk_mean": 0.0644825382264016
+  },
+  {
+   "family": "NOISY",
+   "config": "immediate",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 0,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 1.0,
+   "regret_risk_mean": 2.7836188714611055e-17
+  },
+  {
+   "family": "NOISY",
+   "config": "guarded",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 65,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 0.9329996071023792,
+   "regret_risk_mean": 0.07166000087963223
+  },
+  {
+   "family": "BIAS_FAV_IDEAL_k0.5",
+   "config": "immediate",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 2,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 0.9999389628173554,
+   "regret_risk_mean": 6.463759747997036e-05
+  },
+  {
+   "family": "BIAS_FAV_IDEAL_k0.5",
+   "config": "guarded",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 64,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 0.934772305751246,
+   "regret_risk_mean": 0.06978275818005453
+  },
+  {
+   "family": "BIAS_FAV_IDEAL_k1",
+   "config": "immediate",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 6,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 0.9995278696835329,
+   "regret_risk_mean": 0.0004999798280361826
+  },
+  {
+   "family": "BIAS_FAV_IDEAL_k1",
+   "config": "guarded",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 64,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 0.934772305751246,
+   "regret_risk_mean": 0.06978275818005453
+  },
+  {
+   "family": "BIAS_FAV_NOISY_k0.5",
+   "config": "immediate",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 2,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 0.9999389628173554,
+   "regret_risk_mean": 6.463759747997036e-05
+  },
+  {
+   "family": "BIAS_FAV_NOISY_k0.5",
+   "config": "guarded",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 66,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 0.9304714747761552,
+   "regret_risk_mean": 0.07433723413857339
+  },
+  {
+   "family": "BIAS_FAV_NOISY_k1",
+   "config": "immediate",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 6,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 0.9995278696835329,
+   "regret_risk_mean": 0.0004999798280361826
+  },
+  {
+   "family": "BIAS_FAV_NOISY_k1",
+   "config": "guarded",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 70,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 0.9155981197902784,
+   "regret_risk_mean": 0.0904658924929276
+  },
+  {
+   "family": "BIAS_ADV_NOISY_k0.5",
+   "config": "immediate",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 1,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 0.9999832629811168,
+   "regret_risk_mean": 1.772402867148086e-05
+  },
+  {
+   "family": "BIAS_ADV_NOISY_k0.5",
+   "config": "guarded",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 65,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 0.9364295765430334,
+   "regret_risk_mean": 0.06802771001535257
+  },
+  {
+   "family": "BIAS_ADV_NOISY_k1",
+   "config": "immediate",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 7,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 0.9989262323313541,
+   "regret_risk_mean": 0.0011371086288227102
+  },
+  {
+   "family": "BIAS_ADV_NOISY_k1",
+   "config": "guarded",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 61,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 0.9437711755288755,
+   "regret_risk_mean": 0.060253013635475396
+  },
+  {
+   "family": "MISSING_DROP",
+   "config": "immediate",
+   "positions": 194,
+   "early_closes": 0,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 128,
+   "never_closed_with_opportunity": 128,
+   "captured_improvement": 0.0,
+   "regret_risk_mean": 1.0695989343836227
+  },
+  {
+   "family": "MISSING_DROP",
+   "config": "guarded",
+   "positions": 194,
+   "early_closes": 0,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 128,
+   "never_closed_with_opportunity": 128,
+   "captured_improvement": 0.0,
+   "regret_risk_mean": 1.0695989343836227
+  },
+  {
+   "family": "MISSING_UNDERWEIGHT",
+   "config": "immediate",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 0,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 1.0,
+   "regret_risk_mean": 2.7836188714611055e-17
+  },
+  {
+   "family": "MISSING_UNDERWEIGHT",
+   "config": "guarded",
+   "positions": 194,
+   "early_closes": 128,
+   "destructive_closes": 0,
+   "missed_optimal_exits": 65,
+   "never_closed_with_opportunity": 0,
+   "captured_improvement": 0.9329996071023792,
+   "regret_risk_mean": 0.07166000087963223
+  }
+ ]
+}

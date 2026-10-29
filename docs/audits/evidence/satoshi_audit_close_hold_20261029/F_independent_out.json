@@ -1,0 +1,20 @@
+{
+ "counts": {
+  "early_close": 0,
+  "first_positive": 864,
+  "ticks": 16528,
+  "ticks_qualifying": 864,
+  "none": 880
+ },
+ "any_executable_request_any_tick": 0,
+ "first_request_position": {
+  "fill_bar_minus_passive_exit_bar=0": 864
+ },
+ "modes": {
+  "('gain', 'SL')": 576,
+  "('loss', 'SL')": 288,
+  "('NONE', 'loss')": 288,
+  "('NONE', 'tp')": 576,
+  "('NONE', 'gap')": 16
+ }
+}

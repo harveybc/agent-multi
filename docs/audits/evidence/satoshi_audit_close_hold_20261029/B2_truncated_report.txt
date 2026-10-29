@@ -1,0 +1,2 @@
+full_to_true_deadline accepted -> HOLD advantage_risk -6.5
+truncated_self_consistent accepted -> CLOSE advantage_risk 0.5
