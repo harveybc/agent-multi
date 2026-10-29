@@ -1,0 +1,43 @@
+{
+  "audit_commit": "bc5e4e94",
+  "imported_byte_identical": [
+    {
+      "file": "docs/audits/SATOSHI_AUDIT_VERDICT_MUSASHI_CROSSED_ACCOUNT_V2_2026_10_29.md",
+      "sha256": "0f0671b386b0bc9ed00b1ea901262c6ca33c37d37cc02fd8e9337dbdd8d00f59"
+    },
+    {
+      "file": "docs/audits/evidence/satoshi_audit_crossed_account_v2_20261029/out/C_paired.json",
+      "sha256": "df68b89e25d3ed2e0c5ffe3858791d34cafd7a2f7e36590ad16b4118806fe823"
+    },
+    {
+      "file": "docs/audits/evidence/satoshi_audit_crossed_account_v2_20261029/out/E_close_correlated.json",
+      "sha256": "8d843588a73f1584aeb454bd79d58b82152fa55c13fe1682530076cc03ff60e4"
+    },
+    {
+      "file": "docs/audits/evidence/satoshi_audit_crossed_account_v2_20261029/out/E_close_ideal.json",
+      "sha256": "ce6f3d7dc806385d1f3f581c52fa6c7a19b6e39b5c1a41ce433641803e5cd246"
+    },
+    {
+      "file": "docs/audits/evidence/satoshi_audit_crossed_account_v2_20261029/out/E_close_omitted_reversal.json",
+      "sha256": "0ba5f35378feca0085d6036f75178709cfaa378e29965c608fac72670f042015"
+    },
+    {
+      "file": "docs/audits/evidence/satoshi_audit_crossed_account_v2_20261029/out/F2_archive_counts.json",
+      "sha256": "d478bc2ad0238ec23c0b4b4695193fbe00f1fe90a3a8a3ae09655518b7d0e6e4"
+    },
+    {
+      "file": "docs/audits/evidence/satoshi_audit_crossed_account_v2_20261029/out/G_coverage.json",
+      "sha256": "4dc6545b0a9820e6f842eacdcca85fefd8f92f6170a248165daa48e56aa37a2e"
+    },
+    {
+      "file": "docs/audits/evidence/satoshi_audit_crossed_account_v2_20261029/out/H_adverse.json",
+      "sha256": "27793de0dcf7874c948cb56f2c4d585b841398e8a743bce4830f3c0b6326d902"
+    }
+  ],
+  "focused_tests_passed": 170,
+  "skipped": 0,
+  "new_boundary_regressions": 4,
+  "new_optimization": false,
+  "production_formula_changed": false,
+  "test_source_sha256": "73362f31f530e9fa0f9e45dd994aff77b0acbd16bba4423728c88967bfe77f0f"
+}

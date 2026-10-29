@@ -73,3 +73,6 @@ CP07,Exact parallel native execution,tests/unit/test_crossed_account_panel.py,Tw
 CP08,Authenticated sequential queue,docs/audits/evidence/crossed_account_final_20261029/COMPLETE.json,Full run complete with authenticated re-entry and no new search evaluations,BEFORE_PHASE2,PASS_COMPLETE
 CP09,Independent final analysis,tests/unit/test_crossed_account_analysis.py,Pair mismatch and forged metrics rejected and independent skyline checked,BEFORE_PHASE2,PASS
 CP10,Full evidence and replay,docs/audits/evidence/crossed_account_final_20261029/ANALYSIS.json,27000 archived accounts checked and1800 native P1 replays exact with exposure contrasts,BEFORE_PHASE2,PASS_SYNTHETIC_ONLY
+CX05,Discriminating terminal spread,tests/unit/test_crossed_audit_boundary_regressions.py,Last-bar quote differs from deadline quote and only the latter matches native cash on both sides,BEFORE_PHASE2,PASS
+CX07,Full-account close preemption,tests/unit/test_crossed_audit_boundary_regressions.py,Archived P1 mirrors request CLOSE at26 and gap SL preempts at27 with exact full-account parity,BEFORE_PHASE2,PASS
+CX09_17,Causal report and close qualification,docs/work_plan/144_CAUSAL_REPORT_CLOSE_REPAIR_PLAN.md,Separate shape calibration error history close regret and fixed-size comparisons before new search,BEFORE_PHASE2,DESIGN_NOT_EXECUTED

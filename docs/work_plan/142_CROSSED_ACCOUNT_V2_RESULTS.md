@@ -1,5 +1,9 @@
 # Crossed account v2: completed results
 
+Independent review received: see [disposition143](143_CROSSED_V2_AUDIT_DISPOSITION.md)
+for Holm-corrected contrasts, fixed-position early-close regret and causal-report
+qualifications. The original run and numerical results below are unchanged.
+
 Date: 2026-10-29. Execution code `e889a2d4`, native engine `e0a1c2b`.
 Run identity: `4415bd3fdab307bf0869051a37f8a69035d1a727a6b642cb9afd880aa0725455`.
 Design: [140](140_CROSSED_PANEL_AUTOMATION_PLAN.md); execution: [141](141_CROSSED_PANEL_EXECUTION.md).

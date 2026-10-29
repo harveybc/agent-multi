@@ -2,6 +2,13 @@
 
 ## Priority override: 2026-10-29
 
+Latest: [independent audit disposition143](143_CROSSED_V2_AUDIT_DISPOSITION.md)
+and [causal report / early-close sequence144](144_CAUSAL_REPORT_CLOSE_REPAIR_PLAN.md).
+Satoshi independently reproduced27,360 accounts and the search. Preserve v2;
+repair destructive early closing and qualify uncertainty/reporter causality
+before a new search or floating selection. New long/short boundary regressions
+cover the terminal spread and native gap preemption. No new training is running.
+
 Completed: [crossed account v2 results142](142_CROSSED_ACCOUNT_V2_RESULTS.md),
 under [plan140](140_CROSSED_PANEL_AUTOMATION_PLAN.md), code e889a2d4.
 Three20x300 searches,17,028 candidates,199 frontier policies/180 vectors,

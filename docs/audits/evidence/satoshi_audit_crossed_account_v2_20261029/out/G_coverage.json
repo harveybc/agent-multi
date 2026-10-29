@@ -1,0 +1,686 @@
+{
+ "banks": {
+  "calib_conf_overlap": [],
+  "distinct_price_hashes": 364,
+  "full_manifest_bank_seeds": [
+   [
+    "calibration",
+    50100
+   ],
+   [
+    "calibration",
+    50101
+   ],
+   [
+    "calibration",
+    50102
+   ],
+   [
+    "calibration",
+    50103
+   ],
+   [
+    "calibration",
+    50104
+   ],
+   [
+    "calibration",
+    50105
+   ],
+   [
+    "calibration",
+    50106
+   ],
+   [
+    "calibration",
+    50107
+   ],
+   [
+    "calibration",
+    50108
+   ],
+   [
+    "calibration",
+    50109
+   ],
+   [
+    "confirmation",
+    60100
+   ],
+   [
+    "confirmation",
+    60101
+   ],
+   [
+    "confirmation",
+    60102
+   ],
+   [
+    "confirmation",
+    60103
+   ],
+   [
+    "confirmation",
+    60104
+   ],
+   [
+    "confirmation",
+    60105
+   ],
+   [
+    "confirmation",
+    60106
+   ],
+   [
+    "confirmation",
+    60107
+   ],
+   [
+    "confirmation",
+    60108
+   ],
+   [
+    "confirmation",
+    60109
+   ]
+  ],
+  "hash_collisions_across_banks": 0,
+  "smoke_full_seed_overlap": [],
+  "smoke_manifest_specs": [
+   [
+    "smoke_calibration",
+    70100
+   ],
+   [
+    "smoke_confirmation",
+    80100
+   ]
+  ]
+ },
+ "causality": {
+  "correlated": {
+   "changed_when_future_bars_shift": 18,
+   "reports": 18
+  },
+  "delayed": {
+   "changed_when_future_bars_shift": 18,
+   "reports": 18
+  },
+  "ideal": {
+   "changed_when_future_bars_shift": 18,
+   "reports": 18
+  },
+  "omitted_reversal": {
+   "changed_when_future_bars_shift": 0,
+   "reports": 18
+  }
+ },
+ "coverage": {
+  "calibration": {
+   "cells": 360,
+   "draws": 30,
+   "gap_sign_up_share": 0.4777777777777778,
+   "gap_size_pips": {
+    "max": 17.967891907206837,
+    "median": 10.88970109253112,
+    "min": 3.0709927550424627
+   },
+   "gaps_per_world": 3,
+   "innovation_corr_across_draws": {
+    "max_abs": 0.2753136953763442,
+    "mean": -0.000603458607177332
+   },
+   "mirrors": [
+    -1,
+    1
+   ],
+   "my_generator_equal": 360,
+   "overlap_amps_pips": [
+    [
+     8.33,
+     14.85,
+     13.86
+    ],
+    [
+     3.94,
+     5.46,
+     10.24
+    ],
+    [
+     7.84,
+     13.14,
+     8.08
+    ],
+    [
+     6.42,
+     11.03,
+     4.62
+    ],
+    [
+     5.85,
+     9.37,
+     6.06
+    ],
+    [
+     3.09,
+     9.31,
+     14.68
+    ],
+    [
+     14.57,
+     10.63,
+     9.28
+    ],
+    [
+     7.26,
+     6.95,
+     3.58
+    ],
+    [
+     3.05,
+     3.17,
+     8.47
+    ],
+    [
+     11.65,
+     11.37,
+     12.42
+    ]
+   ],
+   "reversal_cuts": [
+    [
+     62,
+     90
+    ],
+    [
+     31,
+     36
+    ],
+    [
+     28,
+     29
+    ],
+    [
+     49,
+     61
+    ],
+    [
+     43,
+     50
+    ],
+    [
+     36,
+     70
+    ],
+    [
+     53,
+     69
+    ],
+    [
+     34,
+     94
+    ],
+    [
+     47,
+     57
+    ],
+    [
+     34,
+     81
+    ]
+   ],
+   "reversal_mult": [
+    0.985,
+    0.819,
+    0.897,
+    0.999,
+    0.855,
+    1.215,
+    1.011,
+    1.024,
+    1.117,
+    0.922
+   ],
+   "seeds": [
+    50100,
+    50101,
+    50102,
+    50103,
+    50104,
+    50105,
+    50106,
+    50107,
+    50108,
+    50109
+   ],
+   "spreads_pips": [
+    0.5,
+    3.0
+   ],
+   "trend_strength_pips_per_bar": {
+    "by_pattern": {
+     "overlap": [
+      0.95,
+      0.569,
+      0.521,
+      0.384,
+      0.637,
+      0.971,
+      0.903,
+      0.659,
+      0.662,
+      0.583
+     ],
+     "reversal": [
+      0.936,
+      0.548,
+      0.706,
+      0.478,
+      0.756,
+      0.877,
+      0.561,
+      0.537,
+      0.92,
+      0.47
+     ],
+     "trend": [
+      0.942,
+      0.331,
+      0.446,
+      0.514,
+      0.811,
+      0.773,
+      0.499,
+      0.991,
+      0.566,
+      0.911
+     ]
+    },
+    "max": 0.9909757674296104,
+    "min": 0.3308696841975272
+   },
+   "volatility_envelopes": [
+    "constant",
+    "increasing",
+    "decreasing"
+   ]
+  },
+  "confirmation": {
+   "cells": 360,
+   "draws": 30,
+   "gap_sign_up_share": 0.5444444444444444,
+   "gap_size_pips": {
+    "max": 17.90212393464733,
+    "median": 12.372438061277602,
+    "min": 3.107717118865
+   },
+   "gaps_per_world": 3,
+   "innovation_corr_across_draws": {
+    "max_abs": 0.2765512544851027,
+    "mean": -0.002376559057064922
+   },
+   "mirrors": [
+    -1,
+    1
+   ],
+   "my_generator_equal": 360,
+   "overlap_amps_pips": [
+    [
+     7.77,
+     4.58,
+     5.04
+    ],
+    [
+     13.62,
+     13.38,
+     7.49
+    ],
+    [
+     11.21,
+     4.42,
+     13.64
+    ],
+    [
+     5.42,
+     12.2,
+     9.69
+    ],
+    [
+     14.86,
+     11.71,
+     8.59
+    ],
+    [
+     4.54,
+     4.97,
+     5.26
+    ],
+    [
+     8.66,
+     13.64,
+     3.84
+    ],
+    [
+     7.34,
+     3.51,
+     5.78
+    ],
+    [
+     11.18,
+     12.7,
+     6.88
+    ],
+    [
+     9.24,
+     13.99,
+     12.83
+    ]
+   ],
+   "reversal_cuts": [
+    [
+     55,
+     57
+    ],
+    [
+     65,
+     76
+    ],
+    [
+     63,
+     71
+    ],
+    [
+     42,
+     85
+    ],
+    [
+     28,
+     94
+    ],
+    [
+     39,
+     44
+    ],
+    [
+     63,
+     69
+    ],
+    [
+     65,
+     83
+    ],
+    [
+     81,
+     93
+    ],
+    [
+     38,
+     68
+    ]
+   ],
+   "reversal_mult": [
+    0.767,
+    0.988,
+    0.937,
+    1.288,
+    1.055,
+    0.735,
+    0.659,
+    0.963,
+    0.996,
+    1.26
+   ],
+   "seeds": [
+    60100,
+    60101,
+    60102,
+    60103,
+    60104,
+    60105,
+    60106,
+    60107,
+    60108,
+    60109
+   ],
+   "spreads_pips": [
+    0.5,
+    3.0
+   ],
+   "trend_strength_pips_per_bar": {
+    "by_pattern": {
+     "overlap": [
+      0.622,
+      0.69,
+      0.811,
+      0.784,
+      0.928,
+      0.996,
+      0.541,
+      0.324,
+      0.297,
+      0.982
+     ],
+     "reversal": [
+      0.642,
+      0.444,
+      0.329,
+      0.515,
+      0.992,
+      0.729,
+      0.562,
+      0.752,
+      0.946,
+      0.623
+     ],
+     "trend": [
+      0.487,
+      0.697,
+      0.688,
+      0.548,
+      0.27,
+      0.333,
+      0.255,
+      0.533,
+      0.943,
+      0.85
+     ]
+    },
+    "max": 0.9957503598879038,
+    "min": 0.2549932227095433
+   },
+   "volatility_envelopes": [
+    "constant",
+    "increasing",
+    "decreasing"
+   ]
+  }
+ },
+ "foresight_calibration": {
+  "correlated": {
+   "1": {
+    "band_coverage_3paths": 0.346031746031746,
+    "corr_pred_real": 0.6232410602270545,
+    "median_abs_err_over_sd": 1.7892064863505432,
+    "n": 7560,
+    "real_move_rms_pips": 3.680876732717382,
+    "rmse_pips": 4.562870884584582,
+    "sign_agreement": 0.6666666666666666
+   },
+   "12": {
+    "band_coverage_3paths": 0.546031746031746,
+    "corr_pred_real": 0.7858294069307479,
+    "median_abs_err_over_sd": 1.0454542502039346,
+    "n": 7560,
+    "real_move_rms_pips": 14.197667241843915,
+    "rmse_pips": 11.279544729606991,
+    "sign_agreement": 0.7761904761904762
+   },
+   "3": {
+    "band_coverage_3paths": 0.47513227513227513,
+    "corr_pred_real": 0.7749212670659003,
+    "median_abs_err_over_sd": 1.2584860065501664,
+    "n": 7560,
+    "real_move_rms_pips": 7.997198920653734,
+    "rmse_pips": 6.46214177658047,
+    "sign_agreement": 0.7375661375661375
+   },
+   "6": {
+    "band_coverage_3paths": 0.5328042328042328,
+    "corr_pred_real": 0.8321609828300304,
+    "median_abs_err_over_sd": 1.0497552153583602,
+    "n": 7560,
+    "real_move_rms_pips": 12.217425999752889,
+    "rmse_pips": 8.213757153765988,
+    "sign_agreement": 0.7772486772486773
+   }
+  },
+  "delayed": {
+   "1": {
+    "band_coverage_3paths": 0.08624338624338625,
+    "corr_pred_real": -0.3409234337872722,
+    "median_abs_err_over_sd": 7.974689992855793,
+    "n": 7560,
+    "real_move_rms_pips": 3.680876732717382,
+    "rmse_pips": 8.197303672496158,
+    "sign_agreement": 0.3952380952380952
+   },
+   "12": {
+    "band_coverage_3paths": 0.10317460317460317,
+    "corr_pred_real": 0.8239998952812534,
+    "median_abs_err_over_sd": 7.842893978024636,
+    "n": 7560,
+    "real_move_rms_pips": 14.197667241843915,
+    "rmse_pips": 8.157041427694624,
+    "sign_agreement": 0.8629629629629629
+   },
+   "3": {
+    "band_coverage_3paths": 0.09365079365079365,
+    "corr_pred_real": 0.03156709552337604,
+    "median_abs_err_over_sd": 7.858337064417595,
+    "n": 7560,
+    "real_move_rms_pips": 7.997198920653734,
+    "rmse_pips": 7.995870567828821,
+    "sign_agreement": 0.5058201058201058
+   },
+   "6": {
+    "band_coverage_3paths": 0.0835978835978836,
+    "corr_pred_real": 0.7264615756874616,
+    "median_abs_err_over_sd": 7.731445059703178,
+    "n": 7560,
+    "real_move_rms_pips": 12.217425999752889,
+    "rmse_pips": 8.43994715570078,
+    "sign_agreement": 0.7798941798941799
+   }
+  },
+  "ideal": {
+   "1": {
+    "band_coverage_3paths": 1.0,
+    "corr_pred_real": 1.0,
+    "median_abs_err_over_sd": 0.0,
+    "n": 7560,
+    "real_move_rms_pips": 3.680876732717382,
+    "rmse_pips": 0.0,
+    "sign_agreement": 1.0
+   },
+   "12": {
+    "band_coverage_3paths": 1.0,
+    "corr_pred_real": 1.0,
+    "median_abs_err_over_sd": 0.0,
+    "n": 7560,
+    "real_move_rms_pips": 14.197667241843915,
+    "rmse_pips": 0.0,
+    "sign_agreement": 1.0
+   },
+   "3": {
+    "band_coverage_3paths": 1.0,
+    "corr_pred_real": 1.0,
+    "median_abs_err_over_sd": 0.0,
+    "n": 7560,
+    "real_move_rms_pips": 7.997198920653734,
+    "rmse_pips": 0.0,
+    "sign_agreement": 1.0
+   },
+   "6": {
+    "band_coverage_3paths": 1.0,
+    "corr_pred_real": 1.0,
+    "median_abs_err_over_sd": 0.0,
+    "n": 7560,
+    "real_move_rms_pips": 12.217425999752889,
+    "rmse_pips": 0.0,
+    "sign_agreement": 1.0
+   }
+  },
+  "omitted_reversal": {
+   "1": {
+    "band_coverage_3paths": 0.09470899470899471,
+    "corr_pred_real": -0.17286883324362318,
+    "median_abs_err_over_sd": 7.233688860335881,
+    "n": 7560,
+    "real_move_rms_pips": 3.680876732717382,
+    "rmse_pips": 4.327901463903494,
+    "sign_agreement": 0.5121693121693122
+   },
+   "12": {
+    "band_coverage_3paths": 0.01216931216931217,
+    "corr_pred_real": 0.07631101426469371,
+    "median_abs_err_over_sd": 50.64572570396467,
+    "n": 7560,
+    "real_move_rms_pips": 14.197667241843915,
+    "rmse_pips": 23.997027546803434,
+    "sign_agreement": 0.5650793650793651
+   },
+   "3": {
+    "band_coverage_3paths": 0.049206349206349205,
+    "corr_pred_real": -0.30303587700940676,
+    "median_abs_err_over_sd": 18.13153822234144,
+    "n": 7560,
+    "real_move_rms_pips": 7.997198920653734,
+    "rmse_pips": 10.72982826703645,
+    "sign_agreement": 0.5010582010582011
+   },
+   "6": {
+    "band_coverage_3paths": 0.016931216931216932,
+    "corr_pred_real": -0.2560946734938757,
+    "median_abs_err_over_sd": 32.20303288799781,
+    "n": 7560,
+    "real_move_rms_pips": 12.217425999752889,
+    "rmse_pips": 17.825047350340775,
+    "sign_agreement": 0.5148148148148148
+   }
+  }
+ },
+ "price_identity": {
+  "groups": 180,
+  "groups_with_one_hash": 180,
+  "note": "group = (seed,pattern,volatility,mirror) across 5 qualities x 2 spreads = 10 worlds each",
+  "worlds_hashed": 1800
+ },
+ "report_sharing": {
+  "correlated": {
+   "checked": 12,
+   "envelope_pairs_identical": 0,
+   "mirror_pair_equivariant": 12,
+   "seed_pairs_identical": 0,
+   "spread_pair_identical": 12
+  },
+  "delayed": {
+   "checked": 12,
+   "envelope_pairs_identical": 0,
+   "mirror_pair_equivariant": 12,
+   "seed_pairs_identical": 0,
+   "spread_pair_identical": 12
+  },
+  "missing_equals_correlated_when_available": [
+   275,
+   275
+  ],
+  "missing_mask_identical_across_spread_mirror": true,
+  "omitted_reversal": {
+   "checked": 12,
+   "envelope_pairs_identical": 0,
+   "mirror_pair_equivariant": 12,
+   "seed_pairs_identical": 0,
+   "spread_pair_identical": 12
+  }
+ }
+}
