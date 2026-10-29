@@ -56,4 +56,10 @@ AP04,Synthetic cache isolation,tests/unit/test_close_hold_controller.py,Cache re
 AP05,Durable sequential search,tests/unit/test_dynamic_account_queue.py,Chained tamper rejection and exact restart with no refits,BEFORE_PHASE2,PASS
 AP06,Full budget and frozen confirmation,docs/audits/evidence/dynamic_account_pareto_20261029/VERIFICATION.json,20x300x3 authenticated and288 native accounts exactly reproduced,BEFORE_PHASE2,PASS_BOUNDED_SYNTHETIC_NOT_GLOBAL_OPTIMUM
 AP07,Independent dominance check,tools/verify_dynamic_account_results.py,632 policies match independent frontier of342 distinct objective vectors,BEFORE_PHASE2,PASS
-AP08,Complete audit delivery,docs/audits/SATOSHI_AUDIT_REQUEST_DYNAMIC_ACCOUNT_PARETO_2026_10_29.md,Final artifacts and limitations including control domination and positive unilateral gain,BEFORE_PHASE2,REQUEST_READY_EXTERNAL_VERDICT_NOT_RECEIVED
+AP08,Complete audit delivery,docs/work_plan/139_EXTERNAL_AUDIT_REPAIR_RESULTS.md,Satoshi and Retsu received with code repairs verified and broader coverage revision specified,BEFORE_PHASE2,REPAIRED_BOUNDED_SCOPE_NOT_GLOBAL_QUALIFICATION
+AR01,Exact TP threshold,tests/unit/test_external_audit_repairs.py,Native arithmetic matches at threshold in both directions,BEFORE_PHASE2,PASS
+AR02,Deadline spread,tests/unit/test_dynamic_account_panel.py,Forced-flat terminal quote and cash match native with spread jump in both directions,BEFORE_PHASE2,PASS
+AR03,Independent calendar,tests/unit/test_external_audit_repairs.py,Self-consistent truncated report rejected against external deadline,BEFORE_PHASE2,PASS
+AR04,Independent clock,tests/unit/test_dynamic_account_panel.py,Stale reports rejected on entry and close including cache and verified full runs,BEFORE_PHASE2,PASS
+AR05,Full cache identity,tests/unit/test_dynamic_account_panel.py,Changed geometry rejected and changed reports costs or funding cannot reuse wrong key,BEFORE_PHASE2,PASS
+AR06,Historical result preservation,docs/audits/evidence/external_audit_repairs_20261029/REPAIR_VERIFICATION.json,288 exact repaired accounts with148 enumerated passing tests,BEFORE_PHASE2,PASS_PREDECESSOR_PANEL_ONLY

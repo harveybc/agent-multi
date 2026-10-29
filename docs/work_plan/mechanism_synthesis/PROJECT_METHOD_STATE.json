@@ -3,7 +3,10 @@
   "date": "2026-10-29",
   "timezone": "America/Bogota",
   "priority": 0,
-  "current_stage": "DYNAMIC_ACCOUNT_SYNTHETIC_PARETO_COMPLETE_AUDIT_REQUESTED",
+  "current_stage": "EXTERNAL_AUDITS_RECEIVED_REPAIRS_VERIFIED_NEW_PANEL_DESIGNED",
+  "audit_repair_plan": "../138_EXTERNAL_AUDIT_REPAIR_PLAN.md",
+  "audit_repair_results": "../139_EXTERNAL_AUDIT_REPAIR_RESULTS.md",
+  "audit_repair_evidence": {"focused_tests": 148, "skipped": 0, "exact_predecessor_account_replays": 288, "new_optimization": false, "broader_behavioral_qualification": false},
   "dynamic_account_results": "../137_DYNAMIC_ACCOUNT_PARETO_RESULTS.md",
   "dynamic_account_audit_request": "../../audits/SATOSHI_AUDIT_REQUEST_DYNAMIC_ACCOUNT_PARETO_2026_10_29.md",
   "dynamic_account_plan": "../134_DYNAMIC_ACCOUNT_PARETO_PLAN.md",
@@ -12,7 +15,7 @@
   "context_followup_status": "DOCUMENTED_PAIRED_ABLATIONS_AFTER_COMPLETED_BASELINE_REVIEW",
   "dynamic_account_identity": "098e871909f0c587b1cbe855cc49b93723ed63a03c74845a52dd9009071a966d",
   "dynamic_account_budget": {"population": 20, "generations": 300, "seeds": [7, 19, 43], "mode": "sequential synthetic CPU"},
-  "dynamic_account_verification": {"focused_tests": 128, "final_optimization_results_available": true, "candidates": 17018, "frontier_policies": 632, "unique_frontier_vectors": 342, "exact_native_replays": 288, "independent_dominance_check": true, "global_optimum_certified": false, "external_audit_received": false},
+  "dynamic_account_verification": {"focused_tests": 128, "final_optimization_results_available": true, "candidates": 17018, "frontier_policies": 632, "unique_frontier_vectors": 342, "exact_native_replays": 288, "independent_dominance_check": true, "global_optimum_certified": false, "external_audit_received": true},
   "close_controller_plan": "../132_CLOSE_HOLD_CONTROLLER_PLAN.md",
   "close_controller_results": "../133_CLOSE_HOLD_CONTROLLER_RESULTS.md",
   "close_controller_audit_request": "../../audits/SATOSHI_AUDIT_REQUEST_CLOSE_HOLD_COMPONENT_2026_10_29.md",
@@ -71,15 +74,16 @@
   "implementation_scope": "M0 exact games plus risk profiles, native execution, close/hold and completed full-account synthetic Pareto search; no qualified learned reporter or global optimum claim",
   "top_down": {
     "discovery": "DOCUMENTED",
-    "requirements_and_use_cases": "AP01-AP08_FROZEN_IN_PLAN134",
+    "requirements_and_use_cases": "AP01-AP08_IN_PLAN134; AR01-AR06_FROZEN_IN_PLAN138_BEFORE_REPAIR",
     "acceptance_design": "SYNTHETIC_CALIBRATION_CONFIRMATION_AND_CONTROLS_FROZEN",
     "architecture_and_components": "NATIVE_ACCOUNT_CONTROLLER_AND_PURE_ARBITER_IMPLEMENTED",
-    "system_and_integration_tests": "NATIVE_REPLAY_AND_QUEUE_SMOKE_PASSED; FULL_SEARCH_COMPLETE; 288_FINAL_ACCOUNTS_REPRODUCED",
-    "unit_tests": "128_FOCUSED_TESTS_PASSED; LEARNED_POLICY_NOT_QUALIFIED"
+    "system_and_integration_tests": "288_REPAIRED_ACCOUNTS_EXACTLY_EQUAL_PREDECESSOR; NATIVE_BOUNDARY_WITNESSES_PASS",
+    "unit_tests": "148_ENUMERATED_TESTS_PASSED_ZERO_SKIPS; LEARNED_POLICY_NOT_QUALIFIED"
   },
-  "bottom_up": "EXACT_CORE_AND_NATIVE_SYNTHETIC_ACCOUNT_INTEGRATION_VERIFIED; FULL_SEARCH_COMPLETE; INDEPENDENT_REVIEW_REQUESTED",
+  "bottom_up": "INDEPENDENT_REVIEWS_RECEIVED; FIVE_CONCRETE_DEFECTS_REPAIRED_AND_REPLAYED; COVERAGE_REVISION_REQUIRED",
   "next_allowed_actions": [
-    "Obtain independent audit of137 and fix demonstrated defects before claiming broader strategy qualification",
+    "Implement plan138 crossed cost/volatility panel and independent report-quality ladder; freeze expectations and run controls before new optimization",
+    "Targeted re-review of report139 repairs and required caller migration; retain predecessor receipts unchanged",
     "Review the implemented close/hold component and qualify report errors and a real report adapter before claiming causal financial performance; ideal future remains test-only",
     "Keep shared SL/TP geometry fixed during this allocation search; position-size and close genes vary as declared in134",
     "Review the completed account report before expanding policy library or risk geometry; local close optimum is not a global account optimum",
@@ -90,7 +94,7 @@
     "Model-specific sequential floating selection",
     "Promotion of synthetic-oracle results as learned-model evidence"
   ],
-  "operations": "Synthetic account queue completed in1641.81s with zero restarts; exit0; no active queue or financial training; full evidence exported and audit request prepared",
+  "operations": "Repair suite148/148 and288 exact native account replays complete; no active optimization or financial training; new panel design in138 is the next executable task",
   "history": [
     {"date": "2026-10-28", "event": "User prioritizes mechanism synthesis and requests detailed implementation proposal plus Satoshi audit"},
     {"date": "2026-10-28", "event": "Owner clarifies daily openings: three or more allowed, no strategy daily cap; contract recorded without runtime change"},
@@ -98,6 +102,7 @@
     {"date": "2026-10-29", "event": "Plans129/130 implemented: native absolute-order interface, fixed-position early-close regret, 1744 synthetic cases with 14784 alternative executions and exact replay; report131 and Satoshi component handoff"},
     {"date": "2026-10-29", "event": "Plan132 close/hold rule implemented and verified in 8720 native rollouts with exact replay; ideal component passed, guarded controls lose about6% improvement, causal prefix fails with late signals; report133 and component audit request"},
     {"date": "2026-10-29", "event": "Owner approves dynamic full-account Pareto mechanism; plan134, native arbiter,128 focused tests, complete smoke and independent sequential20x300x3 service launched; report135 records scope and limits"},
-    {"date": "2026-10-29", "event": "Three20x300 searches complete;17018 receipts verified;632 frontier policies/342 vectors;288 final account replays exact; report137 and final Satoshi audit request published; confirmation domination and positive Nash epsilon explicitly reported"}
+    {"date": "2026-10-29", "event": "Three20x300 searches complete;17018 receipts verified;632 frontier policies/342 vectors;288 final account replays exact; report137 and final Satoshi audit request published; confirmation domination and positive Nash epsilon explicitly reported"},
+    {"date": "2026-10-29", "event": "Read Satoshi three audits and Retsu review; repaired exact TP arithmetic, terminal spread, external deadline/clock and cache identity;148 passing tests and288 exact patched replays; scientific qualifications corrected in139; new crossed-panel work designed in138"}
   ]
 }

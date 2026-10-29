@@ -2,6 +2,17 @@
 
 ## Priority override: 2026-10-29
 
+Latest: [external audit disposition and repairs139](139_EXTERNAL_AUDIT_REPAIR_RESULTS.md)
+under [repair and successor-panel plan138](138_EXTERNAL_AUDIT_REPAIR_PLAN.md).
+Satoshi's three verdicts and Retsu's review are received. Five concrete defects
+are repaired;148 enumerated tests pass and288 patched native account replays
+exactly preserve the predecessor. Broader scenario coverage is not qualified:
+next is the crossed cost/volatility and report-quality panel with frozen controls,
+not financial training or floating selection. No new optimization is running.
+[Return to Satoshi](../handoffs/MUSASHI_AUDIT_REPAIRS_TO_SATOSHI_2026_10_29.md).
+The historical milestones below retain their original scope;139 governs current
+interpretation and explicitly corrects the oracle, pairing and spread limitations.
+
 Completed: [dynamic account Pareto results137](137_DYNAMIC_ACCOUNT_PARETO_RESULTS.md)
 under [plan134](134_DYNAMIC_ACCOUNT_PARETO_PLAN.md): three20x300 searches,
 17,018 policies,632 nondominated policies/342 objective vectors and exact288

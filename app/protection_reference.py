@@ -19,7 +19,9 @@ def protection_exit(direction, tp, sl, opens, highs, lows, closes, through):
         adverse=l[k] if direction==1 else h[k]
         favorable=h[k] if direction==1 else l[k]
         if direction*(adverse-sl)<=0:return k,float(sl),'SL'
-        if direction*(favorable-tp)>=through:return k,float(tp),'TP'
+        # Match native execution arithmetic at the exact floating-point boundary.
+        if (favorable>=tp+through if direction==1 else favorable<=tp-through):
+            return k,float(tp),'TP'
     return len(c)-1,float(c[-1]),'DEADLINE'
 
 

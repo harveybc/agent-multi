@@ -38,6 +38,7 @@ class PathReport:
     spreads: np.ndarray  # [sample, bar], full bid/ask spread
     weights: np.ndarray
     provenance: str
+    terminal_spreads: np.ndarray  # [sample], spread at deadline liquidation
 
 
 @dataclass(frozen=True)
@@ -68,6 +69,10 @@ def validate(p,r,opening_funding,ending_funding):
             or (s<0).any() or (x-s[:,:,None]/2<=0).any()
             or (x[:,:,1]<np.max(x,axis=2)).any() or (x[:,:,2]>np.min(x,axis=2)).any()):
         raise ValueError('PATH_CONTRACT')
+    terminal=np.asarray(r.terminal_spreads,float)
+    if (terminal.shape!=(len(x),) or not np.isfinite(terminal).all()
+            or (terminal<0).any() or (x[:,-1,3]-terminal/2<=0).any()):
+        raise ValueError('TERMINAL_SPREAD_CONTRACT')
     for f in (opening_funding,ending_funding):
         if np.asarray(f).shape!=(x.shape[1],) or not np.isfinite(f).all():
             raise ValueError('KNOWN_FUNDING_SCHEDULE')
@@ -75,6 +80,21 @@ def validate(p,r,opening_funding,ending_funding):
     if (not all(isinstance(t,(int,np.integer)) and not isinstance(t,bool) for t in times)
             or r.step<=0 or r.first_fill!=r.issued_at or r.observed_through>r.issued_at
             or r.deadline!=r.first_fill+x.shape[1]*r.step):
+        raise ValueError('REPORT_TIME_SUPPORT')
+
+
+def validate_context(r,decision_time,expected_deadline):
+    """Bind report support to the caller's independent clock and calendar."""
+    if (not all(isinstance(t,(int,np.integer)) and not isinstance(t,bool)
+                for t in (decision_time,expected_deadline)) or expected_deadline<=decision_time):
+        raise ValueError('EXTERNAL_CLOCK_CONTRACT')
+    if r.issued_at!=decision_time or r.first_fill!=decision_time or r.observed_through>decision_time:
+        raise ValueError('STALE_OR_FUTURE_REPORT')
+    if r.deadline!=expected_deadline:
+        raise ValueError('EXTERNAL_DEADLINE_MISMATCH')
+    if (not isinstance(r.step,(int,np.integer)) or isinstance(r.step,bool) or r.step<=0
+            or np.ndim(r.paths)!=3 or r.paths.shape[1]<1
+            or r.first_fill+r.paths.shape[1]*r.step!=expected_deadline):
         raise ValueError('REPORT_TIME_SUPPORT')
 
 
@@ -92,6 +112,8 @@ charges since original entry, computed from a known calendar, not price paths.
     costs=p.entry_slip+p.market_slip+p.commission_roundtrip
     for i,path in enumerate(x):
         at,quote,reason=protection_exit(p.direction,p.tp,p.sl,*path.T,p.limit_through)
+        if reason=='DEADLINE':
+            quote=float(r.paths[i,-1,3]-p.direction*r.terminal_spreads[i]/2)
         at_open=(reason!='DEADLINE' and
             (p.direction*(path[at,0]-p.sl)<=0 or p.direction*(path[at,0]-p.tp)>=0))
         funding=opening_funding[at] if at_open else ending_funding[at]
@@ -123,9 +145,8 @@ class CloseController:
             raise ValueError('CONTROLLER_STATE_IDENTITY')
         self.position_id=state['position_id'];self.last_tick=state['last_tick'];self.streak=state['streak']
 
-    def decide(self,p,r,decision_time,opening_funding,ending_funding):
-        if r.issued_at!=decision_time:
-            raise ValueError('STALE_OR_FUTURE_REPORT')
+    def decide(self,p,r,decision_time,opening_funding,ending_funding,*,expected_deadline):
+        validate_context(r,decision_time,expected_deadline)
         if r.provenance!='causal' and not (self.allow_synthetic and r.provenance in ('synthetic_ideal','synthetic_noisy')):
             raise ValueError('ORACLE_PLANE_FORBIDDEN')
         if self.position_id==p.identity and self.last_tick is not None and decision_time<=self.last_tick:
@@ -133,10 +154,13 @@ class CloseController:
         values=value_paths(p,r,opening_funding,ending_funding)
         return self._decide_values(p.identity,decision_time,r.step,values,r.weights,p.risk,r.provenance)
 
-    def decide_synthetic_values(self,identity,decision_time,step,values,weights,risk):
+    def decide_synthetic_values(self,identity,decision_time,step,values,weights,risk,*,report,expected_deadline):
         """Test-plane cache adapter; never available to a causal/live consumer."""
         if not self.allow_synthetic:
             raise ValueError('SYNTHETIC_CACHE_FORBIDDEN')
+        validate_context(report,decision_time,expected_deadline)
+        if report.provenance not in ('synthetic_ideal','synthetic_noisy'):
+            raise ValueError('SYNTHETIC_CACHE_PROVENANCE')
         values=np.asarray(values,float); weights=np.asarray(weights,float)
         if (not identity or type(step) is not int or step<=0 or type(decision_time) is not int
                 or values.ndim!=2 or values.shape[1]<2 or len(values)<1
@@ -145,6 +169,9 @@ class CloseController:
                 or not np.isclose(weights.sum(),1,rtol=0,atol=1e-12)
                 or not math.isfinite(risk) or risk<=0):
             raise ValueError('SYNTHETIC_CACHE_CONTRACT')
+        if (step!=report.step or values.shape!=(len(report.paths),report.paths.shape[1]+1)
+                or not np.array_equal(weights,report.weights)):
+            raise ValueError('SYNTHETIC_CACHE_REPORT_SUPPORT')
         if self.position_id==identity and self.last_tick is not None and decision_time<=self.last_tick:
             raise ValueError('DUPLICATE_OR_REVERSED_TICK')
         return self._decide_values(identity,decision_time,step,values,weights,risk,'synthetic_noisy')

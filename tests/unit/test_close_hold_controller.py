@@ -16,12 +16,12 @@ def report(prices=(100.,98.,104.), weights=None, tag='causal', time=10):
     if a.ndim==1: a=a[None,:]
     paths=np.repeat(a[:,:,None],4,axis=2)
     return PathReport(time,time,time,1,time+a.shape[1],paths,np.zeros(a.shape),
-                      np.ones(len(a))/len(a) if weights is None else np.array(weights),tag)
+                      np.ones(len(a))/len(a) if weights is None else np.array(weights),tag,np.zeros(len(a)))
 
 
 def decide(p,r,cfg=None):
     return CloseController(cfg or CloseConfig()).decide(p,r,r.issued_at,
-        np.zeros(r.paths.shape[1]),np.zeros(r.paths.shape[1]))
+        np.zeros(r.paths.shape[1]),np.zeros(r.paths.shape[1]),expected_deadline=r.deadline)
 
 
 @pytest.mark.parametrize('d',[1,-1])
@@ -59,12 +59,12 @@ def test_persistence_urgency_gap_reset_and_serialization():
     p=position()
     def call(t,prices=(100,98,97),pos=p):
         r=report(prices,time=t)
-        return c.decide(pos,r,t,np.zeros(3),np.zeros(3))
+        return c.decide(pos,r,t,np.zeros(3),np.zeros(3),expected_deadline=t+3)
     assert call(10)['action']=='HOLD'
     restored=CloseController(c.config)
     restored.restore(json.loads(json.dumps(c.state())))
     r=report(time=11)
-    assert c.decide(p,r,11,np.zeros(3),np.zeros(3))==restored.decide(p,r,11,np.zeros(3),np.zeros(3))
+    assert c.decide(p,r,11,np.zeros(3),np.zeros(3),expected_deadline=14)==restored.decide(p,r,11,np.zeros(3),np.zeros(3),expected_deadline=14)
     assert call(12,(100,102,104))['action']=='HOLD'
     assert call(13)['action']=='HOLD'
     assert call(15)['action']=='HOLD'
@@ -85,8 +85,8 @@ def test_invalid_inputs_and_duplicate_tick():
         with pytest.raises(ValueError): decide(p,bad)
     for cfg in (dict(persistence=0),dict(uncertainty_penalty=-1),dict(margin_risk=float('nan'))):
         with pytest.raises(ValueError): CloseConfig(**cfg)
-    c=CloseController(CloseConfig());c.decide(p,r,10,z,z)
-    with pytest.raises(ValueError,match='DUPLICATE'): c.decide(p,r,10,z,z)
+    c=CloseController(CloseConfig());c.decide(p,r,10,z,z,expected_deadline=13)
+    with pytest.raises(ValueError,match='DUPLICATE'): c.decide(p,r,10,z,z,expected_deadline=13)
 
 
 def test_fee_funding_units_and_scale_invariance():
@@ -95,16 +95,16 @@ def test_fee_funding_units_and_scale_invariance():
     v=value_paths(p,r,opening,ending)
     assert v[0,0]==pytest.approx(-.3)
     assert v[0,-1]==pytest.approx(-2.9)
-    a=CloseController(CloseConfig()).decide(p,r,10,opening,ending)
-    b=CloseController(CloseConfig()).decide(replace(p,units=10,risk=20),r,10,opening,ending)
+    a=CloseController(CloseConfig()).decide(p,r,10,opening,ending,expected_deadline=13)
+    b=CloseController(CloseConfig()).decide(replace(p,units=10,risk=20),r,10,opening,ending,expected_deadline=13)
     assert a['advantage_risk']==pytest.approx(b['advantage_risk'])
 
 
 def test_synthetic_value_cache_matches_report_and_cannot_bypass_causal_api():
     p=position(); r=report(tag='synthetic_ideal'); z=np.zeros(3)
     values=value_paths(p,r,z,z)
-    a=CloseController(CloseConfig(),allow_synthetic=True).decide(p,r,10,z,z)
-    b=CloseController(CloseConfig(),allow_synthetic=True).decide_synthetic_values(p.identity,10,1,values,r.weights,p.risk)
+    a=CloseController(CloseConfig(),allow_synthetic=True).decide(p,r,10,z,z,expected_deadline=13)
+    b=CloseController(CloseConfig(),allow_synthetic=True).decide_synthetic_values(p.identity,10,1,values,r.weights,p.risk,report=r,expected_deadline=13)
     assert a['action']==b['action'] and a['advantage_risk']==b['advantage_risk']
     with pytest.raises(ValueError,match='SYNTHETIC'):
-        CloseController().decide_synthetic_values(p.identity,10,1,values,r.weights,p.risk)
+        CloseController().decide_synthetic_values(p.identity,10,1,values,r.weights,p.risk,report=r,expected_deadline=13)

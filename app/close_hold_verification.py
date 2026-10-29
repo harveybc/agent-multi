@@ -33,13 +33,15 @@ def position_view(e,risk):
 
 def build_report(e,kind,seed):
     b=e.next_decision; first=int(e.v[b])+HOUR; deadline=int(e.ff[e.pos.seg])
+    terminal=e.cfg.profile.spread_at(deadline,int(e.mo[e.pos.seg]))
     if first>=deadline:
         return None
     if kind=='prefix':
         # Only the completed prefix crosses the reporter boundary. Future quote
         # observations, labels and position state are not arguments.
         prefix=np.column_stack([v[max(0,b-7):b+1] for v in (e.o,e.h,e.l,e.c)])
-        return prefix_report(prefix,first,HOUR,deadline,e.cfg.profile.spread_at(int(e.v[b]),int(e.mo[e.pos.seg])))
+        return prefix_report(prefix,first,HOUR,deadline,e.cfg.profile.spread_at(int(e.v[b]),int(e.mo[e.pos.seg])),
+                             terminal_spread=terminal)
     end=int(np.searchsorted(e.v,deadline))
     future=np.column_stack([v[b+1:end] for v in (e.o,e.h,e.l,e.c)])
     spread=np.array([e.cfg.profile.spread_at(int(t),int(e.mo[e.pos.seg])) for t in e.v[b+1:end]])
@@ -54,7 +56,7 @@ def build_report(e,kind,seed):
     else:
         raise ValueError('REPORT_KIND')
     return PathReport(first,first,first,HOUR,deadline,paths,spreads,weights,
-                      'synthetic_ideal' if kind=='ideal' else 'synthetic_noisy')
+                      'synthetic_ideal' if kind=='ideal' else 'synthetic_noisy',np.full(len(paths),terminal))
 
 
 def run_case(spec,config,reference,arm):
@@ -70,7 +72,8 @@ def run_case(spec,config,reference,arm):
             times=report.first_fill+np.arange(report.paths.shape[1])*report.step
             funding_open=np.array([_funding(e,e.pos,int(t))/e.pos.units for t in times])
             funding_end=np.array([_funding(e,e.pos,int(t)+HOUR)/e.pos.units for t in times])
-            result=controller.decide(p,report,report.issued_at,funding_open,funding_end)
+            result=controller.decide(p,report,int(e.v[b])+HOUR,funding_open,funding_end,
+                                     expected_deadline=int(e.ff[e.pos.seg]))
         native=e.step(b,3 if result['action']=='CLOSE' else 0)
         trace.append(dict(decision_bar=b,**result,native_close=native['close']))
     trade=e.trades[0]
@@ -99,8 +102,9 @@ def prefix_future_witness(spec,config):
     times=a.first_fill+np.arange(a.paths.shape[1])*HOUR
     fo=np.array([_funding(e,e.pos,int(t))/e.pos.units for t in times])
     fe=np.array([_funding(e,e.pos,int(t)+HOUR)/e.pos.units for t in times])
-    ca=CloseController(CloseConfig()).decide(p,a,a.issued_at,fo,fe)
-    cb=CloseController(CloseConfig()).decide(p,b,b.issued_at,fo,fe)
+    clock=int(e.v[e.next_decision])+HOUR; deadline=int(e.ff[e.pos.seg])
+    ca=CloseController(CloseConfig()).decide(p,a,clock,fo,fe,expected_deadline=deadline)
+    cb=CloseController(CloseConfig()).decide(p,b,clock,fo,fe,expected_deadline=deadline)
     if ca!=cb:
         raise AssertionError('DECISION_FUTURE_LEAK')
     return dict(case=spec['id'],report_equal=True,decision_equal=True)

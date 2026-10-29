@@ -1,18 +1,28 @@
 """Explicitly synthetic, full-account allocation experiments on the native engine."""
 from collections import OrderedDict, Counter
 import copy
+import hashlib
 from dataclasses import replace
 
 import numpy as np
 import pandas as pd
 
-from app.close_hold_controller import PositionView, PathReport, CloseConfig, CloseController, value_paths
+from app.close_hold_controller import PositionView, PathReport, CloseConfig, CloseController, value_paths, validate_context
 from app.dynamic_account_arbiter import HORIZONS, choose, decode, objectives
 from app.horizon_risk_rules import levels, propose
 from app.protection_reference import protection_exit
 
 HOUR=3600*10**9
 BASE=(1.,1.,1.,1.,0.,0.,0.,0.,1.,0.,1.)
+
+
+def report_identity(r):
+    h=hashlib.sha256(repr((r.issued_at,r.observed_through,r.first_fill,r.step,
+                           r.deadline,r.provenance)).encode())
+    for a in (r.paths,r.spreads,r.weights,r.terminal_spreads):
+        a=np.asarray(a,dtype=float)
+        h.update(repr(a.shape).encode());h.update(a.tobytes())
+    return h.digest()
 
 
 def expected_duration(position,report,choice):
@@ -97,7 +107,8 @@ class World:
             spreads=np.full(paths.shape[:2],e.cfg.profile.spread_at(int(e.v[b]),int(e.mo[0])))
             first=int(e.v[b])+HOUR
             self.reports[b]=PathReport(first,first,first,HOUR,int(e.ff[0]),paths,spreads,
-                                      np.full(3,1/3),'synthetic_noisy')
+                                      np.full(3,1/3),'synthetic_noisy',
+                                      np.full(3,e.cfg.profile.spread_at(int(e.ff[0]),int(e.mo[0]))))
         return self.reports[b]
 
     def geometry(self,h,d,entry):
@@ -115,8 +126,11 @@ class World:
                             2*f.commission_per_lot_side/f.lot_units,f.limit_through)
 
     def candidate_bids(self,b):
-        if b not in self.bids:
-            r=self.report(b);rows=[];entry_bar=b+1
+        r=self.report(b)
+        validate_context(r,int(self.env.v[b])+HOUR,int(self.env.ff[0]))
+        key=(b,report_identity(r))
+        if key not in self.bids:
+            rows=[];entry_bar=b+1
             times=r.first_fill+np.arange(r.paths.shape[1])*HOUR
             for h in HORIZONS:
                 for d in (1,-1):
@@ -131,8 +145,8 @@ class World:
                     duration=expected_duration(p,r,j+1)
                     rows.append(dict(horizon=h,direction=d,gain_risk=float(means[j])/p.risk,
                         uncertainty_risk=uncertainty/p.risk,duration=duration))
-            self.bids[b]=rows
-        return self.bids[b]
+            self.bids[key]=rows
+        return self.bids[key]
 
     def past_efficiency(self,b):
         x=np.diff(self.env.c[max(0,b-6):b+1]);den=float(np.abs(x).sum())
@@ -154,13 +168,16 @@ class World:
         return build
 
     def close_values(self,e,h,b):
-        p=e.pos;key=(h,p.direction,p.entry_bar,b)
+        if e.cfg!=self.env.cfg: raise ValueError('CACHE_EXECUTION_CONFIG')
+        p=e.pos;r=self.report(b)
+        validate_context(r,int(e.v[b])+HOUR,int(e.ff[p.seg]))
+        unit=self.position(h,p.direction,p.entry_price,p.entry_bar)
+        if (unit.sl,unit.tp)!=(p.sl,p.tp): raise AssertionError('CACHE_GEOMETRY')
+        times=r.first_fill+np.arange(r.paths.shape[1])*HOUR
+        fo=self.funding(int(e.v[p.entry_bar]),p.direction,times)
+        fe=self.funding(int(e.v[p.entry_bar]),p.direction,times+HOUR)
+        key=(unit,report_identity(r),fo.tobytes(),fe.tobytes())
         if key not in self.cache:
-            r=self.report(b);unit=self.position(h,p.direction,p.entry_price,p.entry_bar)
-            if (unit.sl,unit.tp)!=(p.sl,p.tp): raise AssertionError('CACHE_GEOMETRY')
-            times=r.first_fill+np.arange(r.paths.shape[1])*HOUR
-            fo=self.funding(int(e.v[p.entry_bar]),p.direction,times)
-            fe=self.funding(int(e.v[p.entry_bar]),p.direction,times+HOUR)
             self.cache[key]=(unit,value_paths(unit,r,fo,fe),fo,fe)
             if len(self.cache)>512: self.cache.popitem(last=False)
         self.cache.move_to_end(key)
@@ -177,11 +194,12 @@ class World:
                 occupied+=1
                 if b+1<self.end:
                     unit,values,fo,fe=self.close_values(e,horizon,b);r=self.report(b)
-                    result=controller.decide_synthetic_values(unit.identity,int(r.issued_at),HOUR,
-                                                              values,r.weights,unit.risk)
+                    clock=int(e.v[b])+HOUR;deadline=int(e.ff[e.pos.seg])
+                    result=controller.decide_synthetic_values(unit.identity,clock,HOUR,
+                        values,r.weights,unit.risk,report=r,expected_deadline=deadline)
                     if verify:
                         actual=replace(unit,units=e.pos.units,risk=unit.risk*e.pos.units)
-                        other=direct.decide(actual,r,int(r.issued_at),fo,fe)
+                        other=direct.decide(actual,r,clock,fo,fe,expected_deadline=deadline)
                         max_error=max(max_error,abs(other['advantage_risk']-result['advantage_risk']))
                         if other['action']!=result['action'] or max_error>1e-10:
                             raise AssertionError('CACHE_DIRECT_PARITY')
