@@ -2,13 +2,20 @@
 
 ## Priority override: 2026-10-29
 
+Running: [crossed panel queue141](141_CROSSED_PANEL_EXECUTION.md), under
+[plan140](140_CROSSED_PANEL_AUTOMATION_PLAN.md), code e889a2d4.162 tests and the
+complete smoke/restart passed. Automatic chain:35 frozen-control jobs ->
+20x300x3 DEAP -> frozen five-quality confirmation and fixed-size diagnostics.
+Four bounded CPU shards per candidate; no GPU or financial training. Smoke and
+scientific seed banks are disjoint. Check the service and run STATE for live status.
+
 Latest: [external audit disposition and repairs139](139_EXTERNAL_AUDIT_REPAIR_RESULTS.md)
 under [repair and successor-panel plan138](138_EXTERNAL_AUDIT_REPAIR_PLAN.md).
 Satoshi's three verdicts and Retsu's review are received. Five concrete defects
 are repaired;148 enumerated tests pass and288 patched native account replays
 exactly preserve the predecessor. Broader scenario coverage is not qualified:
-next is the crossed cost/volatility and report-quality panel with frozen controls,
-not financial training or floating selection. No new optimization is running.
+the crossed cost/volatility and report-quality panel with frozen controls now runs
+under141, before financial training or floating selection.
 [Return to Satoshi](../handoffs/MUSASHI_AUDIT_REPAIRS_TO_SATOSHI_2026_10_29.md).
 The historical milestones below retain their original scope;139 governs current
 interpretation and explicitly corrects the oracle, pairing and spread limitations.

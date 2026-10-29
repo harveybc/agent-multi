@@ -63,3 +63,11 @@ AR03,Independent calendar,tests/unit/test_external_audit_repairs.py,Self-consist
 AR04,Independent clock,tests/unit/test_dynamic_account_panel.py,Stale reports rejected on entry and close including cache and verified full runs,BEFORE_PHASE2,PASS
 AR05,Full cache identity,tests/unit/test_dynamic_account_panel.py,Changed geometry rejected and changed reports costs or funding cannot reuse wrong key,BEFORE_PHASE2,PASS
 AR06,Historical result preservation,docs/audits/evidence/external_audit_repairs_20261029/REPAIR_VERIFICATION.json,288 exact repaired accounts with148 enumerated passing tests,BEFORE_PHASE2,PASS_PREDECESSOR_PANEL_ONLY
+CP01,Crossed independent bank design,tests/unit/test_crossed_account_panel.py,Thirty independent draws and360 paired cells with disjoint smoke and scientific banks,BEFORE_PHASE2,PASS
+CP02,Price cost quality isolation,tests/unit/test_crossed_account_panel.py,Spread and report quality do not change prices and mirrors transform OHLC exactly,BEFORE_PHASE2,PASS
+CP03,Non-antithetic report errors,tests/unit/test_crossed_account_panel.py,Independent draws differ and costs share paired report errors without exact mean truth,BEFORE_PHASE2,PASS
+CP04,Report clocks and path contracts,tests/unit/test_crossed_account_panel.py,All five rungs pass clock OHLC spread and native accounting checks,BEFORE_PHASE2,PASS
+CP05,Missing report handling,tests/unit/test_crossed_account_panel.py,Unavailable reports prevent entries while native steps still execute,BEFORE_PHASE2,PASS
+CP06,Forced-position boundary behavior,tests/unit/test_dynamic_account_panel.py,Gap preemption and SL TP deadline witnesses in both directions,BEFORE_PHASE2,PASS
+CP07,Exact parallel native execution,tests/unit/test_crossed_account_panel.py,Two persistent shards equal serial full-ledger accounts and cached repeats,BEFORE_PHASE2,PASS
+CP08,Authenticated sequential queue,docs/audits/evidence/crossed_account_queue_20261029/SMOKE_COMPLETE.json,Full smoke and complete-run re-entry with no new evaluations,BEFORE_PHASE2,PASS_SMOKE_FULL_QUEUE_RUNNING
