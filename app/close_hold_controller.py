@@ -131,21 +131,40 @@ class CloseController:
         if self.position_id==p.identity and self.last_tick is not None and decision_time<=self.last_tick:
             raise ValueError('DUPLICATE_OR_REVERSED_TICK')
         values=value_paths(p,r,opening_funding,ending_funding)
+        return self._decide_values(p.identity,decision_time,r.step,values,r.weights,p.risk,r.provenance)
+
+    def decide_synthetic_values(self,identity,decision_time,step,values,weights,risk):
+        """Test-plane cache adapter; never available to a causal/live consumer."""
+        if not self.allow_synthetic:
+            raise ValueError('SYNTHETIC_CACHE_FORBIDDEN')
+        values=np.asarray(values,float); weights=np.asarray(weights,float)
+        if (not identity or type(step) is not int or step<=0 or type(decision_time) is not int
+                or values.ndim!=2 or values.shape[1]<2 or len(values)<1
+                or weights.shape!=(len(values),) or not np.isfinite(values).all()
+                or not np.isfinite(weights).all() or (weights<0).any()
+                or not np.isclose(weights.sum(),1,rtol=0,atol=1e-12)
+                or not math.isfinite(risk) or risk<=0):
+            raise ValueError('SYNTHETIC_CACHE_CONTRACT')
+        if self.position_id==identity and self.last_tick is not None and decision_time<=self.last_tick:
+            raise ValueError('DUPLICATE_OR_REVERSED_TICK')
+        return self._decide_values(identity,decision_time,step,values,weights,risk,'synthetic_noisy')
+
+    def _decide_values(self,identity,decision_time,step,values,weights,risk,provenance):
         # Each column is the SAME waiting action across all samples, not E(max).
         delta=values[:,[0]]-values[:,1:]
-        w=np.asarray(r.weights,float)
+        w=np.asarray(weights,float)
         mean=w@delta
         sd=np.sqrt(w@((delta-mean)**2))
-        advantage=float(np.min(mean-self.config.uncertainty_penalty*sd))/p.risk
-        contiguous=self.position_id==p.identity and self.last_tick is not None and decision_time==self.last_tick+r.step
+        advantage=float(np.min(mean-self.config.uncertainty_penalty*sd))/risk
+        contiguous=self.position_id==identity and self.last_tick is not None and decision_time==self.last_tick+step
         streak=self.streak if contiguous else 0
         qualifies=advantage>max(self.config.margin_risk,1e-12)
         self.streak=streak+1 if qualifies else 0
-        self.position_id=p.identity;self.last_tick=int(decision_time)
+        self.position_id=identity;self.last_tick=int(decision_time)
         urgent=qualifies and self.config.urgent_risk is not None and advantage>=self.config.urgent_risk
         close=qualifies and (urgent or self.streak>=self.config.persistence)
         return dict(action='CLOSE' if close else 'HOLD',advantage_risk=advantage,
                     expected_close_net=float(w@values[:,0]),
                     best_expected_wait_net=float(np.max(w@values[:,1:])),
                     qualifies=qualifies,streak=self.streak,urgent=urgent,
-                    provenance=r.provenance)
+                    provenance=provenance)

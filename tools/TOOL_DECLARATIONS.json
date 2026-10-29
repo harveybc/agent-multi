@@ -2,6 +2,10 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "optimize_dynamic_account.py": {
+   "purpose": "Pinned sequential synthetic native-account NSGA-II with durable receipts, fixed confirmation, Pareto archive and finite on/off game diagnostics; no financial training",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "mechanism synthesis"
+  },
   "audit_close_hold_prefix_trace.py": {
    "purpose": "Read-only paired audit of late close requests from complete causal-prefix HOLD traces; no new backtest",
    "lifecycle": "experimental", "mutability": "read_only", "authority_class": "evidence_producer", "owner": "mechanism synthesis"

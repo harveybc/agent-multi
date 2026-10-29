@@ -1,0 +1,314 @@
+{
+  "identity": "9becdd6030785b440659552a54cc148b2d1e3033fff6ad73ae59662290b91aba",
+  "keys": [
+    "52c06cea29c973fc4ead486b1480c91672172be058043fccc33f16220dffdd17",
+    "d460919bce369b1d5164b5ebe2f09b22c5b2a6b520abab50de7d7f240ae42296",
+    "4428b7a4378428295442b20b93c31d256c198c0c07fcf96b1b843f8629f9df01",
+    "fa3e699a0559fb8c52ca41f2f0ce0a184757b7fa6f8e30784799ec0f0a67bedb",
+    "ca17a25fcbb0bb72d4548febd5e52e0903fa09b9bb041857184cc4c85664bf4d",
+    "de38fcfd4e4bc4fa173cfcbada527f04d2b71dee420c3c4a41fba6aa3a32bcc5",
+    "f66a968a8796d2913c54f4d3d665a86b98c9af18281cbb7e88321a5416e1a280",
+    "3c59ecdb1b7c3abd47166c06ec3103d7a0ef866ce14a191a2bcb70bc621f3724",
+    "473c0ced5d0f946eed462c409bce6a75818bc74d85823f812318b9bc991a0462",
+    "d809a0fc3d25c9f5dfef924d3814908b3bb3a244baded4f7c54bc6acb2e687fb"
+  ],
+  "representatives": [
+    "52c06cea29c973fc4ead486b1480c91672172be058043fccc33f16220dffdd17",
+    "4428b7a4378428295442b20b93c31d256c198c0c07fcf96b1b843f8629f9df01",
+    "ca17a25fcbb0bb72d4548febd5e52e0903fa09b9bb041857184cc4c85664bf4d",
+    "3c59ecdb1b7c3abd47166c06ec3103d7a0ef866ce14a191a2bcb70bc621f3724",
+    "d809a0fc3d25c9f5dfef924d3814908b3bb3a244baded4f7c54bc6acb2e687fb"
+  ],
+  "rows": [
+    {
+      "buy_wins": 23,
+      "buys": 25,
+      "early_closes": 28,
+      "eligible": true,
+      "genes": [
+        0.938,
+        0.985,
+        0.957,
+        0.281,
+        0.0,
+        0.006,
+        0.08,
+        0.007,
+        1.0,
+        0.0,
+        1
+      ],
+      "key": "52c06cea29c973fc4ead486b1480c91672172be058043fccc33f16220dffdd17",
+      "mean_orders": 4.5,
+      "objectives": [
+        2.5055198089626196,
+        -0.6525665263246885
+      ],
+      "orders": 54,
+      "sell_wins": 27,
+      "sells": 29,
+      "wins": 50
+    },
+    {
+      "buy_wins": 23,
+      "buys": 25,
+      "early_closes": 28,
+      "eligible": true,
+      "genes": [
+        1.0,
+        0.985,
+        0.957,
+        0.281,
+        0.0,
+        0.006,
+        0.08,
+        0.007,
+        1.0,
+        0.0,
+        1
+      ],
+      "key": "d460919bce369b1d5164b5ebe2f09b22c5b2a6b520abab50de7d7f240ae42296",
+      "mean_orders": 4.5,
+      "objectives": [
+        2.5055198089626196,
+        -0.6525665263246885
+      ],
+      "orders": 54,
+      "sell_wins": 27,
+      "sells": 29,
+      "wins": 50
+    },
+    {
+      "buy_wins": 21,
+      "buys": 21,
+      "early_closes": 24,
+      "eligible": true,
+      "genes": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        1
+      ],
+      "key": "4428b7a4378428295442b20b93c31d256c198c0c07fcf96b1b843f8629f9df01",
+      "mean_orders": 3.5833333333333335,
+      "objectives": [
+        2.198800932298702,
+        -0.6189914086616682
+      ],
+      "orders": 43,
+      "sell_wins": 22,
+      "sells": 22,
+      "wins": 43
+    },
+    {
+      "buy_wins": 21,
+      "buys": 21,
+      "early_closes": 24,
+      "eligible": true,
+      "genes": [
+        1.0,
+        0.982,
+        1.0,
+        0.99,
+        0.0,
+        0.002,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        1
+      ],
+      "key": "fa3e699a0559fb8c52ca41f2f0ce0a184757b7fa6f8e30784799ec0f0a67bedb",
+      "mean_orders": 3.5833333333333335,
+      "objectives": [
+        2.198800932298702,
+        -0.6189914086616682
+      ],
+      "orders": 43,
+      "sell_wins": 22,
+      "sells": 22,
+      "wins": 43
+    },
+    {
+      "buy_wins": 21,
+      "buys": 21,
+      "early_closes": 18,
+      "eligible": true,
+      "genes": [
+        1.918,
+        1.458,
+        1.371,
+        1.331,
+        -0.424,
+        0.108,
+        0.166,
+        0.78,
+        0.906,
+        0.012,
+        2
+      ],
+      "key": "ca17a25fcbb0bb72d4548febd5e52e0903fa09b9bb041857184cc4c85664bf4d",
+      "mean_orders": 3.5833333333333335,
+      "objectives": [
+        1.8386729296444564,
+        -0.5678762669435458
+      ],
+      "orders": 43,
+      "sell_wins": 20,
+      "sells": 22,
+      "wins": 41
+    },
+    {
+      "buy_wins": 27,
+      "buys": 28,
+      "early_closes": 25,
+      "eligible": true,
+      "genes": [
+        1.405,
+        0.398,
+        0.392,
+        0.392,
+        0.381,
+        0.154,
+        0.768,
+        0.131,
+        0.488,
+        0.078,
+        2
+      ],
+      "key": "de38fcfd4e4bc4fa173cfcbada527f04d2b71dee420c3c4a41fba6aa3a32bcc5",
+      "mean_orders": 4.666666666666667,
+      "objectives": [
+        1.176679435367008,
+        -0.30689806811347203
+      ],
+      "orders": 56,
+      "sell_wins": 26,
+      "sells": 28,
+      "wins": 53
+    },
+    {
+      "buy_wins": 25,
+      "buys": 28,
+      "early_closes": 20,
+      "eligible": true,
+      "genes": [
+        1.405,
+        0.284,
+        1.141,
+        0.457,
+        -0.413,
+        0.155,
+        0.768,
+        0.124,
+        0.436,
+        0.054,
+        3
+      ],
+      "key": "f66a968a8796d2913c54f4d3d665a86b98c9af18281cbb7e88321a5416e1a280",
+      "mean_orders": 4.333333333333333,
+      "objectives": [
+        0.9623322528253486,
+        -0.27431648012698356
+      ],
+      "orders": 52,
+      "sell_wins": 23,
+      "sells": 24,
+      "wins": 48
+    },
+    {
+      "buy_wins": 26,
+      "buys": 27,
+      "early_closes": 23,
+      "eligible": true,
+      "genes": [
+        1.987,
+        1.075,
+        0.961,
+        0.295,
+        0.013,
+        0.096,
+        0.259,
+        0.779,
+        0.371,
+        0.005,
+        2
+      ],
+      "key": "3c59ecdb1b7c3abd47166c06ec3103d7a0ef866ce14a191a2bcb70bc621f3724",
+      "mean_orders": 4.333333333333333,
+      "objectives": [
+        0.8732767527253159,
+        -0.24256450708602645
+      ],
+      "orders": 52,
+      "sell_wins": 24,
+      "sells": 25,
+      "wins": 50
+    },
+    {
+      "buy_wins": 18,
+      "buys": 19,
+      "early_closes": 19,
+      "eligible": true,
+      "genes": [
+        0.948,
+        0.497,
+        1.03,
+        0.359,
+        0.194,
+        0.418,
+        0.896,
+        0.34,
+        0.289,
+        0.151,
+        1
+      ],
+      "key": "473c0ced5d0f946eed462c409bce6a75818bc74d85823f812318b9bc991a0462",
+      "mean_orders": 3.5,
+      "objectives": [
+        0.6332740081108438,
+        -0.18204035320575093
+      ],
+      "orders": 42,
+      "sell_wins": 23,
+      "sells": 23,
+      "wins": 41
+    },
+    {
+      "buy_wins": 21,
+      "buys": 21,
+      "early_closes": 21,
+      "eligible": true,
+      "genes": [
+        0.948,
+        0.431,
+        1.36,
+        0.359,
+        -0.433,
+        0.418,
+        0.162,
+        0.34,
+        0.289,
+        0.0,
+        1
+      ],
+      "key": "d809a0fc3d25c9f5dfef924d3814908b3bb3a244baded4f7c54bc6acb2e687fb",
+      "mean_orders": 3.4166666666666665,
+      "objectives": [
+        0.6305687300295589,
+        -0.11376166051449402
+      ],
+      "orders": 41,
+      "sell_wins": 20,
+      "sells": 20,
+      "wins": 41
+    }
+  ]
+}
