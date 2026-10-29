@@ -2,6 +2,13 @@
 
 ## Priority override: 2026-10-28
 
+Completed: [shared configurable risk rules and engineering verification](128_SHARED_RISK_RULES_RESULTS.md)
+under [plan 127](127_SHARED_RISK_RULES_PLAN.md). 3,456 proposals, 17,280
+protection witnesses, 18 additional controls, 70 tests and exact JSON replay.
+[Satoshi handoff: complete process, parameters, findings and evidence](../handoffs/MUSASHI_TO_SATOSHI_SHARED_ZIGZAG_RISK_2026_10_28.md).
+Next: absolute-level execution and early-close integration; no account-level
+coefficient optimum or full strategy qualification is claimed.
+
 Completed: [TRAIN SL/TP reference profiles and bounded volume](126_ZIGZAG_RISK_PROFILE_RESULTS.md),
 following [the risk-profile test plan](125_ZIGZAG_RISK_PROFILE_PLAN.md).
 134,916 directional paths reconstructed exactly; deterministic replay;

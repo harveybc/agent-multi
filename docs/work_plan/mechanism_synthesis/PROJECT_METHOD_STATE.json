@@ -3,7 +3,11 @@
   "date": "2026-10-28",
   "timezone": "America/Bogota",
   "priority": 0,
-  "current_stage": "TRAIN_ZIGZAG_RISK_REFERENCES_COMPLETE",
+  "current_stage": "SHARED_HORIZON_ORDER_CONSTRUCTION_VERIFIED",
+  "shared_risk_rules_plan": "../127_SHARED_RISK_RULES_PLAN.md",
+  "shared_risk_rules_results": "../128_SHARED_RISK_RULES_RESULTS.md",
+  "satoshi_shared_handoff": "../../handoffs/MUSASHI_TO_SATOSHI_SHARED_ZIGZAG_RISK_2026_10_28.md",
+  "shared_risk_verification": {"proposals": 3456, "protection_witnesses": 17280, "additional_controls": 18, "focused_tests_passed": 70, "json_replay_exact": true, "account_optimization": false},
   "risk_profile_plan": "../125_ZIGZAG_RISK_PROFILE_PLAN.md",
   "risk_profile_results": "../126_ZIGZAG_RISK_PROFILE_RESULTS.md",
   "risk_profile_verification": {"paths": 134916, "max_abs_error": 0.0, "focused_tests_passed": 47, "deterministic_replay": true},
@@ -47,7 +51,7 @@
     "35 focused pytest cases passed: exact games, Pareto, deviations, redundancy, Shapley counterexample and subprocess replay",
     "../../audits/evidence/mechanism_design_20261028/M0_EXACT_REPORT.json"
   ],
-  "implementation_scope": "M0 exact arithmetic and bounded reproduction only; no production signal schema or native trading qualification",
+  "implementation_scope": "M0 exact games plus TRAIN oracle references and configurable order geometry/sizing; native protection primitives verified, no full account or early-close qualification",
   "top_down": {
     "discovery": "DOCUMENTED",
     "requirements_and_use_cases": "PROPOSED",
@@ -58,8 +62,9 @@
   },
   "bottom_up": "M0_EXACT_CORE_VERIFIED; HIGHER_LAYERS_NOT_QUALIFIED",
   "next_allowed_actions": [
-    "Construct joint per-horizon SL/TP candidate rules from completed TRAIN references; declare buffer and broker rounding rather than converting MAE directly into a stop",
-    "Compare explicit monetary risk-budget candidates with native loss-at-SL and lot conversion; no automatic size premium for longer horizons",
+    "Qualify absolute-level execution interface with next-open revalidation and calendar gating; do not silently pass new rules through legacy multiplier and effectiveness caps",
+    "Use shared configurable level and size rules with c=1, explicit costs and funding reserve; calibrate uncertainty reduction only as a separate contrast",
+    "After full strategy qualification compare account objectives and optimize per-horizon coefficients with population20/gen300; current numerical controls are not optima",
     "Resolve and test position-dependent close report semantics before native M1 strategy execution",
     "Implement independent oracle-validity and signal/business contract validation with non-vacuous coverage",
     "Extend paired scenario and policy-library design including persistence and false/true cross-scale reversals",
@@ -70,7 +75,7 @@
     "Model-specific sequential floating selection",
     "Promotion of synthetic-oracle results as learned-model evidence"
   ],
-  "operations": "K=3 optimization and risk-reference profiles complete; 134916 paths reconstructed, deterministic report replay and 47 focused tests passed; no active jobs",
+  "operations": "Shared risk references, configurable controls, synthetic native sizing/protection matrix and replay completed; 70 focused tests passed; no active jobs or financial training",
   "history": [
     {"date": "2026-10-28", "event": "User prioritizes mechanism synthesis and requests detailed implementation proposal plus Satoshi audit"},
     {"date": "2026-10-28", "event": "Owner clarifies daily openings: three or more allowed, no strategy daily cap; contract recorded without runtime change"},

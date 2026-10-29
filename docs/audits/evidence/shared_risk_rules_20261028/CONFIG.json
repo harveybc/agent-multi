@@ -1,0 +1,263 @@
+{
+  "account_currency": "USD",
+  "axes": {
+    "a_sl": [
+      0.75,
+      1.25
+    ],
+    "a_tp": [
+      0.75,
+      1.25
+    ],
+    "buffer_pips": [
+      0.5,
+      2
+    ],
+    "reference": [
+      "median",
+      "p75"
+    ],
+    "rho": [
+      0.001,
+      0.005,
+      0.01
+    ],
+    "sigma_pips": [
+      5,
+      15,
+      30
+    ],
+    "spread_pips": [
+      0.5,
+      2,
+      5
+    ]
+  },
+  "baseline": {
+    "a_sl": 1.0,
+    "a_tp": 1.0,
+    "b_sl": 0.0,
+    "b_tp": 0.0,
+    "buffer_pips": 1.0,
+    "rho": 0.005
+  },
+  "baseline_reference": "median",
+  "baseline_rho_status": "simulation control only, not a selected risk budget",
+  "future_deap": {
+    "generations": 300,
+    "population": 20,
+    "status": "after full mechanism qualification"
+  },
+  "instrument": "EURUSD",
+  "leverage": 50,
+  "probe_fixed": {
+    "b_sl": 0.25,
+    "b_tp": 0.1,
+    "quality": 1.0
+  },
+  "proposed_search_bounds": {
+    "a_sl": [
+      0.5,
+      2
+    ],
+    "a_tp": [
+      0.5,
+      2
+    ],
+    "b_sl": [
+      0,
+      1
+    ],
+    "b_tp": [
+      0,
+      1
+    ],
+    "buffer_pips": [
+      0,
+      5
+    ],
+    "rho": [
+      0.001,
+      0.01
+    ]
+  },
+  "quality": 1.0,
+  "rel_volume": 0.1,
+  "rows": [
+    {
+      "direction": "buy",
+      "horizon": 3,
+      "n": 15033,
+      "reference": {
+        "median": {
+          "mae_pips": 7.399999999999629,
+          "tp_pips": 20.000000000000018
+        },
+        "p75": {
+          "mae_pips": 15.099999999999003,
+          "tp_pips": 35.89999999999982
+        }
+      },
+      "zigzag": {
+        "backstep": 1,
+        "depth": 3,
+        "deviation_pips": 5.0
+      }
+    },
+    {
+      "direction": "sell",
+      "horizon": 3,
+      "n": 15053,
+      "reference": {
+        "median": {
+          "mae_pips": 7.700000000000484,
+          "tp_pips": 19.600000000000726
+        },
+        "p75": {
+          "mae_pips": 15.999999999998238,
+          "tp_pips": 35.30000000000033
+        }
+      },
+      "zigzag": {
+        "backstep": 1,
+        "depth": 3,
+        "deviation_pips": 5.0
+      }
+    },
+    {
+      "direction": "buy",
+      "horizon": 6,
+      "n": 14946,
+      "reference": {
+        "median": {
+          "mae_pips": 8.500000000000174,
+          "tp_pips": 23.999999999999577
+        },
+        "p75": {
+          "mae_pips": 17.499999999999183,
+          "tp_pips": 43.10000000000036
+        }
+      },
+      "zigzag": {
+        "backstep": 2,
+        "depth": 4,
+        "deviation_pips": 5.0
+      }
+    },
+    {
+      "direction": "sell",
+      "horizon": 6,
+      "n": 14845,
+      "reference": {
+        "median": {
+          "mae_pips": 8.900000000000574,
+          "tp_pips": 23.400000000000087
+        },
+        "p75": {
+          "mae_pips": 18.400000000000638,
+          "tp_pips": 42.40000000000021
+        }
+      },
+      "zigzag": {
+        "backstep": 2,
+        "depth": 4,
+        "deviation_pips": 5.0
+      }
+    },
+    {
+      "direction": "buy",
+      "horizon": 12,
+      "n": 12932,
+      "reference": {
+        "median": {
+          "mae_pips": 11.900000000000244,
+          "tp_pips": 35.30000000000033
+        },
+        "p75": {
+          "mae_pips": 24.42500000000125,
+          "tp_pips": 62.59999999999932
+        }
+      },
+      "zigzag": {
+        "backstep": 6,
+        "depth": 7,
+        "deviation_pips": 25.0
+      }
+    },
+    {
+      "direction": "sell",
+      "horizon": 12,
+      "n": 13191,
+      "reference": {
+        "median": {
+          "mae_pips": 12.700000000001044,
+          "tp_pips": 35.800000000000274
+        },
+        "p75": {
+          "mae_pips": 25.800000000000267,
+          "tp_pips": 62.300000000001795
+        }
+      },
+      "zigzag": {
+        "backstep": 6,
+        "depth": 7,
+        "deviation_pips": 25.0
+      }
+    },
+    {
+      "direction": "buy",
+      "horizon": 24,
+      "n": 10284,
+      "reference": {
+        "median": {
+          "mae_pips": 16.00000000000046,
+          "tp_pips": 42.10000000000047
+        },
+        "p75": {
+          "mae_pips": 30.799999999999716,
+          "tp_pips": 71.20000000000014
+        }
+      },
+      "zigzag": {
+        "backstep": 11,
+        "depth": 12,
+        "deviation_pips": 25.0
+      }
+    },
+    {
+      "direction": "sell",
+      "horizon": 24,
+      "n": 10765,
+      "reference": {
+        "median": {
+          "mae_pips": 16.199999999999548,
+          "tp_pips": 43.10000000000036
+        },
+        "p75": {
+          "mae_pips": 31.30000000000077,
+          "tp_pips": 69.79999999999986
+        }
+      },
+      "zigzag": {
+        "backstep": 11,
+        "depth": 12,
+        "deviation_pips": 25.0
+      }
+    }
+  ],
+  "schema": "shared_horizon_risk_controls.v1",
+  "source_profile_sha256": "aa2cb1f8f524db4091f8d3cd3b86b7b0f31af6f2ff71bb5a974f49e9d33d9d96",
+  "source_run_identity": "d54d51768a5ac257b7428a8e7afc8fb61bd467009dea77e8224a64c9ee824a9e",
+  "status": "ENGINEERING_CONTROLS_NOT_OPTIMIZED",
+  "synthetic_execution": {
+    "balance": 10000.0,
+    "commission_per_lot_side": 3.5,
+    "funding_reserve_per_unit": 0.0,
+    "lot_units": 100000.0,
+    "min_distance": 5e-05,
+    "slippage_market": 2e-05,
+    "slippage_stop": 5e-05,
+    "status": "ASSUMED_SYNTHETIC_NOT_BROKER_VERIFIED",
+    "tick": 1e-05
+  }
+}

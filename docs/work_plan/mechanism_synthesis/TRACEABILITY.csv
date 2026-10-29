@@ -31,3 +31,9 @@ RP01,Authenticated immutable TRAIN profiles,tools/zigzag_risk_profiles.py and re
 RP02,MAE versus drawdown and calendar support,tests/unit/test_zigzag_risk_profiles.py,Known mirrored paths boundary censoring empty support and corrupted records,BEFORE_PHASE2,PASSED
 RP03,Normalized volume without double scaling,tests/unit/test_zigzag_risk_profiles.py,Common q times rel_volume times balance and explicit linear loss budget,BEFORE_PHASE2,PASSED_HELPER_NOT_NATIVE_ADAPTER
 RP04,Report reproducibility,docs/audits/evidence/zigzag_risk_profiles_20261028/PROFILES.json,Two independent full report executions same digest,BEFORE_PHASE2,PASS
+RR01,Shared reference identity and numerical config,tests/unit/test_horizon_risk_rules.py plus CONFIG.json,JSON rejects reference and business mutations,BEFORE_PHASE2,PASS
+RR02,SL TP coefficients affect actual levels,tests/unit/test_horizon_risk_rules.py,Every geometry gene changes its named output with conservative tick rounding,BEFORE_PHASE2,PASS
+RR03,Native margin and modeled stop risk,tools/verify_horizon_risk_rules.py,3456 synthetic proposals respect both caps with rel_volume once,BEFORE_PHASE2,PASS_NOT_ACCOUNT_OPTIMIZATION
+RR04,Mirrored native protection behavior,docs/audits/evidence/shared_risk_rules_20261028/REPORT.json,17280 known-outcome fixtures and 18 rejection funding gap controls,BEFORE_PHASE2,PASS_PRIMITIVES_ONLY
+RR05,Serialized configuration replay,tests/unit/test_horizon_risk_rules.py and final replay,Canonical axis ordering reproduces config cases report bytes,BEFORE_PHASE2,PASS
+RR06,Cross-lane findings handoff,docs/handoffs/MUSASHI_TO_SATOSHI_SHARED_ZIGZAG_RISK_2026_10_28.md,Parameters process results and old adapter caps explicitly documented,BEFORE_PHASE2,DELIVERED
