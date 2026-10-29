@@ -2,6 +2,10 @@
 
 ## Priority override: 2026-10-28
 
+Current extension: [40 versus 300 generations](116_ZIGZAG_300_GENERATION_CONTRAST.md),
+same population 30, seeds and objective. Automatic search, scalar audit and
+paired comparison; original results stay unchanged.
+
 Immediate owner-authorized subplan: [TRAIN ZigZag opportunity optimization](114_TRAIN_ZIGZAG_OPPORTUNITY_OPTIMIZATION.md),
 3/6/12/24 hours, sequential DEAP, population 30 and 40 generations per seed.
 This precedes risk-profile design, strategy qualification and phase 2 floating

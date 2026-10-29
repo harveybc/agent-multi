@@ -3,7 +3,10 @@
   "date": "2026-10-28",
   "timezone": "America/Bogota",
   "priority": 0,
-  "current_stage": "TRAIN_ZIGZAG_OPPORTUNITY_DEAP_COMPLETE_PROFILE_DISCUSSION_NEXT",
+  "current_stage": "TRAIN_ZIGZAG_300_GENERATION_PAIRED_EXTENSION_RUNNING",
+  "zigzag_extension_plan": "../116_ZIGZAG_300_GENERATION_CONTRAST.md",
+  "zigzag_extension_identity": "e11b753e8812aced7d6ea70f77cda458247f34cdac79f3dfb9bf0aa38260f9e6",
+  "zigzag_extension_budget": {"population": 30, "generations": 300, "seeds": [7, 19, 43]},
   "zigzag_subplan": "../114_TRAIN_ZIGZAG_OPPORTUNITY_OPTIMIZATION.md",
   "zigzag_horizons_hours": [3, 6, 12, 24],
   "zigzag_budget": {"population": 30, "generations": 40, "seeds": [7, 19, 43]},
@@ -39,7 +42,7 @@
   },
   "bottom_up": "M0_EXACT_CORE_VERIFIED; HIGHER_LAYERS_NOT_QUALIFIED",
   "next_allowed_actions": [
-    "Discuss measured ZigZag results: neutral deviation and lower-band durations before deriving SL/TP/volume profiles",
+    "Complete the owner-authorized 300-generation extension, audit and compare against the preserved 40-generation baseline",
     "Resolve and test position-dependent close report semantics before native M1 strategy execution",
     "Implement independent oracle-validity and signal/business contract validation with non-vacuous coverage",
     "Extend paired scenario and policy-library design including persistence and false/true cross-scale reversals",
@@ -50,7 +53,7 @@
     "Model-specific sequential floating selection",
     "Promotion of synthetic-oracle results as learned-model evidence"
   ],
-  "operations": "Sequential CPU-only ZigZag search and scalar audit completed; no active job in this subplan",
+  "operations": "Sequential CPU-only 300-generation extension, scalar audit and paired comparison; no GPU or model training",
   "history": [
     {"date": "2026-10-28", "event": "User prioritizes mechanism synthesis and requests detailed implementation proposal plus Satoshi audit"},
     {"date": "2026-10-28", "event": "Owner clarifies daily openings: three or more allowed, no strategy daily cap; contract recorded without runtime change"},

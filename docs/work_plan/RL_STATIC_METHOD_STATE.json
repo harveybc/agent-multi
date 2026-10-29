@@ -1,14 +1,15 @@
 {
   "schema": "rl_static_engineering_state.v1",
   "updated_on": "2026-10-28",
-  "current_stage": "PRIORITY_0_TRAIN_ZIGZAG_DEAP_COMPLETE_PROFILE_DISCUSSION_NEXT",
-  "latest_review": "115_TRAIN_ZIGZAG_DEAP_RESULTS.md",
+  "current_stage": "PRIORITY_0_ZIGZAG_300_GENERATION_PAIRED_EXTENSION",
+  "latest_review": "116_ZIGZAG_300_GENERATION_CONTRAST.md",
   "zigzag_subplan": {
-    "state": "COMPLETE_12_OF_12_SCALAR_AUDIT_PASS",
+    "state": "BASELINE_COMPLETE; 300_GENERATION_EXTENSION_RUNNING",
     "results": "115_TRAIN_ZIGZAG_DEAP_RESULTS.md",
     "horizons_hours": [3, 6, 12, 24],
     "population": 30,
-    "generations": 40,
+    "generations": 300,
+    "baseline_generations": 40,
     "seeds": [7, 19, 43],
     "scope": "RETROSPECTIVE_TRAIN_OPPORTUNITIES_NOT_RL_PERFORMANCE"
   },
