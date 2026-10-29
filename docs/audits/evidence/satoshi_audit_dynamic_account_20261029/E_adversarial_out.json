@@ -1,0 +1,49 @@
+{
+ "full_route_current": [
+  "ACCEPTED",
+  "HOLD"
+ ],
+ "full_route_stale_report_at_env_clock": [
+  "REFUSED",
+  "STALE_OR_FUTURE_REPORT"
+ ],
+ "full_route_stale_report_at_report_clock(panel_convention)": [
+  "ACCEPTED",
+  "HOLD"
+ ],
+ "full_route_future_report_at_env_clock": [
+  "REFUSED",
+  "STALE_OR_FUTURE_REPORT"
+ ],
+ "cache_adapter_stale_values_at_env_clock": [
+  "ACCEPTED",
+  "HOLD"
+ ],
+ "cache_adapter_forbidden_for_causal": [
+  "REFUSED",
+  "SYNTHETIC_CACHE_FORBIDDEN"
+ ],
+ "full_route_synthetic_report_forbidden_for_causal": [
+  "REFUSED",
+  "ORACLE_PLANE_FORBIDDEN"
+ ],
+ "F10_truncated_report_accepted": [
+  "ACCEPTED",
+  "HOLD"
+ ],
+ "cache_hit_changed_entry_served_stale": true,
+ "cache_miss_changed_entry": [
+  "REFUSED",
+  "CACHE_GEOMETRY"
+ ],
+ "changed_profile_changes_values": true,
+ "changed_side_changes_values": true,
+ "changed_funding_changes_values": true,
+ "panel_with_stale_reports_verify_true": [
+  "ACCEPTED",
+  1.8810392458384229
+ ],
+ "panel_true": 1.7950627842073352,
+ "label_mutation_pattern_volatility_trace_equal": true,
+ "label_mutation_mirror_trace_equal": false
+}

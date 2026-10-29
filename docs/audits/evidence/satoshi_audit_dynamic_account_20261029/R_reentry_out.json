@@ -1,0 +1,553 @@
+{
+ "totals": {
+  "trades": 1173,
+  "gap1": 806
+ },
+ "entries_on_bar107": [
+  {
+   "policy": "P4",
+   "split": "calibration",
+   "spec": {
+    "mirror": -1,
+    "pattern": "reversal",
+    "seed": 7,
+    "volatility": "increasing"
+   },
+   "entry": 107,
+   "exit": 107,
+   "reason": "FORCED_FLAT",
+   "net": 1.8244322888520266,
+   "horizon": 6,
+   "side": 1
+  },
+  {
+   "policy": "P5",
+   "split": "calibration",
+   "spec": {
+    "mirror": -1,
+    "pattern": "reversal",
+    "seed": 7,
+    "volatility": "increasing"
+   },
+   "entry": 107,
+   "exit": 107,
+   "reason": "FORCED_FLAT",
+   "net": 1.0324096822324789,
+   "horizon": 6,
+   "side": 1
+  }
+ ],
+ "per_policy": {
+  "P4|calibration": {
+   "counts": {
+    "first_of_week": 12,
+    "gap1|AGENT_CLOSE|opposite": 32,
+    "gap1|AGENT_CLOSE|same": 2,
+    "gap1|TP|opposite": 4,
+    "gap1|TP|same": 11,
+    "gap2-3|AGENT_CLOSE|same": 4,
+    "gap2-3|TP|same": 1,
+    "reentry_gap1": 49
+   },
+   "gap_hist": {
+    "1": 49,
+    "2": 5
+   },
+   "net_total_usd": 1448.0177815572142,
+   "net_trades_opened_gap1_after_early": 876.3415984918641,
+   "n_trades_gap1_after_early": 34,
+   "share_of_net_gap1_after_early": 0.6052008543358057,
+   "return_pts_gap1_after_early": 0.7302846654098868,
+   "net_after_early_any_gap": 879.3332050269499
+  },
+  "P4|confirmation": {
+   "counts": {
+    "first_of_week": 12,
+    "gap1|AGENT_CLOSE|opposite": 15,
+    "gap1|AGENT_CLOSE|same": 4,
+    "gap1|TP|opposite": 2,
+    "gap1|TP|same": 19,
+    "gap2-3|AGENT_CLOSE|same": 4,
+    "reentry_gap1": 40
+   },
+   "gap_hist": {
+    "1": 40,
+    "2": 4
+   },
+   "net_total_usd": 1473.6907290055706,
+   "net_trades_opened_gap1_after_early": 596.0989726582249,
+   "n_trades_gap1_after_early": 19,
+   "share_of_net_gap1_after_early": 0.40449394226729346,
+   "return_pts_gap1_after_early": 0.4967491438818541,
+   "net_after_early_any_gap": 589.0359340036347
+  },
+  "P1|calibration": {
+   "counts": {
+    "first_of_week": 12,
+    "gap1|AGENT_CLOSE|opposite": 25,
+    "gap1|TP|opposite": 8,
+    "gap1|TP|same": 10,
+    "gap2-3|AGENT_CLOSE|opposite": 6,
+    "gap2-3|AGENT_CLOSE|same": 2,
+    "gap2-3|TP|opposite": 1,
+    "gap2-3|TP|same": 1,
+    "gap4-10|TP|same": 3,
+    "reentry_gap1": 43
+   },
+   "gap_hist": {
+    "1": 43,
+    "2": 4,
+    "3": 6,
+    "5": 1,
+    "7": 2
+   },
+   "net_total_usd": 3740.2955052984107,
+   "net_trades_opened_gap1_after_early": 1638.578416408289,
+   "n_trades_gap1_after_early": 25,
+   "share_of_net_gap1_after_early": 0.43808795697749525,
+   "return_pts_gap1_after_early": 1.3654820136735741,
+   "net_after_early_any_gap": 1900.9013921552717
+  },
+  "P1|confirmation": {
+   "counts": {
+    "first_of_week": 12,
+    "gap1|AGENT_CLOSE|opposite": 15,
+    "gap1|TP|opposite": 5,
+    "gap1|TP|same": 16,
+    "gap2-3|AGENT_CLOSE|opposite": 1,
+    "gap2-3|TP|same": 3,
+    "gap4-10|TP|same": 2,
+    "reentry_gap1": 36
+   },
+   "gap_hist": {
+    "1": 36,
+    "2": 4,
+    "6": 2
+   },
+   "net_total_usd": 3613.835287878495,
+   "net_trades_opened_gap1_after_early": 1403.2233198925308,
+   "n_trades_gap1_after_early": 15,
+   "share_of_net_gap1_after_early": 0.3882919967601219,
+   "return_pts_gap1_after_early": 1.169352766577109,
+   "net_after_early_any_gap": 1466.499246237853
+  },
+  "P3|calibration": {
+   "counts": {
+    "first_of_week": 12,
+    "gap1|AGENT_CLOSE|opposite": 24,
+    "gap1|AGENT_CLOSE|same": 1,
+    "gap1|TP|opposite": 7,
+    "gap1|TP|same": 9,
+    "gap2-3|AGENT_CLOSE|opposite": 4,
+    "gap2-3|AGENT_CLOSE|same": 2,
+    "gap2-3|TP|opposite": 2,
+    "gap4-10|TP|same": 3,
+    "reentry_gap1": 41
+   },
+   "gap_hist": {
+    "1": 41,
+    "2": 6,
+    "3": 2,
+    "4": 1,
+    "7": 2
+   },
+   "net_total_usd": 2631.290675311162,
+   "net_trades_opened_gap1_after_early": 1226.6437596150506,
+   "n_trades_gap1_after_early": 25,
+   "share_of_net_gap1_after_early": 0.4661756951158558,
+   "return_pts_gap1_after_early": 1.0222031330125423,
+   "net_after_early_any_gap": 1403.1975051881088
+  },
+  "P3|confirmation": {
+   "counts": {
+    "first_of_week": 12,
+    "gap1|AGENT_CLOSE|opposite": 12,
+    "gap1|AGENT_CLOSE|same": 2,
+    "gap1|TP|opposite": 5,
+    "gap1|TP|same": 13,
+    "gap2-3|AGENT_CLOSE|opposite": 1,
+    "gap2-3|TP|same": 3,
+    "gap4-10|TP|same": 1,
+    "reentry_gap1": 32
+   },
+   "gap_hist": {
+    "1": 32,
+    "2": 4,
+    "9": 1
+   },
+   "net_total_usd": 2490.0650413578414,
+   "net_trades_opened_gap1_after_early": 870.8887609980138,
+   "n_trades_gap1_after_early": 14,
+   "share_of_net_gap1_after_early": 0.3497453867803851,
+   "return_pts_gap1_after_early": 0.7257406341650116,
+   "net_after_early_any_gap": 933.6564830817954
+  },
+  "P2|calibration": {
+   "counts": {
+    "first_of_week": 12,
+    "gap1|AGENT_CLOSE|opposite": 24,
+    "gap1|AGENT_CLOSE|same": 1,
+    "gap1|TP|opposite": 7,
+    "gap1|TP|same": 9,
+    "gap2-3|AGENT_CLOSE|opposite": 4,
+    "gap2-3|AGENT_CLOSE|same": 2,
+    "gap2-3|TP|opposite": 2,
+    "gap4-10|TP|same": 3,
+    "reentry_gap1": 41
+   },
+   "gap_hist": {
+    "1": 41,
+    "2": 6,
+    "3": 2,
+    "4": 1,
+    "7": 2
+   },
+   "net_total_usd": 3514.8445005883254,
+   "net_trades_opened_gap1_after_early": 1640.0672287139957,
+   "n_trades_gap1_after_early": 25,
+   "share_of_net_gap1_after_early": 0.4666116035686575,
+   "return_pts_gap1_after_early": 1.3667226905949965,
+   "net_after_early_any_gap": 1875.906014359742
+  },
+  "P2|confirmation": {
+   "counts": {
+    "first_of_week": 12,
+    "gap1|AGENT_CLOSE|opposite": 12,
+    "gap1|AGENT_CLOSE|same": 2,
+    "gap1|TP|opposite": 5,
+    "gap1|TP|same": 13,
+    "gap2-3|AGENT_CLOSE|opposite": 1,
+    "gap2-3|TP|same": 3,
+    "gap4-10|TP|same": 1,
+    "reentry_gap1": 32
+   },
+   "gap_hist": {
+    "1": 32,
+    "2": 4,
+    "9": 1
+   },
+   "net_total_usd": 3325.428608409469,
+   "net_trades_opened_gap1_after_early": 1164.6113301715436,
+   "n_trades_gap1_after_early": 14,
+   "share_of_net_gap1_after_early": 0.350213902420407,
+   "return_pts_gap1_after_early": 0.9705094418096197,
+   "net_after_early_any_gap": 1248.2367548740415
+  },
+  "P5|calibration": {
+   "counts": {
+    "first_of_week": 12,
+    "gap1|AGENT_CLOSE|opposite": 31,
+    "gap1|AGENT_CLOSE|same": 3,
+    "gap1|TP|opposite": 4,
+    "gap1|TP|same": 11,
+    "gap2-3|AGENT_CLOSE|same": 3,
+    "gap2-3|TP|same": 3,
+    "reentry_gap1": 49
+   },
+   "gap_hist": {
+    "1": 49,
+    "2": 5,
+    "3": 1
+   },
+   "net_total_usd": 825.2894518226689,
+   "net_trades_opened_gap1_after_early": 492.28614280621275,
+   "n_trades_gap1_after_early": 34,
+   "share_of_net_gap1_after_early": 0.5965011932710258,
+   "return_pts_gap1_after_early": 0.4102384523385106,
+   "net_after_early_any_gap": 492.44324711492663
+  },
+  "P5|confirmation": {
+   "counts": {
+    "first_of_week": 12,
+    "gap1|AGENT_CLOSE|opposite": 13,
+    "gap1|AGENT_CLOSE|same": 4,
+    "gap1|TP|opposite": 2,
+    "gap1|TP|same": 19,
+    "reentry_gap1": 38
+   },
+   "gap_hist": {
+    "1": 38
+   },
+   "net_total_usd": 844.8521749949222,
+   "net_trades_opened_gap1_after_early": 339.39941144995583,
+   "n_trades_gap1_after_early": 17,
+   "share_of_net_gap1_after_early": 0.4017263865740722,
+   "return_pts_gap1_after_early": 0.2828328428749632,
+   "net_after_early_any_gap": 339.39941144995583
+  },
+  "equal_guarded|calibration": {
+   "counts": {
+    "first_of_week": 12,
+    "gap1|AGENT_CLOSE|opposite": 7,
+    "gap1|SL|same": 1,
+    "gap1|TP|opposite": 7,
+    "gap1|TP|same": 3,
+    "gap2-3|AGENT_CLOSE|opposite": 1,
+    "gap2-3|TP|same": 1,
+    "reentry_gap1": 18
+   },
+   "gap_hist": {
+    "1": 18,
+    "2": 2
+   },
+   "net_total_usd": 1802.3461613703396,
+   "net_trades_opened_gap1_after_early": 308.6237276813291,
+   "n_trades_gap1_after_early": 7,
+   "share_of_net_gap1_after_early": 0.17123443559070795,
+   "return_pts_gap1_after_early": 0.25718643973444094,
+   "net_after_early_any_gap": 329.4698300005422
+  },
+  "equal_guarded|confirmation": {
+   "counts": {
+    "first_of_week": 12,
+    "gap1|AGENT_CLOSE|opposite": 6,
+    "gap1|TP|opposite": 4,
+    "gap1|TP|same": 14,
+    "reentry_gap1": 24
+   },
+   "gap_hist": {
+    "1": 24
+   },
+   "net_total_usd": 2582.2158403258927,
+   "net_trades_opened_gap1_after_early": 554.7483552784419,
+   "n_trades_gap1_after_early": 6,
+   "share_of_net_gap1_after_early": 0.21483423136635588,
+   "return_pts_gap1_after_early": 0.46229029606536826,
+   "net_after_early_any_gap": 554.7483552784419
+  },
+  "greedy|calibration": {
+   "counts": {
+    "first_of_week": 12,
+    "gap1|AGENT_CLOSE|opposite": 18,
+    "gap1|AGENT_CLOSE|same": 2,
+    "gap1|TP|opposite": 6,
+    "gap1|TP|same": 3,
+    "gap2-3|AGENT_CLOSE|same": 2,
+    "reentry_gap1": 29
+   },
+   "gap_hist": {
+    "1": 29,
+    "2": 2
+   },
+   "net_total_usd": 2638.5611187584423,
+   "net_trades_opened_gap1_after_early": 1068.450816571819,
+   "n_trades_gap1_after_early": 20,
+   "share_of_net_gap1_after_early": 0.40493692148187627,
+   "return_pts_gap1_after_early": 0.8903756804765157,
+   "net_after_early_any_gap": 1080.926994281736
+  },
+  "greedy|confirmation": {
+   "counts": {
+    "first_of_week": 12,
+    "gap1|AGENT_CLOSE|opposite": 5,
+    "gap1|AGENT_CLOSE|same": 2,
+    "gap1|TP|opposite": 5,
+    "gap1|TP|same": 12,
+    "gap2-3|AGENT_CLOSE|opposite": 2,
+    "gap2-3|AGENT_CLOSE|same": 2,
+    "reentry_gap1": 24
+   },
+   "gap_hist": {
+    "1": 24,
+    "2": 4
+   },
+   "net_total_usd": 2629.3335004743526,
+   "net_trades_opened_gap1_after_early": 493.3894817463488,
+   "n_trades_gap1_after_early": 7,
+   "share_of_net_gap1_after_early": 0.18764811753904076,
+   "return_pts_gap1_after_early": 0.41115790145529063,
+   "net_after_early_any_gap": 482.7774887820814
+  },
+  "nop|calibration": {
+   "counts": {},
+   "gap_hist": {},
+   "net_total_usd": 0.0,
+   "net_trades_opened_gap1_after_early": 0.0,
+   "n_trades_gap1_after_early": 0,
+   "share_of_net_gap1_after_early": null,
+   "return_pts_gap1_after_early": 0.0,
+   "net_after_early_any_gap": 0.0
+  },
+  "nop|confirmation": {
+   "counts": {},
+   "gap_hist": {},
+   "net_total_usd": 0.0,
+   "net_trades_opened_gap1_after_early": 0.0,
+   "n_trades_gap1_after_early": 0,
+   "share_of_net_gap1_after_early": null,
+   "return_pts_gap1_after_early": 0.0,
+   "net_after_early_any_gap": 0.0
+  },
+  "only_12|calibration": {
+   "counts": {
+    "first_of_week": 12,
+    "gap1|AGENT_CLOSE|opposite": 18,
+    "gap1|AGENT_CLOSE|same": 7,
+    "gap1|TP|opposite": 10,
+    "gap1|TP|same": 1,
+    "gap2-3|AGENT_CLOSE|same": 2,
+    "reentry_gap1": 36
+   },
+   "gap_hist": {
+    "1": 36,
+    "3": 2
+   },
+   "net_total_usd": 2458.094215182454,
+   "net_trades_opened_gap1_after_early": 1320.8515058720375,
+   "n_trades_gap1_after_early": 25,
+   "share_of_net_gap1_after_early": 0.5373477947727876,
+   "return_pts_gap1_after_early": 1.100709588226698,
+   "net_after_early_any_gap": 1330.1963194533844
+  },
+  "only_12|confirmation": {
+   "counts": {
+    "first_of_week": 12,
+    "gap1|AGENT_CLOSE|opposite": 6,
+    "gap1|AGENT_CLOSE|same": 2,
+    "gap1|TP|opposite": 4,
+    "gap1|TP|same": 12,
+    "gap2-3|AGENT_CLOSE|opposite": 2,
+    "gap2-3|AGENT_CLOSE|same": 2,
+    "reentry_gap1": 24
+   },
+   "gap_hist": {
+    "1": 24,
+    "2": 4
+   },
+   "net_total_usd": 2416.61986522446,
+   "net_trades_opened_gap1_after_early": 566.9439201719425,
+   "n_trades_gap1_after_early": 8,
+   "share_of_net_gap1_after_early": 0.23460202753869347,
+   "return_pts_gap1_after_early": 0.4724532668099521,
+   "net_after_early_any_gap": 559.0325257449109
+  },
+  "only_24|calibration": {
+   "counts": {
+    "first_of_week": 12,
+    "gap1|AGENT_CLOSE|opposite": 20,
+    "gap2-3|AGENT_CLOSE|same": 2,
+    "reentry_gap1": 20
+   },
+   "gap_hist": {
+    "1": 20,
+    "2": 2
+   },
+   "net_total_usd": 1774.3403285980137,
+   "net_trades_opened_gap1_after_early": 934.5976752774445,
+   "n_trades_gap1_after_early": 20,
+   "share_of_net_gap1_after_early": 0.5267296584618083,
+   "return_pts_gap1_after_early": 0.7788313960645371,
+   "net_after_early_any_gap": 942.0025402118806
+  },
+  "only_24|confirmation": {
+   "counts": {
+    "first_of_week": 12,
+    "gap1|AGENT_CLOSE|opposite": 7,
+    "gap1|TP|opposite": 3,
+    "gap1|TP|same": 7,
+    "gap2-3|AGENT_CLOSE|opposite": 2,
+    "gap2-3|AGENT_CLOSE|same": 2,
+    "gap2-3|TP|same": 2,
+    "reentry_gap1": 17
+   },
+   "gap_hist": {
+    "1": 17,
+    "2": 6
+   },
+   "net_total_usd": 2119.1789095415465,
+   "net_trades_opened_gap1_after_early": 645.3727152739034,
+   "n_trades_gap1_after_early": 7,
+   "share_of_net_gap1_after_early": 0.30453904215832367,
+   "return_pts_gap1_after_early": 0.5378105960615861,
+   "net_after_early_any_gap": 639.0928179300126
+  },
+  "only_3|calibration": {
+   "counts": {
+    "first_of_week": 12,
+    "gap1|AGENT_CLOSE|opposite": 33,
+    "gap1|AGENT_CLOSE|same": 5,
+    "gap1|TP|opposite": 9,
+    "gap1|TP|same": 16,
+    "gap2-3|AGENT_CLOSE|same": 2,
+    "reentry_gap1": 63
+   },
+   "gap_hist": {
+    "1": 63,
+    "2": 2
+   },
+   "net_total_usd": 3615.058518228635,
+   "net_trades_opened_gap1_after_early": 1928.6869155140462,
+   "n_trades_gap1_after_early": 38,
+   "share_of_net_gap1_after_early": 0.5335147151253019,
+   "return_pts_gap1_after_early": 1.6072390962617051,
+   "net_after_early_any_gap": 1941.2825462787418
+  },
+  "only_3|confirmation": {
+   "counts": {
+    "first_of_week": 12,
+    "gap1|AGENT_CLOSE|opposite": 18,
+    "gap1|AGENT_CLOSE|same": 1,
+    "gap1|TP|opposite": 6,
+    "gap1|TP|same": 25,
+    "gap2-3|AGENT_CLOSE|opposite": 2,
+    "gap2-3|AGENT_CLOSE|same": 2,
+    "gap2-3|TP|same": 2,
+    "reentry_gap1": 50
+   },
+   "gap_hist": {
+    "1": 50,
+    "2": 6
+   },
+   "net_total_usd": 3553.596626758715,
+   "net_trades_opened_gap1_after_early": 1437.5929945620906,
+   "n_trades_gap1_after_early": 19,
+   "share_of_net_gap1_after_early": 0.40454591377562715,
+   "return_pts_gap1_after_early": 1.1979941621350754,
+   "net_after_early_any_gap": 1426.9044661561518
+  },
+  "only_6|calibration": {
+   "counts": {
+    "first_of_week": 12,
+    "gap1|AGENT_CLOSE|opposite": 39,
+    "gap1|AGENT_CLOSE|same": 5,
+    "gap1|TP|opposite": 4,
+    "gap1|TP|same": 13,
+    "gap2-3|AGENT_CLOSE|same": 2,
+    "gap2-3|TP|opposite": 1,
+    "reentry_gap1": 61
+   },
+   "gap_hist": {
+    "1": 61,
+    "2": 3
+   },
+   "net_total_usd": 3442.259817269262,
+   "net_trades_opened_gap1_after_early": 2275.2057208499646,
+   "n_trades_gap1_after_early": 44,
+   "share_of_net_gap1_after_early": 0.660962809790134,
+   "return_pts_gap1_after_early": 1.8960047673749703,
+   "net_after_early_any_gap": 2287.528432676294
+  },
+  "only_6|confirmation": {
+   "counts": {
+    "first_of_week": 12,
+    "gap1|AGENT_CLOSE|opposite": 15,
+    "gap1|AGENT_CLOSE|same": 2,
+    "gap1|TP|opposite": 4,
+    "gap1|TP|same": 18,
+    "gap2-3|AGENT_CLOSE|opposite": 2,
+    "gap2-3|AGENT_CLOSE|same": 2,
+    "reentry_gap1": 39
+   },
+   "gap_hist": {
+    "1": 39,
+    "2": 4
+   },
+   "net_total_usd": 3539.9390347108947,
+   "net_trades_opened_gap1_after_early": 1574.9475912900962,
+   "n_trades_gap1_after_early": 17,
+   "share_of_net_gap1_after_early": 0.4449081116502114,
+   "return_pts_gap1_after_early": 1.3124563260750801,
+   "net_after_early_any_gap": 1564.457165332918
+  }
+ }
+}

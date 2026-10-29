@@ -1,0 +1,1211 @@
+{
+ "totals": {
+  "trades": 1173,
+  "reentry_next_bar": 806,
+  "entry_on_forced_flat_bar": 2
+ },
+ "max_abs_errors": {
+  "q_quality_dev_from_grid": 4.440892098500626e-16,
+  "net_abs": 2.842170943040401e-14,
+  "return_pct": 0.0,
+  "dd_pct": 1.8207657603852567e-14,
+  "sharpe": 6.139089236967266e-12
+ },
+ "F07_boundary": {
+  "bars_checked": 24224
+ },
+ "exit_kinds": {
+  "P1|calibration|AGENT_OPEN": 35,
+  "P1|calibration|FORCED_FLAT": 10,
+  "P1|calibration|TP_INTRABAR": 20,
+  "P1|calibration|TP_OPEN": 3,
+  "P1|confirmation|AGENT_OPEN": 20,
+  "P1|confirmation|FORCED_FLAT": 6,
+  "P1|confirmation|TP_INTRABAR": 21,
+  "P1|confirmation|TP_OPEN": 7,
+  "P2|calibration|AGENT_OPEN": 33,
+  "P2|calibration|FORCED_FLAT": 10,
+  "P2|calibration|TP_INTRABAR": 17,
+  "P2|calibration|TP_OPEN": 4,
+  "P2|confirmation|AGENT_OPEN": 20,
+  "P2|confirmation|FORCED_FLAT": 6,
+  "P2|confirmation|TP_INTRABAR": 15,
+  "P2|confirmation|TP_OPEN": 8,
+  "P3|calibration|AGENT_OPEN": 33,
+  "P3|calibration|FORCED_FLAT": 10,
+  "P3|calibration|TP_INTRABAR": 17,
+  "P3|calibration|TP_OPEN": 4,
+  "P3|confirmation|AGENT_OPEN": 20,
+  "P3|confirmation|FORCED_FLAT": 6,
+  "P3|confirmation|TP_INTRABAR": 15,
+  "P3|confirmation|TP_OPEN": 8,
+  "P4|calibration|AGENT_OPEN": 40,
+  "P4|calibration|FORCED_FLAT": 10,
+  "P4|calibration|TP_INTRABAR": 13,
+  "P4|calibration|TP_OPEN": 3,
+  "P4|confirmation|AGENT_OPEN": 25,
+  "P4|confirmation|FORCED_FLAT": 10,
+  "P4|confirmation|TP_INTRABAR": 15,
+  "P4|confirmation|TP_OPEN": 6,
+  "P5|calibration|AGENT_OPEN": 39,
+  "P5|calibration|FORCED_FLAT": 10,
+  "P5|calibration|TP_INTRABAR": 15,
+  "P5|calibration|TP_OPEN": 3,
+  "P5|confirmation|AGENT_OPEN": 23,
+  "P5|confirmation|FORCED_FLAT": 6,
+  "P5|confirmation|TP_INTRABAR": 15,
+  "P5|confirmation|TP_OPEN": 6,
+  "equal_guarded|calibration|AGENT_OPEN": 8,
+  "equal_guarded|calibration|FORCED_FLAT": 12,
+  "equal_guarded|calibration|SL_INTRABAR": 1,
+  "equal_guarded|calibration|TP_INTRABAR": 9,
+  "equal_guarded|calibration|TP_OPEN": 2,
+  "equal_guarded|confirmation|AGENT_OPEN": 6,
+  "equal_guarded|confirmation|FORCED_FLAT": 10,
+  "equal_guarded|confirmation|TP_INTRABAR": 14,
+  "equal_guarded|confirmation|TP_OPEN": 6,
+  "greedy|calibration|AGENT_OPEN": 24,
+  "greedy|calibration|FORCED_FLAT": 10,
+  "greedy|calibration|TP_INTRABAR": 8,
+  "greedy|calibration|TP_OPEN": 1,
+  "greedy|confirmation|AGENT_OPEN": 14,
+  "greedy|confirmation|FORCED_FLAT": 8,
+  "greedy|confirmation|TP_INTRABAR": 14,
+  "greedy|confirmation|TP_OPEN": 4,
+  "only_12|calibration|AGENT_OPEN": 29,
+  "only_12|calibration|FORCED_FLAT": 10,
+  "only_12|calibration|TP_INTRABAR": 8,
+  "only_12|calibration|TP_OPEN": 3,
+  "only_12|confirmation|AGENT_OPEN": 16,
+  "only_12|confirmation|FORCED_FLAT": 8,
+  "only_12|confirmation|TP_INTRABAR": 16,
+  "only_24|calibration|AGENT_OPEN": 24,
+  "only_24|calibration|FORCED_FLAT": 10,
+  "only_24|confirmation|AGENT_OPEN": 15,
+  "only_24|confirmation|FORCED_FLAT": 8,
+  "only_24|confirmation|TP_INTRABAR": 9,
+  "only_24|confirmation|TP_OPEN": 3,
+  "only_3|calibration|AGENT_OPEN": 42,
+  "only_3|calibration|FORCED_FLAT": 10,
+  "only_3|calibration|TP_INTRABAR": 19,
+  "only_3|calibration|TP_OPEN": 6,
+  "only_3|confirmation|AGENT_OPEN": 25,
+  "only_3|confirmation|FORCED_FLAT": 7,
+  "only_3|confirmation|TP_INTRABAR": 27,
+  "only_3|confirmation|TP_OPEN": 9,
+  "only_6|calibration|AGENT_OPEN": 48,
+  "only_6|calibration|FORCED_FLAT": 10,
+  "only_6|calibration|TP_INTRABAR": 15,
+  "only_6|calibration|TP_OPEN": 3,
+  "only_6|confirmation|AGENT_OPEN": 25,
+  "only_6|confirmation|FORCED_FLAT": 8,
+  "only_6|confirmation|TP_INTRABAR": 16,
+  "only_6|confirmation|TP_OPEN": 6
+ },
+ "per_policy": {
+  "P4": {
+   "calibration": {
+    "mean_return": 1.2066814846310097,
+    "worst_dd": 0.14346522855221563,
+    "orders": 66,
+    "orders_week": 5.5,
+    "buys": 31,
+    "sells": 35,
+    "win_pct": 95.45454545454545,
+    "buy_wins": 30.0,
+    "sell_wins": 33.0,
+    "TP": 16,
+    "SL": 0,
+    "FF": 10,
+    "EARLY": 40,
+    "win_by_reason": {
+     "TP": [
+      16.0,
+      0.0
+     ],
+     "SL": [
+      0,
+      0
+     ],
+     "AGENT_CLOSE": [
+      37.0,
+      3.0
+     ],
+     "FORCED_FLAT": [
+      10.0,
+      0.0
+     ]
+    },
+    "mean_sharpe": 22.196964512513745,
+    "weekly_sd": 0.5235286874774009,
+    "weekly_sharpe_sqrt52": 16.620873201634918,
+    "costs": {
+     "spread": 189.78204999999997,
+     "slip": 41.285000000000004,
+     "comm": 82.08101999999998,
+     "fin": 8.514079999999998
+    },
+    "closed_trade_dd_max": 0.024663222970642624,
+    "objectives_match": true,
+    "days": 6
+   },
+   "confirmation": {
+    "mean_return": 1.2280756075046473,
+    "worst_dd": 0.23709804936596118,
+    "orders": 56,
+    "orders_week": 4.666666666666667,
+    "buys": 27,
+    "sells": 29,
+    "win_pct": 85.71428571428571,
+    "buy_wins": 23.0,
+    "sell_wins": 25.0,
+    "TP": 21,
+    "SL": 0,
+    "FF": 10,
+    "EARLY": 25,
+    "win_by_reason": {
+     "TP": [
+      21.0,
+      0.0
+     ],
+     "SL": [
+      0,
+      0
+     ],
+     "AGENT_CLOSE": [
+      21.0,
+      4.0
+     ],
+     "FORCED_FLAT": [
+      6.0,
+      4.0
+     ]
+    },
+    "mean_sharpe": 19.772792485861363,
+    "weekly_sd": 0.5217959924074779,
+    "weekly_sharpe_sqrt52": 16.9717270252501,
+    "costs": {
+     "spread": 154.96149999999992,
+     "slip": 31.54898,
+     "comm": 68.2822,
+     "fin": -0.22021500000000183
+    },
+    "closed_trade_dd_max": 0.05098623183816615,
+    "objectives_match": true,
+    "days": 6
+   }
+  },
+  "P1": {
+   "calibration": {
+    "mean_return": 3.1169129210820086,
+    "worst_dd": 0.41760661172625835,
+    "orders": 68,
+    "orders_week": 5.666666666666667,
+    "buys": 35,
+    "sells": 33,
+    "win_pct": 100.0,
+    "buy_wins": 35.0,
+    "sell_wins": 33.0,
+    "TP": 23,
+    "SL": 0,
+    "FF": 10,
+    "EARLY": 35,
+    "win_by_reason": {
+     "TP": [
+      23.0,
+      0.0
+     ],
+     "SL": [
+      0,
+      0
+     ],
+     "AGENT_CLOSE": [
+      35.0,
+      0.0
+     ],
+     "FORCED_FLAT": [
+      10.0,
+      0.0
+     ]
+    },
+    "mean_sharpe": 24.894695315371113,
+    "weekly_sd": 0.94765035782634,
+    "weekly_sharpe_sqrt52": 23.7180079452402,
+    "costs": {
+     "spread": 530.4256499999999,
+     "slip": 98.99874,
+     "comm": 206.66191000000006,
+     "fin": 37.987839999999984
+    },
+    "closed_trade_dd_max": 0,
+    "objectives_match": true,
+    "days": 6
+   },
+   "confirmation": {
+    "mean_return": 3.011529406565409,
+    "worst_dd": 0.5378371107907162,
+    "orders": 54,
+    "orders_week": 4.5,
+    "buys": 27,
+    "sells": 27,
+    "win_pct": 98.14814814814815,
+    "buy_wins": 26.0,
+    "sell_wins": 27.0,
+    "TP": 28,
+    "SL": 0,
+    "FF": 6,
+    "EARLY": 20,
+    "win_by_reason": {
+     "TP": [
+      28.0,
+      0.0
+     ],
+     "SL": [
+      0,
+      0
+     ],
+     "AGENT_CLOSE": [
+      19.0,
+      1.0
+     ],
+     "FORCED_FLAT": [
+      6.0,
+      0.0
+     ]
+    },
+    "mean_sharpe": 20.22784792589973,
+    "weekly_sd": 1.2216353159575324,
+    "weekly_sharpe_sqrt52": 17.77653862998945,
+    "costs": {
+     "spread": 397.7644,
+     "slip": 69.1314,
+     "comm": 162.35715999999996,
+     "fin": -1.1156950000000099
+    },
+    "closed_trade_dd_max": 0.0015443192154468628,
+    "objectives_match": true,
+    "days": 6
+   }
+  },
+  "P3": {
+   "calibration": {
+    "mean_return": 2.1927422294259666,
+    "worst_dd": 0.255155904300912,
+    "orders": 64,
+    "orders_week": 5.333333333333333,
+    "buys": 30,
+    "sells": 34,
+    "win_pct": 100.0,
+    "buy_wins": 30.0,
+    "sell_wins": 34.0,
+    "TP": 21,
+    "SL": 0,
+    "FF": 10,
+    "EARLY": 33,
+    "win_by_reason": {
+     "TP": [
+      21.0,
+      0.0
+     ],
+     "SL": [
+      0,
+      0
+     ],
+     "AGENT_CLOSE": [
+      33.0,
+      0.0
+     ],
+     "FORCED_FLAT": [
+      10.0,
+      0.0
+     ]
+    },
+    "mean_sharpe": 23.400101437782023,
+    "weekly_sd": 0.8396227010283976,
+    "weekly_sharpe_sqrt52": 18.8323744281496,
+    "costs": {
+     "spread": 342.8526499999999,
+     "slip": 68.88854,
+     "comm": 141.28715999999991,
+     "fin": 20.796424999999992
+    },
+    "closed_trade_dd_max": 0,
+    "objectives_match": true,
+    "days": 6
+   },
+   "confirmation": {
+    "mean_return": 2.0750542011315343,
+    "worst_dd": 0.4042661240827124,
+    "orders": 49,
+    "orders_week": 4.083333333333333,
+    "buys": 24,
+    "sells": 25,
+    "win_pct": 93.87755102040816,
+    "buy_wins": 22.0,
+    "sell_wins": 24.0,
+    "TP": 23,
+    "SL": 0,
+    "FF": 6,
+    "EARLY": 20,
+    "win_by_reason": {
+     "TP": [
+      23.0,
+      0.0
+     ],
+     "SL": [
+      0,
+      0
+     ],
+     "AGENT_CLOSE": [
+      17.0,
+      3.0
+     ],
+     "FORCED_FLAT": [
+      6.0,
+      0.0
+     ]
+    },
+    "mean_sharpe": 20.52164775674191,
+    "weekly_sd": 0.9524314985064936,
+    "weekly_sharpe_sqrt52": 15.710766250966664,
+    "costs": {
+     "spread": 243.46380000000005,
+     "slip": 45.984599999999986,
+     "comm": 104.62066999999999,
+     "fin": 4.820889999999993
+    },
+    "closed_trade_dd_max": 0.028418403091242977,
+    "objectives_match": true,
+    "days": 6
+   }
+  },
+  "P2": {
+   "calibration": {
+    "mean_return": 2.9290370838235975,
+    "worst_dd": 0.33958874641382664,
+    "orders": 64,
+    "orders_week": 5.333333333333333,
+    "buys": 30,
+    "sells": 34,
+    "win_pct": 100.0,
+    "buy_wins": 30.0,
+    "sell_wins": 34.0,
+    "TP": 21,
+    "SL": 0,
+    "FF": 10,
+    "EARLY": 33,
+    "win_by_reason": {
+     "TP": [
+      21.0,
+      0.0
+     ],
+     "SL": [
+      0,
+      0
+     ],
+     "AGENT_CLOSE": [
+      33.0,
+      0.0
+     ],
+     "FORCED_FLAT": [
+      10.0,
+      0.0
+     ]
+    },
+    "mean_sharpe": 23.39161818343054,
+    "weekly_sd": 1.1260129723731542,
+    "weekly_sharpe_sqrt52": 18.757853865935232,
+    "costs": {
+     "spread": 458.03004999999996,
+     "slip": 92.09646,
+     "comm": 188.82717,
+     "fin": 27.778609999999997
+    },
+    "closed_trade_dd_max": 0,
+    "objectives_match": true,
+    "days": 6
+   },
+   "confirmation": {
+    "mean_return": 2.7711905070078924,
+    "worst_dd": 0.5378371107907162,
+    "orders": 49,
+    "orders_week": 4.083333333333333,
+    "buys": 24,
+    "sells": 25,
+    "win_pct": 93.87755102040816,
+    "buy_wins": 22.0,
+    "sell_wins": 24.0,
+    "TP": 23,
+    "SL": 0,
+    "FF": 6,
+    "EARLY": 20,
+    "win_by_reason": {
+     "TP": [
+      23.0,
+      0.0
+     ],
+     "SL": [
+      0,
+      0
+     ],
+     "AGENT_CLOSE": [
+      17.0,
+      3.0
+     ],
+     "FORCED_FLAT": [
+      6.0,
+      0.0
+     ]
+    },
+    "mean_sharpe": 20.51574802678626,
+    "weekly_sd": 1.2756862025488784,
+    "weekly_sharpe_sqrt52": 15.66477625474384,
+    "costs": {
+     "spread": 325.33879999999994,
+     "slip": 61.465140000000005,
+     "comm": 139.80021999999997,
+     "fin": 6.4257549999999934
+    },
+    "closed_trade_dd_max": 0.03783991046309446,
+    "objectives_match": true,
+    "days": 6
+   }
+  },
+  "P5": {
+   "calibration": {
+    "mean_return": 0.6877412098522161,
+    "worst_dd": 0.08154366135901242,
+    "orders": 67,
+    "orders_week": 5.583333333333333,
+    "buys": 32,
+    "sells": 35,
+    "win_pct": 97.01492537313433,
+    "buy_wins": 31.0,
+    "sell_wins": 34.0,
+    "TP": 18,
+    "SL": 0,
+    "FF": 10,
+    "EARLY": 39,
+    "win_by_reason": {
+     "TP": [
+      18.0,
+      0.0
+     ],
+     "SL": [
+      0,
+      0
+     ],
+     "AGENT_CLOSE": [
+      37.0,
+      2.0
+     ],
+     "FORCED_FLAT": [
+      10.0,
+      0.0
+     ]
+    },
+    "mean_sharpe": 22.405388002262843,
+    "weekly_sd": 0.29293811662806374,
+    "weekly_sharpe_sqrt52": 16.929761308735394,
+    "costs": {
+     "spread": 110.58695000000002,
+     "slip": 23.49522,
+     "comm": 47.29228,
+     "fin": 5.750499999999997
+    },
+    "closed_trade_dd_max": 0.006734686202767312,
+    "objectives_match": true,
+    "days": 6
+   },
+   "confirmation": {
+    "mean_return": 0.704043479162438,
+    "worst_dd": 0.13479894856899177,
+    "orders": 50,
+    "orders_week": 4.166666666666667,
+    "buys": 24,
+    "sells": 26,
+    "win_pct": 96.0,
+    "buy_wins": 23.0,
+    "sell_wins": 25.0,
+    "TP": 21,
+    "SL": 0,
+    "FF": 6,
+    "EARLY": 23,
+    "win_by_reason": {
+     "TP": [
+      21.0,
+      0.0
+     ],
+     "SL": [
+      0,
+      0
+     ],
+     "AGENT_CLOSE": [
+      21.0,
+      2.0
+     ],
+     "FORCED_FLAT": [
+      6.0,
+      0.0
+     ]
+    },
+    "mean_sharpe": 20.064775182234566,
+    "weekly_sd": 0.2937695203242119,
+    "weekly_sharpe_sqrt52": 17.282016605907348,
+    "costs": {
+     "spread": 81.933,
+     "slip": 15.646519999999999,
+     "comm": 34.797700000000006,
+     "fin": -0.2245500000000027
+    },
+    "closed_trade_dd_max": 0.00945941681483659,
+    "objectives_match": true,
+    "days": 6
+   }
+  },
+  "equal_guarded": {
+   "calibration": {
+    "mean_return": 1.5019551344752875,
+    "worst_dd": 0.6476553942128215,
+    "orders": 32,
+    "orders_week": 2.6666666666666665,
+    "buys": 14,
+    "sells": 18,
+    "win_pct": 93.75,
+    "buy_wins": 14.0,
+    "sell_wins": 16.0,
+    "TP": 11,
+    "SL": 1,
+    "FF": 12,
+    "EARLY": 8,
+    "win_by_reason": {
+     "TP": [
+      11.0,
+      0.0
+     ],
+     "SL": [
+      0.0,
+      1.0
+     ],
+     "AGENT_CLOSE": [
+      7.0,
+      1.0
+     ],
+     "FORCED_FLAT": [
+      12.0,
+      0.0
+     ]
+    },
+    "mean_sharpe": 16.695427051975965,
+    "weekly_sd": 0.6168475125050549,
+    "weekly_sharpe_sqrt52": 17.558233245700844,
+    "costs": {
+     "spread": 211.25849999999997,
+     "slip": 39.76349,
+     "comm": 82.56185000000002,
+     "fin": 24.825899999999994
+    },
+    "closed_trade_dd_max": 0.4731413930569943,
+    "objectives_match": true,
+    "days": 6
+   },
+   "confirmation": {
+    "mean_return": 2.151846533604914,
+    "worst_dd": 0.40341182527495834,
+    "orders": 36,
+    "orders_week": 3.0,
+    "buys": 18,
+    "sells": 18,
+    "win_pct": 94.44444444444444,
+    "buy_wins": 17.0,
+    "sell_wins": 17.0,
+    "TP": 20,
+    "SL": 0,
+    "FF": 10,
+    "EARLY": 6,
+    "win_by_reason": {
+     "TP": [
+      20.0,
+      0.0
+     ],
+     "SL": [
+      0,
+      0
+     ],
+     "AGENT_CLOSE": [
+      6.0,
+      0.0
+     ],
+     "FORCED_FLAT": [
+      8.0,
+      2.0
+     ]
+    },
+    "mean_sharpe": 20.716679301884184,
+    "weekly_sd": 0.8408310413231681,
+    "weekly_sharpe_sqrt52": 18.454582746214278,
+    "costs": {
+     "spread": 220.49185,
+     "slip": 41.026500000000006,
+     "comm": 96.94559000000002,
+     "fin": 46.36962000000001
+    },
+    "closed_trade_dd_max": 0.03172175555268971,
+    "objectives_match": true,
+    "days": 6
+   }
+  },
+  "greedy": {
+   "calibration": {
+    "mean_return": 2.198800932298702,
+    "worst_dd": 0.6189914086616682,
+    "orders": 43,
+    "orders_week": 3.5833333333333335,
+    "buys": 21,
+    "sells": 22,
+    "win_pct": 100.0,
+    "buy_wins": 21.0,
+    "sell_wins": 22.0,
+    "TP": 9,
+    "SL": 0,
+    "FF": 10,
+    "EARLY": 24,
+    "win_by_reason": {
+     "TP": [
+      9.0,
+      0.0
+     ],
+     "SL": [
+      0,
+      0
+     ],
+     "AGENT_CLOSE": [
+      24.0,
+      0.0
+     ],
+     "FORCED_FLAT": [
+      10.0,
+      0.0
+     ]
+    },
+    "mean_sharpe": 20.737035258360688,
+    "weekly_sd": 0.8385958278798505,
+    "weekly_sharpe_sqrt52": 18.90753386165632,
+    "costs": {
+     "spread": 278.78855000000004,
+     "slip": 60.178439999999995,
+     "comm": 116.21546999999998,
+     "fin": 32.57322999999999
+    },
+    "closed_trade_dd_max": 0,
+    "objectives_match": true,
+    "days": 6
+   },
+   "confirmation": {
+    "mean_return": 2.1911112503952963,
+    "worst_dd": 0.40341182527495834,
+    "orders": 40,
+    "orders_week": 3.3333333333333335,
+    "buys": 20,
+    "sells": 20,
+    "win_pct": 85.0,
+    "buy_wins": 17.0,
+    "sell_wins": 17.0,
+    "TP": 18,
+    "SL": 0,
+    "FF": 8,
+    "EARLY": 14,
+    "win_by_reason": {
+     "TP": [
+      18.0,
+      0.0
+     ],
+     "SL": [
+      0,
+      0
+     ],
+     "AGENT_CLOSE": [
+      10.0,
+      4.0
+     ],
+     "FORCED_FLAT": [
+      6.0,
+      2.0
+     ]
+    },
+    "mean_sharpe": 19.059253150076874,
+    "weekly_sd": 0.9798414821115503,
+    "weekly_sharpe_sqrt52": 16.12539192874641,
+    "costs": {
+     "spread": 245.95679999999996,
+     "slip": 48.72648,
+     "comm": 106.55757,
+     "fin": 25.689209999999992
+    },
+    "closed_trade_dd_max": 0.05283068238531789,
+    "objectives_match": true,
+    "days": 6
+   }
+  },
+  "nop": {
+   "calibration": {
+    "mean_return": 0.0,
+    "worst_dd": 0.0,
+    "orders": 0,
+    "orders_week": 0.0,
+    "buys": 0,
+    "sells": 0,
+    "win_pct": null,
+    "buy_wins": 0,
+    "sell_wins": 0,
+    "TP": 0,
+    "SL": 0,
+    "FF": 0,
+    "EARLY": 0,
+    "win_by_reason": {
+     "TP": [
+      0,
+      0
+     ],
+     "SL": [
+      0,
+      0
+     ],
+     "AGENT_CLOSE": [
+      0,
+      0
+     ],
+     "FORCED_FLAT": [
+      0,
+      0
+     ]
+    },
+    "mean_sharpe": 0.0,
+    "weekly_sd": 0.0,
+    "weekly_sharpe_sqrt52": null,
+    "costs": {
+     "spread": 0,
+     "slip": 0,
+     "comm": 0,
+     "fin": 0
+    },
+    "closed_trade_dd_max": 0,
+    "objectives_match": true,
+    "days": 6
+   },
+   "confirmation": {
+    "mean_return": 0.0,
+    "worst_dd": 0.0,
+    "orders": 0,
+    "orders_week": 0.0,
+    "buys": 0,
+    "sells": 0,
+    "win_pct": null,
+    "buy_wins": 0,
+    "sell_wins": 0,
+    "TP": 0,
+    "SL": 0,
+    "FF": 0,
+    "EARLY": 0,
+    "win_by_reason": {
+     "TP": [
+      0,
+      0
+     ],
+     "SL": [
+      0,
+      0
+     ],
+     "AGENT_CLOSE": [
+      0,
+      0
+     ],
+     "FORCED_FLAT": [
+      0,
+      0
+     ]
+    },
+    "mean_sharpe": 0.0,
+    "weekly_sd": 0.0,
+    "weekly_sharpe_sqrt52": null,
+    "costs": {
+     "spread": 0,
+     "slip": 0,
+     "comm": 0,
+     "fin": 0
+    },
+    "closed_trade_dd_max": 0,
+    "objectives_match": true,
+    "days": 6
+   }
+  },
+  "only_12": {
+   "calibration": {
+    "mean_return": 2.0484118459853726,
+    "worst_dd": 0.7168415985966881,
+    "orders": 50,
+    "orders_week": 4.166666666666667,
+    "buys": 24,
+    "sells": 26,
+    "win_pct": 88.0,
+    "buy_wins": 21.0,
+    "sell_wins": 23.0,
+    "TP": 11,
+    "SL": 0,
+    "FF": 10,
+    "EARLY": 29,
+    "win_by_reason": {
+     "TP": [
+      11.0,
+      0.0
+     ],
+     "SL": [
+      0,
+      0
+     ],
+     "AGENT_CLOSE": [
+      23.0,
+      6.0
+     ],
+     "FORCED_FLAT": [
+      10.0,
+      0.0
+     ]
+    },
+    "mean_sharpe": 21.358359348329,
+    "weekly_sd": 0.6341271130496994,
+    "weekly_sharpe_sqrt52": 23.29392259683827,
+    "costs": {
+     "spread": 295.32585000000006,
+     "slip": 56.899640000000005,
+     "comm": 111.40199000000001,
+     "fin": 35.44548999999999
+    },
+    "closed_trade_dd_max": 0.27480080088424075,
+    "objectives_match": true,
+    "days": 6
+   },
+   "confirmation": {
+    "mean_return": 2.0138498876870505,
+    "worst_dd": 0.40341182527495834,
+    "orders": 40,
+    "orders_week": 3.3333333333333335,
+    "buys": 20,
+    "sells": 20,
+    "win_pct": 85.0,
+    "buy_wins": 17.0,
+    "sell_wins": 17.0,
+    "TP": 16,
+    "SL": 0,
+    "FF": 8,
+    "EARLY": 16,
+    "win_by_reason": {
+     "TP": [
+      16.0,
+      0.0
+     ],
+     "SL": [
+      0,
+      0
+     ],
+     "AGENT_CLOSE": [
+      12.0,
+      4.0
+     ],
+     "FORCED_FLAT": [
+      6.0,
+      2.0
+     ]
+    },
+    "mean_sharpe": 18.625841346800037,
+    "weekly_sd": 0.75758430733927,
+    "weekly_sharpe_sqrt52": 19.168926707694688,
+    "costs": {
+     "spread": 208.75264999999996,
+     "slip": 41.71414000000001,
+     "comm": 90.02791000000002,
+     "fin": 24.736004999999984
+    },
+    "closed_trade_dd_max": 0.04021541984483256,
+    "objectives_match": true,
+    "days": 6
+   }
+  },
+  "only_24": {
+   "calibration": {
+    "mean_return": 1.478616940498345,
+    "worst_dd": 0.6189914086616682,
+    "orders": 34,
+    "orders_week": 2.8333333333333335,
+    "buys": 17,
+    "sells": 17,
+    "win_pct": 100.0,
+    "buy_wins": 17.0,
+    "sell_wins": 17.0,
+    "TP": 0,
+    "SL": 0,
+    "FF": 10,
+    "EARLY": 24,
+    "win_by_reason": {
+     "TP": [
+      0,
+      0
+     ],
+     "SL": [
+      0,
+      0
+     ],
+     "AGENT_CLOSE": [
+      24.0,
+      0.0
+     ],
+     "FORCED_FLAT": [
+      10.0,
+      0.0
+     ]
+    },
+    "mean_sharpe": 21.708438903463463,
+    "weekly_sd": 0.29249069446762455,
+    "weekly_sharpe_sqrt52": 36.45400894165251,
+    "costs": {
+     "spread": 145.08110000000002,
+     "slip": 34.79788,
+     "comm": 60.89628999999999,
+     "fin": 32.50570499999999
+    },
+    "closed_trade_dd_max": 0,
+    "objectives_match": true,
+    "days": 6
+   },
+   "confirmation": {
+    "mean_return": 1.765982424617955,
+    "worst_dd": 0.32792831671825107,
+    "orders": 35,
+    "orders_week": 2.9166666666666665,
+    "buys": 17,
+    "sells": 18,
+    "win_pct": 88.57142857142857,
+    "buy_wins": 15.0,
+    "sell_wins": 16.0,
+    "TP": 12,
+    "SL": 0,
+    "FF": 8,
+    "EARLY": 15,
+    "win_by_reason": {
+     "TP": [
+      12.0,
+      0.0
+     ],
+     "SL": [
+      0,
+      0
+     ],
+     "AGENT_CLOSE": [
+      13.0,
+      2.0
+     ],
+     "FORCED_FLAT": [
+      6.0,
+      2.0
+     ]
+    },
+    "mean_sharpe": 19.199950199765393,
+    "weekly_sd": 0.6810587366547525,
+    "weekly_sharpe_sqrt52": 18.698358425893115,
+    "costs": {
+     "spread": 142.77649999999994,
+     "slip": 30.191360000000003,
+     "comm": 63.36855000000001,
+     "fin": 12.93455999999999
+    },
+    "closed_trade_dd_max": 0.03128990771312362,
+    "objectives_match": true,
+    "days": 6
+   }
+  },
+  "only_3": {
+   "calibration": {
+    "mean_return": 3.0125487651905245,
+    "worst_dd": 0.5944663853942075,
+    "orders": 77,
+    "orders_week": 6.416666666666667,
+    "buys": 39,
+    "sells": 38,
+    "win_pct": 93.50649350649351,
+    "buy_wins": 36.0,
+    "sell_wins": 36.0,
+    "TP": 25,
+    "SL": 0,
+    "FF": 10,
+    "EARLY": 42,
+    "win_by_reason": {
+     "TP": [
+      25.0,
+      0.0
+     ],
+     "SL": [
+      0,
+      0
+     ],
+     "AGENT_CLOSE": [
+      37.0,
+      5.0
+     ],
+     "FORCED_FLAT": [
+      10.0,
+      0.0
+     ]
+    },
+    "mean_sharpe": 22.363931798622875,
+    "weekly_sd": 0.9358378448422764,
+    "weekly_sharpe_sqrt52": 23.213207507248857,
+    "costs": {
+     "spread": 659.2381499999996,
+     "slip": 113.16579999999999,
+     "comm": 234.81136000000006,
+     "fin": 51.72938499999998
+    },
+    "closed_trade_dd_max": 0.41629033840841656,
+    "objectives_match": true,
+    "days": 6
+   },
+   "confirmation": {
+    "mean_return": 2.961330522298933,
+    "worst_dd": 0.554502264068094,
+    "orders": 68,
+    "orders_week": 5.666666666666667,
+    "buys": 34,
+    "sells": 34,
+    "win_pct": 85.29411764705883,
+    "buy_wins": 29.0,
+    "sell_wins": 29.0,
+    "TP": 36,
+    "SL": 0,
+    "FF": 7,
+    "EARLY": 25,
+    "win_by_reason": {
+     "TP": [
+      36.0,
+      0.0
+     ],
+     "SL": [
+      0,
+      0
+     ],
+     "AGENT_CLOSE": [
+      17.0,
+      8.0
+     ],
+     "FORCED_FLAT": [
+      5.0,
+      2.0
+     ]
+    },
+    "mean_sharpe": 19.24917929381269,
+    "weekly_sd": 1.0498629653005926,
+    "weekly_sharpe_sqrt52": 20.340233715527425,
+    "costs": {
+     "spread": 478.5887500000001,
+     "slip": 88.09482000000001,
+     "comm": 208.65634999999997,
+     "fin": 23.59193499999999
+    },
+    "closed_trade_dd_max": 0.1517343505717724,
+    "objectives_match": true,
+    "days": 6
+   }
+  },
+  "only_6": {
+   "calibration": {
+    "mean_return": 2.868549847724383,
+    "worst_dd": 0.5767555010880097,
+    "orders": 76,
+    "orders_week": 6.333333333333333,
+    "buys": 37,
+    "sells": 39,
+    "win_pct": 90.78947368421052,
+    "buy_wins": 34.0,
+    "sell_wins": 35.0,
+    "TP": 18,
+    "SL": 0,
+    "FF": 10,
+    "EARLY": 48,
+    "win_by_reason": {
+     "TP": [
+      18.0,
+      0.0
+     ],
+     "SL": [
+      0,
+      0
+     ],
+     "AGENT_CLOSE": [
+      41.0,
+      7.0
+     ],
+     "FORCED_FLAT": [
+      10.0,
+      0.0
+     ]
+    },
+    "mean_sharpe": 21.71657491747644,
+    "weekly_sd": 1.0872061832674855,
+    "weekly_sharpe_sqrt52": 19.026204452058497,
+    "costs": {
+     "spread": 579.6520499999996,
+     "slip": 112.04726000000001,
+     "comm": 221.09612000000004,
+     "fin": 33.983249999999984
+    },
+    "closed_trade_dd_max": 0.5242166248497415,
+    "objectives_match": true,
+    "days": 6
+   },
+   "confirmation": {
+    "mean_return": 2.9499491955924104,
+    "worst_dd": 0.5378371107907162,
+    "orders": 55,
+    "orders_week": 4.583333333333333,
+    "buys": 27,
+    "sells": 28,
+    "win_pct": 92.72727272727273,
+    "buy_wins": 25.0,
+    "sell_wins": 26.0,
+    "TP": 22,
+    "SL": 0,
+    "FF": 8,
+    "EARLY": 25,
+    "win_by_reason": {
+     "TP": [
+      22.0,
+      0.0
+     ],
+     "SL": [
+      0,
+      0
+     ],
+     "AGENT_CLOSE": [
+      23.0,
+      2.0
+     ],
+     "FORCED_FLAT": [
+      6.0,
+      2.0
+     ]
+    },
+    "mean_sharpe": 19.769744661859693,
+    "weekly_sd": 1.204447239279892,
+    "weekly_sharpe_sqrt52": 17.661534250485378,
+    "costs": {
+     "spread": 390.28689999999995,
+     "slip": 74.9337,
+     "comm": 162.5384600000001,
+     "fin": 7.851039999999991
+    },
+    "closed_trade_dd_max": 0.052674535226368946,
+    "objectives_match": true,
+    "days": 6
+   }
+  }
+ }
+}

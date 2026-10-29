@@ -1,0 +1,35 @@
+{
+ "manifest_identity_recomputed": "098e871909f0c587b1cbe855cc49b93723ed63a03c74845a52dd9009071a966d",
+ "manifest_identity_ok": true,
+ "source_counts": {
+  "agent_multi": 12,
+  "heuristic_strategy": 29
+ },
+ "source_mismatches": [],
+ "config_sha_ok": true,
+ "CANDIDATES.jsonl_digest_ok": true,
+ "REPLAYS.json.gz_digest_ok": true,
+ "FRONTIER.json_digest_ok": true,
+ "verification_artifacts_ok": {
+  "CANDIDATES.jsonl.gz": true,
+  "FRONTIER.json": true,
+  "MANIFEST.json": true,
+  "REPLAYS.json.gz": true,
+  "REPORT.json": true,
+  "SEED_19.json.gz": true,
+  "SEED_43.json.gz": true,
+  "SEED_7.json.gz": true,
+  "SUMMARY.md": true
+ },
+ "verifier_sha_ok": true,
+ "receipts": 17018,
+ "receipt_bad": 0,
+ "receipt_tail_ok": true,
+ "unique_ok": true,
+ "genes_off_grid_or_bounds": 0,
+ "generations": 900,
+ "population_fitness_mismatch": 0,
+ "keys_in_populations": 3888,
+ "eligible": 16920,
+ "new_evaluations_sum": 17018
+}

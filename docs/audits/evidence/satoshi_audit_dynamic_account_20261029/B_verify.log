@@ -1,0 +1,5 @@
+{"status": "PASS", "identity": "098e871909f0c587b1cbe855cc49b93723ed63a03c74845a52dd9009071a966d", "receipt_count": 17018, "native_world_replays": 288, "exact_replay": true, "full_budget_verified": true, "frontier_policies": 632, "unique_frontier_vectors": 342, "representative_rule_verified": true, "source_pins_verified": true, "verifier_sha256": "ea2ad5c8a60cc9b294faa350c3dc10452bbc55c228ffd488f75a2587cedbe8fb"}
+
+real	0m25.565s
+user	0m25.182s
+sys	0m0.298s

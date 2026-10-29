@@ -1,0 +1,10 @@
+{
+ "agent_close_ledger": 564,
+ "close_actions_trace": 564,
+ "worlds_with_gap": 192,
+ "trades_spanning_gap": 161,
+ "gap_span_exit_AGENT_CLOSE": 55,
+ "gap_span_exit_TP": 89,
+ "gap_span_exit_FORCED_FLAT": 16,
+ "gap_span_exit_SL": 1
+}
