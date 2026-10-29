@@ -111,6 +111,9 @@ class World:
                                       np.full(3,e.cfg.profile.spread_at(int(e.ff[0]),int(e.mo[0]))))
         return self.reports[b]
 
+    def report_available(self,b):
+        return True
+
     def geometry(self,h,d,entry):
         ref=self.references[h,d]
         return levels(d,entry,ref['tp_pips']*.0001,ref['mae_pips']*.0001,
@@ -192,7 +195,7 @@ class World:
             b=e.next_decision;action=0;plan=None;selected=None
             if e.pos is not None:
                 occupied+=1
-                if b+1<self.end:
+                if b+1<self.end and self.report_available(b):
                     unit,values,fo,fe=self.close_values(e,horizon,b);r=self.report(b)
                     clock=int(e.v[b])+HOUR;deadline=int(e.ff[e.pos.seg])
                     result=controller.decide_synthetic_values(unit.identity,clock,HOUR,
@@ -204,7 +207,7 @@ class World:
                         if other['action']!=result['action'] or max_error>1e-10:
                             raise AssertionError('CACHE_DIRECT_PARITY')
                     action=3 if result['action']=='CLOSE' else 0
-            elif e.entry_gate(b)[0]:
+            elif e.entry_gate(b)[0] and self.report_available(b):
                 bids=self.candidate_bids(b)
                 if enabled is not None: bids=[x for x in bids if (x['horizon'],x['direction']) in enabled]
                 selected=choose(bids,genes,self.past_efficiency(b))

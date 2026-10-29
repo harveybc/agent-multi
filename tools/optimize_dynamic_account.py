@@ -113,7 +113,8 @@ def write_summary(output,report):
         'For a smoke run this request is a generated template only, not a final audit submission.', '']))
 
 
-def search(worlds,receipts,seed,population,generations,output,identity,check):
+def search(worlds,receipts,seed,population,generations,output,identity,check,*,evaluate_fn=None):
+    evaluate_fn=evaluate if evaluate_fn is None else evaluate_fn
     if not hasattr(creator,'AccountFitness'):
         creator.create('AccountFitness',base.Fitness,weights=(1.,1.))
         creator.create('AccountIndividual',list,fitness=creator.AccountFitness)
@@ -122,7 +123,7 @@ def search(worlds,receipts,seed,population,generations,output,identity,check):
         nonlocal evaluations
         ind[:]=decode(ind);key=digest(ind)
         if key not in receipts.rows:
-            result=compact(evaluate(worlds,ind));receipts.append(list(ind),result);evaluations+=1
+            result=compact(evaluate_fn(worlds,ind));receipts.append(list(ind),result);evaluations+=1
         r=receipts.rows[key]
         return tuple(r['objectives']) if r['eligible'] else (-1e6,-1e6)
     pop=[creator.AccountIndividual(BASE)]

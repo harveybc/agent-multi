@@ -1,0 +1,27 @@
+[Unit]
+Description=Sequential crossed synthetic account experiment
+StartLimitIntervalSec=900
+StartLimitBurst=3
+
+[Service]
+Type=simple
+WorkingDirectory=<pinned-agent-checkout>
+Environment=CUDA_VISIBLE_DEVICES=
+Environment=OMP_NUM_THREADS=1
+Environment=OPENBLAS_NUM_THREADS=1
+Environment=MKL_NUM_THREADS=1
+ExecStart=<python> tools/run_crossed_account_queue.py --engine-root <pinned-native-checkout> --output <new-output-directory> --workers 4
+Restart=on-abnormal
+RestartSec=60
+KillMode=control-group
+TimeoutStopSec=30
+MemoryHigh=4G
+MemoryMax=6G
+MemorySwapMax=0
+CPUQuota=400%
+TasksMax=64
+Nice=10
+UMask=0077
+
+[Install]
+WantedBy=default.target
