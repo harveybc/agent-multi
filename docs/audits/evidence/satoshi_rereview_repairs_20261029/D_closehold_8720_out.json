@@ -1,0 +1,10 @@
+{
+ "records": 8720,
+ "committed": 8720,
+ "mismatching_records": 0,
+ "first": [],
+ "witnesses": 25,
+ "witnesses_equal": true,
+ "bytes_equal": true,
+ "seconds": 253.99169605202042
+}

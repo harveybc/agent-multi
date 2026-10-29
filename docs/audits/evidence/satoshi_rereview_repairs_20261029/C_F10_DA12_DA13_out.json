@@ -1,0 +1,212 @@
+{
+ "F10_unit": {
+  "full_report_calendar_deadline": [
+   "ACCEPTED",
+   [
+    "HOLD",
+    -2.4
+   ]
+  ],
+  "truncated_self_consistent_calendar_deadline": [
+   "REFUSED",
+   "ValueError:EXTERNAL_DEADLINE_MISMATCH"
+  ],
+  "deadline_matches_bars_stop_early": [
+   "REFUSED",
+   "ValueError:REPORT_TIME_SUPPORT"
+  ],
+  "full_report_expected_deadline_minus_1": [
+   "REFUSED",
+   "ValueError:EXTERNAL_DEADLINE_MISMATCH"
+  ],
+  "full_report_expected_deadline_plus_1": [
+   "REFUSED",
+   "ValueError:EXTERNAL_DEADLINE_MISMATCH"
+  ],
+  "report_step_2_vs_calendar_13": [
+   "REFUSED",
+   "ValueError:EXTERNAL_DEADLINE_MISMATCH"
+  ],
+  "cache_adapter_truncated_calendar_deadline": [
+   "REFUSED",
+   "ValueError:EXTERNAL_DEADLINE_MISMATCH"
+  ],
+  "MISUSE_truncated_with_expected_deadline_from_report": [
+   "ACCEPTED",
+   "CLOSE"
+  ],
+  "value_paths_direct_truncated": [
+   "ACCEPTED",
+   [
+    [
+     0.0,
+     -1.0,
+     -1.0
+    ]
+   ]
+  ]
+ },
+ "F10_native": {
+  "full_route_current": [
+   "ACCEPTED",
+   "HOLD"
+  ],
+  "F10_truncated_report_native_world": [
+   "REFUSED",
+   "ValueError:EXTERNAL_DEADLINE_MISMATCH"
+  ],
+  "F10_deadline_matches_bars_stop_early_native_world": [
+   "REFUSED",
+   "ValueError:REPORT_TIME_SUPPORT"
+  ],
+  "F10_full_report_mismatched_expected_deadline": [
+   "REFUSED",
+   "ValueError:EXTERNAL_DEADLINE_MISMATCH"
+  ]
+ },
+ "DA12": {
+  "direct_stale_at_env_clock": [
+   "REFUSED",
+   "ValueError:STALE_OR_FUTURE_REPORT"
+  ],
+  "direct_future_at_env_clock": [
+   "REFUSED",
+   "ValueError:STALE_OR_FUTURE_REPORT"
+  ],
+  "cache_adapter_stale_at_env_clock": [
+   "REFUSED",
+   "ValueError:STALE_OR_FUTURE_REPORT"
+  ],
+  "cache_adapter_future_at_env_clock": [
+   "REFUSED",
+   "ValueError:STALE_OR_FUTURE_REPORT"
+  ],
+  "cache_adapter_current_report_with_stale_values": [
+   "ACCEPTED",
+   "HOLD"
+  ],
+  "MISUSE_direct_stale_at_report_clock": [
+   "ACCEPTED",
+   "HOLD"
+  ],
+  "close_values_warm_cache_stale_report": [
+   "REFUSED",
+   "ValueError:STALE_OR_FUTURE_REPORT"
+  ],
+  "close_values_warm_cache_future_report": [
+   "REFUSED",
+   "ValueError:STALE_OR_FUTURE_REPORT"
+  ],
+  "bids_warm_cache_stale_report": [
+   "REFUSED",
+   "ValueError:STALE_OR_FUTURE_REPORT"
+  ],
+  "bids_warm_cache_future_report": [
+   "REFUSED",
+   "ValueError:STALE_OR_FUTURE_REPORT"
+  ],
+  "panel_true_P1_conf_trend_up": 1.7950627842073352,
+  "panel_Stale_verify_False": [
+   "REFUSED",
+   "ValueError:STALE_OR_FUTURE_REPORT"
+  ],
+  "panel_Stale_verify_True": [
+   "REFUSED",
+   "ValueError:STALE_OR_FUTURE_REPORT"
+  ],
+  "panel_Future_verify_False": [
+   "REFUSED",
+   "ValueError:STALE_OR_FUTURE_REPORT"
+  ],
+  "panel_Future_verify_True": [
+   "REFUSED",
+   "ValueError:STALE_OR_FUTURE_REPORT"
+  ],
+  "panel_StaleCloseOnly_verify_False": [
+   "REFUSED",
+   "ValueError:STALE_OR_FUTURE_REPORT"
+  ],
+  "panel_StaleCloseOnly_verify_True": [
+   "REFUSED",
+   "ValueError:STALE_OR_FUTURE_REPORT"
+  ],
+  "panel_StaleAdapterOnly_verify_False": [
+   "REFUSED",
+   "ValueError:STALE_OR_FUTURE_REPORT"
+  ],
+  "panel_StaleAdapterOnly_verify_True": [
+   "REFUSED",
+   "ValueError:STALE_OR_FUTURE_REPORT"
+  ],
+  "panel_StaleBidsOnly_verify_False": [
+   "REFUSED",
+   "ValueError:STALE_OR_FUTURE_REPORT"
+  ],
+  "panel_StaleBidsOnly_verify_True": [
+   "REFUSED",
+   "ValueError:STALE_OR_FUTURE_REPORT"
+  ]
+ },
+ "DA13": {
+  "hit_changed_entry_old_geometry": {
+   "result": "REFUSED",
+   "error": "AssertionError:CACHE_GEOMETRY"
+  },
+  "hit_changed_entry_consistent_geometry": {
+   "result": "SERVED",
+   "equals_warm_baseline": false,
+   "equals_fresh_recompute": true,
+   "fresh_differs_from_baseline": true
+  },
+  "hit_changed_profile": {
+   "result": "SERVED",
+   "equals_warm_baseline": false,
+   "equals_fresh_recompute": true,
+   "fresh_differs_from_baseline": true
+  },
+  "hit_changed_side": {
+   "result": "SERVED",
+   "equals_warm_baseline": false,
+   "equals_fresh_recompute": true,
+   "fresh_differs_from_baseline": true
+  },
+  "hit_changed_funding": {
+   "result": "SERVED",
+   "equals_warm_baseline": false,
+   "equals_fresh_recompute": true,
+   "fresh_differs_from_baseline": true
+  },
+  "hit_changed_market_slippage": {
+   "result": "SERVED",
+   "equals_warm_baseline": false,
+   "equals_fresh_recompute": true,
+   "fresh_differs_from_baseline": true
+  },
+  "hit_changed_spread_schedule": {
+   "result": "SERVED",
+   "equals_warm_baseline": true,
+   "equals_fresh_recompute": false,
+   "fresh_differs_from_baseline": true
+  },
+  "hit_changed_report_paths": {
+   "result": "SERVED",
+   "equals_warm_baseline": false,
+   "equals_fresh_recompute": true,
+   "fresh_differs_from_baseline": true
+  },
+  "env_cfg_differs_from_world_cfg": [
+   "REFUSED",
+   "ValueError:CACHE_EXECUTION_CONFIG"
+  ],
+  "bids_hit_changed_market_slippage": {
+   "equals_warm_baseline": true,
+   "equals_fresh": false,
+   "fresh_differs": true
+  },
+  "bids_hit_changed_spread_schedule": {
+   "equals_warm_baseline": true,
+   "equals_fresh": false,
+   "fresh_differs": true
+  }
+ }
+}

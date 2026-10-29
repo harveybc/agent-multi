@@ -1,0 +1,122 @@
+[
+ {
+  "mode": "gap_close",
+  "direction": 1,
+  "native_reason": "SL",
+  "reason_ok": true,
+  "native_net": -70.64019499999553,
+  "controller_passive": -70.64019499999553,
+  "abs_err": 0.0,
+  "test_would_pass": true,
+  "last_bar_open_spread": 5e-05,
+  "flat_time_spread": 5e-05
+ },
+ {
+  "mode": "ambiguous",
+  "direction": 1,
+  "native_reason": "SL",
+  "reason_ok": true,
+  "native_net": -35.053194999999455,
+  "controller_passive": -35.05319499999946,
+  "abs_err": 7.105427357601002e-15,
+  "test_would_pass": true,
+  "last_bar_open_spread": 5e-05,
+  "flat_time_spread": 5e-05
+ },
+ {
+  "mode": "through",
+  "direction": 1,
+  "native_reason": "TP",
+  "reason_ok": true,
+  "native_net": 67.79323499999889,
+  "controller_passive": 67.7932349999989,
+  "abs_err": 1.4210854715202004e-14,
+  "test_would_pass": true,
+  "last_bar_open_spread": 5e-05,
+  "flat_time_spread": 5e-05
+ },
+ {
+  "mode": "deadline_spread",
+  "direction": 1,
+  "native_reason": "FORCED_FLAT",
+  "reason_ok": true,
+  "native_net": -25.97850999999922,
+  "controller_passive": -25.97850999999921,
+  "abs_err": 7.105427357601002e-15,
+  "test_would_pass": true,
+  "last_bar_open_spread": 0.0004,
+  "flat_time_spread": 0.0004
+ },
+ {
+  "mode": "deadline_spread_boundary12",
+  "direction": 1,
+  "native_reason": "FORCED_FLAT",
+  "reason_ok": true,
+  "native_net": -25.97850999999922,
+  "controller_passive": -25.97850999999921,
+  "abs_err": 7.105427357601002e-15,
+  "test_would_pass": true,
+  "last_bar_open_spread": 5e-05,
+  "flat_time_spread": 0.0004
+ },
+ {
+  "mode": "gap_close",
+  "direction": -1,
+  "native_reason": "SL",
+  "reason_ok": true,
+  "native_net": -91.59182499999314,
+  "controller_passive": -91.59182499999314,
+  "abs_err": 0.0,
+  "test_would_pass": true,
+  "last_bar_open_spread": 5e-05,
+  "flat_time_spread": 5e-05
+ },
+ {
+  "mode": "ambiguous",
+  "direction": -1,
+  "native_reason": "SL",
+  "reason_ok": true,
+  "native_net": -46.13682499999815,
+  "controller_passive": -46.13682499999815,
+  "abs_err": 0.0,
+  "test_would_pass": true,
+  "last_bar_open_spread": 5e-05,
+  "flat_time_spread": 5e-05
+ },
+ {
+  "mode": "through",
+  "direction": -1,
+  "native_reason": "TP",
+  "reason_ok": true,
+  "native_net": 84.77357500000687,
+  "controller_passive": 84.77357500000687,
+  "abs_err": 0.0,
+  "test_would_pass": true,
+  "last_bar_open_spread": 5e-05,
+  "flat_time_spread": 5e-05
+ },
+ {
+  "mode": "deadline_spread",
+  "direction": -1,
+  "native_reason": "FORCED_FLAT",
+  "reason_ok": true,
+  "native_net": -7.272799999999,
+  "controller_passive": -7.272799999998997,
+  "abs_err": 2.6645352591003757e-15,
+  "test_would_pass": true,
+  "last_bar_open_spread": 0.0004,
+  "flat_time_spread": 0.0004
+ },
+ {
+  "mode": "deadline_spread_boundary12",
+  "direction": -1,
+  "native_reason": "FORCED_FLAT",
+  "reason_ok": true,
+  "native_net": -7.272799999999,
+  "controller_passive": -7.272799999998997,
+  "abs_err": 2.6645352591003757e-15,
+  "test_would_pass": true,
+  "last_bar_open_spread": 5e-05,
+  "flat_time_spread": 0.0004
+ }
+]

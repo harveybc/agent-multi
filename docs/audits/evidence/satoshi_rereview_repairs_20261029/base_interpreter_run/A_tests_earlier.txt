@@ -1,0 +1,12 @@
+== close/hold named (was 34 passed)
+...................................                                      [100%]
+35 passed in 0.44s
+== close/hold broad (was 86 passed, 72 skipped)
+sssssssssssssss                                                          [100%]
+87 passed, 72 skipped in 0.64s
+== dynacct named 4 (was 25 passed)
+.....................................                                    [100%]
+37 passed in 1.04s
+== dynacct broad 14 (was 132 passed)
+........................................................................ [100%]
+144 passed in 1.31s

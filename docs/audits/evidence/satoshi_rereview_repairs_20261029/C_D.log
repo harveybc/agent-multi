@@ -1,0 +1,6 @@
+== BEFORE (original scripts, agent-multi 3644ece9)
+D exit 0
+D2 exit 0
+== AFTER (adapted scripts, agent-multi 2318b0e3)
+D exit 0
+D2 exit 0

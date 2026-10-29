@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "<scratch>/scripts_orig/E_adversarial.py", line 16, in <module>
+    u,vals,fo,fe=w.close_values(fake,tr['horizon'],b); r=w.report(b)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<am-worktree>/app/dynamic_account_panel.py", line 171, in close_values
+    if e.cfg!=self.env.cfg: raise ValueError('CACHE_EXECUTION_CONFIG')
+       ^^^^^
+AttributeError: 'E' object has no attribute 'cfg'

@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "<scratch>/scripts/D_closehold_8720.py", line 50, in <module>
+    example_keys=sorted(new[diff[0]].keys())), indent=1, default=str))
+                            ~~~~^^^
+IndexError: list index out of range

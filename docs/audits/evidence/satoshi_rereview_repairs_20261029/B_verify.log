@@ -1,0 +1,38 @@
+== archive sha256 BEFORE
+e98720b9483d49e2a460e443f950bfe7c3c2979f6592492edcc92a6d8262faef  docs/audits/evidence/dynamic_account_pareto_20261029/CANDIDATES.jsonl.gz
+116102193d4e1623d2abaabec0be5e5196ebc5ef851694786ba340f8abb71ba4  docs/audits/evidence/dynamic_account_pareto_20261029/FRONTIER.json
+966b02927cb2a06accdf31e9f63bf08f0648d561f0457d8418361217a3b1a2bb  docs/audits/evidence/dynamic_account_pareto_20261029/MANIFEST.json
+c19a5998a5cc440043305a3723c3fbe9876e9ff7931b964ad6dc2a8947a0a6c8  docs/audits/evidence/dynamic_account_pareto_20261029/REPLAYS.json.gz
+5760fb13c1717d06a5708d65cddb74f3891d3138ca2f242a6a1b13e22e26912b  docs/audits/evidence/dynamic_account_pareto_20261029/REPORT.json
+b2d1b6312d0f43c3b9772721a14a7bde394f155f23b781db5faacd4469f5a98f  docs/audits/evidence/dynamic_account_pareto_20261029/SEED_19.json.gz
+eefbd5c947275f88e40cda4a8c61dce5c7eaf765d23ad72570d7cec90a8790b9  docs/audits/evidence/dynamic_account_pareto_20261029/SEED_43.json.gz
+8e6aee79dd2a8ee6a40e41bf3596c9d35e35f1128ca295d54136565b16e46637  docs/audits/evidence/dynamic_account_pareto_20261029/SEED_7.json.gz
+e4b3b46280b372c70c5ca5db9090ae80676ef20dd2224012ccaf5bcf65ba80b7  docs/audits/evidence/dynamic_account_pareto_20261029/SUMMARY.md
+d66dca80ba83c2fb46872a5f2fc6a798f75475fcf41f5ceb6a57d53393ed62a9  docs/audits/evidence/dynamic_account_pareto_20261029/VERIFICATION.json
+== archive vs predecessor commit 3644ece9 (git diff --stat)
+(empty = byte-identical)
+{"policy": "nop", "accounts_verified": 24}
+{"policy": "equal_guarded", "accounts_verified": 48}
+{"policy": "greedy", "accounts_verified": 72}
+{"policy": "only_3", "accounts_verified": 96}
+{"policy": "only_6", "accounts_verified": 120}
+{"policy": "only_12", "accounts_verified": 144}
+{"policy": "only_24", "accounts_verified": 168}
+{"policy": "08fca639649ce453f94aa3697ef13403912ebbaefa327f27dc58069517fc164a", "accounts_verified": 192}
+{"policy": "7d161591d433ff6961cbb697b9a205254fefd59f31383d1823aedd5bb6c5e94c", "accounts_verified": 216}
+{"policy": "18c72e613b22641393b09842fd0bf6cb1a1e85a5c5096ef77d2044774c290940", "accounts_verified": 240}
+{"policy": "0622b2f8d354e2a1d4aea99e5e63167620d7172c43c7ab173f9ef68403f23302", "accounts_verified": 264}
+{"policy": "89a4e072655dbe88138fe4a40875d8e1461c5bbc3a0267a701b757a62637b7eb", "accounts_verified": 288}
+{"status": "PASS", "accounts": 288}
+	Maximum resident set size (kbytes): 192216
+== archive sha256 AFTER
+e98720b9483d49e2a460e443f950bfe7c3c2979f6592492edcc92a6d8262faef  docs/audits/evidence/dynamic_account_pareto_20261029/CANDIDATES.jsonl.gz
+116102193d4e1623d2abaabec0be5e5196ebc5ef851694786ba340f8abb71ba4  docs/audits/evidence/dynamic_account_pareto_20261029/FRONTIER.json
+966b02927cb2a06accdf31e9f63bf08f0648d561f0457d8418361217a3b1a2bb  docs/audits/evidence/dynamic_account_pareto_20261029/MANIFEST.json
+c19a5998a5cc440043305a3723c3fbe9876e9ff7931b964ad6dc2a8947a0a6c8  docs/audits/evidence/dynamic_account_pareto_20261029/REPLAYS.json.gz
+5760fb13c1717d06a5708d65cddb74f3891d3138ca2f242a6a1b13e22e26912b  docs/audits/evidence/dynamic_account_pareto_20261029/REPORT.json
+b2d1b6312d0f43c3b9772721a14a7bde394f155f23b781db5faacd4469f5a98f  docs/audits/evidence/dynamic_account_pareto_20261029/SEED_19.json.gz
+eefbd5c947275f88e40cda4a8c61dce5c7eaf765d23ad72570d7cec90a8790b9  docs/audits/evidence/dynamic_account_pareto_20261029/SEED_43.json.gz
+8e6aee79dd2a8ee6a40e41bf3596c9d35e35f1128ca295d54136565b16e46637  docs/audits/evidence/dynamic_account_pareto_20261029/SEED_7.json.gz
+e4b3b46280b372c70c5ca5db9090ae80676ef20dd2224012ccaf5bcf65ba80b7  docs/audits/evidence/dynamic_account_pareto_20261029/SUMMARY.md
+d66dca80ba83c2fb46872a5f2fc6a798f75475fcf41f5ceb6a57d53393ed62a9  docs/audits/evidence/dynamic_account_pareto_20261029/VERIFICATION.json

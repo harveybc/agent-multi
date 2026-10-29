@@ -1,0 +1,5 @@
+  File "<am-worktree>/tools/verify_dynamic_account_results.py", line 64, in main
+    if sources(a.engine_root)!=manifest['sources']: raise ValueError('SOURCE_PINS')
+                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: SOURCE_PINS
+exit=0

@@ -1,0 +1,48 @@
+{
+ "F07_pure_sweep": {
+  "cases": 60000,
+  "mismatches": 11497,
+  "examples": [
+   {
+    "d": 1,
+    "tp": 1.8488300000000002,
+    "through": 2e-05,
+    "fav": 1.84885,
+    "native": "TP",
+    "reference": null
+   },
+   {
+    "d": -1,
+    "tp": 1.72042,
+    "through": 1.7e-05,
+    "fav": 1.7204030000000001,
+    "native": "TP",
+    "reference": null
+   },
+   {
+    "d": -1,
+    "tp": 1.24232,
+    "through": 0.0001,
+    "fav": 1.24222,
+    "native": "TP",
+    "reference": null
+   },
+   {
+    "d": 1,
+    "tp": 1.16335,
+    "through": 2e-05,
+    "fav": 1.16337,
+    "native": "TP",
+    "reference": null
+   },
+   {
+    "d": 1,
+    "tp": 0.61304,
+    "through": 3e-05,
+    "fav": 0.61307,
+    "native": "TP",
+    "reference": null
+   }
+  ]
+ }
+}

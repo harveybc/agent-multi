@@ -1,0 +1,55 @@
+{
+ "records": 8720,
+ "committed": 8720,
+ "mismatching_records": 2450,
+ "first": [
+  122,
+  123,
+  127,
+  128,
+  132
+ ],
+ "witnesses": 25,
+ "witnesses_equal": true,
+ "bytes_equal": false,
+ "seconds": 281.8878774839977
+}
+{
+ "arms": {
+  "noisy_immediate": 1216,
+  "noisy_guarded": 1234
+ },
+ "modes": {
+  "('gain', 3)": 192,
+  "('loss', 3)": 186,
+  "('tp', 3)": 192,
+  "('gain', 6)": 234,
+  "('loss', 6)": 201,
+  "('tp', 6)": 210,
+  "('gain', 12)": 228,
+  "('loss', 12)": 207,
+  "('tp', 12)": 216,
+  "('gain', 24)": 174,
+  "('loss', 24)": 210,
+  "('tp', 24)": 192,
+  "('gap', 3)": 4,
+  "('gap', 6)": 2,
+  "('gap', 24)": 2
+ },
+ "fields": {
+  ".trace[].expected_close_net": 4958
+ },
+ "maxabs": {
+  ".trace[].expected_close_net": 2.842170943040401e-14
+ },
+ "records_with_action_sequence_changed": 0,
+ "records_with_metrics_changed": 0,
+ "example_keys": [
+  "arm",
+  "exit_bar",
+  "metrics",
+  "native_reason",
+  "spec",
+  "trace"
+ ]
+}

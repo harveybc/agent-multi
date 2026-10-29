@@ -1,0 +1,12 @@
+== BEFORE: original E_adversarial.py on 3644ece9
+exit 0
+== AFTER: original E_adversarial.py UNADAPTED on 2318b0e3 (expected to fail at migrated call sites)
+exit 1
+       ^^^^^
+AttributeError: 'E' object has no attribute 'cfg'
+== AFTER: adapted F10/DA12/DA13 on 2318b0e3
+exit 0
+== F07 pure sweep BEFORE (3644ece9)
+exit 0
+== F07 + DA24 AFTER (2318b0e3)
+exit 0
