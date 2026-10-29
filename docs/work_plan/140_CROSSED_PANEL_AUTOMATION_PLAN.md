@@ -5,7 +5,8 @@ Precedes floating feature selection and learned-policy experiments.
 
 ## Frozen design before implementation
 
-- Calibration seed bank 10100..10109; confirmation 20100..20109. Three price
+- Calibration seed bank 50100..50109; confirmation 60100..60109. Smoke tests use
+  separate banks70100/80100 and cannot consume scientific-bank paths. Three price
   families: trend, reversal and overlapping frequencies. Thirty independent
   innovations per bank; three volatility envelopes (constant/increasing/decreasing),
   two spreads (0.5/3 pips), and exact mirrored price paths are paired transforms.
@@ -72,3 +73,12 @@ Sharpe is diagnostic only; no significance claim treats mirrors as independent.
 No global optimum or learned report sufficiency follows from this finite panel.
 This version does not yet solve multi-week global opportunity scheduling; it tests
 the audited account mechanism on a less favorable, independently crossed panel.
+
+## Pre-search correction
+
+The first end-to-end smoke consumed two paths of the originally proposed 20100
+confirmation bank. Before any full DEAP generation, the initial service was
+stopped during controls (7/35 completed). Its identity9dfeae88 remains separate
+and is not scientific evidence. Both full banks were replaced with the unused
+50100/60100 banks above; smoke now has its own namespace and disjointness test.
+No original control or candidate result is reused in the replacement run.

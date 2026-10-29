@@ -1,0 +1,8 @@
+{
+  "data": {
+    "log_sha256": "0be79b90f7e59fb997a3ffbae1d299be70c86162bdff8fecfc8411d81d8b629a",
+    "passed": 162
+  },
+  "identity": "cdd8c5aef97f28ce7c86dcc0b47110e96d4da78b96f18b0bf8b1bbd978b5d0fe",
+  "seal": "a33de4682f89e893f447743abe2e01dfc6f520a0e1a7f95d5628fb195a083614"
+}

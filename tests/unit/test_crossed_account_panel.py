@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from app.crossed_account_panel import CrossedWorld, panel_specs, market, QUALITIES
+from app.crossed_account_panel import CrossedWorld, panel_specs, execution_specs, market, QUALITIES
 from app.dynamic_account_panel import BASE
 from app.close_hold_controller import validate, validate_context
 from app.zigzag_opportunities import engine
@@ -26,6 +26,16 @@ def test_full_grid_independence_units_and_disjoint_banks():
     assert len({(s['seed'],s['pattern']) for s in a})==30
     assert {s['seed'] for s in a}.isdisjoint({s['seed'] for s in b})
     assert len({tuple(sorted(s.items())) for s in a})==360
+
+
+def test_smoke_and_scientific_price_banks_never_overlap():
+    banks=[]
+    for smoke in (False,True):
+        for split in ('calibration','confirmation'):
+            banks.append({s['seed'] for s in execution_specs(split,'correlated',smoke)})
+    for i,a in enumerate(banks):
+        for b in banks[i+1:]: assert a.isdisjoint(b)
+    assert all(b.isdisjoint(set(range(10100,10110))|set(range(20100,20110))) for b in banks)
 
 
 def test_cost_quality_and_mirror_metamorphisms():

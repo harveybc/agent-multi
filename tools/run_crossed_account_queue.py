@@ -18,7 +18,7 @@ import pandas as pd
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
-from app.crossed_account_panel import CrossedWorld, panel_specs, QUALITIES
+from app.crossed_account_panel import execution_specs, QUALITIES
 from app.crossed_account_workers import ShardPool
 from app.dynamic_account_arbiter import frontier, GENES, bounds
 from app.zigzag_opportunities import engine, sha
@@ -116,8 +116,7 @@ def main():
     code=pins(native);config=ROOT/'docs/audits/evidence/shared_risk_rules_20261028/CONFIG.json'
     cfg=json.loads(config.read_text());generations=2 if a.smoke else 300;seeds=[7] if a.smoke else [7,19,43]
     def specs(bank,q):
-        rows=panel_specs(bank,q)
-        return rows[:2] if a.smoke else rows
+        return execution_specs(bank,q,a.smoke)
     manifest=dict(schema='crossed_account.v2',smoke=a.smoke,synthetic_only=True,
         sources=code,config_sha256=sha(config),population=20,generations=generations,seeds=seeds,workers=a.workers,
         genes=GENES,bounds=bounds(),calibration=specs('calibration','correlated'),

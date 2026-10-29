@@ -16,9 +16,15 @@ QUALITIES=('ideal','correlated','delayed','omitted_reversal','missing')
 def panel_specs(bank,quality='correlated',draws=10):
     if bank not in ('calibration','confirmation') or quality not in QUALITIES or not 1<=draws<=10:
         raise ValueError('CROSSED_PANEL_SPEC')
-    start=10100 if bank=='calibration' else 20100
+    start=50100 if bank=='calibration' else 60100
     return [dict(bank=bank,seed=start+i,pattern=p,volatility=v,spread_pips=s,mirror=m,quality=quality)
             for i,p,v,s,m in itertools.product(range(draws),PATTERNS,ENVELOPES,(.5,3.),(1,-1))]
+
+
+def execution_specs(bank,quality,smoke=False):
+    rows=panel_specs(bank,quality)
+    if not smoke: return rows
+    return [dict(s,seed=s['seed']+20000,bank='smoke_'+bank) for s in rows[:2]]
 
 
 def market(spec):

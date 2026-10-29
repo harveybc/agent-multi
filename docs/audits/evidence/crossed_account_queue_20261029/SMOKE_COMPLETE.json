@@ -1,0 +1,2706 @@
+{
+  "data": {
+    "behavior_classes": {
+      "correlated": 12,
+      "delayed": 9,
+      "ideal": 10,
+      "missing": 12,
+      "omitted_reversal": 12
+    },
+    "candidates": 60,
+    "confirmation": [
+      {
+        "action_signature": "7800ae99e02bc36974feb2ba7a3b7c421a1e3f40ff9a3ab72365b5195b4cec4f",
+        "buy_wins": 0,
+        "buys": 0,
+        "distinct_world_traces": 1,
+        "early_closes": 0,
+        "eligible": false,
+        "mean_orders": 0.0,
+        "name": "nop",
+        "objectives": [
+          0.0,
+          -0.0
+        ],
+        "orders": 0,
+        "quality": "ideal",
+        "replay_sha256": "2098970afb13dcc3306f8970ce34cb0a6116de94fc5cfa9e892e649fb56592ac",
+        "sell_wins": 0,
+        "sells": 0,
+        "wins": 0
+      },
+      {
+        "action_signature": "ff3756c56e261f1b43f712e3f6d87a50341d073d3bdc6882591e4234323404e5",
+        "buy_wins": 3,
+        "buys": 3,
+        "distinct_world_traces": 2,
+        "early_closes": 2,
+        "eligible": true,
+        "mean_orders": 3.0,
+        "name": "equal_guarded",
+        "objectives": [
+          2.3748363073794243,
+          -0.44147042750009885
+        ],
+        "orders": 6,
+        "quality": "ideal",
+        "replay_sha256": "0c68cd2cde1c8d77df0e58dc4083a3ec3289df90ac268a7c2ac4df10764b2f6b",
+        "sell_wins": 3,
+        "sells": 3,
+        "wins": 6
+      },
+      {
+        "action_signature": "726d96635497da5c5674a9ffac5e9f3e33af09e069a311e0c13289835c1e5672",
+        "buy_wins": 3,
+        "buys": 3,
+        "distinct_world_traces": 2,
+        "early_closes": 2,
+        "eligible": true,
+        "mean_orders": 3.0,
+        "name": "greedy",
+        "objectives": [
+          2.7008034652397206,
+          -0.42740312171240663
+        ],
+        "orders": 6,
+        "quality": "ideal",
+        "replay_sha256": "c1aec26b6ae201eb218ce012fd8921b87e0064cfbde4b7a5ac921f4ae27c027e",
+        "sell_wins": 3,
+        "sells": 3,
+        "wins": 6
+      },
+      {
+        "action_signature": "f4d36c8ea70a88789a7d02880c89eaa9610926bf48f56d62ce3e0e7d06fabbfa",
+        "buy_wins": 4,
+        "buys": 4,
+        "distinct_world_traces": 2,
+        "early_closes": 0,
+        "eligible": true,
+        "mean_orders": 4.0,
+        "name": "only_3",
+        "objectives": [
+          3.218429115406396,
+          -0.5228656057402182
+        ],
+        "orders": 8,
+        "quality": "ideal",
+        "replay_sha256": "acc774aaa511c028720b3e7cb943e1f6f8f862acdea20bdf0d8035425ca2e45f",
+        "sell_wins": 4,
+        "sells": 4,
+        "wins": 8
+      },
+      {
+        "action_signature": "427d8fc135ec61535ae1f46abc060648219648c95fd530b48534689b28120c7b",
+        "buy_wins": 4,
+        "buys": 4,
+        "distinct_world_traces": 2,
+        "early_closes": 2,
+        "eligible": true,
+        "mean_orders": 4.0,
+        "name": "only_6",
+        "objectives": [
+          3.5394260049261272,
+          -0.5083393056370492
+        ],
+        "orders": 8,
+        "quality": "ideal",
+        "replay_sha256": "c0062f84182b5cfd875ee98387d87921178d6b40a4a1856e0c2157025a2979e9",
+        "sell_wins": 4,
+        "sells": 4,
+        "wins": 8
+      },
+      {
+        "action_signature": "a5a3efd32ac34f0069f459c6a260d29096f10be155ea69641768a027c230188b",
+        "buy_wins": 3,
+        "buys": 3,
+        "distinct_world_traces": 2,
+        "early_closes": 2,
+        "eligible": true,
+        "mean_orders": 3.0,
+        "name": "only_12",
+        "objectives": [
+          2.3052698850057562,
+          -0.381313113419983
+        ],
+        "orders": 6,
+        "quality": "ideal",
+        "replay_sha256": "357690bf1a6c0d559571bf3350e8339a696c93329b9b9f652dc4689a667be847",
+        "sell_wins": 3,
+        "sells": 3,
+        "wins": 6
+      },
+      {
+        "action_signature": "084e8f2cae16a00a871e69af532ff42e632e698b0ef07e7a0f936bf2b312f832",
+        "buy_wins": 3,
+        "buys": 3,
+        "distinct_world_traces": 2,
+        "early_closes": 2,
+        "eligible": true,
+        "mean_orders": 3.0,
+        "name": "only_24",
+        "objectives": [
+          2.197079916008071,
+          -0.3099661700117993
+        ],
+        "orders": 6,
+        "quality": "ideal",
+        "replay_sha256": "7a7a22e4795dad74721de4d4d8d2fa6f67d1cdfe3dbcc040319d8de9320921db",
+        "sell_wins": 3,
+        "sells": 3,
+        "wins": 6
+      },
+      {
+        "action_signature": "c1ef01e69c3a3a495a58be8508c477f7d21f3df5d1af287fd117293f73e16866",
+        "buy_wins": 4,
+        "buys": 4,
+        "distinct_world_traces": 2,
+        "early_closes": 3,
+        "eligible": true,
+        "mean_orders": 4.0,
+        "name": "3c25e0758e738ae8feed3492f4aa867a1bb8dea1c40af13ca41f1db4b7510b0f",
+        "objectives": [
+          2.863841798746125,
+          -0.44068662446069967
+        ],
+        "orders": 8,
+        "quality": "ideal",
+        "replay_sha256": "ebf499509f9a05e36bf7a0c2b170cb6e45ca6422b24b209b4e4f6f54caf53ff5",
+        "sell_wins": 4,
+        "sells": 4,
+        "wins": 8
+      },
+      {
+        "action_signature": "00afc68d83b4ca318b7134a48996c592ae8eca36561356647efeb1c4e47a9356",
+        "buy_wins": 3,
+        "buys": 3,
+        "distinct_world_traces": 2,
+        "early_closes": 0,
+        "eligible": true,
+        "mean_orders": 3.0,
+        "name": "2f4ce7b0af806eda857f51bad2757dced0dd374b48275efb3f144901521d9c01",
+        "objectives": [
+          1.564504403417466,
+          -0.2308730860004201
+        ],
+        "orders": 6,
+        "quality": "ideal",
+        "replay_sha256": "3e19b86eb8f2b31c220d00da3a5ad16b31bf44300c0b720df9f7afd5ce881f7e",
+        "sell_wins": 3,
+        "sells": 3,
+        "wins": 6
+      },
+      {
+        "action_signature": "00afc68d83b4ca318b7134a48996c592ae8eca36561356647efeb1c4e47a9356",
+        "buy_wins": 3,
+        "buys": 3,
+        "distinct_world_traces": 2,
+        "early_closes": 0,
+        "eligible": true,
+        "mean_orders": 3.0,
+        "name": "dd4b100ba76ab22657c26cbac175a253a864ecc43c4eef5b1f7472952b7057c8",
+        "objectives": [
+          1.6404964221801488,
+          -0.24197955539171484
+        ],
+        "orders": 6,
+        "quality": "ideal",
+        "replay_sha256": "1328e4efb8e7ef14eb101f5300aa72997b58ce8d5df43f15dc31a8bc014da8bc",
+        "sell_wins": 3,
+        "sells": 3,
+        "wins": 6
+      },
+      {
+        "action_signature": "a81d9f88a6a4245f7d99809ba8fad924ed03e5d9cd8bc57e26dadf5ec29761b5",
+        "buy_wins": 3,
+        "buys": 3,
+        "distinct_world_traces": 2,
+        "early_closes": 2,
+        "eligible": true,
+        "mean_orders": 3.0,
+        "name": "03a1cb79855abd82b2a8a85351a344dd048b383193bfceae2819a4456540c647",
+        "objectives": [
+          1.0291061730273388,
+          -0.16248622381819933
+        ],
+        "orders": 6,
+        "quality": "ideal",
+        "replay_sha256": "78ee19c4126ac51a0f5315b87f7b666fbc29789c5715ece05b22051e92381212",
+        "sell_wins": 3,
+        "sells": 3,
+        "wins": 6
+      },
+      {
+        "action_signature": "f4d36c8ea70a88789a7d02880c89eaa9610926bf48f56d62ce3e0e7d06fabbfa",
+        "buy_wins": 4,
+        "buys": 4,
+        "distinct_world_traces": 2,
+        "early_closes": 0,
+        "eligible": true,
+        "mean_orders": 4.0,
+        "name": "c30c91e788b4db56cc9af6f0ec88143d19c887624263a012d36c1fbbc8981a54",
+        "objectives": [
+          0.8006493683868299,
+          -0.13204411459601356
+        ],
+        "orders": 8,
+        "quality": "ideal",
+        "replay_sha256": "0fe2710b2d6e251585e06fd4e3035523af4e9fb6eb636f5a4b4357a28a68b180",
+        "sell_wins": 4,
+        "sells": 4,
+        "wins": 8
+      },
+      {
+        "action_signature": "c1ef01e69c3a3a495a58be8508c477f7d21f3df5d1af287fd117293f73e16866",
+        "buy_wins": 4,
+        "buys": 4,
+        "distinct_world_traces": 2,
+        "early_closes": 3,
+        "eligible": true,
+        "mean_orders": 4.0,
+        "name": "3c25e0758e738ae8feed3492f4aa867a1bb8dea1c40af13ca41f1db4b7510b0f_size1",
+        "objectives": [
+          3.312372203853109,
+          -0.5083393056370492
+        ],
+        "orders": 8,
+        "quality": "ideal",
+        "replay_sha256": "318df562fd3508931db2aa6eebdd3a35bb4a7216c4746c8defd7d79ca8ea2ac6",
+        "sell_wins": 4,
+        "sells": 4,
+        "wins": 8
+      },
+      {
+        "action_signature": "00afc68d83b4ca318b7134a48996c592ae8eca36561356647efeb1c4e47a9356",
+        "buy_wins": 3,
+        "buys": 3,
+        "distinct_world_traces": 2,
+        "early_closes": 0,
+        "eligible": true,
+        "mean_orders": 3.0,
+        "name": "2f4ce7b0af806eda857f51bad2757dced0dd374b48275efb3f144901521d9c01_size1",
+        "objectives": [
+          2.9208557294602033,
+          -0.4274746509668744
+        ],
+        "orders": 6,
+        "quality": "ideal",
+        "replay_sha256": "d23f94335cba2c7126734f30b700c5b074fece852b8b4740cb600b0007396d5f",
+        "sell_wins": 3,
+        "sells": 3,
+        "wins": 6
+      },
+      {
+        "action_signature": "00afc68d83b4ca318b7134a48996c592ae8eca36561356647efeb1c4e47a9356",
+        "buy_wins": 3,
+        "buys": 3,
+        "distinct_world_traces": 2,
+        "early_closes": 0,
+        "eligible": true,
+        "mean_orders": 3.0,
+        "name": "dd4b100ba76ab22657c26cbac175a253a864ecc43c4eef5b1f7472952b7057c8_size1",
+        "objectives": [
+          2.9208557294602033,
+          -0.4274746509668744
+        ],
+        "orders": 6,
+        "quality": "ideal",
+        "replay_sha256": "d23f94335cba2c7126734f30b700c5b074fece852b8b4740cb600b0007396d5f",
+        "sell_wins": 3,
+        "sells": 3,
+        "wins": 6
+      },
+      {
+        "action_signature": "a81d9f88a6a4245f7d99809ba8fad924ed03e5d9cd8bc57e26dadf5ec29761b5",
+        "buy_wins": 3,
+        "buys": 3,
+        "distinct_world_traces": 2,
+        "early_closes": 2,
+        "eligible": true,
+        "mean_orders": 3.0,
+        "name": "03a1cb79855abd82b2a8a85351a344dd048b383193bfceae2819a4456540c647_size1",
+        "objectives": [
+          1.973368282597443,
+          -0.3099661700117993
+        ],
+        "orders": 6,
+        "quality": "ideal",
+        "replay_sha256": "1f379b99b1af679cee5d69fbfa92fd5d50c60cd6d1906f9fd51e3c2da69a1b22",
+        "sell_wins": 3,
+        "sells": 3,
+        "wins": 6
+      },
+      {
+        "action_signature": "f4d36c8ea70a88789a7d02880c89eaa9610926bf48f56d62ce3e0e7d06fabbfa",
+        "buy_wins": 4,
+        "buys": 4,
+        "distinct_world_traces": 2,
+        "early_closes": 0,
+        "eligible": true,
+        "mean_orders": 4.0,
+        "name": "c30c91e788b4db56cc9af6f0ec88143d19c887624263a012d36c1fbbc8981a54_size1",
+        "objectives": [
+          3.218429115406396,
+          -0.5228656057402182
+        ],
+        "orders": 8,
+        "quality": "ideal",
+        "replay_sha256": "acc774aaa511c028720b3e7cb943e1f6f8f862acdea20bdf0d8035425ca2e45f",
+        "sell_wins": 4,
+        "sells": 4,
+        "wins": 8
+      },
+      {
+        "action_signature": "7800ae99e02bc36974feb2ba7a3b7c421a1e3f40ff9a3ab72365b5195b4cec4f",
+        "buy_wins": 0,
+        "buys": 0,
+        "distinct_world_traces": 1,
+        "early_closes": 0,
+        "eligible": false,
+        "mean_orders": 0.0,
+        "name": "nop",
+        "objectives": [
+          0.0,
+          -0.0
+        ],
+        "orders": 0,
+        "quality": "correlated",
+        "replay_sha256": "6529624f9edf39647e17f0a3c714e9e9e5ff58facc5e9f65fa499bee62e269cb",
+        "sell_wins": 0,
+        "sells": 0,
+        "wins": 0
+      },
+      {
+        "action_signature": "53a143b698cb467600f74bb25c709d082230a563bcd8b2c33629f72a5adf2375",
+        "buy_wins": 4,
+        "buys": 7,
+        "distinct_world_traces": 2,
+        "early_closes": 10,
+        "eligible": true,
+        "mean_orders": 7.0,
+        "name": "equal_guarded",
+        "objectives": [
+          2.6335882744365935,
+          -0.3838012108463576
+        ],
+        "orders": 14,
+        "quality": "correlated",
+        "replay_sha256": "690ea34901882c8bea12e470e31c02c2b1010870469c1963bad3c535285953a2",
+        "sell_wins": 5,
+        "sells": 7,
+        "wins": 9
+      },
+      {
+        "action_signature": "82e5a896c465ecd863a9ebd327050fabd6524d9090f3cd65e99ddb6c98a49f23",
+        "buy_wins": 5,
+        "buys": 9,
+        "distinct_world_traces": 2,
+        "early_closes": 17,
+        "eligible": true,
+        "mean_orders": 9.0,
+        "name": "greedy",
+        "objectives": [
+          1.2897063192103375,
+          -0.5728546401675116
+        ],
+        "orders": 18,
+        "quality": "correlated",
+        "replay_sha256": "bd5849ba830cfedaa82cd52d8a696f4ee97aa265e5c45b40d70abb0d11f0ac27",
+        "sell_wins": 5,
+        "sells": 9,
+        "wins": 10
+      },
+      {
+        "action_signature": "7d680fe9467556fa4a0dfb3fe5ccb254497cf685d63004504c70337ccfcafa5f",
+        "buy_wins": 6,
+        "buys": 11,
+        "distinct_world_traces": 2,
+        "early_closes": 20,
+        "eligible": true,
+        "mean_orders": 11.0,
+        "name": "only_3",
+        "objectives": [
+          1.7400518796710118,
+          -0.6379435892433741
+        ],
+        "orders": 22,
+        "quality": "correlated",
+        "replay_sha256": "9914fbc6c106735b39cbae9af77a05f2280749cdd59d72d3f2fbba7ec9ff5528",
+        "sell_wins": 7,
+        "sells": 11,
+        "wins": 13
+      },
+      {
+        "action_signature": "a4d2b5dfedbe563372751843928ed68e7ec01c16400256938b383e647854905f",
+        "buy_wins": 6,
+        "buys": 11,
+        "distinct_world_traces": 2,
+        "early_closes": 20,
+        "eligible": true,
+        "mean_orders": 11.0,
+        "name": "only_6",
+        "objectives": [
+          1.5547696373628073,
+          -0.6134400992628943
+        ],
+        "orders": 22,
+        "quality": "correlated",
+        "replay_sha256": "b69cd859d6fe520ca2a356eb7d185bee11c9fa3132410321d4a41ef989267a23",
+        "sell_wins": 7,
+        "sells": 11,
+        "wins": 13
+      },
+      {
+        "action_signature": "6395946d9c1cf9a0ff55152f2b5c256903228fb43045abd436dcf21af25f626f",
+        "buy_wins": 5,
+        "buys": 9,
+        "distinct_world_traces": 2,
+        "early_closes": 17,
+        "eligible": true,
+        "mean_orders": 9.0,
+        "name": "only_12",
+        "objectives": [
+          1.5191062099072505,
+          -0.4665431682762289
+        ],
+        "orders": 18,
+        "quality": "correlated",
+        "replay_sha256": "b5f3b27ad24a6333cd529a30e8d99e74413a2d3381ef038f311a7139ece495ae",
+        "sell_wins": 5,
+        "sells": 9,
+        "wins": 10
+      },
+      {
+        "action_signature": "1f84137a7af892b0bb5e4e67f888d643d269af004f46b9f950b3a3515bf45476",
+        "buy_wins": 5,
+        "buys": 9,
+        "distinct_world_traces": 2,
+        "early_closes": 18,
+        "eligible": true,
+        "mean_orders": 9.0,
+        "name": "only_24",
+        "objectives": [
+          1.3542334143070711,
+          -0.3448318964130369
+        ],
+        "orders": 18,
+        "quality": "correlated",
+        "replay_sha256": "e0faf337fbead25616dd4699cc4b850bd68bc7f6d0a630a0b5daa8b4048dd4b2",
+        "sell_wins": 5,
+        "sells": 9,
+        "wins": 10
+      },
+      {
+        "action_signature": "1557622b0fb2afbd14dfeb4e261c0612349a8ca0d1371ec351fdac8b93699391",
+        "buy_wins": 5,
+        "buys": 8,
+        "distinct_world_traces": 2,
+        "early_closes": 12,
+        "eligible": true,
+        "mean_orders": 8.0,
+        "name": "3c25e0758e738ae8feed3492f4aa867a1bb8dea1c40af13ca41f1db4b7510b0f",
+        "objectives": [
+          2.2192388426838017,
+          -0.33286305975815944
+        ],
+        "orders": 16,
+        "quality": "correlated",
+        "replay_sha256": "f0bff666c51bcca732d3b6fc5284e3d9479ff33698987ebdfab107ea57e1a4c3",
+        "sell_wins": 5,
+        "sells": 8,
+        "wins": 10
+      },
+      {
+        "action_signature": "e470dab6220d62a00ad677ae7a84d3fa99a4365ea198e411bf51802ea9ce0d3d",
+        "buy_wins": 3,
+        "buys": 6,
+        "distinct_world_traces": 2,
+        "early_closes": 9,
+        "eligible": true,
+        "mean_orders": 5.5,
+        "name": "2f4ce7b0af806eda857f51bad2757dced0dd374b48275efb3f144901521d9c01",
+        "objectives": [
+          0.4123547630020319,
+          -0.367648778128561
+        ],
+        "orders": 11,
+        "quality": "correlated",
+        "replay_sha256": "7b5565a1c3b98f2453affec0304e20fc3f83240b5e78f88642820793e2d45fb2",
+        "sell_wins": 3,
+        "sells": 5,
+        "wins": 6
+      },
+      {
+        "action_signature": "7c8ebc088233c431284131e6cb1d562c2e5dd89b0c1613d58fa8179feb8c99d0",
+        "buy_wins": 2,
+        "buys": 5,
+        "distinct_world_traces": 2,
+        "early_closes": 8,
+        "eligible": true,
+        "mean_orders": 5.0,
+        "name": "dd4b100ba76ab22657c26cbac175a253a864ecc43c4eef5b1f7472952b7057c8",
+        "objectives": [
+          0.5574515990958595,
+          -0.3853303364915739
+        ],
+        "orders": 10,
+        "quality": "correlated",
+        "replay_sha256": "6fdf4decdb73ca6ccbb626e74e5b00076a8d06d9c58c87aea1460f0101c77e1c",
+        "sell_wins": 2,
+        "sells": 5,
+        "wins": 4
+      },
+      {
+        "action_signature": "bf828491f2cf78d3e29a53d1bac0cc36cf35806fc2cd99b074b011e4a6f2af77",
+        "buy_wins": 2,
+        "buys": 5,
+        "distinct_world_traces": 2,
+        "early_closes": 8,
+        "eligible": true,
+        "mean_orders": 5.0,
+        "name": "03a1cb79855abd82b2a8a85351a344dd048b383193bfceae2819a4456540c647",
+        "objectives": [
+          0.4928756641778054,
+          -0.3574517190145629
+        ],
+        "orders": 10,
+        "quality": "correlated",
+        "replay_sha256": "a46fcc7c1da223fd675098efba72675d0746c3b394f871d973aefee23eab9c64",
+        "sell_wins": 2,
+        "sells": 5,
+        "wins": 4
+      },
+      {
+        "action_signature": "5ef918aef7e41fa57ee1840ad3f907dd19a39a181e812b3602d6a77395ae5818",
+        "buy_wins": 5,
+        "buys": 8,
+        "distinct_world_traces": 2,
+        "early_closes": 12,
+        "eligible": true,
+        "mean_orders": 8.0,
+        "name": "c30c91e788b4db56cc9af6f0ec88143d19c887624263a012d36c1fbbc8981a54",
+        "objectives": [
+          0.770642622686668,
+          -0.11111958969702361
+        ],
+        "orders": 16,
+        "quality": "correlated",
+        "replay_sha256": "39050a68450b1db81e236adeef62f4685215d19b8269375607d044c9ba3fe2b5",
+        "sell_wins": 5,
+        "sells": 8,
+        "wins": 10
+      },
+      {
+        "action_signature": "1557622b0fb2afbd14dfeb4e261c0612349a8ca0d1371ec351fdac8b93699391",
+        "buy_wins": 5,
+        "buys": 8,
+        "distinct_world_traces": 2,
+        "early_closes": 12,
+        "eligible": true,
+        "mean_orders": 8.0,
+        "name": "3c25e0758e738ae8feed3492f4aa867a1bb8dea1c40af13ca41f1db4b7510b0f_size1",
+        "objectives": [
+          2.5658874461223946,
+          -0.38425822555432576
+        ],
+        "orders": 16,
+        "quality": "correlated",
+        "replay_sha256": "4e42d9561ed6e90805a188d9f66bc668bb8293cfc5e81676bc3fec1f62b0b258",
+        "sell_wins": 5,
+        "sells": 8,
+        "wins": 10
+      },
+      {
+        "action_signature": "e470dab6220d62a00ad677ae7a84d3fa99a4365ea198e411bf51802ea9ce0d3d",
+        "buy_wins": 3,
+        "buys": 6,
+        "distinct_world_traces": 2,
+        "early_closes": 9,
+        "eligible": true,
+        "mean_orders": 5.5,
+        "name": "2f4ce7b0af806eda857f51bad2757dced0dd374b48275efb3f144901521d9c01_size1",
+        "objectives": [
+          0.7657635816328723,
+          -0.6802679638213907
+        ],
+        "orders": 11,
+        "quality": "correlated",
+        "replay_sha256": "894cedf5efc014dd3a4deae2bc6d95fd9c63faf59c01b79cd0596dadd37e04ee",
+        "sell_wins": 3,
+        "sells": 5,
+        "wins": 6
+      },
+      {
+        "action_signature": "7c8ebc088233c431284131e6cb1d562c2e5dd89b0c1613d58fa8179feb8c99d0",
+        "buy_wins": 2,
+        "buys": 5,
+        "distinct_world_traces": 2,
+        "early_closes": 8,
+        "eligible": true,
+        "mean_orders": 5.0,
+        "name": "dd4b100ba76ab22657c26cbac175a253a864ecc43c4eef5b1f7472952b7057c8_size1",
+        "objectives": [
+          0.9887566919713819,
+          -0.6802821356927825
+        ],
+        "orders": 10,
+        "quality": "correlated",
+        "replay_sha256": "007f9ad8a8978825a49c986292cdc7193a2afd9099ca68ac1583164d593a665b",
+        "sell_wins": 2,
+        "sells": 5,
+        "wins": 4
+      },
+      {
+        "action_signature": "bf828491f2cf78d3e29a53d1bac0cc36cf35806fc2cd99b074b011e4a6f2af77",
+        "buy_wins": 2,
+        "buys": 5,
+        "distinct_world_traces": 2,
+        "early_closes": 8,
+        "eligible": true,
+        "mean_orders": 5.0,
+        "name": "03a1cb79855abd82b2a8a85351a344dd048b383193bfceae2819a4456540c647_size1",
+        "objectives": [
+          0.9426428917753027,
+          -0.6802787765523771
+        ],
+        "orders": 10,
+        "quality": "correlated",
+        "replay_sha256": "c9bd33722a0b145938c3cc2fda49d83b1eccbf7a1a185122346897b37a4f2d96",
+        "sell_wins": 2,
+        "sells": 5,
+        "wins": 4
+      },
+      {
+        "action_signature": "5ef918aef7e41fa57ee1840ad3f907dd19a39a181e812b3602d6a77395ae5818",
+        "buy_wins": 5,
+        "buys": 8,
+        "distinct_world_traces": 2,
+        "early_closes": 12,
+        "eligible": true,
+        "mean_orders": 8.0,
+        "name": "c30c91e788b4db56cc9af6f0ec88143d19c887624263a012d36c1fbbc8981a54_size1",
+        "objectives": [
+          3.097354552417486,
+          -0.4399727412721772
+        ],
+        "orders": 16,
+        "quality": "correlated",
+        "replay_sha256": "11918464769f98b36c505714285ccc0d7edd27a7f71e1e50e2d39c05b1dc2ebf",
+        "sell_wins": 5,
+        "sells": 8,
+        "wins": 10
+      },
+      {
+        "action_signature": "7800ae99e02bc36974feb2ba7a3b7c421a1e3f40ff9a3ab72365b5195b4cec4f",
+        "buy_wins": 0,
+        "buys": 0,
+        "distinct_world_traces": 1,
+        "early_closes": 0,
+        "eligible": false,
+        "mean_orders": 0.0,
+        "name": "nop",
+        "objectives": [
+          0.0,
+          -0.0
+        ],
+        "orders": 0,
+        "quality": "delayed",
+        "replay_sha256": "9ad7f4c60c0f0be797e1ec832bfac6b102d2d9ea7052e19f0585bde9b24e43b9",
+        "sell_wins": 0,
+        "sells": 0,
+        "wins": 0
+      },
+      {
+        "action_signature": "4d6888368d52c60cb640906fc186597daab3dcaf07e41ec3d3302a9e86c65b92",
+        "buy_wins": 1,
+        "buys": 2,
+        "distinct_world_traces": 2,
+        "early_closes": 0,
+        "eligible": false,
+        "mean_orders": 2.0,
+        "name": "equal_guarded",
+        "objectives": [
+          0.7549649713761042,
+          -0.8197564711753813
+        ],
+        "orders": 4,
+        "quality": "delayed",
+        "replay_sha256": "90a00b8b357a17cbe9dc6f61979ae6c5ea8edce87bc4613dd1b53fc2de1bd7d5",
+        "sell_wins": 1,
+        "sells": 2,
+        "wins": 2
+      },
+      {
+        "action_signature": "4d6888368d52c60cb640906fc186597daab3dcaf07e41ec3d3302a9e86c65b92",
+        "buy_wins": 1,
+        "buys": 2,
+        "distinct_world_traces": 2,
+        "early_closes": 0,
+        "eligible": false,
+        "mean_orders": 2.0,
+        "name": "greedy",
+        "objectives": [
+          0.7549649713761042,
+          -0.8197564711753813
+        ],
+        "orders": 4,
+        "quality": "delayed",
+        "replay_sha256": "3e13b5c83fadcb1f186f91ccf4f5b46fa9ac11c886bcd06887513724d67c5811",
+        "sell_wins": 1,
+        "sells": 2,
+        "wins": 2
+      },
+      {
+        "action_signature": "05fcc71f7b8a981c9609c835a05d9fd2626429e56639f80cbdf7b34621533f4d",
+        "buy_wins": 4,
+        "buys": 5,
+        "distinct_world_traces": 2,
+        "early_closes": 4,
+        "eligible": true,
+        "mean_orders": 5.0,
+        "name": "only_3",
+        "objectives": [
+          2.5615707653960484,
+          -0.5228656057402182
+        ],
+        "orders": 10,
+        "quality": "delayed",
+        "replay_sha256": "d8caa93628a3ae1300319e1f7434b346405b77b07239b3143a02dae3fb6e4baa",
+        "sell_wins": 4,
+        "sells": 5,
+        "wins": 8
+      },
+      {
+        "action_signature": "6e6337b92af48b4c3e200ad9de0af0f301bb58457e1dc404ebac82c402c30f38",
+        "buy_wins": 3,
+        "buys": 4,
+        "distinct_world_traces": 2,
+        "early_closes": 3,
+        "eligible": true,
+        "mean_orders": 5.0,
+        "name": "only_6",
+        "objectives": [
+          2.182330411640232,
+          -1.0122653427941797
+        ],
+        "orders": 10,
+        "quality": "delayed",
+        "replay_sha256": "481735ae8993fa9e86995aa31f6d55d46b5efc6f7b90e84544ec8149780dd35d",
+        "sell_wins": 4,
+        "sells": 6,
+        "wins": 7
+      },
+      {
+        "action_signature": "4d6888368d52c60cb640906fc186597daab3dcaf07e41ec3d3302a9e86c65b92",
+        "buy_wins": 1,
+        "buys": 2,
+        "distinct_world_traces": 2,
+        "early_closes": 0,
+        "eligible": false,
+        "mean_orders": 2.0,
+        "name": "only_12",
+        "objectives": [
+          0.7549649713761042,
+          -0.8197564711753813
+        ],
+        "orders": 4,
+        "quality": "delayed",
+        "replay_sha256": "3e13b5c83fadcb1f186f91ccf4f5b46fa9ac11c886bcd06887513724d67c5811",
+        "sell_wins": 1,
+        "sells": 2,
+        "wins": 2
+      },
+      {
+        "action_signature": "0fbbf9b27e12831073daed11463dad87de632f89ed9b66f2b1200c7b2b3d9678",
+        "buy_wins": 1,
+        "buys": 2,
+        "distinct_world_traces": 2,
+        "early_closes": 1,
+        "eligible": false,
+        "mean_orders": 2.0,
+        "name": "only_24",
+        "objectives": [
+          0.9363952019576849,
+          -0.6657802194668603
+        ],
+        "orders": 4,
+        "quality": "delayed",
+        "replay_sha256": "0281f7e1be5f70c6e4e5fc472e9a3d99ce00a16a2a81b39f3ae7041059ee31e0",
+        "sell_wins": 1,
+        "sells": 2,
+        "wins": 2
+      },
+      {
+        "action_signature": "623dc685f58ae01902610d81866730280c9c7b37e19f604e19950e146b7ed3e8",
+        "buy_wins": 3,
+        "buys": 3,
+        "distinct_world_traces": 2,
+        "early_closes": 0,
+        "eligible": true,
+        "mean_orders": 3.0,
+        "name": "3c25e0758e738ae8feed3492f4aa867a1bb8dea1c40af13ca41f1db4b7510b0f",
+        "objectives": [
+          2.250735673320803,
+          -0.8572685408263028
+        ],
+        "orders": 6,
+        "quality": "delayed",
+        "replay_sha256": "48906efe2ea32845cd2c20bfaefa0abbbbb472be824ceb325cec06d309f7861a",
+        "sell_wins": 3,
+        "sells": 3,
+        "wins": 6
+      },
+      {
+        "action_signature": "00afc68d83b4ca318b7134a48996c592ae8eca36561356647efeb1c4e47a9356",
+        "buy_wins": 3,
+        "buys": 3,
+        "distinct_world_traces": 2,
+        "early_closes": 0,
+        "eligible": true,
+        "mean_orders": 3.0,
+        "name": "2f4ce7b0af806eda857f51bad2757dced0dd374b48275efb3f144901521d9c01",
+        "objectives": [
+          1.564504403417466,
+          -0.2308730860004201
+        ],
+        "orders": 6,
+        "quality": "delayed",
+        "replay_sha256": "7bfa675a690a5ef0e5de462c4824891d0a7e29eb445f20e916fe74b93d3ebc1b",
+        "sell_wins": 3,
+        "sells": 3,
+        "wins": 6
+      },
+      {
+        "action_signature": "00afc68d83b4ca318b7134a48996c592ae8eca36561356647efeb1c4e47a9356",
+        "buy_wins": 3,
+        "buys": 3,
+        "distinct_world_traces": 2,
+        "early_closes": 0,
+        "eligible": true,
+        "mean_orders": 3.0,
+        "name": "dd4b100ba76ab22657c26cbac175a253a864ecc43c4eef5b1f7472952b7057c8",
+        "objectives": [
+          1.6404964221801488,
+          -0.24197955539171484
+        ],
+        "orders": 6,
+        "quality": "delayed",
+        "replay_sha256": "0540feeeafcf88e7aeae89f39807cde83360e1df537bd9b2848b243f0b0f7b53",
+        "sell_wins": 3,
+        "sells": 3,
+        "wins": 6
+      },
+      {
+        "action_signature": "b05982747e6f4807bdbb05a3e0a475400b1fd60ac07d7fe6f2073bfbe59373f3",
+        "buy_wins": 1,
+        "buys": 2,
+        "distinct_world_traces": 2,
+        "early_closes": 0,
+        "eligible": false,
+        "mean_orders": 2.0,
+        "name": "03a1cb79855abd82b2a8a85351a344dd048b383193bfceae2819a4456540c647",
+        "objectives": [
+          0.49655432659782006,
+          -0.34924330914914414
+        ],
+        "orders": 4,
+        "quality": "delayed",
+        "replay_sha256": "2eef738c2e4b7441cc94f393403ad6a45f909f270764c9404059e7e19125ac9d",
+        "sell_wins": 1,
+        "sells": 2,
+        "wins": 2
+      },
+      {
+        "action_signature": "2d34839305728371551bd409e75a3b88945e82bb257a2bf7eda75a36d59290ed",
+        "buy_wins": 4,
+        "buys": 4,
+        "distinct_world_traces": 2,
+        "early_closes": 0,
+        "eligible": true,
+        "mean_orders": 4.0,
+        "name": "c30c91e788b4db56cc9af6f0ec88143d19c887624263a012d36c1fbbc8981a54",
+        "objectives": [
+          0.8083926797334606,
+          -0.13204411459601356
+        ],
+        "orders": 8,
+        "quality": "delayed",
+        "replay_sha256": "eb9a9b6e0c176e561f651f2fad2fc01db4d6d7476ca6cfd84a38eb01820a8220",
+        "sell_wins": 4,
+        "sells": 4,
+        "wins": 8
+      },
+      {
+        "action_signature": "623dc685f58ae01902610d81866730280c9c7b37e19f604e19950e146b7ed3e8",
+        "buy_wins": 3,
+        "buys": 3,
+        "distinct_world_traces": 2,
+        "early_closes": 0,
+        "eligible": true,
+        "mean_orders": 3.0,
+        "name": "3c25e0758e738ae8feed3492f4aa867a1bb8dea1c40af13ca41f1db4b7510b0f_size1",
+        "objectives": [
+          2.6031222873367676,
+          -0.9890031059597151
+        ],
+        "orders": 6,
+        "quality": "delayed",
+        "replay_sha256": "13096d2fe19bcc777f592222a98a5ba7763ff7afcc0bc54ff3473f11ecba6255",
+        "sell_wins": 3,
+        "sells": 3,
+        "wins": 6
+      },
+      {
+        "action_signature": "00afc68d83b4ca318b7134a48996c592ae8eca36561356647efeb1c4e47a9356",
+        "buy_wins": 3,
+        "buys": 3,
+        "distinct_world_traces": 2,
+        "early_closes": 0,
+        "eligible": true,
+        "mean_orders": 3.0,
+        "name": "2f4ce7b0af806eda857f51bad2757dced0dd374b48275efb3f144901521d9c01_size1",
+        "objectives": [
+          2.9208557294602033,
+          -0.4274746509668744
+        ],
+        "orders": 6,
+        "quality": "delayed",
+        "replay_sha256": "e68fdc54029db6c27176aefd8b5f7cebe7797f8db23a4f66365f6a464ec23fb1",
+        "sell_wins": 3,
+        "sells": 3,
+        "wins": 6
+      },
+      {
+        "action_signature": "00afc68d83b4ca318b7134a48996c592ae8eca36561356647efeb1c4e47a9356",
+        "buy_wins": 3,
+        "buys": 3,
+        "distinct_world_traces": 2,
+        "early_closes": 0,
+        "eligible": true,
+        "mean_orders": 3.0,
+        "name": "dd4b100ba76ab22657c26cbac175a253a864ecc43c4eef5b1f7472952b7057c8_size1",
+        "objectives": [
+          2.9208557294602033,
+          -0.4274746509668744
+        ],
+        "orders": 6,
+        "quality": "delayed",
+        "replay_sha256": "e68fdc54029db6c27176aefd8b5f7cebe7797f8db23a4f66365f6a464ec23fb1",
+        "sell_wins": 3,
+        "sells": 3,
+        "wins": 6
+      },
+      {
+        "action_signature": "b05982747e6f4807bdbb05a3e0a475400b1fd60ac07d7fe6f2073bfbe59373f3",
+        "buy_wins": 1,
+        "buys": 2,
+        "distinct_world_traces": 2,
+        "early_closes": 0,
+        "eligible": false,
+        "mean_orders": 2.0,
+        "name": "03a1cb79855abd82b2a8a85351a344dd048b383193bfceae2819a4456540c647_size1",
+        "objectives": [
+          0.9491183771994649,
+          -0.6657847712168413
+        ],
+        "orders": 4,
+        "quality": "delayed",
+        "replay_sha256": "5a6b33c5feb86c8f3129df51e054b9b4477a4f54122caaa7974df8c9b2a4f37d",
+        "sell_wins": 1,
+        "sells": 2,
+        "wins": 2
+      },
+      {
+        "action_signature": "2d34839305728371551bd409e75a3b88945e82bb257a2bf7eda75a36d59290ed",
+        "buy_wins": 4,
+        "buys": 4,
+        "distinct_world_traces": 2,
+        "early_closes": 0,
+        "eligible": true,
+        "mean_orders": 4.0,
+        "name": "c30c91e788b4db56cc9af6f0ec88143d19c887624263a012d36c1fbbc8981a54_size1",
+        "objectives": [
+          3.249805559198249,
+          -0.5228656057402182
+        ],
+        "orders": 8,
+        "quality": "delayed",
+        "replay_sha256": "b2f5a7136511eb1cf98973462b55a7235a37e1810b522c2e819485fe3517fdc7",
+        "sell_wins": 4,
+        "sells": 4,
+        "wins": 8
+      },
+      {
+        "action_signature": "7800ae99e02bc36974feb2ba7a3b7c421a1e3f40ff9a3ab72365b5195b4cec4f",
+        "buy_wins": 0,
+        "buys": 0,
+        "distinct_world_traces": 1,
+        "early_closes": 0,
+        "eligible": false,
+        "mean_orders": 0.0,
+        "name": "nop",
+        "objectives": [
+          0.0,
+          -0.0
+        ],
+        "orders": 0,
+        "quality": "omitted_reversal",
+        "replay_sha256": "c474e8588edd17d539d91ff2132d366cadefe0405ee213e3f873b073da97f698",
+        "sell_wins": 0,
+        "sells": 0,
+        "wins": 0
+      },
+      {
+        "action_signature": "11bce90833caac297e40bbd14bf1536fa30e5b2f7c32d0fbdbbf1dcc2178c735",
+        "buy_wins": 3,
+        "buys": 6,
+        "distinct_world_traces": 2,
+        "early_closes": 6,
+        "eligible": true,
+        "mean_orders": 6.0,
+        "name": "equal_guarded",
+        "objectives": [
+          -0.3846746707548643,
+          -1.1574359677890425
+        ],
+        "orders": 12,
+        "quality": "omitted_reversal",
+        "replay_sha256": "e488d790927c72430fa66ceb3798503e26eaf53effcf5b036850b4738848f313",
+        "sell_wins": 3,
+        "sells": 6,
+        "wins": 6
+      },
+      {
+        "action_signature": "b4a5d9250ddfd0238aec3d024d6275442abba457eaba7347acbd1c6877fa03c5",
+        "buy_wins": 4,
+        "buys": 7,
+        "distinct_world_traces": 2,
+        "early_closes": 10,
+        "eligible": true,
+        "mean_orders": 7.0,
+        "name": "greedy",
+        "objectives": [
+          0.7458400054272007,
+          -0.5675282471000213
+        ],
+        "orders": 14,
+        "quality": "omitted_reversal",
+        "replay_sha256": "86cdfe78ef95d3e4fc8c4030d4eaff8d6152e25a02eb639f9a66631a39d6bf77",
+        "sell_wins": 4,
+        "sells": 7,
+        "wins": 8
+      },
+      {
+        "action_signature": "25888dc3a7748134239f366d65d5d3994a0ccb8340754787e3a7093a12a93fff",
+        "buy_wins": 4,
+        "buys": 8,
+        "distinct_world_traces": 2,
+        "early_closes": 10,
+        "eligible": true,
+        "mean_orders": 8.0,
+        "name": "only_3",
+        "objectives": [
+          0.9332184280899991,
+          -0.6957768704659645
+        ],
+        "orders": 16,
+        "quality": "omitted_reversal",
+        "replay_sha256": "f9e1064cb3ea4705a19b8580418787747cabc2761fbd6db4f079dc499190c46d",
+        "sell_wins": 4,
+        "sells": 8,
+        "wins": 8
+      },
+      {
+        "action_signature": "3f0da5a5c4e3a36831a4301a408bef0631a4d4e9adef0bef78b0192d9a99807c",
+        "buy_wins": 4,
+        "buys": 7,
+        "distinct_world_traces": 2,
+        "early_closes": 12,
+        "eligible": true,
+        "mean_orders": 7.0,
+        "name": "only_6",
+        "objectives": [
+          1.0003200193302697,
+          -0.6722771702235821
+        ],
+        "orders": 14,
+        "quality": "omitted_reversal",
+        "replay_sha256": "574e5c07eb44402b5ce4b95ab8f7fd9323175e24e72985a14ad38a7612babca6",
+        "sell_wins": 4,
+        "sells": 7,
+        "wins": 8
+      },
+      {
+        "action_signature": "8af9a1ae12d9bcf77eef5c32d666a595d4c3e1de9073b8de5b2703dcecb798de",
+        "buy_wins": 4,
+        "buys": 7,
+        "distinct_world_traces": 2,
+        "early_closes": 12,
+        "eligible": true,
+        "mean_orders": 7.0,
+        "name": "only_12",
+        "objectives": [
+          0.7611855592800754,
+          -0.5078636071587695
+        ],
+        "orders": 14,
+        "quality": "omitted_reversal",
+        "replay_sha256": "f669bddecdd637f1cb09a4508c3d4995c338333fb5b68dd5507c29338aef9be4",
+        "sell_wins": 4,
+        "sells": 7,
+        "wins": 8
+      },
+      {
+        "action_signature": "1ce80a0fe5340fbd9235f2a3e21407ebb5ca7047d6a89c461c7647fd0c5cccdd",
+        "buy_wins": 4,
+        "buys": 7,
+        "distinct_world_traces": 2,
+        "early_closes": 12,
+        "eligible": true,
+        "mean_orders": 7.0,
+        "name": "only_24",
+        "objectives": [
+          0.6101758418231906,
+          -0.41040577254664523
+        ],
+        "orders": 14,
+        "quality": "omitted_reversal",
+        "replay_sha256": "4eefbf4ec2a10db63cc9f77d900e6849a773b863ea8f72ee602c113eefe0bd54",
+        "sell_wins": 4,
+        "sells": 7,
+        "wins": 8
+      },
+      {
+        "action_signature": "3ae7db8a2107c8b06757bd9ea076fdc656f4285fe2cb26b5d4a804fbdd54ff94",
+        "buy_wins": 2,
+        "buys": 5,
+        "distinct_world_traces": 2,
+        "early_closes": 3,
+        "eligible": true,
+        "mean_orders": 4.5,
+        "name": "3c25e0758e738ae8feed3492f4aa867a1bb8dea1c40af13ca41f1db4b7510b0f",
+        "objectives": [
+          0.44002992548435316,
+          -0.8700738684940784
+        ],
+        "orders": 9,
+        "quality": "omitted_reversal",
+        "replay_sha256": "925bac1de240715e8e96b975290e3321b2f265eb1f72aeac87a059b1390b5fc1",
+        "sell_wins": 3,
+        "sells": 4,
+        "wins": 5
+      },
+      {
+        "action_signature": "90a5d7a958f0e6725b0508935b8c20f02ed4e3bfbebdd9aeebdb446b99d20c40",
+        "buy_wins": 2,
+        "buys": 3,
+        "distinct_world_traces": 2,
+        "early_closes": 0,
+        "eligible": true,
+        "mean_orders": 3.0,
+        "name": "2f4ce7b0af806eda857f51bad2757dced0dd374b48275efb3f144901521d9c01",
+        "objectives": [
+          0.1789401080749875,
+          -0.6953677802482603
+        ],
+        "orders": 6,
+        "quality": "omitted_reversal",
+        "replay_sha256": "7b6b0c0dedbf037d82ffe5a702c5e3eda9276d31c8e28c37797f6aa87ca3c41a",
+        "sell_wins": 1,
+        "sells": 3,
+        "wins": 3
+      },
+      {
+        "action_signature": "22e63d84aff461b4d1b11d98f62b6cd4347269afbc95a0d3e670806a016a27ee",
+        "buy_wins": 1,
+        "buys": 1,
+        "distinct_world_traces": 2,
+        "early_closes": 0,
+        "eligible": false,
+        "mean_orders": 1.0,
+        "name": "dd4b100ba76ab22657c26cbac175a253a864ecc43c4eef5b1f7472952b7057c8",
+        "objectives": [
+          0.45976644793821464,
+          -0.3846388428670994
+        ],
+        "orders": 2,
+        "quality": "omitted_reversal",
+        "replay_sha256": "11f460ab39c552fcb5ac16e839fd5db35395f337d2792c0cf503b4867e81e5ab",
+        "sell_wins": 1,
+        "sells": 1,
+        "wins": 2
+      },
+      {
+        "action_signature": "16413a75c54142c6f6fb74b972713383183570d3e4fd9691a8152826167e3a0c",
+        "buy_wins": 1,
+        "buys": 1,
+        "distinct_world_traces": 2,
+        "early_closes": 1,
+        "eligible": false,
+        "mean_orders": 2.0,
+        "name": "03a1cb79855abd82b2a8a85351a344dd048b383193bfceae2819a4456540c647",
+        "objectives": [
+          0.13637205046230783,
+          -0.5186430216671033
+        ],
+        "orders": 4,
+        "quality": "omitted_reversal",
+        "replay_sha256": "612589956da4b4b9439ca18a66f844415dec79863856bc741696b37a6d4afbff",
+        "sell_wins": 1,
+        "sells": 3,
+        "wins": 2
+      },
+      {
+        "action_signature": "93bf2069a6d8f3bf81907f89fb02c0bc978d2d72f3bc570ac4ecc9eb32b9cf0c",
+        "buy_wins": 3,
+        "buys": 5,
+        "distinct_world_traces": 2,
+        "early_closes": 2,
+        "eligible": true,
+        "mean_orders": 5.0,
+        "name": "c30c91e788b4db56cc9af6f0ec88143d19c887624263a012d36c1fbbc8981a54",
+        "objectives": [
+          0.166765493356269,
+          -0.25095478865654525
+        ],
+        "orders": 10,
+        "quality": "omitted_reversal",
+        "replay_sha256": "d36a5969e1bf6ad9ab31460e4f926f24288a5ea88ee6d41410193810c82ca29f",
+        "sell_wins": 3,
+        "sells": 5,
+        "wins": 6
+      },
+      {
+        "action_signature": "3ae7db8a2107c8b06757bd9ea076fdc656f4285fe2cb26b5d4a804fbdd54ff94",
+        "buy_wins": 2,
+        "buys": 5,
+        "distinct_world_traces": 2,
+        "early_closes": 3,
+        "eligible": true,
+        "mean_orders": 4.5,
+        "name": "3c25e0758e738ae8feed3492f4aa867a1bb8dea1c40af13ca41f1db4b7510b0f_size1",
+        "objectives": [
+          0.5075949839230098,
+          -1.0041663069321323
+        ],
+        "orders": 9,
+        "quality": "omitted_reversal",
+        "replay_sha256": "cb8b55beaf41857ca0dd4d6973fe1dbad3997a1d6229f9c1685064e5950deebd",
+        "sell_wins": 3,
+        "sells": 4,
+        "wins": 5
+      },
+      {
+        "action_signature": "90a5d7a958f0e6725b0508935b8c20f02ed4e3bfbebdd9aeebdb446b99d20c40",
+        "buy_wins": 2,
+        "buys": 3,
+        "distinct_world_traces": 2,
+        "early_closes": 0,
+        "eligible": true,
+        "mean_orders": 3.0,
+        "name": "2f4ce7b0af806eda857f51bad2757dced0dd374b48275efb3f144901521d9c01_size1",
+        "objectives": [
+          0.33101874330043746,
+          -1.2897365706028867
+        ],
+        "orders": 6,
+        "quality": "omitted_reversal",
+        "replay_sha256": "a8513a194001c32c31066bff3eb5b7d34ae47c3836211d79bc5c7ec15d090545",
+        "sell_wins": 1,
+        "sells": 3,
+        "wins": 3
+      },
+      {
+        "action_signature": "22e63d84aff461b4d1b11d98f62b6cd4347269afbc95a0d3e670806a016a27ee",
+        "buy_wins": 1,
+        "buys": 1,
+        "distinct_world_traces": 2,
+        "early_closes": 0,
+        "eligible": false,
+        "mean_orders": 1.0,
+        "name": "dd4b100ba76ab22657c26cbac175a253a864ecc43c4eef5b1f7472952b7057c8_size1",
+        "objectives": [
+          0.8152047034694854,
+          -0.6790770522327012
+        ],
+        "orders": 2,
+        "quality": "omitted_reversal",
+        "replay_sha256": "c586030260ac72f38463606169c528506d464a8f4834d96bebc5d3fc87e9e798",
+        "sell_wins": 1,
+        "sells": 1,
+        "wins": 2
+      },
+      {
+        "action_signature": "16413a75c54142c6f6fb74b972713383183570d3e4fd9691a8152826167e3a0c",
+        "buy_wins": 1,
+        "buys": 1,
+        "distinct_world_traces": 2,
+        "early_closes": 1,
+        "eligible": false,
+        "mean_orders": 2.0,
+        "name": "03a1cb79855abd82b2a8a85351a344dd048b383193bfceae2819a4456540c647_size1",
+        "objectives": [
+          0.2605296865540174,
+          -0.9901893128221309
+        ],
+        "orders": 4,
+        "quality": "omitted_reversal",
+        "replay_sha256": "7afe605efab670d0a938a166046640f81fab556f513f3d4f420d17003bbed348",
+        "sell_wins": 1,
+        "sells": 3,
+        "wins": 2
+      },
+      {
+        "action_signature": "93bf2069a6d8f3bf81907f89fb02c0bc978d2d72f3bc570ac4ecc9eb32b9cf0c",
+        "buy_wins": 3,
+        "buys": 5,
+        "distinct_world_traces": 2,
+        "early_closes": 2,
+        "eligible": true,
+        "mean_orders": 5.0,
+        "name": "c30c91e788b4db56cc9af6f0ec88143d19c887624263a012d36c1fbbc8981a54_size1",
+        "objectives": [
+          0.6615030437500558,
+          -0.9959542232897982
+        ],
+        "orders": 10,
+        "quality": "omitted_reversal",
+        "replay_sha256": "c7846b65894c330f64ac2825531f653a6488a61759d9197642a35d9714e7cec2",
+        "sell_wins": 3,
+        "sells": 5,
+        "wins": 6
+      },
+      {
+        "action_signature": "7800ae99e02bc36974feb2ba7a3b7c421a1e3f40ff9a3ab72365b5195b4cec4f",
+        "buy_wins": 0,
+        "buys": 0,
+        "distinct_world_traces": 1,
+        "early_closes": 0,
+        "eligible": false,
+        "mean_orders": 0.0,
+        "name": "nop",
+        "objectives": [
+          0.0,
+          -0.0
+        ],
+        "orders": 0,
+        "quality": "missing",
+        "replay_sha256": "29c2a893b52342a54744decf8fb31a7f35c5a9becf4577ae94a3eaa38a2c1be9",
+        "sell_wins": 0,
+        "sells": 0,
+        "wins": 0
+      },
+      {
+        "action_signature": "53a143b698cb467600f74bb25c709d082230a563bcd8b2c33629f72a5adf2375",
+        "buy_wins": 4,
+        "buys": 7,
+        "distinct_world_traces": 2,
+        "early_closes": 10,
+        "eligible": true,
+        "mean_orders": 7.0,
+        "name": "equal_guarded",
+        "objectives": [
+          2.6335882744365935,
+          -0.3838012108463576
+        ],
+        "orders": 14,
+        "quality": "missing",
+        "replay_sha256": "8faa0acd2caa9fee086e6c395a9cc3bc36ddedc862562c81be4bfe80805898ae",
+        "sell_wins": 5,
+        "sells": 7,
+        "wins": 9
+      },
+      {
+        "action_signature": "35c5b440975b70368c2c87cceea5c53ffe353347b089766ce2056e272c69b01f",
+        "buy_wins": 4,
+        "buys": 8,
+        "distinct_world_traces": 2,
+        "early_closes": 15,
+        "eligible": true,
+        "mean_orders": 8.0,
+        "name": "greedy",
+        "objectives": [
+          1.010747983033533,
+          -0.6800284888333399
+        ],
+        "orders": 16,
+        "quality": "missing",
+        "replay_sha256": "2a9dff1de26e750b41f7b87f8502ac6801355cde70368a565fba0749712aa427",
+        "sell_wins": 4,
+        "sells": 8,
+        "wins": 8
+      },
+      {
+        "action_signature": "7d680fe9467556fa4a0dfb3fe5ccb254497cf685d63004504c70337ccfcafa5f",
+        "buy_wins": 6,
+        "buys": 11,
+        "distinct_world_traces": 2,
+        "early_closes": 20,
+        "eligible": true,
+        "mean_orders": 11.0,
+        "name": "only_3",
+        "objectives": [
+          1.7400518796710118,
+          -0.6379435892433741
+        ],
+        "orders": 22,
+        "quality": "missing",
+        "replay_sha256": "4a0f56604922ebe2858397a3cbb16f842576ae2a4bd137c65b88077a99ab1b6f",
+        "sell_wins": 7,
+        "sells": 11,
+        "wins": 13
+      },
+      {
+        "action_signature": "a4d2b5dfedbe563372751843928ed68e7ec01c16400256938b383e647854905f",
+        "buy_wins": 6,
+        "buys": 11,
+        "distinct_world_traces": 2,
+        "early_closes": 20,
+        "eligible": true,
+        "mean_orders": 11.0,
+        "name": "only_6",
+        "objectives": [
+          1.5547696373628073,
+          -0.6134400992628943
+        ],
+        "orders": 22,
+        "quality": "missing",
+        "replay_sha256": "bcb59e3e8b0afb790fc7869c5455e403d04c7de7ea993dbb0d69a267509b851e",
+        "sell_wins": 7,
+        "sells": 11,
+        "wins": 13
+      },
+      {
+        "action_signature": "08d9823b220201e89bce67698a927788d1a68fdb3fbbebfe667db40de93cd3c7",
+        "buy_wins": 4,
+        "buys": 8,
+        "distinct_world_traces": 2,
+        "early_closes": 15,
+        "eligible": true,
+        "mean_orders": 8.0,
+        "name": "only_12",
+        "objectives": [
+          1.2285336828319227,
+          -0.8352804118246971
+        ],
+        "orders": 16,
+        "quality": "missing",
+        "replay_sha256": "7a24105cd7abb828b9df734280cb2fc30853b9420caba747264f9fcdaa9a291d",
+        "sell_wins": 4,
+        "sells": 8,
+        "wins": 8
+      },
+      {
+        "action_signature": "6525f8e4b406561e4fa40c4a79511ef9c927797c54813a43bc584e8972cfb9bc",
+        "buy_wins": 3,
+        "buys": 7,
+        "distinct_world_traces": 2,
+        "early_closes": 14,
+        "eligible": true,
+        "mean_orders": 7.0,
+        "name": "only_24",
+        "objectives": [
+          0.4712274778988168,
+          -0.6800286471489734
+        ],
+        "orders": 14,
+        "quality": "missing",
+        "replay_sha256": "d42945e0a3f938d8cea92176a32dd57e302d056809967e3afc56d96ce8502427",
+        "sell_wins": 3,
+        "sells": 7,
+        "wins": 6
+      },
+      {
+        "action_signature": "28b6a26ea208d7e3544ad31f570c1921dc0c04c02156f69d444a259084c11ea0",
+        "buy_wins": 5,
+        "buys": 9,
+        "distinct_world_traces": 2,
+        "early_closes": 11,
+        "eligible": true,
+        "mean_orders": 8.0,
+        "name": "3c25e0758e738ae8feed3492f4aa867a1bb8dea1c40af13ca41f1db4b7510b0f",
+        "objectives": [
+          1.7862346494738501,
+          -0.999072374225418
+        ],
+        "orders": 16,
+        "quality": "missing",
+        "replay_sha256": "e7494fd9cc53a628d0dd41f84f46b4e4369e99ad0d5b5aff6fa1906e28fbd83e",
+        "sell_wins": 4,
+        "sells": 7,
+        "wins": 9
+      },
+      {
+        "action_signature": "e470dab6220d62a00ad677ae7a84d3fa99a4365ea198e411bf51802ea9ce0d3d",
+        "buy_wins": 3,
+        "buys": 6,
+        "distinct_world_traces": 2,
+        "early_closes": 9,
+        "eligible": true,
+        "mean_orders": 5.5,
+        "name": "2f4ce7b0af806eda857f51bad2757dced0dd374b48275efb3f144901521d9c01",
+        "objectives": [
+          0.4123547630020319,
+          -0.367648778128561
+        ],
+        "orders": 11,
+        "quality": "missing",
+        "replay_sha256": "605bd14b70f40267bfe66c76e1e932cbfb5ccab13ad64acc9a461e94451e0bed",
+        "sell_wins": 3,
+        "sells": 5,
+        "wins": 6
+      },
+      {
+        "action_signature": "7c8ebc088233c431284131e6cb1d562c2e5dd89b0c1613d58fa8179feb8c99d0",
+        "buy_wins": 2,
+        "buys": 5,
+        "distinct_world_traces": 2,
+        "early_closes": 8,
+        "eligible": true,
+        "mean_orders": 5.0,
+        "name": "dd4b100ba76ab22657c26cbac175a253a864ecc43c4eef5b1f7472952b7057c8",
+        "objectives": [
+          0.5574515990958595,
+          -0.3853303364915739
+        ],
+        "orders": 10,
+        "quality": "missing",
+        "replay_sha256": "62d32438786ce8bedf0ca17fd84ef4725240cb761e7cb637d6b1dfbfd16c58c5",
+        "sell_wins": 2,
+        "sells": 5,
+        "wins": 4
+      },
+      {
+        "action_signature": "bf828491f2cf78d3e29a53d1bac0cc36cf35806fc2cd99b074b011e4a6f2af77",
+        "buy_wins": 2,
+        "buys": 5,
+        "distinct_world_traces": 2,
+        "early_closes": 8,
+        "eligible": true,
+        "mean_orders": 5.0,
+        "name": "03a1cb79855abd82b2a8a85351a344dd048b383193bfceae2819a4456540c647",
+        "objectives": [
+          0.4928756641778054,
+          -0.3574517190145629
+        ],
+        "orders": 10,
+        "quality": "missing",
+        "replay_sha256": "b1549750e229bda7d77a9a740af575d718ff22f22c2ce445ccea42e23de01287",
+        "sell_wins": 2,
+        "sells": 5,
+        "wins": 4
+      },
+      {
+        "action_signature": "5ef918aef7e41fa57ee1840ad3f907dd19a39a181e812b3602d6a77395ae5818",
+        "buy_wins": 5,
+        "buys": 8,
+        "distinct_world_traces": 2,
+        "early_closes": 12,
+        "eligible": true,
+        "mean_orders": 8.0,
+        "name": "c30c91e788b4db56cc9af6f0ec88143d19c887624263a012d36c1fbbc8981a54",
+        "objectives": [
+          0.770642622686668,
+          -0.11111958969702361
+        ],
+        "orders": 16,
+        "quality": "missing",
+        "replay_sha256": "8eab67a1f3aad4393dd352a9b7482708cfb7778ae26cdef1c0372c868028460e",
+        "sell_wins": 5,
+        "sells": 8,
+        "wins": 10
+      },
+      {
+        "action_signature": "28b6a26ea208d7e3544ad31f570c1921dc0c04c02156f69d444a259084c11ea0",
+        "buy_wins": 5,
+        "buys": 9,
+        "distinct_world_traces": 2,
+        "early_closes": 11,
+        "eligible": true,
+        "mean_orders": 8.0,
+        "name": "3c25e0758e738ae8feed3492f4aa867a1bb8dea1c40af13ca41f1db4b7510b0f_size1",
+        "objectives": [
+          2.0645455470875373,
+          -1.1530777175458493
+        ],
+        "orders": 16,
+        "quality": "missing",
+        "replay_sha256": "5bfa9949f73d4684b947ad83d716086fe8b9a31dca84261c0603526ee6e13fff",
+        "sell_wins": 4,
+        "sells": 7,
+        "wins": 9
+      },
+      {
+        "action_signature": "e470dab6220d62a00ad677ae7a84d3fa99a4365ea198e411bf51802ea9ce0d3d",
+        "buy_wins": 3,
+        "buys": 6,
+        "distinct_world_traces": 2,
+        "early_closes": 9,
+        "eligible": true,
+        "mean_orders": 5.5,
+        "name": "2f4ce7b0af806eda857f51bad2757dced0dd374b48275efb3f144901521d9c01_size1",
+        "objectives": [
+          0.7657635816328723,
+          -0.6802679638213907
+        ],
+        "orders": 11,
+        "quality": "missing",
+        "replay_sha256": "f12c504e76172029344c9bbe121ff1f23787a82a4004af98964acb9bec7a24d8",
+        "sell_wins": 3,
+        "sells": 5,
+        "wins": 6
+      },
+      {
+        "action_signature": "7c8ebc088233c431284131e6cb1d562c2e5dd89b0c1613d58fa8179feb8c99d0",
+        "buy_wins": 2,
+        "buys": 5,
+        "distinct_world_traces": 2,
+        "early_closes": 8,
+        "eligible": true,
+        "mean_orders": 5.0,
+        "name": "dd4b100ba76ab22657c26cbac175a253a864ecc43c4eef5b1f7472952b7057c8_size1",
+        "objectives": [
+          0.9887566919713819,
+          -0.6802821356927825
+        ],
+        "orders": 10,
+        "quality": "missing",
+        "replay_sha256": "03c14cba2f21ad09620ee630c97276c85b76d8a7756ae02ff645b42aef0ce928",
+        "sell_wins": 2,
+        "sells": 5,
+        "wins": 4
+      },
+      {
+        "action_signature": "bf828491f2cf78d3e29a53d1bac0cc36cf35806fc2cd99b074b011e4a6f2af77",
+        "buy_wins": 2,
+        "buys": 5,
+        "distinct_world_traces": 2,
+        "early_closes": 8,
+        "eligible": true,
+        "mean_orders": 5.0,
+        "name": "03a1cb79855abd82b2a8a85351a344dd048b383193bfceae2819a4456540c647_size1",
+        "objectives": [
+          0.9426428917753027,
+          -0.6802787765523771
+        ],
+        "orders": 10,
+        "quality": "missing",
+        "replay_sha256": "4a8980b1c5fc9583a5e2db3bd35544808249a73658033beed3f5ee771fe2d779",
+        "sell_wins": 2,
+        "sells": 5,
+        "wins": 4
+      },
+      {
+        "action_signature": "5ef918aef7e41fa57ee1840ad3f907dd19a39a181e812b3602d6a77395ae5818",
+        "buy_wins": 5,
+        "buys": 8,
+        "distinct_world_traces": 2,
+        "early_closes": 12,
+        "eligible": true,
+        "mean_orders": 8.0,
+        "name": "c30c91e788b4db56cc9af6f0ec88143d19c887624263a012d36c1fbbc8981a54_size1",
+        "objectives": [
+          3.097354552417486,
+          -0.4399727412721772
+        ],
+        "orders": 16,
+        "quality": "missing",
+        "replay_sha256": "2d7fcb21b56b085458370630a6404205e7f49be33b82d033db14974171674505",
+        "sell_wins": 5,
+        "sells": 8,
+        "wins": 10
+      }
+    ],
+    "controls": [
+      {
+        "buy_wins": 0,
+        "buys": 0,
+        "early_closes": 0,
+        "elapsed_seconds": 0.17212649999419227,
+        "eligible": false,
+        "mean_orders": 0.0,
+        "name": "nop",
+        "objectives": [
+          0.0,
+          -0.0
+        ],
+        "orders": 0,
+        "quality": "ideal",
+        "sell_wins": 0,
+        "sells": 0,
+        "wins": 0
+      },
+      {
+        "buy_wins": 4,
+        "buys": 4,
+        "early_closes": 5,
+        "elapsed_seconds": 0.04346552901552059,
+        "eligible": true,
+        "mean_orders": 4.0,
+        "name": "equal_guarded",
+        "objectives": [
+          2.0591826543014724,
+          -0.3743377343689379
+        ],
+        "orders": 8,
+        "quality": "ideal",
+        "sell_wins": 4,
+        "sells": 4,
+        "wins": 8
+      },
+      {
+        "buy_wins": 4,
+        "buys": 4,
+        "early_closes": 7,
+        "elapsed_seconds": 0.04776016800315119,
+        "eligible": true,
+        "mean_orders": 4.0,
+        "name": "greedy",
+        "objectives": [
+          2.414321789438034,
+          -0.33374323236273684
+        ],
+        "orders": 8,
+        "quality": "ideal",
+        "sell_wins": 4,
+        "sells": 4,
+        "wins": 8
+      },
+      {
+        "buy_wins": 7,
+        "buys": 7,
+        "early_closes": 11,
+        "elapsed_seconds": 0.03939667600207031,
+        "eligible": true,
+        "mean_orders": 7.5,
+        "name": "only_3",
+        "objectives": [
+          3.7675089329904488,
+          -0.3501222524477532
+        ],
+        "orders": 15,
+        "quality": "ideal",
+        "sell_wins": 8,
+        "sells": 8,
+        "wins": 15
+      },
+      {
+        "buy_wins": 5,
+        "buys": 5,
+        "early_closes": 6,
+        "elapsed_seconds": 0.03932813700521365,
+        "eligible": true,
+        "mean_orders": 5.0,
+        "name": "only_6",
+        "objectives": [
+          2.8768087702323974,
+          -0.34343687435668907
+        ],
+        "orders": 10,
+        "quality": "ideal",
+        "sell_wins": 5,
+        "sells": 5,
+        "wins": 10
+      },
+      {
+        "buy_wins": 4,
+        "buys": 4,
+        "early_closes": 8,
+        "elapsed_seconds": 0.04599503698409535,
+        "eligible": true,
+        "mean_orders": 4.0,
+        "name": "only_12",
+        "objectives": [
+          2.2552491363305283,
+          -0.3106847744248443
+        ],
+        "orders": 8,
+        "quality": "ideal",
+        "sell_wins": 4,
+        "sells": 4,
+        "wins": 8
+      },
+      {
+        "buy_wins": 4,
+        "buys": 4,
+        "early_closes": 8,
+        "elapsed_seconds": 0.04338442502194084,
+        "eligible": true,
+        "mean_orders": 4.0,
+        "name": "only_24",
+        "objectives": [
+          1.8182490960631847,
+          -0.25251280298740314
+        ],
+        "orders": 8,
+        "quality": "ideal",
+        "sell_wins": 4,
+        "sells": 4,
+        "wins": 8
+      },
+      {
+        "buy_wins": 0,
+        "buys": 0,
+        "early_closes": 0,
+        "elapsed_seconds": 0.27401227501104586,
+        "eligible": false,
+        "mean_orders": 0.0,
+        "name": "nop",
+        "objectives": [
+          0.0,
+          -0.0
+        ],
+        "orders": 0,
+        "quality": "correlated",
+        "sell_wins": 0,
+        "sells": 0,
+        "wins": 0
+      },
+      {
+        "buy_wins": 5,
+        "buys": 6,
+        "early_closes": 10,
+        "elapsed_seconds": 0.049547913018614054,
+        "eligible": true,
+        "mean_orders": 6.0,
+        "name": "equal_guarded",
+        "objectives": [
+          0.8500024830545683,
+          -0.6376124264747466
+        ],
+        "orders": 12,
+        "quality": "correlated",
+        "sell_wins": 5,
+        "sells": 6,
+        "wins": 10
+      },
+      {
+        "buy_wins": 7,
+        "buys": 11,
+        "early_closes": 19,
+        "elapsed_seconds": 0.04772278800373897,
+        "eligible": true,
+        "mean_orders": 11.5,
+        "name": "greedy",
+        "objectives": [
+          1.2225280147919015,
+          -0.6395425918101337
+        ],
+        "orders": 23,
+        "quality": "correlated",
+        "sell_wins": 8,
+        "sells": 12,
+        "wins": 15
+      },
+      {
+        "buy_wins": 9,
+        "buys": 19,
+        "early_closes": 34,
+        "elapsed_seconds": 0.04497258199262433,
+        "eligible": true,
+        "mean_orders": 20.0,
+        "name": "only_3",
+        "objectives": [
+          0.4269740880901818,
+          -0.9426663708593088
+        ],
+        "orders": 40,
+        "quality": "correlated",
+        "sell_wins": 10,
+        "sells": 21,
+        "wins": 19
+      },
+      {
+        "buy_wins": 8,
+        "buys": 14,
+        "early_closes": 24,
+        "elapsed_seconds": 0.04783751501236111,
+        "eligible": true,
+        "mean_orders": 14.0,
+        "name": "only_6",
+        "objectives": [
+          0.84737109402091,
+          -0.7477386430624426
+        ],
+        "orders": 28,
+        "quality": "correlated",
+        "sell_wins": 8,
+        "sells": 14,
+        "wins": 16
+      },
+      {
+        "buy_wins": 7,
+        "buys": 11,
+        "early_closes": 20,
+        "elapsed_seconds": 0.051723140000831336,
+        "eligible": true,
+        "mean_orders": 11.0,
+        "name": "only_12",
+        "objectives": [
+          1.0928378906111758,
+          -0.46497763752374077
+        ],
+        "orders": 22,
+        "quality": "correlated",
+        "sell_wins": 7,
+        "sells": 11,
+        "wins": 14
+      },
+      {
+        "buy_wins": 7,
+        "buys": 9,
+        "early_closes": 16,
+        "elapsed_seconds": 0.055019730993080884,
+        "eligible": true,
+        "mean_orders": 9.0,
+        "name": "only_24",
+        "objectives": [
+          0.7729343064382554,
+          -0.438453164399926
+        ],
+        "orders": 18,
+        "quality": "correlated",
+        "sell_wins": 7,
+        "sells": 9,
+        "wins": 14
+      },
+      {
+        "buy_wins": 0,
+        "buys": 0,
+        "early_closes": 0,
+        "elapsed_seconds": 0.3016573270142544,
+        "eligible": false,
+        "mean_orders": 0.0,
+        "name": "nop",
+        "objectives": [
+          0.0,
+          -0.0
+        ],
+        "orders": 0,
+        "quality": "delayed",
+        "sell_wins": 0,
+        "sells": 0,
+        "wins": 0
+      },
+      {
+        "buy_wins": 1,
+        "buys": 2,
+        "early_closes": 0,
+        "elapsed_seconds": 0.06535194901516661,
+        "eligible": false,
+        "mean_orders": 2.0,
+        "name": "equal_guarded",
+        "objectives": [
+          0.32906694461265484,
+          -1.0777840448589209
+        ],
+        "orders": 4,
+        "quality": "delayed",
+        "sell_wins": 2,
+        "sells": 2,
+        "wins": 3
+      },
+      {
+        "buy_wins": 3,
+        "buys": 5,
+        "early_closes": 8,
+        "elapsed_seconds": 0.04956122700241394,
+        "eligible": true,
+        "mean_orders": 5.0,
+        "name": "greedy",
+        "objectives": [
+          0.41445112207564305,
+          -0.8001974289276977
+        ],
+        "orders": 10,
+        "quality": "delayed",
+        "sell_wins": 3,
+        "sells": 5,
+        "wins": 6
+      },
+      {
+        "buy_wins": 5,
+        "buys": 9,
+        "early_closes": 10,
+        "elapsed_seconds": 0.04858291501295753,
+        "eligible": true,
+        "mean_orders": 9.0,
+        "name": "only_3",
+        "objectives": [
+          0.1714170869973941,
+          -0.9926330806054986
+        ],
+        "orders": 18,
+        "quality": "delayed",
+        "sell_wins": 5,
+        "sells": 9,
+        "wins": 10
+      },
+      {
+        "buy_wins": 4,
+        "buys": 4,
+        "early_closes": 5,
+        "elapsed_seconds": 0.06003133702324703,
+        "eligible": true,
+        "mean_orders": 4.5,
+        "name": "only_6",
+        "objectives": [
+          2.608088714173873,
+          -0.34343687435668907
+        ],
+        "orders": 9,
+        "quality": "delayed",
+        "sell_wins": 5,
+        "sells": 5,
+        "wins": 9
+      },
+      {
+        "buy_wins": 2,
+        "buys": 5,
+        "early_closes": 10,
+        "elapsed_seconds": 0.06035771602182649,
+        "eligible": true,
+        "mean_orders": 5.0,
+        "name": "only_12",
+        "objectives": [
+          0.3365964996117743,
+          -0.6591975928250007
+        ],
+        "orders": 10,
+        "quality": "delayed",
+        "sell_wins": 2,
+        "sells": 5,
+        "wins": 4
+      },
+      {
+        "buy_wins": 2,
+        "buys": 3,
+        "early_closes": 6,
+        "elapsed_seconds": 0.0648838730121497,
+        "eligible": true,
+        "mean_orders": 3.0,
+        "name": "only_24",
+        "objectives": [
+          0.5891777000680443,
+          -0.5069155153301896
+        ],
+        "orders": 6,
+        "quality": "delayed",
+        "sell_wins": 2,
+        "sells": 3,
+        "wins": 4
+      },
+      {
+        "buy_wins": 0,
+        "buys": 0,
+        "early_closes": 0,
+        "elapsed_seconds": 0.29923659400083125,
+        "eligible": false,
+        "mean_orders": 0.0,
+        "name": "nop",
+        "objectives": [
+          0.0,
+          -0.0
+        ],
+        "orders": 0,
+        "quality": "omitted_reversal",
+        "sell_wins": 0,
+        "sells": 0,
+        "wins": 0
+      },
+      {
+        "buy_wins": 1,
+        "buys": 5,
+        "early_closes": 6,
+        "elapsed_seconds": 0.05417962101637386,
+        "eligible": true,
+        "mean_orders": 5.0,
+        "name": "equal_guarded",
+        "objectives": [
+          -0.7891846615492082,
+          -1.777479022592025
+        ],
+        "orders": 10,
+        "quality": "omitted_reversal",
+        "sell_wins": 2,
+        "sells": 5,
+        "wins": 3
+      },
+      {
+        "buy_wins": 4,
+        "buys": 9,
+        "early_closes": 17,
+        "elapsed_seconds": 0.05385552701773122,
+        "eligible": true,
+        "mean_orders": 9.5,
+        "name": "greedy",
+        "objectives": [
+          -0.825156698221341,
+          -1.1120136865969437
+        ],
+        "orders": 19,
+        "quality": "omitted_reversal",
+        "sell_wins": 3,
+        "sells": 10,
+        "wins": 7
+      },
+      {
+        "buy_wins": 4,
+        "buys": 9,
+        "early_closes": 17,
+        "elapsed_seconds": 0.046459867007797584,
+        "eligible": true,
+        "mean_orders": 9.5,
+        "name": "only_3",
+        "objectives": [
+          -1.0086503605249986,
+          -1.4188331335658726
+        ],
+        "orders": 19,
+        "quality": "omitted_reversal",
+        "sell_wins": 3,
+        "sells": 10,
+        "wins": 7
+      },
+      {
+        "buy_wins": 4,
+        "buys": 9,
+        "early_closes": 17,
+        "elapsed_seconds": 0.0545670640130993,
+        "eligible": true,
+        "mean_orders": 9.5,
+        "name": "only_6",
+        "objectives": [
+          -0.9650689021436343,
+          -1.375829441946967
+        ],
+        "orders": 19,
+        "quality": "omitted_reversal",
+        "sell_wins": 3,
+        "sells": 10,
+        "wins": 7
+      },
+      {
+        "buy_wins": 4,
+        "buys": 9,
+        "early_closes": 17,
+        "elapsed_seconds": 0.05538866901770234,
+        "eligible": true,
+        "mean_orders": 9.5,
+        "name": "only_12",
+        "objectives": [
+          -0.7386099353398179,
+          -1.0369886404986806
+        ],
+        "orders": 19,
+        "quality": "omitted_reversal",
+        "sell_wins": 3,
+        "sells": 10,
+        "wins": 7
+      },
+      {
+        "buy_wins": 4,
+        "buys": 9,
+        "early_closes": 17,
+        "elapsed_seconds": 0.057974102994194254,
+        "eligible": true,
+        "mean_orders": 9.5,
+        "name": "only_24",
+        "objectives": [
+          -0.5949701879129299,
+          -0.8361118612510453
+        ],
+        "orders": 19,
+        "quality": "omitted_reversal",
+        "sell_wins": 3,
+        "sells": 10,
+        "wins": 7
+      },
+      {
+        "buy_wins": 0,
+        "buys": 0,
+        "early_closes": 0,
+        "elapsed_seconds": 0.21066924001206644,
+        "eligible": false,
+        "mean_orders": 0.0,
+        "name": "nop",
+        "objectives": [
+          0.0,
+          -0.0
+        ],
+        "orders": 0,
+        "quality": "missing",
+        "sell_wins": 0,
+        "sells": 0,
+        "wins": 0
+      },
+      {
+        "buy_wins": 5,
+        "buys": 5,
+        "early_closes": 7,
+        "elapsed_seconds": 0.039977485983399674,
+        "eligible": true,
+        "mean_orders": 5.0,
+        "name": "equal_guarded",
+        "objectives": [
+          1.8381782604180108,
+          -0.38490611620538523
+        ],
+        "orders": 10,
+        "quality": "missing",
+        "sell_wins": 5,
+        "sells": 5,
+        "wins": 10
+      },
+      {
+        "buy_wins": 6,
+        "buys": 7,
+        "early_closes": 12,
+        "elapsed_seconds": 0.038979306002147496,
+        "eligible": true,
+        "mean_orders": 7.0,
+        "name": "greedy",
+        "objectives": [
+          1.4998656396154386,
+          -0.3388498199938933
+        ],
+        "orders": 14,
+        "quality": "missing",
+        "sell_wins": 6,
+        "sells": 7,
+        "wins": 12
+      },
+      {
+        "buy_wins": 6,
+        "buys": 16,
+        "early_closes": 24,
+        "elapsed_seconds": 0.03543635000823997,
+        "eligible": true,
+        "mean_orders": 16.5,
+        "name": "only_3",
+        "objectives": [
+          0.8261622206424457,
+          -0.8733345392208078
+        ],
+        "orders": 33,
+        "quality": "missing",
+        "sell_wins": 8,
+        "sells": 17,
+        "wins": 14
+      },
+      {
+        "buy_wins": 7,
+        "buys": 12,
+        "early_closes": 20,
+        "elapsed_seconds": 0.03863257000921294,
+        "eligible": true,
+        "mean_orders": 12.0,
+        "name": "only_6",
+        "objectives": [
+          0.6321350687105154,
+          -0.8494413937631818
+        ],
+        "orders": 24,
+        "quality": "missing",
+        "sell_wins": 8,
+        "sells": 12,
+        "wins": 15
+      },
+      {
+        "buy_wins": 6,
+        "buys": 7,
+        "early_closes": 11,
+        "elapsed_seconds": 0.042089493974344805,
+        "eligible": true,
+        "mean_orders": 6.5,
+        "name": "only_12",
+        "objectives": [
+          1.5871051038015338,
+          -0.2746526824708413
+        ],
+        "orders": 13,
+        "quality": "missing",
+        "sell_wins": 5,
+        "sells": 6,
+        "wins": 11
+      },
+      {
+        "buy_wins": 6,
+        "buys": 6,
+        "early_closes": 9,
+        "elapsed_seconds": 0.042019120999611914,
+        "eligible": true,
+        "mean_orders": 5.5,
+        "name": "only_24",
+        "objectives": [
+          1.2423417748743115,
+          -0.2220303094007938
+        ],
+        "orders": 11,
+        "quality": "missing",
+        "sell_wins": 5,
+        "sells": 5,
+        "wins": 11
+      }
+    ],
+    "elapsed_this_invocation": 18.437883208011044,
+    "frontier_policies": 10,
+    "global_optimum_certified": false,
+    "identity": "cdd8c5aef97f28ce7c86dcc0b47110e96d4da78b96f18b0bf8b1bbd978b5d0fe",
+    "learned_reporter_tested": false,
+    "receipt_sha256": "37b69307d0468b2e8d469598ddc8141884f8e24c09cf793fc21f740bbe5f45a1",
+    "receipt_tail": "279a9072d829da9046c342e570732150abd5c723c31b5e90cb7dd141c86cd3f4",
+    "replay_files": [
+      {
+        "file": "REPLAY_ideal_nop.json.gz",
+        "sha256": "2098970afb13dcc3306f8970ce34cb0a6116de94fc5cfa9e892e649fb56592ac"
+      },
+      {
+        "file": "REPLAY_ideal_equal_guarded.json.gz",
+        "sha256": "0c68cd2cde1c8d77df0e58dc4083a3ec3289df90ac268a7c2ac4df10764b2f6b"
+      },
+      {
+        "file": "REPLAY_ideal_greedy.json.gz",
+        "sha256": "c1aec26b6ae201eb218ce012fd8921b87e0064cfbde4b7a5ac921f4ae27c027e"
+      },
+      {
+        "file": "REPLAY_ideal_only_3.json.gz",
+        "sha256": "acc774aaa511c028720b3e7cb943e1f6f8f862acdea20bdf0d8035425ca2e45f"
+      },
+      {
+        "file": "REPLAY_ideal_only_6.json.gz",
+        "sha256": "c0062f84182b5cfd875ee98387d87921178d6b40a4a1856e0c2157025a2979e9"
+      },
+      {
+        "file": "REPLAY_ideal_only_12.json.gz",
+        "sha256": "357690bf1a6c0d559571bf3350e8339a696c93329b9b9f652dc4689a667be847"
+      },
+      {
+        "file": "REPLAY_ideal_only_24.json.gz",
+        "sha256": "7a7a22e4795dad74721de4d4d8d2fa6f67d1cdfe3dbcc040319d8de9320921db"
+      },
+      {
+        "file": "REPLAY_ideal_3c25e0758e738ae8feed3492f4aa867a1bb8dea1c40af13ca41f1db4b7510b0f.json.gz",
+        "sha256": "ebf499509f9a05e36bf7a0c2b170cb6e45ca6422b24b209b4e4f6f54caf53ff5"
+      },
+      {
+        "file": "REPLAY_ideal_2f4ce7b0af806eda857f51bad2757dced0dd374b48275efb3f144901521d9c01.json.gz",
+        "sha256": "3e19b86eb8f2b31c220d00da3a5ad16b31bf44300c0b720df9f7afd5ce881f7e"
+      },
+      {
+        "file": "REPLAY_ideal_dd4b100ba76ab22657c26cbac175a253a864ecc43c4eef5b1f7472952b7057c8.json.gz",
+        "sha256": "1328e4efb8e7ef14eb101f5300aa72997b58ce8d5df43f15dc31a8bc014da8bc"
+      },
+      {
+        "file": "REPLAY_ideal_03a1cb79855abd82b2a8a85351a344dd048b383193bfceae2819a4456540c647.json.gz",
+        "sha256": "78ee19c4126ac51a0f5315b87f7b666fbc29789c5715ece05b22051e92381212"
+      },
+      {
+        "file": "REPLAY_ideal_c30c91e788b4db56cc9af6f0ec88143d19c887624263a012d36c1fbbc8981a54.json.gz",
+        "sha256": "0fe2710b2d6e251585e06fd4e3035523af4e9fb6eb636f5a4b4357a28a68b180"
+      },
+      {
+        "file": "REPLAY_ideal_3c25e0758e738ae8feed3492f4aa867a1bb8dea1c40af13ca41f1db4b7510b0f_size1.json.gz",
+        "sha256": "318df562fd3508931db2aa6eebdd3a35bb4a7216c4746c8defd7d79ca8ea2ac6"
+      },
+      {
+        "file": "REPLAY_ideal_2f4ce7b0af806eda857f51bad2757dced0dd374b48275efb3f144901521d9c01_size1.json.gz",
+        "sha256": "d23f94335cba2c7126734f30b700c5b074fece852b8b4740cb600b0007396d5f"
+      },
+      {
+        "file": "REPLAY_ideal_dd4b100ba76ab22657c26cbac175a253a864ecc43c4eef5b1f7472952b7057c8_size1.json.gz",
+        "sha256": "d23f94335cba2c7126734f30b700c5b074fece852b8b4740cb600b0007396d5f"
+      },
+      {
+        "file": "REPLAY_ideal_03a1cb79855abd82b2a8a85351a344dd048b383193bfceae2819a4456540c647_size1.json.gz",
+        "sha256": "1f379b99b1af679cee5d69fbfa92fd5d50c60cd6d1906f9fd51e3c2da69a1b22"
+      },
+      {
+        "file": "REPLAY_ideal_c30c91e788b4db56cc9af6f0ec88143d19c887624263a012d36c1fbbc8981a54_size1.json.gz",
+        "sha256": "acc774aaa511c028720b3e7cb943e1f6f8f862acdea20bdf0d8035425ca2e45f"
+      },
+      {
+        "file": "REPLAY_correlated_nop.json.gz",
+        "sha256": "6529624f9edf39647e17f0a3c714e9e9e5ff58facc5e9f65fa499bee62e269cb"
+      },
+      {
+        "file": "REPLAY_correlated_equal_guarded.json.gz",
+        "sha256": "690ea34901882c8bea12e470e31c02c2b1010870469c1963bad3c535285953a2"
+      },
+      {
+        "file": "REPLAY_correlated_greedy.json.gz",
+        "sha256": "bd5849ba830cfedaa82cd52d8a696f4ee97aa265e5c45b40d70abb0d11f0ac27"
+      },
+      {
+        "file": "REPLAY_correlated_only_3.json.gz",
+        "sha256": "9914fbc6c106735b39cbae9af77a05f2280749cdd59d72d3f2fbba7ec9ff5528"
+      },
+      {
+        "file": "REPLAY_correlated_only_6.json.gz",
+        "sha256": "b69cd859d6fe520ca2a356eb7d185bee11c9fa3132410321d4a41ef989267a23"
+      },
+      {
+        "file": "REPLAY_correlated_only_12.json.gz",
+        "sha256": "b5f3b27ad24a6333cd529a30e8d99e74413a2d3381ef038f311a7139ece495ae"
+      },
+      {
+        "file": "REPLAY_correlated_only_24.json.gz",
+        "sha256": "e0faf337fbead25616dd4699cc4b850bd68bc7f6d0a630a0b5daa8b4048dd4b2"
+      },
+      {
+        "file": "REPLAY_correlated_3c25e0758e738ae8feed3492f4aa867a1bb8dea1c40af13ca41f1db4b7510b0f.json.gz",
+        "sha256": "f0bff666c51bcca732d3b6fc5284e3d9479ff33698987ebdfab107ea57e1a4c3"
+      },
+      {
+        "file": "REPLAY_correlated_2f4ce7b0af806eda857f51bad2757dced0dd374b48275efb3f144901521d9c01.json.gz",
+        "sha256": "7b5565a1c3b98f2453affec0304e20fc3f83240b5e78f88642820793e2d45fb2"
+      },
+      {
+        "file": "REPLAY_correlated_dd4b100ba76ab22657c26cbac175a253a864ecc43c4eef5b1f7472952b7057c8.json.gz",
+        "sha256": "6fdf4decdb73ca6ccbb626e74e5b00076a8d06d9c58c87aea1460f0101c77e1c"
+      },
+      {
+        "file": "REPLAY_correlated_03a1cb79855abd82b2a8a85351a344dd048b383193bfceae2819a4456540c647.json.gz",
+        "sha256": "a46fcc7c1da223fd675098efba72675d0746c3b394f871d973aefee23eab9c64"
+      },
+      {
+        "file": "REPLAY_correlated_c30c91e788b4db56cc9af6f0ec88143d19c887624263a012d36c1fbbc8981a54.json.gz",
+        "sha256": "39050a68450b1db81e236adeef62f4685215d19b8269375607d044c9ba3fe2b5"
+      },
+      {
+        "file": "REPLAY_correlated_3c25e0758e738ae8feed3492f4aa867a1bb8dea1c40af13ca41f1db4b7510b0f_size1.json.gz",
+        "sha256": "4e42d9561ed6e90805a188d9f66bc668bb8293cfc5e81676bc3fec1f62b0b258"
+      },
+      {
+        "file": "REPLAY_correlated_2f4ce7b0af806eda857f51bad2757dced0dd374b48275efb3f144901521d9c01_size1.json.gz",
+        "sha256": "894cedf5efc014dd3a4deae2bc6d95fd9c63faf59c01b79cd0596dadd37e04ee"
+      },
+      {
+        "file": "REPLAY_correlated_dd4b100ba76ab22657c26cbac175a253a864ecc43c4eef5b1f7472952b7057c8_size1.json.gz",
+        "sha256": "007f9ad8a8978825a49c986292cdc7193a2afd9099ca68ac1583164d593a665b"
+      },
+      {
+        "file": "REPLAY_correlated_03a1cb79855abd82b2a8a85351a344dd048b383193bfceae2819a4456540c647_size1.json.gz",
+        "sha256": "c9bd33722a0b145938c3cc2fda49d83b1eccbf7a1a185122346897b37a4f2d96"
+      },
+      {
+        "file": "REPLAY_correlated_c30c91e788b4db56cc9af6f0ec88143d19c887624263a012d36c1fbbc8981a54_size1.json.gz",
+        "sha256": "11918464769f98b36c505714285ccc0d7edd27a7f71e1e50e2d39c05b1dc2ebf"
+      },
+      {
+        "file": "REPLAY_delayed_nop.json.gz",
+        "sha256": "9ad7f4c60c0f0be797e1ec832bfac6b102d2d9ea7052e19f0585bde9b24e43b9"
+      },
+      {
+        "file": "REPLAY_delayed_equal_guarded.json.gz",
+        "sha256": "90a00b8b357a17cbe9dc6f61979ae6c5ea8edce87bc4613dd1b53fc2de1bd7d5"
+      },
+      {
+        "file": "REPLAY_delayed_greedy.json.gz",
+        "sha256": "3e13b5c83fadcb1f186f91ccf4f5b46fa9ac11c886bcd06887513724d67c5811"
+      },
+      {
+        "file": "REPLAY_delayed_only_3.json.gz",
+        "sha256": "d8caa93628a3ae1300319e1f7434b346405b77b07239b3143a02dae3fb6e4baa"
+      },
+      {
+        "file": "REPLAY_delayed_only_6.json.gz",
+        "sha256": "481735ae8993fa9e86995aa31f6d55d46b5efc6f7b90e84544ec8149780dd35d"
+      },
+      {
+        "file": "REPLAY_delayed_only_12.json.gz",
+        "sha256": "3e13b5c83fadcb1f186f91ccf4f5b46fa9ac11c886bcd06887513724d67c5811"
+      },
+      {
+        "file": "REPLAY_delayed_only_24.json.gz",
+        "sha256": "0281f7e1be5f70c6e4e5fc472e9a3d99ce00a16a2a81b39f3ae7041059ee31e0"
+      },
+      {
+        "file": "REPLAY_delayed_3c25e0758e738ae8feed3492f4aa867a1bb8dea1c40af13ca41f1db4b7510b0f.json.gz",
+        "sha256": "48906efe2ea32845cd2c20bfaefa0abbbbb472be824ceb325cec06d309f7861a"
+      },
+      {
+        "file": "REPLAY_delayed_2f4ce7b0af806eda857f51bad2757dced0dd374b48275efb3f144901521d9c01.json.gz",
+        "sha256": "7bfa675a690a5ef0e5de462c4824891d0a7e29eb445f20e916fe74b93d3ebc1b"
+      },
+      {
+        "file": "REPLAY_delayed_dd4b100ba76ab22657c26cbac175a253a864ecc43c4eef5b1f7472952b7057c8.json.gz",
+        "sha256": "0540feeeafcf88e7aeae89f39807cde83360e1df537bd9b2848b243f0b0f7b53"
+      },
+      {
+        "file": "REPLAY_delayed_03a1cb79855abd82b2a8a85351a344dd048b383193bfceae2819a4456540c647.json.gz",
+        "sha256": "2eef738c2e4b7441cc94f393403ad6a45f909f270764c9404059e7e19125ac9d"
+      },
+      {
+        "file": "REPLAY_delayed_c30c91e788b4db56cc9af6f0ec88143d19c887624263a012d36c1fbbc8981a54.json.gz",
+        "sha256": "eb9a9b6e0c176e561f651f2fad2fc01db4d6d7476ca6cfd84a38eb01820a8220"
+      },
+      {
+        "file": "REPLAY_delayed_3c25e0758e738ae8feed3492f4aa867a1bb8dea1c40af13ca41f1db4b7510b0f_size1.json.gz",
+        "sha256": "13096d2fe19bcc777f592222a98a5ba7763ff7afcc0bc54ff3473f11ecba6255"
+      },
+      {
+        "file": "REPLAY_delayed_2f4ce7b0af806eda857f51bad2757dced0dd374b48275efb3f144901521d9c01_size1.json.gz",
+        "sha256": "e68fdc54029db6c27176aefd8b5f7cebe7797f8db23a4f66365f6a464ec23fb1"
+      },
+      {
+        "file": "REPLAY_delayed_dd4b100ba76ab22657c26cbac175a253a864ecc43c4eef5b1f7472952b7057c8_size1.json.gz",
+        "sha256": "e68fdc54029db6c27176aefd8b5f7cebe7797f8db23a4f66365f6a464ec23fb1"
+      },
+      {
+        "file": "REPLAY_delayed_03a1cb79855abd82b2a8a85351a344dd048b383193bfceae2819a4456540c647_size1.json.gz",
+        "sha256": "5a6b33c5feb86c8f3129df51e054b9b4477a4f54122caaa7974df8c9b2a4f37d"
+      },
+      {
+        "file": "REPLAY_delayed_c30c91e788b4db56cc9af6f0ec88143d19c887624263a012d36c1fbbc8981a54_size1.json.gz",
+        "sha256": "b2f5a7136511eb1cf98973462b55a7235a37e1810b522c2e819485fe3517fdc7"
+      },
+      {
+        "file": "REPLAY_omitted_reversal_nop.json.gz",
+        "sha256": "c474e8588edd17d539d91ff2132d366cadefe0405ee213e3f873b073da97f698"
+      },
+      {
+        "file": "REPLAY_omitted_reversal_equal_guarded.json.gz",
+        "sha256": "e488d790927c72430fa66ceb3798503e26eaf53effcf5b036850b4738848f313"
+      },
+      {
+        "file": "REPLAY_omitted_reversal_greedy.json.gz",
+        "sha256": "86cdfe78ef95d3e4fc8c4030d4eaff8d6152e25a02eb639f9a66631a39d6bf77"
+      },
+      {
+        "file": "REPLAY_omitted_reversal_only_3.json.gz",
+        "sha256": "f9e1064cb3ea4705a19b8580418787747cabc2761fbd6db4f079dc499190c46d"
+      },
+      {
+        "file": "REPLAY_omitted_reversal_only_6.json.gz",
+        "sha256": "574e5c07eb44402b5ce4b95ab8f7fd9323175e24e72985a14ad38a7612babca6"
+      },
+      {
+        "file": "REPLAY_omitted_reversal_only_12.json.gz",
+        "sha256": "f669bddecdd637f1cb09a4508c3d4995c338333fb5b68dd5507c29338aef9be4"
+      },
+      {
+        "file": "REPLAY_omitted_reversal_only_24.json.gz",
+        "sha256": "4eefbf4ec2a10db63cc9f77d900e6849a773b863ea8f72ee602c113eefe0bd54"
+      },
+      {
+        "file": "REPLAY_omitted_reversal_3c25e0758e738ae8feed3492f4aa867a1bb8dea1c40af13ca41f1db4b7510b0f.json.gz",
+        "sha256": "925bac1de240715e8e96b975290e3321b2f265eb1f72aeac87a059b1390b5fc1"
+      },
+      {
+        "file": "REPLAY_omitted_reversal_2f4ce7b0af806eda857f51bad2757dced0dd374b48275efb3f144901521d9c01.json.gz",
+        "sha256": "7b6b0c0dedbf037d82ffe5a702c5e3eda9276d31c8e28c37797f6aa87ca3c41a"
+      },
+      {
+        "file": "REPLAY_omitted_reversal_dd4b100ba76ab22657c26cbac175a253a864ecc43c4eef5b1f7472952b7057c8.json.gz",
+        "sha256": "11f460ab39c552fcb5ac16e839fd5db35395f337d2792c0cf503b4867e81e5ab"
+      },
+      {
+        "file": "REPLAY_omitted_reversal_03a1cb79855abd82b2a8a85351a344dd048b383193bfceae2819a4456540c647.json.gz",
+        "sha256": "612589956da4b4b9439ca18a66f844415dec79863856bc741696b37a6d4afbff"
+      },
+      {
+        "file": "REPLAY_omitted_reversal_c30c91e788b4db56cc9af6f0ec88143d19c887624263a012d36c1fbbc8981a54.json.gz",
+        "sha256": "d36a5969e1bf6ad9ab31460e4f926f24288a5ea88ee6d41410193810c82ca29f"
+      },
+      {
+        "file": "REPLAY_omitted_reversal_3c25e0758e738ae8feed3492f4aa867a1bb8dea1c40af13ca41f1db4b7510b0f_size1.json.gz",
+        "sha256": "cb8b55beaf41857ca0dd4d6973fe1dbad3997a1d6229f9c1685064e5950deebd"
+      },
+      {
+        "file": "REPLAY_omitted_reversal_2f4ce7b0af806eda857f51bad2757dced0dd374b48275efb3f144901521d9c01_size1.json.gz",
+        "sha256": "a8513a194001c32c31066bff3eb5b7d34ae47c3836211d79bc5c7ec15d090545"
+      },
+      {
+        "file": "REPLAY_omitted_reversal_dd4b100ba76ab22657c26cbac175a253a864ecc43c4eef5b1f7472952b7057c8_size1.json.gz",
+        "sha256": "c586030260ac72f38463606169c528506d464a8f4834d96bebc5d3fc87e9e798"
+      },
+      {
+        "file": "REPLAY_omitted_reversal_03a1cb79855abd82b2a8a85351a344dd048b383193bfceae2819a4456540c647_size1.json.gz",
+        "sha256": "7afe605efab670d0a938a166046640f81fab556f513f3d4f420d17003bbed348"
+      },
+      {
+        "file": "REPLAY_omitted_reversal_c30c91e788b4db56cc9af6f0ec88143d19c887624263a012d36c1fbbc8981a54_size1.json.gz",
+        "sha256": "c7846b65894c330f64ac2825531f653a6488a61759d9197642a35d9714e7cec2"
+      },
+      {
+        "file": "REPLAY_missing_nop.json.gz",
+        "sha256": "29c2a893b52342a54744decf8fb31a7f35c5a9becf4577ae94a3eaa38a2c1be9"
+      },
+      {
+        "file": "REPLAY_missing_equal_guarded.json.gz",
+        "sha256": "8faa0acd2caa9fee086e6c395a9cc3bc36ddedc862562c81be4bfe80805898ae"
+      },
+      {
+        "file": "REPLAY_missing_greedy.json.gz",
+        "sha256": "2a9dff1de26e750b41f7b87f8502ac6801355cde70368a565fba0749712aa427"
+      },
+      {
+        "file": "REPLAY_missing_only_3.json.gz",
+        "sha256": "4a0f56604922ebe2858397a3cbb16f842576ae2a4bd137c65b88077a99ab1b6f"
+      },
+      {
+        "file": "REPLAY_missing_only_6.json.gz",
+        "sha256": "bcb59e3e8b0afb790fc7869c5455e403d04c7de7ea993dbb0d69a267509b851e"
+      },
+      {
+        "file": "REPLAY_missing_only_12.json.gz",
+        "sha256": "7a24105cd7abb828b9df734280cb2fc30853b9420caba747264f9fcdaa9a291d"
+      },
+      {
+        "file": "REPLAY_missing_only_24.json.gz",
+        "sha256": "d42945e0a3f938d8cea92176a32dd57e302d056809967e3afc56d96ce8502427"
+      },
+      {
+        "file": "REPLAY_missing_3c25e0758e738ae8feed3492f4aa867a1bb8dea1c40af13ca41f1db4b7510b0f.json.gz",
+        "sha256": "e7494fd9cc53a628d0dd41f84f46b4e4369e99ad0d5b5aff6fa1906e28fbd83e"
+      },
+      {
+        "file": "REPLAY_missing_2f4ce7b0af806eda857f51bad2757dced0dd374b48275efb3f144901521d9c01.json.gz",
+        "sha256": "605bd14b70f40267bfe66c76e1e932cbfb5ccab13ad64acc9a461e94451e0bed"
+      },
+      {
+        "file": "REPLAY_missing_dd4b100ba76ab22657c26cbac175a253a864ecc43c4eef5b1f7472952b7057c8.json.gz",
+        "sha256": "62d32438786ce8bedf0ca17fd84ef4725240cb761e7cb637d6b1dfbfd16c58c5"
+      },
+      {
+        "file": "REPLAY_missing_03a1cb79855abd82b2a8a85351a344dd048b383193bfceae2819a4456540c647.json.gz",
+        "sha256": "b1549750e229bda7d77a9a740af575d718ff22f22c2ce445ccea42e23de01287"
+      },
+      {
+        "file": "REPLAY_missing_c30c91e788b4db56cc9af6f0ec88143d19c887624263a012d36c1fbbc8981a54.json.gz",
+        "sha256": "8eab67a1f3aad4393dd352a9b7482708cfb7778ae26cdef1c0372c868028460e"
+      },
+      {
+        "file": "REPLAY_missing_3c25e0758e738ae8feed3492f4aa867a1bb8dea1c40af13ca41f1db4b7510b0f_size1.json.gz",
+        "sha256": "5bfa9949f73d4684b947ad83d716086fe8b9a31dca84261c0603526ee6e13fff"
+      },
+      {
+        "file": "REPLAY_missing_2f4ce7b0af806eda857f51bad2757dced0dd374b48275efb3f144901521d9c01_size1.json.gz",
+        "sha256": "f12c504e76172029344c9bbe121ff1f23787a82a4004af98964acb9bec7a24d8"
+      },
+      {
+        "file": "REPLAY_missing_dd4b100ba76ab22657c26cbac175a253a864ecc43c4eef5b1f7472952b7057c8_size1.json.gz",
+        "sha256": "03c14cba2f21ad09620ee630c97276c85b76d8a7756ae02ff645b42aef0ce928"
+      },
+      {
+        "file": "REPLAY_missing_03a1cb79855abd82b2a8a85351a344dd048b383193bfceae2819a4456540c647_size1.json.gz",
+        "sha256": "4a8980b1c5fc9583a5e2db3bd35544808249a73658033beed3f5ee771fe2d779"
+      },
+      {
+        "file": "REPLAY_missing_c30c91e788b4db56cc9af6f0ec88143d19c887624263a012d36c1fbbc8981a54_size1.json.gz",
+        "sha256": "2d7fcb21b56b085458370630a6404205e7f49be33b82d033db14974171674505"
+      }
+    ],
+    "representatives": [
+      "3c25e0758e738ae8feed3492f4aa867a1bb8dea1c40af13ca41f1db4b7510b0f",
+      "2f4ce7b0af806eda857f51bad2757dced0dd374b48275efb3f144901521d9c01",
+      "dd4b100ba76ab22657c26cbac175a253a864ecc43c4eef5b1f7472952b7057c8",
+      "03a1cb79855abd82b2a8a85351a344dd048b383193bfceae2819a4456540c647",
+      "c30c91e788b4db56cc9af6f0ec88143d19c887624263a012d36c1fbbc8981a54"
+    ],
+    "status": "SMOKE_ONLY",
+    "unique_vectors": 7
+  },
+  "identity": "cdd8c5aef97f28ce7c86dcc0b47110e96d4da78b96f18b0bf8b1bbd978b5d0fe",
+  "seal": "272b0d9b6440c6398acaa5bedab543462c39a4c303e2f8621dfffa15d0061075"
+}
