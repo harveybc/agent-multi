@@ -59,7 +59,7 @@ def prepare(args):
                 train=['2020-01-01','2024-01-01'], horizons=[3,6,12,24],
                 future_pivots=args.future_pivots,
                 endpoint_policy='NEXT_K_EVENTS_NO_TIMED_EXIT',
-                budget=dict(population=30,generations=300,seeds=[7,19,43]),
+                budget=dict(population=args.population,generations=args.generations,seeds=[7,19,43]),
                 bounds=dict(depth=[2,96],deviation_pips=[1,120],backstep=[1,24]),
                 mode='RETROSPECTIVE_TRAIN_OPPORTUNITY_MAP_NOT_STRATEGY_QUALIFICATION')
     ident = identity(spec)
@@ -240,6 +240,8 @@ if __name__=='__main__':
     p.add_argument('--source-spec',type=Path)
     p.add_argument('--engine-root',type=Path)
     p.add_argument('--future-pivots',type=int,choices=[2,3],default=3)
+    p.add_argument('--population',type=int,default=30)
+    p.add_argument('--generations',type=int,default=300)
     a=p.parse_args()
     if a.command=='prepare':
         prepare(a)

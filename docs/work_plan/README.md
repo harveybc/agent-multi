@@ -2,6 +2,9 @@
 
 ## Priority override: 2026-10-28
 
+Completed owner budget: [corrected K=2 versus K=3, population 20 and 30 generations](119_ZIGZAG_NEXT_EVENTS_P20_G30_RESULTS.md).
+24 searches and both scalar audits passed; paired scores and coverage reported.
+
 Current correction: [next 2/3 ZigZag events, no timed substitutes](118_ZIGZAG_NEXT_EVENTS_CORRECTION.md).
 This supersedes the endpoint rule of the completed searches below; their
 champions cannot be promoted under the corrected objective.

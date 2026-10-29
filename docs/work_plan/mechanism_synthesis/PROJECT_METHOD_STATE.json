@@ -3,7 +3,9 @@
   "date": "2026-10-28",
   "timezone": "America/Bogota",
   "priority": 0,
-  "current_stage": "TRAIN_ZIGZAG_NEXT_EVENTS_CORRECTED_UNIT_VERIFIED",
+  "current_stage": "TRAIN_ZIGZAG_NEXT_EVENTS_P20_G30_COMPLETE_AUDITED",
+  "zigzag_next_events_results": "../119_ZIGZAG_NEXT_EVENTS_P20_G30_RESULTS.md",
+  "zigzag_next_events_budget": {"population": 20, "generations": 30, "seeds": [7, 19, 43]},
   "zigzag_endpoint_correction": "../118_ZIGZAG_NEXT_EVENTS_CORRECTION.md",
   "zigzag_future_pivots": [2, 3],
   "zigzag_extension_results": "../117_ZIGZAG_300_RESULTS_AND_DIRECTION_SEMANTICS.md",
@@ -45,7 +47,7 @@
   },
   "bottom_up": "M0_EXACT_CORE_VERIFIED; HIGHER_LAYERS_NOT_QUALIFIED",
   "next_allowed_actions": [
-    "Validate and evaluate the corrected next-K-event objective in new roots, K=2 and K=3; no capped-result cache reuse",
+    "Interpret the completed K=2/K=3 paired comparison and explicit boundary coverage before risk-profile design",
     "Resolve and test position-dependent close report semantics before native M1 strategy execution",
     "Implement independent oracle-validity and signal/business contract validation with non-vacuous coverage",
     "Extend paired scenario and policy-library design including persistence and false/true cross-scale reversals",
@@ -56,7 +58,7 @@
     "Model-specific sequential floating selection",
     "Promotion of synthetic-oracle results as learned-model evidence"
   ],
-  "operations": "300-generation extension, scalar audit and paired comparison complete; no active job in this subplan",
+  "operations": "Corrected K=2/K=3 population-20 generation-30 searches and both scalar audits complete; no active job in this subplan",
   "history": [
     {"date": "2026-10-28", "event": "User prioritizes mechanism synthesis and requests detailed implementation proposal plus Satoshi audit"},
     {"date": "2026-10-28", "event": "Owner clarifies daily openings: three or more allowed, no strategy daily cap; contract recorded without runtime change"},
