@@ -3,7 +3,10 @@
   "date": "2026-10-29",
   "timezone": "America/Bogota",
   "priority": 0,
-  "current_stage": "CROSSED_PANEL_V2_RUNNING_SEQUENTIAL_AUTOMATED_QUEUE",
+  "current_stage": "CROSSED_PANEL_V2_COMPLETE_RESULTS_SUBMITTED_FOR_AUDIT",
+  "crossed_panel_results": "../142_CROSSED_ACCOUNT_V2_RESULTS.md",
+  "crossed_panel_audit_request": "../../audits/SATOSHI_AUDIT_REQUEST_CROSSED_ACCOUNT_V2_2026_10_29.md",
+  "crossed_panel_completed": {"candidates":17028,"frontier_policies":199,"unique_vectors":180,"confirmation_jobs":75,"archived_accounts_checked":27000,"fresh_p1_replays_exact":1800,"generation_fitness_checked":18000,"focused_tests_passed":166,"post_hoc_same_genes_only6_accounts":360,"financial_training":false},
   "crossed_panel_plan": "../140_CROSSED_PANEL_AUTOMATION_PLAN.md",
   "crossed_panel_execution": "../141_CROSSED_PANEL_EXECUTION.md",
   "crossed_panel_identity": "4415bd3fdab307bf0869051a37f8a69035d1a727a6b642cb9afd880aa0725455",
@@ -87,7 +90,8 @@
   },
   "bottom_up": "INDEPENDENT_REVIEWS_RECEIVED; FIVE_CONCRETE_DEFECTS_REPAIRED_AND_REPLAYED; COVERAGE_REVISION_REQUIRED",
   "next_allowed_actions": [
-    "Monitor the pinned141 queue read-only while it automatically completes frozen controls then20x300x3 search then five-quality confirmation",
+    "Independent audit of completed142 and full exported evidence; no new training authorized by synthetic success",
+    "Design paired uncertainty-calibration and abstention contrasts for confidently wrong reports; distinguish tuning gains from multihorizon contribution",
     "Review full new account results and report-quality sensitivity before floating selection; do not modify the running pinned code",
     "Targeted re-review of report139 repairs and required caller migration; retain predecessor receipts unchanged",
     "Review the implemented close/hold component and qualify report errors and a real report adapter before claiming causal financial performance; ideal future remains test-only",
@@ -100,8 +104,9 @@
     "Model-specific sequential floating selection",
     "Promotion of synthetic-oracle results as learned-model evidence"
   ],
-  "operations": "Pinned crossed-panel service enabled and running controls with162/162 runtime tests; CPU quota400percent and memory ceiling6GiB; automatic DEAP and confirmation follow without intermediate approvals; no GPU or financial training",
+  "operations": "Pinned crossed-panel service completed with exit0 and zero restarts at18:29:52UTC; no running search or financial training; full result evidence exported for independent audit",
   "history": [
+    {"date": "2026-10-29", "event": "Crossed v2 completed and authenticated:17028 candidates;75 confirmation jobs;1800 fresh exact P1 replays;166 tests. Exported142 and final audit request. Post hoc same-genome6h ablation shows no demonstrated multihorizon gain; omitted-reversion stress remains negative. No training launched."},
     {"date": "2026-10-28", "event": "User prioritizes mechanism synthesis and requests detailed implementation proposal plus Satoshi audit"},
     {"date": "2026-10-28", "event": "Owner clarifies daily openings: three or more allowed, no strategy daily cap; contract recorded without runtime change"},
     {"date": "2026-10-28", "event": "Read audit 3326f898, published reciprocal guided-lane audit 660511a0, implemented exact M0 core with 35 tests and completed deterministic reproduction"},

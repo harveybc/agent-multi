@@ -1,0 +1,24 @@
+{
+  "data": {
+    "action_signature": "4372e11945d477f2331632ea39d2538a8761889c59233e39d9551c9fc8f21791",
+    "buy_wins": 1083,
+    "buys": 1840,
+    "distinct_world_traces": 360,
+    "early_closes": 2932,
+    "eligible": true,
+    "mean_orders": 10.319444444444445,
+    "name": "greedy",
+    "objectives": [
+      2.2940226494269544,
+      -2.333313064051895
+    ],
+    "orders": 3715,
+    "quality": "missing",
+    "replay_sha256": "461d84398746dad6d2c782eb23e7653630e5699fa61ee417dc1c1f5fbf7991f8",
+    "sell_wins": 1128,
+    "sells": 1875,
+    "wins": 2211
+  },
+  "identity": "4415bd3fdab307bf0869051a37f8a69035d1a727a6b642cb9afd880aa0725455",
+  "seal": "6dc39b00d15099a40c3ad5cd16e74b0639d40bd8748d1c751bc768487be4b6d7"
+}

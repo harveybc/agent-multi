@@ -2,6 +2,10 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "analyze_crossed_account_results.py": {
+   "purpose": "Authenticate frozen crossed-panel results, verify ledger summaries and seed fitness, export paired diagnostics and optional fresh finalist replays without training",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "mechanism synthesis"
+  },
   "run_crossed_account_queue.py": {
    "purpose": "Sequential pinned synthetic scenario controls, correlated-report DEAP and frozen multi-quality confirmation with restart authentication; no financial training",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "mechanism synthesis"

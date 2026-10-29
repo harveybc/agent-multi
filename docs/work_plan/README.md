@@ -2,20 +2,22 @@
 
 ## Priority override: 2026-10-29
 
-Running: [crossed panel queue141](141_CROSSED_PANEL_EXECUTION.md), under
-[plan140](140_CROSSED_PANEL_AUTOMATION_PLAN.md), code e889a2d4.162 tests and the
-complete smoke/restart passed. Automatic chain:35 frozen-control jobs ->
-20x300x3 DEAP -> frozen five-quality confirmation and fixed-size diagnostics.
-Four bounded CPU shards per candidate; no GPU or financial training. Smoke and
-scientific seed banks are disjoint. Check the service and run STATE for live status.
+Completed: [crossed account v2 results142](142_CROSSED_ACCOUNT_V2_RESULTS.md),
+under [plan140](140_CROSSED_PANEL_AUTOMATION_PLAN.md), code e889a2d4.
+Three20x300 searches,17,028 candidates,199 frontier policies/180 vectors,
+75/75 confirmation jobs and1,800 exact fresh P1 replays. Finished13:29 Bogota;
+the service exited0. Synthetic correlated-error improvement is accompanied by
+failure under omitted reversions and strong6h concentration. No financial
+training or floating selection started.
+[Completed-results audit request](../audits/SATOSHI_AUDIT_REQUEST_CROSSED_ACCOUNT_V2_2026_10_29.md).
 
 Latest: [external audit disposition and repairs139](139_EXTERNAL_AUDIT_REPAIR_RESULTS.md)
 under [repair and successor-panel plan138](138_EXTERNAL_AUDIT_REPAIR_PLAN.md).
 Satoshi's three verdicts and Retsu's review are received. Five concrete defects
 are repaired;148 enumerated tests pass and288 patched native account replays
 exactly preserve the predecessor. Broader scenario coverage is not qualified:
-the crossed cost/volatility and report-quality panel with frozen controls now runs
-under141, before financial training or floating selection.
+the crossed cost/volatility and report-quality panel with frozen controls is
+complete in142 and submitted for review before financial training or floating selection.
 [Return to Satoshi](../handoffs/MUSASHI_AUDIT_REPAIRS_TO_SATOSHI_2026_10_29.md).
 The historical milestones below retain their original scope;139 governs current
 interpretation and explicitly corrects the oracle, pairing and spread limitations.

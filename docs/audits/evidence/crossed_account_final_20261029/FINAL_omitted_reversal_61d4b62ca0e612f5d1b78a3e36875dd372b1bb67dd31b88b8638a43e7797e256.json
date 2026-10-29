@@ -1,0 +1,24 @@
+{
+  "data": {
+    "action_signature": "68bf8ef2cbad36089b217405e52e312f9c1c0862011377e22aa99984e0b60e57",
+    "buy_wins": 50,
+    "buys": 473,
+    "distinct_world_traces": 235,
+    "early_closes": 645,
+    "eligible": true,
+    "mean_orders": 3.7222222222222223,
+    "name": "61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256",
+    "objectives": [
+      -0.41499352085434815,
+      -3.686463913668734
+    ],
+    "orders": 1340,
+    "quality": "omitted_reversal",
+    "replay_sha256": "1f1e86235fc202a67dbb2854545c7cf48bebe689b0487c3618c762e450f8152b",
+    "sell_wins": 156,
+    "sells": 867,
+    "wins": 206
+  },
+  "identity": "4415bd3fdab307bf0869051a37f8a69035d1a727a6b642cb9afd880aa0725455",
+  "seal": "9ab97d4849406d9ac7c8b16fd9f38f5c210c8f0bdf1fc8e3e5fd3d0e36e71819"
+}

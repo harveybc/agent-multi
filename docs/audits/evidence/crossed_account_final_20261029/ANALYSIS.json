@@ -1,0 +1,4245 @@
+{
+  "analysis_source_sha256": "b93060de24d5fda9377b4d726c6ade4419e6b0f5d1c99cf2e4f22b8cdd48134a",
+  "archived_accounts_checked": 27000,
+  "authenticated_candidates": 17028,
+  "files": [
+    {
+      "file": "POST_HOC_P1_ONLY6.json.gz",
+      "sha256": "742975930916ad0a02358d1aa97306eeac5f73f6b45d3399eb5db755a16c79b6"
+    },
+    {
+      "file": "CANDIDATES.jsonl.gz",
+      "original_file": "CANDIDATES.jsonl",
+      "original_sha256": "9db7cc508d9c39f04e31835c94577c8f3e3e2623d63d4d4d26fb462f5572a04d",
+      "sha256": "28b66c569ff7cb401c4c9a7617c731c6442040039aff73ed366b5ab15b218ec6"
+    },
+    {
+      "file": "COMPLETE.json",
+      "original_file": "COMPLETE.json",
+      "original_sha256": "ba38e23fbf7c0c9e36642f74be2146967f2c649fa6f729f7be65047eefd25dc1",
+      "sha256": "ba38e23fbf7c0c9e36642f74be2146967f2c649fa6f729f7be65047eefd25dc1"
+    },
+    {
+      "file": "CONTROLS.md",
+      "original_file": "CONTROLS.md",
+      "original_sha256": "e22dc11f00e00448de9b01f7ec07c85e4c8da1081c231ee6083345e46f7165e6",
+      "sha256": "e22dc11f00e00448de9b01f7ec07c85e4c8da1081c231ee6083345e46f7165e6"
+    },
+    {
+      "file": "CONTROL_correlated_equal_guarded.json",
+      "original_file": "CONTROL_correlated_equal_guarded.json",
+      "original_sha256": "9f3a881ffd181ab9d7179c1154e6d265f0ab756465b65014f830052beb651fb2",
+      "sha256": "9f3a881ffd181ab9d7179c1154e6d265f0ab756465b65014f830052beb651fb2"
+    },
+    {
+      "file": "CONTROL_correlated_greedy.json",
+      "original_file": "CONTROL_correlated_greedy.json",
+      "original_sha256": "883262b2cfc02788df6bc481f48953e2f8b36e998b52fed27c272d22af880e9d",
+      "sha256": "883262b2cfc02788df6bc481f48953e2f8b36e998b52fed27c272d22af880e9d"
+    },
+    {
+      "file": "CONTROL_correlated_nop.json",
+      "original_file": "CONTROL_correlated_nop.json",
+      "original_sha256": "7bd01dd3c0d8292da9f321d574798bf096f2ba701a3013d2caa78657f25abccf",
+      "sha256": "7bd01dd3c0d8292da9f321d574798bf096f2ba701a3013d2caa78657f25abccf"
+    },
+    {
+      "file": "CONTROL_correlated_only_12.json",
+      "original_file": "CONTROL_correlated_only_12.json",
+      "original_sha256": "92fa8349d808de90e675b4790c5336377f5479c191ed5e385d35d3d3d6de26fa",
+      "sha256": "92fa8349d808de90e675b4790c5336377f5479c191ed5e385d35d3d3d6de26fa"
+    },
+    {
+      "file": "CONTROL_correlated_only_24.json",
+      "original_file": "CONTROL_correlated_only_24.json",
+      "original_sha256": "ab271a27dd46dcd86f40d437291de8d8e34a735c761e530f06b5d1a46a43cc2a",
+      "sha256": "ab271a27dd46dcd86f40d437291de8d8e34a735c761e530f06b5d1a46a43cc2a"
+    },
+    {
+      "file": "CONTROL_correlated_only_3.json",
+      "original_file": "CONTROL_correlated_only_3.json",
+      "original_sha256": "1757831d6ebbb5622c6121c4376648d9aaf7b92359bbb948ba59b863a2980a82",
+      "sha256": "1757831d6ebbb5622c6121c4376648d9aaf7b92359bbb948ba59b863a2980a82"
+    },
+    {
+      "file": "CONTROL_correlated_only_6.json",
+      "original_file": "CONTROL_correlated_only_6.json",
+      "original_sha256": "2d413dcc00529ffd4c86106c52baf6fec3762699bfa2e3e892f82231920fe214",
+      "sha256": "2d413dcc00529ffd4c86106c52baf6fec3762699bfa2e3e892f82231920fe214"
+    },
+    {
+      "file": "CONTROL_delayed_equal_guarded.json",
+      "original_file": "CONTROL_delayed_equal_guarded.json",
+      "original_sha256": "8f46da3000969ac9bd310d9231650c29e08ff4f846e2421962612d60bd83c59d",
+      "sha256": "8f46da3000969ac9bd310d9231650c29e08ff4f846e2421962612d60bd83c59d"
+    },
+    {
+      "file": "CONTROL_delayed_greedy.json",
+      "original_file": "CONTROL_delayed_greedy.json",
+      "original_sha256": "feba4602c9da574cce38aa3db94465522b398cab7202050424f23d02f713d839",
+      "sha256": "feba4602c9da574cce38aa3db94465522b398cab7202050424f23d02f713d839"
+    },
+    {
+      "file": "CONTROL_delayed_nop.json",
+      "original_file": "CONTROL_delayed_nop.json",
+      "original_sha256": "7e09e0eac3ed7b9626bd498266a266cbef0eba2b8ac37ce01a860d475198bc6f",
+      "sha256": "7e09e0eac3ed7b9626bd498266a266cbef0eba2b8ac37ce01a860d475198bc6f"
+    },
+    {
+      "file": "CONTROL_delayed_only_12.json",
+      "original_file": "CONTROL_delayed_only_12.json",
+      "original_sha256": "d6be7443b7f88d4eb7156b9b2e05fe717959d85610d602bfedf8df75c1f210a6",
+      "sha256": "d6be7443b7f88d4eb7156b9b2e05fe717959d85610d602bfedf8df75c1f210a6"
+    },
+    {
+      "file": "CONTROL_delayed_only_24.json",
+      "original_file": "CONTROL_delayed_only_24.json",
+      "original_sha256": "d16020657f7b79d10c01d640a75125531ad73fe8822f376746d0a9073d236868",
+      "sha256": "d16020657f7b79d10c01d640a75125531ad73fe8822f376746d0a9073d236868"
+    },
+    {
+      "file": "CONTROL_delayed_only_3.json",
+      "original_file": "CONTROL_delayed_only_3.json",
+      "original_sha256": "e863d6231afbd0d2b3a759a0555b82f98e19f07c82763fdb9ebeba6cc3e56e92",
+      "sha256": "e863d6231afbd0d2b3a759a0555b82f98e19f07c82763fdb9ebeba6cc3e56e92"
+    },
+    {
+      "file": "CONTROL_delayed_only_6.json",
+      "original_file": "CONTROL_delayed_only_6.json",
+      "original_sha256": "6da54ed3167363361c4fec954dcfca8399764e1d62796e91d80feac7424030a5",
+      "sha256": "6da54ed3167363361c4fec954dcfca8399764e1d62796e91d80feac7424030a5"
+    },
+    {
+      "file": "CONTROL_ideal_equal_guarded.json",
+      "original_file": "CONTROL_ideal_equal_guarded.json",
+      "original_sha256": "d95f264305502ab898f0827e72e4d9ad1b06eeb3e82d9096147ca879febb9def",
+      "sha256": "d95f264305502ab898f0827e72e4d9ad1b06eeb3e82d9096147ca879febb9def"
+    },
+    {
+      "file": "CONTROL_ideal_greedy.json",
+      "original_file": "CONTROL_ideal_greedy.json",
+      "original_sha256": "cb77a1b1ebf3c2991b32ed8a40c00c92dfe2390f3f608b00bebdca4c40fc9464",
+      "sha256": "cb77a1b1ebf3c2991b32ed8a40c00c92dfe2390f3f608b00bebdca4c40fc9464"
+    },
+    {
+      "file": "CONTROL_ideal_nop.json",
+      "original_file": "CONTROL_ideal_nop.json",
+      "original_sha256": "46dc4d42144b0b64a25c5f0fe0e9ca43195175d0dc45d563528c18378e8ddd38",
+      "sha256": "46dc4d42144b0b64a25c5f0fe0e9ca43195175d0dc45d563528c18378e8ddd38"
+    },
+    {
+      "file": "CONTROL_ideal_only_12.json",
+      "original_file": "CONTROL_ideal_only_12.json",
+      "original_sha256": "1b5cb5bde7ce12151cf4eb0aea4feb03c6c70cbcafe04b78896071061b87f979",
+      "sha256": "1b5cb5bde7ce12151cf4eb0aea4feb03c6c70cbcafe04b78896071061b87f979"
+    },
+    {
+      "file": "CONTROL_ideal_only_24.json",
+      "original_file": "CONTROL_ideal_only_24.json",
+      "original_sha256": "da0dcbf0702442b7ace357bbdfdf4cd76169ef357cff7ec034a94297775a905d",
+      "sha256": "da0dcbf0702442b7ace357bbdfdf4cd76169ef357cff7ec034a94297775a905d"
+    },
+    {
+      "file": "CONTROL_ideal_only_3.json",
+      "original_file": "CONTROL_ideal_only_3.json",
+      "original_sha256": "5841e962318f76f5a1d889095bdf56363414ca3d55a0ab628f2c11c25edd5f4f",
+      "sha256": "5841e962318f76f5a1d889095bdf56363414ca3d55a0ab628f2c11c25edd5f4f"
+    },
+    {
+      "file": "CONTROL_ideal_only_6.json",
+      "original_file": "CONTROL_ideal_only_6.json",
+      "original_sha256": "c104fb232b8d04b43ddcccf8c134138b37e048195f83b585c76de7f425cdd63a",
+      "sha256": "c104fb232b8d04b43ddcccf8c134138b37e048195f83b585c76de7f425cdd63a"
+    },
+    {
+      "file": "CONTROL_missing_equal_guarded.json",
+      "original_file": "CONTROL_missing_equal_guarded.json",
+      "original_sha256": "da1a8b16001a5ee772dab00af24d3d059d4089a3f7bf42b9c7614ee8e282cb45",
+      "sha256": "da1a8b16001a5ee772dab00af24d3d059d4089a3f7bf42b9c7614ee8e282cb45"
+    },
+    {
+      "file": "CONTROL_missing_greedy.json",
+      "original_file": "CONTROL_missing_greedy.json",
+      "original_sha256": "73f0abfcc6780300333b6cf50c4efe31dfa01bd49626328fd21d38340dcd1b6e",
+      "sha256": "73f0abfcc6780300333b6cf50c4efe31dfa01bd49626328fd21d38340dcd1b6e"
+    },
+    {
+      "file": "CONTROL_missing_nop.json",
+      "original_file": "CONTROL_missing_nop.json",
+      "original_sha256": "f283a9687663b6fa85a50be3305cdf2da169c955ef0b747d9312a58bc5a889ab",
+      "sha256": "f283a9687663b6fa85a50be3305cdf2da169c955ef0b747d9312a58bc5a889ab"
+    },
+    {
+      "file": "CONTROL_missing_only_12.json",
+      "original_file": "CONTROL_missing_only_12.json",
+      "original_sha256": "9331876186de3e1945bc4d3f3dccdaa2ed7296ac40ae93a444fd725c12d17a70",
+      "sha256": "9331876186de3e1945bc4d3f3dccdaa2ed7296ac40ae93a444fd725c12d17a70"
+    },
+    {
+      "file": "CONTROL_missing_only_24.json",
+      "original_file": "CONTROL_missing_only_24.json",
+      "original_sha256": "8e809a3fb70ea52c7c0cf756b25fc1dfb08a8dfed8f04cc7b91b978d0ee022a1",
+      "sha256": "8e809a3fb70ea52c7c0cf756b25fc1dfb08a8dfed8f04cc7b91b978d0ee022a1"
+    },
+    {
+      "file": "CONTROL_missing_only_3.json",
+      "original_file": "CONTROL_missing_only_3.json",
+      "original_sha256": "8e970519bb7111d45bb7ebbeaec8b0208916bf61f790c5a2eef4748230804442",
+      "sha256": "8e970519bb7111d45bb7ebbeaec8b0208916bf61f790c5a2eef4748230804442"
+    },
+    {
+      "file": "CONTROL_missing_only_6.json",
+      "original_file": "CONTROL_missing_only_6.json",
+      "original_sha256": "2c20f86019945f662e55dab6070920e3da3a814fd96fbe5f4b73ed842dbc20ff",
+      "sha256": "2c20f86019945f662e55dab6070920e3da3a814fd96fbe5f4b73ed842dbc20ff"
+    },
+    {
+      "file": "CONTROL_omitted_reversal_equal_guarded.json",
+      "original_file": "CONTROL_omitted_reversal_equal_guarded.json",
+      "original_sha256": "f3579d34a6345312105cbc73a57812a40d1bc0b6b9a6d9f3d4055424dcd54428",
+      "sha256": "f3579d34a6345312105cbc73a57812a40d1bc0b6b9a6d9f3d4055424dcd54428"
+    },
+    {
+      "file": "CONTROL_omitted_reversal_greedy.json",
+      "original_file": "CONTROL_omitted_reversal_greedy.json",
+      "original_sha256": "2faf66fdf83ee4123dbde37510f434a59561a0f7312026cd4cfd75fbc2ec991c",
+      "sha256": "2faf66fdf83ee4123dbde37510f434a59561a0f7312026cd4cfd75fbc2ec991c"
+    },
+    {
+      "file": "CONTROL_omitted_reversal_nop.json",
+      "original_file": "CONTROL_omitted_reversal_nop.json",
+      "original_sha256": "e220eff8a0630654387d759e9fc935d249753475c96c10c05259574dc2ad868a",
+      "sha256": "e220eff8a0630654387d759e9fc935d249753475c96c10c05259574dc2ad868a"
+    },
+    {
+      "file": "CONTROL_omitted_reversal_only_12.json",
+      "original_file": "CONTROL_omitted_reversal_only_12.json",
+      "original_sha256": "cd0f5ef3ad46e56311f20f07849a95c004b6fd6f869f6ba340fd1ac7f8ec0dcf",
+      "sha256": "cd0f5ef3ad46e56311f20f07849a95c004b6fd6f869f6ba340fd1ac7f8ec0dcf"
+    },
+    {
+      "file": "CONTROL_omitted_reversal_only_24.json",
+      "original_file": "CONTROL_omitted_reversal_only_24.json",
+      "original_sha256": "82329e9393b3419573db98ceb10b917b4f0b9bd8b29c5995285c623d9be9f70a",
+      "sha256": "82329e9393b3419573db98ceb10b917b4f0b9bd8b29c5995285c623d9be9f70a"
+    },
+    {
+      "file": "CONTROL_omitted_reversal_only_3.json",
+      "original_file": "CONTROL_omitted_reversal_only_3.json",
+      "original_sha256": "4988b73240c66351e4b30294b31bf511edd3cce15e9a47567c149bf135265c42",
+      "sha256": "4988b73240c66351e4b30294b31bf511edd3cce15e9a47567c149bf135265c42"
+    },
+    {
+      "file": "CONTROL_omitted_reversal_only_6.json",
+      "original_file": "CONTROL_omitted_reversal_only_6.json",
+      "original_sha256": "76247046b39d030374daf8bb17dca22c97474dab93c3221e7880112ac078dc9d",
+      "sha256": "76247046b39d030374daf8bb17dca22c97474dab93c3221e7880112ac078dc9d"
+    },
+    {
+      "file": "FINAL_correlated_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e.json",
+      "original_file": "FINAL_correlated_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e.json",
+      "original_sha256": "812144462e70b7d472987fafa54f10018bc3262a480319c0b79df2ec5559076c",
+      "sha256": "812144462e70b7d472987fafa54f10018bc3262a480319c0b79df2ec5559076c"
+    },
+    {
+      "file": "FINAL_correlated_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e_size1.json",
+      "original_file": "FINAL_correlated_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e_size1.json",
+      "original_sha256": "3ce16051a9505cd5c46f91347f3ff64d4503d5c64a267ac70e1afd39606a64ee",
+      "sha256": "3ce16051a9505cd5c46f91347f3ff64d4503d5c64a267ac70e1afd39606a64ee"
+    },
+    {
+      "file": "FINAL_correlated_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5.json",
+      "original_file": "FINAL_correlated_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5.json",
+      "original_sha256": "bf154ac26d8a528104c65d269071e9f6517bd9f30e12cbcc3d7ac90d7736a5d0",
+      "sha256": "bf154ac26d8a528104c65d269071e9f6517bd9f30e12cbcc3d7ac90d7736a5d0"
+    },
+    {
+      "file": "FINAL_correlated_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5_size1.json",
+      "original_file": "FINAL_correlated_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5_size1.json",
+      "original_sha256": "1b3cdd0cf2779a6f521e76b536d3a838e3b52db015496e9319085efbdc919886",
+      "sha256": "1b3cdd0cf2779a6f521e76b536d3a838e3b52db015496e9319085efbdc919886"
+    },
+    {
+      "file": "FINAL_correlated_523daabbcfba19f7721fcf10f9116ea5d21cb4f335653e549c038ab2197212dc.json",
+      "original_file": "FINAL_correlated_523daabbcfba19f7721fcf10f9116ea5d21cb4f335653e549c038ab2197212dc.json",
+      "original_sha256": "a4e6ab40484dcf35ec9b45bbfe4c00446772266e308cdb7a6448adfa968a3308",
+      "sha256": "a4e6ab40484dcf35ec9b45bbfe4c00446772266e308cdb7a6448adfa968a3308"
+    },
+    {
+      "file": "FINAL_correlated_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256.json",
+      "original_file": "FINAL_correlated_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256.json",
+      "original_sha256": "7110464643ec09c166bbd80b1f7cebf00147a3e086bf54321447b41f9d9e2623",
+      "sha256": "7110464643ec09c166bbd80b1f7cebf00147a3e086bf54321447b41f9d9e2623"
+    },
+    {
+      "file": "FINAL_correlated_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256_size1.json",
+      "original_file": "FINAL_correlated_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256_size1.json",
+      "original_sha256": "5cdc6784dd01d5e555648b0b349ac67736061dbfd1645fad10304d52bc763c5d",
+      "sha256": "5cdc6784dd01d5e555648b0b349ac67736061dbfd1645fad10304d52bc763c5d"
+    },
+    {
+      "file": "FINAL_correlated_c676633aac58ad2f3b3873d861d3645bb6f71f87dcd2f55f3dc31904e834aa21.json",
+      "original_file": "FINAL_correlated_c676633aac58ad2f3b3873d861d3645bb6f71f87dcd2f55f3dc31904e834aa21.json",
+      "original_sha256": "37c5119fea0310e064b3defe34df3ddf3e39e3b70cc3c3139b06ab49c6c4a4c1",
+      "sha256": "37c5119fea0310e064b3defe34df3ddf3e39e3b70cc3c3139b06ab49c6c4a4c1"
+    },
+    {
+      "file": "FINAL_correlated_equal_guarded.json",
+      "original_file": "FINAL_correlated_equal_guarded.json",
+      "original_sha256": "1ea3d79fc6f80a2ed3686a5cd9733185c5628edc4fa1bf403523a83ab59c54fd",
+      "sha256": "1ea3d79fc6f80a2ed3686a5cd9733185c5628edc4fa1bf403523a83ab59c54fd"
+    },
+    {
+      "file": "FINAL_correlated_greedy.json",
+      "original_file": "FINAL_correlated_greedy.json",
+      "original_sha256": "2c5060d183b77349eec4147098c93cbd45802ebbd1855f2926230b392b8708cd",
+      "sha256": "2c5060d183b77349eec4147098c93cbd45802ebbd1855f2926230b392b8708cd"
+    },
+    {
+      "file": "FINAL_correlated_nop.json",
+      "original_file": "FINAL_correlated_nop.json",
+      "original_sha256": "bee67a2d157d1ecc19f14667fbf55a942323ad1d7962584bd1d5a3a17bd19e94",
+      "sha256": "bee67a2d157d1ecc19f14667fbf55a942323ad1d7962584bd1d5a3a17bd19e94"
+    },
+    {
+      "file": "FINAL_correlated_only_12.json",
+      "original_file": "FINAL_correlated_only_12.json",
+      "original_sha256": "f7474d59874221c410b0d67c57bddf4597e6e564b119a8fab36a4f043855b5bb",
+      "sha256": "f7474d59874221c410b0d67c57bddf4597e6e564b119a8fab36a4f043855b5bb"
+    },
+    {
+      "file": "FINAL_correlated_only_24.json",
+      "original_file": "FINAL_correlated_only_24.json",
+      "original_sha256": "5d0ae71cef89f2b8ea57930f0d3b2d2873f1dc472214807a08acb3bb2aad3a7b",
+      "sha256": "5d0ae71cef89f2b8ea57930f0d3b2d2873f1dc472214807a08acb3bb2aad3a7b"
+    },
+    {
+      "file": "FINAL_correlated_only_3.json",
+      "original_file": "FINAL_correlated_only_3.json",
+      "original_sha256": "aabff4d8e7f8cc7dba074dc92054a4330efc053908fd5125520a1b580746bc8e",
+      "sha256": "aabff4d8e7f8cc7dba074dc92054a4330efc053908fd5125520a1b580746bc8e"
+    },
+    {
+      "file": "FINAL_correlated_only_6.json",
+      "original_file": "FINAL_correlated_only_6.json",
+      "original_sha256": "a751d3313d8796858bcaa2eb2ef17101cde5ff832039c10dd22098eaa28d1d1e",
+      "sha256": "a751d3313d8796858bcaa2eb2ef17101cde5ff832039c10dd22098eaa28d1d1e"
+    },
+    {
+      "file": "FINAL_delayed_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e.json",
+      "original_file": "FINAL_delayed_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e.json",
+      "original_sha256": "4b7d0249c229e82f56fe5b6ae4ba3556633bcf9db12b61a16948d79a78c321e9",
+      "sha256": "4b7d0249c229e82f56fe5b6ae4ba3556633bcf9db12b61a16948d79a78c321e9"
+    },
+    {
+      "file": "FINAL_delayed_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e_size1.json",
+      "original_file": "FINAL_delayed_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e_size1.json",
+      "original_sha256": "a171b9547ae2eb734b4be6061a190595a9745fb921a3463cac3101892054fdba",
+      "sha256": "a171b9547ae2eb734b4be6061a190595a9745fb921a3463cac3101892054fdba"
+    },
+    {
+      "file": "FINAL_delayed_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5.json",
+      "original_file": "FINAL_delayed_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5.json",
+      "original_sha256": "30848a9bfa88135955d82bce80b424889b0880f723cc42001a6cc735289b3cc9",
+      "sha256": "30848a9bfa88135955d82bce80b424889b0880f723cc42001a6cc735289b3cc9"
+    },
+    {
+      "file": "FINAL_delayed_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5_size1.json",
+      "original_file": "FINAL_delayed_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5_size1.json",
+      "original_sha256": "a8f218b33b95791e6a92972bc1640e23ba0a873768febf44ea8d3a6df5fd6062",
+      "sha256": "a8f218b33b95791e6a92972bc1640e23ba0a873768febf44ea8d3a6df5fd6062"
+    },
+    {
+      "file": "FINAL_delayed_523daabbcfba19f7721fcf10f9116ea5d21cb4f335653e549c038ab2197212dc.json",
+      "original_file": "FINAL_delayed_523daabbcfba19f7721fcf10f9116ea5d21cb4f335653e549c038ab2197212dc.json",
+      "original_sha256": "5ca1a0f25afaaac246ef9328a8621763b5e78f5fbdb8b07b40151d72f5a4f755",
+      "sha256": "5ca1a0f25afaaac246ef9328a8621763b5e78f5fbdb8b07b40151d72f5a4f755"
+    },
+    {
+      "file": "FINAL_delayed_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256.json",
+      "original_file": "FINAL_delayed_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256.json",
+      "original_sha256": "33266dc039d8864281e090e62f352df6820e8eb88041ad9d8aeada30d7f5a5a9",
+      "sha256": "33266dc039d8864281e090e62f352df6820e8eb88041ad9d8aeada30d7f5a5a9"
+    },
+    {
+      "file": "FINAL_delayed_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256_size1.json",
+      "original_file": "FINAL_delayed_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256_size1.json",
+      "original_sha256": "9cb3d406f0819ac7080472d89d01e81cd49e951e27959062e660dcda8efbf5d4",
+      "sha256": "9cb3d406f0819ac7080472d89d01e81cd49e951e27959062e660dcda8efbf5d4"
+    },
+    {
+      "file": "FINAL_delayed_c676633aac58ad2f3b3873d861d3645bb6f71f87dcd2f55f3dc31904e834aa21.json",
+      "original_file": "FINAL_delayed_c676633aac58ad2f3b3873d861d3645bb6f71f87dcd2f55f3dc31904e834aa21.json",
+      "original_sha256": "c8c5cd12eec155e94621bd57784cfb5d5d711e3b36fd81a71d98147153f5f205",
+      "sha256": "c8c5cd12eec155e94621bd57784cfb5d5d711e3b36fd81a71d98147153f5f205"
+    },
+    {
+      "file": "FINAL_delayed_equal_guarded.json",
+      "original_file": "FINAL_delayed_equal_guarded.json",
+      "original_sha256": "e9b35f9ef340c981970c7893fd6a76b893a1fe26d5425d363c0a2d3f359a68e5",
+      "sha256": "e9b35f9ef340c981970c7893fd6a76b893a1fe26d5425d363c0a2d3f359a68e5"
+    },
+    {
+      "file": "FINAL_delayed_greedy.json",
+      "original_file": "FINAL_delayed_greedy.json",
+      "original_sha256": "c7c9a9be9586f0431c1f777aa8a0a83f600e4fc781d0f00f8180e6c0552d58af",
+      "sha256": "c7c9a9be9586f0431c1f777aa8a0a83f600e4fc781d0f00f8180e6c0552d58af"
+    },
+    {
+      "file": "FINAL_delayed_nop.json",
+      "original_file": "FINAL_delayed_nop.json",
+      "original_sha256": "b34d0923836da5cbef650d1b66d195a9535e0ca5e63b66ca0be5cc7c91d65d03",
+      "sha256": "b34d0923836da5cbef650d1b66d195a9535e0ca5e63b66ca0be5cc7c91d65d03"
+    },
+    {
+      "file": "FINAL_delayed_only_12.json",
+      "original_file": "FINAL_delayed_only_12.json",
+      "original_sha256": "afe1779a4c8356bdbd8977a8935bfe55cc69500468f242a5afb3794fc4524036",
+      "sha256": "afe1779a4c8356bdbd8977a8935bfe55cc69500468f242a5afb3794fc4524036"
+    },
+    {
+      "file": "FINAL_delayed_only_24.json",
+      "original_file": "FINAL_delayed_only_24.json",
+      "original_sha256": "dbe00232e37d45e2c951938a5c569d172614538c40f89d431ebf13d37a3dbe12",
+      "sha256": "dbe00232e37d45e2c951938a5c569d172614538c40f89d431ebf13d37a3dbe12"
+    },
+    {
+      "file": "FINAL_delayed_only_3.json",
+      "original_file": "FINAL_delayed_only_3.json",
+      "original_sha256": "d6714f40e289831b49749e2b22e5951b4526dbf881f67031424b4669b877400d",
+      "sha256": "d6714f40e289831b49749e2b22e5951b4526dbf881f67031424b4669b877400d"
+    },
+    {
+      "file": "FINAL_delayed_only_6.json",
+      "original_file": "FINAL_delayed_only_6.json",
+      "original_sha256": "dc2d20f592ade4198aa5c38eee1c0abff3f7e9ac82e1fd9706f2a76cfd7a027c",
+      "sha256": "dc2d20f592ade4198aa5c38eee1c0abff3f7e9ac82e1fd9706f2a76cfd7a027c"
+    },
+    {
+      "file": "FINAL_ideal_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e.json",
+      "original_file": "FINAL_ideal_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e.json",
+      "original_sha256": "5ae4feb396d39d2c86b04b172e2051985756b4f390e07dc2b87d6a4928c0e7db",
+      "sha256": "5ae4feb396d39d2c86b04b172e2051985756b4f390e07dc2b87d6a4928c0e7db"
+    },
+    {
+      "file": "FINAL_ideal_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e_size1.json",
+      "original_file": "FINAL_ideal_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e_size1.json",
+      "original_sha256": "6356149d3c48af114f182a56d703e8153fecccb9e6c3804e3d1af953340b178b",
+      "sha256": "6356149d3c48af114f182a56d703e8153fecccb9e6c3804e3d1af953340b178b"
+    },
+    {
+      "file": "FINAL_ideal_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5.json",
+      "original_file": "FINAL_ideal_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5.json",
+      "original_sha256": "7839ca3a486350ab90f5b8f3b3b82cc7579c23eab6e8f765b496e369a3fc5639",
+      "sha256": "7839ca3a486350ab90f5b8f3b3b82cc7579c23eab6e8f765b496e369a3fc5639"
+    },
+    {
+      "file": "FINAL_ideal_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5_size1.json",
+      "original_file": "FINAL_ideal_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5_size1.json",
+      "original_sha256": "96da0cf428df07c746096a227eb0a1cc68174899cac8ea02d459cb9759749bbf",
+      "sha256": "96da0cf428df07c746096a227eb0a1cc68174899cac8ea02d459cb9759749bbf"
+    },
+    {
+      "file": "FINAL_ideal_523daabbcfba19f7721fcf10f9116ea5d21cb4f335653e549c038ab2197212dc.json",
+      "original_file": "FINAL_ideal_523daabbcfba19f7721fcf10f9116ea5d21cb4f335653e549c038ab2197212dc.json",
+      "original_sha256": "0737d016e194cda394d2d71995c80dbc34f5d87a147e21159df8195c29118816",
+      "sha256": "0737d016e194cda394d2d71995c80dbc34f5d87a147e21159df8195c29118816"
+    },
+    {
+      "file": "FINAL_ideal_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256.json",
+      "original_file": "FINAL_ideal_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256.json",
+      "original_sha256": "3e5f5df816f1020a6d4363b3f6d2cfd5f209eff0477bc86cf80d6dbe1703ddc6",
+      "sha256": "3e5f5df816f1020a6d4363b3f6d2cfd5f209eff0477bc86cf80d6dbe1703ddc6"
+    },
+    {
+      "file": "FINAL_ideal_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256_size1.json",
+      "original_file": "FINAL_ideal_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256_size1.json",
+      "original_sha256": "fa3272fd862f22d2b504971244bdb4f9cd1c92d6c272b2c2ca280512244b5f93",
+      "sha256": "fa3272fd862f22d2b504971244bdb4f9cd1c92d6c272b2c2ca280512244b5f93"
+    },
+    {
+      "file": "FINAL_ideal_c676633aac58ad2f3b3873d861d3645bb6f71f87dcd2f55f3dc31904e834aa21.json",
+      "original_file": "FINAL_ideal_c676633aac58ad2f3b3873d861d3645bb6f71f87dcd2f55f3dc31904e834aa21.json",
+      "original_sha256": "6f43756b6a09a908c93439eb95e18765eb544c03d11fc0d6257a293b9fbfa853",
+      "sha256": "6f43756b6a09a908c93439eb95e18765eb544c03d11fc0d6257a293b9fbfa853"
+    },
+    {
+      "file": "FINAL_ideal_equal_guarded.json",
+      "original_file": "FINAL_ideal_equal_guarded.json",
+      "original_sha256": "7bb0e36dc54ade3f7e121b05abe54ec50ccede20505d27f77c9217716877437f",
+      "sha256": "7bb0e36dc54ade3f7e121b05abe54ec50ccede20505d27f77c9217716877437f"
+    },
+    {
+      "file": "FINAL_ideal_greedy.json",
+      "original_file": "FINAL_ideal_greedy.json",
+      "original_sha256": "e0480c2dda5ea5dbc9d1f81f414955c2e7fc67bc49ea75503ea73fe0aead02d7",
+      "sha256": "e0480c2dda5ea5dbc9d1f81f414955c2e7fc67bc49ea75503ea73fe0aead02d7"
+    },
+    {
+      "file": "FINAL_ideal_nop.json",
+      "original_file": "FINAL_ideal_nop.json",
+      "original_sha256": "e9cc896161b45190305c7935daf33c31fb9f2f2f2c90943259f9a5e78792b5ee",
+      "sha256": "e9cc896161b45190305c7935daf33c31fb9f2f2f2c90943259f9a5e78792b5ee"
+    },
+    {
+      "file": "FINAL_ideal_only_12.json",
+      "original_file": "FINAL_ideal_only_12.json",
+      "original_sha256": "b45e589d729488f8f5f372f6465128bcd35ccd1c5e67b0872a3946f9df8ad0b7",
+      "sha256": "b45e589d729488f8f5f372f6465128bcd35ccd1c5e67b0872a3946f9df8ad0b7"
+    },
+    {
+      "file": "FINAL_ideal_only_24.json",
+      "original_file": "FINAL_ideal_only_24.json",
+      "original_sha256": "69f486fdf3073b9db00d46eb44aadbf3b8a9c33b569e04276560fba4b5459ec1",
+      "sha256": "69f486fdf3073b9db00d46eb44aadbf3b8a9c33b569e04276560fba4b5459ec1"
+    },
+    {
+      "file": "FINAL_ideal_only_3.json",
+      "original_file": "FINAL_ideal_only_3.json",
+      "original_sha256": "5ae318019035bff89cd4d4d0f502bf8b956d720127933e3898ec01ae5a8599fc",
+      "sha256": "5ae318019035bff89cd4d4d0f502bf8b956d720127933e3898ec01ae5a8599fc"
+    },
+    {
+      "file": "FINAL_ideal_only_6.json",
+      "original_file": "FINAL_ideal_only_6.json",
+      "original_sha256": "37885be2f4eb6accf3dc1b91b98e976214472007634a9e812f6f5f79ee12ea6e",
+      "sha256": "37885be2f4eb6accf3dc1b91b98e976214472007634a9e812f6f5f79ee12ea6e"
+    },
+    {
+      "file": "FINAL_missing_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e.json",
+      "original_file": "FINAL_missing_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e.json",
+      "original_sha256": "650fa460aaaec08b77756c90a971c7a5dfdfbb56f60fe92cf92d05bc009aa5f8",
+      "sha256": "650fa460aaaec08b77756c90a971c7a5dfdfbb56f60fe92cf92d05bc009aa5f8"
+    },
+    {
+      "file": "FINAL_missing_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e_size1.json",
+      "original_file": "FINAL_missing_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e_size1.json",
+      "original_sha256": "b56f5f9c4879a83577dc29cf3dcbd444b886d8917ac8682aee8994b50aceb95f",
+      "sha256": "b56f5f9c4879a83577dc29cf3dcbd444b886d8917ac8682aee8994b50aceb95f"
+    },
+    {
+      "file": "FINAL_missing_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5.json",
+      "original_file": "FINAL_missing_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5.json",
+      "original_sha256": "984cb7d5ae34602a5aa607ec87c5e1c6a244bf11e248160eb04f4e348ae42372",
+      "sha256": "984cb7d5ae34602a5aa607ec87c5e1c6a244bf11e248160eb04f4e348ae42372"
+    },
+    {
+      "file": "FINAL_missing_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5_size1.json",
+      "original_file": "FINAL_missing_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5_size1.json",
+      "original_sha256": "401b6e7d89ad0567549a8cc1feea5ffce79ef91ca681475611f6dde835dcc58c",
+      "sha256": "401b6e7d89ad0567549a8cc1feea5ffce79ef91ca681475611f6dde835dcc58c"
+    },
+    {
+      "file": "FINAL_missing_523daabbcfba19f7721fcf10f9116ea5d21cb4f335653e549c038ab2197212dc.json",
+      "original_file": "FINAL_missing_523daabbcfba19f7721fcf10f9116ea5d21cb4f335653e549c038ab2197212dc.json",
+      "original_sha256": "2ff7239016a7693b920040abccb160b6c240b3bb5457726c4be75968acdacbe0",
+      "sha256": "2ff7239016a7693b920040abccb160b6c240b3bb5457726c4be75968acdacbe0"
+    },
+    {
+      "file": "FINAL_missing_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256.json",
+      "original_file": "FINAL_missing_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256.json",
+      "original_sha256": "fc478328e55230a553ce69733f4219062e145a70fdb54a204e90de848817344d",
+      "sha256": "fc478328e55230a553ce69733f4219062e145a70fdb54a204e90de848817344d"
+    },
+    {
+      "file": "FINAL_missing_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256_size1.json",
+      "original_file": "FINAL_missing_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256_size1.json",
+      "original_sha256": "a4b5336c467266ef76cf2900906e2bc7d4878d26cdf730082c6f1deec4125a4b",
+      "sha256": "a4b5336c467266ef76cf2900906e2bc7d4878d26cdf730082c6f1deec4125a4b"
+    },
+    {
+      "file": "FINAL_missing_c676633aac58ad2f3b3873d861d3645bb6f71f87dcd2f55f3dc31904e834aa21.json",
+      "original_file": "FINAL_missing_c676633aac58ad2f3b3873d861d3645bb6f71f87dcd2f55f3dc31904e834aa21.json",
+      "original_sha256": "9155134e306a402b7ea9c1e625856fc7a5fd9286f600083289bcd5e8a2c29cab",
+      "sha256": "9155134e306a402b7ea9c1e625856fc7a5fd9286f600083289bcd5e8a2c29cab"
+    },
+    {
+      "file": "FINAL_missing_equal_guarded.json",
+      "original_file": "FINAL_missing_equal_guarded.json",
+      "original_sha256": "d97ec363f5d436c6a0abe746e743b1425f13582fb58467a89baad3663c287e22",
+      "sha256": "d97ec363f5d436c6a0abe746e743b1425f13582fb58467a89baad3663c287e22"
+    },
+    {
+      "file": "FINAL_missing_greedy.json",
+      "original_file": "FINAL_missing_greedy.json",
+      "original_sha256": "a6f06c425152a6441fc33457b351c2a662137fc23ccff3031a9e2d510d80ef7e",
+      "sha256": "a6f06c425152a6441fc33457b351c2a662137fc23ccff3031a9e2d510d80ef7e"
+    },
+    {
+      "file": "FINAL_missing_nop.json",
+      "original_file": "FINAL_missing_nop.json",
+      "original_sha256": "848e039552f7df1e84ee9cb3c471d17d5b453c7567a096a59d2fc70acc30bd3d",
+      "sha256": "848e039552f7df1e84ee9cb3c471d17d5b453c7567a096a59d2fc70acc30bd3d"
+    },
+    {
+      "file": "FINAL_missing_only_12.json",
+      "original_file": "FINAL_missing_only_12.json",
+      "original_sha256": "273897e41b70dde7dcc4393d088e07db0be182a1cc2ec670dca66df000709bd9",
+      "sha256": "273897e41b70dde7dcc4393d088e07db0be182a1cc2ec670dca66df000709bd9"
+    },
+    {
+      "file": "FINAL_missing_only_24.json",
+      "original_file": "FINAL_missing_only_24.json",
+      "original_sha256": "6c481f8104e0a1b9f4e14b72ddd570b0bc36837cdb571bed7037b8cefdb3df11",
+      "sha256": "6c481f8104e0a1b9f4e14b72ddd570b0bc36837cdb571bed7037b8cefdb3df11"
+    },
+    {
+      "file": "FINAL_missing_only_3.json",
+      "original_file": "FINAL_missing_only_3.json",
+      "original_sha256": "beacc3d541d7c14f36798704e614af3b46afba6190640f1772b17db3a005d616",
+      "sha256": "beacc3d541d7c14f36798704e614af3b46afba6190640f1772b17db3a005d616"
+    },
+    {
+      "file": "FINAL_missing_only_6.json",
+      "original_file": "FINAL_missing_only_6.json",
+      "original_sha256": "5dd869e5a14486f860bcbf596651def4c288ac1382cbf27078a90e94b366640c",
+      "sha256": "5dd869e5a14486f860bcbf596651def4c288ac1382cbf27078a90e94b366640c"
+    },
+    {
+      "file": "FINAL_omitted_reversal_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e.json",
+      "original_file": "FINAL_omitted_reversal_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e.json",
+      "original_sha256": "74e32f55d2e1afeb8accf18af0c4b4d2c65c45ae258d241205e1055b66d4a95e",
+      "sha256": "74e32f55d2e1afeb8accf18af0c4b4d2c65c45ae258d241205e1055b66d4a95e"
+    },
+    {
+      "file": "FINAL_omitted_reversal_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e_size1.json",
+      "original_file": "FINAL_omitted_reversal_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e_size1.json",
+      "original_sha256": "fe59e2069d55d8785b9841c2d3d4fba69071cad1df66e5ab4996fab6e6c7dcb6",
+      "sha256": "fe59e2069d55d8785b9841c2d3d4fba69071cad1df66e5ab4996fab6e6c7dcb6"
+    },
+    {
+      "file": "FINAL_omitted_reversal_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5.json",
+      "original_file": "FINAL_omitted_reversal_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5.json",
+      "original_sha256": "da903749bfaea71d2e7775c749c68b884c0caf2912ee97d9ebbd18b668b7b28c",
+      "sha256": "da903749bfaea71d2e7775c749c68b884c0caf2912ee97d9ebbd18b668b7b28c"
+    },
+    {
+      "file": "FINAL_omitted_reversal_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5_size1.json",
+      "original_file": "FINAL_omitted_reversal_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5_size1.json",
+      "original_sha256": "877df64a8da99d9d8cd0512de642a3e5a491c80ee7ab8f62485dbf79b26887bd",
+      "sha256": "877df64a8da99d9d8cd0512de642a3e5a491c80ee7ab8f62485dbf79b26887bd"
+    },
+    {
+      "file": "FINAL_omitted_reversal_523daabbcfba19f7721fcf10f9116ea5d21cb4f335653e549c038ab2197212dc.json",
+      "original_file": "FINAL_omitted_reversal_523daabbcfba19f7721fcf10f9116ea5d21cb4f335653e549c038ab2197212dc.json",
+      "original_sha256": "9959ae1a5ce37514f6a9e83ce47d4173b36c2249c77273e3934f6995f72c9438",
+      "sha256": "9959ae1a5ce37514f6a9e83ce47d4173b36c2249c77273e3934f6995f72c9438"
+    },
+    {
+      "file": "FINAL_omitted_reversal_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256.json",
+      "original_file": "FINAL_omitted_reversal_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256.json",
+      "original_sha256": "ae0ed830aff30ddd1ec540846cdce8064493ccfdb23cee165dbaee5ced123cf0",
+      "sha256": "ae0ed830aff30ddd1ec540846cdce8064493ccfdb23cee165dbaee5ced123cf0"
+    },
+    {
+      "file": "FINAL_omitted_reversal_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256_size1.json",
+      "original_file": "FINAL_omitted_reversal_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256_size1.json",
+      "original_sha256": "7e5fc5a8253807e8632fd82ca0dcdd51d9199b2b1ef9b8328c536c59982e4351",
+      "sha256": "7e5fc5a8253807e8632fd82ca0dcdd51d9199b2b1ef9b8328c536c59982e4351"
+    },
+    {
+      "file": "FINAL_omitted_reversal_c676633aac58ad2f3b3873d861d3645bb6f71f87dcd2f55f3dc31904e834aa21.json",
+      "original_file": "FINAL_omitted_reversal_c676633aac58ad2f3b3873d861d3645bb6f71f87dcd2f55f3dc31904e834aa21.json",
+      "original_sha256": "17441da26adc458d224f2c665caefe57843384029b11750a5e9d83a7acc1a54b",
+      "sha256": "17441da26adc458d224f2c665caefe57843384029b11750a5e9d83a7acc1a54b"
+    },
+    {
+      "file": "FINAL_omitted_reversal_equal_guarded.json",
+      "original_file": "FINAL_omitted_reversal_equal_guarded.json",
+      "original_sha256": "09ae2c981579285206d905985f7f4f8f467fb46092dfd447ba5d6a76419cbdc2",
+      "sha256": "09ae2c981579285206d905985f7f4f8f467fb46092dfd447ba5d6a76419cbdc2"
+    },
+    {
+      "file": "FINAL_omitted_reversal_greedy.json",
+      "original_file": "FINAL_omitted_reversal_greedy.json",
+      "original_sha256": "e44221e26211afa7e14ec19e292407ad39b8dd262f038b136e5f53a7cde37126",
+      "sha256": "e44221e26211afa7e14ec19e292407ad39b8dd262f038b136e5f53a7cde37126"
+    },
+    {
+      "file": "FINAL_omitted_reversal_nop.json",
+      "original_file": "FINAL_omitted_reversal_nop.json",
+      "original_sha256": "9dac5802b8826a8538a184c520cf0d5dadd3bb17f2b0712594f75c409c5f6ee6",
+      "sha256": "9dac5802b8826a8538a184c520cf0d5dadd3bb17f2b0712594f75c409c5f6ee6"
+    },
+    {
+      "file": "FINAL_omitted_reversal_only_12.json",
+      "original_file": "FINAL_omitted_reversal_only_12.json",
+      "original_sha256": "ac19b8fac4e9979a30f61b54574a817526bf0608672f193b065faa84e679e9a4",
+      "sha256": "ac19b8fac4e9979a30f61b54574a817526bf0608672f193b065faa84e679e9a4"
+    },
+    {
+      "file": "FINAL_omitted_reversal_only_24.json",
+      "original_file": "FINAL_omitted_reversal_only_24.json",
+      "original_sha256": "9111b66711494fbc3f811b86ad07fff5153683ed226e7cfa03953730584501a8",
+      "sha256": "9111b66711494fbc3f811b86ad07fff5153683ed226e7cfa03953730584501a8"
+    },
+    {
+      "file": "FINAL_omitted_reversal_only_3.json",
+      "original_file": "FINAL_omitted_reversal_only_3.json",
+      "original_sha256": "5d72c94c1d18fbdfbce9537d7b9f241818f4f608942f131ede88ede194a14b90",
+      "sha256": "5d72c94c1d18fbdfbce9537d7b9f241818f4f608942f131ede88ede194a14b90"
+    },
+    {
+      "file": "FINAL_omitted_reversal_only_6.json",
+      "original_file": "FINAL_omitted_reversal_only_6.json",
+      "original_sha256": "749525d90794662b2b8a502facf544e08aa3c748346b6257fbea50efe795920d",
+      "sha256": "749525d90794662b2b8a502facf544e08aa3c748346b6257fbea50efe795920d"
+    },
+    {
+      "file": "FRONTIER.json",
+      "original_file": "FRONTIER.json",
+      "original_sha256": "cd491f8e34432c6d60ce90de5284eb634cdbd2e1cb0fe6503a4f7a17ad30f1ec",
+      "sha256": "cd491f8e34432c6d60ce90de5284eb634cdbd2e1cb0fe6503a4f7a17ad30f1ec"
+    },
+    {
+      "file": "MANIFEST.json",
+      "original_file": "MANIFEST.json",
+      "original_sha256": "80699c6d434af2eddaec9cb0057d4ae310b6187d21e302306940d9f0b9f1b34f",
+      "sha256": "80699c6d434af2eddaec9cb0057d4ae310b6187d21e302306940d9f0b9f1b34f"
+    },
+    {
+      "file": "REPLAY_correlated_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e.json.gz",
+      "original_file": "REPLAY_correlated_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e.json.gz",
+      "original_sha256": "9647e896c3a213f1715cef3dd2c91f0257a57e14e4dca8e7b7c3216e995ae5fe",
+      "sha256": "9647e896c3a213f1715cef3dd2c91f0257a57e14e4dca8e7b7c3216e995ae5fe"
+    },
+    {
+      "file": "REPLAY_correlated_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e_size1.json.gz",
+      "original_file": "REPLAY_correlated_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e_size1.json.gz",
+      "original_sha256": "591ca94797f61ca89221d169ad508b6e0147913a7b084642a3d36127cf95c4ce",
+      "sha256": "591ca94797f61ca89221d169ad508b6e0147913a7b084642a3d36127cf95c4ce"
+    },
+    {
+      "file": "REPLAY_correlated_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5.json.gz",
+      "original_file": "REPLAY_correlated_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5.json.gz",
+      "original_sha256": "d33b0478aa58292f7661b269118ca7bb4e66c802f1e9fa6a11ff7e8a46c7bbe0",
+      "sha256": "d33b0478aa58292f7661b269118ca7bb4e66c802f1e9fa6a11ff7e8a46c7bbe0"
+    },
+    {
+      "file": "REPLAY_correlated_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5_size1.json.gz",
+      "original_file": "REPLAY_correlated_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5_size1.json.gz",
+      "original_sha256": "b2ab6ace555a240a379585e9a16eac65910fcce59e3792f556df2a7ce9604a62",
+      "sha256": "b2ab6ace555a240a379585e9a16eac65910fcce59e3792f556df2a7ce9604a62"
+    },
+    {
+      "file": "REPLAY_correlated_523daabbcfba19f7721fcf10f9116ea5d21cb4f335653e549c038ab2197212dc.json.gz",
+      "original_file": "REPLAY_correlated_523daabbcfba19f7721fcf10f9116ea5d21cb4f335653e549c038ab2197212dc.json.gz",
+      "original_sha256": "1d066b8c3ba9b5cd5d1bf2da88ee327684cb73c0424783445b0cf1f23fa603ca",
+      "sha256": "1d066b8c3ba9b5cd5d1bf2da88ee327684cb73c0424783445b0cf1f23fa603ca"
+    },
+    {
+      "file": "REPLAY_correlated_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256.json.gz",
+      "original_file": "REPLAY_correlated_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256.json.gz",
+      "original_sha256": "01546b6d83f364b76c9a56d7c8f54610c90af093a3e58d6525732b8cc09db45b",
+      "sha256": "01546b6d83f364b76c9a56d7c8f54610c90af093a3e58d6525732b8cc09db45b"
+    },
+    {
+      "file": "REPLAY_correlated_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256_size1.json.gz",
+      "original_file": "REPLAY_correlated_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256_size1.json.gz",
+      "original_sha256": "2c0b0cf1c7de57f2f5e94c10cd522777605b1ce240782bd86c1bf1b1bc816d83",
+      "sha256": "2c0b0cf1c7de57f2f5e94c10cd522777605b1ce240782bd86c1bf1b1bc816d83"
+    },
+    {
+      "file": "REPLAY_correlated_c676633aac58ad2f3b3873d861d3645bb6f71f87dcd2f55f3dc31904e834aa21.json.gz",
+      "original_file": "REPLAY_correlated_c676633aac58ad2f3b3873d861d3645bb6f71f87dcd2f55f3dc31904e834aa21.json.gz",
+      "original_sha256": "b778e35234aa8500031d5e2790f6d7d6ad244adaf9307e51beaac9a2031413bb",
+      "sha256": "b778e35234aa8500031d5e2790f6d7d6ad244adaf9307e51beaac9a2031413bb"
+    },
+    {
+      "file": "REPLAY_correlated_equal_guarded.json.gz",
+      "original_file": "REPLAY_correlated_equal_guarded.json.gz",
+      "original_sha256": "206cd414b49e044413a6295441f1cc80f4cf441574304e9adb7db2bafcc88f72",
+      "sha256": "206cd414b49e044413a6295441f1cc80f4cf441574304e9adb7db2bafcc88f72"
+    },
+    {
+      "file": "REPLAY_correlated_greedy.json.gz",
+      "original_file": "REPLAY_correlated_greedy.json.gz",
+      "original_sha256": "3e9cc01917a72e16889845a996a6ab3e112b22c8816778299c716634ac174b17",
+      "sha256": "3e9cc01917a72e16889845a996a6ab3e112b22c8816778299c716634ac174b17"
+    },
+    {
+      "file": "REPLAY_correlated_nop.json.gz",
+      "original_file": "REPLAY_correlated_nop.json.gz",
+      "original_sha256": "012559b3c7427bef76f06974cb1b14a9ab62d9cc05a12d333513741b5536cb93",
+      "sha256": "012559b3c7427bef76f06974cb1b14a9ab62d9cc05a12d333513741b5536cb93"
+    },
+    {
+      "file": "REPLAY_correlated_only_12.json.gz",
+      "original_file": "REPLAY_correlated_only_12.json.gz",
+      "original_sha256": "71939eee7fd3036473a57bac0c8c484136bad7d44ffe2ef44bd63c97a77e2a1e",
+      "sha256": "71939eee7fd3036473a57bac0c8c484136bad7d44ffe2ef44bd63c97a77e2a1e"
+    },
+    {
+      "file": "REPLAY_correlated_only_24.json.gz",
+      "original_file": "REPLAY_correlated_only_24.json.gz",
+      "original_sha256": "4fad0ba790c519f42484fe92ace910644a958e13ef419086d26badd36fec12a9",
+      "sha256": "4fad0ba790c519f42484fe92ace910644a958e13ef419086d26badd36fec12a9"
+    },
+    {
+      "file": "REPLAY_correlated_only_3.json.gz",
+      "original_file": "REPLAY_correlated_only_3.json.gz",
+      "original_sha256": "0c66cd473dd4fb8a444d5802d6a19973cfa2f4424554e02257915d7c53cbda91",
+      "sha256": "0c66cd473dd4fb8a444d5802d6a19973cfa2f4424554e02257915d7c53cbda91"
+    },
+    {
+      "file": "REPLAY_correlated_only_6.json.gz",
+      "original_file": "REPLAY_correlated_only_6.json.gz",
+      "original_sha256": "0235ce7b8de80244ca9f9934deea928c7cba0549af9b18c02213082febcdb4a0",
+      "sha256": "0235ce7b8de80244ca9f9934deea928c7cba0549af9b18c02213082febcdb4a0"
+    },
+    {
+      "file": "REPLAY_delayed_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e.json.gz",
+      "original_file": "REPLAY_delayed_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e.json.gz",
+      "original_sha256": "e744a81c097b815d0cb14d056a05b25db6cf002ba82ee3460a3d383fceed1f6c",
+      "sha256": "e744a81c097b815d0cb14d056a05b25db6cf002ba82ee3460a3d383fceed1f6c"
+    },
+    {
+      "file": "REPLAY_delayed_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e_size1.json.gz",
+      "original_file": "REPLAY_delayed_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e_size1.json.gz",
+      "original_sha256": "222a2d441682b942c2bd4e411705192adc6a21142ecac464aca18d6d4f54235c",
+      "sha256": "222a2d441682b942c2bd4e411705192adc6a21142ecac464aca18d6d4f54235c"
+    },
+    {
+      "file": "REPLAY_delayed_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5.json.gz",
+      "original_file": "REPLAY_delayed_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5.json.gz",
+      "original_sha256": "0f0c3f3c9593067fa12d71c7ef41b83f17d5debabc32f96dbc7c46eaaba7844c",
+      "sha256": "0f0c3f3c9593067fa12d71c7ef41b83f17d5debabc32f96dbc7c46eaaba7844c"
+    },
+    {
+      "file": "REPLAY_delayed_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5_size1.json.gz",
+      "original_file": "REPLAY_delayed_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5_size1.json.gz",
+      "original_sha256": "9c83c2fabf6055164ec17f0f0294e472058919139fcb360c7460110f87c7b48e",
+      "sha256": "9c83c2fabf6055164ec17f0f0294e472058919139fcb360c7460110f87c7b48e"
+    },
+    {
+      "file": "REPLAY_delayed_523daabbcfba19f7721fcf10f9116ea5d21cb4f335653e549c038ab2197212dc.json.gz",
+      "original_file": "REPLAY_delayed_523daabbcfba19f7721fcf10f9116ea5d21cb4f335653e549c038ab2197212dc.json.gz",
+      "original_sha256": "dd5ce91eb8cfb61a309d9ca1033f4b70b8af0b6da5c0d29eaf2668bbefd874d6",
+      "sha256": "dd5ce91eb8cfb61a309d9ca1033f4b70b8af0b6da5c0d29eaf2668bbefd874d6"
+    },
+    {
+      "file": "REPLAY_delayed_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256.json.gz",
+      "original_file": "REPLAY_delayed_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256.json.gz",
+      "original_sha256": "e44827454aac6676384fab6c3b54bb3170e54ad3e55d016ab6ac985ecde4f2c9",
+      "sha256": "e44827454aac6676384fab6c3b54bb3170e54ad3e55d016ab6ac985ecde4f2c9"
+    },
+    {
+      "file": "REPLAY_delayed_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256_size1.json.gz",
+      "original_file": "REPLAY_delayed_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256_size1.json.gz",
+      "original_sha256": "c624bdb9bf1557f50b8fc8af21e0d1434981720e11bea78dbfa87acbcfe646d1",
+      "sha256": "c624bdb9bf1557f50b8fc8af21e0d1434981720e11bea78dbfa87acbcfe646d1"
+    },
+    {
+      "file": "REPLAY_delayed_c676633aac58ad2f3b3873d861d3645bb6f71f87dcd2f55f3dc31904e834aa21.json.gz",
+      "original_file": "REPLAY_delayed_c676633aac58ad2f3b3873d861d3645bb6f71f87dcd2f55f3dc31904e834aa21.json.gz",
+      "original_sha256": "d930be25d7dd580bebc1148145a90f535b4f5beebdfba968383b128645f358b5",
+      "sha256": "d930be25d7dd580bebc1148145a90f535b4f5beebdfba968383b128645f358b5"
+    },
+    {
+      "file": "REPLAY_delayed_equal_guarded.json.gz",
+      "original_file": "REPLAY_delayed_equal_guarded.json.gz",
+      "original_sha256": "f468e1bceb1a639e45aeed96fa06dd16bab6fba6c3ea383170d62ab81d0ddeff",
+      "sha256": "f468e1bceb1a639e45aeed96fa06dd16bab6fba6c3ea383170d62ab81d0ddeff"
+    },
+    {
+      "file": "REPLAY_delayed_greedy.json.gz",
+      "original_file": "REPLAY_delayed_greedy.json.gz",
+      "original_sha256": "a19c8cc9bf5d78208a37d1e1a8f00266403a8324d4214679057ebf33bb96013d",
+      "sha256": "a19c8cc9bf5d78208a37d1e1a8f00266403a8324d4214679057ebf33bb96013d"
+    },
+    {
+      "file": "REPLAY_delayed_nop.json.gz",
+      "original_file": "REPLAY_delayed_nop.json.gz",
+      "original_sha256": "9907a995230a845029ab4ca6291c96641d96b31675ca1427bfc848c7b96a6fc0",
+      "sha256": "9907a995230a845029ab4ca6291c96641d96b31675ca1427bfc848c7b96a6fc0"
+    },
+    {
+      "file": "REPLAY_delayed_only_12.json.gz",
+      "original_file": "REPLAY_delayed_only_12.json.gz",
+      "original_sha256": "410f8ec7f9a216738ca2b7370a6efdcb93c421749fd1b802dc5593bc138ca687",
+      "sha256": "410f8ec7f9a216738ca2b7370a6efdcb93c421749fd1b802dc5593bc138ca687"
+    },
+    {
+      "file": "REPLAY_delayed_only_24.json.gz",
+      "original_file": "REPLAY_delayed_only_24.json.gz",
+      "original_sha256": "7182dcb67aaeea2c599d3a5fb0b47df850e52e3b41a0cb7794954c141f53066e",
+      "sha256": "7182dcb67aaeea2c599d3a5fb0b47df850e52e3b41a0cb7794954c141f53066e"
+    },
+    {
+      "file": "REPLAY_delayed_only_3.json.gz",
+      "original_file": "REPLAY_delayed_only_3.json.gz",
+      "original_sha256": "196c172e12c6874fdca685a13052ab3223b862390d60d6675ba9b4b3661b6ed7",
+      "sha256": "196c172e12c6874fdca685a13052ab3223b862390d60d6675ba9b4b3661b6ed7"
+    },
+    {
+      "file": "REPLAY_delayed_only_6.json.gz",
+      "original_file": "REPLAY_delayed_only_6.json.gz",
+      "original_sha256": "996b699a1806d65784d06b041436f3b10ec7b6c364c60206b86f2087ef124797",
+      "sha256": "996b699a1806d65784d06b041436f3b10ec7b6c364c60206b86f2087ef124797"
+    },
+    {
+      "file": "REPLAY_ideal_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e.json.gz",
+      "original_file": "REPLAY_ideal_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e.json.gz",
+      "original_sha256": "72aed1673aa85409c7fbe22743b660813589f19ab65d8b424b90cadbbced6003",
+      "sha256": "72aed1673aa85409c7fbe22743b660813589f19ab65d8b424b90cadbbced6003"
+    },
+    {
+      "file": "REPLAY_ideal_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e_size1.json.gz",
+      "original_file": "REPLAY_ideal_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e_size1.json.gz",
+      "original_sha256": "e3fd323008abdbac5c6c1701916a646e3a8fd27904989d01fdab75cbf327932e",
+      "sha256": "e3fd323008abdbac5c6c1701916a646e3a8fd27904989d01fdab75cbf327932e"
+    },
+    {
+      "file": "REPLAY_ideal_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5.json.gz",
+      "original_file": "REPLAY_ideal_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5.json.gz",
+      "original_sha256": "c29deef6fc4ea6bd5f9a580bacfa8107f4e0ddf5eaebf96e5fd59b8bcdbe7226",
+      "sha256": "c29deef6fc4ea6bd5f9a580bacfa8107f4e0ddf5eaebf96e5fd59b8bcdbe7226"
+    },
+    {
+      "file": "REPLAY_ideal_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5_size1.json.gz",
+      "original_file": "REPLAY_ideal_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5_size1.json.gz",
+      "original_sha256": "719e5eb787d91ef82952081e2370f585c2332402a083f78d48989546919ce4a7",
+      "sha256": "719e5eb787d91ef82952081e2370f585c2332402a083f78d48989546919ce4a7"
+    },
+    {
+      "file": "REPLAY_ideal_523daabbcfba19f7721fcf10f9116ea5d21cb4f335653e549c038ab2197212dc.json.gz",
+      "original_file": "REPLAY_ideal_523daabbcfba19f7721fcf10f9116ea5d21cb4f335653e549c038ab2197212dc.json.gz",
+      "original_sha256": "994eed3122121be6c82e1f856727f5f7b6585ddc30814a4e38ebb3fdfdeeda4c",
+      "sha256": "994eed3122121be6c82e1f856727f5f7b6585ddc30814a4e38ebb3fdfdeeda4c"
+    },
+    {
+      "file": "REPLAY_ideal_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256.json.gz",
+      "original_file": "REPLAY_ideal_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256.json.gz",
+      "original_sha256": "3da5a9a8c8605472ac5a0b000f50adddf8233f5fbd3443d32be652433a8fa356",
+      "sha256": "3da5a9a8c8605472ac5a0b000f50adddf8233f5fbd3443d32be652433a8fa356"
+    },
+    {
+      "file": "REPLAY_ideal_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256_size1.json.gz",
+      "original_file": "REPLAY_ideal_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256_size1.json.gz",
+      "original_sha256": "72c8b322078b00bb43e035eb3918b81b593e0928ee6f2843da46b39947cbe9dd",
+      "sha256": "72c8b322078b00bb43e035eb3918b81b593e0928ee6f2843da46b39947cbe9dd"
+    },
+    {
+      "file": "REPLAY_ideal_c676633aac58ad2f3b3873d861d3645bb6f71f87dcd2f55f3dc31904e834aa21.json.gz",
+      "original_file": "REPLAY_ideal_c676633aac58ad2f3b3873d861d3645bb6f71f87dcd2f55f3dc31904e834aa21.json.gz",
+      "original_sha256": "f46d275951331fbf3b906141c1374a05b5aab7d0c94aeddc162654204987c0ab",
+      "sha256": "f46d275951331fbf3b906141c1374a05b5aab7d0c94aeddc162654204987c0ab"
+    },
+    {
+      "file": "REPLAY_ideal_equal_guarded.json.gz",
+      "original_file": "REPLAY_ideal_equal_guarded.json.gz",
+      "original_sha256": "15fbe15b92bfd6a7ae316a88e5796d508b867523846bc98f1cb9642b7f7be23e",
+      "sha256": "15fbe15b92bfd6a7ae316a88e5796d508b867523846bc98f1cb9642b7f7be23e"
+    },
+    {
+      "file": "REPLAY_ideal_greedy.json.gz",
+      "original_file": "REPLAY_ideal_greedy.json.gz",
+      "original_sha256": "c0ca136e65d7dc34883de21e3006e32d30512ed50a2d841b8b659e838b7e0370",
+      "sha256": "c0ca136e65d7dc34883de21e3006e32d30512ed50a2d841b8b659e838b7e0370"
+    },
+    {
+      "file": "REPLAY_ideal_nop.json.gz",
+      "original_file": "REPLAY_ideal_nop.json.gz",
+      "original_sha256": "b29925e15212f62305f1d3ca0350e09b525ccec61e2ee80aa809b9f3c659def0",
+      "sha256": "b29925e15212f62305f1d3ca0350e09b525ccec61e2ee80aa809b9f3c659def0"
+    },
+    {
+      "file": "REPLAY_ideal_only_12.json.gz",
+      "original_file": "REPLAY_ideal_only_12.json.gz",
+      "original_sha256": "f020b58c38108723d576a6285a1cd67bd2662d0af130860fd683c7b4429f4849",
+      "sha256": "f020b58c38108723d576a6285a1cd67bd2662d0af130860fd683c7b4429f4849"
+    },
+    {
+      "file": "REPLAY_ideal_only_24.json.gz",
+      "original_file": "REPLAY_ideal_only_24.json.gz",
+      "original_sha256": "c6bd6b50ca1da5129f4c4222d4bfdac0dde72e5debbd1832ed171d1b0d947726",
+      "sha256": "c6bd6b50ca1da5129f4c4222d4bfdac0dde72e5debbd1832ed171d1b0d947726"
+    },
+    {
+      "file": "REPLAY_ideal_only_3.json.gz",
+      "original_file": "REPLAY_ideal_only_3.json.gz",
+      "original_sha256": "84be3923a827df231f5624dbc3aa9072fdf374d48521e434b7d932888f5316fc",
+      "sha256": "84be3923a827df231f5624dbc3aa9072fdf374d48521e434b7d932888f5316fc"
+    },
+    {
+      "file": "REPLAY_ideal_only_6.json.gz",
+      "original_file": "REPLAY_ideal_only_6.json.gz",
+      "original_sha256": "a788e644e8de2349cb00c9ec14d00b112bacc3ca1012367986f760cc29502218",
+      "sha256": "a788e644e8de2349cb00c9ec14d00b112bacc3ca1012367986f760cc29502218"
+    },
+    {
+      "file": "REPLAY_missing_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e.json.gz",
+      "original_file": "REPLAY_missing_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e.json.gz",
+      "original_sha256": "a2059a4dd9d373f39c39216e7f2a66934e3805cb51f1abb02e3f30937a90e735",
+      "sha256": "a2059a4dd9d373f39c39216e7f2a66934e3805cb51f1abb02e3f30937a90e735"
+    },
+    {
+      "file": "REPLAY_missing_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e_size1.json.gz",
+      "original_file": "REPLAY_missing_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e_size1.json.gz",
+      "original_sha256": "80b8025813a418d95b9bb469df6243a220a1ff73949e7e02cd86ec0c2559db1f",
+      "sha256": "80b8025813a418d95b9bb469df6243a220a1ff73949e7e02cd86ec0c2559db1f"
+    },
+    {
+      "file": "REPLAY_missing_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5.json.gz",
+      "original_file": "REPLAY_missing_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5.json.gz",
+      "original_sha256": "e71153e2e7ad09d7c292dd50430b2fddf8ba8d8265106b68bbc4588261a8fdaf",
+      "sha256": "e71153e2e7ad09d7c292dd50430b2fddf8ba8d8265106b68bbc4588261a8fdaf"
+    },
+    {
+      "file": "REPLAY_missing_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5_size1.json.gz",
+      "original_file": "REPLAY_missing_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5_size1.json.gz",
+      "original_sha256": "ade5c39594ae1c7ae52e7431af76bcaec035db2390449b6a7d0aa82dd949f628",
+      "sha256": "ade5c39594ae1c7ae52e7431af76bcaec035db2390449b6a7d0aa82dd949f628"
+    },
+    {
+      "file": "REPLAY_missing_523daabbcfba19f7721fcf10f9116ea5d21cb4f335653e549c038ab2197212dc.json.gz",
+      "original_file": "REPLAY_missing_523daabbcfba19f7721fcf10f9116ea5d21cb4f335653e549c038ab2197212dc.json.gz",
+      "original_sha256": "6763e45249c9ffa04f568c42f4027cc2f4cfcd88abcea0a7febea745cc1679c2",
+      "sha256": "6763e45249c9ffa04f568c42f4027cc2f4cfcd88abcea0a7febea745cc1679c2"
+    },
+    {
+      "file": "REPLAY_missing_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256.json.gz",
+      "original_file": "REPLAY_missing_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256.json.gz",
+      "original_sha256": "c5edbfa56e325a9a785b7f6d8f40503ddb6edbf6c25e6c7d9d411c75caf02430",
+      "sha256": "c5edbfa56e325a9a785b7f6d8f40503ddb6edbf6c25e6c7d9d411c75caf02430"
+    },
+    {
+      "file": "REPLAY_missing_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256_size1.json.gz",
+      "original_file": "REPLAY_missing_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256_size1.json.gz",
+      "original_sha256": "9cac5031f7cb58bd4990cbbc7035569c02247ec90507d796c56146c502b559e9",
+      "sha256": "9cac5031f7cb58bd4990cbbc7035569c02247ec90507d796c56146c502b559e9"
+    },
+    {
+      "file": "REPLAY_missing_c676633aac58ad2f3b3873d861d3645bb6f71f87dcd2f55f3dc31904e834aa21.json.gz",
+      "original_file": "REPLAY_missing_c676633aac58ad2f3b3873d861d3645bb6f71f87dcd2f55f3dc31904e834aa21.json.gz",
+      "original_sha256": "75ec53da1f47fe16c8a5182c753cf0a59f4047510311d84e1695714799560d36",
+      "sha256": "75ec53da1f47fe16c8a5182c753cf0a59f4047510311d84e1695714799560d36"
+    },
+    {
+      "file": "REPLAY_missing_equal_guarded.json.gz",
+      "original_file": "REPLAY_missing_equal_guarded.json.gz",
+      "original_sha256": "2bd0909591f267f8eabcff0224a65fb307f67e536aae069c83bc9f78a217d05c",
+      "sha256": "2bd0909591f267f8eabcff0224a65fb307f67e536aae069c83bc9f78a217d05c"
+    },
+    {
+      "file": "REPLAY_missing_greedy.json.gz",
+      "original_file": "REPLAY_missing_greedy.json.gz",
+      "original_sha256": "461d84398746dad6d2c782eb23e7653630e5699fa61ee417dc1c1f5fbf7991f8",
+      "sha256": "461d84398746dad6d2c782eb23e7653630e5699fa61ee417dc1c1f5fbf7991f8"
+    },
+    {
+      "file": "REPLAY_missing_nop.json.gz",
+      "original_file": "REPLAY_missing_nop.json.gz",
+      "original_sha256": "dae263f051f666843310d9e145237b9a3be332575d265454d9f3eca1037ea60e",
+      "sha256": "dae263f051f666843310d9e145237b9a3be332575d265454d9f3eca1037ea60e"
+    },
+    {
+      "file": "REPLAY_missing_only_12.json.gz",
+      "original_file": "REPLAY_missing_only_12.json.gz",
+      "original_sha256": "205b3edf25c8cf5840469fcae809b9c2e08796bd6aa7f8c14de066a472c6a5e5",
+      "sha256": "205b3edf25c8cf5840469fcae809b9c2e08796bd6aa7f8c14de066a472c6a5e5"
+    },
+    {
+      "file": "REPLAY_missing_only_24.json.gz",
+      "original_file": "REPLAY_missing_only_24.json.gz",
+      "original_sha256": "e2dbabff39517b8d3327aa6964fa0a47b59b836e3df7c53af1f749a90aad5737",
+      "sha256": "e2dbabff39517b8d3327aa6964fa0a47b59b836e3df7c53af1f749a90aad5737"
+    },
+    {
+      "file": "REPLAY_missing_only_3.json.gz",
+      "original_file": "REPLAY_missing_only_3.json.gz",
+      "original_sha256": "f868f6699dbbbeefdafa445c1ce71cab95623e9137e0e27505c73a1497b2bb9c",
+      "sha256": "f868f6699dbbbeefdafa445c1ce71cab95623e9137e0e27505c73a1497b2bb9c"
+    },
+    {
+      "file": "REPLAY_missing_only_6.json.gz",
+      "original_file": "REPLAY_missing_only_6.json.gz",
+      "original_sha256": "85343f96de0b092630e968f5ebe78086dbb80ba71aadec95d36efb2a5f35ea6a",
+      "sha256": "85343f96de0b092630e968f5ebe78086dbb80ba71aadec95d36efb2a5f35ea6a"
+    },
+    {
+      "file": "REPLAY_omitted_reversal_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e.json.gz",
+      "original_file": "REPLAY_omitted_reversal_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e.json.gz",
+      "original_sha256": "17f0d1da6cf84c7a48d26cbf8c9f61b7a64baea1a165083e5dd42835a2849fa8",
+      "sha256": "17f0d1da6cf84c7a48d26cbf8c9f61b7a64baea1a165083e5dd42835a2849fa8"
+    },
+    {
+      "file": "REPLAY_omitted_reversal_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e_size1.json.gz",
+      "original_file": "REPLAY_omitted_reversal_0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e_size1.json.gz",
+      "original_sha256": "12f04f6008360d8adda5592ca158e54df3680b2661234d00949a53f161b1e59a",
+      "sha256": "12f04f6008360d8adda5592ca158e54df3680b2661234d00949a53f161b1e59a"
+    },
+    {
+      "file": "REPLAY_omitted_reversal_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5.json.gz",
+      "original_file": "REPLAY_omitted_reversal_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5.json.gz",
+      "original_sha256": "0156d2035ef802ea919893398b828a7d6c87507abc2464561e7e2be232871120",
+      "sha256": "0156d2035ef802ea919893398b828a7d6c87507abc2464561e7e2be232871120"
+    },
+    {
+      "file": "REPLAY_omitted_reversal_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5_size1.json.gz",
+      "original_file": "REPLAY_omitted_reversal_0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5_size1.json.gz",
+      "original_sha256": "ee58b465cdef5308390268194d78cb3ceaea3798e379dc62e1ef879ebfec6a43",
+      "sha256": "ee58b465cdef5308390268194d78cb3ceaea3798e379dc62e1ef879ebfec6a43"
+    },
+    {
+      "file": "REPLAY_omitted_reversal_523daabbcfba19f7721fcf10f9116ea5d21cb4f335653e549c038ab2197212dc.json.gz",
+      "original_file": "REPLAY_omitted_reversal_523daabbcfba19f7721fcf10f9116ea5d21cb4f335653e549c038ab2197212dc.json.gz",
+      "original_sha256": "96071ee5482445f2c887e1de13213e61da677acd822535fad32ae07504d04aaf",
+      "sha256": "96071ee5482445f2c887e1de13213e61da677acd822535fad32ae07504d04aaf"
+    },
+    {
+      "file": "REPLAY_omitted_reversal_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256.json.gz",
+      "original_file": "REPLAY_omitted_reversal_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256.json.gz",
+      "original_sha256": "1f1e86235fc202a67dbb2854545c7cf48bebe689b0487c3618c762e450f8152b",
+      "sha256": "1f1e86235fc202a67dbb2854545c7cf48bebe689b0487c3618c762e450f8152b"
+    },
+    {
+      "file": "REPLAY_omitted_reversal_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256_size1.json.gz",
+      "original_file": "REPLAY_omitted_reversal_61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256_size1.json.gz",
+      "original_sha256": "4dae1edbae4f09a085770a6875d1d9c8b2a4d0dab6f4197939657e20adda47b3",
+      "sha256": "4dae1edbae4f09a085770a6875d1d9c8b2a4d0dab6f4197939657e20adda47b3"
+    },
+    {
+      "file": "REPLAY_omitted_reversal_c676633aac58ad2f3b3873d861d3645bb6f71f87dcd2f55f3dc31904e834aa21.json.gz",
+      "original_file": "REPLAY_omitted_reversal_c676633aac58ad2f3b3873d861d3645bb6f71f87dcd2f55f3dc31904e834aa21.json.gz",
+      "original_sha256": "dc9f731e4783c4dbc8d6f42046e859f01a87819aa911c263364577f8cb8e9421",
+      "sha256": "dc9f731e4783c4dbc8d6f42046e859f01a87819aa911c263364577f8cb8e9421"
+    },
+    {
+      "file": "REPLAY_omitted_reversal_equal_guarded.json.gz",
+      "original_file": "REPLAY_omitted_reversal_equal_guarded.json.gz",
+      "original_sha256": "31ecd22176b397d67b89d9c5b588705a9e53a8aed92db2e405e491173e552fda",
+      "sha256": "31ecd22176b397d67b89d9c5b588705a9e53a8aed92db2e405e491173e552fda"
+    },
+    {
+      "file": "REPLAY_omitted_reversal_greedy.json.gz",
+      "original_file": "REPLAY_omitted_reversal_greedy.json.gz",
+      "original_sha256": "0f55067bd3c4969fe3661bf40662dd936ff55512f25c50db749c582ea5163b24",
+      "sha256": "0f55067bd3c4969fe3661bf40662dd936ff55512f25c50db749c582ea5163b24"
+    },
+    {
+      "file": "REPLAY_omitted_reversal_nop.json.gz",
+      "original_file": "REPLAY_omitted_reversal_nop.json.gz",
+      "original_sha256": "61a514d7fea96301fc97188c820e8ad652a21221b463efd8ec772584ee8463da",
+      "sha256": "61a514d7fea96301fc97188c820e8ad652a21221b463efd8ec772584ee8463da"
+    },
+    {
+      "file": "REPLAY_omitted_reversal_only_12.json.gz",
+      "original_file": "REPLAY_omitted_reversal_only_12.json.gz",
+      "original_sha256": "de4c392696626bf908bd4e45bfe5cc99e940b3fa9f0d23c1e8b8efc6eaca3e21",
+      "sha256": "de4c392696626bf908bd4e45bfe5cc99e940b3fa9f0d23c1e8b8efc6eaca3e21"
+    },
+    {
+      "file": "REPLAY_omitted_reversal_only_24.json.gz",
+      "original_file": "REPLAY_omitted_reversal_only_24.json.gz",
+      "original_sha256": "3f2cfa395a04223d3752d6ac41150c3dbe0b8f7c6ceb9c051d329f643d05ba6a",
+      "sha256": "3f2cfa395a04223d3752d6ac41150c3dbe0b8f7c6ceb9c051d329f643d05ba6a"
+    },
+    {
+      "file": "REPLAY_omitted_reversal_only_3.json.gz",
+      "original_file": "REPLAY_omitted_reversal_only_3.json.gz",
+      "original_sha256": "a347e2ae84833b99690b0a422ee27bb17750664be309479cc169762fa9e0873e",
+      "sha256": "a347e2ae84833b99690b0a422ee27bb17750664be309479cc169762fa9e0873e"
+    },
+    {
+      "file": "REPLAY_omitted_reversal_only_6.json.gz",
+      "original_file": "REPLAY_omitted_reversal_only_6.json.gz",
+      "original_sha256": "7ba740c7786fa34e7b4e142a97ac57d31023c77b9f02d2021b45fdab8c3117bd",
+      "sha256": "7ba740c7786fa34e7b4e142a97ac57d31023c77b9f02d2021b45fdab8c3117bd"
+    },
+    {
+      "file": "RESULTS.md",
+      "original_file": "RESULTS.md",
+      "original_sha256": "1895bfdb14a349e59d252c05f0c4f0d2a58201c4c907c501da2d742bda5aec2f",
+      "sha256": "1895bfdb14a349e59d252c05f0c4f0d2a58201c4c907c501da2d742bda5aec2f"
+    },
+    {
+      "file": "SEED_19.json.gz",
+      "original_file": "SEED_19.json",
+      "original_sha256": "16c919e8fc152cee183f28c138a6f0e9cf287fb556ac060733d488e015d6159c",
+      "sha256": "272c0c70c4b66633183aeef37301906a57d0bcd6a932a1b9422b78a24de274fd"
+    },
+    {
+      "file": "SEED_43.json.gz",
+      "original_file": "SEED_43.json",
+      "original_sha256": "8fe66d9584b88e01cc0c6380070f13360cbcdc088cc655cf071078c535b6b343",
+      "sha256": "5b442a37639fdab1dc1fdc6b4a1ef0914254593fdf477bb517811b7c28403f60"
+    },
+    {
+      "file": "SEED_7.json.gz",
+      "original_file": "SEED_7.json",
+      "original_sha256": "93517095c37ab9073dfc6c6c458c68c9bb11af31a1f9fde683f9ccc265243a52",
+      "sha256": "b831cfa61641a700a4e1c4080ed84f43509f5d18df976e9d2b85e267e5273fe9"
+    },
+    {
+      "file": "SEED_DONE_19.json",
+      "original_file": "SEED_DONE_19.json",
+      "original_sha256": "d77d4a52f83292c8d04d27fb9be8d8252bd8c02ea4874c198b0c476ac241441a",
+      "sha256": "d77d4a52f83292c8d04d27fb9be8d8252bd8c02ea4874c198b0c476ac241441a"
+    },
+    {
+      "file": "SEED_DONE_43.json",
+      "original_file": "SEED_DONE_43.json",
+      "original_sha256": "28bdcb6ae32e96d0b4eb484102fc214b6918f1ac435ef88b118eea53b88b794b",
+      "sha256": "28bdcb6ae32e96d0b4eb484102fc214b6918f1ac435ef88b118eea53b88b794b"
+    },
+    {
+      "file": "SEED_DONE_7.json",
+      "original_file": "SEED_DONE_7.json",
+      "original_sha256": "e682b4f9e37298308ce31a6e262d1f0d1759976013055748e59decada6cbc3ed",
+      "sha256": "e682b4f9e37298308ce31a6e262d1f0d1759976013055748e59decada6cbc3ed"
+    },
+    {
+      "file": "TESTS.json",
+      "original_file": "TESTS.json",
+      "original_sha256": "d71289b8cf1e23b9d36dee6ff2b24d3ae8950a8ed22126786664e6c373bef25a",
+      "sha256": "d71289b8cf1e23b9d36dee6ff2b24d3ae8950a8ed22126786664e6c373bef25a"
+    }
+  ],
+  "fixed_size_trace_checks": {
+    "correlated / 0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e": true,
+    "correlated / 0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5": true,
+    "correlated / 61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256": true,
+    "delayed / 0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e": true,
+    "delayed / 0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5": true,
+    "delayed / 61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256": true,
+    "ideal / 0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e": true,
+    "ideal / 0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5": true,
+    "ideal / 61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256": true,
+    "missing / 0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e": true,
+    "missing / 0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5": true,
+    "missing / 61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256": true,
+    "omitted_reversal / 0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e": true,
+    "omitted_reversal / 0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5": true,
+    "omitted_reversal / 61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256": true
+  },
+  "fresh_native_p1_replays_exact": 1800,
+  "generation_fitness_checked": 18000,
+  "identity": "4415bd3fdab307bf0869051a37f8a69035d1a727a6b642cb9afd880aa0725455",
+  "independent_frontier_policies": 199,
+  "inference_scope": "Descriptive paired cluster bootstrap; 30 draws, no multiplicity correction, synthetic only",
+  "paired_p1_vs_controls": {
+    "correlated": {
+      "equal_guarded": {
+        "ci95_descriptive_pp": [
+          1.0292794665377667,
+          1.824706645568809
+        ],
+        "clusters": 30,
+        "mean_delta_pp": 1.4034888633541542,
+        "positive_clusters": 30
+      },
+      "greedy": {
+        "ci95_descriptive_pp": [
+          0.765581233541063,
+          1.129752082914407
+        ],
+        "clusters": 30,
+        "mean_delta_pp": 0.9392791512592701,
+        "positive_clusters": 30
+      },
+      "nop": {
+        "ci95_descriptive_pp": [
+          2.3707429223133754,
+          4.44822991518945
+        ],
+        "clusters": 30,
+        "mean_delta_pp": 3.324692160516539,
+        "positive_clusters": 30
+      },
+      "only_12": {
+        "ci95_descriptive_pp": [
+          0.6647083888415903,
+          1.0525930120702927
+        ],
+        "clusters": 30,
+        "mean_delta_pp": 0.8527350396144304,
+        "positive_clusters": 29
+      },
+      "only_24": {
+        "ci95_descriptive_pp": [
+          0.8762391635812485,
+          1.6946613200513407
+        ],
+        "clusters": 30,
+        "mean_delta_pp": 1.2491372392855018,
+        "positive_clusters": 30
+      },
+      "only_3": {
+        "ci95_descriptive_pp": [
+          0.4962224589863649,
+          1.0594129345599048
+        ],
+        "clusters": 30,
+        "mean_delta_pp": 0.7797516733968624,
+        "positive_clusters": 24
+      },
+      "only_6": {
+        "ci95_descriptive_pp": [
+          0.38867522895854395,
+          0.918185986766229
+        ],
+        "clusters": 30,
+        "mean_delta_pp": 0.6575857916088793,
+        "positive_clusters": 24
+      }
+    },
+    "delayed": {
+      "equal_guarded": {
+        "ci95_descriptive_pp": [
+          0.7695699346027484,
+          1.622766400183386
+        ],
+        "clusters": 30,
+        "mean_delta_pp": 1.1790775254362236,
+        "positive_clusters": 27
+      },
+      "greedy": {
+        "ci95_descriptive_pp": [
+          -0.18688960314269273,
+          0.4059168190183286
+        ],
+        "clusters": 30,
+        "mean_delta_pp": 0.11517016615408934,
+        "positive_clusters": 18
+      },
+      "nop": {
+        "ci95_descriptive_pp": [
+          1.868407241257552,
+          2.8222382011316443
+        ],
+        "clusters": 30,
+        "mean_delta_pp": 2.317900487991184,
+        "positive_clusters": 30
+      },
+      "only_12": {
+        "ci95_descriptive_pp": [
+          0.09610420379132889,
+          0.6760791249070911
+        ],
+        "clusters": 30,
+        "mean_delta_pp": 0.38776724406504287,
+        "positive_clusters": 22
+      },
+      "only_24": {
+        "ci95_descriptive_pp": [
+          0.42610759925958697,
+          0.9287606338157386
+        ],
+        "clusters": 30,
+        "mean_delta_pp": 0.6708909031922308,
+        "positive_clusters": 26
+      },
+      "only_3": {
+        "ci95_descriptive_pp": [
+          0.5265060218034274,
+          1.4905036333745867
+        ],
+        "clusters": 30,
+        "mean_delta_pp": 0.9948149673019913,
+        "positive_clusters": 20
+      },
+      "only_6": {
+        "ci95_descriptive_pp": [
+          0.13969167499373514,
+          0.7069557961690026
+        ],
+        "clusters": 30,
+        "mean_delta_pp": 0.41771677915446775,
+        "positive_clusters": 19
+      }
+    },
+    "ideal": {
+      "equal_guarded": {
+        "ci95_descriptive_pp": [
+          0.27254017940585434,
+          1.0635388981726916
+        ],
+        "clusters": 30,
+        "mean_delta_pp": 0.6370373894334808,
+        "positive_clusters": 22
+      },
+      "greedy": {
+        "ci95_descriptive_pp": [
+          0.07045058501506872,
+          0.7659898410788691
+        ],
+        "clusters": 30,
+        "mean_delta_pp": 0.39248589648487214,
+        "positive_clusters": 20
+      },
+      "nop": {
+        "ci95_descriptive_pp": [
+          2.9533300138782863,
+          5.094263343655977
+        ],
+        "clusters": 30,
+        "mean_delta_pp": 3.9466533683907827,
+        "positive_clusters": 30
+      },
+      "only_12": {
+        "ci95_descriptive_pp": [
+          0.32344579536778834,
+          1.0540100915656232
+        ],
+        "clusters": 30,
+        "mean_delta_pp": 0.6714345820545252,
+        "positive_clusters": 25
+      },
+      "only_24": {
+        "ci95_descriptive_pp": [
+          0.930159643656259,
+          2.0355323091394935
+        ],
+        "clusters": 30,
+        "mean_delta_pp": 1.4425596180016518,
+        "positive_clusters": 27
+      },
+      "only_3": {
+        "ci95_descriptive_pp": [
+          -1.4914811003606148,
+          -0.9227719582689206
+        ],
+        "clusters": 30,
+        "mean_delta_pp": -1.1783762055549407,
+        "positive_clusters": 0
+      },
+      "only_6": {
+        "ci95_descriptive_pp": [
+          -0.9647010277679683,
+          -0.5436568907686611
+        ],
+        "clusters": 30,
+        "mean_delta_pp": -0.7300349251141921,
+        "positive_clusters": 2
+      }
+    },
+    "missing": {
+      "equal_guarded": {
+        "ci95_descriptive_pp": [
+          0.9865651443173206,
+          1.7211080998147656
+        ],
+        "clusters": 30,
+        "mean_delta_pp": 1.3297404558332926,
+        "positive_clusters": 30
+      },
+      "greedy": {
+        "ci95_descriptive_pp": [
+          0.6398741450072923,
+          1.0656633387881462
+        ],
+        "clusters": 30,
+        "mean_delta_pp": 0.8334842858271477,
+        "positive_clusters": 30
+      },
+      "nop": {
+        "ci95_descriptive_pp": [
+          2.2466576453564695,
+          4.156353165043984
+        ],
+        "clusters": 30,
+        "mean_delta_pp": 3.127506935254102,
+        "positive_clusters": 30
+      },
+      "only_12": {
+        "ci95_descriptive_pp": [
+          0.6697370269464592,
+          1.1424697975221383
+        ],
+        "clusters": 30,
+        "mean_delta_pp": 0.8903117688638188,
+        "positive_clusters": 30
+      },
+      "only_24": {
+        "ci95_descriptive_pp": [
+          0.8305210152010053,
+          1.6864311816025401
+        ],
+        "clusters": 30,
+        "mean_delta_pp": 1.2248928296792498,
+        "positive_clusters": 30
+      },
+      "only_3": {
+        "ci95_descriptive_pp": [
+          0.579912584794677,
+          1.0588687748635246
+        ],
+        "clusters": 30,
+        "mean_delta_pp": 0.8248466741322159,
+        "positive_clusters": 25
+      },
+      "only_6": {
+        "ci95_descriptive_pp": [
+          0.4296310449174284,
+          0.829147369668662
+        ],
+        "clusters": 30,
+        "mean_delta_pp": 0.6280913584480007,
+        "positive_clusters": 24
+      }
+    },
+    "omitted_reversal": {
+      "equal_guarded": {
+        "ci95_descriptive_pp": [
+          -0.5807648248094995,
+          -0.029217205963136327
+        ],
+        "clusters": 30,
+        "mean_delta_pp": -0.2966148340293948,
+        "positive_clusters": 14
+      },
+      "greedy": {
+        "ci95_descriptive_pp": [
+          -0.003026383802243663,
+          0.4411574956436352
+        ],
+        "clusters": 30,
+        "mean_delta_pp": 0.21912027163413786,
+        "positive_clusters": 18
+      },
+      "nop": {
+        "ci95_descriptive_pp": [
+          -3.339263865458318,
+          -0.5036988984852895
+        ],
+        "clusters": 30,
+        "mean_delta_pp": -1.8122800498386489,
+        "positive_clusters": 13
+      },
+      "only_12": {
+        "ci95_descriptive_pp": [
+          -0.26403561665673203,
+          0.18774547026352836
+        ],
+        "clusters": 30,
+        "mean_delta_pp": -0.029230970340432663,
+        "positive_clusters": 17
+      },
+      "only_24": {
+        "ci95_descriptive_pp": [
+          -0.7701351903922201,
+          0.02116590803184861
+        ],
+        "clusters": 30,
+        "mean_delta_pp": -0.34314039419860004,
+        "positive_clusters": 17
+      },
+      "only_3": {
+        "ci95_descriptive_pp": [
+          0.5798552948951811,
+          1.2952678309331833
+        ],
+        "clusters": 30,
+        "mean_delta_pp": 0.9212652855837751,
+        "positive_clusters": 24
+      },
+      "only_6": {
+        "ci95_descriptive_pp": [
+          0.39772411160795434,
+          1.0276216952963408
+        ],
+        "clusters": 30,
+        "mean_delta_pp": 0.7019467377067433,
+        "positive_clusters": 24
+      }
+    }
+  },
+  "post_hoc_p1_only6": {
+    "label": "POST_HOC_NOT_SELECTION_P1_ONLY6_SAME_GENES",
+    "p1_minus_only6": {
+      "ci95_descriptive_pp": [
+        -0.009426453261516714,
+        0.020697094190702543
+      ],
+      "clusters": 30,
+      "mean_delta_pp": 0.00522702781032497,
+      "positive_clusters": 15
+    },
+    "summary": {
+      "buy_wins": 1088,
+      "buys": 1508,
+      "closes": {
+        "AGENT_CLOSE": 2096,
+        "FORCED_FLAT": 63,
+        "SL": 127,
+        "TP": 854
+      },
+      "early_closes": 2096,
+      "eligible": true,
+      "horizons": {
+        "6": 3140
+      },
+      "losing_early_closes": 719,
+      "mean_costs_usd": {
+        "commission_usd": 25.548928222222226,
+        "financing_usd": 2.5989470694444443,
+        "slippage_usd": 13.058689166666666,
+        "spread_usd": 63.80648458333334
+      },
+      "mean_holding_bars": 7.483757961783439,
+      "mean_orders": 8.722222222222221,
+      "objectives": [
+        3.3194651327062137,
+        -1.7788684363776557
+      ],
+      "one_bar_trades": 195,
+      "orders": 3140,
+      "sell_wins": 1196,
+      "sells": 1632,
+      "under_three_order_worlds": 0,
+      "wins": 2284,
+      "zero_order_worlds": 0
+    }
+  },
+  "summaries": {
+    "correlated / 0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e": {
+      "buy_wins": 763,
+      "buys": 949,
+      "closes": {
+        "AGENT_CLOSE": 1536,
+        "FORCED_FLAT": 51,
+        "SL": 32,
+        "TP": 386
+      },
+      "early_closes": 1536,
+      "eligible": true,
+      "horizons": {
+        "12": 2004,
+        "3": 1
+      },
+      "losing_early_closes": 376,
+      "mean_costs_usd": {
+        "commission_usd": 9.916427305555555,
+        "financing_usd": 1.3932173194444444,
+        "slippage_usd": 5.196193555555555,
+        "spread_usd": 24.011664097222223
+      },
+      "mean_holding_bars": 10.817456359102245,
+      "mean_orders": 5.569444444444445,
+      "objectives": [
+        2.004586632654751,
+        -1.3359713845481274
+      ],
+      "one_bar_trades": 109,
+      "orders": 2005,
+      "sell_wins": 830,
+      "sells": 1056,
+      "under_three_order_worlds": 17,
+      "wins": 1593,
+      "zero_order_worlds": 0
+    },
+    "correlated / 0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e_size1": {
+      "buy_wins": 763,
+      "buys": 949,
+      "closes": {
+        "AGENT_CLOSE": 1536,
+        "FORCED_FLAT": 51,
+        "SL": 32,
+        "TP": 386
+      },
+      "early_closes": 1536,
+      "eligible": true,
+      "horizons": {
+        "12": 2004,
+        "3": 1
+      },
+      "losing_early_closes": 376,
+      "mean_costs_usd": {
+        "commission_usd": 12.45984988888889,
+        "financing_usd": 1.750405888888889,
+        "slippage_usd": 6.528450138888888,
+        "spread_usd": 30.163075000000006
+      },
+      "mean_holding_bars": 10.817456359102245,
+      "mean_orders": 5.569444444444445,
+      "objectives": [
+        2.5206868783478864,
+        -1.67052646445635
+      ],
+      "one_bar_trades": 109,
+      "orders": 2005,
+      "sell_wins": 830,
+      "sells": 1056,
+      "under_three_order_worlds": 17,
+      "wins": 1593,
+      "zero_order_worlds": 0
+    },
+    "correlated / 0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5": {
+      "buy_wins": 517,
+      "buys": 620,
+      "closes": {
+        "AGENT_CLOSE": 1198,
+        "FORCED_FLAT": 31,
+        "SL": 31,
+        "TP": 354
+      },
+      "early_closes": 1198,
+      "eligible": true,
+      "horizons": {
+        "12": 1423,
+        "3": 78,
+        "6": 113
+      },
+      "losing_early_closes": 280,
+      "mean_costs_usd": {
+        "commission_usd": 2.6260457222222224,
+        "financing_usd": 0.19497009722222222,
+        "slippage_usd": 1.363128388888889,
+        "spread_usd": 6.364129722222222
+      },
+      "mean_holding_bars": 10.948574969021065,
+      "mean_orders": 4.483333333333333,
+      "objectives": [
+        0.5455180578075268,
+        -0.4209983084556071
+      ],
+      "one_bar_trades": 77,
+      "orders": 1614,
+      "sell_wins": 784,
+      "sells": 994,
+      "under_three_order_worlds": 49,
+      "wins": 1301,
+      "zero_order_worlds": 0
+    },
+    "correlated / 0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5_size1": {
+      "buy_wins": 517,
+      "buys": 620,
+      "closes": {
+        "AGENT_CLOSE": 1198,
+        "FORCED_FLAT": 31,
+        "SL": 31,
+        "TP": 354
+      },
+      "early_closes": 1198,
+      "eligible": true,
+      "horizons": {
+        "12": 1423,
+        "3": 78,
+        "6": 113
+      },
+      "losing_early_closes": 280,
+      "mean_costs_usd": {
+        "commission_usd": 10.59727336111111,
+        "financing_usd": 0.7900673749999999,
+        "slippage_usd": 5.499875444444445,
+        "spread_usd": 25.663072916666664
+      },
+      "mean_holding_bars": 10.948574969021065,
+      "mean_orders": 4.483333333333333,
+      "objectives": [
+        2.205850840650446,
+        -1.6704923789319523
+      ],
+      "one_bar_trades": 77,
+      "orders": 1614,
+      "sell_wins": 784,
+      "sells": 994,
+      "under_three_order_worlds": 49,
+      "wins": 1301,
+      "zero_order_worlds": 0
+    },
+    "correlated / 523daabbcfba19f7721fcf10f9116ea5d21cb4f335653e549c038ab2197212dc": {
+      "buy_wins": 1089,
+      "buys": 1512,
+      "closes": {
+        "AGENT_CLOSE": 2103,
+        "FORCED_FLAT": 63,
+        "SL": 132,
+        "TP": 858
+      },
+      "early_closes": 2103,
+      "eligible": true,
+      "horizons": {
+        "12": 1,
+        "3": 65,
+        "6": 3090
+      },
+      "losing_early_closes": 721,
+      "mean_costs_usd": {
+        "commission_usd": 25.707837555555553,
+        "financing_usd": 2.5465189444444447,
+        "slippage_usd": 13.159015444444446,
+        "spread_usd": 64.31595354166667
+      },
+      "mean_holding_bars": 7.465462610899873,
+      "mean_orders": 8.766666666666667,
+      "objectives": [
+        3.324692160516539,
+        -1.7788684363776557
+      ],
+      "one_bar_trades": 201,
+      "orders": 3156,
+      "sell_wins": 1204,
+      "sells": 1644,
+      "under_three_order_worlds": 0,
+      "wins": 2293,
+      "zero_order_worlds": 0
+    },
+    "correlated / 61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256": {
+      "buy_wins": 742,
+      "buys": 900,
+      "closes": {
+        "AGENT_CLOSE": 1498,
+        "FORCED_FLAT": 46,
+        "SL": 28,
+        "TP": 385
+      },
+      "early_closes": 1498,
+      "eligible": true,
+      "horizons": {
+        "12": 1946,
+        "3": 11
+      },
+      "losing_early_closes": 343,
+      "mean_costs_usd": {
+        "commission_usd": 5.434917055555555,
+        "financing_usd": 0.7345279027777778,
+        "slippage_usd": 2.8392603333333337,
+        "spread_usd": 13.149306458333335
+      },
+      "mean_holding_bars": 10.854879918242208,
+      "mean_orders": 5.436111111111111,
+      "objectives": [
+        1.1287678094977804,
+        -0.7528550422921041
+      ],
+      "one_bar_trades": 97,
+      "orders": 1957,
+      "sell_wins": 840,
+      "sells": 1057,
+      "under_three_order_worlds": 20,
+      "wins": 1582,
+      "zero_order_worlds": 0
+    },
+    "correlated / 61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256_size1": {
+      "buy_wins": 742,
+      "buys": 900,
+      "closes": {
+        "AGENT_CLOSE": 1498,
+        "FORCED_FLAT": 46,
+        "SL": 28,
+        "TP": 385
+      },
+      "early_closes": 1498,
+      "eligible": true,
+      "horizons": {
+        "12": 1946,
+        "3": 11
+      },
+      "losing_early_closes": 343,
+      "mean_costs_usd": {
+        "commission_usd": 12.22438661111111,
+        "financing_usd": 1.6524604166666668,
+        "slippage_usd": 6.3847775,
+        "spread_usd": 29.55877444444445
+      },
+      "mean_holding_bars": 10.854879918242208,
+      "mean_orders": 5.436111111111111,
+      "objectives": [
+        2.543983900747853,
+        -1.67052646445635
+      ],
+      "one_bar_trades": 97,
+      "orders": 1957,
+      "sell_wins": 840,
+      "sells": 1057,
+      "under_three_order_worlds": 20,
+      "wins": 1582,
+      "zero_order_worlds": 0
+    },
+    "correlated / c676633aac58ad2f3b3873d861d3645bb6f71f87dcd2f55f3dc31904e834aa21": {
+      "buy_wins": 876,
+      "buys": 1137,
+      "closes": {
+        "AGENT_CLOSE": 1955,
+        "FORCED_FLAT": 56,
+        "SL": 36,
+        "TP": 399
+      },
+      "early_closes": 1955,
+      "eligible": true,
+      "horizons": {
+        "12": 2268,
+        "3": 178
+      },
+      "losing_early_closes": 553,
+      "mean_costs_usd": {
+        "commission_usd": 15.654249333333334,
+        "financing_usd": 1.9688355694444444,
+        "slippage_usd": 8.338453555555557,
+        "spread_usd": 38.56184708333333
+      },
+      "mean_holding_bars": 9.973017170891252,
+      "mean_orders": 6.794444444444444,
+      "objectives": [
+        2.6933175241222735,
+        -1.67052646445635
+      ],
+      "one_bar_trades": 138,
+      "orders": 2446,
+      "sell_wins": 977,
+      "sells": 1309,
+      "under_three_order_worlds": 9,
+      "wins": 1853,
+      "zero_order_worlds": 0
+    },
+    "correlated / equal_guarded": {
+      "buy_wins": 706,
+      "buys": 1085,
+      "closes": {
+        "AGENT_CLOSE": 1241,
+        "FORCED_FLAT": 253,
+        "SL": 195,
+        "TP": 496
+      },
+      "early_closes": 1241,
+      "eligible": true,
+      "horizons": {
+        "12": 783,
+        "24": 425,
+        "3": 688,
+        "6": 289
+      },
+      "losing_early_closes": 493,
+      "mean_costs_usd": {
+        "commission_usd": 15.107586277777777,
+        "financing_usd": 3.50309525,
+        "slippage_usd": 8.381567194444445,
+        "spread_usd": 38.57908430555556
+      },
+      "mean_holding_bars": 14.54279176201373,
+      "mean_orders": 6.069444444444445,
+      "objectives": [
+        1.9212032971623847,
+        -1.8799740386085178
+      ],
+      "one_bar_trades": 88,
+      "orders": 2185,
+      "sell_wins": 720,
+      "sells": 1100,
+      "under_three_order_worlds": 19,
+      "wins": 1426,
+      "zero_order_worlds": 0
+    },
+    "correlated / greedy": {
+      "buy_wins": 1195,
+      "buys": 2070,
+      "closes": {
+        "AGENT_CLOSE": 3485,
+        "FORCED_FLAT": 203,
+        "SL": 117,
+        "TP": 401
+      },
+      "early_closes": 3485,
+      "eligible": true,
+      "horizons": {
+        "12": 1259,
+        "24": 1035,
+        "3": 1379,
+        "6": 533
+      },
+      "losing_early_closes": 1550,
+      "mean_costs_usd": {
+        "commission_usd": 29.179153888888887,
+        "financing_usd": 2.8465186527777786,
+        "slippage_usd": 16.34371875,
+        "spread_usd": 75.94445201388888
+      },
+      "mean_holding_bars": 7.180694246314788,
+      "mean_orders": 11.683333333333334,
+      "objectives": [
+        2.385413009257269,
+        -2.403983805688197
+      ],
+      "one_bar_trades": 648,
+      "orders": 4206,
+      "sell_wins": 1239,
+      "sells": 2136,
+      "under_three_order_worlds": 0,
+      "wins": 2434,
+      "zero_order_worlds": 0
+    },
+    "correlated / nop": {
+      "buy_wins": 0,
+      "buys": 0,
+      "closes": {},
+      "early_closes": 0,
+      "eligible": false,
+      "horizons": {},
+      "losing_early_closes": 0,
+      "mean_costs_usd": {
+        "commission_usd": 0.0,
+        "financing_usd": 0.0,
+        "slippage_usd": 0.0,
+        "spread_usd": 0.0
+      },
+      "mean_holding_bars": null,
+      "mean_orders": 0.0,
+      "objectives": [
+        0.0,
+        -0.0
+      ],
+      "one_bar_trades": 0,
+      "orders": 0,
+      "sell_wins": 0,
+      "sells": 0,
+      "under_three_order_worlds": 360,
+      "wins": 0,
+      "zero_order_worlds": 360
+    },
+    "correlated / only_12": {
+      "buy_wins": 1249,
+      "buys": 2136,
+      "closes": {
+        "AGENT_CLOSE": 3671,
+        "FORCED_FLAT": 217,
+        "SL": 68,
+        "TP": 365
+      },
+      "early_closes": 3671,
+      "eligible": true,
+      "horizons": {
+        "12": 4321
+      },
+      "losing_early_closes": 1608,
+      "mean_costs_usd": {
+        "commission_usd": 26.92173127777778,
+        "financing_usd": 2.8404890833333334,
+        "slippage_usd": 14.924242638888892,
+        "spread_usd": 70.01540631944445
+      },
+      "mean_holding_bars": 6.9534829900486,
+      "mean_orders": 12.002777777777778,
+      "objectives": [
+        2.471957120902108,
+        -2.274752854064431
+      ],
+      "one_bar_trades": 624,
+      "orders": 4321,
+      "sell_wins": 1274,
+      "sells": 2185,
+      "under_three_order_worlds": 0,
+      "wins": 2523,
+      "zero_order_worlds": 0
+    },
+    "correlated / only_24": {
+      "buy_wins": 1070,
+      "buys": 1730,
+      "closes": {
+        "AGENT_CLOSE": 2991,
+        "FORCED_FLAT": 213,
+        "SL": 18,
+        "TP": 272
+      },
+      "early_closes": 2991,
+      "eligible": true,
+      "horizons": {
+        "24": 3494
+      },
+      "losing_early_closes": 1201,
+      "mean_costs_usd": {
+        "commission_usd": 17.53172341666667,
+        "financing_usd": 2.458138472222222,
+        "slippage_usd": 9.676660861111113,
+        "spread_usd": 46.10656138888889
+      },
+      "mean_holding_bars": 8.855466514024041,
+      "mean_orders": 9.705555555555556,
+      "objectives": [
+        2.075554921231037,
+        -1.2019058525814463
+      ],
+      "one_bar_trades": 409,
+      "orders": 3494,
+      "sell_wins": 1089,
+      "sells": 1764,
+      "under_three_order_worlds": 0,
+      "wins": 2159,
+      "zero_order_worlds": 0
+    },
+    "correlated / only_3": {
+      "buy_wins": 1649,
+      "buys": 3134,
+      "closes": {
+        "AGENT_CLOSE": 4736,
+        "FORCED_FLAT": 204,
+        "SL": 402,
+        "TP": 985
+      },
+      "early_closes": 4736,
+      "eligible": true,
+      "horizons": {
+        "3": 6327
+      },
+      "losing_early_closes": 2452,
+      "mean_costs_usd": {
+        "commission_usd": 53.71561786111111,
+        "financing_usd": 3.516055319444445,
+        "slippage_usd": 29.749216027777777,
+        "spread_usd": 138.65602458333333
+      },
+      "mean_holding_bars": 4.332385016595543,
+      "mean_orders": 17.575,
+      "objectives": [
+        2.5449404871196766,
+        -4.286018067965575
+      ],
+      "one_bar_trades": 1300,
+      "orders": 6327,
+      "sell_wins": 1710,
+      "sells": 3193,
+      "under_three_order_worlds": 0,
+      "wins": 3359,
+      "zero_order_worlds": 0
+    },
+    "correlated / only_6": {
+      "buy_wins": 1526,
+      "buys": 2845,
+      "closes": {
+        "AGENT_CLOSE": 4529,
+        "FORCED_FLAT": 204,
+        "SL": 260,
+        "TP": 776
+      },
+      "early_closes": 4529,
+      "eligible": true,
+      "horizons": {
+        "6": 5769
+      },
+      "losing_early_closes": 2275,
+      "mean_costs_usd": {
+        "commission_usd": 46.7793515,
+        "financing_usd": 3.2085529722222215,
+        "slippage_usd": 25.82389702777778,
+        "spread_usd": 121.70318368055555
+      },
+      "mean_holding_bars": 4.899809325706362,
+      "mean_orders": 16.025,
+      "objectives": [
+        2.6671063689076595,
+        -4.118158351407916
+      ],
+      "one_bar_trades": 1115,
+      "orders": 5769,
+      "sell_wins": 1592,
+      "sells": 2924,
+      "under_three_order_worlds": 0,
+      "wins": 3118,
+      "zero_order_worlds": 0
+    },
+    "delayed / 0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e": {
+      "buy_wins": 150,
+      "buys": 165,
+      "closes": {
+        "AGENT_CLOSE": 82,
+        "FORCED_FLAT": 14,
+        "SL": 31,
+        "TP": 300
+      },
+      "early_closes": 82,
+      "eligible": false,
+      "horizons": {
+        "12": 427
+      },
+      "losing_early_closes": 10,
+      "mean_costs_usd": {
+        "commission_usd": 2.1449744166666664,
+        "financing_usd": -0.15395708333333336,
+        "slippage_usd": 0.8682381666666666,
+        "spread_usd": 5.059658958333334
+      },
+      "mean_holding_bars": 16.11007025761124,
+      "mean_orders": 1.1861111111111111,
+      "objectives": [
+        0.8736518071074417,
+        -1.6708608405426528
+      ],
+      "one_bar_trades": 9,
+      "orders": 427,
+      "sell_wins": 236,
+      "sells": 262,
+      "under_three_order_worlds": 305,
+      "wins": 386,
+      "zero_order_worlds": 178
+    },
+    "delayed / 0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e_size1": {
+      "buy_wins": 150,
+      "buys": 165,
+      "closes": {
+        "AGENT_CLOSE": 82,
+        "FORCED_FLAT": 14,
+        "SL": 31,
+        "TP": 300
+      },
+      "early_closes": 82,
+      "eligible": false,
+      "horizons": {
+        "12": 427
+      },
+      "losing_early_closes": 10,
+      "mean_costs_usd": {
+        "commission_usd": 2.6953614722222223,
+        "financing_usd": -0.19264131944444446,
+        "slippage_usd": 1.0913679722222225,
+        "spread_usd": 6.357234583333334
+      },
+      "mean_holding_bars": 16.11007025761124,
+      "mean_orders": 1.1861111111111111,
+      "objectives": [
+        1.0974985698746624,
+        -2.0889986179902946
+      ],
+      "one_bar_trades": 9,
+      "orders": 427,
+      "sell_wins": 236,
+      "sells": 262,
+      "under_three_order_worlds": 305,
+      "wins": 386,
+      "zero_order_worlds": 178
+    },
+    "delayed / 0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5": {
+      "buy_wins": 56,
+      "buys": 69,
+      "closes": {
+        "AGENT_CLOSE": 28,
+        "FORCED_FLAT": 5,
+        "SL": 20,
+        "TP": 176
+      },
+      "early_closes": 28,
+      "eligible": false,
+      "horizons": {
+        "12": 198,
+        "3": 15,
+        "6": 16
+      },
+      "losing_early_closes": 10,
+      "mean_costs_usd": {
+        "commission_usd": 0.3829462777777778,
+        "financing_usd": -0.023657902777777778,
+        "slippage_usd": 0.14890025,
+        "spread_usd": 0.8676394444444445
+      },
+      "mean_holding_bars": 10.519650655021834,
+      "mean_orders": 0.6361111111111111,
+      "objectives": [
+        0.15382392635228873,
+        -0.5008666840378739
+      ],
+      "one_bar_trades": 7,
+      "orders": 229,
+      "sell_wins": 141,
+      "sells": 160,
+      "under_three_order_worlds": 331,
+      "wins": 197,
+      "zero_order_worlds": 246
+    },
+    "delayed / 0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5_size1": {
+      "buy_wins": 56,
+      "buys": 69,
+      "closes": {
+        "AGENT_CLOSE": 28,
+        "FORCED_FLAT": 5,
+        "SL": 20,
+        "TP": 176
+      },
+      "early_closes": 28,
+      "eligible": false,
+      "horizons": {
+        "12": 198,
+        "3": 15,
+        "6": 16
+      },
+      "losing_early_closes": 10,
+      "mean_costs_usd": {
+        "commission_usd": 1.5444416944444443,
+        "financing_usd": -0.09353691666666666,
+        "slippage_usd": 0.6012245,
+        "spread_usd": 3.4936663888888893
+      },
+      "mean_holding_bars": 10.519650655021834,
+      "mean_orders": 0.6361111111111111,
+      "objectives": [
+        0.6197101580808199,
+        -1.9854262399578941
+      ],
+      "one_bar_trades": 7,
+      "orders": 229,
+      "sell_wins": 141,
+      "sells": 160,
+      "under_three_order_worlds": 331,
+      "wins": 197,
+      "zero_order_worlds": 246
+    },
+    "delayed / 523daabbcfba19f7721fcf10f9116ea5d21cb4f335653e549c038ab2197212dc": {
+      "buy_wins": 519,
+      "buys": 727,
+      "closes": {
+        "AGENT_CLOSE": 221,
+        "FORCED_FLAT": 78,
+        "SL": 410,
+        "TP": 976
+      },
+      "early_closes": 221,
+      "eligible": true,
+      "horizons": {
+        "12": 1,
+        "3": 87,
+        "6": 1597
+      },
+      "losing_early_closes": 63,
+      "mean_costs_usd": {
+        "commission_usd": 13.82363577777778,
+        "financing_usd": 0.8587351944444445,
+        "slippage_usd": 7.132404916666668,
+        "spread_usd": 33.676822847222226
+      },
+      "mean_holding_bars": 12.081899109792285,
+      "mean_orders": 4.680555555555555,
+      "objectives": [
+        2.3179004879911846,
+        -2.7065444902162965
+      ],
+      "one_bar_trades": 176,
+      "orders": 1685,
+      "sell_wins": 666,
+      "sells": 958,
+      "under_three_order_worlds": 141,
+      "wins": 1185,
+      "zero_order_worlds": 10
+    },
+    "delayed / 61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256": {
+      "buy_wins": 167,
+      "buys": 182,
+      "closes": {
+        "AGENT_CLOSE": 114,
+        "FORCED_FLAT": 17,
+        "SL": 28,
+        "TP": 299
+      },
+      "early_closes": 114,
+      "eligible": false,
+      "horizons": {
+        "12": 457,
+        "3": 1
+      },
+      "losing_early_closes": 15,
+      "mean_costs_usd": {
+        "commission_usd": 1.2851970833333333,
+        "financing_usd": -0.015545694444444442,
+        "slippage_usd": 0.53114,
+        "spread_usd": 3.019971041666667
+      },
+      "mean_holding_bars": 14.7117903930131,
+      "mean_orders": 1.2722222222222221,
+      "objectives": [
+        0.515358053001988,
+        -0.9417639488160585
+      ],
+      "one_bar_trades": 17,
+      "orders": 458,
+      "sell_wins": 248,
+      "sells": 276,
+      "under_three_order_worlds": 298,
+      "wins": 415,
+      "zero_order_worlds": 183
+    },
+    "delayed / 61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256_size1": {
+      "buy_wins": 167,
+      "buys": 182,
+      "closes": {
+        "AGENT_CLOSE": 114,
+        "FORCED_FLAT": 17,
+        "SL": 28,
+        "TP": 299
+      },
+      "early_closes": 114,
+      "eligible": false,
+      "horizons": {
+        "12": 457,
+        "3": 1
+      },
+      "losing_early_closes": 15,
+      "mean_costs_usd": {
+        "commission_usd": 2.8911481666666665,
+        "financing_usd": -0.033326375000000005,
+        "slippage_usd": 1.1956282222222223,
+        "spread_usd": 6.787496666666668
+      },
+      "mean_holding_bars": 14.7117903930131,
+      "mean_orders": 1.2722222222222221,
+      "objectives": [
+        1.158514128049868,
+        -2.0889986179902946
+      ],
+      "one_bar_trades": 17,
+      "orders": 458,
+      "sell_wins": 248,
+      "sells": 276,
+      "under_three_order_worlds": 298,
+      "wins": 415,
+      "zero_order_worlds": 183
+    },
+    "delayed / c676633aac58ad2f3b3873d861d3645bb6f71f87dcd2f55f3dc31904e834aa21": {
+      "buy_wins": 319,
+      "buys": 369,
+      "closes": {
+        "AGENT_CLOSE": 320,
+        "FORCED_FLAT": 44,
+        "SL": 93,
+        "TP": 406
+      },
+      "early_closes": 320,
+      "eligible": false,
+      "horizons": {
+        "12": 765,
+        "3": 98
+      },
+      "losing_early_closes": 26,
+      "mean_costs_usd": {
+        "commission_usd": 5.656238777777777,
+        "financing_usd": 0.24916465277777777,
+        "slippage_usd": 2.813776138888889,
+        "spread_usd": 13.367422430555557
+      },
+      "mean_holding_bars": 18.192352259559676,
+      "mean_orders": 2.397222222222222,
+      "objectives": [
+        1.7383079354664397,
+        -2.620071849569587
+      ],
+      "one_bar_trades": 61,
+      "orders": 863,
+      "sell_wins": 415,
+      "sells": 494,
+      "under_three_order_worlds": 243,
+      "wins": 734,
+      "zero_order_worlds": 77
+    },
+    "delayed / equal_guarded": {
+      "buy_wins": 380,
+      "buys": 685,
+      "closes": {
+        "AGENT_CLOSE": 74,
+        "FORCED_FLAT": 291,
+        "SL": 502,
+        "TP": 555
+      },
+      "early_closes": 74,
+      "eligible": true,
+      "horizons": {
+        "12": 463,
+        "24": 162,
+        "3": 590,
+        "6": 207
+      },
+      "losing_early_closes": 22,
+      "mean_costs_usd": {
+        "commission_usd": 10.359185083333333,
+        "financing_usd": 3.2942880277777777,
+        "slippage_usd": 6.568062861111111,
+        "spread_usd": 27.807392083333333
+      },
+      "mean_holding_bars": 23.253867791842474,
+      "mean_orders": 3.95,
+      "objectives": [
+        1.138822962554961,
+        -4.230235738177514
+      ],
+      "one_bar_trades": 93,
+      "orders": 1422,
+      "sell_wins": 406,
+      "sells": 737,
+      "under_three_order_worlds": 133,
+      "wins": 786,
+      "zero_order_worlds": 0
+    },
+    "delayed / greedy": {
+      "buy_wins": 604,
+      "buys": 845,
+      "closes": {
+        "AGENT_CLOSE": 649,
+        "FORCED_FLAT": 191,
+        "SL": 261,
+        "TP": 654
+      },
+      "early_closes": 649,
+      "eligible": true,
+      "horizons": {
+        "12": 562,
+        "24": 173,
+        "3": 766,
+        "6": 254
+      },
+      "losing_early_closes": 119,
+      "mean_costs_usd": {
+        "commission_usd": 13.084963694444445,
+        "financing_usd": 2.783484097222222,
+        "slippage_usd": 7.191285250000001,
+        "spread_usd": 34.489736944444445
+      },
+      "mean_holding_bars": 18.476353276353276,
+      "mean_orders": 4.875,
+      "objectives": [
+        2.202730321837095,
+        -2.769378802991225
+      ],
+      "one_bar_trades": 145,
+      "orders": 1755,
+      "sell_wins": 638,
+      "sells": 910,
+      "under_three_order_worlds": 53,
+      "wins": 1242,
+      "zero_order_worlds": 0
+    },
+    "delayed / nop": {
+      "buy_wins": 0,
+      "buys": 0,
+      "closes": {},
+      "early_closes": 0,
+      "eligible": false,
+      "horizons": {},
+      "losing_early_closes": 0,
+      "mean_costs_usd": {
+        "commission_usd": 0.0,
+        "financing_usd": 0.0,
+        "slippage_usd": 0.0,
+        "spread_usd": 0.0
+      },
+      "mean_holding_bars": null,
+      "mean_orders": 0.0,
+      "objectives": [
+        0.0,
+        -0.0
+      ],
+      "one_bar_trades": 0,
+      "orders": 0,
+      "sell_wins": 0,
+      "sells": 0,
+      "under_three_order_worlds": 360,
+      "wins": 0,
+      "zero_order_worlds": 360
+    },
+    "delayed / only_12": {
+      "buy_wins": 600,
+      "buys": 846,
+      "closes": {
+        "AGENT_CLOSE": 820,
+        "FORCED_FLAT": 226,
+        "SL": 249,
+        "TP": 457
+      },
+      "early_closes": 820,
+      "eligible": true,
+      "horizons": {
+        "12": 1752
+      },
+      "losing_early_closes": 121,
+      "mean_costs_usd": {
+        "commission_usd": 10.925657555555555,
+        "financing_usd": 2.653476263888889,
+        "slippage_usd": 6.118628055555557,
+        "spread_usd": 28.6061
+      },
+      "mean_holding_bars": 18.514269406392692,
+      "mean_orders": 4.866666666666666,
+      "objectives": [
+        1.9301332439261418,
+        -3.0150296217977357
+      ],
+      "one_bar_trades": 184,
+      "orders": 1752,
+      "sell_wins": 626,
+      "sells": 906,
+      "under_three_order_worlds": 62,
+      "wins": 1226,
+      "zero_order_worlds": 0
+    },
+    "delayed / only_24": {
+      "buy_wins": 518,
+      "buys": 666,
+      "closes": {
+        "AGENT_CLOSE": 750,
+        "FORCED_FLAT": 226,
+        "SL": 70,
+        "TP": 323
+      },
+      "early_closes": 750,
+      "eligible": true,
+      "horizons": {
+        "24": 1369
+      },
+      "losing_early_closes": 78,
+      "mean_costs_usd": {
+        "commission_usd": 6.882709361111112,
+        "financing_usd": 2.2046241666666666,
+        "slippage_usd": 3.634217944444445,
+        "spread_usd": 17.81412472222222
+      },
+      "mean_holding_bars": 23.99415631848064,
+      "mean_orders": 3.8027777777777776,
+      "objectives": [
+        1.6470095847989537,
+        -2.1058635998381545
+      ],
+      "one_bar_trades": 88,
+      "orders": 1369,
+      "sell_wins": 536,
+      "sells": 703,
+      "under_three_order_worlds": 102,
+      "wins": 1054,
+      "zero_order_worlds": 0
+    },
+    "delayed / only_3": {
+      "buy_wins": 934,
+      "buys": 1861,
+      "closes": {
+        "AGENT_CLOSE": 1026,
+        "FORCED_FLAT": 190,
+        "SL": 1418,
+        "TP": 1167
+      },
+      "early_closes": 1026,
+      "eligible": true,
+      "horizons": {
+        "3": 3801
+      },
+      "losing_early_closes": 335,
+      "mean_costs_usd": {
+        "commission_usd": 32.08183397222222,
+        "financing_usd": 2.974695361111111,
+        "slippage_usd": 20.695174861111113,
+        "spread_usd": 88.56324423611112
+      },
+      "mean_holding_bars": 7.956590370955012,
+      "mean_orders": 10.558333333333334,
+      "objectives": [
+        1.3230855206891932,
+        -5.166837269295453
+      ],
+      "one_bar_trades": 555,
+      "orders": 3801,
+      "sell_wins": 968,
+      "sells": 1940,
+      "under_three_order_worlds": 2,
+      "wins": 1902,
+      "zero_order_worlds": 0
+    },
+    "delayed / only_6": {
+      "buy_wins": 821,
+      "buys": 1437,
+      "closes": {
+        "AGENT_CLOSE": 907,
+        "FORCED_FLAT": 211,
+        "SL": 852,
+        "TP": 968
+      },
+      "early_closes": 907,
+      "eligible": true,
+      "horizons": {
+        "6": 2938
+      },
+      "losing_early_closes": 248,
+      "mean_costs_usd": {
+        "commission_usd": 23.797934805555553,
+        "financing_usd": 3.065177291666666,
+        "slippage_usd": 14.363081527777778,
+        "spread_usd": 63.80252541666667
+      },
+      "mean_holding_bars": 10.62933968686181,
+      "mean_orders": 8.161111111111111,
+      "objectives": [
+        1.9001837088367166,
+        -3.7999881685111045
+      ],
+      "one_bar_trades": 413,
+      "orders": 2938,
+      "sell_wins": 855,
+      "sells": 1501,
+      "under_three_order_worlds": 6,
+      "wins": 1676,
+      "zero_order_worlds": 0
+    },
+    "ideal / 0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e": {
+      "buy_wins": 223,
+      "buys": 223,
+      "closes": {
+        "AGENT_CLOSE": 157,
+        "FORCED_FLAT": 15,
+        "TP": 368
+      },
+      "early_closes": 157,
+      "eligible": false,
+      "horizons": {
+        "12": 536,
+        "3": 4
+      },
+      "losing_early_closes": 0,
+      "mean_costs_usd": {
+        "commission_usd": 2.7244385,
+        "financing_usd": 0.021785972222222238,
+        "slippage_usd": 1.0305215,
+        "spread_usd": 6.385361597222222
+      },
+      "mean_holding_bars": 14.162962962962963,
+      "mean_orders": 1.5,
+      "objectives": [
+        1.3048994605792694,
+        -0.8378178028774074
+      ],
+      "one_bar_trades": 0,
+      "orders": 540,
+      "sell_wins": 317,
+      "sells": 317,
+      "under_three_order_worlds": 295,
+      "wins": 540,
+      "zero_order_worlds": 163
+    },
+    "ideal / 0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e_size1": {
+      "buy_wins": 223,
+      "buys": 223,
+      "closes": {
+        "AGENT_CLOSE": 157,
+        "FORCED_FLAT": 15,
+        "TP": 368
+      },
+      "early_closes": 157,
+      "eligible": false,
+      "horizons": {
+        "12": 536,
+        "3": 4
+      },
+      "losing_early_closes": 0,
+      "mean_costs_usd": {
+        "commission_usd": 3.4278772499999994,
+        "financing_usd": 0.029342333333333356,
+        "slippage_usd": 1.296788277777778,
+        "spread_usd": 8.032976527777778
+      },
+      "mean_holding_bars": 14.162962962962963,
+      "mean_orders": 1.5,
+      "objectives": [
+        1.6415988037631002,
+        -1.0483732069619407
+      ],
+      "one_bar_trades": 0,
+      "orders": 540,
+      "sell_wins": 317,
+      "sells": 317,
+      "under_three_order_worlds": 295,
+      "wins": 540,
+      "zero_order_worlds": 163
+    },
+    "ideal / 0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5": {
+      "buy_wins": 104,
+      "buys": 104,
+      "closes": {
+        "AGENT_CLOSE": 64,
+        "FORCED_FLAT": 5,
+        "TP": 237
+      },
+      "early_closes": 64,
+      "eligible": false,
+      "horizons": {
+        "12": 265,
+        "3": 21,
+        "6": 20
+      },
+      "losing_early_closes": 0,
+      "mean_costs_usd": {
+        "commission_usd": 0.5087508611111111,
+        "financing_usd": -0.058534638888888886,
+        "slippage_usd": 0.1774517777777778,
+        "spread_usd": 1.2055845833333334
+      },
+      "mean_holding_bars": 10.72549019607843,
+      "mean_orders": 0.85,
+      "objectives": [
+        0.2535047598159125,
+        -0.26349196035863065
+      ],
+      "one_bar_trades": 0,
+      "orders": 306,
+      "sell_wins": 202,
+      "sells": 202,
+      "under_three_order_worlds": 315,
+      "wins": 306,
+      "zero_order_worlds": 226
+    },
+    "ideal / 0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5_size1": {
+      "buy_wins": 104,
+      "buys": 104,
+      "closes": {
+        "AGENT_CLOSE": 64,
+        "FORCED_FLAT": 5,
+        "TP": 237
+      },
+      "early_closes": 64,
+      "eligible": false,
+      "horizons": {
+        "12": 265,
+        "3": 21,
+        "6": 20
+      },
+      "losing_early_closes": 0,
+      "mean_costs_usd": {
+        "commission_usd": 2.059877166666667,
+        "financing_usd": -0.23437394444444443,
+        "slippage_usd": 0.7197980000000002,
+        "spread_usd": 4.876031041666668
+      },
+      "mean_holding_bars": 10.72549019607843,
+      "mean_orders": 0.85,
+      "objectives": [
+        1.0260074592745836,
+        -1.0483661429140947
+      ],
+      "one_bar_trades": 0,
+      "orders": 306,
+      "sell_wins": 202,
+      "sells": 202,
+      "under_three_order_worlds": 315,
+      "wins": 306,
+      "zero_order_worlds": 226
+    },
+    "ideal / 523daabbcfba19f7721fcf10f9116ea5d21cb4f335653e549c038ab2197212dc": {
+      "buy_wins": 695,
+      "buys": 695,
+      "closes": {
+        "AGENT_CLOSE": 353,
+        "FORCED_FLAT": 41,
+        "TP": 1158
+      },
+      "early_closes": 353,
+      "eligible": true,
+      "horizons": {
+        "3": 6,
+        "6": 1546
+      },
+      "losing_early_closes": 0,
+      "mean_costs_usd": {
+        "commission_usd": 12.769790444444444,
+        "financing_usd": 1.7306340555555557,
+        "slippage_usd": 4.620300833333333,
+        "spread_usd": 30.947295416666673
+      },
+      "mean_holding_bars": 13.465850515463918,
+      "mean_orders": 4.311111111111111,
+      "objectives": [
+        3.9466533683907823,
+        -1.2548685295483626
+      ],
+      "one_bar_trades": 7,
+      "orders": 1552,
+      "sell_wins": 857,
+      "sells": 857,
+      "under_three_order_worlds": 136,
+      "wins": 1552,
+      "zero_order_worlds": 6
+    },
+    "ideal / 61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256": {
+      "buy_wins": 230,
+      "buys": 230,
+      "closes": {
+        "AGENT_CLOSE": 192,
+        "FORCED_FLAT": 16,
+        "TP": 342
+      },
+      "early_closes": 192,
+      "eligible": false,
+      "horizons": {
+        "12": 545,
+        "3": 5
+      },
+      "losing_early_closes": 0,
+      "mean_costs_usd": {
+        "commission_usd": 1.5537244722222223,
+        "financing_usd": -0.057805194444444444,
+        "slippage_usd": 0.6143550555555557,
+        "spread_usd": 3.5991073611111113
+      },
+      "mean_holding_bars": 13.132727272727273,
+      "mean_orders": 1.5277777777777777,
+      "objectives": [
+        0.7370966460139502,
+        -0.4715456821866428
+      ],
+      "one_bar_trades": 0,
+      "orders": 550,
+      "sell_wins": 320,
+      "sells": 320,
+      "under_three_order_worlds": 293,
+      "wins": 550,
+      "zero_order_worlds": 170
+    },
+    "ideal / 61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256_size1": {
+      "buy_wins": 230,
+      "buys": 230,
+      "closes": {
+        "AGENT_CLOSE": 192,
+        "FORCED_FLAT": 16,
+        "TP": 342
+      },
+      "early_closes": 192,
+      "eligible": false,
+      "horizons": {
+        "12": 545,
+        "3": 5
+      },
+      "losing_early_closes": 0,
+      "mean_costs_usd": {
+        "commission_usd": 3.508741055555556,
+        "financing_usd": -0.1268672916666667,
+        "slippage_usd": 1.3880491666666668,
+        "spread_usd": 8.123964444444445
+      },
+      "mean_holding_bars": 13.132727272727273,
+      "mean_orders": 1.5277777777777777,
+      "objectives": [
+        1.6639783219794266,
+        -1.0483732069619407
+      ],
+      "one_bar_trades": 0,
+      "orders": 550,
+      "sell_wins": 320,
+      "sells": 320,
+      "under_three_order_worlds": 293,
+      "wins": 550,
+      "zero_order_worlds": 170
+    },
+    "ideal / c676633aac58ad2f3b3873d861d3645bb6f71f87dcd2f55f3dc31904e834aa21": {
+      "buy_wins": 395,
+      "buys": 395,
+      "closes": {
+        "AGENT_CLOSE": 356,
+        "FORCED_FLAT": 33,
+        "TP": 493
+      },
+      "early_closes": 356,
+      "eligible": false,
+      "horizons": {
+        "12": 856,
+        "3": 26
+      },
+      "losing_early_closes": 0,
+      "mean_costs_usd": {
+        "commission_usd": 5.589833861111112,
+        "financing_usd": 0.6189838194444444,
+        "slippage_usd": 2.302230666666667,
+        "spread_usd": 13.354690416666669
+      },
+      "mean_holding_bars": 18.0124716553288,
+      "mean_orders": 2.45,
+      "objectives": [
+        2.485292608495871,
+        -0.9541897886537192
+      ],
+      "one_bar_trades": 0,
+      "orders": 882,
+      "sell_wins": 487,
+      "sells": 487,
+      "under_three_order_worlds": 235,
+      "wins": 882,
+      "zero_order_worlds": 64
+    },
+    "ideal / equal_guarded": {
+      "buy_wins": 757,
+      "buys": 762,
+      "closes": {
+        "AGENT_CLOSE": 529,
+        "FORCED_FLAT": 237,
+        "TP": 789
+      },
+      "early_closes": 529,
+      "eligible": true,
+      "horizons": {
+        "12": 561,
+        "24": 101,
+        "3": 622,
+        "6": 271
+      },
+      "losing_early_closes": 5,
+      "mean_costs_usd": {
+        "commission_usd": 11.614515500000001,
+        "financing_usd": 3.4103903888888882,
+        "slippage_usd": 5.083941111111112,
+        "spread_usd": 29.41442465277778
+      },
+      "mean_holding_bars": 20.97234726688103,
+      "mean_orders": 4.319444444444445,
+      "objectives": [
+        3.309615978957302,
+        -1.28061591074516
+      ],
+      "one_bar_trades": 18,
+      "orders": 1555,
+      "sell_wins": 786,
+      "sells": 793,
+      "under_three_order_worlds": 79,
+      "wins": 1543,
+      "zero_order_worlds": 0
+    },
+    "ideal / greedy": {
+      "buy_wins": 804,
+      "buys": 804,
+      "closes": {
+        "AGENT_CLOSE": 655,
+        "FORCED_FLAT": 205,
+        "TP": 782
+      },
+      "early_closes": 655,
+      "eligible": true,
+      "horizons": {
+        "12": 597,
+        "24": 126,
+        "3": 675,
+        "6": 244
+      },
+      "losing_early_closes": 0,
+      "mean_costs_usd": {
+        "commission_usd": 12.259540611111111,
+        "financing_usd": 2.939540916666667,
+        "slippage_usd": 5.477818777777778,
+        "spread_usd": 30.690033402777782
+      },
+      "mean_holding_bars": 19.857490864799026,
+      "mean_orders": 4.561111111111111,
+      "objectives": [
+        3.55416747190591,
+        -1.1985360984596536
+      ],
+      "one_bar_trades": 27,
+      "orders": 1642,
+      "sell_wins": 838,
+      "sells": 838,
+      "under_three_order_worlds": 54,
+      "wins": 1642,
+      "zero_order_worlds": 0
+    },
+    "ideal / nop": {
+      "buy_wins": 0,
+      "buys": 0,
+      "closes": {},
+      "early_closes": 0,
+      "eligible": false,
+      "horizons": {},
+      "losing_early_closes": 0,
+      "mean_costs_usd": {
+        "commission_usd": 0.0,
+        "financing_usd": 0.0,
+        "slippage_usd": 0.0,
+        "spread_usd": 0.0
+      },
+      "mean_holding_bars": null,
+      "mean_orders": 0.0,
+      "objectives": [
+        0.0,
+        -0.0
+      ],
+      "one_bar_trades": 0,
+      "orders": 0,
+      "sell_wins": 0,
+      "sells": 0,
+      "under_three_order_worlds": 360,
+      "wins": 0,
+      "zero_order_worlds": 360
+    },
+    "ideal / only_12": {
+      "buy_wins": 825,
+      "buys": 825,
+      "closes": {
+        "AGENT_CLOSE": 901,
+        "FORCED_FLAT": 220,
+        "TP": 538
+      },
+      "early_closes": 901,
+      "eligible": true,
+      "horizons": {
+        "12": 1659
+      },
+      "losing_early_closes": 0,
+      "mean_costs_usd": {
+        "commission_usd": 10.425618777777778,
+        "financing_usd": 3.1776671805555554,
+        "slippage_usd": 5.022453388888889,
+        "spread_usd": 26.528519583333335
+      },
+      "mean_holding_bars": 19.677516576250753,
+      "mean_orders": 4.608333333333333,
+      "objectives": [
+        3.275218786336257,
+        -1.2959646417243362
+      ],
+      "one_bar_trades": 23,
+      "orders": 1659,
+      "sell_wins": 834,
+      "sells": 834,
+      "under_three_order_worlds": 63,
+      "wins": 1659,
+      "zero_order_worlds": 0
+    },
+    "ideal / only_24": {
+      "buy_wins": 704,
+      "buys": 704,
+      "closes": {
+        "AGENT_CLOSE": 813,
+        "FORCED_FLAT": 231,
+        "TP": 369
+      },
+      "early_closes": 813,
+      "eligible": true,
+      "horizons": {
+        "24": 1413
+      },
+      "losing_early_closes": 0,
+      "mean_costs_usd": {
+        "commission_usd": 7.125811,
+        "financing_usd": 2.395322013888889,
+        "slippage_usd": 3.558253277777778,
+        "spread_usd": 18.26014076388889
+      },
+      "mean_holding_bars": 23.309978768577494,
+      "mean_orders": 3.925,
+      "objectives": [
+        2.504093750389131,
+        -1.0565337298901707
+      ],
+      "one_bar_trades": 21,
+      "orders": 1413,
+      "sell_wins": 709,
+      "sells": 709,
+      "under_three_order_worlds": 89,
+      "wins": 1413,
+      "zero_order_worlds": 0
+    },
+    "ideal / only_3": {
+      "buy_wins": 1479,
+      "buys": 1479,
+      "closes": {
+        "AGENT_CLOSE": 1266,
+        "FORCED_FLAT": 211,
+        "TP": 1511
+      },
+      "early_closes": 1266,
+      "eligible": true,
+      "horizons": {
+        "3": 2988
+      },
+      "losing_early_closes": 0,
+      "mean_costs_usd": {
+        "commission_usd": 25.83523677777778,
+        "financing_usd": 4.005449333333333,
+        "slippage_usd": 11.09056238888889,
+        "spread_usd": 66.24986777777778
+      },
+      "mean_holding_bars": 10.440763052208835,
+      "mean_orders": 8.3,
+      "objectives": [
+        5.125029573945723,
+        -1.0066312794536432
+      ],
+      "one_bar_trades": 71,
+      "orders": 2988,
+      "sell_wins": 1509,
+      "sells": 1509,
+      "under_three_order_worlds": 0,
+      "wins": 2988,
+      "zero_order_worlds": 0
+    },
+    "ideal / only_6": {
+      "buy_wins": 1210,
+      "buys": 1210,
+      "closes": {
+        "AGENT_CLOSE": 1046,
+        "FORCED_FLAT": 215,
+        "TP": 1193
+      },
+      "early_closes": 1046,
+      "eligible": true,
+      "horizons": {
+        "6": 2454
+      },
+      "losing_early_closes": 0,
+      "mean_costs_usd": {
+        "commission_usd": 20.25483113888889,
+        "financing_usd": 3.5121514861111107,
+        "slippage_usd": 8.833340111111111,
+        "spread_usd": 51.893298125
+      },
+      "mean_holding_bars": 12.966177669111655,
+      "mean_orders": 6.816666666666666,
+      "objectives": [
+        4.6766882935049745,
+        -1.2754094688339328
+      ],
+      "one_bar_trades": 69,
+      "orders": 2454,
+      "sell_wins": 1244,
+      "sells": 1244,
+      "under_three_order_worlds": 9,
+      "wins": 2454,
+      "zero_order_worlds": 0
+    },
+    "missing / 0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e": {
+      "buy_wins": 680,
+      "buys": 849,
+      "closes": {
+        "AGENT_CLOSE": 1319,
+        "FORCED_FLAT": 53,
+        "SL": 35,
+        "TP": 387
+      },
+      "early_closes": 1319,
+      "eligible": true,
+      "horizons": {
+        "12": 1793,
+        "3": 1
+      },
+      "losing_early_closes": 324,
+      "mean_costs_usd": {
+        "commission_usd": 8.867128472222221,
+        "financing_usd": 1.4820463888888888,
+        "slippage_usd": 4.600262472222223,
+        "spread_usd": 21.65458215277778
+      },
+      "mean_holding_bars": 11.828874024526199,
+      "mean_orders": 4.983333333333333,
+      "objectives": [
+        1.8707904732874125,
+        -1.335991993528157
+      ],
+      "one_bar_trades": 92,
+      "orders": 1794,
+      "sell_wins": 749,
+      "sells": 945,
+      "under_three_order_worlds": 24,
+      "wins": 1429,
+      "zero_order_worlds": 0
+    },
+    "missing / 0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e_size1": {
+      "buy_wins": 680,
+      "buys": 849,
+      "closes": {
+        "AGENT_CLOSE": 1319,
+        "FORCED_FLAT": 53,
+        "SL": 35,
+        "TP": 387
+      },
+      "early_closes": 1319,
+      "eligible": true,
+      "horizons": {
+        "12": 1793,
+        "3": 1
+      },
+      "losing_early_closes": 324,
+      "mean_costs_usd": {
+        "commission_usd": 11.13934188888889,
+        "financing_usd": 1.8617169444444446,
+        "slippage_usd": 5.778622361111112,
+        "spread_usd": 27.198141388888892
+      },
+      "mean_holding_bars": 11.828874024526199,
+      "mean_orders": 4.983333333333333,
+      "objectives": [
+        2.351539951754798,
+        -1.6705051365460095
+      ],
+      "one_bar_trades": 92,
+      "orders": 1794,
+      "sell_wins": 749,
+      "sells": 945,
+      "under_three_order_worlds": 24,
+      "wins": 1429,
+      "zero_order_worlds": 0
+    },
+    "missing / 0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5": {
+      "buy_wins": 463,
+      "buys": 548,
+      "closes": {
+        "AGENT_CLOSE": 1029,
+        "FORCED_FLAT": 31,
+        "SL": 37,
+        "TP": 345
+      },
+      "early_closes": 1029,
+      "eligible": true,
+      "horizons": {
+        "12": 1276,
+        "3": 62,
+        "6": 104
+      },
+      "losing_early_closes": 236,
+      "mean_costs_usd": {
+        "commission_usd": 2.3440499444444445,
+        "financing_usd": 0.16862100000000002,
+        "slippage_usd": 1.2096924166666667,
+        "spread_usd": 5.698429930555556
+      },
+      "mean_holding_bars": 11.938280166435506,
+      "mean_orders": 4.0055555555555555,
+      "objectives": [
+        0.5041247130135009,
+        -0.4210002836959693
+      ],
+      "one_bar_trades": 66,
+      "orders": 1442,
+      "sell_wins": 704,
+      "sells": 894,
+      "under_three_order_worlds": 66,
+      "wins": 1167,
+      "zero_order_worlds": 0
+    },
+    "missing / 0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5_size1": {
+      "buy_wins": 463,
+      "buys": 548,
+      "closes": {
+        "AGENT_CLOSE": 1029,
+        "FORCED_FLAT": 31,
+        "SL": 37,
+        "TP": 345
+      },
+      "early_closes": 1029,
+      "eligible": true,
+      "horizons": {
+        "12": 1276,
+        "3": 62,
+        "6": 104
+      },
+      "losing_early_closes": 236,
+      "mean_costs_usd": {
+        "commission_usd": 9.453746361111111,
+        "financing_usd": 0.6828191527777777,
+        "slippage_usd": 4.878424000000001,
+        "spread_usd": 22.964047569444446
+      },
+      "mean_holding_bars": 11.938280166435506,
+      "mean_orders": 4.0055555555555555,
+      "objectives": [
+        2.0358662562919845,
+        -1.6704915870365842
+      ],
+      "one_bar_trades": 66,
+      "orders": 1442,
+      "sell_wins": 704,
+      "sells": 894,
+      "under_three_order_worlds": 66,
+      "wins": 1167,
+      "zero_order_worlds": 0
+    },
+    "missing / 523daabbcfba19f7721fcf10f9116ea5d21cb4f335653e549c038ab2197212dc": {
+      "buy_wins": 974,
+      "buys": 1322,
+      "closes": {
+        "AGENT_CLOSE": 1756,
+        "FORCED_FLAT": 77,
+        "SL": 109,
+        "TP": 842
+      },
+      "early_closes": 1756,
+      "eligible": true,
+      "horizons": {
+        "12": 1,
+        "3": 58,
+        "6": 2725
+      },
+      "losing_early_closes": 603,
+      "mean_costs_usd": {
+        "commission_usd": 22.695024333333333,
+        "financing_usd": 2.5685063055555557,
+        "slippage_usd": 11.398177277777778,
+        "spread_usd": 55.86173194444444
+      },
+      "mean_holding_bars": 8.167385057471265,
+      "mean_orders": 7.733333333333333,
+      "objectives": [
+        3.127506935254102,
+        -1.7421172338425204
+      ],
+      "one_bar_trades": 157,
+      "orders": 2784,
+      "sell_wins": 1083,
+      "sells": 1462,
+      "under_three_order_worlds": 2,
+      "wins": 2057,
+      "zero_order_worlds": 0
+    },
+    "missing / 61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256": {
+      "buy_wins": 664,
+      "buys": 812,
+      "closes": {
+        "AGENT_CLOSE": 1290,
+        "FORCED_FLAT": 49,
+        "SL": 34,
+        "TP": 386
+      },
+      "early_closes": 1290,
+      "eligible": true,
+      "horizons": {
+        "12": 1752,
+        "3": 7
+      },
+      "losing_early_closes": 301,
+      "mean_costs_usd": {
+        "commission_usd": 4.878706583333334,
+        "financing_usd": 0.8068573194444443,
+        "slippage_usd": 2.5280699444444443,
+        "spread_usd": 11.90833826388889
+      },
+      "mean_holding_bars": 11.884025014212622,
+      "mean_orders": 4.886111111111111,
+      "objectives": [
+        1.0417390047707917,
+        -0.7528489302079879
+      ],
+      "one_bar_trades": 90,
+      "orders": 1759,
+      "sell_wins": 754,
+      "sells": 947,
+      "under_three_order_worlds": 30,
+      "wins": 1418,
+      "zero_order_worlds": 0
+    },
+    "missing / 61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256_size1": {
+      "buy_wins": 664,
+      "buys": 812,
+      "closes": {
+        "AGENT_CLOSE": 1290,
+        "FORCED_FLAT": 49,
+        "SL": 34,
+        "TP": 386
+      },
+      "early_closes": 1290,
+      "eligible": true,
+      "horizons": {
+        "12": 1752,
+        "3": 7
+      },
+      "losing_early_closes": 301,
+      "mean_costs_usd": {
+        "commission_usd": 10.96696611111111,
+        "financing_usd": 1.8135941666666668,
+        "slippage_usd": 5.681883,
+        "spread_usd": 26.756245000000003
+      },
+      "mean_holding_bars": 11.884025014212622,
+      "mean_orders": 4.886111111111111,
+      "objectives": [
+        2.3451240470857293,
+        -1.6705051365460095
+      ],
+      "one_bar_trades": 90,
+      "orders": 1759,
+      "sell_wins": 754,
+      "sells": 947,
+      "under_three_order_worlds": 30,
+      "wins": 1418,
+      "zero_order_worlds": 0
+    },
+    "missing / c676633aac58ad2f3b3873d861d3645bb6f71f87dcd2f55f3dc31904e834aa21": {
+      "buy_wins": 773,
+      "buys": 1003,
+      "closes": {
+        "AGENT_CLOSE": 1651,
+        "FORCED_FLAT": 61,
+        "SL": 44,
+        "TP": 400
+      },
+      "early_closes": 1651,
+      "eligible": true,
+      "horizons": {
+        "12": 2003,
+        "3": 153
+      },
+      "losing_early_closes": 458,
+      "mean_costs_usd": {
+        "commission_usd": 13.787996055555555,
+        "financing_usd": 1.8647546805555555,
+        "slippage_usd": 7.29419688888889,
+        "spread_usd": 34.047317847222224
+      },
+      "mean_holding_bars": 11.036178107606679,
+      "mean_orders": 5.988888888888889,
+      "objectives": [
+        2.492798475878199,
+        -1.6705051365460095
+      ],
+      "one_bar_trades": 105,
+      "orders": 2156,
+      "sell_wins": 875,
+      "sells": 1153,
+      "under_three_order_worlds": 11,
+      "wins": 1648,
+      "zero_order_worlds": 0
+    },
+    "missing / equal_guarded": {
+      "buy_wins": 630,
+      "buys": 983,
+      "closes": {
+        "AGENT_CLOSE": 1011,
+        "FORCED_FLAT": 253,
+        "SL": 206,
+        "TP": 506
+      },
+      "early_closes": 1011,
+      "eligible": true,
+      "horizons": {
+        "12": 692,
+        "24": 440,
+        "3": 583,
+        "6": 261
+      },
+      "losing_early_closes": 418,
+      "mean_costs_usd": {
+        "commission_usd": 13.492746166666667,
+        "financing_usd": 3.4557462083333337,
+        "slippage_usd": 7.438482666666666,
+        "spread_usd": 34.761020763888894
+      },
+      "mean_holding_bars": 15.890182186234817,
+      "mean_orders": 5.488888888888889,
+      "objectives": [
+        1.7977664794208095,
+        -1.9925043362970973
+      ],
+      "one_bar_trades": 67,
+      "orders": 1976,
+      "sell_wins": 648,
+      "sells": 993,
+      "under_three_order_worlds": 26,
+      "wins": 1278,
+      "zero_order_worlds": 0
+    },
+    "missing / greedy": {
+      "buy_wins": 1083,
+      "buys": 1840,
+      "closes": {
+        "AGENT_CLOSE": 2932,
+        "FORCED_FLAT": 209,
+        "SL": 126,
+        "TP": 448
+      },
+      "early_closes": 2932,
+      "eligible": true,
+      "horizons": {
+        "12": 1156,
+        "24": 855,
+        "3": 1203,
+        "6": 501
+      },
+      "losing_early_closes": 1282,
+      "mean_costs_usd": {
+        "commission_usd": 25.863152583333335,
+        "financing_usd": 2.802861791666667,
+        "slippage_usd": 14.376060111111112,
+        "spread_usd": 66.80368201388889
+      },
+      "mean_holding_bars": 8.016150740242262,
+      "mean_orders": 10.319444444444445,
+      "objectives": [
+        2.2940226494269544,
+        -2.333313064051895
+      ],
+      "one_bar_trades": 500,
+      "orders": 3715,
+      "sell_wins": 1128,
+      "sells": 1875,
+      "under_three_order_worlds": 0,
+      "wins": 2211,
+      "zero_order_worlds": 0
+    },
+    "missing / nop": {
+      "buy_wins": 0,
+      "buys": 0,
+      "closes": {},
+      "early_closes": 0,
+      "eligible": false,
+      "horizons": {},
+      "losing_early_closes": 0,
+      "mean_costs_usd": {
+        "commission_usd": 0.0,
+        "financing_usd": 0.0,
+        "slippage_usd": 0.0,
+        "spread_usd": 0.0
+      },
+      "mean_holding_bars": null,
+      "mean_orders": 0.0,
+      "objectives": [
+        0.0,
+        -0.0
+      ],
+      "one_bar_trades": 0,
+      "orders": 0,
+      "sell_wins": 0,
+      "sells": 0,
+      "under_three_order_worlds": 360,
+      "wins": 0,
+      "zero_order_worlds": 360
+    },
+    "missing / only_12": {
+      "buy_wins": 1120,
+      "buys": 1890,
+      "closes": {
+        "AGENT_CLOSE": 3129,
+        "FORCED_FLAT": 224,
+        "SL": 89,
+        "TP": 364
+      },
+      "early_closes": 3129,
+      "eligible": true,
+      "horizons": {
+        "12": 3806
+      },
+      "losing_early_closes": 1350,
+      "mean_costs_usd": {
+        "commission_usd": 23.695623194444444,
+        "financing_usd": 2.8029949166666666,
+        "slippage_usd": 13.138702166666667,
+        "spread_usd": 61.78663423611112
+      },
+      "mean_holding_bars": 7.783762480294272,
+      "mean_orders": 10.572222222222223,
+      "objectives": [
+        2.2371951663902836,
+        -2.9383567665712236
+      ],
+      "one_bar_trades": 471,
+      "orders": 3806,
+      "sell_wins": 1145,
+      "sells": 1916,
+      "under_three_order_worlds": 0,
+      "wins": 2265,
+      "zero_order_worlds": 0
+    },
+    "missing / only_24": {
+      "buy_wins": 970,
+      "buys": 1538,
+      "closes": {
+        "AGENT_CLOSE": 2607,
+        "FORCED_FLAT": 213,
+        "SL": 28,
+        "TP": 261
+      },
+      "early_closes": 2607,
+      "eligible": true,
+      "horizons": {
+        "24": 3109
+      },
+      "losing_early_closes": 1033,
+      "mean_costs_usd": {
+        "commission_usd": 15.595355611111113,
+        "financing_usd": 2.2597687777777775,
+        "slippage_usd": 8.607661305555554,
+        "spread_usd": 40.708639444444444
+      },
+      "mean_holding_bars": 9.814409778063686,
+      "mean_orders": 8.636111111111111,
+      "objectives": [
+        1.9026141055748518,
+        -1.2287701643673785
+      ],
+      "one_bar_trades": 307,
+      "orders": 3109,
+      "sell_wins": 984,
+      "sells": 1571,
+      "under_three_order_worlds": 0,
+      "wins": 1954,
+      "zero_order_worlds": 0
+    },
+    "missing / only_3": {
+      "buy_wins": 1441,
+      "buys": 2686,
+      "closes": {
+        "AGENT_CLOSE": 3867,
+        "FORCED_FLAT": 200,
+        "SL": 421,
+        "TP": 949
+      },
+      "early_closes": 3867,
+      "eligible": true,
+      "horizons": {
+        "3": 5437
+      },
+      "losing_early_closes": 1993,
+      "mean_costs_usd": {
+        "commission_usd": 46.123699805555546,
+        "financing_usd": 3.3036846666666664,
+        "slippage_usd": 25.581392166666674,
+        "spread_usd": 119.5870551388889
+      },
+      "mean_holding_bars": 4.929004965973883,
+      "mean_orders": 15.102777777777778,
+      "objectives": [
+        2.3026602611218863,
+        -4.20628091361318
+      ],
+      "one_bar_trades": 923,
+      "orders": 5437,
+      "sell_wins": 1492,
+      "sells": 2751,
+      "under_three_order_worlds": 0,
+      "wins": 2933,
+      "zero_order_worlds": 0
+    },
+    "missing / only_6": {
+      "buy_wins": 1354,
+      "buys": 2439,
+      "closes": {
+        "AGENT_CLOSE": 3709,
+        "FORCED_FLAT": 204,
+        "SL": 262,
+        "TP": 774
+      },
+      "early_closes": 3709,
+      "eligible": true,
+      "horizons": {
+        "6": 4949
+      },
+      "losing_early_closes": 1842,
+      "mean_costs_usd": {
+        "commission_usd": 40.096747444444446,
+        "financing_usd": 3.1028953055555557,
+        "slippage_usd": 22.029946944444447,
+        "spread_usd": 104.50559277777779
+      },
+      "mean_holding_bars": 5.609011921600323,
+      "mean_orders": 13.747222222222222,
+      "objectives": [
+        2.4994155768061015,
+        -3.809939671733352
+      ],
+      "one_bar_trades": 773,
+      "orders": 4949,
+      "sell_wins": 1398,
+      "sells": 2510,
+      "under_three_order_worlds": 0,
+      "wins": 2752,
+      "zero_order_worlds": 0
+    },
+    "omitted_reversal / 0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e": {
+      "buy_wins": 131,
+      "buys": 724,
+      "closes": {
+        "AGENT_CLOSE": 890,
+        "FORCED_FLAT": 49,
+        "SL": 733,
+        "TP": 61
+      },
+      "early_closes": 890,
+      "eligible": true,
+      "horizons": {
+        "12": 1733
+      },
+      "losing_early_closes": 618,
+      "mean_costs_usd": {
+        "commission_usd": 8.438178194444445,
+        "financing_usd": 0.48859494444444446,
+        "slippage_usd": 6.244657361111111,
+        "spread_usd": 21.573232847222222
+      },
+      "mean_holding_bars": 8.300057703404502,
+      "mean_orders": 4.813888888888889,
+      "objectives": [
+        -0.7378800021268141,
+        -6.715867355605696
+      ],
+      "one_bar_trades": 211,
+      "orders": 1733,
+      "sell_wins": 250,
+      "sells": 1009,
+      "under_three_order_worlds": 150,
+      "wins": 381,
+      "zero_order_worlds": 8
+    },
+    "omitted_reversal / 0778ecc8a69677daf0ae7aa8c47ceccd622a12281b630976a8188b54d5b7af9e_size1": {
+      "buy_wins": 131,
+      "buys": 724,
+      "closes": {
+        "AGENT_CLOSE": 890,
+        "FORCED_FLAT": 49,
+        "SL": 733,
+        "TP": 61
+      },
+      "early_closes": 890,
+      "eligible": true,
+      "horizons": {
+        "12": 1733
+      },
+      "losing_early_closes": 618,
+      "mean_costs_usd": {
+        "commission_usd": 10.542247138888888,
+        "financing_usd": 0.6096312777777778,
+        "slippage_usd": 7.798447472222223,
+        "spread_usd": 26.946377430555557
+      },
+      "mean_holding_bars": 8.300057703404502,
+      "mean_orders": 4.813888888888889,
+      "objectives": [
+        -0.9192286153043445,
+        -8.346782820264707
+      ],
+      "one_bar_trades": 211,
+      "orders": 1733,
+      "sell_wins": 250,
+      "sells": 1009,
+      "under_three_order_worlds": 150,
+      "wins": 381,
+      "zero_order_worlds": 8
+    },
+    "omitted_reversal / 0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5": {
+      "buy_wins": 40,
+      "buys": 335,
+      "closes": {
+        "AGENT_CLOSE": 452,
+        "FORCED_FLAT": 26,
+        "SL": 533,
+        "TP": 29
+      },
+      "early_closes": 452,
+      "eligible": false,
+      "horizons": {
+        "12": 1040
+      },
+      "losing_early_closes": 340,
+      "mean_costs_usd": {
+        "commission_usd": 1.6326162222222222,
+        "financing_usd": -0.15161862499999998,
+        "slippage_usd": 1.2750403888888888,
+        "spread_usd": 4.137945486111111
+      },
+      "mean_holding_bars": 7.65,
+      "mean_orders": 2.888888888888889,
+      "objectives": [
+        -0.186953053720048,
+        -1.881096311709516
+      ],
+      "one_bar_trades": 96,
+      "orders": 1040,
+      "sell_wins": 127,
+      "sells": 705,
+      "under_three_order_worlds": 242,
+      "wins": 167,
+      "zero_order_worlds": 100
+    },
+    "omitted_reversal / 0fddb088a81620327993c6d23e737f43ebc9b13378f2a0522e0ba33211d681f5_size1": {
+      "buy_wins": 40,
+      "buys": 335,
+      "closes": {
+        "AGENT_CLOSE": 452,
+        "FORCED_FLAT": 26,
+        "SL": 533,
+        "TP": 29
+      },
+      "early_closes": 452,
+      "eligible": false,
+      "horizons": {
+        "12": 1040
+      },
+      "losing_early_closes": 340,
+      "mean_costs_usd": {
+        "commission_usd": 6.468908055555555,
+        "financing_usd": -0.608868,
+        "slippage_usd": 5.046863555555556,
+        "spread_usd": 16.38751715277778
+      },
+      "mean_holding_bars": 7.65,
+      "mean_orders": 2.888888888888889,
+      "objectives": [
+        -0.7374610867634908,
+        -7.327879730165386
+      ],
+      "one_bar_trades": 96,
+      "orders": 1040,
+      "sell_wins": 127,
+      "sells": 705,
+      "under_three_order_worlds": 242,
+      "wins": 167,
+      "zero_order_worlds": 100
+    },
+    "omitted_reversal / 523daabbcfba19f7721fcf10f9116ea5d21cb4f335653e549c038ab2197212dc": {
+      "buy_wins": 267,
+      "buys": 1474,
+      "closes": {
+        "AGENT_CLOSE": 1277,
+        "FORCED_FLAT": 58,
+        "SL": 1700,
+        "TP": 278
+      },
+      "early_closes": 1277,
+      "eligible": true,
+      "horizons": {
+        "6": 3313
+      },
+      "losing_early_closes": 958,
+      "mean_costs_usd": {
+        "commission_usd": 25.91777863888889,
+        "financing_usd": 1.2458040277777778,
+        "slippage_usd": 19.78153838888889,
+        "spread_usd": 68.02763631944445
+      },
+      "mean_holding_bars": 6.237549049200121,
+      "mean_orders": 9.202777777777778,
+      "objectives": [
+        -1.8122800498386489,
+        -15.12536528129467
+      ],
+      "one_bar_trades": 585,
+      "orders": 3313,
+      "sell_wins": 380,
+      "sells": 1839,
+      "under_three_order_worlds": 10,
+      "wins": 647,
+      "zero_order_worlds": 0
+    },
+    "omitted_reversal / 61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256": {
+      "buy_wins": 50,
+      "buys": 473,
+      "closes": {
+        "AGENT_CLOSE": 645,
+        "FORCED_FLAT": 27,
+        "SL": 630,
+        "TP": 38
+      },
+      "early_closes": 645,
+      "eligible": true,
+      "horizons": {
+        "12": 1340
+      },
+      "losing_early_closes": 504,
+      "mean_costs_usd": {
+        "commission_usd": 3.7274519722222217,
+        "financing_usd": -0.25252949999999996,
+        "slippage_usd": 2.8428943333333336,
+        "spread_usd": 9.476522986111112
+      },
+      "mean_holding_bars": 6.830597014925373,
+      "mean_orders": 3.7222222222222223,
+      "objectives": [
+        -0.41499352085434815,
+        -3.686463913668734
+      ],
+      "one_bar_trades": 200,
+      "orders": 1340,
+      "sell_wins": 156,
+      "sells": 867,
+      "under_three_order_worlds": 223,
+      "wins": 206,
+      "zero_order_worlds": 69
+    },
+    "omitted_reversal / 61d4b62ca0e612f5d1b78a3e36875dd372b1bb67dd31b88b8638a43e7797e256_size1": {
+      "buy_wins": 50,
+      "buys": 473,
+      "closes": {
+        "AGENT_CLOSE": 645,
+        "FORCED_FLAT": 27,
+        "SL": 630,
+        "TP": 38
+      },
+      "early_closes": 645,
+      "eligible": true,
+      "horizons": {
+        "12": 1340
+      },
+      "losing_early_closes": 504,
+      "mean_costs_usd": {
+        "commission_usd": 8.248679833333332,
+        "financing_usd": -0.5661431527777777,
+        "slippage_usd": 6.285220638888889,
+        "spread_usd": 20.95865291666667
+      },
+      "mean_holding_bars": 6.830597014925373,
+      "mean_orders": 3.7222222222222223,
+      "objectives": [
+        -0.9142271046172977,
+        -8.052460833350118
+      ],
+      "one_bar_trades": 200,
+      "orders": 1340,
+      "sell_wins": 156,
+      "sells": 867,
+      "under_three_order_worlds": 223,
+      "wins": 206,
+      "zero_order_worlds": 69
+    },
+    "omitted_reversal / c676633aac58ad2f3b3873d861d3645bb6f71f87dcd2f55f3dc31904e834aa21": {
+      "buy_wins": 226,
+      "buys": 1119,
+      "closes": {
+        "AGENT_CLOSE": 1339,
+        "FORCED_FLAT": 52,
+        "SL": 943,
+        "TP": 78
+      },
+      "early_closes": 1339,
+      "eligible": true,
+      "horizons": {
+        "12": 2412
+      },
+      "losing_early_closes": 920,
+      "mean_costs_usd": {
+        "commission_usd": 14.511448583333332,
+        "financing_usd": 1.3767844166666665,
+        "slippage_usd": 10.555291916666667,
+        "spread_usd": 37.47647277777778
+      },
+      "mean_holding_bars": 8.11608623548922,
+      "mean_orders": 6.7,
+      "objectives": [
+        -1.1260472422934114,
+        -9.942722299678593
+      ],
+      "one_bar_trades": 366,
+      "orders": 2412,
+      "sell_wins": 321,
+      "sells": 1293,
+      "under_three_order_worlds": 45,
+      "wins": 547,
+      "zero_order_worlds": 0
+    },
+    "omitted_reversal / equal_guarded": {
+      "buy_wins": 374,
+      "buys": 1622,
+      "closes": {
+        "AGENT_CLOSE": 1105,
+        "FORCED_FLAT": 244,
+        "SL": 1654,
+        "TP": 233
+      },
+      "early_closes": 1105,
+      "eligible": true,
+      "horizons": {
+        "12": 2134,
+        "24": 1,
+        "3": 794,
+        "6": 307
+      },
+      "losing_early_closes": 760,
+      "mean_costs_usd": {
+        "commission_usd": 21.731487944444442,
+        "financing_usd": 3.4810506805555557,
+        "slippage_usd": 16.787515194444445,
+        "spread_usd": 57.66410743055557
+      },
+      "mean_holding_bars": 9.514833127317676,
+      "mean_orders": 8.988888888888889,
+      "objectives": [
+        -1.5156652158092538,
+        -13.766018284948093
+      ],
+      "one_bar_trades": 435,
+      "orders": 3236,
+      "sell_wins": 398,
+      "sells": 1614,
+      "under_three_order_worlds": 10,
+      "wins": 772,
+      "zero_order_worlds": 0
+    },
+    "omitted_reversal / greedy": {
+      "buy_wins": 474,
+      "buys": 2282,
+      "closes": {
+        "AGENT_CLOSE": 2555,
+        "FORCED_FLAT": 185,
+        "SL": 1581,
+        "TP": 233
+      },
+      "early_closes": 2555,
+      "eligible": true,
+      "horizons": {
+        "12": 2393,
+        "24": 34,
+        "3": 1682,
+        "6": 445
+      },
+      "losing_early_closes": 1954,
+      "mean_costs_usd": {
+        "commission_usd": 31.91470041666667,
+        "financing_usd": 2.672625333333333,
+        "slippage_usd": 22.42312263888889,
+        "spread_usd": 82.92736604166667
+      },
+      "mean_holding_bars": 6.407334211682038,
+      "mean_orders": 12.65,
+      "objectives": [
+        -2.031400321472787,
+        -14.100255973245154
+      ],
+      "one_bar_trades": 927,
+      "orders": 4554,
+      "sell_wins": 491,
+      "sells": 2272,
+      "under_three_order_worlds": 0,
+      "wins": 965,
+      "zero_order_worlds": 0
+    },
+    "omitted_reversal / nop": {
+      "buy_wins": 0,
+      "buys": 0,
+      "closes": {},
+      "early_closes": 0,
+      "eligible": false,
+      "horizons": {},
+      "losing_early_closes": 0,
+      "mean_costs_usd": {
+        "commission_usd": 0.0,
+        "financing_usd": 0.0,
+        "slippage_usd": 0.0,
+        "spread_usd": 0.0
+      },
+      "mean_holding_bars": null,
+      "mean_orders": 0.0,
+      "objectives": [
+        0.0,
+        -0.0
+      ],
+      "one_bar_trades": 0,
+      "orders": 0,
+      "sell_wins": 0,
+      "sells": 0,
+      "under_three_order_worlds": 360,
+      "wins": 0,
+      "zero_order_worlds": 360
+    },
+    "omitted_reversal / only_12": {
+      "buy_wins": 452,
+      "buys": 2112,
+      "closes": {
+        "AGENT_CLOSE": 2669,
+        "FORCED_FLAT": 202,
+        "SL": 1217,
+        "TP": 110
+      },
+      "early_closes": 2669,
+      "eligible": true,
+      "horizons": {
+        "12": 4198
+      },
+      "losing_early_closes": 2011,
+      "mean_costs_usd": {
+        "commission_usd": 25.204841472222224,
+        "financing_usd": 2.3716811805555555,
+        "slippage_usd": 17.29367311111111,
+        "spread_usd": 65.04919708333334
+      },
+      "mean_holding_bars": 7.060743211052882,
+      "mean_orders": 11.661111111111111,
+      "objectives": [
+        -1.7830490794982163,
+        -13.207925204566843
+      ],
+      "one_bar_trades": 852,
+      "orders": 4198,
+      "sell_wins": 462,
+      "sells": 2086,
+      "under_three_order_worlds": 0,
+      "wins": 914,
+      "zero_order_worlds": 0
+    },
+    "omitted_reversal / only_24": {
+      "buy_wins": 443,
+      "buys": 1933,
+      "closes": {
+        "AGENT_CLOSE": 2770,
+        "FORCED_FLAT": 208,
+        "SL": 828,
+        "TP": 79
+      },
+      "early_closes": 2770,
+      "eligible": true,
+      "horizons": {
+        "24": 3885
+      },
+      "losing_early_closes": 2097,
+      "mean_costs_usd": {
+        "commission_usd": 18.910019138888888,
+        "financing_usd": 1.9238809583333332,
+        "slippage_usd": 12.398381722222227,
+        "spread_usd": 48.078981805555564
+      },
+      "mean_holding_bars": 7.731531531531531,
+      "mean_orders": 10.791666666666666,
+      "objectives": [
+        -1.4691396556400491,
+        -10.879739159171308
+      ],
+      "one_bar_trades": 646,
+      "orders": 3885,
+      "sell_wins": 453,
+      "sells": 1952,
+      "under_three_order_worlds": 0,
+      "wins": 896,
+      "zero_order_worlds": 0
+    },
+    "omitted_reversal / only_3": {
+      "buy_wins": 535,
+      "buys": 2799,
+      "closes": {
+        "AGENT_CLOSE": 2286,
+        "FORCED_FLAT": 181,
+        "SL": 2607,
+        "TP": 530
+      },
+      "early_closes": 2286,
+      "eligible": true,
+      "horizons": {
+        "3": 5604
+      },
+      "losing_early_closes": 1854,
+      "mean_costs_usd": {
+        "commission_usd": 45.4310115,
+        "financing_usd": 3.3147988194444453,
+        "slippage_usd": 33.625738416666664,
+        "spread_usd": 120.24379479166669
+      },
+      "mean_holding_bars": 5.011955745895789,
+      "mean_orders": 15.566666666666666,
+      "objectives": [
+        -2.733545335422424,
+        -18.04078820761651
+      ],
+      "one_bar_trades": 1217,
+      "orders": 5604,
+      "sell_wins": 557,
+      "sells": 2805,
+      "under_three_order_worlds": 0,
+      "wins": 1092,
+      "zero_order_worlds": 0
+    },
+    "omitted_reversal / only_6": {
+      "buy_wins": 493,
+      "buys": 2552,
+      "closes": {
+        "AGENT_CLOSE": 2428,
+        "FORCED_FLAT": 187,
+        "SL": 2113,
+        "TP": 365
+      },
+      "early_closes": 2428,
+      "eligible": true,
+      "horizons": {
+        "6": 5093
+      },
+      "losing_early_closes": 1925,
+      "mean_costs_usd": {
+        "commission_usd": 39.41791525,
+        "financing_usd": 2.8932799861111107,
+        "slippage_usd": 28.59200555555556,
+        "spread_usd": 102.557565625
+      },
+      "mean_holding_bars": 5.626742587865698,
+      "mean_orders": 14.147222222222222,
+      "objectives": [
+        -2.5142267875453923,
+        -16.982636528350646
+      ],
+      "one_bar_trades": 1161,
+      "orders": 5093,
+      "sell_wins": 511,
+      "sells": 2541,
+      "under_three_order_worlds": 0,
+      "wins": 1004,
+      "zero_order_worlds": 0
+    }
+  },
+  "unique_vectors": 180
+}

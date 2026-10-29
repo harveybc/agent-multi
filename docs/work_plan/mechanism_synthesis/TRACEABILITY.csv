@@ -70,4 +70,6 @@ CP04,Report clocks and path contracts,tests/unit/test_crossed_account_panel.py,A
 CP05,Missing report handling,tests/unit/test_crossed_account_panel.py,Unavailable reports prevent entries while native steps still execute,BEFORE_PHASE2,PASS
 CP06,Forced-position boundary behavior,tests/unit/test_dynamic_account_panel.py,Gap preemption and SL TP deadline witnesses in both directions,BEFORE_PHASE2,PASS
 CP07,Exact parallel native execution,tests/unit/test_crossed_account_panel.py,Two persistent shards equal serial full-ledger accounts and cached repeats,BEFORE_PHASE2,PASS
-CP08,Authenticated sequential queue,docs/audits/evidence/crossed_account_queue_20261029/SMOKE_COMPLETE.json,Full smoke and complete-run re-entry with no new evaluations,BEFORE_PHASE2,PASS_SMOKE_FULL_QUEUE_RUNNING
+CP08,Authenticated sequential queue,docs/audits/evidence/crossed_account_final_20261029/COMPLETE.json,Full run complete with authenticated re-entry and no new search evaluations,BEFORE_PHASE2,PASS_COMPLETE
+CP09,Independent final analysis,tests/unit/test_crossed_account_analysis.py,Pair mismatch and forged metrics rejected and independent skyline checked,BEFORE_PHASE2,PASS
+CP10,Full evidence and replay,docs/audits/evidence/crossed_account_final_20261029/ANALYSIS.json,27000 archived accounts checked and1800 native P1 replays exact with exposure contrasts,BEFORE_PHASE2,PASS_SYNTHETIC_ONLY
