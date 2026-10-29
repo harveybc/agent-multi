@@ -1,0 +1,14 @@
+{
+  "schema": "absolute_exit_replay.v1",
+  "identity": "7f6c0f460a1b8b13d018a9cdacda2c94969f623303795f1e211f1334f382e63d",
+  "executions": 2,
+  "manifest_bytes_equal": true,
+  "compressed_cases_bytes_equal": true,
+  "report_bytes_equal": true,
+  "cases_sha256": "79035aeb64c99b04447e43b17d6d4df9b7f5126d8bf7447bad0a754c9a23db75",
+  "legacy_execution_digest_unchanged": "51e9aa9226c49238d20198da7df37abb6f70c65c1d7a021655f1c0e9a772c219",
+  "agent_multi_focused_tests": 115,
+  "heuristic_strategy_focused_tests": 74,
+  "first_elapsed_seconds": 11.609776802011766,
+  "scope": "SYNTHETIC_POSITION_METRICS_AND_EXECUTION_NOT_LEARNED_PERFORMANCE"
+}

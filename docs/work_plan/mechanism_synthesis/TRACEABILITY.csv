@@ -37,3 +37,10 @@ RR03,Native margin and modeled stop risk,tools/verify_horizon_risk_rules.py,3456
 RR04,Mirrored native protection behavior,docs/audits/evidence/shared_risk_rules_20261028/REPORT.json,17280 known-outcome fixtures and 18 rejection funding gap controls,BEFORE_PHASE2,PASS_PRIMITIVES_ONLY
 RR05,Serialized configuration replay,tests/unit/test_horizon_risk_rules.py and final replay,Canonical axis ordering reproduces config cases report bytes,BEFORE_PHASE2,PASS
 RR06,Cross-lane findings handoff,docs/handoffs/MUSASHI_TO_SATOSHI_SHARED_ZIGZAG_RISK_2026_10_28.md,Parameters process results and old adapter caps explicitly documented,BEFORE_PHASE2,DELIVERED
+AO01,Absolute order interface and original position identity,heuristic-strategy tests/test_absolute_order_execution.py,Native quote-side next-open fill and per-position q with no legacy clipping,BEFORE_PHASE2,PASS
+AO02,Business calendar and one position,heuristic-strategy tests/test_absolute_order_execution.py,12h gates no daily cap no implicit reversal missing bars refused,BEFORE_PHASE2,PASS
+AO03,Legacy execution replay,docs/work_plan/131_EARLY_CLOSE_COUNTERFACTUAL_RESULTS.md,Two historical default-mode synthetic replays retain digest,BEFORE_PHASE2,BYTE_IDENTICAL
+EC01,Fixed-risk regret improvement and undefined opportunity,tests/unit/test_early_close_metrics.py,13 known-answer metric tests including destructive closes,BEFORE_PHASE2,PASS
+EC02,Independent native counterfactual execution,docs/audits/evidence/absolute_early_close_20261029/REPORT.json,1744 positions and 14784 alternatives agree with cash and barrier reference,BEFORE_PHASE2,PASS_SYNTHETIC_COMPONENT
+EC03,Same market different positions,heuristic-strategy tests/test_absolute_order_execution.py,Different stops require different best exits on identical future in both directions,BEFORE_PHASE2,PASS
+EC04,Replay and coverage,docs/audits/evidence/absolute_early_close_20261029/REPLAY.json,Complete matrix and byte-identical second execution,BEFORE_PHASE2,PASS

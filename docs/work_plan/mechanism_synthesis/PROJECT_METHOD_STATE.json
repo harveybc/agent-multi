@@ -1,9 +1,13 @@
 {
   "schema": "mechanism_synthesis.design_state.v1",
-  "date": "2026-10-28",
+  "date": "2026-10-29",
   "timezone": "America/Bogota",
   "priority": 0,
-  "current_stage": "SHARED_HORIZON_ORDER_CONSTRUCTION_VERIFIED",
+  "current_stage": "ABSOLUTE_EXECUTION_AND_FIXED_POSITION_EXIT_METRICS_VERIFIED",
+  "early_close_plan": "../130_EARLY_CLOSE_COUNTERFACTUAL_METRICS_PLAN.md",
+  "absolute_execution_plan": "../129_ABSOLUTE_ORDERS_EARLY_CLOSE_PLAN.md",
+  "early_close_results": "../131_EARLY_CLOSE_COUNTERFACTUAL_RESULTS.md",
+  "early_close_evidence": {"positions": 1744, "alternative_native_exits": 14784, "max_cash_error_usd": 2.842170943040401e-14, "agent_component_tests": 115, "native_tests": 74, "byte_exact_replay": true, "learned_policy": false},
   "shared_risk_rules_plan": "../127_SHARED_RISK_RULES_PLAN.md",
   "shared_risk_rules_results": "../128_SHARED_RISK_RULES_RESULTS.md",
   "satoshi_shared_handoff": "../../handoffs/MUSASHI_TO_SATOSHI_SHARED_ZIGZAG_RISK_2026_10_28.md",
@@ -43,7 +47,7 @@
   "scope": "Mechanism design, test-guided synthesis, finite-policy Nash checks and account Pareto analysis",
   "implementation_started": true,
   "experiments_started": true,
-  "experiment_scope": "TRAIN hindsight opportunity optimization only; no RL fit or feature selection",
+  "experiment_scope": "TRAIN hindsight references plus synthetic fixed-position execution and metrics; no RL fit or feature selection",
   "review_received": true,
   "review_identity": "Satoshi agent-multi 3326f898: REVISE before M1; M0 allowed",
   "theory_and_disposition": "../113_MECHANISM_THEORY_AND_AUDIT_DISPOSITION.md",
@@ -51,18 +55,18 @@
     "35 focused pytest cases passed: exact games, Pareto, deviations, redundancy, Shapley counterexample and subprocess replay",
     "../../audits/evidence/mechanism_design_20261028/M0_EXACT_REPORT.json"
   ],
-  "implementation_scope": "M0 exact games plus TRAIN oracle references and configurable order geometry/sizing; native protection primitives verified, no full account or early-close qualification",
+  "implementation_scope": "M0 exact games plus TRAIN references and configurable order sizing; native absolute execution and synthetic fixed-position early-close metric component verified; full causal controller and account strategy not qualified",
   "top_down": {
     "discovery": "DOCUMENTED",
     "requirements_and_use_cases": "PROPOSED",
     "acceptance_design": "PROPOSED",
     "architecture_and_components": "PROPOSED",
     "system_and_integration_tests": "PROPOSED",
-    "unit_tests": "M0_EXACT_CORE_IMPLEMENTED_AND_PASSED; M1-M6_NOT_RUN"
+    "unit_tests": "M0_EXACT_CORE_AND_ABSOLUTE_EXECUTION_EXIT_METRIC_COMPONENTS_PASSED; FULL_M1-M6_NOT_QUALIFIED"
   },
   "bottom_up": "M0_EXACT_CORE_VERIFIED; HIGHER_LAYERS_NOT_QUALIFIED",
   "next_allowed_actions": [
-    "Qualify absolute-level execution interface with next-open revalidation and calendar gating; do not silently pass new rules through legacy multiplier and effectiveness caps",
+    "Implement causal report-driven close/hold controller using the verified fixed-position metrics; do not expose future oracle values as model observations",
     "Use shared configurable level and size rules with c=1, explicit costs and funding reserve; calibrate uncertainty reduction only as a separate contrast",
     "After full strategy qualification compare account objectives and optimize per-horizon coefficients with population20/gen300; current numerical controls are not optima",
     "Resolve and test position-dependent close report semantics before native M1 strategy execution",
@@ -75,10 +79,11 @@
     "Model-specific sequential floating selection",
     "Promotion of synthetic-oracle results as learned-model evidence"
   ],
-  "operations": "Shared risk references, configurable controls, synthetic native sizing/protection matrix and replay completed; 70 focused tests passed; no active jobs or financial training",
+  "operations": "Two synthetic early-close verification runs complete with exact replay; 115 metric/component tests and 74 native tests pass; no active jobs or financial training",
   "history": [
     {"date": "2026-10-28", "event": "User prioritizes mechanism synthesis and requests detailed implementation proposal plus Satoshi audit"},
     {"date": "2026-10-28", "event": "Owner clarifies daily openings: three or more allowed, no strategy daily cap; contract recorded without runtime change"},
-    {"date": "2026-10-28", "event": "Read audit 3326f898, published reciprocal guided-lane audit 660511a0, implemented exact M0 core with 35 tests and completed deterministic reproduction"}
+    {"date": "2026-10-28", "event": "Read audit 3326f898, published reciprocal guided-lane audit 660511a0, implemented exact M0 core with 35 tests and completed deterministic reproduction"},
+    {"date": "2026-10-29", "event": "Plans129/130 implemented: native absolute-order interface, fixed-position early-close regret, 1744 synthetic cases with 14784 alternative executions and exact replay; report131 and Satoshi component handoff"}
   ]
 }

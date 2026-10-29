@@ -1,13 +1,22 @@
 # Adaptive Multi-Asset Trading Work Plan
 
-## Priority override: 2026-10-28
+## Priority override: 2026-10-29
+
+Completed: [absolute execution and fixed-position early-close metrics](131_EARLY_CLOSE_COUNTERFACTUAL_RESULTS.md)
+under [plan129](129_ABSOLUTE_ORDERS_EARLY_CLOSE_PLAN.md) and
+[plan130](130_EARLY_CLOSE_COUNTERFACTUAL_METRICS_PLAN.md). 1,744 synthetic
+positions, 14,784 native alternative exits, independent cash agreement,
+exact replay, 115 metric/component tests and 74 native tests.
+[Satoshi component-review handoff](../handoffs/MUSASHI_TO_SATOSHI_EARLY_CLOSE_METRICS_2026_10_29.md).
+Next: causal report-driven close/hold and entry arbitration, then account-level
+coefficient optimization. These oracle controls are not learned RL performance.
 
 Completed: [shared configurable risk rules and engineering verification](128_SHARED_RISK_RULES_RESULTS.md)
 under [plan 127](127_SHARED_RISK_RULES_PLAN.md). 3,456 proposals, 17,280
 protection witnesses, 18 additional controls, 70 tests and exact JSON replay.
 [Satoshi handoff: complete process, parameters, findings and evidence](../handoffs/MUSASHI_TO_SATOSHI_SHARED_ZIGZAG_RISK_2026_10_28.md).
-Next: absolute-level execution and early-close integration; no account-level
-coefficient optimum or full strategy qualification is claimed.
+Absolute execution and counterfactual metrics are now covered by131; no
+account-level coefficient optimum or full strategy qualification is claimed.
 
 Completed: [TRAIN SL/TP reference profiles and bounded volume](126_ZIGZAG_RISK_PROFILE_RESULTS.md),
 following [the risk-profile test plan](125_ZIGZAG_RISK_PROFILE_PLAN.md).
