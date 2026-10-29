@@ -1,10 +1,10 @@
 {
   "schema": "rl_static_engineering_state.v1",
   "updated_on": "2026-10-28",
-  "current_stage": "PRIORITY_0_ZIGZAG_300_GENERATION_PAIRED_EXTENSION",
-  "latest_review": "116_ZIGZAG_300_GENERATION_CONTRAST.md",
+  "current_stage": "PRIORITY_0_ZIGZAG_300_COMPLETE_DIRECTION_SEMANTICS_DISCUSSION",
+  "latest_review": "117_ZIGZAG_300_RESULTS_AND_DIRECTION_SEMANTICS.md",
   "zigzag_subplan": {
-    "state": "BASELINE_COMPLETE; 300_GENERATION_EXTENSION_RUNNING",
+    "state": "BASELINE_AND_300_GENERATION_EXTENSION_COMPLETE; PAIRED_AUDIT_PASS",
     "results": "115_TRAIN_ZIGZAG_DEAP_RESULTS.md",
     "horizons_hours": [3, 6, 12, 24],
     "population": 30,

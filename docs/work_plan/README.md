@@ -5,6 +5,9 @@
 Current extension: [40 versus 300 generations](116_ZIGZAG_300_GENERATION_CONTRAST.md),
 same population 30, seeds and objective. Automatic search, scalar audit and
 paired comparison; original results stay unchanged.
+The [300-generation comparison and direction breakdown](117_ZIGZAG_300_RESULTS_AND_DIRECTION_SEMANTICS.md)
+are complete. No best-per-horizon fitness improvement; two individual seeds
+improved. Next-extremum versus timed-exit semantics are explicitly documented.
 
 Immediate owner-authorized subplan: [TRAIN ZigZag opportunity optimization](114_TRAIN_ZIGZAG_OPPORTUNITY_OPTIMIZATION.md),
 3/6/12/24 hours, sequential DEAP, population 30 and 40 generations per seed.

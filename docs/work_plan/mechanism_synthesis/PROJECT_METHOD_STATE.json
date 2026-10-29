@@ -3,7 +3,8 @@
   "date": "2026-10-28",
   "timezone": "America/Bogota",
   "priority": 0,
-  "current_stage": "TRAIN_ZIGZAG_300_GENERATION_PAIRED_EXTENSION_RUNNING",
+  "current_stage": "TRAIN_ZIGZAG_300_COMPLETE_DIRECTION_SEMANTICS_DISCUSSION",
+  "zigzag_extension_results": "../117_ZIGZAG_300_RESULTS_AND_DIRECTION_SEMANTICS.md",
   "zigzag_extension_plan": "../116_ZIGZAG_300_GENERATION_CONTRAST.md",
   "zigzag_extension_identity": "e11b753e8812aced7d6ea70f77cda458247f34cdac79f3dfb9bf0aa38260f9e6",
   "zigzag_extension_budget": {"population": 30, "generations": 300, "seeds": [7, 19, 43]},
@@ -42,7 +43,7 @@
   },
   "bottom_up": "M0_EXACT_CORE_VERIFIED; HIGHER_LAYERS_NOT_QUALIFIED",
   "next_allowed_actions": [
-    "Complete the owner-authorized 300-generation extension, audit and compare against the preserved 40-generation baseline",
+    "Discuss next-extremum versus timed-exit semantics; 300-generation paired comparison complete without champion fitness improvement",
     "Resolve and test position-dependent close report semantics before native M1 strategy execution",
     "Implement independent oracle-validity and signal/business contract validation with non-vacuous coverage",
     "Extend paired scenario and policy-library design including persistence and false/true cross-scale reversals",
@@ -53,7 +54,7 @@
     "Model-specific sequential floating selection",
     "Promotion of synthetic-oracle results as learned-model evidence"
   ],
-  "operations": "Sequential CPU-only 300-generation extension, scalar audit and paired comparison; no GPU or model training",
+  "operations": "300-generation extension, scalar audit and paired comparison complete; no active job in this subplan",
   "history": [
     {"date": "2026-10-28", "event": "User prioritizes mechanism synthesis and requests detailed implementation proposal plus Satoshi audit"},
     {"date": "2026-10-28", "event": "Owner clarifies daily openings: three or more allowed, no strategy daily cap; contract recorded without runtime change"},
