@@ -3,6 +3,9 @@
 ## Priority override: 2026-10-29
 
 Active: [dynamic account arbitration and empirical Pareto optimization](134_DYNAMIC_ACCOUNT_PARETO_PLAN.md).
+[Context-adaptive selector recommendation review](136_REGIME_SELECTOR_RECOMMENDATION_REVIEW.md)
+records the next paired context ablations without changing the running study;
+no regime rule may block qualified early closure.
 The native full-account implementation, replay checks and sequential queue are
 described in [implementation and execution record135](135_DYNAMIC_ACCOUNT_IMPLEMENTATION.md).
 Population20 x generations300 x seeds7/19/43; synthetic reports only. This

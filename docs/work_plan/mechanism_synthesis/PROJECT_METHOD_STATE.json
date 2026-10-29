@@ -6,6 +6,8 @@
   "current_stage": "DYNAMIC_ACCOUNT_SYNTHETIC_PARETO_SEARCH_RUNNING",
   "dynamic_account_plan": "../134_DYNAMIC_ACCOUNT_PARETO_PLAN.md",
   "dynamic_account_implementation": "../135_DYNAMIC_ACCOUNT_IMPLEMENTATION.md",
+  "context_recommendation_review": "../136_REGIME_SELECTOR_RECOMMENDATION_REVIEW.md",
+  "context_followup_status": "DOCUMENTED_PAIRED_ABLATIONS; NO_RUNNING_SOURCE_OR_CONTRACT_CHANGED",
   "dynamic_account_identity": "098e871909f0c587b1cbe855cc49b93723ed63a03c74845a52dd9009071a966d",
   "dynamic_account_budget": {"population": 20, "generations": 300, "seeds": [7, 19, 43], "mode": "sequential synthetic CPU"},
   "dynamic_account_verification": {"focused_tests": 128, "smoke_candidates": 60, "smoke_only": true, "final_optimization_results_available": false},
