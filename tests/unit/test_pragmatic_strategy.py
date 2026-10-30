@@ -7,11 +7,17 @@ import numpy as np
 import pytest
 
 from app.pragmatic_strategy import (ControllerConfig,rank_openings,select_plan,
-    PragmaticWorld,shadow_environment,rollout_plan,PragmaticController,run_account)
+    PragmaticWorld,shadow_environment,rollout_plan,PragmaticController,run_account,defined_sharpe)
 
 
 def bid(h,d,gain,duration=6):
     return dict(horizon=h,direction=d,gain_risk=gain,uncertainty_risk=.1,duration=duration)
+
+
+@pytest.mark.parametrize('daily',[[100.,100.],[110.,121.],[100.]])
+def test_constant_return_sharpe_is_undefined_not_zero(daily):
+    assert defined_sharpe(0.,daily,100.) is None
+    assert defined_sharpe(0.,[110.,99.],100.)==0.
 
 
 def test_joint_ranking_ties_nop_and_time_units():

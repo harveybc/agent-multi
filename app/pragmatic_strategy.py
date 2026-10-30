@@ -56,6 +56,16 @@ def rank_openings(bids,c):
     return ranked
 
 
+def defined_sharpe(native_value,daily_equity,initial):
+    values=np.r_[initial,np.asarray(daily_equity,float)]
+    if not np.isfinite(values).all() or initial<=0:
+        raise ValueError('SHARPE_EQUITY')
+    if len(values)<3 or np.any(values[:-1]==0) or not math.isfinite(native_value):
+        return None
+    returns=np.diff(values)/values[:-1]
+    return float(native_value) if float(np.std(returns,ddof=1))>0 else None
+
+
 def select_plan(plans,samples,weights,c):
     if len(plans)!=len(samples) or not plans: raise ValueError('PLAN_SET')
     w=np.asarray(weights,float)
@@ -282,11 +292,11 @@ def run_account(world,config,*,diagnose=False,controller=None):
         raise AssertionError('PRAGMATIC_NATIVE_METRICS')
     trades=e.trades;buys=[t for t in trades if t['direction']==1];sells=[t for t in trades if t['direction']==-1]
     executed=[x for x in closes if not x['preempted']]
-    sharpe=float(result['sharpe_daily_sqrt365'])
+    sharpe=defined_sharpe(float(result['sharpe_daily_sqrt365']),result['daily_equity'],e.cfg.capital)
     market_weeks=len(e.cal.segments)
     if market_weeks!=1: raise ValueError('PRAGMATIC_FULL_SINGLE_SESSION_REQUIRED')
     return dict(spec=world.spec,reporter=world.reporter,config=asdict(config),return_pct=ret,drawdown_pct=dd,
-        net_usd=net,sharpe=sharpe if math.isfinite(sharpe) else None,cash_error=cash,
+        net_usd=net,sharpe=sharpe,cash_error=cash,
         orders=len(trades),orders_per_week=len(trades)/market_weeks,market_weeks=market_weeks,
         native_iso_orders_per_week=result['orders_per_week'],wins=sum(t['net_usd']>0 for t in trades),
         buys=len(buys),sells=len(sells),buy_wins=sum(t['net_usd']>0 for t in buys),sell_wins=sum(t['net_usd']>0 for t in sells),

@@ -1,0 +1,34 @@
+{
+  "data": [
+    {
+      "activity_eligible": true,
+      "fallback": false,
+      "key": "e5df77dd883da608434f0921abba428e7c04002019f84c7b6b6c3528d95c1f3b",
+      "selection_bank": "calibration_noise_1",
+      "variant": "predictive_proxy"
+    },
+    {
+      "activity_eligible": true,
+      "fallback": false,
+      "key": "59a75d7347527e8c72f19b7f6180cfe00222a1b9bf77bdec2024116502f6f370",
+      "selection_bank": "calibration_noise_1",
+      "variant": "sequential"
+    },
+    {
+      "activity_eligible": true,
+      "fallback": false,
+      "key": "280977a99cdaa64118d87917f4faf845a7454b913143ea9b02d7f6fe2819b54c",
+      "selection_bank": "calibration_noise_1",
+      "variant": "sequential"
+    },
+    {
+      "activity_eligible": true,
+      "fallback": false,
+      "key": "c9408e3b946416d9fc801925aa8f09dcd8e8d7f4b0bdb714e5e5c93c64a8bc77",
+      "selection_bank": "calibration_noise_1",
+      "variant": "simple"
+    }
+  ],
+  "identity": "f5a82347b3181ee814fe07869b9e858965d52183b287293b144378eaced4e823",
+  "seal": "e4fff21c788aa3f9781d97bc0784c63f7134ed6d1e1518cc6fcb9697e9e2330f"
+}

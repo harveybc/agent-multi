@@ -13,6 +13,14 @@ global Pareto claim. This remains before model-specific floating selection.
 selection and five-reporter confirmation. Four bounded CPU workers; persistent
 restartable service. No financial learning or feature-selection launch.
 
+[Completed results163](163_PRAGMATIC_CONTROLLER_CONTRAST_RESULTS.md):
+1,584 accounts finished without restart (864 calibration and720 confirmation).
+Four representatives were frozen before confirmation. Simple/proxy have zero
+locally harmful closes with ideal reports; sequential returns are higher there
+but require per-close account attribution. Noise sensitivity and all negative
+prefix-baseline results are published.250 post-run tests pass; no financial
+training or floating-selection admission. Final audit request is linked in163.
+
 [Suppressed closes159](159_SUPPRESSED_CLOSE_COUNTERFACTUAL_RESULTS.md):
 432 exact baseline replays and305 single-close full-account interventions.
 202 suppressed closes improve their position;103 harm it. Three locally

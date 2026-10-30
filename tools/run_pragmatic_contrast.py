@@ -136,7 +136,7 @@ def report(output,manifest,calibration,selection,confirmation):
         'Harmful close is local fixed-position versus passive; it does not include subsequent-account opportunities.',
         'Worlds share mirrored/envelope transformations; no independent-sample significance claim.',
         'No optimizer parameters, data selection or model release are changed by confirmation.',
-        'Exact optimality is only over the declared finite plan library; actual future is unavailable to causal reports.',
+        'The finite plan frontier is enumerated; ties and close safeguards can override its score winner. No global or executed-policy optimum is claimed.',
         'NOP earns zero with zero orders and is ineligible. Negative results are preserved.']
     (output/'RESULTS.md').write_text('\n'.join(lines)+'\n')
     write(output/'REPORT.json',dict(identity=manifest['identity'],calibration=calibration,

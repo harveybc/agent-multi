@@ -3,7 +3,10 @@
   "date": "2026-10-30",
   "timezone": "America/Bogota",
   "priority": 0,
-  "current_stage": "PRAGMATIC_CONTROLLER_CONTRAST_AUTOMATED_RUNNING",
+  "current_stage": "PRAGMATIC_CONTROLLER_CONTRAST_COMPLETE",
+  "pragmatic_contrast_results": "../163_PRAGMATIC_CONTROLLER_CONTRAST_RESULTS.md",
+  "pragmatic_contrast_audit": "../../audits/SATOSHI_AUDIT_REQUEST_PRAGMATIC_CONTROLLER_CONTRAST_2026_10_30.md",
+  "pragmatic_contrast_completion": {"accounts":1584,"calibration_accounts":864,"confirmation_accounts":720,"frozen_representatives":4,"runtime_tests_passed":247,"postrun_tests_passed":250,"service_exit":0,"restarts":0,"resume_authenticated":true,"learned_model_qualified":false,"floating_selection_started":false},
   "pragmatic_contrast_launch": "../162_PRAGMATIC_CONTRAST_LAUNCH.md",
   "pragmatic_contrast_runtime": {"code":"6c9f597e","identity":"f5a82347b3181ee814fe07869b9e858965d52183b287293b144378eaced4e823","tests_passed":247,"cpu_workers":4,"memory_max_gib":6,"persistent_service":true,"intermediate_approval_required":false},
   "pragmatic_contrast_plan": "../160_PRAGMATIC_CONTROLLER_CONTRAST_PLAN.md",
@@ -124,7 +127,7 @@
   },
   "bottom_up": "INDEPENDENT_REVIEWS_RECEIVED; FIVE_CONCRETE_DEFECTS_REPAIRED_AND_REPLAYED; COVERAGE_REVISION_REQUIRED",
   "next_allowed_actions": [
-    "Execute160 immutable pragmatic grid automatically through calibration frozen selection noise and causal confirmation; publish complete native metrics without selecting on confirmation or releasing financial learning",
+    "Contrast160 completed in163: audit the frozen comparison and measure per-close full-account continuation before qualifying a learned adapter; no tuning on confirmation or automatic financial-learning release",
     "Suppressed-close diagnostic159 complete: use fixed-position versus full-account counterexamples to test sequential causal allocation on new worlds; do not tune gates on already-read confirmation",
     "Graph155 complete: expand bounded decision coverage and compare sequential allocation against its native exact prefix references; do not claim the full historical frontier from the three-decision proof",
     "Qualify non-anticipative sequential scenario-tree allocator against153 and running local-policy baseline; expose return-drawdown preference rather than inventing a unique Pareto optimum",
@@ -142,8 +145,9 @@
     "Model-specific sequential floating selection",
     "Promotion of synthetic-oracle results as learned-model evidence"
   ],
-  "operations": "Both prior causal-history lanes and their collector completed. Pragmatic contrast now deployed under6c9f597e with247 runtime tests;4 bounded CPU workers;864 calibration accounts then up to1080 frozen confirmation accounts and automatic report. No financial training or feature selection.",
+  "operations": "Both prior causal-history lanes and their collector completed. Pragmatic contrast completed under6c9f597e:1584 accounts;247 runtime tests;250 post-run tests;service exited0 without restart;completed resume authenticated. Results163 and audit request published. Next audit and full-account close attribution before learned-adapter qualification. No financial training or feature selection.",
   "history": [
+    {"date":"2026-10-30","event":"Full pragmatic contrast completed automatically:864 calibration and720 confirmation accounts;four frozen representatives;247 runtime tests;no restarts. Independent selection check and completed resume pass. Published all sensitivity results and local close harms without selecting on confirmation. Post-run undefined-Sharpe reporting guard has zero impact on1584 accounts;250 tests pass. Runtime and receipts unchanged."},
     {"date":"2026-10-30","event":"Published6c9f597e and deployed immutable full contrast service.247 runtime tests passed before calibration;8/36 initial units observed complete with22.28s mean time. Persistent restartable service;4 CPU workers;6GiB cap; no GPU allocation; no approvals between phases."},
     {"date":"2026-10-30","event":"Owner accepts pragmatic hierarchical comparison. Implemented three controller arms and bounded two-order native receding-horizon plans;24-profile JSON grid and resumable phase queue.247 runtime tests pass;24-account smoke and completed resume verified. Found and corrected ISO versus market-week activity denominator before full calibration. All learned-model observations remain free of position state and oracle paths."},
     {"date":"2026-10-30","event":"Owner authorizes next step. Implemented native same-position exit enumeration and one-intervention frozen-policy continuation.432 accounts replay exactly;305 suppressed ticks;2059 close alternatives;202 locally helpful versus103 harmful.199 account improvements versus106 losses; shared counterexample shows local+23.95 becoming account-6.06 through continuation.65 tests; full resume authenticated. No live runtime modified; sequential causal allocator remains next."},
