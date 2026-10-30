@@ -2,6 +2,10 @@
 
 ## Priority update: 2026-10-30
 
+[Launch151](151_CAUSAL_HISTORY_V2_LAUNCH.md): both persistent CPU lanes started
+with pinned3e6450fc and209 runtime tests passed on each host. The collector is
+enabled; no intermediate approval is required for the20x300x3 sequence.
+
 [Search correction150](150_CAUSAL_HISTORY_SEARCH_GATE_CORRECTION.md) supersedes
 the performance-based launch gate from148. Runtime tests/integrity enable DEAP;
 candidate activity is strictly mean orders/week >2, not >=3. Separate return/DD

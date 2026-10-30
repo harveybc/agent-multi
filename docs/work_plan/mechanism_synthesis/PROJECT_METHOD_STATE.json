@@ -3,7 +3,9 @@
   "date": "2026-10-30",
   "timezone": "America/Bogota",
   "priority": 0,
-  "current_stage": "CAUSAL_HISTORY_V2_TEST_QUALIFIED_SEARCH_READY",
+  "current_stage": "CAUSAL_HISTORY_V2_AUTOMATED_SEARCH_DEPLOYED",
+  "causal_history_v2_launch": "../151_CAUSAL_HISTORY_V2_LAUNCH.md",
+  "causal_history_v2_runtime": {"code":"3e6450fc","zero_identity":"a7ecac6dac2bd812992c074ef42723010e3740ed1e7b249d458799fc92f3be2e","median_identity":"452931b1fe97840255ac60abe87911a97724053ffc7d6c1249318c5c5026d36e","runtime_tests_each":209,"workers_each":2,"memory_max_gib_each":4,"automatic_collection":true},
   "causal_history_search_correction": "../150_CAUSAL_HISTORY_SEARCH_GATE_CORRECTION.md",
   "causal_history_v2_preflight": {"tests_passed":209,"skipped":0,"smoke_candidates":57,"confirmation_jobs":12,"free_genes_varied":13,"resume_authenticated":true,"population":20,"generations":300,"seeds":[7,19,43],"activity":"mean_orders_per_week > 2","performance_launch_gate":false},
   "causal_history_deployment": "../149_CAUSAL_HISTORY_DEPLOYMENT.md",
@@ -118,7 +120,7 @@
     "Model-specific sequential floating selection",
     "Promotion of synthetic-oracle results as learned-model evidence"
   ],
-  "operations": "Prior history lanes and collection complete. V2 removes performance-based launch rejection and corrects activity to >2.209 tests and57-candidate smoke with12 confirmation jobs and authenticated resume passed. Fresh two-host20x300x3 search being deployed; no financial training or feature selection.",
+  "operations": "V2 deployed00:11Bogota with pinned3e6450fc on two independent CPU hosts;209 runtime tests passed each; test-qualified20x300x3 search and confirmation/report/collection enabled. No performance launch gate; activity >2. No financial training or feature selection.",
   "history": [
     {"date":"2026-10-30","event":"Owner authorizes continuation after mistaken launch criterion. Tests/integrity now enable DEAP regardless of control performance; candidate activity strictly >2. Added no-close behavior flags, observed gene variation and new seed banks.209 tests;57-candidate smoke;12 confirmation jobs; authenticated resume. Existing evidence preserved."},
     {"date":"2026-10-29","event":"Owner requests unattended continuation. Implemented causal history penalties separately for entries and closes; independent close uncertainty, fixed exposure, bounded workers and tests-to-report queue with conditional20x300x3 exploratory search.200 tests pass,58-candidate smoke and authenticated resume complete. Not final R4/R6 qualification."},
