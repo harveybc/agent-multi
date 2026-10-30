@@ -2,6 +2,13 @@
 
 ## Priority update: 2026-10-30
 
+[Completed168](168_PRAGMATIC_CLOSE_AND_RESOLUTION_RESULTS.md):360 baseline
+accounts/3,940 close interventions and the1,296-account1h/2h contrast finished
+without restart; all artifact hashes verified. Resolution effects are mixed,
+not a strategy release. Owner approves[plan169](169_PRAGMATIC_PLAN_EXECUTION_GAP_PLAN.md)
+to separate exact committed-plan valuation from hourly policy continuation.
+265 tests pass; smoke native plan valuations reproduce exactly.
+
 [Close attribution164](164_PRAGMATIC_CLOSE_ATTRIBUTION_PLAN.md): owner requests
 continued execution. Authenticate the frozen sequential finalists, suppress
 each executed close for exactly one tick, then resume the identical policy.

@@ -2,6 +2,10 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "diagnose_pragmatic_plan_gap.py": {
+   "purpose": "Replay frozen ideal-report close and hold plans in the native engine and decompose committed versus hourly replanned account utilities without tuning",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "mechanism synthesis"
+  },
   "run_pragmatic_resolution.py": {
    "purpose": "Await authenticated close attribution then compare frozen sequential policies with 1h and 2h close alternatives on fresh paired worlds without retuning coefficients",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "mechanism synthesis"
