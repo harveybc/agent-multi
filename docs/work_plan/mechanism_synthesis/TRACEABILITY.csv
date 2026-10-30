@@ -80,4 +80,4 @@ PA01,Config-aware report caches,tests/unit/test_report_cache_binding.py,Warm exe
 PA02,Cached value binding,tests/unit/test_report_cache_binding.py,Same-shape report position risk and value corruption rejected,BEFORE_PHASE2,PASS
 PA03,Matured forecast errors,tests/unit/test_report_track_record.py,No early outcomes duplicate issues retrospective mutation or missing-value filling; snapshot exact,BEFORE_PHASE2,PASS_COMPONENT
 PA04,Causal baseline calibration,tests/unit/test_causal_report_baseline.py,Prefix invariance and mirror response with32 independently sampled paths; no learned qualification,BEFORE_PHASE2,PASS_COMPONENT
-PA05_07,Automated complete exit diagnostics,docs/work_plan/146_POST_AUDIT_IMPLEMENTATION_AND_QUEUE.md,All finalists full native replay counterfactual and no-close accounts with sealed resumable units,BEFORE_PHASE2,SMOKE_PASSED_FULL_QUEUE_READY
+PA05_07,Automated complete exit diagnostics,docs/work_plan/147_POST_AUDIT_LAUNCH.md,All finalists full native replay counterfactual and no-close accounts with sealed resumable units,BEFORE_PHASE2,SMOKE_PASSED_FULL_QUEUE_RUNNING

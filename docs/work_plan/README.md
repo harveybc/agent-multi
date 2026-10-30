@@ -4,6 +4,8 @@
 
 Execution increment: [post-audit implementation and queue146](146_POST_AUDIT_IMPLEMENTATION_AND_QUEUE.md),
 under [frozen contract145](145_POST_AUDIT_AUTOMATION_CONTRACT.md).
+[Launched147](147_POST_AUDIT_LAUNCH.md): pinned657b6818,27 units running
+sequentially under the enabled persistent service, with184 runtime tests passed.
 R1 cache bindings and R2 matured forecast-error ledger are implemented;
 184 tests and complete7-unit smoke/resume passed.27-unit sequential diagnostics
 cover all frozen finalists, native counterfactual closes, full no-close accounts
