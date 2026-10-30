@@ -1,0 +1,146 @@
+{
+  "baseline_replays": 4,
+  "identity": "b12f7c02f49bad5726da4c9a7f6062d6f3824e17a046e361252f15aafe2dc2dd",
+  "intervention_replays": 44,
+  "scope": "POST_HOC_SYNTHETIC_DIAGNOSTIC_NO_TUNING_NOT_ADDITIVE_POLICY_GAINS",
+  "source_identity": "f5a82347b3181ee814fe07869b9e858965d52183b287293b144378eaced4e823",
+  "summaries": [
+    {
+      "key": "59a75d7347527e8c72f19b7f6180cfe00222a1b9bf77bdec2024116502f6f370",
+      "reporter": "ideal",
+      "summary": {
+        "account": {
+          "harmful": 3
+        },
+        "closes": 3,
+        "directions": {
+          "-1": 1,
+          "1": 2
+        },
+        "locally_harmful_account_harmful": 2,
+        "locally_harmful_account_helpful": 0,
+        "mean_account_delta_usd": -18.934119930173818,
+        "mean_continuation_delta_usd": 8.529937112781118,
+        "mean_drawdown_advantage_pp": 0.0,
+        "mean_position_delta_usd": -27.464057042954934,
+        "pareto": {
+          "HOLD_DOMINATES": 3
+        },
+        "passive": {
+          "harmful": 2,
+          "helpful": 1
+        },
+        "position": {
+          "harmful": 3
+        }
+      }
+    },
+    {
+      "key": "280977a99cdaa64118d87917f4faf845a7454b913143ea9b02d7f6fe2819b54c",
+      "reporter": "ideal",
+      "summary": {
+        "account": {
+          "harmful": 1,
+          "helpful": 3
+        },
+        "closes": 4,
+        "directions": {
+          "-1": 1,
+          "1": 3
+        },
+        "locally_harmful_account_harmful": 0,
+        "locally_harmful_account_helpful": 3,
+        "mean_account_delta_usd": 13.779140216080364,
+        "mean_continuation_delta_usd": 46.82930768913832,
+        "mean_drawdown_advantage_pp": 0.0,
+        "mean_position_delta_usd": -33.050167473057954,
+        "pareto": {
+          "CLOSE_DOMINATES": 3,
+          "HOLD_DOMINATES": 1
+        },
+        "passive": {
+          "harmful": 3,
+          "helpful": 1
+        },
+        "position": {
+          "harmful": 3,
+          "helpful": 1
+        }
+      }
+    },
+    {
+      "key": "59a75d7347527e8c72f19b7f6180cfe00222a1b9bf77bdec2024116502f6f370",
+      "reporter": "noise_1",
+      "summary": {
+        "account": {
+          "harmful": 13,
+          "helpful": 6
+        },
+        "closes": 19,
+        "directions": {
+          "-1": 7,
+          "1": 12
+        },
+        "locally_harmful_account_harmful": 8,
+        "locally_harmful_account_helpful": 3,
+        "mean_account_delta_usd": -1.6018248287732917,
+        "mean_continuation_delta_usd": 8.427883317139832,
+        "mean_drawdown_advantage_pp": 0.011293443311945284,
+        "mean_position_delta_usd": -10.029708145913125,
+        "pareto": {
+          "CLOSE_DOMINATES": 6,
+          "HOLD_DOMINATES": 12,
+          "TRADEOFF": 1
+        },
+        "passive": {
+          "harmful": 11,
+          "helpful": 8
+        },
+        "position": {
+          "harmful": 14,
+          "helpful": 5
+        }
+      }
+    },
+    {
+      "key": "280977a99cdaa64118d87917f4faf845a7454b913143ea9b02d7f6fe2819b54c",
+      "reporter": "noise_1",
+      "summary": {
+        "account": {
+          "harmful": 14,
+          "helpful": 4
+        },
+        "closes": 18,
+        "directions": {
+          "-1": 7,
+          "1": 11
+        },
+        "locally_harmful_account_harmful": 9,
+        "locally_harmful_account_helpful": 2,
+        "mean_account_delta_usd": -12.700360698704095,
+        "mean_continuation_delta_usd": -2.6182184030164737,
+        "mean_drawdown_advantage_pp": -0.00018357717299132147,
+        "mean_position_delta_usd": -10.082142295687623,
+        "pareto": {
+          "CLOSE_DOMINATES": 4,
+          "HOLD_DOMINATES": 13,
+          "TRADEOFF": 1
+        },
+        "passive": {
+          "harmful": 11,
+          "helpful": 7
+        },
+        "position": {
+          "harmful": 14,
+          "helpful": 4
+        }
+      }
+    }
+  ],
+  "units": {
+    "WORLD_ideal_000_280977a9.json": "a0be52c0504563d11aa1251d85b81046c1fa9632529767db3d6d0d996b5be5e4",
+    "WORLD_ideal_000_59a75d73.json": "be018f55bfc76ee757c24084fc55ca578c29f0d89ffea2638727cdefbdb74408",
+    "WORLD_noise_1_000_280977a9.json": "f0daf4966db15514bba67210e14b1f0b24536be28419b8ddaacac604ad23a101",
+    "WORLD_noise_1_000_59a75d73.json": "a02314d4b0a19e39eae7bf8b4098f404af0663b40f477651b0c0017bfc29174e"
+  }
+}

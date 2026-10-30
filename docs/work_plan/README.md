@@ -2,6 +2,12 @@
 
 ## Priority update: 2026-10-30
 
+[Close attribution164](164_PRAGMATIC_CLOSE_ATTRIBUTION_PLAN.md): owner requests
+continued execution. Authenticate the frozen sequential finalists, suppress
+each executed close for exactly one tick, then resume the identical policy.
+Measure position and full-account effects separately. All five reporters;
+360 baselines, per-case resumable receipts, no retuning or financial training.
+
 [Pragmatic contrast160](160_PRAGMATIC_CONTROLLER_CONTRAST_PLAN.md): owner accepts
 a simple hierarchical controller, a declared short/long predictive-logic proxy,
 and bounded sequential allocation on identical signals and native accounting.
