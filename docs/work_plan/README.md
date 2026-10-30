@@ -2,6 +2,16 @@
 
 ## Priority update: 2026-10-30
 
+[Two-phase sequential derivation152](152_TWO_PHASE_SEQUENTIAL_PARETO_DERIVATION.md)
+consolidates the K=3 opening oracle, fixed-position early-close regret and
+account continuation value. The running DEAP is a local-policy coefficient
+frontier, not an exact sequential planner. [Exact finite reference153](153_SEQUENTIAL_PARETO_REFERENCE_RESULTS.md)
+enumerates18 native synthetic trees /37,578 terminal accounts, with126 cold
+witness replays and independent dominance checks;89 focused tests pass.
+This is not the four-year TRAIN frontier or a causal strategy release.
+Preserve the running searches; next connect all TRAIN endpoint alternatives
+and then qualify non-anticipative allocation before floating selection.
+
 [Launch151](151_CAUSAL_HISTORY_V2_LAUNCH.md): both persistent CPU lanes started
 with pinned3e6450fc and209 runtime tests passed on each host. The collector is
 enabled; no intermediate approval is required for the20x300x3 sequence.

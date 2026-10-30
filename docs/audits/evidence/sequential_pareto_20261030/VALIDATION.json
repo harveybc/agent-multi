@@ -1,0 +1,18 @@
+{
+  "schema": "sequential_pareto.verification.v1",
+  "report_sha256": "bf5489700b332c65cb81521d786ead8266d12f7ec14d7789eb853c06ab809b7d",
+  "cold_rerun_all_files_byte_identical": true,
+  "tests_passed": 89,
+  "tests_skipped": 0,
+  "test_modules": [
+    "test_sequential_account_pareto",
+    "test_dynamic_account_panel",
+    "test_dynamic_account_arbiter",
+    "test_mechanism_games",
+    "test_horizon_risk_rules",
+    "test_post_audit_diagnostics"
+  ],
+  "scoped_ruff": "PASS",
+  "git_diff_check": "PASS",
+  "scope": "exact declared finite synthetic trees, not full TRAIN frontier or causal strategy"
+}

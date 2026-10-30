@@ -4,6 +4,9 @@
   "timezone": "America/Bogota",
   "priority": 0,
   "current_stage": "CAUSAL_HISTORY_V2_AUTOMATED_SEARCH_DEPLOYED",
+  "sequential_derivation": "../152_TWO_PHASE_SEQUENTIAL_PARETO_DERIVATION.md",
+  "sequential_exact_results": "../153_SEQUENTIAL_PARETO_REFERENCE_RESULTS.md",
+  "sequential_exact_scope": {"native_synthetic_trees":18,"terminal_accounts":37578,"cold_witness_replays":126,"focused_tests_passed":89,"complete_train_frontier":false,"causal_policy":false,"running_search_modified":false},
   "causal_history_v2_launch": "../151_CAUSAL_HISTORY_V2_LAUNCH.md",
   "causal_history_v2_runtime": {"code":"3e6450fc","zero_identity":"a7ecac6dac2bd812992c074ef42723010e3740ed1e7b249d458799fc92f3be2e","median_identity":"452931b1fe97840255ac60abe87911a97724053ffc7d6c1249318c5c5026d36e","runtime_tests_each":209,"workers_each":2,"memory_max_gib_each":4,"automatic_collection":true},
   "causal_history_search_correction": "../150_CAUSAL_HISTORY_SEARCH_GATE_CORRECTION.md",
@@ -106,6 +109,8 @@
   },
   "bottom_up": "INDEPENDENT_REVIEWS_RECEIVED; FIVE_CONCRETE_DEFECTS_REPAIRED_AND_REPLAYED; COVERAGE_REVISION_REQUIRED",
   "next_allowed_actions": [
+    "Construct TRAIN opportunity graph retaining all K=3 endpoints and feasible early exits; qualify bounded native exact subproblems before claiming a full historical frontier",
+    "Qualify non-anticipative sequential scenario-tree allocator against153 and running local-policy baseline; expose return-drawdown preference rather than inventing a unique Pareto optimum",
     "Implement144 stagesR1-R4 with adversarial tests: cache/report bindings, sealed matured-error history, explicit nominal uncertainty and causal adapter controls",
     "Then qualify paired fixed-size close/HOLD and no-close account contrasts on new worlds; do not use old confirmation to tune a new gate",
     "Review full new account results and report-quality sensitivity before floating selection; do not modify the running pinned code",
@@ -122,6 +127,7 @@
   ],
   "operations": "V2 deployed00:11Bogota with pinned3e6450fc on two independent CPU hosts;209 runtime tests passed each; test-qualified20x300x3 search and confirmation/report/collection enabled. No performance launch gate; activity >2. No financial training or feature selection.",
   "history": [
+    {"date":"2026-10-30","event":"Owner requests consolidated opening-close continuation mechanism and theoretical Pareto calculation. Added152 Bellman-set derivation and153 exact finite native reference:18 trees;37578 terminal accounts;126 cold witness replays;independent global and conditional dominance checks;89 tests. Fixed saved risk recipe remains engineering control. Existing DEAP services unchanged; no full TRAIN frontier or learned qualification claimed."},
     {"date":"2026-10-30","event":"Owner authorizes continuation after mistaken launch criterion. Tests/integrity now enable DEAP regardless of control performance; candidate activity strictly >2. Added no-close behavior flags, observed gene variation and new seed banks.209 tests;57-candidate smoke;12 confirmation jobs; authenticated resume. Existing evidence preserved."},
     {"date":"2026-10-29","event":"Owner requests unattended continuation. Implemented causal history penalties separately for entries and closes; independent close uncertainty, fixed exposure, bounded workers and tests-to-report queue with conditional20x300x3 exploratory search.200 tests pass,58-candidate smoke and authenticated resume complete. Not final R4/R6 qualification."},
     {"date":"2026-10-29","event":"Owner authorizes automated execution. Implemented config-aware caches/value bindings and sealed matured-error ledger with prefix-only32-path baseline;184 tests;7-unit smoke and authenticated resume. Launched27-unit persistent diagnostic service at19:09Bogota under657b6818. Remaining learned-adapter/control qualification not misrepresented as complete."},

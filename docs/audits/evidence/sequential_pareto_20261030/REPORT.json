@@ -1,0 +1,4426 @@
+{
+  "cases": [
+    {
+      "all_terminal_payoffs_file": "smooth_1_0.json.gz",
+      "all_terminal_payoffs_sha256": "a53c43eab685305d425510dc0bd9b36756e3d7c98711dfc1216626dca5aec786",
+      "best_return_at_most_one_entry": 1.219505000000054,
+      "best_return_no_voluntary_close": 1.854088449999991,
+      "best_return_single_horizon": {
+        "12": 1.219505000000054,
+        "24": 1.1151649999999957,
+        "3": 1.6708156500000015,
+        "6": 1.854088449999991
+      },
+      "complete": true,
+      "conditional": {
+        "BUY:12": [
+          {
+            "trace": [
+              "BUY:12",
+              "HOLD",
+              "CLOSE",
+              "BUY:3",
+              "HOLD"
+            ],
+            "vector": [
+              1.3459172000000352,
+              -0.019056416789048927
+            ]
+          },
+          {
+            "trace": [
+              "BUY:12",
+              "HOLD",
+              "HOLD",
+              "CLOSE",
+              "BUY:3"
+            ],
+            "vector": [
+              1.2436516000000397,
+              -0.018993241262375293
+            ]
+          },
+          {
+            "trace": [
+              "BUY:12",
+              "HOLD",
+              "HOLD",
+              "HOLD",
+              "CLOSE"
+            ],
+            "vector": [
+              1.219505000000054,
+              -0.012046671145469085
+            ]
+          }
+        ],
+        "BUY:24": [
+          {
+            "trace": [
+              "BUY:24",
+              "CLOSE",
+              "BUY:6",
+              "HOLD",
+              "HOLD"
+            ],
+            "vector": [
+              1.2322712999999652,
+              -0.014875370493281791
+            ]
+          },
+          {
+            "trace": [
+              "BUY:24",
+              "HOLD",
+              "CLOSE",
+              "BUY:3",
+              "HOLD"
+            ],
+            "vector": [
+              1.2241584000000305,
+              -0.014840050293880124
+            ]
+          },
+          {
+            "trace": [
+              "BUY:24",
+              "HOLD",
+              "HOLD",
+              "HOLD",
+              "HOLD"
+            ],
+            "vector": [
+              1.1151649999999957,
+              -0.0
+            ]
+          }
+        ],
+        "BUY:3": [
+          {
+            "trace": [
+              "BUY:3",
+              "HOLD",
+              "HOLD",
+              "BUY:3",
+              "HOLD"
+            ],
+            "vector": [
+              1.6708156500000015,
+              -0.0
+            ]
+          }
+        ],
+        "BUY:6": [
+          {
+            "trace": [
+              "BUY:6",
+              "HOLD",
+              "HOLD",
+              "BUY:3",
+              "HOLD"
+            ],
+            "vector": [
+              1.854088449999991,
+              -0.0
+            ]
+          }
+        ],
+        "NOP": [
+          {
+            "trace": [
+              "NOP",
+              "BUY:6",
+              "HOLD",
+              "HOLD",
+              "BUY:3"
+            ],
+            "vector": [
+              1.4131008999999528,
+              -0.0
+            ]
+          }
+        ],
+        "SELL:12": [
+          {
+            "trace": [
+              "SELL:12",
+              "CLOSE",
+              "BUY:6",
+              "HOLD",
+              "HOLD"
+            ],
+            "vector": [
+              0.7125676000000247,
+              -0.33002999999995153
+            ]
+          }
+        ],
+        "SELL:24": [
+          {
+            "trace": [
+              "SELL:24",
+              "CLOSE",
+              "BUY:6",
+              "HOLD",
+              "HOLD"
+            ],
+            "vector": [
+              0.7751530000000173,
+              -0.2680899999999565
+            ]
+          }
+        ],
+        "SELL:3": [
+          {
+            "trace": [
+              "SELL:3",
+              "BUY:6",
+              "HOLD",
+              "HOLD",
+              "BUY:3"
+            ],
+            "vector": [
+              0.9452271999999651,
+              -0.46136824999997766
+            ]
+          }
+        ],
+        "SELL:6": [
+          {
+            "trace": [
+              "SELL:6",
+              "CLOSE",
+              "BUY:6",
+              "HOLD",
+              "HOLD"
+            ],
+            "vector": [
+              0.6009251000000493,
+              -0.4405199999999241
+            ]
+          }
+        ]
+      },
+      "frontier": [
+        {
+          "trace": [
+            "BUY:6",
+            "HOLD",
+            "HOLD",
+            "BUY:3",
+            "HOLD"
+          ],
+          "vector": [
+            1.854088449999991,
+            -0.0
+          ]
+        }
+      ],
+      "initial_direction": 0,
+      "max_return": {
+        "trace": [
+          "BUY:6",
+          "HOLD",
+          "HOLD",
+          "BUY:3",
+          "HOLD"
+        ],
+        "vector": [
+          1.854088449999991,
+          -0.0
+        ]
+      },
+      "max_return_ledger": [
+        {
+          "direction": 1,
+          "entry": 103,
+          "exit": 105,
+          "net": 104.76916499999659,
+          "q": 1.0,
+          "reason": "TP",
+          "units": 45453
+        },
+        {
+          "direction": 1,
+          "entry": 106,
+          "exit": 107,
+          "net": 80.63968000000175,
+          "q": 1.0,
+          "reason": "FORCED_FLAT",
+          "units": 45818
+        }
+      ],
+      "mirror": 1,
+      "nodes": 4914,
+      "pattern": "smooth",
+      "risk_budget_choices": {
+        "0.0": {
+          "trace": [
+            "BUY:6",
+            "HOLD",
+            "HOLD",
+            "BUY:3",
+            "HOLD"
+          ],
+          "vector": [
+            1.854088449999991,
+            -0.0
+          ]
+        },
+        "0.1": {
+          "trace": [
+            "BUY:6",
+            "HOLD",
+            "HOLD",
+            "BUY:3",
+            "HOLD"
+          ],
+          "vector": [
+            1.854088449999991,
+            -0.0
+          ]
+        },
+        "0.5": {
+          "trace": [
+            "BUY:6",
+            "HOLD",
+            "HOLD",
+            "BUY:3",
+            "HOLD"
+          ],
+          "vector": [
+            1.854088449999991,
+            -0.0
+          ]
+        },
+        "1.0": {
+          "trace": [
+            "BUY:6",
+            "HOLD",
+            "HOLD",
+            "BUY:3",
+            "HOLD"
+          ],
+          "vector": [
+            1.854088449999991,
+            -0.0
+          ]
+        },
+        "5.0": {
+          "trace": [
+            "BUY:6",
+            "HOLD",
+            "HOLD",
+            "BUY:3",
+            "HOLD"
+          ],
+          "vector": [
+            1.854088449999991,
+            -0.0
+          ]
+        }
+      },
+      "scope": "EXACT_DECLARED_FINITE_NATIVE_TREE_NOT_TRAIN_OR_CAUSAL_POLICY",
+      "steps": 5,
+      "terminal_accounts": 3910
+    },
+    {
+      "all_terminal_payoffs_file": "smooth_1_1.json.gz",
+      "all_terminal_payoffs_sha256": "c44524a61b52eb98c30f3f9dd5e407e0e603b9bc56c2ad0985a4cf076515ebc3",
+      "best_return_no_voluntary_close": 1.219505000000054,
+      "complete": true,
+      "conditional": {
+        "CLOSE": [
+          {
+            "trace": [
+              "CLOSE",
+              "BUY:6",
+              "HOLD",
+              "HOLD",
+              "BUY:3"
+            ],
+            "vector": [
+              1.356575849999997,
+              -0.05574879999996483
+            ]
+          }
+        ],
+        "HOLD": [
+          {
+            "trace": [
+              "HOLD",
+              "HOLD",
+              "CLOSE",
+              "BUY:3",
+              "HOLD"
+            ],
+            "vector": [
+              1.3459172000000352,
+              -0.036585149999973504
+            ]
+          }
+        ]
+      },
+      "frontier": [
+        {
+          "trace": [
+            "CLOSE",
+            "BUY:6",
+            "HOLD",
+            "HOLD",
+            "BUY:3"
+          ],
+          "vector": [
+            1.356575849999997,
+            -0.05574879999996483
+          ]
+        },
+        {
+          "trace": [
+            "HOLD",
+            "HOLD",
+            "CLOSE",
+            "BUY:3",
+            "HOLD"
+          ],
+          "vector": [
+            1.3459172000000352,
+            -0.036585149999973504
+          ]
+        }
+      ],
+      "initial_direction": 1,
+      "max_return": {
+        "trace": [
+          "CLOSE",
+          "BUY:6",
+          "HOLD",
+          "HOLD",
+          "BUY:3"
+        ],
+        "vector": [
+          1.356575849999997,
+          -0.05574879999996483
+        ]
+      },
+      "max_return_ledger": [
+        {
+          "direction": 1,
+          "entry": 102,
+          "exit": 103,
+          "net": -5.5748799999959395,
+          "q": 0.7665765862519917,
+          "reason": "AGENT_CLOSE",
+          "units": 34843
+        },
+        {
+          "direction": 1,
+          "entry": 104,
+          "exit": 106,
+          "net": 104.6308649999966,
+          "q": 1.0,
+          "reason": "TP",
+          "units": 45393
+        },
+        {
+          "direction": 1,
+          "entry": 107,
+          "exit": 107,
+          "net": 36.60159999999846,
+          "q": 1.0,
+          "reason": "FORCED_FLAT",
+          "units": 45752
+        }
+      ],
+      "mirror": 1,
+      "nodes": 1372,
+      "pattern": "smooth",
+      "risk_budget_choices": {
+        "0.0": null,
+        "0.1": {
+          "trace": [
+            "CLOSE",
+            "BUY:6",
+            "HOLD",
+            "HOLD",
+            "BUY:3"
+          ],
+          "vector": [
+            1.356575849999997,
+            -0.05574879999996483
+          ]
+        },
+        "0.5": {
+          "trace": [
+            "CLOSE",
+            "BUY:6",
+            "HOLD",
+            "HOLD",
+            "BUY:3"
+          ],
+          "vector": [
+            1.356575849999997,
+            -0.05574879999996483
+          ]
+        },
+        "1.0": {
+          "trace": [
+            "CLOSE",
+            "BUY:6",
+            "HOLD",
+            "HOLD",
+            "BUY:3"
+          ],
+          "vector": [
+            1.356575849999997,
+            -0.05574879999996483
+          ]
+        },
+        "5.0": {
+          "trace": [
+            "CLOSE",
+            "BUY:6",
+            "HOLD",
+            "HOLD",
+            "BUY:3"
+          ],
+          "vector": [
+            1.356575849999997,
+            -0.05574879999996483
+          ]
+        }
+      },
+      "scope": "EXACT_DECLARED_FINITE_NATIVE_TREE_NOT_TRAIN_OR_CAUSAL_POLICY",
+      "steps": 5,
+      "terminal_accounts": 1089
+    },
+    {
+      "all_terminal_payoffs_file": "smooth_1_-1.json.gz",
+      "all_terminal_payoffs_sha256": "3f599b8b6c35349b742e72e82b10df7608b3d517add85c7097df9e9346f9a194",
+      "best_return_no_voluntary_close": 0.5408273000000019,
+      "complete": true,
+      "conditional": {
+        "CLOSE": [
+          {
+            "trace": [
+              "CLOSE",
+              "BUY:6",
+              "HOLD",
+              "HOLD",
+              "BUY:3"
+            ],
+            "vector": [
+              1.359550899999995,
+              -0.052804799999958046
+            ]
+          }
+        ],
+        "HOLD": [
+          {
+            "trace": [
+              "HOLD",
+              "CLOSE",
+              "BUY:6",
+              "HOLD",
+              "HOLD"
+            ],
+            "vector": [
+              0.7125676000000247,
+              -0.33002999999995153
+            ]
+          }
+        ]
+      },
+      "frontier": [
+        {
+          "trace": [
+            "CLOSE",
+            "BUY:6",
+            "HOLD",
+            "HOLD",
+            "BUY:3"
+          ],
+          "vector": [
+            1.359550899999995,
+            -0.052804799999958046
+          ]
+        }
+      ],
+      "initial_direction": -1,
+      "max_return": {
+        "trace": [
+          "CLOSE",
+          "BUY:6",
+          "HOLD",
+          "HOLD",
+          "BUY:3"
+        ],
+        "vector": [
+          1.359550899999995,
+          -0.052804799999958046
+        ]
+      },
+      "max_return_ledger": [
+        {
+          "direction": -1,
+          "entry": 102,
+          "exit": 103,
+          "net": -5.280479999996155,
+          "q": 0.726065346607306,
+          "reason": "AGENT_CLOSE",
+          "units": 33003
+        },
+        {
+          "direction": 1,
+          "entry": 104,
+          "exit": 106,
+          "net": 104.6331699999966,
+          "q": 1.0,
+          "reason": "TP",
+          "units": 45394
+        },
+        {
+          "direction": 1,
+          "entry": 107,
+          "exit": 107,
+          "net": 36.60239999999846,
+          "q": 1.0,
+          "reason": "FORCED_FLAT",
+          "units": 45753
+        }
+      ],
+      "mirror": 1,
+      "nodes": 1554,
+      "pattern": "smooth",
+      "risk_budget_choices": {
+        "0.0": null,
+        "0.1": {
+          "trace": [
+            "CLOSE",
+            "BUY:6",
+            "HOLD",
+            "HOLD",
+            "BUY:3"
+          ],
+          "vector": [
+            1.359550899999995,
+            -0.052804799999958046
+          ]
+        },
+        "0.5": {
+          "trace": [
+            "CLOSE",
+            "BUY:6",
+            "HOLD",
+            "HOLD",
+            "BUY:3"
+          ],
+          "vector": [
+            1.359550899999995,
+            -0.052804799999958046
+          ]
+        },
+        "1.0": {
+          "trace": [
+            "CLOSE",
+            "BUY:6",
+            "HOLD",
+            "HOLD",
+            "BUY:3"
+          ],
+          "vector": [
+            1.359550899999995,
+            -0.052804799999958046
+          ]
+        },
+        "5.0": {
+          "trace": [
+            "CLOSE",
+            "BUY:6",
+            "HOLD",
+            "HOLD",
+            "BUY:3"
+          ],
+          "vector": [
+            1.359550899999995,
+            -0.052804799999958046
+          ]
+        }
+      },
+      "scope": "EXACT_DECLARED_FINITE_NATIVE_TREE_NOT_TRAIN_OR_CAUSAL_POLICY",
+      "steps": 5,
+      "terminal_accounts": 1236
+    },
+    {
+      "all_terminal_payoffs_file": "smooth_-1_0.json.gz",
+      "all_terminal_payoffs_sha256": "5c9ab6b455430f609c5dd1e3f44926782d98daf209dfd2bd46e1d4c7431d6d93",
+      "best_return_at_most_one_entry": 1.1551050000000673,
+      "best_return_no_voluntary_close": 1.7988666000001041,
+      "best_return_single_horizon": {
+        "12": 1.1551050000000673,
+        "24": 1.1299993500000438,
+        "3": 1.656490950000089,
+        "6": 1.7719562000001243
+      },
+      "complete": true,
+      "conditional": {
+        "BUY:12": [
+          {
+            "trace": [
+              "BUY:12",
+              "CLOSE",
+              "SELL:6",
+              "HOLD",
+              "HOLD"
+            ],
+            "vector": [
+              0.6371025500001348,
+              -0.34842999999993485
+            ]
+          }
+        ],
+        "BUY:24": [
+          {
+            "trace": [
+              "BUY:24",
+              "CLOSE",
+              "SELL:6",
+              "HOLD",
+              "HOLD"
+            ],
+            "vector": [
+              0.7152958500001194,
+              -0.27099999999994906
+            ]
+          }
+        ],
+        "BUY:3": [
+          {
+            "trace": [
+              "BUY:3",
+              "SELL:6",
+              "HOLD",
+              "HOLD",
+              "SELL:3"
+            ],
+            "vector": [
+              0.9036407000000857,
+              -0.447712049999991
+            ]
+          }
+        ],
+        "BUY:6": [
+          {
+            "trace": [
+              "BUY:6",
+              "CLOSE",
+              "SELL:6",
+              "HOLD",
+              "HOLD"
+            ],
+            "vector": [
+              0.5299474000001636,
+              -0.4545299999999224
+            ]
+          }
+        ],
+        "NOP": [
+          {
+            "trace": [
+              "NOP",
+              "SELL:6",
+              "HOLD",
+              "HOLD",
+              "SELL:3"
+            ],
+            "vector": [
+              1.3574234000000907,
+              -0.0
+            ]
+          }
+        ],
+        "SELL:12": [
+          {
+            "trace": [
+              "SELL:12",
+              "HOLD",
+              "CLOSE",
+              "SELL:3",
+              "HOLD"
+            ],
+            "vector": [
+              1.3209444000000348,
+              -0.018055414918343945
+            ]
+          },
+          {
+            "trace": [
+              "SELL:12",
+              "HOLD",
+              "HOLD",
+              "CLOSE",
+              "SELL:3"
+            ],
+            "vector": [
+              1.199555600000024,
+              -0.017998692208964377
+            ]
+          },
+          {
+            "trace": [
+              "SELL:12",
+              "HOLD",
+              "HOLD",
+              "HOLD",
+              "CLOSE"
+            ],
+            "vector": [
+              1.1551050000000673,
+              -0.011417843043353419
+            ]
+          }
+        ],
+        "SELL:24": [
+          {
+            "trace": [
+              "SELL:24",
+              "HOLD",
+              "CLOSE",
+              "SELL:3",
+              "HOLD"
+            ],
+            "vector": [
+              1.2235436000000321,
+              -0.014681384691389958
+            ]
+          },
+          {
+            "trace": [
+              "SELL:24",
+              "HOLD",
+              "HOLD",
+              "HOLD",
+              "HOLD"
+            ],
+            "vector": [
+              1.1299993500000438,
+              -0.0
+            ]
+          }
+        ],
+        "SELL:3": [
+          {
+            "trace": [
+              "SELL:3",
+              "HOLD",
+              "HOLD",
+              "SELL:3",
+              "HOLD"
+            ],
+            "vector": [
+              1.656490950000089,
+              -0.0
+            ]
+          }
+        ],
+        "SELL:6": [
+          {
+            "trace": [
+              "SELL:6",
+              "HOLD",
+              "HOLD",
+              "SELL:3",
+              "HOLD"
+            ],
+            "vector": [
+              1.7988666000001041,
+              -0.0
+            ]
+          }
+        ]
+      },
+      "frontier": [
+        {
+          "trace": [
+            "SELL:6",
+            "HOLD",
+            "HOLD",
+            "SELL:3",
+            "HOLD"
+          ],
+          "vector": [
+            1.7988666000001041,
+            -0.0
+          ]
+        }
+      ],
+      "initial_direction": 0,
+      "max_return": {
+        "trace": [
+          "SELL:6",
+          "HOLD",
+          "HOLD",
+          "SELL:3",
+          "HOLD"
+        ],
+        "vector": [
+          1.7988666000001041,
+          -0.0
+        ]
+      },
+      "max_return_ledger": [
+        {
+          "direction": -1,
+          "entry": 103,
+          "exit": 105,
+          "net": 98.89674000000873,
+          "q": 0.9691533040617951,
+          "reason": "TP",
+          "units": 44052
+        },
+        {
+          "direction": -1,
+          "entry": 106,
+          "exit": 107,
+          "net": 80.98992000000176,
+          "q": 1.0,
+          "reason": "FORCED_FLAT",
+          "units": 46017
+        }
+      ],
+      "mirror": -1,
+      "nodes": 4914,
+      "pattern": "smooth",
+      "risk_budget_choices": {
+        "0.0": {
+          "trace": [
+            "SELL:6",
+            "HOLD",
+            "HOLD",
+            "SELL:3",
+            "HOLD"
+          ],
+          "vector": [
+            1.7988666000001041,
+            -0.0
+          ]
+        },
+        "0.1": {
+          "trace": [
+            "SELL:6",
+            "HOLD",
+            "HOLD",
+            "SELL:3",
+            "HOLD"
+          ],
+          "vector": [
+            1.7988666000001041,
+            -0.0
+          ]
+        },
+        "0.5": {
+          "trace": [
+            "SELL:6",
+            "HOLD",
+            "HOLD",
+            "SELL:3",
+            "HOLD"
+          ],
+          "vector": [
+            1.7988666000001041,
+            -0.0
+          ]
+        },
+        "1.0": {
+          "trace": [
+            "SELL:6",
+            "HOLD",
+            "HOLD",
+            "SELL:3",
+            "HOLD"
+          ],
+          "vector": [
+            1.7988666000001041,
+            -0.0
+          ]
+        },
+        "5.0": {
+          "trace": [
+            "SELL:6",
+            "HOLD",
+            "HOLD",
+            "SELL:3",
+            "HOLD"
+          ],
+          "vector": [
+            1.7988666000001041,
+            -0.0
+          ]
+        }
+      },
+      "scope": "EXACT_DECLARED_FINITE_NATIVE_TREE_NOT_TRAIN_OR_CAUSAL_POLICY",
+      "steps": 5,
+      "terminal_accounts": 3910
+    },
+    {
+      "all_terminal_payoffs_file": "smooth_-1_1.json.gz",
+      "all_terminal_payoffs_sha256": "7c0cd7f2b9de7452d3946c97685f5986473bb1fcf46e24377e0c513431beee98",
+      "best_return_no_voluntary_close": 0.48403135000005815,
+      "complete": true,
+      "conditional": {
+        "CLOSE": [
+          {
+            "trace": [
+              "CLOSE",
+              "SELL:6",
+              "HOLD",
+              "HOLD",
+              "SELL:3"
+            ],
+            "vector": [
+              1.3009278000001068,
+              -0.05574879999996483
+            ]
+          }
+        ],
+        "HOLD": [
+          {
+            "trace": [
+              "HOLD",
+              "CLOSE",
+              "SELL:6",
+              "HOLD",
+              "HOLD"
+            ],
+            "vector": [
+              0.6371025500001348,
+              -0.34842999999993485
+            ]
+          }
+        ]
+      },
+      "frontier": [
+        {
+          "trace": [
+            "CLOSE",
+            "SELL:6",
+            "HOLD",
+            "HOLD",
+            "SELL:3"
+          ],
+          "vector": [
+            1.3009278000001068,
+            -0.05574879999996483
+          ]
+        }
+      ],
+      "initial_direction": 1,
+      "max_return": {
+        "trace": [
+          "CLOSE",
+          "SELL:6",
+          "HOLD",
+          "HOLD",
+          "SELL:3"
+        ],
+        "vector": [
+          1.3009278000001068,
+          -0.05574879999996483
+        ]
+      },
+      "max_return_ledger": [
+        {
+          "direction": 1,
+          "entry": 102,
+          "exit": 103,
+          "net": -5.5748799999959395,
+          "q": 0.7665765862519917,
+          "reason": "AGENT_CLOSE",
+          "units": 34843
+        },
+        {
+          "direction": -1,
+          "entry": 104,
+          "exit": 106,
+          "net": 98.84286000000874,
+          "q": 0.9684212672311638,
+          "reason": "TP",
+          "units": 44028
+        },
+        {
+          "direction": -1,
+          "entry": 107,
+          "exit": 107,
+          "net": 36.824799999998454,
+          "q": 1.0,
+          "reason": "FORCED_FLAT",
+          "units": 46031
+        }
+      ],
+      "mirror": -1,
+      "nodes": 1554,
+      "pattern": "smooth",
+      "risk_budget_choices": {
+        "0.0": null,
+        "0.1": {
+          "trace": [
+            "CLOSE",
+            "SELL:6",
+            "HOLD",
+            "HOLD",
+            "SELL:3"
+          ],
+          "vector": [
+            1.3009278000001068,
+            -0.05574879999996483
+          ]
+        },
+        "0.5": {
+          "trace": [
+            "CLOSE",
+            "SELL:6",
+            "HOLD",
+            "HOLD",
+            "SELL:3"
+          ],
+          "vector": [
+            1.3009278000001068,
+            -0.05574879999996483
+          ]
+        },
+        "1.0": {
+          "trace": [
+            "CLOSE",
+            "SELL:6",
+            "HOLD",
+            "HOLD",
+            "SELL:3"
+          ],
+          "vector": [
+            1.3009278000001068,
+            -0.05574879999996483
+          ]
+        },
+        "5.0": {
+          "trace": [
+            "CLOSE",
+            "SELL:6",
+            "HOLD",
+            "HOLD",
+            "SELL:3"
+          ],
+          "vector": [
+            1.3009278000001068,
+            -0.05574879999996483
+          ]
+        }
+      },
+      "scope": "EXACT_DECLARED_FINITE_NATIVE_TREE_NOT_TRAIN_OR_CAUSAL_POLICY",
+      "steps": 5,
+      "terminal_accounts": 1236
+    },
+    {
+      "all_terminal_payoffs_file": "smooth_-1_-1.json.gz",
+      "all_terminal_payoffs_sha256": "4d158ac88a726c9eeca1fb8292612d4f9a32ddd08b7a247be575a0183aa96cf7",
+      "best_return_no_voluntary_close": 1.1551050000000673,
+      "complete": true,
+      "conditional": {
+        "CLOSE": [
+          {
+            "trace": [
+              "CLOSE",
+              "SELL:6",
+              "HOLD",
+              "HOLD",
+              "SELL:3"
+            ],
+            "vector": [
+              1.3039102500001176,
+              -0.052804799999958046
+            ]
+          }
+        ],
+        "HOLD": [
+          {
+            "trace": [
+              "HOLD",
+              "HOLD",
+              "CLOSE",
+              "SELL:3",
+              "HOLD"
+            ],
+            "vector": [
+              1.3209444000000348,
+              -0.03465314999995826
+            ]
+          }
+        ]
+      },
+      "frontier": [
+        {
+          "trace": [
+            "HOLD",
+            "HOLD",
+            "CLOSE",
+            "SELL:3",
+            "HOLD"
+          ],
+          "vector": [
+            1.3209444000000348,
+            -0.03465314999995826
+          ]
+        }
+      ],
+      "initial_direction": -1,
+      "max_return": {
+        "trace": [
+          "HOLD",
+          "HOLD",
+          "CLOSE",
+          "SELL:3",
+          "HOLD"
+        ],
+        "vector": [
+          1.3209444000000348,
+          -0.03465314999995826
+        ]
+      },
+      "max_return_ledger": [
+        {
+          "direction": -1,
+          "entry": 102,
+          "exit": 105,
+          "net": 51.48468000000199,
+          "q": 0.726065346607306,
+          "reason": "AGENT_CLOSE",
+          "units": 33003
+        },
+        {
+          "direction": -1,
+          "entry": 106,
+          "exit": 107,
+          "net": 80.60976000000176,
+          "q": 1.0,
+          "reason": "FORCED_FLAT",
+          "units": 45801
+        }
+      ],
+      "mirror": -1,
+      "nodes": 1372,
+      "pattern": "smooth",
+      "risk_budget_choices": {
+        "0.0": null,
+        "0.1": {
+          "trace": [
+            "HOLD",
+            "HOLD",
+            "CLOSE",
+            "SELL:3",
+            "HOLD"
+          ],
+          "vector": [
+            1.3209444000000348,
+            -0.03465314999995826
+          ]
+        },
+        "0.5": {
+          "trace": [
+            "HOLD",
+            "HOLD",
+            "CLOSE",
+            "SELL:3",
+            "HOLD"
+          ],
+          "vector": [
+            1.3209444000000348,
+            -0.03465314999995826
+          ]
+        },
+        "1.0": {
+          "trace": [
+            "HOLD",
+            "HOLD",
+            "CLOSE",
+            "SELL:3",
+            "HOLD"
+          ],
+          "vector": [
+            1.3209444000000348,
+            -0.03465314999995826
+          ]
+        },
+        "5.0": {
+          "trace": [
+            "HOLD",
+            "HOLD",
+            "CLOSE",
+            "SELL:3",
+            "HOLD"
+          ],
+          "vector": [
+            1.3209444000000348,
+            -0.03465314999995826
+          ]
+        }
+      },
+      "scope": "EXACT_DECLARED_FINITE_NATIVE_TREE_NOT_TRAIN_OR_CAUSAL_POLICY",
+      "steps": 5,
+      "terminal_accounts": 1089
+    },
+    {
+      "all_terminal_payoffs_file": "oscillating_1_0.json.gz",
+      "all_terminal_payoffs_sha256": "ec152626a32c30251b6d7757d12f70b673d80ddd02b821e2827cbf392de68c44",
+      "best_return_at_most_one_entry": 1.0871016000000289,
+      "best_return_no_voluntary_close": 1.835365649999976,
+      "best_return_single_horizon": {
+        "12": 1.3388992000000988,
+        "24": 1.0602782000000754,
+        "3": 1.9288120500000838,
+        "6": 1.8133324499999715
+      },
+      "complete": true,
+      "conditional": {
+        "BUY:12": [
+          {
+            "trace": [
+              "BUY:12",
+              "CLOSE",
+              "BUY:3",
+              "CLOSE",
+              "SELL:3"
+            ],
+            "vector": [
+              1.5673652000000926,
+              -0.024944171031412957
+            ]
+          },
+          {
+            "trace": [
+              "BUY:12",
+              "CLOSE",
+              "BUY:12",
+              "CLOSE",
+              "SELL:3"
+            ],
+            "vector": [
+              1.5523684000001037,
+              -0.01915058861806855
+            ]
+          },
+          {
+            "trace": [
+              "BUY:12",
+              "CLOSE",
+              "BUY:24",
+              "CLOSE",
+              "SELL:3"
+            ],
+            "vector": [
+              1.5413810000000971,
+              -0.019023460517032176
+            ]
+          }
+        ],
+        "BUY:24": [
+          {
+            "trace": [
+              "BUY:24",
+              "CLOSE",
+              "BUY:3",
+              "CLOSE",
+              "SELL:3"
+            ],
+            "vector": [
+              1.4065188000001116,
+              -0.024943846042529468
+            ]
+          },
+          {
+            "trace": [
+              "BUY:24",
+              "CLOSE",
+              "BUY:12",
+              "CLOSE",
+              "SELL:3"
+            ],
+            "vector": [
+              1.3915458000000935,
+              -0.019150357279612663
+            ]
+          },
+          {
+            "trace": [
+              "BUY:24",
+              "CLOSE",
+              "BUY:24",
+              "CLOSE",
+              "SELL:3"
+            ],
+            "vector": [
+              1.3805594000001031,
+              -0.014896970007319415
+            ]
+          },
+          {
+            "trace": [
+              "BUY:24",
+              "CLOSE",
+              "NOP",
+              "NOP",
+              "SELL:3"
+            ],
+            "vector": [
+              1.34211560000006,
+              -0.01482005662245871
+            ]
+          }
+        ],
+        "BUY:3": [
+          {
+            "trace": [
+              "BUY:3",
+              "SELL:3",
+              "CLOSE",
+              "NOP",
+              "SELL:3"
+            ],
+            "vector": [
+              1.9288120500000838,
+              -0.02487585168718171
+            ]
+          },
+          {
+            "trace": [
+              "BUY:3",
+              "SELL:6",
+              "CLOSE",
+              "NOP",
+              "SELL:3"
+            ],
+            "vector": [
+              1.9208112500000762,
+              -0.024159196852029864
+            ]
+          },
+          {
+            "trace": [
+              "BUY:3",
+              "SELL:12",
+              "CLOSE",
+              "NOP",
+              "SELL:3"
+            ],
+            "vector": [
+              1.8534252500000514,
+              -0.01811262318386686
+            ]
+          },
+          {
+            "trace": [
+              "BUY:3",
+              "SELL:24",
+              "CLOSE",
+              "NOP",
+              "SELL:3"
+            ],
+            "vector": [
+              1.8156448500000533,
+              -0.014719030773970087
+            ]
+          },
+          {
+            "trace": [
+              "BUY:3",
+              "NOP",
+              "NOP",
+              "NOP",
+              "SELL:3"
+            ],
+            "vector": [
+              1.6521260499999801,
+              -0.0
+            ]
+          }
+        ],
+        "BUY:6": [
+          {
+            "trace": [
+              "BUY:6",
+              "HOLD",
+              "HOLD",
+              "HOLD",
+              "SELL:3"
+            ],
+            "vector": [
+              1.835365649999976,
+              -0.34215357181762346
+            ]
+          },
+          {
+            "trace": [
+              "BUY:6",
+              "CLOSE",
+              "BUY:3",
+              "CLOSE",
+              "SELL:3"
+            ],
+            "vector": [
+              1.787772600000137,
+              -0.024944054594093663
+            ]
+          },
+          {
+            "trace": [
+              "BUY:6",
+              "CLOSE",
+              "BUY:12",
+              "CLOSE",
+              "SELL:3"
+            ],
+            "vector": [
+              1.7727608000001283,
+              -0.024761113749960182
+            ]
+          }
+        ],
+        "NOP": [
+          {
+            "trace": [
+              "NOP",
+              "SELL:3",
+              "CLOSE",
+              "NOP",
+              "SELL:3"
+            ],
+            "vector": [
+              1.0538036000000917,
+              -0.024876284052394122
+            ]
+          },
+          {
+            "trace": [
+              "NOP",
+              "SELL:6",
+              "CLOSE",
+              "NOP",
+              "SELL:3"
+            ],
+            "vector": [
+              1.045880000000099,
+              -0.024158891788667244
+            ]
+          },
+          {
+            "trace": [
+              "NOP",
+              "SELL:12",
+              "CLOSE",
+              "NOP",
+              "SELL:3"
+            ],
+            "vector": [
+              0.9790700000000596,
+              -0.018112496280184638
+            ]
+          },
+          {
+            "trace": [
+              "NOP",
+              "SELL:24",
+              "CLOSE",
+              "NOP",
+              "SELL:3"
+            ],
+            "vector": [
+              0.9416136000000463,
+              -0.014719103408968311
+            ]
+          },
+          {
+            "trace": [
+              "NOP",
+              "NOP",
+              "NOP",
+              "NOP",
+              "SELL:3"
+            ],
+            "vector": [
+              0.7795039999999975,
+              -0.0
+            ]
+          }
+        ],
+        "SELL:12": [
+          {
+            "trace": [
+              "SELL:12",
+              "SELL:3",
+              "CLOSE",
+              "NOP",
+              "SELL:3"
+            ],
+            "vector": [
+              0.5485417500001422,
+              -0.4999954499999694
+            ]
+          }
+        ],
+        "SELL:24": [
+          {
+            "trace": [
+              "SELL:24",
+              "SELL:3",
+              "CLOSE",
+              "NOP",
+              "SELL:3"
+            ],
+            "vector": [
+              0.5485493500001493,
+              -0.49998784999994317
+            ]
+          }
+        ],
+        "SELL:3": [
+          {
+            "trace": [
+              "SELL:3",
+              "SELL:3",
+              "CLOSE",
+              "NOP",
+              "SELL:3"
+            ],
+            "vector": [
+              0.5875805500001219,
+              -0.46136824999997766
+            ]
+          }
+        ],
+        "SELL:6": [
+          {
+            "trace": [
+              "SELL:6",
+              "SELL:3",
+              "CLOSE",
+              "NOP",
+              "SELL:3"
+            ],
+            "vector": [
+              0.5485470000001547,
+              -0.4999901999999384
+            ]
+          }
+        ]
+      },
+      "frontier": [
+        {
+          "trace": [
+            "BUY:3",
+            "SELL:3",
+            "CLOSE",
+            "NOP",
+            "SELL:3"
+          ],
+          "vector": [
+            1.9288120500000838,
+            -0.02487585168718171
+          ]
+        },
+        {
+          "trace": [
+            "BUY:3",
+            "SELL:6",
+            "CLOSE",
+            "NOP",
+            "SELL:3"
+          ],
+          "vector": [
+            1.9208112500000762,
+            -0.024159196852029864
+          ]
+        },
+        {
+          "trace": [
+            "BUY:3",
+            "SELL:12",
+            "CLOSE",
+            "NOP",
+            "SELL:3"
+          ],
+          "vector": [
+            1.8534252500000514,
+            -0.01811262318386686
+          ]
+        },
+        {
+          "trace": [
+            "BUY:3",
+            "SELL:24",
+            "CLOSE",
+            "NOP",
+            "SELL:3"
+          ],
+          "vector": [
+            1.8156448500000533,
+            -0.014719030773970087
+          ]
+        },
+        {
+          "trace": [
+            "BUY:3",
+            "NOP",
+            "NOP",
+            "NOP",
+            "SELL:3"
+          ],
+          "vector": [
+            1.6521260499999801,
+            -0.0
+          ]
+        }
+      ],
+      "initial_direction": 0,
+      "max_return": {
+        "trace": [
+          "BUY:3",
+          "SELL:3",
+          "CLOSE",
+          "NOP",
+          "SELL:3"
+        ],
+        "vector": [
+          1.9288120500000838,
+          -0.02487585168718171
+        ]
+      },
+      "max_return_ledger": [
+        {
+          "direction": 1,
+          "entry": 103,
+          "exit": 103,
+          "net": 86.58796499999859,
+          "q": 1.0,
+          "reason": "TP",
+          "units": 45453
+        },
+        {
+          "direction": -1,
+          "entry": 104,
+          "exit": 105,
+          "net": 27.45360000000963,
+          "q": 1.0,
+          "reason": "AGENT_CLOSE",
+          "units": 45756
+        },
+        {
+          "direction": -1,
+          "entry": 107,
+          "exit": 107,
+          "net": 78.83963999999992,
+          "q": 1.0,
+          "reason": "FORCED_FLAT",
+          "units": 45837
+        }
+      ],
+      "mirror": 1,
+      "nodes": 5495,
+      "pattern": "oscillating",
+      "risk_budget_choices": {
+        "0.0": {
+          "trace": [
+            "BUY:3",
+            "NOP",
+            "NOP",
+            "NOP",
+            "SELL:3"
+          ],
+          "vector": [
+            1.6521260499999801,
+            -0.0
+          ]
+        },
+        "0.1": {
+          "trace": [
+            "BUY:3",
+            "SELL:3",
+            "CLOSE",
+            "NOP",
+            "SELL:3"
+          ],
+          "vector": [
+            1.9288120500000838,
+            -0.02487585168718171
+          ]
+        },
+        "0.5": {
+          "trace": [
+            "BUY:3",
+            "SELL:3",
+            "CLOSE",
+            "NOP",
+            "SELL:3"
+          ],
+          "vector": [
+            1.9288120500000838,
+            -0.02487585168718171
+          ]
+        },
+        "1.0": {
+          "trace": [
+            "BUY:3",
+            "SELL:3",
+            "CLOSE",
+            "NOP",
+            "SELL:3"
+          ],
+          "vector": [
+            1.9288120500000838,
+            -0.02487585168718171
+          ]
+        },
+        "5.0": {
+          "trace": [
+            "BUY:3",
+            "SELL:3",
+            "CLOSE",
+            "NOP",
+            "SELL:3"
+          ],
+          "vector": [
+            1.9288120500000838,
+            -0.02487585168718171
+          ]
+        }
+      },
+      "scope": "EXACT_DECLARED_FINITE_NATIVE_TREE_NOT_TRAIN_OR_CAUSAL_POLICY",
+      "steps": 5,
+      "terminal_accounts": 4456
+    },
+    {
+      "all_terminal_payoffs_file": "oscillating_1_1.json.gz",
+      "all_terminal_payoffs_sha256": "c9c46a445253b13dc59d7f11ff286d3754d586c9925b6b4b872e213a3de1e0d8",
+      "best_return_no_voluntary_close": 0.43205320000005987,
+      "complete": true,
+      "conditional": {
+        "CLOSE": [
+          {
+            "trace": [
+              "CLOSE",
+              "SELL:3",
+              "CLOSE",
+              "NOP",
+              "SELL:3"
+            ],
+            "vector": [
+              0.9974688000001342,
+              -0.05574879999996483
+            ]
+          }
+        ],
+        "HOLD": [
+          {
+            "trace": [
+              "HOLD",
+              "CLOSE",
+              "BUY:3",
+              "CLOSE",
+              "SELL:3"
+            ],
+            "vector": [
+              1.5673652000000926,
+              -0.036585149999973504
+            ]
+          }
+        ]
+      },
+      "frontier": [
+        {
+          "trace": [
+            "HOLD",
+            "CLOSE",
+            "BUY:3",
+            "CLOSE",
+            "SELL:3"
+          ],
+          "vector": [
+            1.5673652000000926,
+            -0.036585149999973504
+          ]
+        }
+      ],
+      "initial_direction": 1,
+      "max_return": {
+        "trace": [
+          "HOLD",
+          "CLOSE",
+          "BUY:3",
+          "CLOSE",
+          "SELL:3"
+        ],
+        "vector": [
+          1.5673652000000926,
+          -0.036585149999973504
+        ]
+      },
+      "max_return_ledger": [
+        {
+          "direction": 1,
+          "entry": 102,
+          "exit": 104,
+          "net": 71.77658000000791,
+          "q": 0.7665765862519917,
+          "reason": "AGENT_CLOSE",
+          "units": 34843
+        },
+        {
+          "direction": 1,
+          "entry": 105,
+          "exit": 106,
+          "net": 6.400660000003818,
+          "q": 1.0,
+          "reason": "AGENT_CLOSE",
+          "units": 45719
+        },
+        {
+          "direction": -1,
+          "entry": 107,
+          "exit": 107,
+          "net": 78.55927999999992,
+          "q": 1.0,
+          "reason": "FORCED_FLAT",
+          "units": 45674
+        }
+      ],
+      "mirror": 1,
+      "nodes": 1050,
+      "pattern": "oscillating",
+      "risk_budget_choices": {
+        "0.0": null,
+        "0.1": {
+          "trace": [
+            "HOLD",
+            "CLOSE",
+            "BUY:3",
+            "CLOSE",
+            "SELL:3"
+          ],
+          "vector": [
+            1.5673652000000926,
+            -0.036585149999973504
+          ]
+        },
+        "0.5": {
+          "trace": [
+            "HOLD",
+            "CLOSE",
+            "BUY:3",
+            "CLOSE",
+            "SELL:3"
+          ],
+          "vector": [
+            1.5673652000000926,
+            -0.036585149999973504
+          ]
+        },
+        "1.0": {
+          "trace": [
+            "HOLD",
+            "CLOSE",
+            "BUY:3",
+            "CLOSE",
+            "SELL:3"
+          ],
+          "vector": [
+            1.5673652000000926,
+            -0.036585149999973504
+          ]
+        },
+        "5.0": {
+          "trace": [
+            "HOLD",
+            "CLOSE",
+            "BUY:3",
+            "CLOSE",
+            "SELL:3"
+          ],
+          "vector": [
+            1.5673652000000926,
+            -0.036585149999973504
+          ]
+        }
+      },
+      "scope": "EXACT_DECLARED_FINITE_NATIVE_TREE_NOT_TRAIN_OR_CAUSAL_POLICY",
+      "steps": 5,
+      "terminal_accounts": 851
+    },
+    {
+      "all_terminal_payoffs_file": "oscillating_1_-1.json.gz",
+      "all_terminal_payoffs_sha256": "c454ebd7c1504747f8126d0faf089367ebee7523a40cdd1aa9f48115426dd13b",
+      "best_return_no_voluntary_close": 0.2756041500000306,
+      "complete": true,
+      "conditional": {
+        "CLOSE": [
+          {
+            "trace": [
+              "CLOSE",
+              "SELL:3",
+              "CLOSE",
+              "NOP",
+              "SELL:3"
+            ],
+            "vector": [
+              1.0004420000001346,
+              -0.052804799999958046
+            ]
+          }
+        ],
+        "HOLD": [
+          {
+            "trace": [
+              "HOLD",
+              "SELL:3",
+              "CLOSE",
+              "NOP",
+              "SELL:3"
+            ],
+            "vector": [
+              0.5485417500001422,
+              -0.4999954499999694
+            ]
+          }
+        ]
+      },
+      "frontier": [
+        {
+          "trace": [
+            "CLOSE",
+            "SELL:3",
+            "CLOSE",
+            "NOP",
+            "SELL:3"
+          ],
+          "vector": [
+            1.0004420000001346,
+            -0.052804799999958046
+          ]
+        }
+      ],
+      "initial_direction": -1,
+      "max_return": {
+        "trace": [
+          "CLOSE",
+          "SELL:3",
+          "CLOSE",
+          "NOP",
+          "SELL:3"
+        ],
+        "vector": [
+          1.0004420000001346,
+          -0.052804799999958046
+        ]
+      },
+      "max_return_ledger": [
+        {
+          "direction": -1,
+          "entry": 102,
+          "exit": 103,
+          "net": -5.280479999996155,
+          "q": 0.726065346607306,
+          "reason": "AGENT_CLOSE",
+          "units": 33003
+        },
+        {
+          "direction": -1,
+          "entry": 104,
+          "exit": 105,
+          "net": 27.204000000009543,
+          "q": 1.0,
+          "reason": "AGENT_CLOSE",
+          "units": 45340
+        },
+        {
+          "direction": -1,
+          "entry": 107,
+          "exit": 107,
+          "net": 78.12067999999991,
+          "q": 1.0,
+          "reason": "FORCED_FLAT",
+          "units": 45419
+        }
+      ],
+      "mirror": 1,
+      "nodes": 1561,
+      "pattern": "oscillating",
+      "risk_budget_choices": {
+        "0.0": null,
+        "0.1": {
+          "trace": [
+            "CLOSE",
+            "SELL:3",
+            "CLOSE",
+            "NOP",
+            "SELL:3"
+          ],
+          "vector": [
+            1.0004420000001346,
+            -0.052804799999958046
+          ]
+        },
+        "0.5": {
+          "trace": [
+            "CLOSE",
+            "SELL:3",
+            "CLOSE",
+            "NOP",
+            "SELL:3"
+          ],
+          "vector": [
+            1.0004420000001346,
+            -0.052804799999958046
+          ]
+        },
+        "1.0": {
+          "trace": [
+            "CLOSE",
+            "SELL:3",
+            "CLOSE",
+            "NOP",
+            "SELL:3"
+          ],
+          "vector": [
+            1.0004420000001346,
+            -0.052804799999958046
+          ]
+        },
+        "5.0": {
+          "trace": [
+            "CLOSE",
+            "SELL:3",
+            "CLOSE",
+            "NOP",
+            "SELL:3"
+          ],
+          "vector": [
+            1.0004420000001346,
+            -0.052804799999958046
+          ]
+        }
+      },
+      "scope": "EXACT_DECLARED_FINITE_NATIVE_TREE_NOT_TRAIN_OR_CAUSAL_POLICY",
+      "steps": 5,
+      "terminal_accounts": 1264
+    },
+    {
+      "all_terminal_payoffs_file": "oscillating_-1_0.json.gz",
+      "all_terminal_payoffs_sha256": "93a24c0aac0f3870470996adac375be85a5c87d28295c4d4d06177a4512d96fc",
+      "best_return_at_most_one_entry": 1.0296936000000256,
+      "best_return_no_voluntary_close": 1.780855400000081,
+      "best_return_single_horizon": {
+        "12": 1.3300308000000927,
+        "24": 1.0588772000000857,
+        "3": 1.9162589500001603,
+        "6": 1.780855400000081
+      },
+      "complete": true,
+      "conditional": {
+        "BUY:12": [
+          {
+            "trace": [
+              "BUY:12",
+              "BUY:3",
+              "CLOSE",
+              "NOP",
+              "BUY:3"
+            ],
+            "vector": [
+              0.5542469500000813,
+              -0.4999970500000199
+            ]
+          }
+        ],
+        "BUY:24": [
+          {
+            "trace": [
+              "BUY:24",
+              "BUY:3",
+              "CLOSE",
+              "NOP",
+              "BUY:3"
+            ],
+            "vector": [
+              0.5542490000000955,
+              -0.49999500000001723
+            ]
+          }
+        ],
+        "BUY:3": [
+          {
+            "trace": [
+              "BUY:3",
+              "BUY:3",
+              "CLOSE",
+              "NOP",
+              "BUY:3"
+            ],
+            "vector": [
+              0.6070887500001065,
+              -0.447712049999991
+            ]
+          }
+        ],
+        "BUY:6": [
+          {
+            "trace": [
+              "BUY:6",
+              "BUY:3",
+              "CLOSE",
+              "NOP",
+              "BUY:3"
+            ],
+            "vector": [
+              0.5565568500000673,
+              -0.4977103500000158
+            ]
+          }
+        ],
+        "NOP": [
+          {
+            "trace": [
+              "NOP",
+              "BUY:3",
+              "CLOSE",
+              "NOP",
+              "BUY:3"
+            ],
+            "vector": [
+              1.0595508000001086,
+              -0.024975243914789794
+            ]
+          },
+          {
+            "trace": [
+              "NOP",
+              "BUY:12",
+              "CLOSE",
+              "NOP",
+              "BUY:3"
+            ],
+            "vector": [
+              0.9948228000000725,
+              -0.019120013988586326
+            ]
+          },
+          {
+            "trace": [
+              "NOP",
+              "BUY:24",
+              "CLOSE",
+              "NOP",
+              "BUY:3"
+            ],
+            "vector": [
+              0.9480036000000469,
+              -0.014878589759246677
+            ]
+          },
+          {
+            "trace": [
+              "NOP",
+              "NOP",
+              "SELL:24",
+              "CLOSE",
+              "BUY:3"
+            ],
+            "vector": [
+              0.8219558000000404,
+              -0.014737245728981099
+            ]
+          },
+          {
+            "trace": [
+              "NOP",
+              "NOP",
+              "NOP",
+              "NOP",
+              "BUY:3"
+            ],
+            "vector": [
+              0.7841307999999936,
+              -0.0
+            ]
+          }
+        ],
+        "SELL:12": [
+          {
+            "trace": [
+              "SELL:12",
+              "CLOSE",
+              "SELL:3",
+              "CLOSE",
+              "BUY:3"
+            ],
+            "vector": [
+              1.5339784000001133,
+              -0.025011357498289744
+            ]
+          },
+          {
+            "trace": [
+              "SELL:12",
+              "CLOSE",
+              "SELL:6",
+              "CLOSE",
+              "BUY:3"
+            ],
+            "vector": [
+              1.5318990000001254,
+              -0.02420808180084951
+            ]
+          },
+          {
+            "trace": [
+              "SELL:12",
+              "CLOSE",
+              "SELL:12",
+              "CLOSE",
+              "BUY:3"
+            ],
+            "vector": [
+              1.51620360000011,
+              -0.018139771385158543
+            ]
+          },
+          {
+            "trace": [
+              "SELL:12",
+              "CLOSE",
+              "SELL:24",
+              "CLOSE",
+              "BUY:3"
+            ],
+            "vector": [
+              1.5074044000000786,
+              -0.018025827300965268
+            ]
+          }
+        ],
+        "SELL:24": [
+          {
+            "trace": [
+              "SELL:24",
+              "CLOSE",
+              "SELL:3",
+              "CLOSE",
+              "BUY:3"
+            ],
+            "vector": [
+              1.4053032000001187,
+              -0.025011399110931646
+            ]
+          },
+          {
+            "trace": [
+              "SELL:24",
+              "CLOSE",
+              "SELL:6",
+              "CLOSE",
+              "BUY:3"
+            ],
+            "vector": [
+              1.4032266000001181,
+              -0.024208196146714465
+            ]
+          },
+          {
+            "trace": [
+              "SELL:24",
+              "CLOSE",
+              "SELL:12",
+              "CLOSE",
+              "BUY:3"
+            ],
+            "vector": [
+              1.3875508000001036,
+              -0.01813983156558957
+            ]
+          },
+          {
+            "trace": [
+              "SELL:24",
+              "CLOSE",
+              "SELL:24",
+              "CLOSE",
+              "BUY:3"
+            ],
+            "vector": [
+              1.3787628000000884,
+              -0.014737214676051005
+            ]
+          },
+          {
+            "trace": [
+              "SELL:24",
+              "CLOSE",
+              "NOP",
+              "NOP",
+              "BUY:3"
+            ],
+            "vector": [
+              1.3407306000000618,
+              -0.014661815985847973
+            ]
+          }
+        ],
+        "SELL:3": [
+          {
+            "trace": [
+              "SELL:3",
+              "BUY:3",
+              "CLOSE",
+              "NOP",
+              "BUY:3"
+            ],
+            "vector": [
+              1.9162589500001603,
+              -0.02497518902484242
+            ]
+          },
+          {
+            "trace": [
+              "SELL:3",
+              "BUY:12",
+              "CLOSE",
+              "NOP",
+              "BUY:3"
+            ],
+            "vector": [
+              1.8510021500001361,
+              -0.019119809551745456
+            ]
+          },
+          {
+            "trace": [
+              "SELL:3",
+              "BUY:24",
+              "CLOSE",
+              "NOP",
+              "BUY:3"
+            ],
+            "vector": [
+              1.803775750000125,
+              -0.014878733017890361
+            ]
+          },
+          {
+            "trace": [
+              "SELL:3",
+              "NOP",
+              "SELL:24",
+              "CLOSE",
+              "BUY:3"
+            ],
+            "vector": [
+              1.6766657500000948,
+              -0.014737098915950682
+            ]
+          },
+          {
+            "trace": [
+              "SELL:3",
+              "NOP",
+              "NOP",
+              "NOP",
+              "BUY:3"
+            ],
+            "vector": [
+              1.6385057500000633,
+              -0.0
+            ]
+          }
+        ],
+        "SELL:6": [
+          {
+            "trace": [
+              "SELL:6",
+              "HOLD",
+              "HOLD",
+              "HOLD",
+              "BUY:3"
+            ],
+            "vector": [
+              1.780855400000081,
+              -0.3317047078999494
+            ]
+          },
+          {
+            "trace": [
+              "SELL:6",
+              "CLOSE",
+              "SELL:3",
+              "CLOSE",
+              "BUY:3"
+            ],
+            "vector": [
+              1.763522200000156,
+              -0.02501157639209033
+            ]
+          },
+          {
+            "trace": [
+              "SELL:6",
+              "CLOSE",
+              "SELL:6",
+              "CLOSE",
+              "BUY:3"
+            ],
+            "vector": [
+              1.7614372000001488,
+              -0.024207936173124583
+            ]
+          },
+          {
+            "trace": [
+              "SELL:6",
+              "CLOSE",
+              "SELL:12",
+              "CLOSE",
+              "BUY:3"
+            ],
+            "vector": [
+              1.7457068000001241,
+              -0.02400494596642829
+            ]
+          }
+        ]
+      },
+      "frontier": [
+        {
+          "trace": [
+            "SELL:3",
+            "BUY:3",
+            "CLOSE",
+            "NOP",
+            "BUY:3"
+          ],
+          "vector": [
+            1.9162589500001603,
+            -0.02497518902484242
+          ]
+        },
+        {
+          "trace": [
+            "SELL:3",
+            "BUY:12",
+            "CLOSE",
+            "NOP",
+            "BUY:3"
+          ],
+          "vector": [
+            1.8510021500001361,
+            -0.019119809551745456
+          ]
+        },
+        {
+          "trace": [
+            "SELL:3",
+            "BUY:24",
+            "CLOSE",
+            "NOP",
+            "BUY:3"
+          ],
+          "vector": [
+            1.803775750000125,
+            -0.014878733017890361
+          ]
+        },
+        {
+          "trace": [
+            "SELL:3",
+            "NOP",
+            "SELL:24",
+            "CLOSE",
+            "BUY:3"
+          ],
+          "vector": [
+            1.6766657500000948,
+            -0.014737098915950682
+          ]
+        },
+        {
+          "trace": [
+            "SELL:3",
+            "NOP",
+            "NOP",
+            "NOP",
+            "BUY:3"
+          ],
+          "vector": [
+            1.6385057500000633,
+            -0.0
+          ]
+        }
+      ],
+      "initial_direction": 0,
+      "max_return": {
+        "trace": [
+          "SELL:3",
+          "BUY:3",
+          "CLOSE",
+          "NOP",
+          "BUY:3"
+        ],
+        "vector": [
+          1.9162589500001603,
+          -0.02497518902484242
+        ]
+      },
+      "max_return_ledger": [
+        {
+          "direction": -1,
+          "entry": 103,
+          "exit": 103,
+          "net": 84.77357500000687,
+          "q": 1.0,
+          "reason": "TP",
+          "units": 45455
+        },
+        {
+          "direction": 1,
+          "entry": 104,
+          "exit": 105,
+          "net": 27.55860000000967,
+          "q": 1.0,
+          "reason": "AGENT_CLOSE",
+          "units": 45931
+        },
+        {
+          "direction": 1,
+          "entry": 107,
+          "exit": 107,
+          "net": 79.29371999999992,
+          "q": 1.0,
+          "reason": "FORCED_FLAT",
+          "units": 46101
+        }
+      ],
+      "mirror": -1,
+      "nodes": 5495,
+      "pattern": "oscillating",
+      "risk_budget_choices": {
+        "0.0": {
+          "trace": [
+            "SELL:3",
+            "NOP",
+            "NOP",
+            "NOP",
+            "BUY:3"
+          ],
+          "vector": [
+            1.6385057500000633,
+            -0.0
+          ]
+        },
+        "0.1": {
+          "trace": [
+            "SELL:3",
+            "BUY:3",
+            "CLOSE",
+            "NOP",
+            "BUY:3"
+          ],
+          "vector": [
+            1.9162589500001603,
+            -0.02497518902484242
+          ]
+        },
+        "0.5": {
+          "trace": [
+            "SELL:3",
+            "BUY:3",
+            "CLOSE",
+            "NOP",
+            "BUY:3"
+          ],
+          "vector": [
+            1.9162589500001603,
+            -0.02497518902484242
+          ]
+        },
+        "1.0": {
+          "trace": [
+            "SELL:3",
+            "BUY:3",
+            "CLOSE",
+            "NOP",
+            "BUY:3"
+          ],
+          "vector": [
+            1.9162589500001603,
+            -0.02497518902484242
+          ]
+        },
+        "5.0": {
+          "trace": [
+            "SELL:3",
+            "BUY:3",
+            "CLOSE",
+            "NOP",
+            "BUY:3"
+          ],
+          "vector": [
+            1.9162589500001603,
+            -0.02497518902484242
+          ]
+        }
+      },
+      "scope": "EXACT_DECLARED_FINITE_NATIVE_TREE_NOT_TRAIN_OR_CAUSAL_POLICY",
+      "steps": 5,
+      "terminal_accounts": 4456
+    },
+    {
+      "all_terminal_payoffs_file": "oscillating_-1_1.json.gz",
+      "all_terminal_payoffs_sha256": "9e1345d5eb8e0791f27832d7d93a704000c3815f7ddd3c059a13770ef4b1cebe",
+      "best_return_no_voluntary_close": 0.280212149999981,
+      "complete": true,
+      "conditional": {
+        "CLOSE": [
+          {
+            "trace": [
+              "CLOSE",
+              "BUY:3",
+              "CLOSE",
+              "NOP",
+              "BUY:3"
+            ],
+            "vector": [
+              1.0032048000001348,
+              -0.05574879999996483
+            ]
+          }
+        ],
+        "HOLD": [
+          {
+            "trace": [
+              "HOLD",
+              "BUY:3",
+              "CLOSE",
+              "NOP",
+              "BUY:3"
+            ],
+            "vector": [
+              0.5542469500000813,
+              -0.4999970500000199
+            ]
+          }
+        ]
+      },
+      "frontier": [
+        {
+          "trace": [
+            "CLOSE",
+            "BUY:3",
+            "CLOSE",
+            "NOP",
+            "BUY:3"
+          ],
+          "vector": [
+            1.0032048000001348,
+            -0.05574879999996483
+          ]
+        }
+      ],
+      "initial_direction": 1,
+      "max_return": {
+        "trace": [
+          "CLOSE",
+          "BUY:3",
+          "CLOSE",
+          "NOP",
+          "BUY:3"
+        ],
+        "vector": [
+          1.0032048000001348,
+          -0.05574879999996483
+        ]
+      },
+      "max_return_ledger": [
+        {
+          "direction": 1,
+          "entry": 102,
+          "exit": 103,
+          "net": -5.5748799999959395,
+          "q": 0.7665765862519917,
+          "reason": "AGENT_CLOSE",
+          "units": 34843
+        },
+        {
+          "direction": 1,
+          "entry": 104,
+          "exit": 105,
+          "net": 27.312000000009583,
+          "q": 1.0,
+          "reason": "AGENT_CLOSE",
+          "units": 45520
+        },
+        {
+          "direction": 1,
+          "entry": 107,
+          "exit": 107,
+          "net": 78.58335999999993,
+          "q": 1.0,
+          "reason": "FORCED_FLAT",
+          "units": 45688
+        }
+      ],
+      "mirror": -1,
+      "nodes": 1561,
+      "pattern": "oscillating",
+      "risk_budget_choices": {
+        "0.0": null,
+        "0.1": {
+          "trace": [
+            "CLOSE",
+            "BUY:3",
+            "CLOSE",
+            "NOP",
+            "BUY:3"
+          ],
+          "vector": [
+            1.0032048000001348,
+            -0.05574879999996483
+          ]
+        },
+        "0.5": {
+          "trace": [
+            "CLOSE",
+            "BUY:3",
+            "CLOSE",
+            "NOP",
+            "BUY:3"
+          ],
+          "vector": [
+            1.0032048000001348,
+            -0.05574879999996483
+          ]
+        },
+        "1.0": {
+          "trace": [
+            "CLOSE",
+            "BUY:3",
+            "CLOSE",
+            "NOP",
+            "BUY:3"
+          ],
+          "vector": [
+            1.0032048000001348,
+            -0.05574879999996483
+          ]
+        },
+        "5.0": {
+          "trace": [
+            "CLOSE",
+            "BUY:3",
+            "CLOSE",
+            "NOP",
+            "BUY:3"
+          ],
+          "vector": [
+            1.0032048000001348,
+            -0.05574879999996483
+          ]
+        }
+      },
+      "scope": "EXACT_DECLARED_FINITE_NATIVE_TREE_NOT_TRAIN_OR_CAUSAL_POLICY",
+      "steps": 5,
+      "terminal_accounts": 1264
+    },
+    {
+      "all_terminal_payoffs_file": "oscillating_-1_-1.json.gz",
+      "all_terminal_payoffs_sha256": "c9b5a12449130e2e88d77235970b84cb952a3ffcd4325db0427ff8b8d19b8056",
+      "best_return_no_voluntary_close": 0.4092372000000566,
+      "complete": true,
+      "conditional": {
+        "CLOSE": [
+          {
+            "trace": [
+              "CLOSE",
+              "BUY:3",
+              "CLOSE",
+              "NOP",
+              "BUY:3"
+            ],
+            "vector": [
+              1.0061720000001495,
+              -0.052804799999958046
+            ]
+          }
+        ],
+        "HOLD": [
+          {
+            "trace": [
+              "HOLD",
+              "CLOSE",
+              "SELL:3",
+              "CLOSE",
+              "BUY:3"
+            ],
+            "vector": [
+              1.5339784000001133,
+              -0.03465314999995826
+            ]
+          }
+        ]
+      },
+      "frontier": [
+        {
+          "trace": [
+            "HOLD",
+            "CLOSE",
+            "SELL:3",
+            "CLOSE",
+            "BUY:3"
+          ],
+          "vector": [
+            1.5339784000001133,
+            -0.03465314999995826
+          ]
+        }
+      ],
+      "initial_direction": -1,
+      "max_return": {
+        "trace": [
+          "HOLD",
+          "CLOSE",
+          "SELL:3",
+          "CLOSE",
+          "BUY:3"
+        ],
+        "vector": [
+          1.5339784000001133,
+          -0.03465314999995826
+        ]
+      },
+      "max_return_ledger": [
+        {
+          "direction": -1,
+          "entry": 102,
+          "exit": 104,
+          "net": 67.9861800000075,
+          "q": 0.726065346607306,
+          "reason": "AGENT_CLOSE",
+          "units": 33003
+        },
+        {
+          "direction": -1,
+          "entry": 105,
+          "exit": 106,
+          "net": 6.415500000003824,
+          "q": 1.0,
+          "reason": "AGENT_CLOSE",
+          "units": 45825
+        },
+        {
+          "direction": 1,
+          "entry": 107,
+          "exit": 107,
+          "net": 78.99615999999993,
+          "q": 1.0,
+          "reason": "FORCED_FLAT",
+          "units": 45928
+        }
+      ],
+      "mirror": -1,
+      "nodes": 1050,
+      "pattern": "oscillating",
+      "risk_budget_choices": {
+        "0.0": null,
+        "0.1": {
+          "trace": [
+            "HOLD",
+            "CLOSE",
+            "SELL:3",
+            "CLOSE",
+            "BUY:3"
+          ],
+          "vector": [
+            1.5339784000001133,
+            -0.03465314999995826
+          ]
+        },
+        "0.5": {
+          "trace": [
+            "HOLD",
+            "CLOSE",
+            "SELL:3",
+            "CLOSE",
+            "BUY:3"
+          ],
+          "vector": [
+            1.5339784000001133,
+            -0.03465314999995826
+          ]
+        },
+        "1.0": {
+          "trace": [
+            "HOLD",
+            "CLOSE",
+            "SELL:3",
+            "CLOSE",
+            "BUY:3"
+          ],
+          "vector": [
+            1.5339784000001133,
+            -0.03465314999995826
+          ]
+        },
+        "5.0": {
+          "trace": [
+            "HOLD",
+            "CLOSE",
+            "SELL:3",
+            "CLOSE",
+            "BUY:3"
+          ],
+          "vector": [
+            1.5339784000001133,
+            -0.03465314999995826
+          ]
+        }
+      },
+      "scope": "EXACT_DECLARED_FINITE_NATIVE_TREE_NOT_TRAIN_OR_CAUSAL_POLICY",
+      "steps": 5,
+      "terminal_accounts": 851
+    },
+    {
+      "all_terminal_payoffs_file": "reversal_1_0.json.gz",
+      "all_terminal_payoffs_sha256": "78febddb7106b5bff674ba7b724e4d3f3b353ad47b88aba00c1912ef5d4797d7",
+      "best_return_at_most_one_entry": 1.1501545500000487,
+      "best_return_no_voluntary_close": 1.559069800000179,
+      "best_return_single_horizon": {
+        "12": 1.3193177000000889,
+        "24": 1.2092088000000611,
+        "3": 1.6374723000001978,
+        "6": 1.7621510000002116
+      },
+      "complete": true,
+      "conditional": {
+        "BUY:12": [
+          {
+            "trace": [
+              "BUY:12",
+              "CLOSE",
+              "SELL:6",
+              "HOLD",
+              "SELL:3"
+            ],
+            "vector": [
+              1.7289323000002188,
+              -0.019127993497730013
+            ]
+          },
+          {
+            "trace": [
+              "BUY:12",
+              "HOLD",
+              "CLOSE",
+              "SELL:12",
+              "HOLD"
+            ],
+            "vector": [
+              1.3138256000000625,
+              -0.019098767809230557
+            ]
+          }
+        ],
+        "BUY:24": [
+          {
+            "trace": [
+              "BUY:24",
+              "CLOSE",
+              "SELL:6",
+              "HOLD",
+              "SELL:3"
+            ],
+            "vector": [
+              1.691183500000193,
+              -0.014883421271686266
+            ]
+          },
+          {
+            "trace": [
+              "BUY:24",
+              "HOLD",
+              "CLOSE",
+              "SELL:12",
+              "HOLD"
+            ],
+            "vector": [
+              1.2418700000000893,
+              -0.01486572104855828
+            ]
+          }
+        ],
+        "BUY:3": [
+          {
+            "trace": [
+              "BUY:3",
+              "CLOSE",
+              "SELL:6",
+              "HOLD",
+              "SELL:3"
+            ],
+            "vector": [
+              1.7806394000002168,
+              -0.024938506149283092
+            ]
+          },
+          {
+            "trace": [
+              "BUY:3",
+              "HOLD",
+              "CLOSE",
+              "SELL:12",
+              "HOLD"
+            ],
+            "vector": [
+              1.4123976000000926,
+              -0.024888850888408764
+            ]
+          }
+        ],
+        "BUY:6": [
+          {
+            "trace": [
+              "BUY:6",
+              "CLOSE",
+              "SELL:6",
+              "HOLD",
+              "SELL:3"
+            ],
+            "vector": [
+              1.7806394000002168,
+              -0.024938506149283092
+            ]
+          },
+          {
+            "trace": [
+              "BUY:6",
+              "HOLD",
+              "CLOSE",
+              "SELL:12",
+              "HOLD"
+            ],
+            "vector": [
+              1.4123976000000926,
+              -0.024888850888408764
+            ]
+          }
+        ],
+        "NOP": [
+          {
+            "trace": [
+              "NOP",
+              "NOP",
+              "SELL:6",
+              "HOLD",
+              "SELL:3"
+            ],
+            "vector": [
+              1.559069800000179,
+              -0.0
+            ]
+          }
+        ],
+        "SELL:12": [
+          {
+            "trace": [
+              "SELL:12",
+              "CLOSE",
+              "SELL:6",
+              "HOLD",
+              "SELL:3"
+            ],
+            "vector": [
+              1.2909288000002128,
+              -0.26402399999995396
+            ]
+          }
+        ],
+        "SELL:24": [
+          {
+            "trace": [
+              "SELL:24",
+              "CLOSE",
+              "SELL:6",
+              "HOLD",
+              "SELL:3"
+            ],
+            "vector": [
+              1.3412599000002023,
+              -0.21447199999996883
+            ]
+          }
+        ],
+        "SELL:3": [
+          {
+            "trace": [
+              "SELL:3",
+              "CLOSE",
+              "SELL:6",
+              "HOLD",
+              "SELL:3"
+            ],
+            "vector": [
+              1.1897546000002368,
+              -0.36363999999994123
+            ]
+          }
+        ],
+        "SELL:6": [
+          {
+            "trace": [
+              "SELL:6",
+              "CLOSE",
+              "SELL:6",
+              "HOLD",
+              "SELL:3"
+            ],
+            "vector": [
+              1.2011652500002246,
+              -0.3524159999999392
+            ]
+          }
+        ]
+      },
+      "frontier": [
+        {
+          "trace": [
+            "BUY:3",
+            "CLOSE",
+            "SELL:6",
+            "HOLD",
+            "SELL:3"
+          ],
+          "vector": [
+            1.7806394000002168,
+            -0.024938506149283092
+          ]
+        },
+        {
+          "trace": [
+            "BUY:12",
+            "CLOSE",
+            "SELL:6",
+            "HOLD",
+            "SELL:3"
+          ],
+          "vector": [
+            1.7289323000002188,
+            -0.019127993497730013
+          ]
+        },
+        {
+          "trace": [
+            "BUY:24",
+            "CLOSE",
+            "SELL:6",
+            "HOLD",
+            "SELL:3"
+          ],
+          "vector": [
+            1.691183500000193,
+            -0.014883421271686266
+          ]
+        },
+        {
+          "trace": [
+            "NOP",
+            "NOP",
+            "SELL:6",
+            "HOLD",
+            "SELL:3"
+          ],
+          "vector": [
+            1.559069800000179,
+            -0.0
+          ]
+        }
+      ],
+      "initial_direction": 0,
+      "max_return": {
+        "trace": [
+          "BUY:3",
+          "CLOSE",
+          "SELL:6",
+          "HOLD",
+          "SELL:3"
+        ],
+        "vector": [
+          1.7806394000002168,
+          -0.024938506149283092
+        ]
+      },
+      "max_return_ledger": [
+        {
+          "direction": 1,
+          "entry": 103,
+          "exit": 104,
+          "net": 21.817440000004108,
+          "q": 1.0,
+          "reason": "AGENT_CLOSE",
+          "units": 45453
+        },
+        {
+          "direction": -1,
+          "entry": 105,
+          "exit": 106,
+          "net": 99.11226000000875,
+          "q": 0.9700939465307298,
+          "reason": "TP",
+          "units": 44148
+        },
+        {
+          "direction": -1,
+          "entry": 107,
+          "exit": 107,
+          "net": 57.13424000000849,
+          "q": 1.0,
+          "reason": "FORCED_FLAT",
+          "units": 46076
+        }
+      ],
+      "mirror": 1,
+      "nodes": 4487,
+      "pattern": "reversal",
+      "risk_budget_choices": {
+        "0.0": {
+          "trace": [
+            "NOP",
+            "NOP",
+            "SELL:6",
+            "HOLD",
+            "SELL:3"
+          ],
+          "vector": [
+            1.559069800000179,
+            -0.0
+          ]
+        },
+        "0.1": {
+          "trace": [
+            "BUY:3",
+            "CLOSE",
+            "SELL:6",
+            "HOLD",
+            "SELL:3"
+          ],
+          "vector": [
+            1.7806394000002168,
+            -0.024938506149283092
+          ]
+        },
+        "0.5": {
+          "trace": [
+            "BUY:3",
+            "CLOSE",
+            "SELL:6",
+            "HOLD",
+            "SELL:3"
+          ],
+          "vector": [
+            1.7806394000002168,
+            -0.024938506149283092
+          ]
+        },
+        "1.0": {
+          "trace": [
+            "BUY:3",
+            "CLOSE",
+            "SELL:6",
+            "HOLD",
+            "SELL:3"
+          ],
+          "vector": [
+            1.7806394000002168,
+            -0.024938506149283092
+          ]
+        },
+        "5.0": {
+          "trace": [
+            "BUY:3",
+            "CLOSE",
+            "SELL:6",
+            "HOLD",
+            "SELL:3"
+          ],
+          "vector": [
+            1.7806394000002168,
+            -0.024938506149283092
+          ]
+        }
+      },
+      "scope": "EXACT_DECLARED_FINITE_NATIVE_TREE_NOT_TRAIN_OR_CAUSAL_POLICY",
+      "steps": 5,
+      "terminal_accounts": 3742
+    },
+    {
+      "all_terminal_payoffs_file": "reversal_1_1.json.gz",
+      "all_terminal_payoffs_sha256": "c863b0287059766e576db7e2daec3992245b82d6bea140eb1dec8a6701470a69",
+      "best_return_no_voluntary_close": 0.06169815000005574,
+      "complete": true,
+      "conditional": {
+        "CLOSE": [
+          {
+            "trace": [
+              "CLOSE",
+              "NOP",
+              "SELL:6",
+              "HOLD",
+              "SELL:3"
+            ],
+            "vector": [
+              1.5024598000001887,
+              -0.05574879999996483
+            ]
+          }
+        ],
+        "HOLD": [
+          {
+            "trace": [
+              "HOLD",
+              "CLOSE",
+              "SELL:6",
+              "HOLD",
+              "SELL:3"
+            ],
+            "vector": [
+              1.7289323000002188,
+              -0.036585149999973504
+            ]
+          }
+        ]
+      },
+      "frontier": [
+        {
+          "trace": [
+            "HOLD",
+            "CLOSE",
+            "SELL:6",
+            "HOLD",
+            "SELL:3"
+          ],
+          "vector": [
+            1.7289323000002188,
+            -0.036585149999973504
+          ]
+        }
+      ],
+      "initial_direction": 1,
+      "max_return": {
+        "trace": [
+          "HOLD",
+          "CLOSE",
+          "SELL:6",
+          "HOLD",
+          "SELL:3"
+        ],
+        "vector": [
+          1.7289323000002188,
+          -0.036585149999973504
+        ]
+      },
+      "max_return_ledger": [
+        {
+          "direction": 1,
+          "entry": 102,
+          "exit": 104,
+          "net": 16.72464000000315,
+          "q": 0.7665765862519917,
+          "reason": "AGENT_CLOSE",
+          "units": 34843
+        },
+        {
+          "direction": -1,
+          "entry": 105,
+          "exit": 106,
+          "net": 99.06287000000874,
+          "q": 0.9701125679181013,
+          "reason": "TP",
+          "units": 44126
+        },
+        {
+          "direction": -1,
+          "entry": 107,
+          "exit": 107,
+          "net": 57.10572000000849,
+          "q": 1.0,
+          "reason": "FORCED_FLAT",
+          "units": 46053
+        }
+      ],
+      "mirror": 1,
+      "nodes": 1351,
+      "pattern": "reversal",
+      "risk_budget_choices": {
+        "0.0": null,
+        "0.1": {
+          "trace": [
+            "HOLD",
+            "CLOSE",
+            "SELL:6",
+            "HOLD",
+            "SELL:3"
+          ],
+          "vector": [
+            1.7289323000002188,
+            -0.036585149999973504
+          ]
+        },
+        "0.5": {
+          "trace": [
+            "HOLD",
+            "CLOSE",
+            "SELL:6",
+            "HOLD",
+            "SELL:3"
+          ],
+          "vector": [
+            1.7289323000002188,
+            -0.036585149999973504
+          ]
+        },
+        "1.0": {
+          "trace": [
+            "HOLD",
+            "CLOSE",
+            "SELL:6",
+            "HOLD",
+            "SELL:3"
+          ],
+          "vector": [
+            1.7289323000002188,
+            -0.036585149999973504
+          ]
+        },
+        "5.0": {
+          "trace": [
+            "HOLD",
+            "CLOSE",
+            "SELL:6",
+            "HOLD",
+            "SELL:3"
+          ],
+          "vector": [
+            1.7289323000002188,
+            -0.036585149999973504
+          ]
+        }
+      },
+      "scope": "EXACT_DECLARED_FINITE_NATIVE_TREE_NOT_TRAIN_OR_CAUSAL_POLICY",
+      "steps": 5,
+      "terminal_accounts": 1124
+    },
+    {
+      "all_terminal_payoffs_file": "reversal_1_-1.json.gz",
+      "all_terminal_payoffs_sha256": "d89f12480f590989109b96d517f8b7e73a0ccca2cb4f6dafac0d5bc844fe32ea",
+      "best_return_no_voluntary_close": 0.970288200000069,
+      "complete": true,
+      "conditional": {
+        "CLOSE": [
+          {
+            "trace": [
+              "CLOSE",
+              "NOP",
+              "SELL:6",
+              "HOLD",
+              "SELL:3"
+            ],
+            "vector": [
+              1.5054386500002126,
+              -0.052804799999958046
+            ]
+          }
+        ],
+        "HOLD": [
+          {
+            "trace": [
+              "HOLD",
+              "CLOSE",
+              "SELL:6",
+              "HOLD",
+              "SELL:3"
+            ],
+            "vector": [
+              1.2909288000002128,
+              -0.26402399999995396
+            ]
+          }
+        ]
+      },
+      "frontier": [
+        {
+          "trace": [
+            "CLOSE",
+            "NOP",
+            "SELL:6",
+            "HOLD",
+            "SELL:3"
+          ],
+          "vector": [
+            1.5054386500002126,
+            -0.052804799999958046
+          ]
+        }
+      ],
+      "initial_direction": -1,
+      "max_return": {
+        "trace": [
+          "CLOSE",
+          "NOP",
+          "SELL:6",
+          "HOLD",
+          "SELL:3"
+        ],
+        "vector": [
+          1.5054386500002126,
+          -0.052804799999958046
+        ]
+      },
+      "max_return_ledger": [
+        {
+          "direction": -1,
+          "entry": 102,
+          "exit": 103,
+          "net": -5.280479999996155,
+          "q": 0.726065346607306,
+          "reason": "AGENT_CLOSE",
+          "units": 33003
+        },
+        {
+          "direction": -1,
+          "entry": 105,
+          "exit": 106,
+          "net": 98.84510500000872,
+          "q": 0.9700927888976402,
+          "reason": "TP",
+          "units": 44029
+        },
+        {
+          "direction": -1,
+          "entry": 107,
+          "exit": 107,
+          "net": 56.979240000008474,
+          "q": 1.0,
+          "reason": "FORCED_FLAT",
+          "units": 45951
+        }
+      ],
+      "mirror": 1,
+      "nodes": 1344,
+      "pattern": "reversal",
+      "risk_budget_choices": {
+        "0.0": null,
+        "0.1": {
+          "trace": [
+            "CLOSE",
+            "NOP",
+            "SELL:6",
+            "HOLD",
+            "SELL:3"
+          ],
+          "vector": [
+            1.5054386500002126,
+            -0.052804799999958046
+          ]
+        },
+        "0.5": {
+          "trace": [
+            "CLOSE",
+            "NOP",
+            "SELL:6",
+            "HOLD",
+            "SELL:3"
+          ],
+          "vector": [
+            1.5054386500002126,
+            -0.052804799999958046
+          ]
+        },
+        "1.0": {
+          "trace": [
+            "CLOSE",
+            "NOP",
+            "SELL:6",
+            "HOLD",
+            "SELL:3"
+          ],
+          "vector": [
+            1.5054386500002126,
+            -0.052804799999958046
+          ]
+        },
+        "5.0": {
+          "trace": [
+            "CLOSE",
+            "NOP",
+            "SELL:6",
+            "HOLD",
+            "SELL:3"
+          ],
+          "vector": [
+            1.5054386500002126,
+            -0.052804799999958046
+          ]
+        }
+      },
+      "scope": "EXACT_DECLARED_FINITE_NATIVE_TREE_NOT_TRAIN_OR_CAUSAL_POLICY",
+      "steps": 5,
+      "terminal_accounts": 1117
+    },
+    {
+      "all_terminal_payoffs_file": "reversal_-1_0.json.gz",
+      "all_terminal_payoffs_sha256": "43f31f90d692a9f68f3650e5c5b1d236f6d0cf5a77502a80cfadc0262ced2d8f",
+      "best_return_at_most_one_entry": 1.1968570499999887,
+      "best_return_no_voluntary_close": 1.617380500000043,
+      "best_return_single_horizon": {
+        "12": 1.3571607000000485,
+        "24": 1.2195102000000846,
+        "3": 1.6556692500001136,
+        "6": 1.832245700000068
+      },
+      "complete": true,
+      "conditional": {
+        "BUY:12": [
+          {
+            "trace": [
+              "BUY:12",
+              "CLOSE",
+              "BUY:6",
+              "HOLD",
+              "BUY:3"
+            ],
+            "vector": [
+              1.334121950000089,
+              -0.2787439999999515
+            ]
+          }
+        ],
+        "BUY:24": [
+          {
+            "trace": [
+              "BUY:24",
+              "CLOSE",
+              "BUY:6",
+              "HOLD",
+              "BUY:3"
+            ],
+            "vector": [
+              1.3970585500000965,
+              -0.21679999999996655
+            ]
+          }
+        ],
+        "BUY:3": [
+          {
+            "trace": [
+              "BUY:3",
+              "CLOSE",
+              "BUY:6",
+              "HOLD",
+              "BUY:3"
+            ],
+            "vector": [
+              1.2478594000001175,
+              -0.363623999999927
+            ]
+          }
+        ],
+        "BUY:6": [
+          {
+            "trace": [
+              "BUY:6",
+              "CLOSE",
+              "BUY:6",
+              "HOLD",
+              "BUY:3"
+            ],
+            "vector": [
+              1.2478594000001175,
+              -0.363623999999927
+            ]
+          }
+        ],
+        "NOP": [
+          {
+            "trace": [
+              "NOP",
+              "NOP",
+              "BUY:6",
+              "HOLD",
+              "BUY:3"
+            ],
+            "vector": [
+              1.617380500000043,
+              -0.0
+            ]
+          }
+        ],
+        "SELL:12": [
+          {
+            "trace": [
+              "SELL:12",
+              "CLOSE",
+              "BUY:6",
+              "HOLD",
+              "BUY:3"
+            ],
+            "vector": [
+              1.7783473000001049,
+              -0.018119656837647994
+            ]
+          },
+          {
+            "trace": [
+              "SELL:12",
+              "HOLD",
+              "CLOSE",
+              "BUY:6",
+              "HOLD"
+            ],
+            "vector": [
+              1.354569299999997,
+              -0.01809342909954399
+            ]
+          }
+        ],
+        "SELL:24": [
+          {
+            "trace": [
+              "SELL:24",
+              "CLOSE",
+              "BUY:6",
+              "HOLD",
+              "BUY:3"
+            ],
+            "vector": [
+              1.7481322000000743,
+              -0.01472383188031065
+            ]
+          },
+          {
+            "trace": [
+              "SELL:24",
+              "HOLD",
+              "CLOSE",
+              "BUY:6",
+              "HOLD"
+            ],
+            "vector": [
+              1.2969851999999893,
+              -0.014706508987040918
+            ]
+          }
+        ],
+        "SELL:3": [
+          {
+            "trace": [
+              "SELL:3",
+              "CLOSE",
+              "BUY:6",
+              "HOLD",
+              "BUY:3"
+            ],
+            "vector": [
+              1.8390864500000825,
+              -0.02493960081880765
+            ]
+          },
+          {
+            "trace": [
+              "SELL:3",
+              "HOLD",
+              "CLOSE",
+              "BUY:6",
+              "HOLD"
+            ],
+            "vector": [
+              1.4703263000000133,
+              -0.02488994120296723
+            ]
+          }
+        ],
+        "SELL:6": [
+          {
+            "trace": [
+              "SELL:6",
+              "CLOSE",
+              "BUY:6",
+              "HOLD",
+              "BUY:3"
+            ],
+            "vector": [
+              1.832245700000068,
+              -0.02417163273107461
+            ]
+          },
+          {
+            "trace": [
+              "SELL:6",
+              "HOLD",
+              "CLOSE",
+              "BUY:6",
+              "HOLD"
+            ],
+            "vector": [
+              1.457280399999994,
+              -0.024124981515629296
+            ]
+          }
+        ]
+      },
+      "frontier": [
+        {
+          "trace": [
+            "SELL:3",
+            "CLOSE",
+            "BUY:6",
+            "HOLD",
+            "BUY:3"
+          ],
+          "vector": [
+            1.8390864500000825,
+            -0.02493960081880765
+          ]
+        },
+        {
+          "trace": [
+            "SELL:6",
+            "CLOSE",
+            "BUY:6",
+            "HOLD",
+            "BUY:3"
+          ],
+          "vector": [
+            1.832245700000068,
+            -0.02417163273107461
+          ]
+        },
+        {
+          "trace": [
+            "SELL:12",
+            "CLOSE",
+            "BUY:6",
+            "HOLD",
+            "BUY:3"
+          ],
+          "vector": [
+            1.7783473000001049,
+            -0.018119656837647994
+          ]
+        },
+        {
+          "trace": [
+            "SELL:24",
+            "CLOSE",
+            "BUY:6",
+            "HOLD",
+            "BUY:3"
+          ],
+          "vector": [
+            1.7481322000000743,
+            -0.01472383188031065
+          ]
+        },
+        {
+          "trace": [
+            "NOP",
+            "NOP",
+            "BUY:6",
+            "HOLD",
+            "BUY:3"
+          ],
+          "vector": [
+            1.617380500000043,
+            -0.0
+          ]
+        }
+      ],
+      "initial_direction": 0,
+      "max_return": {
+        "trace": [
+          "SELL:3",
+          "CLOSE",
+          "BUY:6",
+          "HOLD",
+          "BUY:3"
+        ],
+        "vector": [
+          1.8390864500000825,
+          -0.02493960081880765
+        ]
+      },
+      "max_return_ledger": [
+        {
+          "direction": -1,
+          "entry": 103,
+          "exit": 104,
+          "net": 21.81840000000411,
+          "q": 1.0,
+          "reason": "AGENT_CLOSE",
+          "units": 45455
+        },
+        {
+          "direction": 1,
+          "entry": 105,
+          "exit": 106,
+          "net": 105.10108499999657,
+          "q": 1.0,
+          "reason": "TP",
+          "units": 45597
+        },
+        {
+          "direction": 1,
+          "entry": 107,
+          "exit": 107,
+          "net": 56.98916000000847,
+          "q": 1.0,
+          "reason": "FORCED_FLAT",
+          "units": 45959
+        }
+      ],
+      "mirror": -1,
+      "nodes": 4487,
+      "pattern": "reversal",
+      "risk_budget_choices": {
+        "0.0": {
+          "trace": [
+            "NOP",
+            "NOP",
+            "BUY:6",
+            "HOLD",
+            "BUY:3"
+          ],
+          "vector": [
+            1.617380500000043,
+            -0.0
+          ]
+        },
+        "0.1": {
+          "trace": [
+            "SELL:3",
+            "CLOSE",
+            "BUY:6",
+            "HOLD",
+            "BUY:3"
+          ],
+          "vector": [
+            1.8390864500000825,
+            -0.02493960081880765
+          ]
+        },
+        "0.5": {
+          "trace": [
+            "SELL:3",
+            "CLOSE",
+            "BUY:6",
+            "HOLD",
+            "BUY:3"
+          ],
+          "vector": [
+            1.8390864500000825,
+            -0.02493960081880765
+          ]
+        },
+        "1.0": {
+          "trace": [
+            "SELL:3",
+            "CLOSE",
+            "BUY:6",
+            "HOLD",
+            "BUY:3"
+          ],
+          "vector": [
+            1.8390864500000825,
+            -0.02493960081880765
+          ]
+        },
+        "5.0": {
+          "trace": [
+            "SELL:3",
+            "CLOSE",
+            "BUY:6",
+            "HOLD",
+            "BUY:3"
+          ],
+          "vector": [
+            1.8390864500000825,
+            -0.02493960081880765
+          ]
+        }
+      },
+      "scope": "EXACT_DECLARED_FINITE_NATIVE_TREE_NOT_TRAIN_OR_CAUSAL_POLICY",
+      "steps": 5,
+      "terminal_accounts": 3742
+    },
+    {
+      "all_terminal_payoffs_file": "reversal_-1_1.json.gz",
+      "all_terminal_payoffs_sha256": "e9661bd4ce898b14bdd57c936df85af9492101a471ab8eb174fb1162706feecd",
+      "best_return_no_voluntary_close": 1.0243842000000836,
+      "complete": true,
+      "conditional": {
+        "CLOSE": [
+          {
+            "trace": [
+              "CLOSE",
+              "NOP",
+              "BUY:6",
+              "HOLD",
+              "BUY:3"
+            ],
+            "vector": [
+              1.5607100000000873,
+              -0.05574879999996483
+            ]
+          }
+        ],
+        "HOLD": [
+          {
+            "trace": [
+              "HOLD",
+              "CLOSE",
+              "BUY:6",
+              "HOLD",
+              "BUY:3"
+            ],
+            "vector": [
+              1.334121950000089,
+              -0.2787439999999515
+            ]
+          }
+        ]
+      },
+      "frontier": [
+        {
+          "trace": [
+            "CLOSE",
+            "NOP",
+            "BUY:6",
+            "HOLD",
+            "BUY:3"
+          ],
+          "vector": [
+            1.5607100000000873,
+            -0.05574879999996483
+          ]
+        }
+      ],
+      "initial_direction": 1,
+      "max_return": {
+        "trace": [
+          "CLOSE",
+          "NOP",
+          "BUY:6",
+          "HOLD",
+          "BUY:3"
+        ],
+        "vector": [
+          1.5607100000000873,
+          -0.05574879999996483
+        ]
+      },
+      "max_return_ledger": [
+        {
+          "direction": 1,
+          "entry": 102,
+          "exit": 103,
+          "net": -5.5748799999959395,
+          "q": 0.7665765862519917,
+          "reason": "AGENT_CLOSE",
+          "units": 34843
+        },
+        {
+          "direction": 1,
+          "entry": 105,
+          "exit": 106,
+          "net": 104.8129599999966,
+          "q": 1.0,
+          "reason": "TP",
+          "units": 45472
+        },
+        {
+          "direction": 1,
+          "entry": 107,
+          "exit": 107,
+          "net": 56.83292000000844,
+          "q": 1.0,
+          "reason": "FORCED_FLAT",
+          "units": 45833
+        }
+      ],
+      "mirror": -1,
+      "nodes": 1344,
+      "pattern": "reversal",
+      "risk_budget_choices": {
+        "0.0": null,
+        "0.1": {
+          "trace": [
+            "CLOSE",
+            "NOP",
+            "BUY:6",
+            "HOLD",
+            "BUY:3"
+          ],
+          "vector": [
+            1.5607100000000873,
+            -0.05574879999996483
+          ]
+        },
+        "0.5": {
+          "trace": [
+            "CLOSE",
+            "NOP",
+            "BUY:6",
+            "HOLD",
+            "BUY:3"
+          ],
+          "vector": [
+            1.5607100000000873,
+            -0.05574879999996483
+          ]
+        },
+        "1.0": {
+          "trace": [
+            "CLOSE",
+            "NOP",
+            "BUY:6",
+            "HOLD",
+            "BUY:3"
+          ],
+          "vector": [
+            1.5607100000000873,
+            -0.05574879999996483
+          ]
+        },
+        "5.0": {
+          "trace": [
+            "CLOSE",
+            "NOP",
+            "BUY:6",
+            "HOLD",
+            "BUY:3"
+          ],
+          "vector": [
+            1.5607100000000873,
+            -0.05574879999996483
+          ]
+        }
+      },
+      "scope": "EXACT_DECLARED_FINITE_NATIVE_TREE_NOT_TRAIN_OR_CAUSAL_POLICY",
+      "steps": 5,
+      "terminal_accounts": 1117
+    },
+    {
+      "all_terminal_payoffs_file": "reversal_-1_-1.json.gz",
+      "all_terminal_payoffs_sha256": "524b53de26f62ee5b34a8bee7bbe83246fa03bbe4e0ab16c734aaeec8798be29",
+      "best_return_no_voluntary_close": 0.05993895000011573,
+      "complete": true,
+      "conditional": {
+        "CLOSE": [
+          {
+            "trace": [
+              "CLOSE",
+              "NOP",
+              "BUY:6",
+              "HOLD",
+              "BUY:3"
+            ],
+            "vector": [
+              1.5637249000000963,
+              -0.052804799999958046
+            ]
+          }
+        ],
+        "HOLD": [
+          {
+            "trace": [
+              "HOLD",
+              "CLOSE",
+              "BUY:6",
+              "HOLD",
+              "BUY:3"
+            ],
+            "vector": [
+              1.7783473000001049,
+              -0.03465314999995826
+            ]
+          }
+        ]
+      },
+      "frontier": [
+        {
+          "trace": [
+            "HOLD",
+            "CLOSE",
+            "BUY:6",
+            "HOLD",
+            "BUY:3"
+          ],
+          "vector": [
+            1.7783473000001049,
+            -0.03465314999995826
+          ]
+        }
+      ],
+      "initial_direction": -1,
+      "max_return": {
+        "trace": [
+          "HOLD",
+          "CLOSE",
+          "BUY:6",
+          "HOLD",
+          "BUY:3"
+        ],
+        "vector": [
+          1.7783473000001049,
+          -0.03465314999995826
+        ]
+      },
+      "max_return_ledger": [
+        {
+          "direction": -1,
+          "entry": 102,
+          "exit": 104,
+          "net": 15.841440000002981,
+          "q": 0.726065346607306,
+          "reason": "AGENT_CLOSE",
+          "units": 33003
+        },
+        {
+          "direction": 1,
+          "entry": 105,
+          "exit": 106,
+          "net": 105.03884999999657,
+          "q": 1.0,
+          "reason": "TP",
+          "units": 45570
+        },
+        {
+          "direction": 1,
+          "entry": 107,
+          "exit": 107,
+          "net": 56.95444000000846,
+          "q": 1.0,
+          "reason": "FORCED_FLAT",
+          "units": 45931
+        }
+      ],
+      "mirror": -1,
+      "nodes": 1351,
+      "pattern": "reversal",
+      "risk_budget_choices": {
+        "0.0": null,
+        "0.1": {
+          "trace": [
+            "HOLD",
+            "CLOSE",
+            "BUY:6",
+            "HOLD",
+            "BUY:3"
+          ],
+          "vector": [
+            1.7783473000001049,
+            -0.03465314999995826
+          ]
+        },
+        "0.5": {
+          "trace": [
+            "HOLD",
+            "CLOSE",
+            "BUY:6",
+            "HOLD",
+            "BUY:3"
+          ],
+          "vector": [
+            1.7783473000001049,
+            -0.03465314999995826
+          ]
+        },
+        "1.0": {
+          "trace": [
+            "HOLD",
+            "CLOSE",
+            "BUY:6",
+            "HOLD",
+            "BUY:3"
+          ],
+          "vector": [
+            1.7783473000001049,
+            -0.03465314999995826
+          ]
+        },
+        "5.0": {
+          "trace": [
+            "HOLD",
+            "CLOSE",
+            "BUY:6",
+            "HOLD",
+            "BUY:3"
+          ],
+          "vector": [
+            1.7783473000001049,
+            -0.03465314999995826
+          ]
+        }
+      },
+      "scope": "EXACT_DECLARED_FINITE_NATIVE_TREE_NOT_TRAIN_OR_CAUSAL_POLICY",
+      "steps": 5,
+      "terminal_accounts": 1124
+    }
+  ],
+  "cold_replays": 126,
+  "current_deap_modified": false,
+  "feature_selection_authorized": false,
+  "independent_frontier_check": true,
+  "max_cash_error_usd": 2.1600499167107046e-12,
+  "nodes": 46256,
+  "schema": "exact_sequential_account_reference.v1",
+  "scope": "RETROSPECTIVE_FINITE_SYNTHETIC_REFERENCE_NOT_FULL_TRAIN_NOT_CAUSAL",
+  "source_hashes": {
+    "app/dynamic_account_arbiter.py": "3d1c8ae9deb86af40af944bb2b936116cbecb61b79b178a170b9e23f8df19a19",
+    "app/dynamic_account_panel.py": "55dde2937856d17c06f974889dbd1766f552d6fdf0b5a5e74f0bc481acf762c7",
+    "app/horizon_risk_rules.py": "89afca8dd1ba12842449989ff2ca940cb461522a816ef779350b597e2062ae31",
+    "app/sequential_account_pareto.py": "25bbaba9913a0a80e8aba32e2126c2f71fab361b8f7bd74639bba1041c115c57",
+    "docs/audits/evidence/shared_risk_rules_20261028/CONFIG.json": "99d7d4dc92f6437c84b8b36de4c29a1ba474489a7c07444899699c00203c3c0e",
+    "native/app/short_horizon/__init__.py": "89c2c3afeb58e820eb64ddfceed715e20d2cc1e8d4ed7ba7902ed56c90305d2b",
+    "native/app/short_horizon/adapter.py": "9fa2313c3e3ffbbe75d42c6863db0c995e8d75b62a16aa6552deff242cdb5c16",
+    "native/app/short_horizon/analysis.py": "2265c734d5cc674b0fb00c9e629c55f220f4e65e2580ba6b11edef439954ca5c",
+    "native/app/short_horizon/bar_source.py": "fab22a4db4ef656f97dcab5f7ba9f8846910ef2dadfa2c9f0515d6de95555a2e",
+    "native/app/short_horizon/blocks.py": "6bcbf06bd52e942f700d7b7022a61184d5eee8fc62ba7664718d11f339bd59d7",
+    "native/app/short_horizon/calendar.py": "cf980cbf63308cb5e93a6bec1544e378e8df2e56b65111393df05901badafaf1",
+    "native/app/short_horizon/clock_identity.py": "0bd000523da23f9c87fd7947b558ca1c55a16a5df47112aa754f2670080a1d2a",
+    "native/app/short_horizon/data.py": "28d50d2539a99bc0e18af63c49e17bd4b2b6e0245f3e6050bbf328d87836fe5d",
+    "native/app/short_horizon/events.py": "8b84d59c0be00c9f16f521feb44d26ed356235126648b434ee4cbd442a174055",
+    "native/app/short_horizon/execution.py": "a0b374d6ff9dc0165c92aa1a9bc8c980b57a6bd2b3d874a3ff9a899237f73ae2",
+    "native/app/short_horizon/expert_guided/__init__.py": "8080519f546750617743371f2bf23a61f713708beaece7326eb0517b364e849c",
+    "native/app/short_horizon/expert_guided/absolute.py": "dd498804e24d82dff37e9ee9188e819c323e212c0d032e6f9c500b64f5b55083",
+    "native/app/short_horizon/expert_guided/actions.py": "70d637d5f0e02e121a6acab24279eabbff6d19c98e6a0806fb404da80dda9141",
+    "native/app/short_horizon/expert_guided/data.py": "671a7ab8dcde6f4b327f9237d346a1946873da359a081ef11576a6908660682d",
+    "native/app/short_horizon/expert_guided/env.py": "33216a77d9a889baa38fdf50a5a6d9270ef054e24bd9623326061641991c3b96",
+    "native/app/short_horizon/expert_guided/learn.py": "87c6708c7be510745c1b72aa1471ea1903986575053fa753175e5f2060ceceec",
+    "native/app/short_horizon/expert_guided/oracle.py": "e731e227d823db950a8e9a5f7bebed448d97bc260acf5da28f99a78f5d9fb621",
+    "native/app/short_horizon/expert_guided/sac_demo.py": "d4aaf43d3877bec0f486ceff55925b7efa63d51fa67bd16edc4d5244c11f9d20",
+    "native/app/short_horizon/expert_guided/scoring.py": "2fcf62bd07eb3383b77eb477be90125e61c5fd0e3c8eaf6f644391f7a51dc3a5",
+    "native/app/short_horizon/expert_guided/signals.py": "bc8f2bf8b172e78146ec067ccbb5b0d7f4379401f6a4a28584a9530663922ae0",
+    "native/app/short_horizon/expert_guided/temporal.py": "c536186f4170913ce9c5df7176ad78197ed2283c39d8a71102a5d61c506c6bdd",
+    "native/app/short_horizon/noise.py": "58f80ab8220f75272edded13ffc1a2174ed4fbca16455f6abca4259fc61f0ea5",
+    "native/app/short_horizon/predictors.py": "a6318179e62922739cb321d9d3298bde0fd70259c70568148180e7acb518da7d",
+    "native/app/short_horizon/strategies.py": "22634736134d17b8dff2094b05e12b07a5fdad9a682a494a3b4fbbaf72f8aa08",
+    "native/app/short_horizon/vol_features.py": "c8a6046d1210a4f79d371ddbc2b9051bdcd8ded78e780d89a7a7100727c1a86e",
+    "native/app/short_horizon/voltrend.py": "4f8e7629c1acb978ab214f48cbd3f6604a85bff9cf0fc012251f7c888f5d9eab",
+    "native/app/short_horizon/vstrategies.py": "70786105fe1a5b39d59e44e9938ca950e2c024a3721306593744bbf2ee6534ca",
+    "native/app/short_horizon/zigzag.py": "fc24c6f22aa4f7696548d1117b1d2cfad42a43eccd116f0bbcffe6a71df1624a",
+    "native/app/short_horizon/zigzag_opt.py": "dead5eacd7449f21731514417cb604d9a23b0361e151eacecb1825be6323ccb7",
+    "tools/calculate_sequential_pareto_reference.py": "ffdc6966750151ab20ce985f581d1681e5075dcf7fa855882a7c3b9ced1fbccf"
+  },
+  "steps": 5,
+  "terminal_accounts": 37578
+}
