@@ -1,0 +1,10 @@
+{
+  "schema": "pragmatic_resolution_contrast.v1",
+  "calibration_seed": 960000,
+  "confirmation_seed": 970000,
+  "old_close_offsets": [3, 6, 12, 24],
+  "new_close_offsets": [1, 2, 3, 6, 12, 24],
+  "reporters": ["ideal", "noise_0.5", "noise_1", "noise_2", "causal"],
+  "financial_training": false,
+  "coefficient_selection": false
+}

@@ -3,7 +3,11 @@
   "date": "2026-10-30",
   "timezone": "America/Bogota",
   "priority": 0,
-  "current_stage": "PRAGMATIC_CLOSE_ATTRIBUTION_PREFLIGHT",
+  "current_stage": "PRAGMATIC_CLOSE_ATTRIBUTION_RUNNING",
+  "pragmatic_close_attribution_launch": "../166_PRAGMATIC_CLOSE_ATTRIBUTION_LAUNCH.md",
+  "pragmatic_close_attribution_runtime": {"code":"de91e051","identity":"726ebc8a21d7c268493a6765566865bef1868de3a8b4689a63d039f9d2dfed7e","tests_passed":258,"cpu_workers":4,"expected_baselines":360,"expected_interventions":3940,"persistent_service":true},
+  "pragmatic_resolution_plan": "../167_PRAGMATIC_TEMPORAL_RESOLUTION_CONTRAST.md",
+  "pragmatic_resolution_preflight": {"tests_passed":261,"skipped":0,"smoke_accounts":18,"resume_authenticated":true,"frozen_policies":6,"expected_accounts":1296,"calibration_seed":960000,"confirmation_seed":970000,"selection_performed":false},
   "pragmatic_close_attribution_plan": "../164_PRAGMATIC_CLOSE_ATTRIBUTION_PLAN.md",
   "pragmatic_close_attribution_preflight": "../165_PRAGMATIC_CLOSE_ATTRIBUTION_PREFLIGHT.md",
   "pragmatic_close_attribution_checks": {"tests_passed":258,"skipped":0,"smoke_exact_baselines":4,"smoke_interventions":44,"resume_authenticated":true,"full_expected_baselines":360,"financial_training":false},
@@ -130,6 +134,7 @@
   },
   "bottom_up": "INDEPENDENT_REVIEWS_RECEIVED; FIVE_CONCRETE_DEFECTS_REPAIRED_AND_REPLAYED; COVERAGE_REVISION_REQUIRED",
   "next_allowed_actions": [
+    "After authenticated164 completion run167 automatically: six frozen policies on fresh960000/970000 paired worlds; change only1h/2h close alternatives; no coefficient selection or financial training",
     "Execute164: authenticate360 frozen sequential accounts and every one-tick close suppression; publish position and account attribution without retuning; then qualify learned adapter",
     "Contrast160 completed in163: audit the frozen comparison and measure per-close full-account continuation before qualifying a learned adapter; no tuning on confirmation or automatic financial-learning release",
     "Suppressed-close diagnostic159 complete: use fixed-position versus full-account counterexamples to test sequential causal allocation on new worlds; do not tune gates on already-read confirmation",
@@ -149,8 +154,9 @@
     "Model-specific sequential floating selection",
     "Promotion of synthetic-oracle results as learned-model evidence"
   ],
-  "operations": "Both prior causal-history lanes and their collector completed. Pragmatic contrast completed under6c9f597e:1584 accounts;247 runtime tests;250 post-run tests;service exited0 without restart;completed resume authenticated. Results163 and audit request published. Next audit and full-account close attribution before learned-adapter qualification. No financial training or feature selection.",
+  "operations": "Contrast163 complete. Attribution164 running under immutablede91e051:360 baselines and3940 one-tick interventions;258 tests;4 bounded CPU workers. Ideal72 accounts/305 closes completed. Plan167 implements the measured missing1h/2h alternatives as a separate fixed-coefficient contrast on fresh paired worlds;261 tests and18-account smoke with authenticated resume. Automatic dependent execution; no financial training or feature selection.",
   "history": [
+    {"date":"2026-10-30","event":"Owner requests immediate continuation. Implemented164 and deployedde91e051 after258 tests and44-intervention smoke. Ideal stage305 closes:157 help account profit and148 harm it. Found two concrete omitted1h/2h HOLD witnesses; implemented separate167 fixed-coefficient fresh-world contrast with261 tests and18-account smoke. Existing runtime and coefficients unchanged; dependent automatic execution prepared."},
     {"date":"2026-10-30","event":"Full pragmatic contrast completed automatically:864 calibration and720 confirmation accounts;four frozen representatives;247 runtime tests;no restarts. Independent selection check and completed resume pass. Published all sensitivity results and local close harms without selecting on confirmation. Post-run undefined-Sharpe reporting guard has zero impact on1584 accounts;250 tests pass. Runtime and receipts unchanged."},
     {"date":"2026-10-30","event":"Published6c9f597e and deployed immutable full contrast service.247 runtime tests passed before calibration;8/36 initial units observed complete with22.28s mean time. Persistent restartable service;4 CPU workers;6GiB cap; no GPU allocation; no approvals between phases."},
     {"date":"2026-10-30","event":"Owner accepts pragmatic hierarchical comparison. Implemented three controller arms and bounded two-order native receding-horizon plans;24-profile JSON grid and resumable phase queue.247 runtime tests pass;24-account smoke and completed resume verified. Found and corrected ISO versus market-week activity denominator before full calibration. All learned-model observations remain free of position state and oracle paths."},

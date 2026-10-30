@@ -1,0 +1,25 @@
+{
+  "data": {
+    "accounts": 18,
+    "artifacts": {
+      "DEPENDENCY.json": "d4bde5f26d66cc59f977f67e9bcd633d50ec108966d153e2f09ee69a6643cd20",
+      "MANIFEST.json": "85dd3c851a793432f71470d70bad537d46f07ac623ff5b7d6f48fb9b68102019",
+      "REPORT.json": "ac0cd15328e1e0c7c86882b96e713a3c5b46b9d74c859994a7ead5a4cc72780b",
+      "RESULTS.md": "6d8a303dfe483b1f29b8c03ca09a156d33182931a9043138f85d044262fa8076",
+      "TESTS.json": "4c4886789b2a7122aae3abbd7dc586563feef70a64a0b89b0ed6bd2147fe07db",
+      "TESTS.log": "fd5d0f89652987d58ae38e4997afb989d818d969224e57183afb54c7699faa3b",
+      "TESTS.xml": "cb2030601692de1457fda14cb48cfabfe3448ce10a89cd6609705374e0023828",
+      "calibration_noise_1_000.json": "0a430cfde83d6df87db1153c3e6daf4173facc615855491ae9f53768df783ab0",
+      "confirmation_ideal_000.json": "9c5627fa23dd61aed38dbaf8d42d3215e97a0d078c37619d969a9f3317f6b456",
+      "confirmation_noise_1_000.json": "a22be4e2f2c282b366366183f819be30b07dfe86be9b958f5de4e3890d1b5810"
+    },
+    "tests": {
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "tests": 261
+    }
+  },
+  "identity": "70851ab2b57f55e7597a6872e5f711a3ca673e9a6899102b1599cedabe14d1e1",
+  "seal": "9336eabc2dfb0de33dbcacefe3998af2a978cc72be194d22b94d9f1656157420"
+}

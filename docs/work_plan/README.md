@@ -7,6 +7,12 @@ continued execution. Authenticate the frozen sequential finalists, suppress
 each executed close for exactly one tick, then resume the identical policy.
 Measure position and full-account effects separately. All five reporters;
 360 baselines, per-case resumable receipts, no retuning or financial training.
+[Launch166](166_PRAGMATIC_CLOSE_ATTRIBUTION_LAUNCH.md): immutablede91e051,
+258 tests and persistent four-CPU execution. Ideal stage complete:305 closes,
+157 improve account profit and148 worsen it against one-tick HOLD.
+[Resolution contrast167](167_PRAGMATIC_TEMPORAL_RESOLUTION_CONTRAST.md): two
+measured omitted1h/2h hold witnesses; fixed coefficients and fresh paired
+worlds, queued after attribution without another approval.
 
 [Pragmatic contrast160](160_PRAGMATIC_CONTROLLER_CONTRAST_PLAN.md): owner accepts
 a simple hierarchical controller, a declared short/long predictive-logic proxy,
