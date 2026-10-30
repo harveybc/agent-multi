@@ -72,7 +72,11 @@ def test_archived_account_close_request_is_preempted_by_native_gap(config, mirro
                 pattern='trend', volatility='increasing', spread_pips=.5, mirror=mirror)
     expected = next(w for w in archive['worlds'] if w['spec'] == spec)
     actual = CrossedWorld(spec, config).run(genes, verify=True, details=True)
-    assert actual == expected
+    # Dot-product rounding varies across CPU/BLAS; accounts and actions must not.
+    assert 0 <= actual['cache_max_error'] <= 1e-10
+    assert actual['cache_max_error'] == pytest.approx(expected['cache_max_error'],rel=0,abs=1e-12)
+    assert {k:v for k,v in actual.items() if k!='cache_max_error'} == {
+        k:v for k,v in expected.items() if k!='cache_max_error'}
     request = next(t for t in actual['trace'] if t['bar'] == 26)
     assert request['action'] == 3 and request['close'] == 'SL'
     trade = next(t for t in actual['ledger'] if t['exit_bar'] == 27)
