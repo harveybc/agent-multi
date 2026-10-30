@@ -2,6 +2,14 @@
 
 ## Priority update: 2026-10-30
 
+[Suppressed closes159](159_SUPPRESSED_CLOSE_COUNTERFACTUAL_RESULTS.md):
+432 exact baseline replays and305 single-close full-account interventions.
+202 suppressed closes improve their position;103 harm it. Three locally
+beneficial interventions (one shared market witness across policies) harm
+the whole account through subsequent trades. Native fixed-order and complete
+account effects are now measured separately;65 tests. Next: qualify sequential
+non-anticipative allocation against the exact references, not lower all gates.
+
 [Median lane and gate diagnostic157](157_MEDIAN_LANE_AND_FROZEN_GATE_DIAGNOSTIC.md):
 median20x300x3 completed with15,472 receipts. All four frozen finalists fail
 >2 orders/week on synthetic confirmation and execute zero early closes.

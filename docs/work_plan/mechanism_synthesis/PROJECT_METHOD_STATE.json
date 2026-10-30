@@ -4,6 +4,9 @@
   "timezone": "America/Bogota",
   "priority": 0,
   "current_stage": "CAUSAL_HISTORY_V2_AUTOMATED_SEARCH_DEPLOYED",
+  "suppressed_close_plan": "../158_SUPPRESSED_CLOSE_COUNTERFACTUAL_PLAN.md",
+  "suppressed_close_results": "../159_SUPPRESSED_CLOSE_COUNTERFACTUAL_RESULTS.md",
+  "suppressed_close_evidence": {"baseline_replays":432,"single_intervention_replays":305,"native_close_alternatives":2059,"passive_alternatives":305,"locally_helpful_ticks":202,"locally_harmful_ticks":103,"account_helpful_interventions":199,"account_harmful_interventions":106,"tests_passed":65,"resume_verified":true,"confirmation_tuning":false,"causal_allocator_complete":false},
   "median_v2_diagnostic_plan": "../156_FROZEN_POLICY_GATE_DIAGNOSTIC_PLAN.md",
   "median_v2_diagnostic_results": "../157_MEDIAN_LANE_AND_FROZEN_GATE_DIAGNOSTIC.md",
   "median_v2_completed": {"candidates":15472,"confirmation_accounts_per_policy":108,"frozen_representatives":4,"eligible_representatives_on_confirmation":0,"representative_early_closes":0,"observational_replays_exact":432,"diagnostic_tests_passed":47},
@@ -115,7 +118,7 @@
   },
   "bottom_up": "INDEPENDENT_REVIEWS_RECEIVED; FIVE_CONCRETE_DEFECTS_REPAIRED_AND_REPLAYED; COVERAGE_REVISION_REQUIRED",
   "next_allowed_actions": [
-    "Score suppressed close proposals against fixed-position passive and optimal native exits before revising close gates; no tuning on already-read confirmation worlds",
+    "Suppressed-close diagnostic159 complete: use fixed-position versus full-account counterexamples to test sequential causal allocation on new worlds; do not tune gates on already-read confirmation",
     "Graph155 complete: expand bounded decision coverage and compare sequential allocation against its native exact prefix references; do not claim the full historical frontier from the three-decision proof",
     "Qualify non-anticipative sequential scenario-tree allocator against153 and running local-policy baseline; expose return-drawdown preference rather than inventing a unique Pareto optimum",
     "Implement144 stagesR1-R4 with adversarial tests: cache/report bindings, sealed matured-error history, explicit nominal uncertainty and causal adapter controls",
@@ -134,6 +137,7 @@
   ],
   "operations": "V2 deployed00:11Bogota with pinned3e6450fc on two independent CPU hosts;209 runtime tests passed each; test-qualified20x300x3 search and confirmation/report/collection enabled. No performance launch gate; activity >2. No financial training or feature selection.",
   "history": [
+    {"date":"2026-10-30","event":"Owner authorizes next step. Implemented native same-position exit enumeration and one-intervention frozen-policy continuation.432 accounts replay exactly;305 suppressed ticks;2059 close alternatives;202 locally helpful versus103 harmful.199 account improvements versus106 losses; shared counterexample shows local+23.95 becoming account-6.06 through continuation.65 tests; full resume authenticated. No live runtime modified; sequential causal allocator remains next."},
     {"date":"2026-10-30","event":"Status request: median v2 completed0903UTC; zero still in third seed. Authenticated15472 receipts and completed432 exact observational replays. All4 finalists lost >2 activity eligibility in confirmation and executed zero closes; staged uncertainty/history/persistence counts explain suppression, not absence of market signal.47 tests. No campaign mutation or automatic promotion."},
     {"date":"2026-10-30","event":"Owner approves continuation. Recovered exact indicator blob (checkout difference was documentation); all K3 endpoints expanded to404748 edges with zero original-winner error. Explicit BID adapter and next-open pivot exit avoid midpoint mislabeling and impossible extreme fills. Four calendar-only TRAIN prefixes enumerate3206 accounts;28 cold frontier replays;138 tests; byte-identical rebuilds. No live runtime changed; no full TRAIN frontier or learned result claimed."},
     {"date":"2026-10-30","event":"Owner requests consolidated opening-close continuation mechanism and theoretical Pareto calculation. Added152 Bellman-set derivation and153 exact finite native reference:18 trees;37578 terminal accounts;126 cold witness replays;independent global and conditional dominance checks;89 tests. Fixed saved risk recipe remains engineering control. Existing DEAP services unchanged; no full TRAIN frontier or learned qualification claimed."},
