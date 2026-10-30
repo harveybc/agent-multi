@@ -4,6 +4,9 @@
   "timezone": "America/Bogota",
   "priority": 0,
   "current_stage": "CAUSAL_HISTORY_V2_AUTOMATED_SEARCH_DEPLOYED",
+  "train_opportunity_graph_plan": "../154_TRAIN_OPPORTUNITY_GRAPH_PLAN.md",
+  "train_opportunity_graph_results": "../155_TRAIN_OPPORTUNITY_GRAPH_RESULTS.md",
+  "train_opportunity_graph_scope": {"edges":404748,"original_value_max_error":0.0,"restricted_prefix_accounts":3206,"cold_frontier_replays":28,"focused_tests_passed":138,"full_train_account_frontier":false,"causal_policy":false,"inputs_unchanged":true},
   "sequential_derivation": "../152_TWO_PHASE_SEQUENTIAL_PARETO_DERIVATION.md",
   "sequential_exact_results": "../153_SEQUENTIAL_PARETO_REFERENCE_RESULTS.md",
   "sequential_exact_scope": {"native_synthetic_trees":18,"terminal_accounts":37578,"cold_witness_replays":126,"focused_tests_passed":89,"complete_train_frontier":false,"causal_policy":false,"running_search_modified":false},
@@ -109,7 +112,7 @@
   },
   "bottom_up": "INDEPENDENT_REVIEWS_RECEIVED; FIVE_CONCRETE_DEFECTS_REPAIRED_AND_REPLAYED; COVERAGE_REVISION_REQUIRED",
   "next_allowed_actions": [
-    "Construct TRAIN opportunity graph retaining all K=3 endpoints and feasible early exits; qualify bounded native exact subproblems before claiming a full historical frontier",
+    "Graph155 complete: expand bounded decision coverage and compare sequential allocation against its native exact prefix references; do not claim the full historical frontier from the three-decision proof",
     "Qualify non-anticipative sequential scenario-tree allocator against153 and running local-policy baseline; expose return-drawdown preference rather than inventing a unique Pareto optimum",
     "Implement144 stagesR1-R4 with adversarial tests: cache/report bindings, sealed matured-error history, explicit nominal uncertainty and causal adapter controls",
     "Then qualify paired fixed-size close/HOLD and no-close account contrasts on new worlds; do not use old confirmation to tune a new gate",
@@ -127,6 +130,7 @@
   ],
   "operations": "V2 deployed00:11Bogota with pinned3e6450fc on two independent CPU hosts;209 runtime tests passed each; test-qualified20x300x3 search and confirmation/report/collection enabled. No performance launch gate; activity >2. No financial training or feature selection.",
   "history": [
+    {"date":"2026-10-30","event":"Owner approves continuation. Recovered exact indicator blob (checkout difference was documentation); all K3 endpoints expanded to404748 edges with zero original-winner error. Explicit BID adapter and next-open pivot exit avoid midpoint mislabeling and impossible extreme fills. Four calendar-only TRAIN prefixes enumerate3206 accounts;28 cold frontier replays;138 tests; byte-identical rebuilds. No live runtime changed; no full TRAIN frontier or learned result claimed."},
     {"date":"2026-10-30","event":"Owner requests consolidated opening-close continuation mechanism and theoretical Pareto calculation. Added152 Bellman-set derivation and153 exact finite native reference:18 trees;37578 terminal accounts;126 cold witness replays;independent global and conditional dominance checks;89 tests. Fixed saved risk recipe remains engineering control. Existing DEAP services unchanged; no full TRAIN frontier or learned qualification claimed."},
     {"date":"2026-10-30","event":"Owner authorizes continuation after mistaken launch criterion. Tests/integrity now enable DEAP regardless of control performance; candidate activity strictly >2. Added no-close behavior flags, observed gene variation and new seed banks.209 tests;57-candidate smoke;12 confirmation jobs; authenticated resume. Existing evidence preserved."},
     {"date":"2026-10-29","event":"Owner requests unattended continuation. Implemented causal history penalties separately for entries and closes; independent close uncertainty, fixed exposure, bounded workers and tests-to-report queue with conditional20x300x3 exploratory search.200 tests pass,58-candidate smoke and authenticated resume complete. Not final R4/R6 qualification."},

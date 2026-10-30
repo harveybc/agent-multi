@@ -2,6 +2,14 @@
 
 ## Priority update: 2026-10-30
 
+[TRAIN graph155](155_TRAIN_OPPORTUNITY_GRAPH_RESULTS.md), under
+[plan154](154_TRAIN_OPPORTUNITY_GRAPH_PLAN.md): all404,748 K=3 directional
+alternatives retained over2020-2023; previous winning endpoints/values reproduce
+exactly. Explicit BID quote adapter and executable next-open pivot exits were
+qualified on3,206 restricted-prefix native accounts in four calendar-selected
+sessions.28 cold frontier replays;138 tests; byte-identical rebuilds. This is
+not a four-year account frontier or learned performance. Live DEAP unchanged.
+
 [Two-phase sequential derivation152](152_TWO_PHASE_SEQUENTIAL_PARETO_DERIVATION.md)
 consolidates the K=3 opening oracle, fixed-position early-close regret and
 account continuation value. The running DEAP is a local-policy coefficient

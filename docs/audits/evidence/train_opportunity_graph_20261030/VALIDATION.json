@@ -1,0 +1,25 @@
+{
+  "schema": "train_opportunity_graph.verification.v1",
+  "graph_sha256": "db1f05e41ef99f9de52261a08bc8314a563a52d5ad09e8567cbe9eacc1d20c04",
+  "native_report_sha256": "61ccf6022ab582af6c4f2ece326f59f175f7d02e83f6f4ff1e5ad11a8a663345",
+  "graph_report_and_arrays_cold_rebuild_byte_identical": true,
+  "native_report_and_complete_payoffs_cold_rebuild_byte_identical": true,
+  "source_python_bytecode_caches_excluded_from_comparison": true,
+  "tests_passed": 138,
+  "tests_skipped": 0,
+  "test_modules": [
+    "test_train_opportunity_graph",
+    "test_train_native_pareto",
+    "test_sequential_account_pareto",
+    "test_dynamic_account_panel",
+    "test_dynamic_account_arbiter",
+    "test_mechanism_games",
+    "test_horizon_risk_rules",
+    "test_post_audit_diagnostics",
+    "test_zigzag_opportunities",
+    "test_zigzag_risk_profiles"
+  ],
+  "scoped_ruff": "PASS",
+  "git_diff_check": "PASS",
+  "scope": "full TRAIN K3 reference graph plus exact restricted native prefixes, not full TRAIN account frontier or learned performance"
+}

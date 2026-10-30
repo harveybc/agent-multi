@@ -2,6 +2,14 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "verify_train_prefix_pareto.py": {
+   "purpose": "Authenticate a TRAIN K3 graph and enumerate bounded native BID-quoted account prefixes with next-open planned pivot exits and independent Pareto replay; no full-year or learned-policy claim",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "mechanism synthesis"
+  },
+  "build_train_opportunity_graph.py": {
+   "purpose": "Authenticate and recover immutable TRAIN indicator sources; retain all three retrospective pivot alternatives for both directions without reading validation or TEST",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "mechanism synthesis"
+  },
   "calculate_sequential_pareto_reference.py": {
    "purpose": "Enumerate finite synthetic native account trees with saved horizon risk profiles and independently verify conditional and global Pareto frontiers; retrospective reference only, no training or runtime mutation",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "mechanism synthesis"

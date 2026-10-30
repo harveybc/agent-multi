@@ -1,0 +1,184 @@
+{
+  "code_sha256": {
+    "app/train_opportunity_graph.py": "632f9fe61b015d913592ac6acd09310df0250255babe4114f205c23289bed2a5",
+    "tools/build_train_opportunity_graph.py": "b8b5b2ad52a40f8e43acf5aa2c203e044cef8e57c788693fa7194474d2545bf6"
+  },
+  "data": {
+    "chunks": 209,
+    "cost_profile": {
+      "commission_per_lot_side": 3.5,
+      "entry_delay_bars": 0,
+      "limit_through": 0.0001,
+      "lot_units": 100000.0,
+      "slippage_market": 2e-05,
+      "slippage_stop": 5e-05,
+      "spread_schedule": [
+        [
+          0,
+          1,
+          0.0003
+        ],
+        [
+          1,
+          3,
+          0.0001
+        ],
+        [
+          3,
+          9,
+          6e-05
+        ],
+        [
+          9,
+          21,
+          3e-05
+        ],
+        [
+          21,
+          23,
+          6e-05
+        ],
+        [
+          23,
+          24,
+          0.00015
+        ]
+      ],
+      "swap_long_per_lot": -7.0,
+      "swap_short_per_lot": 2.5,
+      "triple_swap_rollover_index": 3,
+      "weekly_open_spread": 0.0003
+    },
+    "costs_status": "ASSUMED_NOT_BROKER_VERIFIED",
+    "end": "2023-12-29 21:00:00+00:00",
+    "excluded_origins": 5016,
+    "origins": 19879,
+    "rows": 24895,
+    "start": "2020-01-02 01:00:00+00:00",
+    "support_sha256": "e575abb297af4b1937105fffa7a8eefff50db594af999b40c063b2d0d741dbfd",
+    "years": {
+      "2020": 6232,
+      "2021": 6235,
+      "2022": 6231,
+      "2023": 6197
+    }
+  },
+  "engine_sha256": {
+    "app/short_horizon/__init__.py": "89c2c3afeb58e820eb64ddfceed715e20d2cc1e8d4ed7ba7902ed56c90305d2b",
+    "app/short_horizon/adapter.py": "9fa2313c3e3ffbbe75d42c6863db0c995e8d75b62a16aa6552deff242cdb5c16",
+    "app/short_horizon/analysis.py": "2265c734d5cc674b0fb00c9e629c55f220f4e65e2580ba6b11edef439954ca5c",
+    "app/short_horizon/bar_source.py": "fab22a4db4ef656f97dcab5f7ba9f8846910ef2dadfa2c9f0515d6de95555a2e",
+    "app/short_horizon/blocks.py": "6bcbf06bd52e942f700d7b7022a61184d5eee8fc62ba7664718d11f339bd59d7",
+    "app/short_horizon/calendar.py": "cf980cbf63308cb5e93a6bec1544e378e8df2e56b65111393df05901badafaf1",
+    "app/short_horizon/clock_identity.py": "0bd000523da23f9c87fd7947b558ca1c55a16a5df47112aa754f2670080a1d2a",
+    "app/short_horizon/data.py": "28d50d2539a99bc0e18af63c49e17bd4b2b6e0245f3e6050bbf328d87836fe5d",
+    "app/short_horizon/events.py": "8b84d59c0be00c9f16f521feb44d26ed356235126648b434ee4cbd442a174055",
+    "app/short_horizon/execution.py": "05179b244b9c095e4b541f5337ee9157b071aea78c8fe002c045f7625c39ff07",
+    "app/short_horizon/noise.py": "58f80ab8220f75272edded13ffc1a2174ed4fbca16455f6abca4259fc61f0ea5",
+    "app/short_horizon/predictors.py": "a6318179e62922739cb321d9d3298bde0fd70259c70568148180e7acb518da7d",
+    "app/short_horizon/strategies.py": "22634736134d17b8dff2094b05e12b07a5fdad9a682a494a3b4fbbaf72f8aa08",
+    "app/short_horizon/vol_features.py": "c8a6046d1210a4f79d371ddbc2b9051bdcd8ded78e780d89a7a7100727c1a86e",
+    "app/short_horizon/voltrend.py": "4f8e7629c1acb978ab214f48cbd3f6604a85bff9cf0fc012251f7c888f5d9eab",
+    "app/short_horizon/vstrategies.py": "70786105fe1a5b39d59e44e9938ca950e2c024a3721306593744bbf2ee6534ca",
+    "app/short_horizon/zigzag.py": "c06592f6478f3887213e985a80de5823dd953d3887ce25bec0272197860affda",
+    "app/short_horizon/zigzag_opt.py": "dead5eacd7449f21731514417cb604d9a23b0361e151eacecb1825be6323ccb7"
+  },
+  "input_sha256": {
+    "bars": "c80847bb149c7af1ad50e42301b5cd70608e6c37702ce8cc6a7b9eb70f36d2ca",
+    "closures": "71078e8f9a95c4438405a9fa3dafdffdc0f44183bbf27ba828168c18065e8350",
+    "recipe": "de4d8cae55de01fb90ddc7334206c7bf6251be671f2b2476859dcd6a76aac924"
+  },
+  "recovered_source_revisions": {
+    "app/short_horizon/zigzag.py": "28ad98e82f4f945cd1c8729b4c75989710a2108d"
+  },
+  "rows": [
+    {
+      "calendar_eligible_directional_edges": 109836,
+      "censored_origins": 259,
+      "complete_origins": 19620,
+      "graph_file": "h3.npz",
+      "graph_sha256": "4b22f9199b9cbae9bfec75cacfd3bf64b9a3ca83897a472ae45037b720f0241e",
+      "horizon": 3,
+      "nonpositive_edges": 61454,
+      "nonwinning_edges": 78480,
+      "original_winner_max_error": 0.0,
+      "origins": 19879,
+      "params": {
+        "backstep": 1,
+        "depth": 3,
+        "deviation_pips": 5.0
+      },
+      "retained_directional_edges": 117720
+    },
+    {
+      "calendar_eligible_directional_edges": 104842,
+      "censored_origins": 771,
+      "complete_origins": 19108,
+      "graph_file": "h6.npz",
+      "graph_sha256": "0eca4ac6337b44991b098f6946bc243013ceb7438de739ca225ccc833a1cae8d",
+      "horizon": 6,
+      "nonpositive_edges": 59127,
+      "nonwinning_edges": 76432,
+      "original_winner_max_error": 0.0,
+      "origins": 19879,
+      "params": {
+        "backstep": 2,
+        "depth": 4,
+        "deviation_pips": 5.0
+      },
+      "retained_directional_edges": 114648
+    },
+    {
+      "calendar_eligible_directional_edges": 85824,
+      "censored_origins": 3688,
+      "complete_origins": 16191,
+      "graph_file": "h12.npz",
+      "graph_sha256": "b8be57cab2d2f959c089f15cac86c6e5ddb4ad0fd454954fab81c96d06894594",
+      "horizon": 12,
+      "nonpositive_edges": 49469,
+      "nonwinning_edges": 64764,
+      "original_winner_max_error": 0.0,
+      "origins": 19879,
+      "params": {
+        "backstep": 6,
+        "depth": 7,
+        "deviation_pips": 25.0
+      },
+      "retained_directional_edges": 97146
+    },
+    {
+      "calendar_eligible_directional_edges": 64570,
+      "censored_origins": 7340,
+      "complete_origins": 12539,
+      "graph_file": "h24.npz",
+      "graph_sha256": "5a712b203650398df2f2e7e6a073a8c31662b0bc4478cb46964346d0c06dd257",
+      "horizon": 24,
+      "nonpositive_edges": 38214,
+      "nonwinning_edges": 50156,
+      "original_winner_max_error": 0.0,
+      "origins": 19879,
+      "params": {
+        "backstep": 11,
+        "depth": 12,
+        "deviation_pips": 25.0
+      },
+      "retained_directional_edges": 75234
+    }
+  ],
+  "schema": "train_k3_opportunity_graph.v1",
+  "scope": "ALL_K3_HINDSIGHT_REFERENCE_EDGES_NOT_EXECUTABLE_FILLS_OR_ACCOUNT_RESULTS",
+  "source_identity": "d54d51768a5ac257b7428a8e7afc8fb61bd467009dea77e8224a64c9ee824a9e",
+  "source_sha256": {
+    "RESULTS.json": "dd9567984b23dc34d40c10c3fffa34b258db2b787b49e114be7c17cb3fe37275",
+    "SPEC.private.json": "692e63353b8abf71d04a4426f75a76a3a0414c2b0b65bca4041e34d1efb5e7c1",
+    "h12_OPPORTUNITIES.npz": "b9feef052da5b837979ca7c02f3c648a6db928022f2f1709cab18a08c4c16bff",
+    "h24_OPPORTUNITIES.npz": "c531db93a7ba9f3753d533bb173e65200347067a7410e06550ca35e9c4399f7b",
+    "h3_OPPORTUNITIES.npz": "d1badaa5710fb445afec23822c46f6af470be091e05361f7a6f5805718dff36c",
+    "h6_OPPORTUNITIES.npz": "6f4bb6a22981f80336b5ab991e5d44858eff462dd343153d65c64067688e0236"
+  },
+  "source_unchanged": true,
+  "train": [
+    "2020-01-01",
+    "2024-01-01"
+  ]
+}
