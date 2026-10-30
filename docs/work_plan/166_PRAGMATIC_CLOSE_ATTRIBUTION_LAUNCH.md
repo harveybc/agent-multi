@@ -2,6 +2,8 @@
 
 2026-10-30. Immutable runtime `de91e051`, native engine `e0a1c2b`.
 Full identity `726ebc8a21d7c268493a6765566865bef1868de3a8b4689a63d039f9d2dfed7e`.
+[Manifest](../audits/evidence/pragmatic_close_launch_20261030/MANIFEST.json)
+and [runtime tests](../audits/evidence/pragmatic_close_launch_20261030/TESTS.json).
 
 The persistent service started at13:09 UTC /08:09 Bogota.258 runtime tests
 passed before replay. Four single-threaded CPU workers, CPU quota400%,

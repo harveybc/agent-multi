@@ -82,3 +82,19 @@ The full run waits for the authenticated attribution automatically. It writes
 STATE.json while waiting and during each stage; the complete metrics are in
 REPORT.json/RESULTS.md and their hashes in COMPLETE.json. There is no return
 to an approval prompt between the two experiments.
+
+## Full dependent service deployed
+
+Immutable runtime `5e352281`, native engine `e0a1c2b`.
+Identity `51a1f17bdfa184f43a2f1e8f9808fa4a3d8c2bb9dea962c348036f3291f84316`.
+[Manifest](../audits/evidence/pragmatic_resolution_launch_20261030/MANIFEST.json)
+and [runtime tests](../audits/evidence/pragmatic_resolution_launch_20261030/TESTS.json).
+The actual deployed runtime passed261 tests and entered WAIT_DEPENDENCY on
+the full attribution identity726ebc8a. The service is enabled across session
+restart, checks every30s and begins simulation automatically after verifying
+the dependency's completion and all artifacts. Four CPU workers, quota400%,
+memory high4GiB/maximum6GiB, bounded retries and authenticated unit reuse.
+At the first check both services were active with zero restarts; attribution
+had130/360 baselines and822 interventions complete. The dependent service
+used about67MiB while waiting. This state is normal sequencing, not an owner
+approval or auditor-response dependency.

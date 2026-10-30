@@ -7,6 +7,7 @@
   "pragmatic_close_attribution_launch": "../166_PRAGMATIC_CLOSE_ATTRIBUTION_LAUNCH.md",
   "pragmatic_close_attribution_runtime": {"code":"de91e051","identity":"726ebc8a21d7c268493a6765566865bef1868de3a8b4689a63d039f9d2dfed7e","tests_passed":258,"cpu_workers":4,"expected_baselines":360,"expected_interventions":3940,"persistent_service":true},
   "pragmatic_resolution_plan": "../167_PRAGMATIC_TEMPORAL_RESOLUTION_CONTRAST.md",
+  "pragmatic_resolution_runtime": {"code":"5e352281","identity":"51a1f17bdfa184f43a2f1e8f9808fa4a3d8c2bb9dea962c348036f3291f84316","tests_passed":261,"status_at_publication":"WAIT_DEPENDENCY","dependency":"726ebc8a21d7c268493a6765566865bef1868de3a8b4689a63d039f9d2dfed7e","persistent_service":true,"intermediate_approval_required":false},
   "pragmatic_resolution_preflight": {"tests_passed":261,"skipped":0,"smoke_accounts":18,"resume_authenticated":true,"frozen_policies":6,"expected_accounts":1296,"calibration_seed":960000,"confirmation_seed":970000,"selection_performed":false},
   "pragmatic_close_attribution_plan": "../164_PRAGMATIC_CLOSE_ATTRIBUTION_PLAN.md",
   "pragmatic_close_attribution_preflight": "../165_PRAGMATIC_CLOSE_ATTRIBUTION_PREFLIGHT.md",
@@ -154,7 +155,7 @@
     "Model-specific sequential floating selection",
     "Promotion of synthetic-oracle results as learned-model evidence"
   ],
-  "operations": "Contrast163 complete. Attribution164 running under immutablede91e051:360 baselines and3940 one-tick interventions;258 tests;4 bounded CPU workers. Ideal72 accounts/305 closes completed. Plan167 implements the measured missing1h/2h alternatives as a separate fixed-coefficient contrast on fresh paired worlds;261 tests and18-account smoke with authenticated resume. Automatic dependent execution; no financial training or feature selection.",
+  "operations": "Contrast163 complete. Attribution164 running under immutablede91e051:360 baselines and3940 one-tick interventions;258 tests;4 bounded CPU workers. Ideal72 accounts/305 closes completed;130 baselines/822 interventions at publication. Plan167 deployed under5e352281:261 runtime tests passed; persistent service automatically awaits authenticated attribution then runs1296 fresh paired accounts. Both services active with zero restarts. No owner approval, financial training or feature selection.",
   "history": [
     {"date":"2026-10-30","event":"Owner requests immediate continuation. Implemented164 and deployedde91e051 after258 tests and44-intervention smoke. Ideal stage305 closes:157 help account profit and148 harm it. Found two concrete omitted1h/2h HOLD witnesses; implemented separate167 fixed-coefficient fresh-world contrast with261 tests and18-account smoke. Existing runtime and coefficients unchanged; dependent automatic execution prepared."},
     {"date":"2026-10-30","event":"Full pragmatic contrast completed automatically:864 calibration and720 confirmation accounts;four frozen representatives;247 runtime tests;no restarts. Independent selection check and completed resume pass. Published all sensitivity results and local close harms without selecting on confirmation. Post-run undefined-Sharpe reporting guard has zero impact on1584 accounts;250 tests pass. Runtime and receipts unchanged."},
