@@ -1,0 +1,1343 @@
+{
+  "calibration": [
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": 1,
+      "pattern": "trend",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 0.5,
+      "volatility": "constant"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": -1,
+      "pattern": "trend",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 0.5,
+      "volatility": "constant"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": 1,
+      "pattern": "trend",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 3.0,
+      "volatility": "constant"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": -1,
+      "pattern": "trend",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 3.0,
+      "volatility": "constant"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": 1,
+      "pattern": "trend",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 0.5,
+      "volatility": "increasing"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": -1,
+      "pattern": "trend",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 0.5,
+      "volatility": "increasing"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": 1,
+      "pattern": "trend",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 3.0,
+      "volatility": "increasing"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": -1,
+      "pattern": "trend",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 3.0,
+      "volatility": "increasing"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": 1,
+      "pattern": "trend",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 0.5,
+      "volatility": "decreasing"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": -1,
+      "pattern": "trend",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 0.5,
+      "volatility": "decreasing"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": 1,
+      "pattern": "trend",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 3.0,
+      "volatility": "decreasing"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": -1,
+      "pattern": "trend",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 3.0,
+      "volatility": "decreasing"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": 1,
+      "pattern": "reversal",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 0.5,
+      "volatility": "constant"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": -1,
+      "pattern": "reversal",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 0.5,
+      "volatility": "constant"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": 1,
+      "pattern": "reversal",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 3.0,
+      "volatility": "constant"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": -1,
+      "pattern": "reversal",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 3.0,
+      "volatility": "constant"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": 1,
+      "pattern": "reversal",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 0.5,
+      "volatility": "increasing"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": -1,
+      "pattern": "reversal",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 0.5,
+      "volatility": "increasing"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": 1,
+      "pattern": "reversal",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 3.0,
+      "volatility": "increasing"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": -1,
+      "pattern": "reversal",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 3.0,
+      "volatility": "increasing"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": 1,
+      "pattern": "reversal",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 0.5,
+      "volatility": "decreasing"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": -1,
+      "pattern": "reversal",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 0.5,
+      "volatility": "decreasing"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": 1,
+      "pattern": "reversal",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 3.0,
+      "volatility": "decreasing"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": -1,
+      "pattern": "reversal",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 3.0,
+      "volatility": "decreasing"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": 1,
+      "pattern": "overlap",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 0.5,
+      "volatility": "constant"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": -1,
+      "pattern": "overlap",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 0.5,
+      "volatility": "constant"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": 1,
+      "pattern": "overlap",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 3.0,
+      "volatility": "constant"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": -1,
+      "pattern": "overlap",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 3.0,
+      "volatility": "constant"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": 1,
+      "pattern": "overlap",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 0.5,
+      "volatility": "increasing"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": -1,
+      "pattern": "overlap",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 0.5,
+      "volatility": "increasing"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": 1,
+      "pattern": "overlap",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 3.0,
+      "volatility": "increasing"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": -1,
+      "pattern": "overlap",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 3.0,
+      "volatility": "increasing"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": 1,
+      "pattern": "overlap",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 0.5,
+      "volatility": "decreasing"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": -1,
+      "pattern": "overlap",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 0.5,
+      "volatility": "decreasing"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": 1,
+      "pattern": "overlap",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 3.0,
+      "volatility": "decreasing"
+    },
+    {
+      "bank": "pragmatic_calibration",
+      "mirror": -1,
+      "pattern": "overlap",
+      "quality": "correlated",
+      "seed": 910000,
+      "spread_pips": 3.0,
+      "volatility": "decreasing"
+    }
+  ],
+  "config": {
+    "activity_min_exclusive": 2.0,
+    "calibration_seed": 910000,
+    "confirmation_reporters": [
+      "ideal",
+      "noise_0.5",
+      "noise_1",
+      "noise_2",
+      "causal"
+    ],
+    "confirmation_seed": 920000,
+    "financial_training": false,
+    "fixed": {
+      "account_risk_weight": 1.0,
+      "close_margin": 0.0,
+      "close_offsets": [
+        3,
+        6,
+        12,
+        24
+      ],
+      "entry_threshold": 0.0,
+      "risk_penalty": 0.0,
+      "shortlist": 2,
+      "tau0": 1.0,
+      "urgent_risk": 0.25
+    },
+    "grid": {
+      "alpha": [
+        0.0,
+        1.0
+      ],
+      "persistence": [
+        1,
+        2
+      ],
+      "uncertainty": [
+        0.0,
+        1.0
+      ]
+    },
+    "horizons": [
+      3,
+      6,
+      12,
+      24
+    ],
+    "schema": "pragmatic_controller_contrast.v1",
+    "variants": [
+      "simple",
+      "predictive_proxy",
+      "sequential"
+    ],
+    "workers": 4
+  },
+  "config_sha256": "7cfad1b32667d20587ad6adbf0c09b2faf1933656b3541b6d98a9060a6cdb47e",
+  "configurations": [
+    {
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 0.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 1,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 0.0,
+        "urgent_risk": 0.25,
+        "variant": "simple"
+      },
+      "key": "e3339e358fb25b5b93e2664eb1712ce2be631fdbce79b38beab8b63b5a3cd877"
+    },
+    {
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 0.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 2,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 0.0,
+        "urgent_risk": 0.25,
+        "variant": "simple"
+      },
+      "key": "c9408e3b946416d9fc801925aa8f09dcd8e8d7f4b0bdb714e5e5c93c64a8bc77"
+    },
+    {
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 0.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 1,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 1.0,
+        "urgent_risk": 0.25,
+        "variant": "simple"
+      },
+      "key": "a7d76f94bba1df90285c1c32426675598b17fceb68d20d506dda7da540e50fb0"
+    },
+    {
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 0.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 2,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 1.0,
+        "urgent_risk": 0.25,
+        "variant": "simple"
+      },
+      "key": "b4dd82dae474f9ac2cd68d628bf42ce8c9e94e8b894e7269858ddf0eb987934e"
+    },
+    {
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 1.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 1,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 0.0,
+        "urgent_risk": 0.25,
+        "variant": "simple"
+      },
+      "key": "990344599c9cc506eb78140d3c78a7fca3ce2ae0fe347526799fcea73d97b043"
+    },
+    {
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 1.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 2,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 0.0,
+        "urgent_risk": 0.25,
+        "variant": "simple"
+      },
+      "key": "f800f1fd22fb730e7a9cfc9cb4245da181448506a2f9865e5fc608002f11f168"
+    },
+    {
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 1.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 1,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 1.0,
+        "urgent_risk": 0.25,
+        "variant": "simple"
+      },
+      "key": "75547186d45ba03d34a6a3ec3338b0348d5338417e0bd6aa94f4d31dd4ee0a10"
+    },
+    {
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 1.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 2,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 1.0,
+        "urgent_risk": 0.25,
+        "variant": "simple"
+      },
+      "key": "0226b76673442dad5c00ae77b9b90739bcfc37a69000e58277c6fb285f83a00a"
+    },
+    {
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 0.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 1,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 0.0,
+        "urgent_risk": 0.25,
+        "variant": "predictive_proxy"
+      },
+      "key": "1fa6ff04226c2dace8eb9851834d3fd04caa30fd6586d237c5a19fa2b3601a38"
+    },
+    {
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 0.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 2,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 0.0,
+        "urgent_risk": 0.25,
+        "variant": "predictive_proxy"
+      },
+      "key": "dcf726f56a20d16513dded0c9a761a1ca221a720cb640bd496619d7179bbbef7"
+    },
+    {
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 0.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 1,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 1.0,
+        "urgent_risk": 0.25,
+        "variant": "predictive_proxy"
+      },
+      "key": "8f6249121ba904018cb412027a23000a7a4f63cd1b0522a0cdb7eea8c692604e"
+    },
+    {
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 0.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 2,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 1.0,
+        "urgent_risk": 0.25,
+        "variant": "predictive_proxy"
+      },
+      "key": "a5e89598e57289dc426389ec299daae03b1b9119262b1d07b2979027b5da51c5"
+    },
+    {
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 1.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 1,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 0.0,
+        "urgent_risk": 0.25,
+        "variant": "predictive_proxy"
+      },
+      "key": "c2ec06db92815c48b813f2cb0572e2bc3a6ebe18128aef5d4848cf6b3249ef95"
+    },
+    {
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 1.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 2,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 0.0,
+        "urgent_risk": 0.25,
+        "variant": "predictive_proxy"
+      },
+      "key": "48d8e6fc6c9181a2084ef75261e0dc0ea64cc2deb0691626a392c97220e8de8c"
+    },
+    {
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 1.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 1,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 1.0,
+        "urgent_risk": 0.25,
+        "variant": "predictive_proxy"
+      },
+      "key": "bd52caa18f304c1604a5816ae90e88a9f33e5f52f3d478a13852c4dddfcb1d6c"
+    },
+    {
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 1.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 2,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 1.0,
+        "urgent_risk": 0.25,
+        "variant": "predictive_proxy"
+      },
+      "key": "e5df77dd883da608434f0921abba428e7c04002019f84c7b6b6c3528d95c1f3b"
+    },
+    {
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 0.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 1,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 0.0,
+        "urgent_risk": 0.25,
+        "variant": "sequential"
+      },
+      "key": "1fe363be41c31b0e1996b292c76c57c21c75a52ee65004040437b008a1f25f9c"
+    },
+    {
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 0.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 2,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 0.0,
+        "urgent_risk": 0.25,
+        "variant": "sequential"
+      },
+      "key": "8e1d9bd1d15fdc16d077fbc7880f185c25f1da33bddb58da9fc039d9bc7e450d"
+    },
+    {
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 0.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 1,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 1.0,
+        "urgent_risk": 0.25,
+        "variant": "sequential"
+      },
+      "key": "02e14dc872433aa87018b2e6c95dffd0e57643b8ef51bfba165ebd5457b5b4e4"
+    },
+    {
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 0.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 2,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 1.0,
+        "urgent_risk": 0.25,
+        "variant": "sequential"
+      },
+      "key": "280977a99cdaa64118d87917f4faf845a7454b913143ea9b02d7f6fe2819b54c"
+    },
+    {
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 1.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 1,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 0.0,
+        "urgent_risk": 0.25,
+        "variant": "sequential"
+      },
+      "key": "72f7ccf8f3dd4204a64cbcbaf05c681e0d95ec44be908316105ec42d6994a0f0"
+    },
+    {
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 1.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 2,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 0.0,
+        "urgent_risk": 0.25,
+        "variant": "sequential"
+      },
+      "key": "59a75d7347527e8c72f19b7f6180cfe00222a1b9bf77bdec2024116502f6f370"
+    },
+    {
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 1.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 1,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 1.0,
+        "urgent_risk": 0.25,
+        "variant": "sequential"
+      },
+      "key": "a2646172e6ffdeb43b148f98151b62591f949f1b040b40609f64444a23ac866a"
+    },
+    {
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 1.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 2,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 1.0,
+        "urgent_risk": 0.25,
+        "variant": "sequential"
+      },
+      "key": "4f7371acad2e934d4bf1686eba4bc208fd598307a5774bc59833f73635d0be30"
+    }
+  ],
+  "confirmation": [
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": 1,
+      "pattern": "trend",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 0.5,
+      "volatility": "constant"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": -1,
+      "pattern": "trend",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 0.5,
+      "volatility": "constant"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": 1,
+      "pattern": "trend",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 3.0,
+      "volatility": "constant"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": -1,
+      "pattern": "trend",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 3.0,
+      "volatility": "constant"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": 1,
+      "pattern": "trend",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 0.5,
+      "volatility": "increasing"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": -1,
+      "pattern": "trend",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 0.5,
+      "volatility": "increasing"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": 1,
+      "pattern": "trend",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 3.0,
+      "volatility": "increasing"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": -1,
+      "pattern": "trend",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 3.0,
+      "volatility": "increasing"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": 1,
+      "pattern": "trend",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 0.5,
+      "volatility": "decreasing"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": -1,
+      "pattern": "trend",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 0.5,
+      "volatility": "decreasing"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": 1,
+      "pattern": "trend",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 3.0,
+      "volatility": "decreasing"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": -1,
+      "pattern": "trend",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 3.0,
+      "volatility": "decreasing"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": 1,
+      "pattern": "reversal",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 0.5,
+      "volatility": "constant"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": -1,
+      "pattern": "reversal",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 0.5,
+      "volatility": "constant"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": 1,
+      "pattern": "reversal",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 3.0,
+      "volatility": "constant"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": -1,
+      "pattern": "reversal",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 3.0,
+      "volatility": "constant"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": 1,
+      "pattern": "reversal",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 0.5,
+      "volatility": "increasing"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": -1,
+      "pattern": "reversal",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 0.5,
+      "volatility": "increasing"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": 1,
+      "pattern": "reversal",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 3.0,
+      "volatility": "increasing"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": -1,
+      "pattern": "reversal",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 3.0,
+      "volatility": "increasing"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": 1,
+      "pattern": "reversal",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 0.5,
+      "volatility": "decreasing"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": -1,
+      "pattern": "reversal",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 0.5,
+      "volatility": "decreasing"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": 1,
+      "pattern": "reversal",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 3.0,
+      "volatility": "decreasing"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": -1,
+      "pattern": "reversal",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 3.0,
+      "volatility": "decreasing"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": 1,
+      "pattern": "overlap",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 0.5,
+      "volatility": "constant"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": -1,
+      "pattern": "overlap",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 0.5,
+      "volatility": "constant"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": 1,
+      "pattern": "overlap",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 3.0,
+      "volatility": "constant"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": -1,
+      "pattern": "overlap",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 3.0,
+      "volatility": "constant"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": 1,
+      "pattern": "overlap",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 0.5,
+      "volatility": "increasing"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": -1,
+      "pattern": "overlap",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 0.5,
+      "volatility": "increasing"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": 1,
+      "pattern": "overlap",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 3.0,
+      "volatility": "increasing"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": -1,
+      "pattern": "overlap",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 3.0,
+      "volatility": "increasing"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": 1,
+      "pattern": "overlap",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 0.5,
+      "volatility": "decreasing"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": -1,
+      "pattern": "overlap",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 0.5,
+      "volatility": "decreasing"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": 1,
+      "pattern": "overlap",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 3.0,
+      "volatility": "decreasing"
+    },
+    {
+      "bank": "pragmatic_confirmation",
+      "mirror": -1,
+      "pattern": "overlap",
+      "quality": "correlated",
+      "seed": 920000,
+      "spread_pips": 3.0,
+      "volatility": "decreasing"
+    }
+  ],
+  "identity": "f5a82347b3181ee814fe07869b9e858965d52183b287293b144378eaced4e823",
+  "native_sources": {
+    "agent_multi": {
+      "app/absolute_exit_corpus.py": "20a5c4fd1cd5b3cc57cdb887125fd8b494307584f853fc5997c7b19e6845eedb",
+      "app/close_hold_controller.py": "973fdcdf5c44ccc2220e8433201defe87b1488f8f0c0ed7ee5d7b041613cc290",
+      "app/dynamic_account_arbiter.py": "3d1c8ae9deb86af40af944bb2b936116cbecb61b79b178a170b9e23f8df19a19",
+      "app/dynamic_account_panel.py": "55dde2937856d17c06f974889dbd1766f552d6fdf0b5a5e74f0bc481acf762c7",
+      "app/early_close_metrics.py": "af3aaf66384a3528488b3837eea4b11fab705832228c4907a305fa5b95ff4e37",
+      "app/horizon_risk_rules.py": "89afca8dd1ba12842449989ff2ca940cb461522a816ef779350b597e2062ae31",
+      "app/optimal_exit.py": "bf51b81f9a8ab940c3a8280eac6dd4a1eaf88c79a707fb3b5048d5fd6d09cde6",
+      "app/protection_reference.py": "64ac99a6a0ae38075624a8d1ed8d2a042a02e8227322de99ad8ea19bf47c26b8",
+      "app/zigzag_opportunities.py": "62d698f635a7bb4394decaaebdfadb4f21d77cabf4a8b91630ac501cdc93aee7",
+      "app/zigzag_risk_profiles.py": "19c329fc172421b1ed1bf152ee4ee56b4b0a9576e20f199855db3528fd25bab1",
+      "tools/optimize_dynamic_account.py": "89686c91551026568a55c367ab04004891fd12a39b98e915bd40f8ee6d93ff90",
+      "tools/verify_absolute_early_close.py": "18b67c5731545e95518516d7e33352ce6e8ce31af1bacc26717e1dcf78bf37b9"
+    },
+    "heuristic_strategy": {
+      "app/short_horizon/__init__.py": "89c2c3afeb58e820eb64ddfceed715e20d2cc1e8d4ed7ba7902ed56c90305d2b",
+      "app/short_horizon/adapter.py": "9fa2313c3e3ffbbe75d42c6863db0c995e8d75b62a16aa6552deff242cdb5c16",
+      "app/short_horizon/analysis.py": "2265c734d5cc674b0fb00c9e629c55f220f4e65e2580ba6b11edef439954ca5c",
+      "app/short_horizon/bar_source.py": "fab22a4db4ef656f97dcab5f7ba9f8846910ef2dadfa2c9f0515d6de95555a2e",
+      "app/short_horizon/blocks.py": "6bcbf06bd52e942f700d7b7022a61184d5eee8fc62ba7664718d11f339bd59d7",
+      "app/short_horizon/calendar.py": "cf980cbf63308cb5e93a6bec1544e378e8df2e56b65111393df05901badafaf1",
+      "app/short_horizon/clock_identity.py": "0bd000523da23f9c87fd7947b558ca1c55a16a5df47112aa754f2670080a1d2a",
+      "app/short_horizon/data.py": "28d50d2539a99bc0e18af63c49e17bd4b2b6e0245f3e6050bbf328d87836fe5d",
+      "app/short_horizon/events.py": "8b84d59c0be00c9f16f521feb44d26ed356235126648b434ee4cbd442a174055",
+      "app/short_horizon/execution.py": "a0b374d6ff9dc0165c92aa1a9bc8c980b57a6bd2b3d874a3ff9a899237f73ae2",
+      "app/short_horizon/expert_guided/__init__.py": "8080519f546750617743371f2bf23a61f713708beaece7326eb0517b364e849c",
+      "app/short_horizon/expert_guided/absolute.py": "dd498804e24d82dff37e9ee9188e819c323e212c0d032e6f9c500b64f5b55083",
+      "app/short_horizon/expert_guided/actions.py": "70d637d5f0e02e121a6acab24279eabbff6d19c98e6a0806fb404da80dda9141",
+      "app/short_horizon/expert_guided/data.py": "671a7ab8dcde6f4b327f9237d346a1946873da359a081ef11576a6908660682d",
+      "app/short_horizon/expert_guided/env.py": "33216a77d9a889baa38fdf50a5a6d9270ef054e24bd9623326061641991c3b96",
+      "app/short_horizon/expert_guided/learn.py": "87c6708c7be510745c1b72aa1471ea1903986575053fa753175e5f2060ceceec",
+      "app/short_horizon/expert_guided/oracle.py": "e731e227d823db950a8e9a5f7bebed448d97bc260acf5da28f99a78f5d9fb621",
+      "app/short_horizon/expert_guided/sac_demo.py": "d4aaf43d3877bec0f486ceff55925b7efa63d51fa67bd16edc4d5244c11f9d20",
+      "app/short_horizon/expert_guided/scoring.py": "2fcf62bd07eb3383b77eb477be90125e61c5fd0e3c8eaf6f644391f7a51dc3a5",
+      "app/short_horizon/expert_guided/signals.py": "bc8f2bf8b172e78146ec067ccbb5b0d7f4379401f6a4a28584a9530663922ae0",
+      "app/short_horizon/expert_guided/temporal.py": "c536186f4170913ce9c5df7176ad78197ed2283c39d8a71102a5d61c506c6bdd",
+      "app/short_horizon/noise.py": "58f80ab8220f75272edded13ffc1a2174ed4fbca16455f6abca4259fc61f0ea5",
+      "app/short_horizon/predictors.py": "a6318179e62922739cb321d9d3298bde0fd70259c70568148180e7acb518da7d",
+      "app/short_horizon/strategies.py": "22634736134d17b8dff2094b05e12b07a5fdad9a682a494a3b4fbbaf72f8aa08",
+      "app/short_horizon/vol_features.py": "c8a6046d1210a4f79d371ddbc2b9051bdcd8ded78e780d89a7a7100727c1a86e",
+      "app/short_horizon/voltrend.py": "4f8e7629c1acb978ab214f48cbd3f6604a85bff9cf0fc012251f7c888f5d9eab",
+      "app/short_horizon/vstrategies.py": "70786105fe1a5b39d59e44e9938ca950e2c024a3721306593744bbf2ee6534ca",
+      "app/short_horizon/zigzag.py": "fc24c6f22aa4f7696548d1117b1d2cfad42a43eccd116f0bbcffe6a71df1624a",
+      "app/short_horizon/zigzag_opt.py": "dead5eacd7449f21731514417cb604d9a23b0361e151eacecb1825be6323ccb7"
+    }
+  },
+  "risk_sha256": "99d7d4dc92f6437c84b8b36de4c29a1ba474489a7c07444899699c00203c3c0e",
+  "schema": "pragmatic_contrast_manifest.v1",
+  "smoke": false,
+  "sources": {
+    "app/causal_history_account.py": "90872e39f2f5c9780b4d7fecb8de0f257c7de1094421c7ded44f5413e7b56346",
+    "app/causal_history_workers.py": "e4138dd42fb9e3718527ebc408df0ae36a9c6c188d068f23855d8a65db3912c1",
+    "app/causal_report_baseline.py": "19c3cbdc38394fb66d6227bd362fd8de195ff380113b00143d975d25191a0df7",
+    "app/close_hold_controller.py": "973fdcdf5c44ccc2220e8433201defe87b1488f8f0c0ed7ee5d7b041613cc290",
+    "app/close_hold_reports.py": "1adea968c2151ab87944eedbd0ee712fbb47b13a50643596afc9ad44a14e0682",
+    "app/crossed_account_panel.py": "03566daf55e3ac658ab9959e353593bed076addda28bc29ec9f0dc58abdd9d03",
+    "app/crossed_account_workers.py": "c05ef83e4510052c7a9ce475fc39b98ba2957b8893e999e4ea9760e7e7f152af",
+    "app/dynamic_account_panel.py": "55dde2937856d17c06f974889dbd1766f552d6fdf0b5a5e74f0bc481acf762c7",
+    "app/frozen_policy_diagnostics.py": "ad62227a4a342449e1e0663e28a7b3a4fbc363fd666973b1e45c22b123e49b0e",
+    "app/pragmatic_strategy.py": "8c0e5dd1ed99811e2c1e03bf23d3c603587b507d81d2699674acd9f3d0e8ac5f",
+    "app/report_track_record.py": "03d5fa4d2506c7dbc2417285dd8441d0d0572d945a8b247cbbf2ca1120d2d705",
+    "app/sequential_account_pareto.py": "25bbaba9913a0a80e8aba32e2126c2f71fab361b8f7bd74639bba1041c115c57",
+    "app/suppressed_close_counterfactuals.py": "751feafe0943f55d622511ede7790e493927bc6790059aabf4d3dada7486658f",
+    "tests/unit/test_absolute_exit_corpus.py": "1593fd054d42a0639571ba1f8c1ea308a43bf9d68b2091ec84163a87f772dacf",
+    "tests/unit/test_causal_history_account.py": "99655d6fe8250a70a65a803d4d7a3c865e304deb75d3431d4a33f2cb9eebb602",
+    "tests/unit/test_causal_history_queue.py": "e532e9d30cdf2708e2b52003ef8f8707f4ede58bf66988080bb329b05b66ca53",
+    "tests/unit/test_causal_report_baseline.py": "d654021030c88212211a9bec712439896b16508b37dd4babf80cf5b33bd725f7",
+    "tests/unit/test_close_hold_controller.py": "b5aae621377bd926122913e1907ee0d8f868f6e8c8528825ba36024bbd7971bd",
+    "tests/unit/test_close_hold_reports.py": "49550541719a1c2da13b3e5548d4078c8c4edaae40867ca4c955ba270a53986f",
+    "tests/unit/test_close_hold_trace_audit.py": "2a2f9874e2d66b4945b25e48ecd644c941856f5aa3168244d6232a42f2172e20",
+    "tests/unit/test_crossed_account_analysis.py": "820d0381ed3f53c19825bbffb34fd5f1a9f3ca019490af766b529d6af5c075f9",
+    "tests/unit/test_crossed_account_panel.py": "3da8e05b255c70b208c51a4319d3eafb1ffe119e4dd19ac12cc489d679fecfeb",
+    "tests/unit/test_crossed_account_queue.py": "76db65db00619a7f22c0763757528c3f56366bf7a72f7ad2b0e6142ccef4f8b3",
+    "tests/unit/test_crossed_audit_boundary_regressions.py": "27efe82244c73bd8200bb97327537fcb823b4e4c344539e2a33cdb32838a477d",
+    "tests/unit/test_dynamic_account_arbiter.py": "06a3aa0d2073787e9a8150828ddb9c2be7ff9697d98002fc0af8c996bc357cb9",
+    "tests/unit/test_dynamic_account_panel.py": "80262deababd92b7ccda2de1b9516d0eea9c6ccc18c57137c8e81914a5492e8c",
+    "tests/unit/test_dynamic_account_queue.py": "529957ed4efcdfd8ea93cbd6f5ef868bae3d0597b5d13ef052e40f5c5363c736",
+    "tests/unit/test_early_close_metrics.py": "8e9e1c7325585d5f338d27cf74314aeab2531eecb2988f626f2adbf8ef48e01f",
+    "tests/unit/test_external_audit_repairs.py": "cda65b7a19f70403f0ecb1f68e1868310bea4f627004ff0232091a8cf8f3bc7f",
+    "tests/unit/test_frozen_policy_diagnostics.py": "c41a3984544e1ff5de9792857403763027971399c5d16c4b846d055951399c2c",
+    "tests/unit/test_horizon_risk_rules.py": "1f457519c0445c86cd49711373ae643e0d67ba8f87c47a0fb6605b1c74e8f709",
+    "tests/unit/test_mechanism_games.py": "e8797052d00fd4d463c0c040a8b6a92fdc504cf1917eeb9c516746dda7ea75b7",
+    "tests/unit/test_mechanism_m0_runner.py": "deb48cfbc2d53e3b66d2d41a5291bc67eee20776f9920230fa57be5f4506c746",
+    "tests/unit/test_post_audit_diagnostics.py": "9190d9b8389d17b5b1871226ac6cab8324dc2bb4b7fad09ac3d7944740333437",
+    "tests/unit/test_pragmatic_queue.py": "e6209ab9aba0a4ad1bf1435aa845b47c062d24dfe1fd10f6d8af1f65cd3d1ae5",
+    "tests/unit/test_pragmatic_strategy.py": "6359e0df417327c70a73e264a675b7a366d182aac35dd583ea7f2dae74bda496",
+    "tests/unit/test_protection_reference.py": "244aee661c8b8a4c7a89191be006c61f4eeba9dbeec8f20101f0c4f4e68fb881",
+    "tests/unit/test_report_cache_binding.py": "55ae62ef4c464cf6921e22fc8415671f27b1768cf93f75f21c0e0aa1e491d9a2",
+    "tests/unit/test_report_track_record.py": "dbab2ad685dc885eba130dba8df01e2b373d83f699c0ecb11ce308907d8892ed",
+    "tests/unit/test_sequential_account_pareto.py": "f89125e3f64ef4bf0a588886d376e9bdc674a0c62ea171fc4506478cfbe25833",
+    "tests/unit/test_suppressed_close_counterfactuals.py": "e86e49a03af5ddfbe0966676b4af0d8b8d8e726f08423f7cec804d2faf5f235b",
+    "tests/unit/test_zigzag_risk_profiles.py": "7844727f9719e9b275c8a4d52284fd33247c7fdcd7c585792fd1210e598ef285",
+    "tools/analyze_crossed_account_results.py": "b93060de24d5fda9377b4d726c6ade4419e6b0f5d1c99cf2e4f22b8cdd48134a",
+    "tools/collect_causal_history_lanes.py": "4cc8563f99f209f8ecb049461f996d0b7252890b5b984c8a28be06641912dd45",
+    "tools/diagnose_frozen_history_policy.py": "2902892793eee8335d0def106fb2da8247d412b07e0b392e68a03577ad0de9f4",
+    "tools/diagnose_suppressed_closes.py": "134bd937c6c7963f4807f04e4e8904a54f7b6ed4c9de8656fe8a4d11d327f3c4",
+    "tools/run_causal_history_queue.py": "e95030eafcbef50c3a2573d53bb065c45ee6a6b69e89cddd548e507264a15ae2",
+    "tools/run_crossed_account_queue.py": "6f64231f718b87b069ac0d6deb12cf56f28f6b4c6c48c9b3be788d3289c5f2f1",
+    "tools/run_post_audit_diagnostics.py": "80d901e87f70676685398b6ed2fd3b31c9951f58a40c0ed484f68f455f714c3c",
+    "tools/run_pragmatic_contrast.py": "d6683564bde2226d485da7726d26bda016c7a3339e970de7fa0ebeee1ddfbd4e"
+  }
+}

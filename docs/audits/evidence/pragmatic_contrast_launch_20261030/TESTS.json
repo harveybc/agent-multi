@@ -1,0 +1,10 @@
+{
+  "data": {
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests": 247
+  },
+  "identity": "f5a82347b3181ee814fe07869b9e858965d52183b287293b144378eaced4e823",
+  "seal": "fbec15af896ca0d748fef5f4541c136c12b27fdf6c643e295a924203e46b18a2"
+}

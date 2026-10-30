@@ -3,7 +3,9 @@
   "date": "2026-10-30",
   "timezone": "America/Bogota",
   "priority": 0,
-  "current_stage": "PRAGMATIC_CONTROLLER_CONTRAST_TEST_QUALIFIED",
+  "current_stage": "PRAGMATIC_CONTROLLER_CONTRAST_AUTOMATED_RUNNING",
+  "pragmatic_contrast_launch": "../162_PRAGMATIC_CONTRAST_LAUNCH.md",
+  "pragmatic_contrast_runtime": {"code":"6c9f597e","identity":"f5a82347b3181ee814fe07869b9e858965d52183b287293b144378eaced4e823","tests_passed":247,"cpu_workers":4,"memory_max_gib":6,"persistent_service":true,"intermediate_approval_required":false},
   "pragmatic_contrast_plan": "../160_PRAGMATIC_CONTROLLER_CONTRAST_PLAN.md",
   "pragmatic_contrast_preflight": "../161_PRAGMATIC_CONTRAST_PREFLIGHT.md",
   "pragmatic_contrast_checks": {"tests_passed":247,"skipped":0,"smoke_policy_accounts":24,"resume_authenticated":true,"configurations":24,"calibration_accounts":864,"maximum_confirmation_accounts":1080,"market_week_denominator_corrected":true,"financial_training":false},
@@ -140,8 +142,9 @@
     "Model-specific sequential floating selection",
     "Promotion of synthetic-oracle results as learned-model evidence"
   ],
-  "operations": "V2 deployed00:11Bogota with pinned3e6450fc on two independent CPU hosts;209 runtime tests passed each; test-qualified20x300x3 search and confirmation/report/collection enabled. No performance launch gate; activity >2. No financial training or feature selection.",
+  "operations": "Both prior causal-history lanes and their collector completed. Pragmatic contrast now deployed under6c9f597e with247 runtime tests;4 bounded CPU workers;864 calibration accounts then up to1080 frozen confirmation accounts and automatic report. No financial training or feature selection.",
   "history": [
+    {"date":"2026-10-30","event":"Published6c9f597e and deployed immutable full contrast service.247 runtime tests passed before calibration;8/36 initial units observed complete with22.28s mean time. Persistent restartable service;4 CPU workers;6GiB cap; no GPU allocation; no approvals between phases."},
     {"date":"2026-10-30","event":"Owner accepts pragmatic hierarchical comparison. Implemented three controller arms and bounded two-order native receding-horizon plans;24-profile JSON grid and resumable phase queue.247 runtime tests pass;24-account smoke and completed resume verified. Found and corrected ISO versus market-week activity denominator before full calibration. All learned-model observations remain free of position state and oracle paths."},
     {"date":"2026-10-30","event":"Owner authorizes next step. Implemented native same-position exit enumeration and one-intervention frozen-policy continuation.432 accounts replay exactly;305 suppressed ticks;2059 close alternatives;202 locally helpful versus103 harmful.199 account improvements versus106 losses; shared counterexample shows local+23.95 becoming account-6.06 through continuation.65 tests; full resume authenticated. No live runtime modified; sequential causal allocator remains next."},
     {"date":"2026-10-30","event":"Status request: median v2 completed0903UTC; zero still in third seed. Authenticated15472 receipts and completed432 exact observational replays. All4 finalists lost >2 activity eligibility in confirmation and executed zero closes; staged uncertainty/history/persistence counts explain suppression, not absence of market signal.47 tests. No campaign mutation or automatic promotion."},

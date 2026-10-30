@@ -8,6 +8,10 @@ and bounded sequential allocation on identical signals and native accounting.
 Tests -> paired grid -> frozen representatives -> noise/causal confirmation ->
 report, with no intermediate approval. No historical-strategy reproduction or
 global Pareto claim. This remains before model-specific floating selection.
+[Launch162](162_PRAGMATIC_CONTRAST_LAUNCH.md): deployed immutable6c9f597e;
+247 runtime tests passed;24 configurations; automatic calibration, frozen
+selection and five-reporter confirmation. Four bounded CPU workers; persistent
+restartable service. No financial learning or feature-selection launch.
 
 [Suppressed closes159](159_SUPPRESSED_CLOSE_COUNTERFACTUAL_RESULTS.md):
 432 exact baseline replays and305 single-close full-account interventions.
