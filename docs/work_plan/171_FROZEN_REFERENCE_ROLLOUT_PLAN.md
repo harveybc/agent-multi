@@ -125,3 +125,19 @@ fast controls are not used to predict unmeasured rollout costs.
 Automatic terminal outputs: REPORT.json, RESULTS.md, per-account and per-close
 receipts, COMPLETE.json and AUDIT_REQUEST.md. Review reference valuation,
 actual adaptive continuation and learned-interface qualification separately.
+
+## Full Execution Started
+
+Runtime pinned to `8c7d0f22`, native engine unchanged at `e0a1c2b`.
+Full identity:
+`5930311292e4c6ef67eb2e9484bdaf92642ba85dfbe63657ee1619198f080af4`.
+Started2026-10-30 21:40UTC. The immutable runtime passed all285 tests in18.55s
+and entered actual execution:10/252 initial ideal accounts had completed at
+21:40:35UTC, zero service restarts. This is not a waiting/approval state.
+
+Persistent user service, enabled at session startup with lingering, four CPU
+workers,6GiB memory maximum,30s restart delay and bounded failure retries.
+Per-unit and per-close receipts survive restart. All subsequent phases and
+final report/audit generation are already part of the running entry point.
+Estimated full completion:23:40-00:40UTC, based on measured small-bank costs;
+load and world-specific policy costs can change that estimate.

@@ -3,8 +3,9 @@
   "date": "2026-10-30",
   "timezone": "America/Bogota",
   "priority": 0,
-  "current_stage": "FROZEN_REFERENCE_ROLLOUT_PREFLIGHT_COMPLETE",
+  "current_stage": "FROZEN_REFERENCE_ROLLOUT_RUNNING",
   "reference_rollout_plan": "../171_FROZEN_REFERENCE_ROLLOUT_PLAN.md",
+  "reference_rollout_runtime": {"code":"8c7d0f22","identity":"5930311292e4c6ef67eb2e9484bdaf92642ba85dfbe63657ee1619198f080af4","native":"e0a1c2b","tests_passed":285,"cpu_workers":4,"memory_max_gib":6,"persistent_service":true,"restarts_at_verification":0,"initial_ideal_completed":10,"initial_ideal_total":252,"verified_utc":"2026-10-30T21:40:35Z","intermediate_approval_required":false},
   "reference_rollout_preflight": {"identity":"9e6dc21b10d9d56892a3cbd1398e6ab50062cf0125cd8de3a6832b8898c8fe55","tests_passed":285,"skipped":0,"accounts":21,"close_interventions":6,"close_profit_harmful":1,"resume_authenticated":true,"lint_passed":true},
   "reference_rollout_contract": {"policies":7,"native_accounts":1512,"ideal_close_interventions":"every executed joint-policy close","automatic_stages":true,"intermediate_approval_required":false,"financial_training":false,"coefficient_selection":false},
   "pragmatic_plan_gap_results": "../170_PRAGMATIC_PLAN_EXECUTION_GAP_RESULTS.md",
@@ -166,8 +167,9 @@
     "Model-specific sequential floating selection",
     "Promotion of synthetic-oracle results as learned-model evidence"
   ],
-  "operations": "Prior164/167/169 queues complete and preserved.171 implemented and preflight complete:285 tests;21 accounts;six actual-policy close interventions;one harmful close retained;authenticated completed resume. Deploy pinned unattended four-worker contrast now without another owner approval. No financial training or floating selection.",
+  "operations": "171 deployed and RUNNING under8c7d0f22.285 immutable-runtime tests pass;10/252 ideal accounts observed complete at21:40:35UTC;zero restarts. Four CPU workers;6GiB cap;all phases and per-close attribution chained;no intermediate approval. Prior studies preserved. No financial training or floating selection.",
   "history": [
+    {"date":"2026-10-30","event":"Owner objects to stopping after diagnosis. Implemented explicit nonrecursive frozen-reference native rollout with whole-ensemble carried forecasts and no future report callbacks.285 tests;21-account smoke;six actual adaptive close counterfactuals;one harmful close retained;authenticated resume. Published8c7d0f22 and started full1512-account service with automatic ideal-close attribution and final audit packet. Verified actual execution after runtime tests;no new owner decision required."},
     {"date":"2026-10-30","event":"Owner approves continuation after status. Published completed168 and executed169 end to end:72 exact baseline accounts;610 committed native plans reproduce ideal valuations withzero error;150/305 utility rankings reverse under actual hourly continuation. Identity residual<=1.78e-15.265 tests and authenticated resume.170 identifies valuation of a different continuation, not a price-model failure; next correction is explicit frozen-reference rollout with causal information tests."},
     {"date":"2026-10-30","event":"Owner requests immediate continuation. Implemented164 and deployedde91e051 after258 tests and44-intervention smoke. Ideal stage305 closes:157 help account profit and148 harm it. Found two concrete omitted1h/2h HOLD witnesses; implemented separate167 fixed-coefficient fresh-world contrast with261 tests and18-account smoke. Existing runtime and coefficients unchanged; dependent automatic execution prepared."},
     {"date":"2026-10-30","event":"Full pragmatic contrast completed automatically:864 calibration and720 confirmation accounts;four frozen representatives;247 runtime tests;no restarts. Independent selection check and completed resume pass. Published all sensitivity results and local close harms without selecting on confirmation. Post-run undefined-Sharpe reporting guard has zero impact on1584 accounts;250 tests pass. Runtime and receipts unchanged."},

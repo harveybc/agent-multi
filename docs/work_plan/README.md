@@ -6,7 +6,9 @@
 nonrecursive reference-policy continuation instead of the two-order proxy.
 Tests and an unattended seven-policy fresh-world contrast include every
 joint-policy ideal close's actual adaptive HOLD alternative. No additional
-owner decision or approval is required between these stages. Results are
+owner decision or approval is required between these stages. Published
+`8c7d0f22`; the persistent full queue started21:40UTC after285 runtime tests
+and is executing its first252 ideal accounts. Results are
 not a learned-model or floating-selection release.
 
 [Continuation gap170](170_PRAGMATIC_PLAN_EXECUTION_GAP_RESULTS.md): all305
