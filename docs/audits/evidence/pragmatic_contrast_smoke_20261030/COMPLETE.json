@@ -1,0 +1,33 @@
+{
+  "data": {
+    "artifacts": {
+      "CALIBRATION.json": "8eb811e60ccb6ddd77a3f543aa0ec2d69f5db48d80afd70261fe92df3900e9b0",
+      "MANIFEST.json": "f1f1735ad6a1483b7d80b7fd845e3d6ef8040f939a3aa0b263d19f5d2d60bbda",
+      "REPORT.json": "255a78b2b6b4129b76e3986693061c7802e5f87092bb2dadf272b39daf45ab08",
+      "RESULTS.md": "549cc2a4f5a1ae7572c93805e61e4865f5c5e0e315e46a8bf7d2ac7a318e0646",
+      "SELECTION.json": "abf5859c49bbc38757b814ff1bf3c7110d8bb58f29fdee42970b3ad90803b907",
+      "TESTS.json": "5773d17e310d654440da7fdd8488e197a607a981d1ca61908925a3be0f873a1c",
+      "TESTS.log": "da77e9c31aba5936fac8ca7d44d9a8d6596f67368b5b3a7a9d6ea8138f3821fd",
+      "TESTS.xml": "4deff29730aaad3cdd1eb4ce80d3d3366ef222dcd319503403802c36fc1d22e1",
+      "calibration_noise_1_000.json": "fa4d5bc23d1105f09b3382732135d655e16fe328f3ffc420b6135e325120be5c",
+      "calibration_noise_1_001.json": "344508b8f0327d554b7c8c4f79bccdca16ca4f82bc23e94a6f5b6bfa4fb7202d",
+      "confirmation_causal_000.json": "fa316213d9523c6aab8a5aea5723888fd0d923c1521ffa38f30f183a285059ae",
+      "confirmation_causal_001.json": "2a140a77bc35b0a85d49d931eb3192a79bcbb1574b6d50964cd468bdd111135d",
+      "confirmation_ideal_000.json": "b1f9de63c922b65b8dd2f9dadf1126ec2c5e677b52b3ee22a0f36054a4bec696",
+      "confirmation_ideal_001.json": "1072b90d2eed6916c08cda83adb0c5cd4f2d9be46e339c532e6e62f53acffd04",
+      "confirmation_noise_1_000.json": "5fda4cd6d653aa9c267411431082f62a2820ae8519d4a933587c5082270eb984",
+      "confirmation_noise_1_001.json": "c917c83190009cac4e9316551be8d7e717ff8a53e9af8ddddd810409ac03cd8b"
+    },
+    "candidates": 3,
+    "financial_training": false,
+    "representatives": 3,
+    "tests": {
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "tests": 247
+    }
+  },
+  "identity": "04ce2bffe723c4d34c1132a3f98865ebe4b9e0bccf5afed59fb4a38cec0935b6",
+  "seal": "f085a41482b58950e99df9b7664aaf39db5281f711ae4f31671644f423c53ee0"
+}

@@ -1,0 +1,13 @@
+{
+  "schema": "pragmatic_controller_contrast.v1",
+  "horizons": [3, 6, 12, 24],
+  "variants": ["simple", "predictive_proxy", "sequential"],
+  "grid": {"alpha": [0.0, 1.0], "uncertainty": [0.0, 1.0], "persistence": [1, 2]},
+  "fixed": {"tau0": 1.0, "risk_penalty": 0.0, "entry_threshold": 0.0, "close_margin": 0.0, "urgent_risk": 0.25, "account_risk_weight": 1.0, "shortlist": 2, "close_offsets": [3, 6, 12, 24]},
+  "calibration_seed": 910000,
+  "confirmation_seed": 920000,
+  "confirmation_reporters": ["ideal", "noise_0.5", "noise_1", "noise_2", "causal"],
+  "activity_min_exclusive": 2.0,
+  "workers": 4,
+  "financial_training": false
+}

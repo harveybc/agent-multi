@@ -3,7 +3,11 @@
   "date": "2026-10-30",
   "timezone": "America/Bogota",
   "priority": 0,
-  "current_stage": "CAUSAL_HISTORY_V2_AUTOMATED_SEARCH_DEPLOYED",
+  "current_stage": "PRAGMATIC_CONTROLLER_CONTRAST_TEST_QUALIFIED",
+  "pragmatic_contrast_plan": "../160_PRAGMATIC_CONTROLLER_CONTRAST_PLAN.md",
+  "pragmatic_contrast_preflight": "../161_PRAGMATIC_CONTRAST_PREFLIGHT.md",
+  "pragmatic_contrast_checks": {"tests_passed":247,"skipped":0,"smoke_policy_accounts":24,"resume_authenticated":true,"configurations":24,"calibration_accounts":864,"maximum_confirmation_accounts":1080,"market_week_denominator_corrected":true,"financial_training":false},
+  "causal_history_v2_both_complete": {"zero_candidates":16069,"median_candidates":15472,"tests_each":209,"collector_complete":true},
   "suppressed_close_plan": "../158_SUPPRESSED_CLOSE_COUNTERFACTUAL_PLAN.md",
   "suppressed_close_results": "../159_SUPPRESSED_CLOSE_COUNTERFACTUAL_RESULTS.md",
   "suppressed_close_evidence": {"baseline_replays":432,"single_intervention_replays":305,"native_close_alternatives":2059,"passive_alternatives":305,"locally_helpful_ticks":202,"locally_harmful_ticks":103,"account_helpful_interventions":199,"account_harmful_interventions":106,"tests_passed":65,"resume_verified":true,"confirmation_tuning":false,"causal_allocator_complete":false},
@@ -118,6 +122,7 @@
   },
   "bottom_up": "INDEPENDENT_REVIEWS_RECEIVED; FIVE_CONCRETE_DEFECTS_REPAIRED_AND_REPLAYED; COVERAGE_REVISION_REQUIRED",
   "next_allowed_actions": [
+    "Execute160 immutable pragmatic grid automatically through calibration frozen selection noise and causal confirmation; publish complete native metrics without selecting on confirmation or releasing financial learning",
     "Suppressed-close diagnostic159 complete: use fixed-position versus full-account counterexamples to test sequential causal allocation on new worlds; do not tune gates on already-read confirmation",
     "Graph155 complete: expand bounded decision coverage and compare sequential allocation against its native exact prefix references; do not claim the full historical frontier from the three-decision proof",
     "Qualify non-anticipative sequential scenario-tree allocator against153 and running local-policy baseline; expose return-drawdown preference rather than inventing a unique Pareto optimum",
@@ -137,6 +142,7 @@
   ],
   "operations": "V2 deployed00:11Bogota with pinned3e6450fc on two independent CPU hosts;209 runtime tests passed each; test-qualified20x300x3 search and confirmation/report/collection enabled. No performance launch gate; activity >2. No financial training or feature selection.",
   "history": [
+    {"date":"2026-10-30","event":"Owner accepts pragmatic hierarchical comparison. Implemented three controller arms and bounded two-order native receding-horizon plans;24-profile JSON grid and resumable phase queue.247 runtime tests pass;24-account smoke and completed resume verified. Found and corrected ISO versus market-week activity denominator before full calibration. All learned-model observations remain free of position state and oracle paths."},
     {"date":"2026-10-30","event":"Owner authorizes next step. Implemented native same-position exit enumeration and one-intervention frozen-policy continuation.432 accounts replay exactly;305 suppressed ticks;2059 close alternatives;202 locally helpful versus103 harmful.199 account improvements versus106 losses; shared counterexample shows local+23.95 becoming account-6.06 through continuation.65 tests; full resume authenticated. No live runtime modified; sequential causal allocator remains next."},
     {"date":"2026-10-30","event":"Status request: median v2 completed0903UTC; zero still in third seed. Authenticated15472 receipts and completed432 exact observational replays. All4 finalists lost >2 activity eligibility in confirmation and executed zero closes; staged uncertainty/history/persistence counts explain suppression, not absence of market signal.47 tests. No campaign mutation or automatic promotion."},
     {"date":"2026-10-30","event":"Owner approves continuation. Recovered exact indicator blob (checkout difference was documentation); all K3 endpoints expanded to404748 edges with zero original-winner error. Explicit BID adapter and next-open pivot exit avoid midpoint mislabeling and impossible extreme fills. Four calendar-only TRAIN prefixes enumerate3206 accounts;28 cold frontier replays;138 tests; byte-identical rebuilds. No live runtime changed; no full TRAIN frontier or learned result claimed."},
