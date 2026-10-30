@@ -3,6 +3,9 @@
 ## Priority override: 2026-10-29
 
 Current increment: [causal history automation148](148_CAUSAL_HISTORY_AUTOMATION.md).
+[Deployment149](149_CAUSAL_HISTORY_DEPLOYMENT.md): two persistent CPU lanes;
+zero-drift completed, median in confirmation at publication. Both calibration
+gates declined the long search and automatically continued to negative reports.
 The 27-unit post-audit diagnostics are COMPLETE, not still running. The new
 prefix-only history controller and unattended queue pass 200 tests (zero skips),
 plus a full two-worker smoke including 58 DEAP candidates and authenticated

@@ -3,7 +3,9 @@
   "date": "2026-10-29",
   "timezone": "America/Bogota",
   "priority": 0,
-  "current_stage": "CAUSAL_HISTORY_AUTOMATION_IMPLEMENTED_SMOKE_VERIFIED",
+  "current_stage": "CAUSAL_HISTORY_TWO_CPU_LANES_DEPLOYED",
+  "causal_history_deployment": "../149_CAUSAL_HISTORY_DEPLOYMENT.md",
+  "causal_history_lanes": {"zero":{"code":"382d25b2","identity":"71d597f34ee659e8bd6ee4ffbe59e34e7a8f3cac783664e79fa51021d556896c","status":"COMPLETE"},"median":{"code":"b37ef5cd","identity":"4acfcdae876bbba833f7af8ccbd748f14c29e53c9aece78f492e4248305eae77","status_at_publication":"CONFIRMATION"},"calibration_search_gates":false,"automatic_report_collection":true},
   "causal_history_automation": "../148_CAUSAL_HISTORY_AUTOMATION.md",
   "causal_history_preflight": {"tests_passed":200,"skipped":0,"smoke_candidates":58,"completed_resume_authenticated":true,"final_R6":false,"learned_adapter_qualified":false},
   "post_audit_launch": "../147_POST_AUDIT_LAUNCH.md",
@@ -114,7 +116,7 @@
     "Model-specific sequential floating selection",
     "Promotion of synthetic-oracle results as learned-model evidence"
   ],
-  "operations": "Post-audit diagnostic27/27 COMPLETE at00:37UTC. Causal-history automated experiment implemented and full smoke/resume verified; separate CPU lanes being deployed. No financial training or feature selection.",
+  "operations": "Two persistent causal-history CPU lanes deployed with200 passing runtime tests each; zero completed22:47Bogota and median in confirmation. Both calibration gates declined exploratory DEAP and continued automatically to confirmation/counterfactuals/report. Automatic collector authenticates outputs. No financial training or feature selection.",
   "history": [
     {"date":"2026-10-29","event":"Owner requests unattended continuation. Implemented causal history penalties separately for entries and closes; independent close uncertainty, fixed exposure, bounded workers and tests-to-report queue with conditional20x300x3 exploratory search.200 tests pass,58-candidate smoke and authenticated resume complete. Not final R4/R6 qualification."},
     {"date":"2026-10-29","event":"Owner authorizes automated execution. Implemented config-aware caches/value bindings and sealed matured-error ledger with prefix-only32-path baseline;184 tests;7-unit smoke and authenticated resume. Launched27-unit persistent diagnostic service at19:09Bogota under657b6818. Remaining learned-adapter/control qualification not misrepresented as complete."},
