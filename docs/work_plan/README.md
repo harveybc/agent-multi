@@ -2,6 +2,13 @@
 
 ## Priority update: 2026-10-30
 
+[Correction171](171_FROZEN_REFERENCE_ROLLOUT_PLAN.md): implement explicit
+nonrecursive reference-policy continuation instead of the two-order proxy.
+Tests and an unattended seven-policy fresh-world contrast include every
+joint-policy ideal close's actual adaptive HOLD alternative. No additional
+owner decision or approval is required between these stages. Results are
+not a learned-model or floating-selection release.
+
 [Continuation gap170](170_PRAGMATIC_PLAN_EXECUTION_GAP_RESULTS.md): all305
 ideal closes checked;610 committed native plans reproduce valuation exactly,
 but150 CLOSE/HOLD utility rankings reverse under actual hourly continuation.

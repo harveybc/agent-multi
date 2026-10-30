@@ -1,0 +1,12 @@
+{
+  "schema": "reference_rollout_contrast.v1",
+  "calibration_seed": 990000,
+  "confirmation_seed": 1000000,
+  "smoke_calibration_seed": 1010000,
+  "smoke_confirmation_seed": 1020000,
+  "reporters": ["ideal", "noise_0.5", "noise_1", "noise_2", "causal"],
+  "account_risk_weight": 1.0,
+  "financial_training": false,
+  "coefficient_selection": false,
+  "automatic_close_attribution": "joint_ideal_every_executed_close"
+}

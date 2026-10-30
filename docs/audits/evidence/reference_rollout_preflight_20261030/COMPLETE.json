@@ -1,0 +1,63 @@
+{
+  "data": {
+    "accounts": 21,
+    "artifacts": {
+      "AUDIT_REQUEST.md": "cdc9e96711c9a0354f3206357bf06ee303923f09458cb66c8f31ce441fe91e17",
+      "MANIFEST.json": "09b5906341b3ba6df9c175262f8607cc7d1983d449d6d77053ee41a7536a878a",
+      "REPORT.json": "3b28cc3499c2d11c1a88fb7f23dc25d844adf85b8bf52e4984c05b8a1040730f",
+      "RESULTS.md": "247faefed525ee18907e054dd0e6c12ca64fd03c497ebf85ef60895dd5855206",
+      "TESTS.json": "3c93f0cb681b4e71bf9983945f3ee70679a599ab57652de9ddfdd854a5f5d2d1",
+      "TESTS.log": "a39e7f970149de3471c663609372ac6c35de07d4bb9383a1d3f27c71566d6739",
+      "TESTS.xml": "faa411fd2e8e24faae0ac6a31ec5444935d267956a9fa178c96c9ef5bc8731c4",
+      "attribution_confirmation_ideal_000_66605b77.json": "6753e36abb707e42c4f4b6c264dd1bc756baef668ff33c9de20c677de1b2f865",
+      "attribution_confirmation_ideal_000_66605b77_BAR_026.json": "8530d9c329a897a1f7c96c4f7b65af015da85d46870dbb0923f2eace8dbffbea",
+      "attribution_confirmation_ideal_000_66605b77_BAR_033.json": "5785d7381f851ed9358165e4eb2cd25cc4e2cfd784f5557e70da608b726c49e4",
+      "attribution_confirmation_ideal_000_66605b77_BAR_046.json": "f8556a6e0ccdf8756d620008eb119dfc0f566374b6c5127ef34abcd53403f003",
+      "attribution_confirmation_ideal_000_66605b77_BAR_075.json": "9360ea2048af7d089f43439e558cd721bfbf1f9d34fda1dcb245424ef3ff2b1d",
+      "attribution_confirmation_ideal_000_66605b77_BAR_093.json": "75123d8d77d8afc6d28622efa8f531783a881116b5341a816ede76881504fab3",
+      "attribution_confirmation_ideal_000_66605b77_BAR_104.json": "ccb16d4de143460f94ed8062b28e18680b47416a68ebcbbb7db831939b3de6f9",
+      "calibration_noise_1_000_16c4a1b9.json": "68f4224101d3d75473114e152f5a2d9c7afefee8e259510363b40448c26b55ea",
+      "calibration_noise_1_000_280977a9.json": "3cbd3e1f8961f37601ce7a97e0565189dd7007c03e770e688a72a46a7621bb93",
+      "calibration_noise_1_000_59a75d73.json": "2b9bb8fde4a4f7a4080e338b3ce22f418aa4495d5ec304f8a168385764cba0e3",
+      "calibration_noise_1_000_646ccafb.json": "324ddf2d0c71410031dcc3d8364384a87b7cd35c3a96cc34f63af502f6294518",
+      "calibration_noise_1_000_66605b77.json": "56643730e87e5d7c7f49ff109f8dd5bcc34671af7574721896db61568614be0e",
+      "calibration_noise_1_000_c9408e3b.json": "4140c6bee3e1aa2f0bfcc96c99349a74eafa2cfa5eebcce42e76b2019b24dbbd",
+      "calibration_noise_1_000_e5df77dd.json": "0d630a6c335c2a35cc13c5b22aea945d26fe30ee2e4a75efc20af406b8e4cd36",
+      "confirmation_ideal_000_16c4a1b9.json": "a9b3128733ceae07f259e64bf4781cb3f66d942e86003c8a56e0e4b3a68eb47c",
+      "confirmation_ideal_000_280977a9.json": "1296c94e304639bc8ad6b87ef2201a08ef863ce65786dd14308d1f550f8a5615",
+      "confirmation_ideal_000_59a75d73.json": "d56d7a3f8a2ec78b711e2593f2f103a30abdaa45a9b8aab1e502066e6c91c408",
+      "confirmation_ideal_000_646ccafb.json": "0d35c6eb0ef1f31eba609e7a82099b43b484e3d07ada88109a72c2cf797d9ce7",
+      "confirmation_ideal_000_66605b77.json": "0c1dc213c4627ff294ae7c91206c8a9b1731fae2d0c20f421ea5d31b9074b913",
+      "confirmation_ideal_000_c9408e3b.json": "08d1a2341f6c2a89c742b1f0e2ea981e496274df6ebd12d503fcb5d17f4a6dbd",
+      "confirmation_ideal_000_e5df77dd.json": "9e4c5164fe58bd953df46650fd7f541571a18734abf598f040af077823de381c",
+      "confirmation_noise_1_000_16c4a1b9.json": "c11d923118c9e20f95944125b51918c9013fb2b801855a3dc1139e5816ce5e66",
+      "confirmation_noise_1_000_280977a9.json": "f80c72430ce05ef86c513e9019ba240cbbf97e3d82b3cd3333205a78cff82e01",
+      "confirmation_noise_1_000_59a75d73.json": "6c11654a685f0a200828c90a00a5b5f324e248503d650a6cc55fe2004ddd1e16",
+      "confirmation_noise_1_000_646ccafb.json": "8e9879a4d5702211735306e83b0d179518b8a12941b43696b25c737736bdde72",
+      "confirmation_noise_1_000_66605b77.json": "1d0d6ef6482d289d93482254089cbbe169914bfa50d493ae901f3fa27a9fe82e",
+      "confirmation_noise_1_000_c9408e3b.json": "e32ec53e7ee20ddf4def35ce9fcba705d4205fe7b19f37c8383dcbd8a00321fc",
+      "confirmation_noise_1_000_e5df77dd.json": "b74f57eb5e9c75f90a11e4b7d363334df49dee2a7cb2c6ab37ef245c33020534"
+    },
+    "attribution": {
+      "accounts": 1,
+      "closes": 6,
+      "pareto_relations": {
+        "CLOSE_DOMINATES": 3,
+        "HOLD_DOMINATES": 1,
+        "TRADEOFF": 2
+      },
+      "profit_harmful": 1,
+      "profit_helpful": 5,
+      "utility_harmful": 1,
+      "utility_helpful": 5
+    },
+    "tests": {
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "tests": 285
+    }
+  },
+  "identity": "9e6dc21b10d9d56892a3cbd1398e6ab50062cf0125cd8de3a6832b8898c8fe55",
+  "seal": "f4917f79d4b658ea85df4c020fe2d1e595153a4e1c6dea93e743e9a7d6447968"
+}

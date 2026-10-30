@@ -3,7 +3,10 @@
   "date": "2026-10-30",
   "timezone": "America/Bogota",
   "priority": 0,
-  "current_stage": "PRAGMATIC_PLAN_EXECUTION_GAP_COMPLETE",
+  "current_stage": "FROZEN_REFERENCE_ROLLOUT_PREFLIGHT_COMPLETE",
+  "reference_rollout_plan": "../171_FROZEN_REFERENCE_ROLLOUT_PLAN.md",
+  "reference_rollout_preflight": {"identity":"9e6dc21b10d9d56892a3cbd1398e6ab50062cf0125cd8de3a6832b8898c8fe55","tests_passed":285,"skipped":0,"accounts":21,"close_interventions":6,"close_profit_harmful":1,"resume_authenticated":true,"lint_passed":true},
+  "reference_rollout_contract": {"policies":7,"native_accounts":1512,"ideal_close_interventions":"every executed joint-policy close","automatic_stages":true,"intermediate_approval_required":false,"financial_training":false,"coefficient_selection":false},
   "pragmatic_plan_gap_results": "../170_PRAGMATIC_PLAN_EXECUTION_GAP_RESULTS.md",
   "pragmatic_plan_gap_audit": "../../audits/SATOSHI_AUDIT_REQUEST_PRAGMATIC_CONTINUATION_GAP_2026_10_30.md",
   "pragmatic_plan_gap_completion": {"code":"ab1c2778","identity":"b2e26ee997822fb67ca7ccddb9a8e0c71fe27653f197f87b917237465813933d","baseline_replays":72,"committed_replays":610,"closes":305,"valuation_error":0,"ranking_reversals":150,"max_decomposition_error":1.7763568394002505e-15,"tests_passed":265,"resume_authenticated":true,"strategy_promoted":false},
@@ -142,7 +145,7 @@
   },
   "bottom_up": "INDEPENDENT_REVIEWS_RECEIVED; FIVE_CONCRETE_DEFECTS_REPAIRED_AND_REPLAYED; COVERAGE_REVISION_REQUIRED",
   "next_allowed_actions": [
-    "169 completed in170: implement an explicitly frozen non-recursive continuation-policy reference; test future-information boundaries and native action consistency before fresh-world policy-improvement contrasts",
+    "Execute171 unattended after tests and smoke: explicit frozen-reference continuation; seven fixed policies; fresh worlds; automatic actual-policy close attribution; all five report qualities; final report and audit packet",
     "164 and167 completed in168: preserve all frozen results and mixed resolution effects; do not repeat completed queues or tune on their confirmation",
     "Review170 and its targeted audit with the exact one-tick interventions and independently committed plans; retain both profit and drawdown evidence",
     "Qualify the corrected continuation model and learned-output adapter before model-specific floating selection; no automatic financial-learning release",
@@ -163,7 +166,7 @@
     "Model-specific sequential floating selection",
     "Promotion of synthetic-oracle results as learned-model evidence"
   ],
-  "operations": "Attribution164 and contrast167 completed without restarts;4529 artifact hashes verified. Diagnostic169 also completed underab1c2778:72 baseline accounts;610 committed plans;zero valuation discrepancy;150 utility-ranking reversals among305 closes;265 tests;completed resume authenticated. Results168/170 and targeted audit request published. No study remains running in this queue; no financial training or feature selection.",
+  "operations": "Prior164/167/169 queues complete and preserved.171 implemented and preflight complete:285 tests;21 accounts;six actual-policy close interventions;one harmful close retained;authenticated completed resume. Deploy pinned unattended four-worker contrast now without another owner approval. No financial training or floating selection.",
   "history": [
     {"date":"2026-10-30","event":"Owner approves continuation after status. Published completed168 and executed169 end to end:72 exact baseline accounts;610 committed native plans reproduce ideal valuations withzero error;150/305 utility rankings reverse under actual hourly continuation. Identity residual<=1.78e-15.265 tests and authenticated resume.170 identifies valuation of a different continuation, not a price-model failure; next correction is explicit frozen-reference rollout with causal information tests."},
     {"date":"2026-10-30","event":"Owner requests immediate continuation. Implemented164 and deployedde91e051 after258 tests and44-intervention smoke. Ideal stage305 closes:157 help account profit and148 harm it. Found two concrete omitted1h/2h HOLD witnesses; implemented separate167 fixed-coefficient fresh-world contrast with261 tests and18-account smoke. Existing runtime and coefficients unchanged; dependent automatic execution prepared."},

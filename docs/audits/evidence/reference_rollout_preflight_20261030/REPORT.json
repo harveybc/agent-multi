@@ -1,0 +1,998 @@
+{
+  "attribution": {
+    "accounts": 1,
+    "closes": 6,
+    "pareto_relations": {
+      "CLOSE_DOMINATES": 3,
+      "HOLD_DOMINATES": 1,
+      "TRADEOFF": 2
+    },
+    "profit_harmful": 1,
+    "profit_helpful": 5,
+    "utility_harmful": 1,
+    "utility_helpful": 5
+  },
+  "financial_training": false,
+  "identity": "9e6dc21b10d9d56892a3cbd1398e6ab50062cf0125cd8de3a6832b8898c8fe55",
+  "policies": [
+    {
+      "arm": "simple_c9408e3b",
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 0.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 2,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 0.0,
+        "urgent_risk": 0.25,
+        "variant": "simple"
+      },
+      "key": "c9408e3b946416d9fc801925aa8f09dcd8e8d7f4b0bdb714e5e5c93c64a8bc77",
+      "references": null
+    },
+    {
+      "arm": "predictive_proxy_e5df77dd",
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 1.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 2,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 1.0,
+        "urgent_risk": 0.25,
+        "variant": "predictive_proxy"
+      },
+      "key": "e5df77dd883da608434f0921abba428e7c04002019f84c7b6b6c3528d95c1f3b",
+      "references": null
+    },
+    {
+      "arm": "sequential_280977a9",
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 0.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 2,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 1.0,
+        "urgent_risk": 0.25,
+        "variant": "sequential"
+      },
+      "key": "280977a99cdaa64118d87917f4faf845a7454b913143ea9b02d7f6fe2819b54c",
+      "references": null
+    },
+    {
+      "arm": "sequential_59a75d73",
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 1.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 2,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 0.0,
+        "urgent_risk": 0.25,
+        "variant": "sequential"
+      },
+      "key": "59a75d7347527e8c72f19b7f6180cfe00222a1b9bf77bdec2024116502f6f370",
+      "references": null
+    },
+    {
+      "account_risk_weight": 1.0,
+      "arm": "rollout_simple",
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 0.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 2,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 0.0,
+        "urgent_risk": 0.25,
+        "variant": "simple"
+      },
+      "key": "646ccafbe668af9b14ac2e667d73e184134d9a07c40674cff5076ed4342f0acf",
+      "references": {
+        "simple": {
+          "account_risk_weight": 1.0,
+          "alpha": 0.0,
+          "close_margin": 0.0,
+          "close_offsets": [
+            3,
+            6,
+            12,
+            24
+          ],
+          "entry_threshold": 0.0,
+          "persistence": 2,
+          "risk_penalty": 0.0,
+          "shortlist": 2,
+          "tau0": 1.0,
+          "uncertainty": 0.0,
+          "urgent_risk": 0.25,
+          "variant": "simple"
+        }
+      }
+    },
+    {
+      "account_risk_weight": 1.0,
+      "arm": "rollout_proxy",
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 0.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 2,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 0.0,
+        "urgent_risk": 0.25,
+        "variant": "simple"
+      },
+      "key": "16c4a1b9017cbd2097470ef727a04e1c85a7bc431441be3e84d5ac5f1cc11ca9",
+      "references": {
+        "predictive_proxy": {
+          "account_risk_weight": 1.0,
+          "alpha": 1.0,
+          "close_margin": 0.0,
+          "close_offsets": [
+            3,
+            6,
+            12,
+            24
+          ],
+          "entry_threshold": 0.0,
+          "persistence": 2,
+          "risk_penalty": 0.0,
+          "shortlist": 2,
+          "tau0": 1.0,
+          "uncertainty": 1.0,
+          "urgent_risk": 0.25,
+          "variant": "predictive_proxy"
+        }
+      }
+    },
+    {
+      "account_risk_weight": 1.0,
+      "arm": "rollout_joint",
+      "config": {
+        "account_risk_weight": 1.0,
+        "alpha": 0.0,
+        "close_margin": 0.0,
+        "close_offsets": [
+          3,
+          6,
+          12,
+          24
+        ],
+        "entry_threshold": 0.0,
+        "persistence": 2,
+        "risk_penalty": 0.0,
+        "shortlist": 2,
+        "tau0": 1.0,
+        "uncertainty": 0.0,
+        "urgent_risk": 0.25,
+        "variant": "simple"
+      },
+      "key": "66605b77cc9080bf3fdfdc6cfb649a1685a91eac99aa04289ab192f3241800e5",
+      "references": {
+        "predictive_proxy": {
+          "account_risk_weight": 1.0,
+          "alpha": 1.0,
+          "close_margin": 0.0,
+          "close_offsets": [
+            3,
+            6,
+            12,
+            24
+          ],
+          "entry_threshold": 0.0,
+          "persistence": 2,
+          "risk_penalty": 0.0,
+          "shortlist": 2,
+          "tau0": 1.0,
+          "uncertainty": 1.0,
+          "urgent_risk": 0.25,
+          "variant": "predictive_proxy"
+        },
+        "simple": {
+          "account_risk_weight": 1.0,
+          "alpha": 0.0,
+          "close_margin": 0.0,
+          "close_offsets": [
+            3,
+            6,
+            12,
+            24
+          ],
+          "entry_threshold": 0.0,
+          "persistence": 2,
+          "risk_penalty": 0.0,
+          "shortlist": 2,
+          "tau0": 1.0,
+          "uncertainty": 0.0,
+          "urgent_risk": 0.25,
+          "variant": "simple"
+        }
+      }
+    }
+  ],
+  "results": {
+    "calibration_noise_1": {
+      "16c4a1b9017cbd2097470ef727a04e1c85a7bc431441be3e84d5ac5f1cc11ca9": {
+        "accounts": 1,
+        "activity_eligible": true,
+        "buy_share_pct": 80.0,
+        "buy_win_pct": 60.0,
+        "buys": 20,
+        "close_reasons": {
+          "AGENT_CLOSE": 25
+        },
+        "costs": {
+          "commission_usd": 64.88524,
+          "financing_usd": 7.3157499999999995,
+          "slippage_usd": 37.07728,
+          "spread_usd": 48.21045
+        },
+        "defined_sharpes": 1,
+        "harmful_closes": 19,
+        "horizons": {
+          "12": 4,
+          "24": 4,
+          "3": 13,
+          "6": 4
+        },
+        "mean_close_regret_risk": 0.9278778496496309,
+        "mean_net_usd": 40.68345068253877,
+        "mean_return_pct": 0.4068345068253709,
+        "mean_sharpe": 5.419642956158791,
+        "orders": 25,
+        "orders_per_week": 25.0,
+        "sell_win_pct": 20.0,
+        "sells": 5,
+        "win_pct": 52.0,
+        "worst_dd_pct": 0.38054261165755476
+      },
+      "280977a99cdaa64118d87917f4faf845a7454b913143ea9b02d7f6fe2819b54c": {
+        "accounts": 1,
+        "activity_eligible": true,
+        "buy_share_pct": 73.6842105263158,
+        "buy_win_pct": 64.28571428571429,
+        "buys": 14,
+        "close_reasons": {
+          "AGENT_CLOSE": 18,
+          "FORCED_FLAT": 1
+        },
+        "costs": {
+          "commission_usd": 47.2906,
+          "financing_usd": 2.42711,
+          "slippage_usd": 27.023200000000003,
+          "spread_usd": 36.75495
+        },
+        "defined_sharpes": 1,
+        "harmful_closes": 14,
+        "horizons": {
+          "12": 4,
+          "24": 4,
+          "3": 8,
+          "6": 3
+        },
+        "mean_close_regret_risk": 1.0435475872297357,
+        "mean_net_usd": 70.05468500669092,
+        "mean_return_pct": 0.7005468500669076,
+        "mean_sharpe": 6.886837813496915,
+        "orders": 19,
+        "orders_per_week": 19.0,
+        "sell_win_pct": 20.0,
+        "sells": 5,
+        "win_pct": 52.63157894736842,
+        "worst_dd_pct": 0.739440817746088
+      },
+      "59a75d7347527e8c72f19b7f6180cfe00222a1b9bf77bdec2024116502f6f370": {
+        "accounts": 1,
+        "activity_eligible": true,
+        "buy_share_pct": 64.28571428571429,
+        "buy_win_pct": 77.77777777777777,
+        "buys": 9,
+        "close_reasons": {
+          "AGENT_CLOSE": 12,
+          "FORCED_FLAT": 1,
+          "TP": 1
+        },
+        "costs": {
+          "commission_usd": 37.69654,
+          "financing_usd": 7.398159999999999,
+          "slippage_usd": 20.63278,
+          "spread_usd": 29.005850000000002
+        },
+        "defined_sharpes": 1,
+        "harmful_closes": 7,
+        "horizons": {
+          "24": 3,
+          "3": 6,
+          "6": 5
+        },
+        "mean_close_regret_risk": 0.7648615863165285,
+        "mean_net_usd": 136.59419250540066,
+        "mean_return_pct": 1.3659419250539706,
+        "mean_sharpe": 10.750456049468474,
+        "orders": 14,
+        "orders_per_week": 14.0,
+        "sell_win_pct": 20.0,
+        "sells": 5,
+        "win_pct": 57.142857142857146,
+        "worst_dd_pct": 0.6461121262920999
+      },
+      "646ccafbe668af9b14ac2e667d73e184134d9a07c40674cff5076ed4342f0acf": {
+        "accounts": 1,
+        "activity_eligible": true,
+        "buy_share_pct": 69.56521739130434,
+        "buy_win_pct": 50.0,
+        "buys": 16,
+        "close_reasons": {
+          "AGENT_CLOSE": 23
+        },
+        "costs": {
+          "commission_usd": 58.80336,
+          "financing_usd": 1.7934949999999998,
+          "slippage_usd": 33.60192,
+          "spread_usd": 44.911550000000005
+        },
+        "defined_sharpes": 1,
+        "harmful_closes": 15,
+        "horizons": {
+          "12": 6,
+          "24": 3,
+          "3": 8,
+          "6": 6
+        },
+        "mean_close_regret_risk": 0.9158381026775575,
+        "mean_net_usd": 29.862536365250207,
+        "mean_return_pct": 0.2986253636524605,
+        "mean_sharpe": 2.6958761702673972,
+        "orders": 23,
+        "orders_per_week": 23.0,
+        "sell_win_pct": 42.857142857142854,
+        "sells": 7,
+        "win_pct": 47.82608695652174,
+        "worst_dd_pct": 0.8414233694299835
+      },
+      "66605b77cc9080bf3fdfdc6cfb649a1685a91eac99aa04289ab192f3241800e5": {
+        "accounts": 1,
+        "activity_eligible": true,
+        "buy_share_pct": 62.5,
+        "buy_win_pct": 46.666666666666664,
+        "buys": 15,
+        "close_reasons": {
+          "AGENT_CLOSE": 23,
+          "TP": 1
+        },
+        "costs": {
+          "commission_usd": 62.1544,
+          "financing_usd": 1.7934949999999998,
+          "slippage_usd": 34.61634,
+          "spread_usd": 47.30825
+        },
+        "defined_sharpes": 1,
+        "harmful_closes": 14,
+        "horizons": {
+          "12": 4,
+          "24": 4,
+          "3": 8,
+          "6": 8
+        },
+        "mean_close_regret_risk": 0.8556510014907233,
+        "mean_net_usd": 57.31232724079697,
+        "mean_return_pct": 0.5731232724079494,
+        "mean_sharpe": 3.913619105664271,
+        "orders": 24,
+        "orders_per_week": 24.0,
+        "sell_win_pct": 33.333333333333336,
+        "sells": 9,
+        "win_pct": 41.666666666666664,
+        "worst_dd_pct": 0.8553385014869876
+      },
+      "c9408e3b946416d9fc801925aa8f09dcd8e8d7f4b0bdb714e5e5c93c64a8bc77": {
+        "accounts": 1,
+        "activity_eligible": true,
+        "buy_share_pct": 100.0,
+        "buy_win_pct": 66.66666666666667,
+        "buys": 3,
+        "close_reasons": {
+          "AGENT_CLOSE": 2,
+          "TP": 1
+        },
+        "costs": {
+          "commission_usd": 6.59386,
+          "financing_usd": 9.559899999999999,
+          "slippage_usd": 3.3271800000000002,
+          "spread_usd": 5.8543
+        },
+        "defined_sharpes": 1,
+        "harmful_closes": 1,
+        "horizons": {
+          "24": 2,
+          "3": 1
+        },
+        "mean_close_regret_risk": 0.07902721887868001,
+        "mean_net_usd": 140.20938504126062,
+        "mean_return_pct": 1.4020938504126113,
+        "mean_sharpe": 20.34910338615743,
+        "orders": 3,
+        "orders_per_week": 3.0,
+        "sell_win_pct": null,
+        "sells": 0,
+        "win_pct": 66.66666666666667,
+        "worst_dd_pct": 0.3716658342463582
+      },
+      "e5df77dd883da608434f0921abba428e7c04002019f84c7b6b6c3528d95c1f3b": {
+        "accounts": 1,
+        "activity_eligible": true,
+        "buy_share_pct": 100.0,
+        "buy_win_pct": 75.0,
+        "buys": 4,
+        "close_reasons": {
+          "AGENT_CLOSE": 2,
+          "TP": 2
+        },
+        "costs": {
+          "commission_usd": 11.15982,
+          "financing_usd": 10.90383,
+          "slippage_usd": 5.0246200000000005,
+          "spread_usd": 9.119625000000001
+        },
+        "defined_sharpes": 1,
+        "harmful_closes": 1,
+        "horizons": {
+          "24": 1,
+          "3": 2,
+          "6": 1
+        },
+        "mean_close_regret_risk": 0.07902721887868001,
+        "mean_net_usd": 174.99209083998647,
+        "mean_return_pct": 1.7499209083998268,
+        "mean_sharpe": 17.51035911252792,
+        "orders": 4,
+        "orders_per_week": 4.0,
+        "sell_win_pct": null,
+        "sells": 0,
+        "win_pct": 75.0,
+        "worst_dd_pct": 0.6402711473836243
+      }
+    },
+    "confirmation_ideal": {
+      "16c4a1b9017cbd2097470ef727a04e1c85a7bc431441be3e84d5ac5f1cc11ca9": {
+        "accounts": 1,
+        "activity_eligible": true,
+        "buy_share_pct": 42.857142857142854,
+        "buy_win_pct": 100.0,
+        "buys": 3,
+        "close_reasons": {
+          "AGENT_CLOSE": 6,
+          "TP": 1
+        },
+        "costs": {
+          "commission_usd": 19.83954,
+          "financing_usd": -4.157875,
+          "slippage_usd": 10.54532,
+          "spread_usd": 15.304525000000002
+        },
+        "defined_sharpes": 1,
+        "harmful_closes": 1,
+        "horizons": {
+          "12": 2,
+          "3": 4,
+          "6": 1
+        },
+        "mean_close_regret_risk": 0.2999204242111849,
+        "mean_net_usd": 322.5548118621823,
+        "mean_return_pct": 3.225548118621835,
+        "mean_sharpe": 15.899549604772107,
+        "orders": 7,
+        "orders_per_week": 7.0,
+        "sell_win_pct": 75.0,
+        "sells": 4,
+        "win_pct": 85.71428571428571,
+        "worst_dd_pct": 0.24377730304204487
+      },
+      "280977a99cdaa64118d87917f4faf845a7454b913143ea9b02d7f6fe2819b54c": {
+        "accounts": 1,
+        "activity_eligible": true,
+        "buy_share_pct": 60.0,
+        "buy_win_pct": 66.66666666666667,
+        "buys": 3,
+        "close_reasons": {
+          "AGENT_CLOSE": 3,
+          "TP": 2
+        },
+        "costs": {
+          "commission_usd": 12.98185,
+          "financing_usd": 3.20747,
+          "slippage_usd": 5.9447600000000005,
+          "spread_usd": 10.4001
+        },
+        "defined_sharpes": 1,
+        "harmful_closes": 1,
+        "horizons": {
+          "12": 2,
+          "3": 1,
+          "6": 2
+        },
+        "mean_close_regret_risk": 0.572470713524687,
+        "mean_net_usd": 254.8063315364073,
+        "mean_return_pct": 2.5480633153640797,
+        "mean_sharpe": 17.618239582788814,
+        "orders": 5,
+        "orders_per_week": 5.0,
+        "sell_win_pct": 100.0,
+        "sells": 2,
+        "win_pct": 80.0,
+        "worst_dd_pct": 0.36932473867000243
+      },
+      "59a75d7347527e8c72f19b7f6180cfe00222a1b9bf77bdec2024116502f6f370": {
+        "accounts": 1,
+        "activity_eligible": true,
+        "buy_share_pct": 71.42857142857143,
+        "buy_win_pct": 80.0,
+        "buys": 5,
+        "close_reasons": {
+          "AGENT_CLOSE": 4,
+          "TP": 3
+        },
+        "costs": {
+          "commission_usd": 19.90296,
+          "financing_usd": -1.1265700000000005,
+          "slippage_usd": 8.74278,
+          "spread_usd": 15.348775000000002
+        },
+        "defined_sharpes": 1,
+        "harmful_closes": 2,
+        "horizons": {
+          "12": 1,
+          "3": 3,
+          "6": 3
+        },
+        "mean_close_regret_risk": 0.6787188339362642,
+        "mean_net_usd": 300.5840758654265,
+        "mean_return_pct": 3.005840758654288,
+        "mean_sharpe": 16.162014636740892,
+        "orders": 7,
+        "orders_per_week": 7.0,
+        "sell_win_pct": 100.0,
+        "sells": 2,
+        "win_pct": 85.71428571428571,
+        "worst_dd_pct": 0.3319314671753124
+      },
+      "646ccafbe668af9b14ac2e667d73e184134d9a07c40674cff5076ed4342f0acf": {
+        "accounts": 1,
+        "activity_eligible": true,
+        "buy_share_pct": 42.857142857142854,
+        "buy_win_pct": 100.0,
+        "buys": 3,
+        "close_reasons": {
+          "AGENT_CLOSE": 5,
+          "TP": 2
+        },
+        "costs": {
+          "commission_usd": 19.78032,
+          "financing_usd": -2.4686700000000004,
+          "slippage_usd": 9.81296,
+          "spread_usd": 14.1288
+        },
+        "defined_sharpes": 1,
+        "harmful_closes": 2,
+        "horizons": {
+          "12": 2,
+          "3": 3,
+          "6": 2
+        },
+        "mean_close_regret_risk": 0.7639478890059946,
+        "mean_net_usd": 323.73651114525137,
+        "mean_return_pct": 3.237365111452495,
+        "mean_sharpe": 19.475183566062228,
+        "orders": 7,
+        "orders_per_week": 7.0,
+        "sell_win_pct": 100.0,
+        "sells": 4,
+        "win_pct": 100.0,
+        "worst_dd_pct": 0.2623326290267924
+      },
+      "66605b77cc9080bf3fdfdc6cfb649a1685a91eac99aa04289ab192f3241800e5": {
+        "accounts": 1,
+        "activity_eligible": true,
+        "buy_share_pct": 42.857142857142854,
+        "buy_win_pct": 100.0,
+        "buys": 3,
+        "close_reasons": {
+          "AGENT_CLOSE": 6,
+          "TP": 1
+        },
+        "costs": {
+          "commission_usd": 19.83954,
+          "financing_usd": -4.157875,
+          "slippage_usd": 10.54532,
+          "spread_usd": 15.304525000000002
+        },
+        "defined_sharpes": 1,
+        "harmful_closes": 1,
+        "horizons": {
+          "12": 2,
+          "3": 4,
+          "6": 1
+        },
+        "mean_close_regret_risk": 0.2999204242111849,
+        "mean_net_usd": 322.5548118621823,
+        "mean_return_pct": 3.225548118621835,
+        "mean_sharpe": 15.899549604772107,
+        "orders": 7,
+        "orders_per_week": 7.0,
+        "sell_win_pct": 75.0,
+        "sells": 4,
+        "win_pct": 85.71428571428571,
+        "worst_dd_pct": 0.24377730304204487
+      },
+      "c9408e3b946416d9fc801925aa8f09dcd8e8d7f4b0bdb714e5e5c93c64a8bc77": {
+        "accounts": 1,
+        "activity_eligible": true,
+        "buy_share_pct": 66.66666666666667,
+        "buy_win_pct": 100.0,
+        "buys": 2,
+        "close_reasons": {
+          "AGENT_CLOSE": 1,
+          "FORCED_FLAT": 1,
+          "TP": 1
+        },
+        "costs": {
+          "commission_usd": 6.22489,
+          "financing_usd": 4.79048,
+          "slippage_usd": 2.8471800000000003,
+          "spread_usd": 4.446350000000001
+        },
+        "defined_sharpes": 1,
+        "harmful_closes": 0,
+        "horizons": {
+          "24": 2,
+          "3": 1
+        },
+        "mean_close_regret_risk": 0.0,
+        "mean_net_usd": 160.20321800722013,
+        "mean_return_pct": 1.6020321800721993,
+        "mean_sharpe": 17.921508945391658,
+        "orders": 3,
+        "orders_per_week": 3.0,
+        "sell_win_pct": 100.0,
+        "sells": 1,
+        "win_pct": 100.0,
+        "worst_dd_pct": 0.41325809091808835
+      },
+      "e5df77dd883da608434f0921abba428e7c04002019f84c7b6b6c3528d95c1f3b": {
+        "accounts": 1,
+        "activity_eligible": true,
+        "buy_share_pct": 75.0,
+        "buy_win_pct": 100.0,
+        "buys": 3,
+        "close_reasons": {
+          "AGENT_CLOSE": 2,
+          "FORCED_FLAT": 1,
+          "TP": 1
+        },
+        "costs": {
+          "commission_usd": 10.65596,
+          "financing_usd": 5.517905,
+          "slippage_usd": 5.379220000000001,
+          "spread_usd": 7.6114
+        },
+        "defined_sharpes": 1,
+        "harmful_closes": 0,
+        "horizons": {
+          "12": 1,
+          "3": 2,
+          "6": 1
+        },
+        "mean_close_regret_risk": 0.08600765761793233,
+        "mean_net_usd": 224.9506879350885,
+        "mean_return_pct": 2.249506879350882,
+        "mean_sharpe": 17.00643595707831,
+        "orders": 4,
+        "orders_per_week": 4.0,
+        "sell_win_pct": 100.0,
+        "sells": 1,
+        "win_pct": 100.0,
+        "worst_dd_pct": 0.41325809091808835
+      }
+    },
+    "confirmation_noise_1": {
+      "16c4a1b9017cbd2097470ef727a04e1c85a7bc431441be3e84d5ac5f1cc11ca9": {
+        "accounts": 1,
+        "activity_eligible": true,
+        "buy_share_pct": 56.25,
+        "buy_win_pct": 27.77777777777778,
+        "buys": 18,
+        "close_reasons": {
+          "AGENT_CLOSE": 32
+        },
+        "costs": {
+          "commission_usd": 82.42563,
+          "financing_usd": 6.07365,
+          "slippage_usd": 47.10036,
+          "spread_usd": 59.99870000000001
+        },
+        "defined_sharpes": 1,
+        "harmful_closes": 16,
+        "horizons": {
+          "12": 7,
+          "24": 5,
+          "3": 12,
+          "6": 8
+        },
+        "mean_close_regret_risk": 0.8207437354203448,
+        "mean_net_usd": -134.3930910790023,
+        "mean_return_pct": -1.3439309107900255,
+        "mean_sharpe": -19.945847158979895,
+        "orders": 32,
+        "orders_per_week": 32.0,
+        "sell_win_pct": 14.285714285714286,
+        "sells": 14,
+        "win_pct": 21.875,
+        "worst_dd_pct": 1.3661555206987344
+      },
+      "280977a99cdaa64118d87917f4faf845a7454b913143ea9b02d7f6fe2819b54c": {
+        "accounts": 1,
+        "activity_eligible": true,
+        "buy_share_pct": 56.52173913043478,
+        "buy_win_pct": 46.15384615384615,
+        "buys": 13,
+        "close_reasons": {
+          "AGENT_CLOSE": 23
+        },
+        "costs": {
+          "commission_usd": 60.68195,
+          "financing_usd": 7.4225200000000005,
+          "slippage_usd": 34.6754,
+          "spread_usd": 45.3153
+        },
+        "defined_sharpes": 1,
+        "harmful_closes": 12,
+        "horizons": {
+          "12": 2,
+          "24": 5,
+          "3": 9,
+          "6": 7
+        },
+        "mean_close_regret_risk": 0.7312097602020486,
+        "mean_net_usd": 65.22707964915334,
+        "mean_return_pct": 0.6522707964915275,
+        "mean_sharpe": 6.921608846039116,
+        "orders": 23,
+        "orders_per_week": 23.0,
+        "sell_win_pct": 50.0,
+        "sells": 10,
+        "win_pct": 47.82608695652174,
+        "worst_dd_pct": 0.4445715241370716
+      },
+      "59a75d7347527e8c72f19b7f6180cfe00222a1b9bf77bdec2024116502f6f370": {
+        "accounts": 1,
+        "activity_eligible": true,
+        "buy_share_pct": 43.47826086956522,
+        "buy_win_pct": 50.0,
+        "buys": 10,
+        "close_reasons": {
+          "AGENT_CLOSE": 22,
+          "FORCED_FLAT": 1
+        },
+        "costs": {
+          "commission_usd": 60.4646,
+          "financing_usd": -0.9268799999999999,
+          "slippage_usd": 34.5512,
+          "spread_usd": 44.291025000000005
+        },
+        "defined_sharpes": 1,
+        "harmful_closes": 9,
+        "horizons": {
+          "12": 1,
+          "24": 6,
+          "3": 10,
+          "6": 6
+        },
+        "mean_close_regret_risk": 0.7313516483956175,
+        "mean_net_usd": 72.58130836537107,
+        "mean_return_pct": 0.7258130836536925,
+        "mean_sharpe": 9.648022616433774,
+        "orders": 23,
+        "orders_per_week": 23.0,
+        "sell_win_pct": 38.46153846153846,
+        "sells": 13,
+        "win_pct": 43.47826086956522,
+        "worst_dd_pct": 0.5889346328031003
+      },
+      "646ccafbe668af9b14ac2e667d73e184134d9a07c40674cff5076ed4342f0acf": {
+        "accounts": 1,
+        "activity_eligible": true,
+        "buy_share_pct": 43.333333333333336,
+        "buy_win_pct": 46.15384615384615,
+        "buys": 13,
+        "close_reasons": {
+          "AGENT_CLOSE": 30
+        },
+        "costs": {
+          "commission_usd": 83.66071,
+          "financing_usd": 10.58719,
+          "slippage_usd": 47.80612000000001,
+          "spread_usd": 62.0153
+        },
+        "defined_sharpes": 1,
+        "harmful_closes": 13,
+        "horizons": {
+          "12": 5,
+          "24": 2,
+          "3": 15,
+          "6": 8
+        },
+        "mean_close_regret_risk": 0.7423500064967793,
+        "mean_net_usd": -65.63829152666845,
+        "mean_return_pct": -0.6563829152667289,
+        "mean_sharpe": -8.80857194774687,
+        "orders": 30,
+        "orders_per_week": 30.0,
+        "sell_win_pct": 29.41176470588235,
+        "sells": 17,
+        "win_pct": 36.666666666666664,
+        "worst_dd_pct": 0.8488837694684122
+      },
+      "66605b77cc9080bf3fdfdc6cfb649a1685a91eac99aa04289ab192f3241800e5": {
+        "accounts": 1,
+        "activity_eligible": true,
+        "buy_share_pct": 42.857142857142854,
+        "buy_win_pct": 41.666666666666664,
+        "buys": 12,
+        "close_reasons": {
+          "AGENT_CLOSE": 28
+        },
+        "costs": {
+          "commission_usd": 79.53337,
+          "financing_usd": 10.58719,
+          "slippage_usd": 45.44764000000001,
+          "spread_usd": 59.067225
+        },
+        "defined_sharpes": 1,
+        "harmful_closes": 12,
+        "horizons": {
+          "12": 4,
+          "24": 1,
+          "3": 15,
+          "6": 8
+        },
+        "mean_close_regret_risk": 0.7319918220960974,
+        "mean_net_usd": -65.48587426972864,
+        "mean_return_pct": -0.6548587426973063,
+        "mean_sharpe": -8.54955199324954,
+        "orders": 28,
+        "orders_per_week": 28.0,
+        "sell_win_pct": 31.25,
+        "sells": 16,
+        "win_pct": 35.714285714285715,
+        "worst_dd_pct": 0.8535817940385598
+      },
+      "c9408e3b946416d9fc801925aa8f09dcd8e8d7f4b0bdb714e5e5c93c64a8bc77": {
+        "accounts": 1,
+        "activity_eligible": true,
+        "buy_share_pct": 57.142857142857146,
+        "buy_win_pct": 75.0,
+        "buys": 4,
+        "close_reasons": {
+          "AGENT_CLOSE": 7
+        },
+        "costs": {
+          "commission_usd": 15.06302,
+          "financing_usd": 1.7908349999999997,
+          "slippage_usd": 8.60744,
+          "spread_usd": 11.42145
+        },
+        "defined_sharpes": 1,
+        "harmful_closes": 3,
+        "horizons": {
+          "12": 2,
+          "24": 3,
+          "3": 1,
+          "6": 1
+        },
+        "mean_close_regret_risk": 0.5957405284814341,
+        "mean_net_usd": 176.5604322864809,
+        "mean_return_pct": 1.765604322864811,
+        "mean_sharpe": 16.54895911569559,
+        "orders": 7,
+        "orders_per_week": 7.0,
+        "sell_win_pct": 100.0,
+        "sells": 3,
+        "win_pct": 85.71428571428571,
+        "worst_dd_pct": 0.21875627506498108
+      },
+      "e5df77dd883da608434f0921abba428e7c04002019f84c7b6b6c3528d95c1f3b": {
+        "accounts": 1,
+        "activity_eligible": true,
+        "buy_share_pct": 50.0,
+        "buy_win_pct": 75.0,
+        "buys": 4,
+        "close_reasons": {
+          "AGENT_CLOSE": 8
+        },
+        "costs": {
+          "commission_usd": 19.84213,
+          "financing_usd": 8.180245000000001,
+          "slippage_usd": 11.338360000000002,
+          "spread_usd": 15.012175000000001
+        },
+        "defined_sharpes": 1,
+        "harmful_closes": 3,
+        "horizons": {
+          "12": 2,
+          "24": 2,
+          "3": 3,
+          "6": 1
+        },
+        "mean_close_regret_risk": 0.46975912012870225,
+        "mean_net_usd": 154.31195918340353,
+        "mean_return_pct": 1.5431195918340412,
+        "mean_sharpe": 17.335232104279154,
+        "orders": 8,
+        "orders_per_week": 8.0,
+        "sell_win_pct": 75.0,
+        "sells": 4,
+        "win_pct": 75.0,
+        "worst_dd_pct": 0.3186950893652721
+      }
+    }
+  },
+  "scope": "SYNTHETIC_REFERENCE_POLICY_ROLLOUT_NOT_LEARNED_RL",
+  "selection_performed": false,
+  "uncertainty_calibrated": false
+}
