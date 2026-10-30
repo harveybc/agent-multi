@@ -7,7 +7,7 @@
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "mechanism synthesis"
   },
   "run_causal_history_queue.py": {
-   "purpose": "Resumable CPU causal-history controls, conditional exploratory DEAP, frozen confirmation, native early-close counterfactuals and diagnostic audit packet; no financial training or final strategy qualification",
+   "purpose": "Resumable CPU causal-history controls, runtime-test-qualified exploratory DEAP, frozen confirmation, native early-close counterfactuals and diagnostic audit packet; no financial training or final strategy qualification",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "mechanism synthesis"
   },
   "run_post_audit_diagnostics.py": {

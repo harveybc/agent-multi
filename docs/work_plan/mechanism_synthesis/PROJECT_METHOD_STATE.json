@@ -1,9 +1,11 @@
 {
   "schema": "mechanism_synthesis.design_state.v1",
-  "date": "2026-10-29",
+  "date": "2026-10-30",
   "timezone": "America/Bogota",
   "priority": 0,
-  "current_stage": "CAUSAL_HISTORY_TWO_CPU_LANES_DEPLOYED",
+  "current_stage": "CAUSAL_HISTORY_V2_TEST_QUALIFIED_SEARCH_READY",
+  "causal_history_search_correction": "../150_CAUSAL_HISTORY_SEARCH_GATE_CORRECTION.md",
+  "causal_history_v2_preflight": {"tests_passed":209,"skipped":0,"smoke_candidates":57,"confirmation_jobs":12,"free_genes_varied":13,"resume_authenticated":true,"population":20,"generations":300,"seeds":[7,19,43],"activity":"mean_orders_per_week > 2","performance_launch_gate":false},
   "causal_history_deployment": "../149_CAUSAL_HISTORY_DEPLOYMENT.md",
   "causal_history_lanes": {"zero":{"code":"382d25b2","identity":"71d597f34ee659e8bd6ee4ffbe59e34e7a8f3cac783664e79fa51021d556896c","status":"COMPLETE"},"median":{"code":"b37ef5cd","identity":"4acfcdae876bbba833f7af8ccbd748f14c29e53c9aece78f492e4248305eae77","status_at_publication":"CONFIRMATION"},"calibration_search_gates":false,"automatic_report_collection":true},
   "causal_history_automation": "../148_CAUSAL_HISTORY_AUTOMATION.md",
@@ -116,8 +118,9 @@
     "Model-specific sequential floating selection",
     "Promotion of synthetic-oracle results as learned-model evidence"
   ],
-  "operations": "Two persistent causal-history CPU lanes deployed with200 passing runtime tests each; zero completed22:47Bogota and median in confirmation. Both calibration gates declined exploratory DEAP and continued automatically to confirmation/counterfactuals/report. Automatic collector authenticates outputs. No financial training or feature selection.",
+  "operations": "Prior history lanes and collection complete. V2 removes performance-based launch rejection and corrects activity to >2.209 tests and57-candidate smoke with12 confirmation jobs and authenticated resume passed. Fresh two-host20x300x3 search being deployed; no financial training or feature selection.",
   "history": [
+    {"date":"2026-10-30","event":"Owner authorizes continuation after mistaken launch criterion. Tests/integrity now enable DEAP regardless of control performance; candidate activity strictly >2. Added no-close behavior flags, observed gene variation and new seed banks.209 tests;57-candidate smoke;12 confirmation jobs; authenticated resume. Existing evidence preserved."},
     {"date":"2026-10-29","event":"Owner requests unattended continuation. Implemented causal history penalties separately for entries and closes; independent close uncertainty, fixed exposure, bounded workers and tests-to-report queue with conditional20x300x3 exploratory search.200 tests pass,58-candidate smoke and authenticated resume complete. Not final R4/R6 qualification."},
     {"date":"2026-10-29","event":"Owner authorizes automated execution. Implemented config-aware caches/value bindings and sealed matured-error ledger with prefix-only32-path baseline;184 tests;7-unit smoke and authenticated resume. Launched27-unit persistent diagnostic service at19:09Bogota under657b6818. Remaining learned-adapter/control qualification not misrepresented as complete."},
     {"date":"2026-10-29","event":"Read Satoshi bc5e4e94 and imported verdict plus selected raw outputs unchanged. Disposition143 accepts reproducibility and qualifies statistics/causality;144 prioritizes destructive-close correction. Added discriminating terminal-spread and archived account preemption tests in both directions; no production formula or historical run changed."},

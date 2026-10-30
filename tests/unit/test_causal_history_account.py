@@ -94,6 +94,8 @@ def test_separate_banks_and_genome_bounds():
     banks=[{s['seed'] for s in specifications(b,smoke=smoke)}
            for b in ('calibration','confirmation') for smoke in (False,True)]
     assert all(not a&b for i,a in enumerate(banks) for b in banks[i+1:])
+    assert {s['seed'] for s in specifications('calibration')}=={350100}
+    assert {s['seed'] for s in specifications('confirmation')}=={360100,360101,360102}
     g=decode_history(base_genes(1.,2.))
     assert g[8]==1 and g[11:13]==(1.,2.)
     assert len(g)==14

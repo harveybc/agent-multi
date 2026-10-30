@@ -1,5 +1,16 @@
 # Adaptive Multi-Asset Trading Work Plan
 
+## Priority update: 2026-10-30
+
+[Search correction150](150_CAUSAL_HISTORY_SEARCH_GATE_CORRECTION.md) supersedes
+the performance-based launch gate from148. Runtime tests/integrity enable DEAP;
+candidate activity is strictly mean orders/week >2, not >=3. Separate return/DD
+objectives remain unchanged. Fresh calibration/confirmation banks protect the
+already-read results. Both CPU lanes will run20x300x3 automatically through
+confirmation and audit packets. Policies with no early close are explicitly
+labelled rather than claimed as successful closers.209 tests,57-candidate smoke,
+12 confirmation jobs and authenticated resume passed; all13 free genes varied.
+
 ## Priority override: 2026-10-29
 
 Current increment: [causal history automation148](148_CAUSAL_HISTORY_AUTOMATION.md).

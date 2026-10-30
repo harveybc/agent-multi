@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Unattended causal controls, conditional exploratory DEAP, confirmation and audit packet.
+"""Unattended causal controls, test-qualified exploratory DEAP and confirmation.
 
 Synthetic engineering study only. No financial training, feature selection,
 learned-reporter qualification or automatic acceptance of an audit.
@@ -61,17 +61,23 @@ def proposals():
             ('no_close',base_genes(),None,False),('nop',base_genes(),set(),False)]
 
 
-def search_gate(controls):
-    base=controls['neither'];accepted=[]
-    for name in ('entry','close','both'):
-        r=controls[name]
-        if (r['mean_orders']>=3 and r['eligible'] and
-                r['objectives'][0]>base['objectives'][0]+1e-12 and
-                r['objectives'][1]>=base['objectives'][1]-1e-12):
-            accepted.append(name)
-    return dict(eligible=bool(accepted),arms=accepted,
-        rule='active history arm improves mean calibration return without increasing worst DD',
+def search_gate(tests):
+    passed=(type(tests.get('passed')) is int and tests['passed']>=200
+            and tests.get('skipped')==0 and tests.get('failed',0)==0)
+    return dict(eligible=passed,
+        rule='authenticated runtime tests pass without skips; control performance never blocks search',
         learned_qualification=False)
+
+
+def close_behavior(result,voluntary=True):
+    if not voluntary: return 'EXPLICITLY_DISABLED'
+    if not result['orders']: return 'NO_ORDERS'
+    return 'EARLY_CLOSE_OBSERVED_NOT_QUALIFIED' if result['early_closes'] else 'NO_EARLY_CLOSE_OBSERVED'
+
+
+def summarized(result,voluntary=True):
+    out=compact(result)
+    return dict(out,close_behavior=close_behavior(out,voluntary))
 
 
 def search(pool,receipts,seed,generations,out,identity,check,state):
@@ -88,7 +94,7 @@ def search(pool,receipts,seed,generations,out,identity,check,state):
     def fit(x):
         g=full(x);x[:]=[g[i] for i in free];key=digest(g)
         if key not in receipts.rows:
-            start=time.monotonic();result=compact(pool.evaluate(g));receipts.append(g,result)
+            start=time.monotonic();result=summarized(pool.evaluate(g));receipts.append(g,result)
             state('DEAP',seed=seed,candidates=len(receipts.rows),
                   last_candidate_seconds=time.monotonic()-start)
         r=receipts.rows[key]
@@ -114,20 +120,21 @@ def search(pool,receipts,seed,generations,out,identity,check,state):
 
 def report(output,identity,mode,gate,rows,comparisons,smoke):
     lines=['# Causal history controller experiment','',f'Identity: `{identity}`.',
-        f'Reporter: {mode}. Smoke: {smoke}. Search calibration gate: {gate["eligible"]}.',
+        f'Reporter: {mode}. Smoke: {smoke}. Runtime-test search gate: {gate["eligible"]}.',
         'Synthetic prefix-only reports; NOT financial validation, a learned RL model or final R6 qualification.',
         'Size fixed at 1; rel_volume=0.1 once; native costs and calendar. No hindsight fitness.',
-        '', '| Policy | Return % | Worst DD % | Mean native Sharpe | Orders/week | Buy / sell | Win % | Early closes | Harmful closes | Regret / risk |',
-        '| --- | ---: | ---: | ---: | ---: | --- | ---: | ---: | ---: | ---: |']
+        '', '| Policy | Return % | Worst DD % | Mean native Sharpe | Orders/week | Buy / sell | Win % | Early closes | Harmful closes | Regret / risk | Close behavior |',
+        '| --- | ---: | ---: | ---: | ---: | --- | ---: | ---: | ---: | ---: | --- |']
     def fmt(x): return '-' if x is None else f'{x:.4f}'
     for name,r in rows.items():
         c=r['close_metrics'];n=r['orders']
         lines.append(f"| {name} | {r['objectives'][0]:.4f} | {-r['objectives'][1]:.4f} | "
             f"{fmt(r['mean_native_sharpe'])} | {r['mean_orders']:.2f} | {r['buys']} / {r['sells']} | "
-            f"{fmt(100*r['wins']/n if n else None)} | {r['early_closes']} | {c['destructive']} | {fmt(c['mean_regret_risk'])} |")
+            f"{fmt(100*r['wins']/n if n else None)} | {r['early_closes']} | {c['destructive']} | {fmt(c['mean_regret_risk'])} | {r['close_behavior']} |")
     lines+=['','Mean native Sharpe is an average of defined account Sharpes, not a pooled portfolio Sharpe.',
         'Paired draw-cluster contrasts are descriptive, not independent tests for each transformed account.',
         'The error penalty is not a calibrated joint-path band. It can suppress beneficial closes.',
+        'Activity eligibility is mean orders/week >2. Zero executed closes do not qualify a closer, even if return improves.',
         'All confirmed policies have native ledgers, costs, directions and fixed-position close alternatives.',
         'No confirmation result selects or modifies a policy. No synthetic result opens TEST.',
         'Full PC1--PC6 learned-interface qualification and final R6 remain outside this engineering experiment.',
@@ -137,11 +144,11 @@ def report(output,identity,mode,gate,rows,comparisons,smoke):
     (output/'AUDIT_REQUEST.md').write_text('\n'.join([
         '# Satoshi: causal history controller experiment audit','',f'Identity: `{identity}`.',
         'Review MANIFEST, TESTS, SEARCH_GATE, CANDIDATES, SEED receipts, CONFIRM archives,',
-        'COMPARISONS and COMPLETE. This is a diagnostic audit, not a final strategy release.',
+        'COMPARISONS, GENE_VARIATION and COMPLETE. This is a diagnostic audit, not a final strategy release.',
         '1. Mutate future OHLC and verify prefix reports, matured error snapshots and decisions.',
         '2. Reproduce native account cash and close counterfactuals including TP sacrifice and SL savings.',
         '3. Verify independent entry/close reliability and close uncertainty; fixed size and business contract.',
-        '4. Check conditional search is calibration-only and confirmation never selects a winner.',
+        '4. Check tests, not control returns, enable search; activity >2 constrains candidates, and confirmation never selects a winner.',
         '5. Attack cold resume, source pins, receipt chain, exact ledger replay and two-host independence.',
         '6. Challenge poor activity, mirror asymmetry, horizon concentration, lack of useful causal signal,',
         '   history warmup suppression and the non-calibrated nature of this empirical penalty.',
@@ -162,11 +169,12 @@ def main():
     cfgpath=ROOT/'docs/audits/evidence/shared_risk_rules_20261028/CONFIG.json'
     cfg=json.loads(cfgpath.read_text());code=source_identity();native=sources(a.engine_root)
     generations=2 if a.smoke else 300;seeds=[7] if a.smoke else [7,19,43]
-    manifest=dict(schema='causal_history_queue.v1',mode=a.mode,smoke=a.smoke,
+    manifest=dict(schema='causal_history_queue.v2',mode=a.mode,smoke=a.smoke,
         sources=code,native_sources=native,config_sha256=sha(cfgpath),workers=a.workers,
         calibration=specifications('calibration',a.smoke),confirmation=specifications('confirmation',a.smoke),
         population=20,generations=generations,seeds=seeds,genes=HISTORY_GENES,bounds=history_bounds(),
-        objectives=['mean_return_pct','negative_worst_mtm_dd_pct'],activity_minimum=3.,
+        objectives=['mean_return_pct','negative_worst_mtm_dd_pct'],activity_minimum=2.,activity_operator='>',
+        launch_requirement='authenticated runtime tests only; no performance launch gate',
         penalty='matured mean absolute price error / unit risk; minimum20,last64,not joint calibration',
         versions=dict(python=sys.version.split()[0],numpy=np.__version__,deap=deap.__version__),
         synthetic_only=True,financial_training=False,final_r6=False)
@@ -214,11 +222,12 @@ def main():
         for name,g,enabled,voluntary in proposals():
             state('CALIBRATION_CONTROLS',unit=name)
             r=archive('CAL_'+name,lambda:pool.evaluate(g,enabled,True,True,voluntary))
-            calibration[name]=compact(r)
-        gate=search_gate(calibration);save(out/'SEARCH_GATE.json',identity,gate)
+            calibration[name]=summarized(r,voluntary)
+        gate=search_gate(load(out/'TESTS.json',identity));save(out/'SEARCH_GATE.json',identity,gate)
         artifacts['SEARCH_GATE.json']=sha(out/'SEARCH_GATE.json')
         receipts=Receipts(out/'CANDIDATES.jsonl',identity)
-        if gate['eligible'] or a.smoke:
+        if not gate['eligible']: raise ValueError('HISTORY_RUNTIME_TEST_GATE')
+        if gate['eligible']:
             for seed in seeds:
                 done_seed=load(out/f'SEED_DONE_{seed}.json',identity)
                 if done_seed is None:
@@ -233,11 +242,16 @@ def main():
                 r=json.loads(line);genes[r['key']]=r['genes']
             artifacts['CANDIDATES.jsonl']=sha(out/'CANDIDATES.jsonl')
         vectors={k:r['objectives'] for k,r in receipts.rows.items() if r['eligible']}
+        variation={name:dict(min=min(g[i] for g in genes.values()),max=max(g[i] for g in genes.values()),
+            distinct=len({g[i] for g in genes.values()}),fixed_by_design=history_bounds()[i][0]==history_bounds()[i][1])
+            for i,name in enumerate(HISTORY_GENES)} if genes else {}
+        save(out/'GENE_VARIATION.json',identity,variation)
+        artifacts['GENE_VARIATION.json']=sha(out/'GENE_VARIATION.json')
         selected,reps,unique=representatives(vectors,genes) if vectors else ([],[],0)
         save(out/'FRONTIER.json',identity,dict(keys=selected,representatives=reps,unique_vectors=unique,genes=genes))
         artifacts['FRONTIER.json']=sha(out/'FRONTIER.json')
         for key in reps:
-            if compact(pool.evaluate(genes[key]))!=receipts.rows[key]:
+            if summarized(pool.evaluate(genes[key]))!=receipts.rows[key]:
                 raise ValueError('HISTORY_COLD_CALIBRATION_REPLAY')
         pool.close();pool=None
         candidates=proposals()+[(k,genes[k],None,True) for k in reps]
@@ -258,7 +272,7 @@ def main():
                     by_passive={k:close_metrics([r for r in closes if r['hold_reason']==k],len(result['worlds'])) for k in ('SL','TP','FORCED_FLAT')})
             r=archive('CONFIRM_'+name,evaluate_final)
             accounts[name]=r['worlds'];sharpes=[w['native_sharpe'] for w in r['worlds'] if w['native_sharpe'] is not None]
-            summaries[name]=dict(**compact(r),close_metrics=r['close_metrics'],by_passive=r['by_passive'],
+            summaries[name]=dict(**summarized(r,voluntary),close_metrics=r['close_metrics'],by_passive=r['by_passive'],
                 mean_native_sharpe=float(np.mean(sharpes)) if sharpes else None)
         comparisons={name:paired_clusters(rows,accounts['neither']) for name,rows in accounts.items() if name!='neither'}
         for key in reps: comparisons[key+'_vs_own_no_close']=paired_clusters(accounts[key],accounts[key+'_no_close'])

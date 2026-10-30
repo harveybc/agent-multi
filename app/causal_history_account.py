@@ -1,5 +1,6 @@
 """Prefix-only account experiments with controller-side matured-error penalties."""
 import math
+from dataclasses import replace
 
 import numpy as np
 
@@ -33,7 +34,7 @@ def decode_history(g):
 
 def specifications(bank,smoke=False):
     rows=panel_specs(bank,'omitted_reversal',draws=1 if bank=='calibration' else 3)
-    offset=100000+(100000 if smoke else 0)
+    offset=300000+(100000 if smoke else 0)
     return [dict(s,seed=s['seed']+offset,bank='history_'+bank) for s in (rows[:2] if smoke else rows)]
 
 
@@ -41,6 +42,8 @@ class HistoryWorld(CrossedWorld):
     def __init__(self,spec,config,mode):
         if mode not in ('median','zero'): raise ValueError('HISTORY_REPORTER_MODE')
         super().__init__(spec,config)
+        # Native reports use an inclusive floor; selection separately enforces >2.
+        self.env.cfg=replace(self.env.cfg,min_orders_per_week=2.)
         self.mode=mode;self.active_genes=base_genes()
         self.quality={};self.through=1
         self.ledger=ReportTrackRecord('history-prefix-v1/'+mode)

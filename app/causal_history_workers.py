@@ -1,8 +1,15 @@
 """Bounded, ordered CPU workers; each owns a fixed subset of causal worlds."""
 import multiprocessing as mp
+import math
 from pathlib import Path
 
 import numpy as np
+
+
+def activity_eligible(mean_orders):
+    if not math.isfinite(mean_orders) or mean_orders<0:
+        raise ValueError('INVALID_ACTIVITY')
+    return bool(mean_orders>2.)
 
 
 def worker(channel,specs,cfg,native,mode):
@@ -50,7 +57,7 @@ class HistoryPool:
             rows.extend(values)
         mean=float(np.mean([r['orders'] for r in rows]))
         return dict(objectives=[float(np.mean([r['return_pct'] for r in rows])),
-            -max(r['drawdown_pct'] for r in rows)],mean_orders=mean,eligible=mean>=3.,worlds=rows)
+            -max(r['drawdown_pct'] for r in rows)],mean_orders=mean,eligible=activity_eligible(mean),worlds=rows)
 
     def close(self):
         from app.crossed_account_workers import ShardPool
