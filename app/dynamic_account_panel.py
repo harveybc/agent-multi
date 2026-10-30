@@ -185,10 +185,20 @@ class World:
         self.cache.move_to_end(key)
         return self.cache[key]
 
+    def make_controller(self,genes):
+        return CloseController(CloseConfig(genes[5],genes[9],genes[10],.25),allow_synthetic=True)
+
+    def close_decision(self,controller,unit,r,clock,deadline,values,binding,b,horizon):
+        return controller.decide_synthetic_values(unit.identity,clock,HOUR,
+            values,r.weights,unit.risk,report=r,expected_deadline=deadline,binding=binding)
+
+    def verify_close_decision(self,direct,unit,r,clock,deadline,fo,fe,b,horizon):
+        return direct.decide(unit,r,clock,fo,fe,expected_deadline=deadline)
+
     def run(self,genes,enabled=None,verify=False,details=False,*,voluntary_close=True):
         genes=decode(genes);e=copy.copy(self.env);e.reset();equity=[e.cfg.capital]
-        controller=CloseController(CloseConfig(genes[5],genes[9],genes[10],.25),allow_synthetic=True)
-        direct=CloseController(controller.config,allow_synthetic=True) if verify else None
+        controller=self.make_controller(genes)
+        direct=self.make_controller(genes) if verify else None
         horizon=None;trace=[];used={};occupied=0;max_error=0.
         while e.next_decision<e.last:
             b=e.next_decision;action=0;plan=None;selected=None
@@ -197,11 +207,10 @@ class World:
                 if voluntary_close and b+1<self.end and self.report_available(b):
                     unit,values,fo,fe,binding=self.close_values(e,horizon,b);r=self.report(b)
                     clock=int(e.v[b])+HOUR;deadline=int(e.ff[e.pos.seg])
-                    result=controller.decide_synthetic_values(unit.identity,clock,HOUR,
-                        values,r.weights,unit.risk,report=r,expected_deadline=deadline,binding=binding)
+                    result=self.close_decision(controller,unit,r,clock,deadline,values,binding,b,horizon)
                     if verify:
                         actual=replace(unit,units=e.pos.units,risk=unit.risk*e.pos.units)
-                        other=direct.decide(actual,r,clock,fo,fe,expected_deadline=deadline)
+                        other=self.verify_close_decision(direct,actual,r,clock,deadline,fo,fe,b,horizon)
                         max_error=max(max_error,abs(other['advantage_risk']-result['advantage_risk']))
                         if other['action']!=result['action'] or max_error>1e-10:
                             raise AssertionError('CACHE_DIRECT_PARITY')

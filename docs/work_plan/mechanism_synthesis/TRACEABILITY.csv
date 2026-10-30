@@ -80,4 +80,6 @@ PA01,Config-aware report caches,tests/unit/test_report_cache_binding.py,Warm exe
 PA02,Cached value binding,tests/unit/test_report_cache_binding.py,Same-shape report position risk and value corruption rejected,BEFORE_PHASE2,PASS
 PA03,Matured forecast errors,tests/unit/test_report_track_record.py,No early outcomes duplicate issues retrospective mutation or missing-value filling; snapshot exact,BEFORE_PHASE2,PASS_COMPONENT
 PA04,Causal baseline calibration,tests/unit/test_causal_report_baseline.py,Prefix invariance and mirror response with32 independently sampled paths; no learned qualification,BEFORE_PHASE2,PASS_COMPONENT
-PA05_07,Automated complete exit diagnostics,docs/work_plan/147_POST_AUDIT_LAUNCH.md,All finalists full native replay counterfactual and no-close accounts with sealed resumable units,BEFORE_PHASE2,SMOKE_PASSED_FULL_QUEUE_RUNNING
+PA05_07,Automated complete exit diagnostics,docs/work_plan/147_POST_AUDIT_LAUNCH.md,All27 units complete with native replay counterfactual no-close and causal calibration,BEFORE_PHASE2,COMPLETE_DIAGNOSTIC_ONLY
+CH01_04,Prefix history and bound causal values,tests/unit/test_causal_history_account.py,Future perturbation penalty separation cached direct parity and cold account replay,BEFORE_PHASE2,PASS_COMPONENT
+CH05_10,Unattended causal history experiment,tests/unit/test_causal_history_queue.py,200 tests and58-candidate full smoke plus authenticated resume; conditional search and automatic negative report,BEFORE_PHASE2,SMOKE_PASS_NOT_FINAL_R6

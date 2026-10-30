@@ -205,13 +205,32 @@ class CloseController:
             raise ValueError('DUPLICATE_OR_REVERSED_TICK')
         return self._decide_values(identity,decision_time,step,values,weights,risk,'synthetic_noisy')
 
-    def _decide_values(self,identity,decision_time,step,values,weights,risk,provenance):
+    def decide_causal_values(self,p,r,decision_time,values,*,expected_deadline,binding,
+                             history_margin_risk=0.):
+        """Bound internal cache; the caller computes history from matured errors only."""
+        validate_context(r,decision_time,expected_deadline)
+        if r.provenance!='causal': raise ValueError('CAUSAL_REPORT_REQUIRED')
+        if not math.isfinite(history_margin_risk) or history_margin_risk<0:
+            raise ValueError('HISTORY_MARGIN')
+        values=np.asarray(values,float)
+        if (values.shape!=(len(r.paths),r.paths.shape[1]+1) or not np.isfinite(values).all()
+                or not math.isfinite(p.risk) or p.risk<=0
+                or not np.isfinite(r.weights).all() or (r.weights<0).any()
+                or not np.isclose(r.weights.sum(),1,rtol=0,atol=1e-12)):
+            raise ValueError('CAUSAL_VALUE_CONTRACT')
+        if binding!=bind_values(p,r,values): raise ValueError('CAUSAL_VALUE_BINDING')
+        if self.position_id==p.identity and self.last_tick is not None and decision_time<=self.last_tick:
+            raise ValueError('DUPLICATE_OR_REVERSED_TICK')
+        return self._decide_values(p.identity,decision_time,r.step,values,r.weights,p.risk,
+                                   r.provenance,history_margin_risk=history_margin_risk)
+
+    def _decide_values(self,identity,decision_time,step,values,weights,risk,provenance,*,history_margin_risk=0.):
         # Each column is the SAME waiting action across all samples, not E(max).
         delta=values[:,[0]]-values[:,1:]
         w=np.asarray(weights,float)
         mean=w@delta
         sd=np.sqrt(w@((delta-mean)**2))
-        advantage=float(np.min(mean-self.config.uncertainty_penalty*sd))/risk
+        advantage=float(np.min(mean-self.config.uncertainty_penalty*sd))/risk-history_margin_risk
         contiguous=self.position_id==identity and self.last_tick is not None and decision_time==self.last_tick+step
         streak=self.streak if contiguous else 0
         qualifies=advantage>max(self.config.margin_risk,1e-12)

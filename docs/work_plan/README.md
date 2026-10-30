@@ -2,10 +2,19 @@
 
 ## Priority override: 2026-10-29
 
+Current increment: [causal history automation148](148_CAUSAL_HISTORY_AUTOMATION.md).
+The 27-unit post-audit diagnostics are COMPLETE, not still running. The new
+prefix-only history controller and unattended queue pass 200 tests (zero skips),
+plus a full two-worker smoke including 58 DEAP candidates and authenticated
+completed resume. Separate median/zero CPU lanes execute controls, conditional
+exploratory search, frozen confirmation, close counterfactuals and final report
+and audit request. A failed calibration gate still produces negative results;
+this is not full R4/R6 or learned-interface qualification.
+
 Execution increment: [post-audit implementation and queue146](146_POST_AUDIT_IMPLEMENTATION_AND_QUEUE.md),
 under [frozen contract145](145_POST_AUDIT_AUTOMATION_CONTRACT.md).
-[Launched147](147_POST_AUDIT_LAUNCH.md): pinned657b6818,27 units running
-sequentially under the enabled persistent service, with184 runtime tests passed.
+[Launched147](147_POST_AUDIT_LAUNCH.md): pinned657b6818,27 units completed
+at19:37 Bogota with184 runtime tests passed and no failed units.
 R1 cache bindings and R2 matured forecast-error ledger are implemented;
 184 tests and complete7-unit smoke/resume passed.27-unit sequential diagnostics
 cover all frozen finalists, native counterfactual closes, full no-close accounts

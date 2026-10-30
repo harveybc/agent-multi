@@ -1,0 +1,25 @@
+[Unit]
+Description=Causal history controller experiment, tests through audit packet
+After=network-online.target
+StartLimitIntervalSec=900
+StartLimitBurst=3
+
+[Service]
+Type=simple
+WorkingDirectory=<pinned-runtime>
+Environment=CUDA_VISIBLE_DEVICES=
+Environment=OMP_NUM_THREADS=1
+Environment=OPENBLAS_NUM_THREADS=1
+ExecStart=<python> tools/run_causal_history_queue.py --engine-root <native-root> --output <output-root> --mode <median-or-zero> --workers 2
+Restart=on-abnormal
+RestartSec=60
+MemoryHigh=3G
+MemoryMax=4G
+MemorySwapMax=0
+CPUQuota=200%
+TasksMax=64
+Nice=10
+KillMode=control-group
+
+[Install]
+WantedBy=default.target

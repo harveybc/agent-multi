@@ -2,6 +2,10 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "run_causal_history_queue.py": {
+   "purpose": "Resumable CPU causal-history controls, conditional exploratory DEAP, frozen confirmation, native early-close counterfactuals and diagnostic audit packet; no financial training or final strategy qualification",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "mechanism synthesis"
+  },
   "run_post_audit_diagnostics.py": {
    "purpose": "Pinned resumable sequential native exit counterfactuals for all frozen finalists, no-close account ablations and causal baseline calibration diagnostics; never launches financial learning",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "mechanism synthesis"
