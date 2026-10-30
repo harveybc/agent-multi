@@ -2,6 +2,13 @@
 
 ## Priority update: 2026-10-30
 
+[Median lane and gate diagnostic157](157_MEDIAN_LANE_AND_FROZEN_GATE_DIAGNOSTIC.md):
+median20x300x3 completed with15,472 receipts. All four frozen finalists fail
+>2 orders/week on synthetic confirmation and execute zero early closes.
+432 exact observational replays decompose entry suppression and close
+uncertainty/history/persistence gates;47 tests passed. No tuning on confirmation.
+Zero-drift lane continues; this result does not release floating selection.
+
 [TRAIN graph155](155_TRAIN_OPPORTUNITY_GRAPH_RESULTS.md), under
 [plan154](154_TRAIN_OPPORTUNITY_GRAPH_PLAN.md): all404,748 K=3 directional
 alternatives retained over2020-2023; previous winning endpoints/values reproduce

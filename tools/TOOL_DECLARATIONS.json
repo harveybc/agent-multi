@@ -2,6 +2,10 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "diagnose_frozen_history_policy.py": {
+   "purpose": "Authenticate frozen causal-history results and instrument identical account replays to decompose entry and close suppression without tuning or modifying any campaign",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "mechanism synthesis"
+  },
   "verify_train_prefix_pareto.py": {
    "purpose": "Authenticate a TRAIN K3 graph and enumerate bounded native BID-quoted account prefixes with next-open planned pivot exits and independent Pareto replay; no full-year or learned-policy claim",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "mechanism synthesis"

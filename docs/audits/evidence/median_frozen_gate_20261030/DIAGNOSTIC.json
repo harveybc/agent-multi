@@ -1,0 +1,483 @@
+{
+  "code_sha256": {
+    "app/frozen_policy_diagnostics.py": "ad62227a4a342449e1e0663e28a7b3a4fbc363fd666973b1e45c22b123e49b0e",
+    "tools/diagnose_frozen_history_policy.py": "2902892793eee8335d0def106fb2da8247d412b07e0b392e68a03577ad0de9f4"
+  },
+  "confirmation_used_for_tuning": false,
+  "rows": [
+    {
+      "accounts_replayed": 108,
+      "calibration": {
+        "buy_wins": 20,
+        "buys": 35,
+        "close_behavior": "NO_EARLY_CLOSE_OBSERVED",
+        "early_closes": 0,
+        "eligible": true,
+        "mean_orders": 2.0277777777777777,
+        "objectives": [
+          0.3737600715734899,
+          -1.37376323891325
+        ],
+        "orders": 73,
+        "sell_wins": 21,
+        "sells": 38,
+        "wins": 41
+      },
+      "confirmation": {
+        "buy_wins": 29,
+        "buys": 102,
+        "by_passive": {
+          "FORCED_FLAT": {
+            "by_direction": {},
+            "by_hold_reason": {},
+            "count": 0,
+            "delta_vs_hold_pp": 0.0,
+            "destructive": 0,
+            "helpful": 0,
+            "mean_regret_risk": null,
+            "neutral": 0
+          },
+          "SL": {
+            "by_direction": {},
+            "by_hold_reason": {},
+            "count": 0,
+            "delta_vs_hold_pp": 0.0,
+            "destructive": 0,
+            "helpful": 0,
+            "mean_regret_risk": null,
+            "neutral": 0
+          },
+          "TP": {
+            "by_direction": {},
+            "by_hold_reason": {},
+            "count": 0,
+            "delta_vs_hold_pp": 0.0,
+            "destructive": 0,
+            "helpful": 0,
+            "mean_regret_risk": null,
+            "neutral": 0
+          }
+        },
+        "close_behavior": "NO_EARLY_CLOSE_OBSERVED",
+        "close_metrics": {
+          "by_direction": {},
+          "by_hold_reason": {},
+          "count": 0,
+          "delta_vs_hold_pp": 0.0,
+          "destructive": 0,
+          "helpful": 0,
+          "mean_regret_risk": null,
+          "neutral": 0
+        },
+        "early_closes": 0,
+        "eligible": false,
+        "mean_native_sharpe": -3.1464360320754343,
+        "mean_orders": 1.9259259259259258,
+        "objectives": [
+          -0.23978145979863508,
+          -2.158352787378103
+        ],
+        "orders": 208,
+        "sell_wins": 30,
+        "sells": 106,
+        "wins": 59
+      },
+      "counts": {
+        "adjusted_bids": 40852,
+        "close_history_pass": 9,
+        "close_matured": 3378,
+        "close_persistence_wait": 9,
+        "close_raw_pass": 117,
+        "close_requests": 0,
+        "close_uncertainty_pass": 15,
+        "entry_adjusted_selected": 208,
+        "entry_raw_selected": 3911,
+        "entry_to_nop_after_history": 3703,
+        "flat_ticks": 6990,
+        "occupied_decisions": 3378,
+        "raw_bids": 55920,
+        "unmatured_bids": 15068
+      },
+      "genes": {
+        "close_history_weight": 0.173,
+        "close_margin": 0.007,
+        "close_persistence": 3,
+        "close_uncertainty": 0.289,
+        "entry_history_weight": 1.052,
+        "entry_threshold": 0.19,
+        "size_multiplier": 1.0,
+        "time_weight": 0.176,
+        "trend_weight": 0.495,
+        "uncertainty_penalty": 0.264,
+        "weight_12": 1.563,
+        "weight_24": 0.293,
+        "weight_3": 0.848,
+        "weight_6": 1.33
+      },
+      "horizons": {
+        "12": 39,
+        "24": 67,
+        "3": 61,
+        "6": 41
+      },
+      "key": "c3f252db58272a8c2d86777c744da5ff3c7b99ff942c1ca9d565f143690e7915"
+    },
+    {
+      "accounts_replayed": 108,
+      "calibration": {
+        "buy_wins": 21,
+        "buys": 35,
+        "close_behavior": "NO_EARLY_CLOSE_OBSERVED",
+        "early_closes": 0,
+        "eligible": true,
+        "mean_orders": 2.0277777777777777,
+        "objectives": [
+          0.36951981269544143,
+          -1.3029967339721096
+        ],
+        "orders": 73,
+        "sell_wins": 21,
+        "sells": 38,
+        "wins": 42
+      },
+      "confirmation": {
+        "buy_wins": 27,
+        "buys": 100,
+        "by_passive": {
+          "FORCED_FLAT": {
+            "by_direction": {},
+            "by_hold_reason": {},
+            "count": 0,
+            "delta_vs_hold_pp": 0.0,
+            "destructive": 0,
+            "helpful": 0,
+            "mean_regret_risk": null,
+            "neutral": 0
+          },
+          "SL": {
+            "by_direction": {},
+            "by_hold_reason": {},
+            "count": 0,
+            "delta_vs_hold_pp": 0.0,
+            "destructive": 0,
+            "helpful": 0,
+            "mean_regret_risk": null,
+            "neutral": 0
+          },
+          "TP": {
+            "by_direction": {},
+            "by_hold_reason": {},
+            "count": 0,
+            "delta_vs_hold_pp": 0.0,
+            "destructive": 0,
+            "helpful": 0,
+            "mean_regret_risk": null,
+            "neutral": 0
+          }
+        },
+        "close_behavior": "NO_EARLY_CLOSE_OBSERVED",
+        "close_metrics": {
+          "by_direction": {},
+          "by_hold_reason": {},
+          "count": 0,
+          "delta_vs_hold_pp": 0.0,
+          "destructive": 0,
+          "helpful": 0,
+          "mean_regret_risk": null,
+          "neutral": 0
+        },
+        "early_closes": 0,
+        "eligible": false,
+        "mean_native_sharpe": -3.201931411012088,
+        "mean_orders": 1.8888888888888888,
+        "objectives": [
+          -0.21224798111750995,
+          -1.8812219669091246
+        ],
+        "orders": 204,
+        "sell_wins": 28,
+        "sells": 104,
+        "wins": 55
+      },
+      "counts": {
+        "adjusted_bids": 41766,
+        "close_history_pass": 14,
+        "close_matured": 3266,
+        "close_persistence_wait": 14,
+        "close_raw_pass": 89,
+        "close_requests": 0,
+        "close_uncertainty_pass": 44,
+        "entry_adjusted_selected": 204,
+        "entry_raw_selected": 4098,
+        "entry_to_nop_after_history": 3894,
+        "flat_ticks": 7102,
+        "occupied_decisions": 3266,
+        "raw_bids": 56816,
+        "unmatured_bids": 15050
+      },
+      "genes": {
+        "close_history_weight": 0.153,
+        "close_margin": 0.005,
+        "close_persistence": 3,
+        "close_uncertainty": 0.169,
+        "entry_history_weight": 1.052,
+        "entry_threshold": 0.17,
+        "size_multiplier": 1.0,
+        "time_weight": 0.176,
+        "trend_weight": 0.495,
+        "uncertainty_penalty": 0.264,
+        "weight_12": 1.563,
+        "weight_24": 0.4,
+        "weight_3": 0.82,
+        "weight_6": 1.329
+      },
+      "horizons": {
+        "12": 37,
+        "24": 60,
+        "3": 62,
+        "6": 45
+      },
+      "key": "e16e479902782cca7d48f4ea9713d0b3fa9ef45708f6b9626eed9c9c3b6efcef"
+    },
+    {
+      "accounts_replayed": 108,
+      "calibration": {
+        "buy_wins": 21,
+        "buys": 35,
+        "close_behavior": "NO_EARLY_CLOSE_OBSERVED",
+        "early_closes": 0,
+        "eligible": true,
+        "mean_orders": 2.0277777777777777,
+        "objectives": [
+          0.3651638892499047,
+          -1.2650374919541532
+        ],
+        "orders": 73,
+        "sell_wins": 21,
+        "sells": 38,
+        "wins": 42
+      },
+      "confirmation": {
+        "buy_wins": 26,
+        "buys": 101,
+        "by_passive": {
+          "FORCED_FLAT": {
+            "by_direction": {},
+            "by_hold_reason": {},
+            "count": 0,
+            "delta_vs_hold_pp": 0.0,
+            "destructive": 0,
+            "helpful": 0,
+            "mean_regret_risk": null,
+            "neutral": 0
+          },
+          "SL": {
+            "by_direction": {},
+            "by_hold_reason": {},
+            "count": 0,
+            "delta_vs_hold_pp": 0.0,
+            "destructive": 0,
+            "helpful": 0,
+            "mean_regret_risk": null,
+            "neutral": 0
+          },
+          "TP": {
+            "by_direction": {},
+            "by_hold_reason": {},
+            "count": 0,
+            "delta_vs_hold_pp": 0.0,
+            "destructive": 0,
+            "helpful": 0,
+            "mean_regret_risk": null,
+            "neutral": 0
+          }
+        },
+        "close_behavior": "NO_EARLY_CLOSE_OBSERVED",
+        "close_metrics": {
+          "by_direction": {},
+          "by_hold_reason": {},
+          "count": 0,
+          "delta_vs_hold_pp": 0.0,
+          "destructive": 0,
+          "helpful": 0,
+          "mean_regret_risk": null,
+          "neutral": 0
+        },
+        "early_closes": 0,
+        "eligible": false,
+        "mean_native_sharpe": -3.3297274147037736,
+        "mean_orders": 1.8888888888888888,
+        "objectives": [
+          -0.22138133753193012,
+          -1.900523938389997
+        ],
+        "orders": 204,
+        "sell_wins": 28,
+        "sells": 103,
+        "wins": 54
+      },
+      "counts": {
+        "adjusted_bids": 42366,
+        "close_history_pass": 0,
+        "close_matured": 3194,
+        "close_persistence_wait": 0,
+        "close_raw_pass": 26,
+        "close_requests": 0,
+        "close_uncertainty_pass": 9,
+        "entry_adjusted_selected": 204,
+        "entry_raw_selected": 3996,
+        "entry_to_nop_after_history": 3792,
+        "flat_ticks": 7174,
+        "occupied_decisions": 3194,
+        "raw_bids": 57392,
+        "unmatured_bids": 15026
+      },
+      "genes": {
+        "close_history_weight": 0.238,
+        "close_margin": 0.045,
+        "close_persistence": 3,
+        "close_uncertainty": 0.166,
+        "entry_history_weight": 1.052,
+        "entry_threshold": 0.168,
+        "size_multiplier": 1.0,
+        "time_weight": 0.176,
+        "trend_weight": 0.495,
+        "uncertainty_penalty": 0.286,
+        "weight_12": 1.563,
+        "weight_24": 0.4,
+        "weight_3": 0.976,
+        "weight_6": 1.329
+      },
+      "horizons": {
+        "12": 37,
+        "24": 60,
+        "3": 67,
+        "6": 40
+      },
+      "key": "4496afdb24b1b119d288de7109d3c4001c493102617f7c4de2f1f8cd7706f4eb"
+    },
+    {
+      "accounts_replayed": 108,
+      "calibration": {
+        "buy_wins": 19,
+        "buys": 35,
+        "close_behavior": "NO_EARLY_CLOSE_OBSERVED",
+        "early_closes": 0,
+        "eligible": true,
+        "mean_orders": 2.0277777777777777,
+        "objectives": [
+          0.3574287044124093,
+          -1.177287081829061
+        ],
+        "orders": 73,
+        "sell_wins": 19,
+        "sells": 38,
+        "wins": 38
+      },
+      "confirmation": {
+        "buy_wins": 28,
+        "buys": 98,
+        "by_passive": {
+          "FORCED_FLAT": {
+            "by_direction": {},
+            "by_hold_reason": {},
+            "count": 0,
+            "delta_vs_hold_pp": 0.0,
+            "destructive": 0,
+            "helpful": 0,
+            "mean_regret_risk": null,
+            "neutral": 0
+          },
+          "SL": {
+            "by_direction": {},
+            "by_hold_reason": {},
+            "count": 0,
+            "delta_vs_hold_pp": 0.0,
+            "destructive": 0,
+            "helpful": 0,
+            "mean_regret_risk": null,
+            "neutral": 0
+          },
+          "TP": {
+            "by_direction": {},
+            "by_hold_reason": {},
+            "count": 0,
+            "delta_vs_hold_pp": 0.0,
+            "destructive": 0,
+            "helpful": 0,
+            "mean_regret_risk": null,
+            "neutral": 0
+          }
+        },
+        "close_behavior": "NO_EARLY_CLOSE_OBSERVED",
+        "close_metrics": {
+          "by_direction": {},
+          "by_hold_reason": {},
+          "count": 0,
+          "delta_vs_hold_pp": 0.0,
+          "destructive": 0,
+          "helpful": 0,
+          "mean_regret_risk": null,
+          "neutral": 0
+        },
+        "early_closes": 0,
+        "eligible": false,
+        "mean_native_sharpe": -2.8484852233635856,
+        "mean_orders": 1.8703703703703705,
+        "objectives": [
+          -0.18681133933395658,
+          -1.8812219669091246
+        ],
+        "orders": 202,
+        "sell_wins": 30,
+        "sells": 104,
+        "wins": 58
+      },
+      "counts": {
+        "adjusted_bids": 42304,
+        "close_history_pass": 1,
+        "close_matured": 3198,
+        "close_persistence_wait": 1,
+        "close_raw_pass": 73,
+        "close_requests": 0,
+        "close_uncertainty_pass": 20,
+        "entry_adjusted_selected": 202,
+        "entry_raw_selected": 4107,
+        "entry_to_nop_after_history": 3905,
+        "flat_ticks": 7170,
+        "occupied_decisions": 3198,
+        "raw_bids": 57360,
+        "unmatured_bids": 15056
+      },
+      "genes": {
+        "close_history_weight": 0.251,
+        "close_margin": 0.002,
+        "close_persistence": 3,
+        "close_uncertainty": 0.295,
+        "entry_history_weight": 1.052,
+        "entry_threshold": 0.19,
+        "size_multiplier": 1.0,
+        "time_weight": 0.176,
+        "trend_weight": 0.495,
+        "uncertainty_penalty": 0.243,
+        "weight_12": 1.561,
+        "weight_24": 0.4,
+        "weight_3": 0.811,
+        "weight_6": 1.321
+      },
+      "horizons": {
+        "12": 37,
+        "24": 59,
+        "3": 61,
+        "6": 45
+      },
+      "key": "a29b2bb28c2a8fd705c01f8b3af1dde747a2d6ac8c5dfe0b93069e75de969b22"
+    }
+  ],
+  "schema": "frozen_history_gate_diagnostic.v1",
+  "scope": "POST_HOC_SAME_VISITED_STATES_NOT_COUNTERFACTUAL_POLICY_PERFORMANCE",
+  "source_complete_sha256": "8f30623b75e1b2cf40801d7a4e228b3d8752c02de1234efb2050dcefe2acbf32",
+  "source_identity": "452931b1fe97840255ac60abe87911a97724053ffc7d6c1249318c5c5026d36e",
+  "workers": 4,
+  "worlds_per_finalist": 108
+}

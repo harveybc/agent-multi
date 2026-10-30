@@ -4,6 +4,9 @@
   "timezone": "America/Bogota",
   "priority": 0,
   "current_stage": "CAUSAL_HISTORY_V2_AUTOMATED_SEARCH_DEPLOYED",
+  "median_v2_diagnostic_plan": "../156_FROZEN_POLICY_GATE_DIAGNOSTIC_PLAN.md",
+  "median_v2_diagnostic_results": "../157_MEDIAN_LANE_AND_FROZEN_GATE_DIAGNOSTIC.md",
+  "median_v2_completed": {"candidates":15472,"confirmation_accounts_per_policy":108,"frozen_representatives":4,"eligible_representatives_on_confirmation":0,"representative_early_closes":0,"observational_replays_exact":432,"diagnostic_tests_passed":47},
   "train_opportunity_graph_plan": "../154_TRAIN_OPPORTUNITY_GRAPH_PLAN.md",
   "train_opportunity_graph_results": "../155_TRAIN_OPPORTUNITY_GRAPH_RESULTS.md",
   "train_opportunity_graph_scope": {"edges":404748,"original_value_max_error":0.0,"restricted_prefix_accounts":3206,"cold_frontier_replays":28,"focused_tests_passed":138,"full_train_account_frontier":false,"causal_policy":false,"inputs_unchanged":true},
@@ -112,6 +115,7 @@
   },
   "bottom_up": "INDEPENDENT_REVIEWS_RECEIVED; FIVE_CONCRETE_DEFECTS_REPAIRED_AND_REPLAYED; COVERAGE_REVISION_REQUIRED",
   "next_allowed_actions": [
+    "Score suppressed close proposals against fixed-position passive and optimal native exits before revising close gates; no tuning on already-read confirmation worlds",
     "Graph155 complete: expand bounded decision coverage and compare sequential allocation against its native exact prefix references; do not claim the full historical frontier from the three-decision proof",
     "Qualify non-anticipative sequential scenario-tree allocator against153 and running local-policy baseline; expose return-drawdown preference rather than inventing a unique Pareto optimum",
     "Implement144 stagesR1-R4 with adversarial tests: cache/report bindings, sealed matured-error history, explicit nominal uncertainty and causal adapter controls",
@@ -130,6 +134,7 @@
   ],
   "operations": "V2 deployed00:11Bogota with pinned3e6450fc on two independent CPU hosts;209 runtime tests passed each; test-qualified20x300x3 search and confirmation/report/collection enabled. No performance launch gate; activity >2. No financial training or feature selection.",
   "history": [
+    {"date":"2026-10-30","event":"Status request: median v2 completed0903UTC; zero still in third seed. Authenticated15472 receipts and completed432 exact observational replays. All4 finalists lost >2 activity eligibility in confirmation and executed zero closes; staged uncertainty/history/persistence counts explain suppression, not absence of market signal.47 tests. No campaign mutation or automatic promotion."},
     {"date":"2026-10-30","event":"Owner approves continuation. Recovered exact indicator blob (checkout difference was documentation); all K3 endpoints expanded to404748 edges with zero original-winner error. Explicit BID adapter and next-open pivot exit avoid midpoint mislabeling and impossible extreme fills. Four calendar-only TRAIN prefixes enumerate3206 accounts;28 cold frontier replays;138 tests; byte-identical rebuilds. No live runtime changed; no full TRAIN frontier or learned result claimed."},
     {"date":"2026-10-30","event":"Owner requests consolidated opening-close continuation mechanism and theoretical Pareto calculation. Added152 Bellman-set derivation and153 exact finite native reference:18 trees;37578 terminal accounts;126 cold witness replays;independent global and conditional dominance checks;89 tests. Fixed saved risk recipe remains engineering control. Existing DEAP services unchanged; no full TRAIN frontier or learned qualification claimed."},
     {"date":"2026-10-30","event":"Owner authorizes continuation after mistaken launch criterion. Tests/integrity now enable DEAP regardless of control performance; candidate activity strictly >2. Added no-close behavior flags, observed gene variation and new seed banks.209 tests;57-candidate smoke;12 confirmation jobs; authenticated resume. Existing evidence preserved."},
