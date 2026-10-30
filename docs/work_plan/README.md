@@ -2,6 +2,13 @@
 
 ## Priority update: 2026-10-30
 
+[Continuation gap170](170_PRAGMATIC_PLAN_EXECUTION_GAP_RESULTS.md): all305
+ideal closes checked;610 committed native plans reproduce valuation exactly,
+but150 CLOSE/HOLD utility rankings reverse under actual hourly continuation.
+265 tests and authenticated completed resume. Correct the continuation model;
+do not attribute these failures to price reports or promote permanent plan
+commitment. Completed evidence and a targeted audit request are published.
+
 [Completed168](168_PRAGMATIC_CLOSE_AND_RESOLUTION_RESULTS.md):360 baseline
 accounts/3,940 close interventions and the1,296-account1h/2h contrast finished
 without restart; all artifact hashes verified. Resolution effects are mixed,

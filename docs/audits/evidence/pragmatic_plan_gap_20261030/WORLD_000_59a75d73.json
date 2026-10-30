@@ -1,0 +1,2304 @@
+{
+  "data": {
+    "baseline_digest": "6e12f5dda252fd8b48650cba5b1d3669350bf3f33dc2573cf314fa6c2f4fec9d",
+    "key": "59a75d7347527e8c72f19b7f6180cfe00222a1b9bf77bdec2024116502f6f370",
+    "rows": [
+      {
+        "actual_close_return_pct": 4.370220254968293,
+        "actual_hold_return_pct": 4.627729938504066,
+        "close_first_deviation": {
+          "actual": [
+            "BUY",
+            12
+          ],
+          "bar": 51,
+          "planned": [
+            "BUY",
+            24
+          ]
+        },
+        "close_plan": [
+          "CLOSE",
+          null,
+          "BUY:24"
+        ],
+        "committed_close": {
+          "cash_error": -1.0516032489249483e-12,
+          "drawdown_pct": 0.2888784538740605,
+          "flat": true,
+          "ledger": [
+            {
+              "direction": 1,
+              "entry_bar": 12,
+              "exit_bar": 34,
+              "net": 65.09833856898031,
+              "reason": "TP",
+              "units": 35524
+            },
+            {
+              "direction": 1,
+              "entry_bar": 35,
+              "exit_bar": 44,
+              "net": 79.91296107711285,
+              "reason": "TP",
+              "units": 34730
+            },
+            {
+              "direction": -1,
+              "entry_bar": 45,
+              "exit_bar": 51,
+              "net": -3.414852040883404,
+              "reason": "AGENT_CLOSE",
+              "units": 33499
+            },
+            {
+              "direction": 1,
+              "entry_bar": 52,
+              "exit_bar": 73,
+              "net": 93.4700850791595,
+              "reason": "TP",
+              "units": 23910
+            }
+          ],
+          "net_usd": 235.06653268436926,
+          "orders": 4,
+          "return_pct": 2.350665326843693,
+          "trace": [
+            {
+              "action": "CLOSE",
+              "bar": 50,
+              "close": "AGENT_CLOSE",
+              "horizon": null
+            },
+            {
+              "action": "BUY",
+              "bar": 51,
+              "close": null,
+              "horizon": 24
+            },
+            {
+              "action": "HOLD",
+              "bar": 52,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 53,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 54,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 55,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 56,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 57,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 58,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 59,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 60,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 61,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 62,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 63,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 64,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 65,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 66,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 67,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 68,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 69,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 70,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 71,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 72,
+              "close": "TP",
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 73,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 74,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 75,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 76,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 77,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 78,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 79,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 80,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 81,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 82,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 83,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 84,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 85,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 86,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 87,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 88,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 89,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 90,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 91,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 92,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 93,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 94,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 95,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 96,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 97,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 98,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 99,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 100,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 101,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 102,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 103,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 104,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 105,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 106,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 107,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 108,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 109,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 110,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 111,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 112,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 113,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 114,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 115,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 116,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 117,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 118,
+              "close": null,
+              "horizon": null
+            }
+          ]
+        },
+        "committed_hold": {
+          "cash_error": -1.8189894035458565e-12,
+          "drawdown_pct": 0.5778298044517969,
+          "flat": true,
+          "ledger": [
+            {
+              "direction": 1,
+              "entry_bar": 12,
+              "exit_bar": 34,
+              "net": 65.09833856898031,
+              "reason": "TP",
+              "units": 35524
+            },
+            {
+              "direction": 1,
+              "entry_bar": 35,
+              "exit_bar": 44,
+              "net": 79.91296107711285,
+              "reason": "TP",
+              "units": 34730
+            },
+            {
+              "direction": -1,
+              "entry_bar": 45,
+              "exit_bar": 54,
+              "net": 13.679269318501811,
+              "reason": "AGENT_CLOSE",
+              "units": 33499
+            },
+            {
+              "direction": 1,
+              "entry_bar": 55,
+              "exit_bar": 107,
+              "net": 88.7052412287381,
+              "reason": "FORCED_FLAT",
+              "units": 23905
+            }
+          ],
+          "net_usd": 247.3958101933331,
+          "orders": 4,
+          "return_pct": 2.4739581019333157,
+          "trace": [
+            {
+              "action": "HOLD",
+              "bar": 50,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 51,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 52,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "CLOSE",
+              "bar": 53,
+              "close": "AGENT_CLOSE",
+              "horizon": null
+            },
+            {
+              "action": "BUY",
+              "bar": 54,
+              "close": null,
+              "horizon": 24
+            },
+            {
+              "action": "HOLD",
+              "bar": 55,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 56,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 57,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 58,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 59,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 60,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 61,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 62,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 63,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 64,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 65,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 66,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 67,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 68,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 69,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 70,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 71,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 72,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 73,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 74,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 75,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 76,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 77,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 78,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 79,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 80,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 81,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 82,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 83,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 84,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 85,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 86,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 87,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 88,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 89,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 90,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 91,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 92,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 93,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 94,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 95,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 96,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 97,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 98,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 99,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 100,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 101,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 102,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 103,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 104,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 105,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 106,
+              "close": "FORCED_FLAT",
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 107,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 108,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 109,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 110,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 111,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 112,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 113,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 114,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 115,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 116,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 117,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 118,
+              "close": null,
+              "horizon": null
+            }
+          ]
+        },
+        "decomposition": {
+          "account_profit_delta_usd": -25.750968353577264,
+          "actual_margin": -0.25750968353577264,
+          "close_continuation_shift": 2.0195549281246006,
+          "drawdown_advantage_pp": 0.0,
+          "hold_continuation_shift": 2.442723187148487,
+          "identity_error": 0.0,
+          "planned_margin": 0.16565857548811347,
+          "ranking_reversal": true
+        },
+        "hold_first_deviation": {
+          "actual": [
+            "CLOSE",
+            null
+          ],
+          "bar": 51,
+          "planned": [
+            "IDLE",
+            null
+          ]
+        },
+        "hold_plan": [
+          "HOLD",
+          3,
+          "BUY:24"
+        ],
+        "target": {
+          "bar": 50,
+          "direction": -1,
+          "entry_bar": 45
+        },
+        "valuation_error": 0.0
+      },
+      {
+        "actual_close_return_pct": 4.370220254968293,
+        "actual_hold_return_pct": 4.447471710224282,
+        "close_first_deviation": {
+          "actual": [
+            "IDLE",
+            null
+          ],
+          "bar": 63,
+          "planned": [
+            "BUY",
+            6
+          ]
+        },
+        "close_plan": [
+          "CLOSE",
+          null,
+          "BUY:6"
+        ],
+        "committed_close": {
+          "cash_error": -4.831690603168681e-13,
+          "drawdown_pct": 0.2888784538740605,
+          "flat": true,
+          "ledger": [
+            {
+              "direction": 1,
+              "entry_bar": 12,
+              "exit_bar": 34,
+              "net": 65.09833856898031,
+              "reason": "TP",
+              "units": 35524
+            },
+            {
+              "direction": 1,
+              "entry_bar": 35,
+              "exit_bar": 44,
+              "net": 79.91296107711285,
+              "reason": "TP",
+              "units": 34730
+            },
+            {
+              "direction": -1,
+              "entry_bar": 45,
+              "exit_bar": 51,
+              "net": -3.414852040883404,
+              "reason": "AGENT_CLOSE",
+              "units": 33499
+            },
+            {
+              "direction": 1,
+              "entry_bar": 52,
+              "exit_bar": 63,
+              "net": 34.82112389468051,
+              "reason": "AGENT_CLOSE",
+              "units": 29640
+            },
+            {
+              "direction": 1,
+              "entry_bar": 64,
+              "exit_bar": 73,
+              "net": 77.08228148873907,
+              "reason": "TP",
+              "units": 36877
+            }
+          ],
+          "net_usd": 253.49985298862933,
+          "orders": 5,
+          "return_pct": 2.5349985298862787,
+          "trace": [
+            {
+              "action": "CLOSE",
+              "bar": 62,
+              "close": "AGENT_CLOSE",
+              "horizon": null
+            },
+            {
+              "action": "BUY",
+              "bar": 63,
+              "close": null,
+              "horizon": 6
+            },
+            {
+              "action": "HOLD",
+              "bar": 64,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 65,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 66,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 67,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 68,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 69,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 70,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 71,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 72,
+              "close": "TP",
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 73,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 74,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 75,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 76,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 77,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 78,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 79,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 80,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 81,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 82,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 83,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 84,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 85,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 86,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 87,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 88,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 89,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 90,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 91,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 92,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 93,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 94,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 95,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 96,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 97,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 98,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 99,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 100,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 101,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 102,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 103,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 104,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 105,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 106,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 107,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 108,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 109,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 110,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 111,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 112,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 113,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 114,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 115,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 116,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 117,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 118,
+              "close": null,
+              "horizon": null
+            }
+          ]
+        },
+        "committed_hold": {
+          "cash_error": -1.1652900866465643e-12,
+          "drawdown_pct": 0.2888784538740605,
+          "flat": true,
+          "ledger": [
+            {
+              "direction": 1,
+              "entry_bar": 12,
+              "exit_bar": 34,
+              "net": 65.09833856898031,
+              "reason": "TP",
+              "units": 35524
+            },
+            {
+              "direction": 1,
+              "entry_bar": 35,
+              "exit_bar": 44,
+              "net": 79.91296107711285,
+              "reason": "TP",
+              "units": 34730
+            },
+            {
+              "direction": -1,
+              "entry_bar": 45,
+              "exit_bar": 51,
+              "net": -3.414852040883404,
+              "reason": "AGENT_CLOSE",
+              "units": 33499
+            },
+            {
+              "direction": 1,
+              "entry_bar": 52,
+              "exit_bar": 71,
+              "net": 95.71486782711327,
+              "reason": "TP",
+              "units": 29640
+            }
+          ],
+          "net_usd": 237.31131543232303,
+          "orders": 4,
+          "return_pct": 2.3731131543232253,
+          "trace": [
+            {
+              "action": "HOLD",
+              "bar": 62,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 63,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 64,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 65,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 66,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 67,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 68,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 69,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 70,
+              "close": "TP",
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 71,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 72,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 73,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 74,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 75,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 76,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 77,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 78,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 79,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 80,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 81,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 82,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 83,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 84,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 85,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 86,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 87,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 88,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 89,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 90,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 91,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 92,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 93,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 94,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 95,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 96,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 97,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 98,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 99,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 100,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 101,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 102,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 103,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 104,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 105,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 106,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 107,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 108,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 109,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 110,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 111,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 112,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 113,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 114,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 115,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 116,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 117,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 118,
+              "close": null,
+              "horizon": null
+            }
+          ]
+        },
+        "decomposition": {
+          "account_profit_delta_usd": -7.725145525600055,
+          "actual_margin": -0.07725145525598887,
+          "close_continuation_shift": 1.8352217250820146,
+          "drawdown_advantage_pp": 0.0,
+          "hold_continuation_shift": 2.074358555901057,
+          "identity_error": 0.0,
+          "planned_margin": 0.16188537556305338,
+          "ranking_reversal": true
+        },
+        "hold_first_deviation": {
+          "actual": [
+            "CLOSE",
+            null
+          ],
+          "bar": 63,
+          "planned": [
+            "IDLE",
+            null
+          ]
+        },
+        "hold_plan": [
+          "HOLD",
+          null,
+          "NOP"
+        ],
+        "target": {
+          "bar": 62,
+          "direction": 1,
+          "entry_bar": 52
+        },
+        "valuation_error": 0.0
+      },
+      {
+        "actual_close_return_pct": 4.370220254968293,
+        "actual_hold_return_pct": 4.6034827140817525,
+        "close_first_deviation": {
+          "actual": [
+            "IDLE",
+            null
+          ],
+          "bar": 96,
+          "planned": [
+            "BUY",
+            6
+          ]
+        },
+        "close_plan": [
+          "CLOSE",
+          null,
+          "BUY:6"
+        ],
+        "committed_close": {
+          "cash_error": -1.5347723092418164e-12,
+          "drawdown_pct": 0.2888784538740605,
+          "flat": true,
+          "ledger": [
+            {
+              "direction": 1,
+              "entry_bar": 12,
+              "exit_bar": 34,
+              "net": 65.09833856898031,
+              "reason": "TP",
+              "units": 35524
+            },
+            {
+              "direction": 1,
+              "entry_bar": 35,
+              "exit_bar": 44,
+              "net": 79.91296107711285,
+              "reason": "TP",
+              "units": 34730
+            },
+            {
+              "direction": -1,
+              "entry_bar": 45,
+              "exit_bar": 51,
+              "net": -3.414852040883404,
+              "reason": "AGENT_CLOSE",
+              "units": 33499
+            },
+            {
+              "direction": 1,
+              "entry_bar": 52,
+              "exit_bar": 63,
+              "net": 34.82112389468051,
+              "reason": "AGENT_CLOSE",
+              "units": 29640
+            },
+            {
+              "direction": 1,
+              "entry_bar": 65,
+              "exit_bar": 80,
+              "net": 77.41785829427377,
+              "reason": "TP",
+              "units": 36974
+            },
+            {
+              "direction": -1,
+              "entry_bar": 81,
+              "exit_bar": 86,
+              "net": 108.4890782469022,
+              "reason": "TP",
+              "units": 45144
+            },
+            {
+              "direction": 1,
+              "entry_bar": 87,
+              "exit_bar": 96,
+              "net": 36.40613090840822,
+              "reason": "AGENT_CLOSE",
+              "units": 46752
+            },
+            {
+              "direction": 1,
+              "entry_bar": 97,
+              "exit_bar": 107,
+              "net": 63.5496622002106,
+              "reason": "FORCED_FLAT",
+              "units": 46878
+            }
+          ],
+          "net_usd": 462.28030114968504,
+          "orders": 8,
+          "return_pct": 4.6228030114968455,
+          "trace": [
+            {
+              "action": "CLOSE",
+              "bar": 95,
+              "close": "AGENT_CLOSE",
+              "horizon": null
+            },
+            {
+              "action": "BUY",
+              "bar": 96,
+              "close": null,
+              "horizon": 6
+            },
+            {
+              "action": "HOLD",
+              "bar": 97,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 98,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 99,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 100,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 101,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 102,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 103,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 104,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 105,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 106,
+              "close": "FORCED_FLAT",
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 107,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 108,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 109,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 110,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 111,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 112,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 113,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 114,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 115,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 116,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 117,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 118,
+              "close": null,
+              "horizon": null
+            }
+          ]
+        },
+        "committed_hold": {
+          "cash_error": -2.8421709430404007e-13,
+          "drawdown_pct": 0.2888784538740605,
+          "flat": true,
+          "ledger": [
+            {
+              "direction": 1,
+              "entry_bar": 12,
+              "exit_bar": 34,
+              "net": 65.09833856898031,
+              "reason": "TP",
+              "units": 35524
+            },
+            {
+              "direction": 1,
+              "entry_bar": 35,
+              "exit_bar": 44,
+              "net": 79.91296107711285,
+              "reason": "TP",
+              "units": 34730
+            },
+            {
+              "direction": -1,
+              "entry_bar": 45,
+              "exit_bar": 51,
+              "net": -3.414852040883404,
+              "reason": "AGENT_CLOSE",
+              "units": 33499
+            },
+            {
+              "direction": 1,
+              "entry_bar": 52,
+              "exit_bar": 63,
+              "net": 34.82112389468051,
+              "reason": "AGENT_CLOSE",
+              "units": 29640
+            },
+            {
+              "direction": 1,
+              "entry_bar": 65,
+              "exit_bar": 80,
+              "net": 77.41785829427377,
+              "reason": "TP",
+              "units": 36974
+            },
+            {
+              "direction": -1,
+              "entry_bar": 81,
+              "exit_bar": 86,
+              "net": 108.4890782469022,
+              "reason": "TP",
+              "units": 45144
+            },
+            {
+              "direction": 1,
+              "entry_bar": 87,
+              "exit_bar": 102,
+              "net": 85.73857973879528,
+              "reason": "TP",
+              "units": 46752
+            },
+            {
+              "direction": 1,
+              "entry_bar": 103,
+              "exit_bar": 107,
+              "net": 2.301094202222872,
+              "reason": "FORCED_FLAT",
+              "units": 47045
+            }
+          ],
+          "net_usd": 450.3641819820844,
+          "orders": 8,
+          "return_pct": 4.503641819820836,
+          "trace": [
+            {
+              "action": "HOLD",
+              "bar": 95,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 96,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 97,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 98,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 99,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 100,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 101,
+              "close": "TP",
+              "horizon": null
+            },
+            {
+              "action": "BUY",
+              "bar": 102,
+              "close": null,
+              "horizon": 6
+            },
+            {
+              "action": "HOLD",
+              "bar": 103,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 104,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 105,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "HOLD",
+              "bar": 106,
+              "close": "FORCED_FLAT",
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 107,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 108,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 109,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 110,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 111,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 112,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 113,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 114,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 115,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 116,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 117,
+              "close": null,
+              "horizon": null
+            },
+            {
+              "action": "NOP",
+              "bar": 118,
+              "close": null,
+              "horizon": null
+            }
+          ]
+        },
+        "decomposition": {
+          "account_profit_delta_usd": -23.32624591134413,
+          "actual_margin": -0.2332624591134591,
+          "close_continuation_shift": -0.2525827565285521,
+          "drawdown_advantage_pp": 0.0,
+          "hold_continuation_shift": 0.09984089426091636,
+          "identity_error": 0.0,
+          "planned_margin": 0.11916119167600936,
+          "ranking_reversal": true
+        },
+        "hold_first_deviation": {
+          "actual": [
+            "IDLE",
+            null
+          ],
+          "bar": 102,
+          "planned": [
+            "BUY",
+            6
+          ]
+        },
+        "hold_plan": [
+          "HOLD",
+          12,
+          "BUY:6"
+        ],
+        "target": {
+          "bar": 95,
+          "direction": 1,
+          "entry_bar": 87
+        },
+        "valuation_error": 0.0
+      }
+    ],
+    "seconds": 2.2067818409996107,
+    "world": 0
+  },
+  "identity": "b1c64b1d12dfc276f927493c6238070c358c120b2d6afbfe4b09796f9c1033ad",
+  "seal": "c1ada89e7e35c7481d02d8d60d51970d25f00f0b8335acf8cca8325661225b02"
+}
