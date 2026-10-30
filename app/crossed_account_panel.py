@@ -87,6 +87,7 @@ class CrossedWorld(World):
         return self.spec['quality']!='missing' or bool(self.available[b])
 
     def report(self,b):
+        self._ensure_cache_context()
         if b in self.reports: return self.reports[b]
         if not self.report_available(b): raise ValueError('REPORT_NOT_AVAILABLE')
         e=self.env;q=self.spec['quality'];future=np.column_stack((e.o,e.h,e.l,e.c))[b+1:self.end]

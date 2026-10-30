@@ -76,3 +76,8 @@ CP10,Full evidence and replay,docs/audits/evidence/crossed_account_final_2026102
 CX05,Discriminating terminal spread,tests/unit/test_crossed_audit_boundary_regressions.py,Last-bar quote differs from deadline quote and only the latter matches native cash on both sides,BEFORE_PHASE2,PASS
 CX07,Full-account close preemption,tests/unit/test_crossed_audit_boundary_regressions.py,Archived P1 mirrors request CLOSE at26 and gap SL preempts at27 with exact full-account parity,BEFORE_PHASE2,PASS
 CX09_17,Causal report and close qualification,docs/work_plan/144_CAUSAL_REPORT_CLOSE_REPAIR_PLAN.md,Separate shape calibration error history close regret and fixed-size comparisons before new search,BEFORE_PHASE2,DESIGN_NOT_EXECUTED
+PA01,Config-aware report caches,tests/unit/test_report_cache_binding.py,Warm execution-cost changes refresh reports and bids,BEFORE_PHASE2,PASS
+PA02,Cached value binding,tests/unit/test_report_cache_binding.py,Same-shape report position risk and value corruption rejected,BEFORE_PHASE2,PASS
+PA03,Matured forecast errors,tests/unit/test_report_track_record.py,No early outcomes duplicate issues retrospective mutation or missing-value filling; snapshot exact,BEFORE_PHASE2,PASS_COMPONENT
+PA04,Causal baseline calibration,tests/unit/test_causal_report_baseline.py,Prefix invariance and mirror response with32 independently sampled paths; no learned qualification,BEFORE_PHASE2,PASS_COMPONENT
+PA05_07,Automated complete exit diagnostics,docs/work_plan/146_POST_AUDIT_IMPLEMENTATION_AND_QUEUE.md,All finalists full native replay counterfactual and no-close accounts with sealed resumable units,BEFORE_PHASE2,SMOKE_PASSED_FULL_QUEUE_READY

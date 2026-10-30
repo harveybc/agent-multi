@@ -2,6 +2,14 @@
 
 ## Priority override: 2026-10-29
 
+Execution increment: [post-audit implementation and queue146](146_POST_AUDIT_IMPLEMENTATION_AND_QUEUE.md),
+under [frozen contract145](145_POST_AUDIT_AUTOMATION_CONTRACT.md).
+R1 cache bindings and R2 matured forecast-error ledger are implemented;
+184 tests and complete7-unit smoke/resume passed.27-unit sequential diagnostics
+cover all frozen finalists, native counterfactual closes, full no-close accounts
+and two prefix-only32-path calibration baselines. No learned adapter or new
+DEAP qualification is claimed by this increment.
+
 Latest: [independent audit disposition143](143_CROSSED_V2_AUDIT_DISPOSITION.md)
 and [causal report / early-close sequence144](144_CAUSAL_REPORT_CLOSE_REPAIR_PLAN.md).
 Satoshi independently reproduced27,360 accounts and the search. Preserve v2;

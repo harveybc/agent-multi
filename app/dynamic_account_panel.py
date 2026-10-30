@@ -1,28 +1,18 @@
 """Explicitly synthetic, full-account allocation experiments on the native engine."""
 from collections import OrderedDict, Counter
 import copy
-import hashlib
 from dataclasses import replace
 
 import numpy as np
 import pandas as pd
 
-from app.close_hold_controller import PositionView, PathReport, CloseConfig, CloseController, value_paths, validate_context
+from app.close_hold_controller import PositionView, PathReport, CloseConfig, CloseController, value_paths, validate_context, report_identity, bind_values
 from app.dynamic_account_arbiter import HORIZONS, choose, decode, objectives
 from app.horizon_risk_rules import levels, propose
 from app.protection_reference import protection_exit
 
 HOUR=3600*10**9
 BASE=(1.,1.,1.,1.,0.,0.,0.,0.,1.,0.,1.)
-
-
-def report_identity(r):
-    h=hashlib.sha256(repr((r.issued_at,r.observed_through,r.first_fill,r.step,
-                           r.deadline,r.provenance)).encode())
-    for a in (r.paths,r.spreads,r.weights,r.terminal_spreads):
-        a=np.asarray(a,dtype=float)
-        h.update(repr(a.shape).encode());h.update(a.tobytes())
-    return h.digest()
 
 
 def expected_duration(position,report,choice):
@@ -84,6 +74,7 @@ class World:
             ts[0],ts[-1]+pd.Timedelta(hours=1),cfg,tick=.00001)
         self.end=int(np.searchsorted(self.env.v,self.env.ff[0]))
         self.reports={};self.bids={};self.cache=OrderedDict()
+        self._cache_context=None
         self.references={(r['horizon'],1 if r['direction']=='buy' else -1):r['reference']['median']
                          for r in risk_config['rows']}
         self.rolls=[(x.value,3 if i==profile.triple_swap_rollover_index else 1)
@@ -96,7 +87,14 @@ class World:
         a=np.asarray(times,dtype=np.int64)
         return sum((rate*n*(a>=t) for t,n in self.rolls if entry<t),np.zeros(a.shape))
 
+    def _ensure_cache_context(self):
+        context=repr((self.env.cfg,self.risk_config,self.references,self.rolls))
+        if self._cache_context is not None and context!=self._cache_context:
+            self.reports.clear();self.bids.clear();self.cache.clear()
+        self._cache_context=context
+
     def report(self,b):
+        self._ensure_cache_context()
         if b not in self.reports:
             e=self.env;future=np.column_stack((e.o,e.h,e.l,e.c))[b+1:self.end]
             rng=np.random.default_rng(np.random.SeedSequence([self.spec['seed'],b,901]))
@@ -181,12 +179,13 @@ class World:
         fe=self.funding(int(e.v[p.entry_bar]),p.direction,times+HOUR)
         key=(unit,report_identity(r),fo.tobytes(),fe.tobytes())
         if key not in self.cache:
-            self.cache[key]=(unit,value_paths(unit,r,fo,fe),fo,fe)
+            values=value_paths(unit,r,fo,fe)
+            self.cache[key]=(unit,values,fo,fe,bind_values(unit,r,values))
             if len(self.cache)>512: self.cache.popitem(last=False)
         self.cache.move_to_end(key)
         return self.cache[key]
 
-    def run(self,genes,enabled=None,verify=False,details=False):
+    def run(self,genes,enabled=None,verify=False,details=False,*,voluntary_close=True):
         genes=decode(genes);e=copy.copy(self.env);e.reset();equity=[e.cfg.capital]
         controller=CloseController(CloseConfig(genes[5],genes[9],genes[10],.25),allow_synthetic=True)
         direct=CloseController(controller.config,allow_synthetic=True) if verify else None
@@ -195,11 +194,11 @@ class World:
             b=e.next_decision;action=0;plan=None;selected=None
             if e.pos is not None:
                 occupied+=1
-                if b+1<self.end and self.report_available(b):
-                    unit,values,fo,fe=self.close_values(e,horizon,b);r=self.report(b)
+                if voluntary_close and b+1<self.end and self.report_available(b):
+                    unit,values,fo,fe,binding=self.close_values(e,horizon,b);r=self.report(b)
                     clock=int(e.v[b])+HOUR;deadline=int(e.ff[e.pos.seg])
                     result=controller.decide_synthetic_values(unit.identity,clock,HOUR,
-                        values,r.weights,unit.risk,report=r,expected_deadline=deadline)
+                        values,r.weights,unit.risk,report=r,expected_deadline=deadline,binding=binding)
                     if verify:
                         actual=replace(unit,units=e.pos.units,risk=unit.risk*e.pos.units)
                         other=direct.decide(actual,r,clock,fo,fe,expected_deadline=deadline)

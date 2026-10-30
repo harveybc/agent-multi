@@ -5,6 +5,7 @@ Synthetic future-aware reports require an explicit test-only permission.
 """
 from dataclasses import dataclass, asdict
 import math
+import hashlib
 
 import numpy as np
 
@@ -39,6 +40,29 @@ class PathReport:
     weights: np.ndarray
     provenance: str
     terminal_spreads: np.ndarray  # [sample], spread at deadline liquidation
+
+
+def report_identity(r):
+    h=hashlib.sha256(repr((r.issued_at,r.observed_through,r.first_fill,r.step,
+                           r.deadline,r.provenance)).encode())
+    for a in (r.paths,r.spreads,r.weights,r.terminal_spreads):
+        a=np.asarray(a,dtype=float)
+        h.update(repr(a.shape).encode());h.update(a.tobytes())
+    return h.digest()
+
+
+@dataclass(frozen=True)
+class ValueBinding:
+    position_identity: str
+    risk: float
+    report_digest: bytes
+    values_digest: bytes
+
+
+def bind_values(position,report,values):
+    a=np.asarray(values,dtype=float)
+    return ValueBinding(position.identity,position.risk,report_identity(report),
+                        hashlib.sha256(repr(a.shape).encode()+a.tobytes()).digest())
 
 
 @dataclass(frozen=True)
@@ -154,7 +178,7 @@ class CloseController:
         values=value_paths(p,r,opening_funding,ending_funding)
         return self._decide_values(p.identity,decision_time,r.step,values,r.weights,p.risk,r.provenance)
 
-    def decide_synthetic_values(self,identity,decision_time,step,values,weights,risk,*,report,expected_deadline):
+    def decide_synthetic_values(self,identity,decision_time,step,values,weights,risk,*,report,expected_deadline,binding=None):
         """Test-plane cache adapter; never available to a causal/live consumer."""
         if not self.allow_synthetic:
             raise ValueError('SYNTHETIC_CACHE_FORBIDDEN')
@@ -172,6 +196,11 @@ class CloseController:
         if (step!=report.step or values.shape!=(len(report.paths),report.paths.shape[1]+1)
                 or not np.array_equal(weights,report.weights)):
             raise ValueError('SYNTHETIC_CACHE_REPORT_SUPPORT')
+        digest=hashlib.sha256(repr(values.shape).encode()+values.tobytes()).digest()
+        if (not isinstance(binding,ValueBinding) or binding.position_identity!=identity
+                or binding.risk!=risk or binding.report_digest!=report_identity(report)
+                or binding.values_digest!=digest):
+            raise ValueError('SYNTHETIC_VALUE_BINDING')
         if self.position_id==identity and self.last_tick is not None and decision_time<=self.last_tick:
             raise ValueError('DUPLICATE_OR_REVERSED_TICK')
         return self._decide_values(identity,decision_time,step,values,weights,risk,'synthetic_noisy')

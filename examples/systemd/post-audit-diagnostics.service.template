@@ -1,0 +1,27 @@
+[Unit]
+Description=Sequential post-audit exit and causal report diagnostics
+StartLimitIntervalSec=900
+StartLimitBurst=3
+
+[Service]
+Type=simple
+WorkingDirectory=<pinned-agent-checkout>
+Environment=CUDA_VISIBLE_DEVICES=
+Environment=OMP_NUM_THREADS=1
+Environment=OPENBLAS_NUM_THREADS=1
+Environment=MKL_NUM_THREADS=1
+ExecStart=<python> tools/run_post_audit_diagnostics.py --engine-root <pinned-native-checkout> --output <new-output-directory>
+Restart=on-abnormal
+RestartSec=60
+KillMode=control-group
+TimeoutStopSec=30
+MemoryHigh=3G
+MemoryMax=4G
+MemorySwapMax=0
+CPUQuota=100%
+TasksMax=32
+Nice=10
+UMask=0077
+
+[Install]
+WantedBy=default.target

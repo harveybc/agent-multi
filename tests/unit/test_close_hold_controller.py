@@ -104,7 +104,8 @@ def test_synthetic_value_cache_matches_report_and_cannot_bypass_causal_api():
     p=position(); r=report(tag='synthetic_ideal'); z=np.zeros(3)
     values=value_paths(p,r,z,z)
     a=CloseController(CloseConfig(),allow_synthetic=True).decide(p,r,10,z,z,expected_deadline=13)
-    b=CloseController(CloseConfig(),allow_synthetic=True).decide_synthetic_values(p.identity,10,1,values,r.weights,p.risk,report=r,expected_deadline=13)
+    from app.close_hold_controller import bind_values
+    b=CloseController(CloseConfig(),allow_synthetic=True).decide_synthetic_values(p.identity,10,1,values,r.weights,p.risk,report=r,expected_deadline=13,binding=bind_values(p,r,values))
     assert a['action']==b['action'] and a['advantage_risk']==b['advantage_risk']
     with pytest.raises(ValueError,match='SYNTHETIC'):
         CloseController().decide_synthetic_values(p.identity,10,1,values,r.weights,p.risk,report=r,expected_deadline=13)
