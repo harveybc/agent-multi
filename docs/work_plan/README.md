@@ -2,6 +2,13 @@
 
 ## Priority update: 2026-10-30
 
+[Completed172](172_FROZEN_REFERENCE_ROLLOUT_RESULTS.md): all1,512 accounts and
+235 close interventions finished at23:18:56UTC without restarts.285 tests;
+1,790 artifact hashes and completed resume verified. New joint rollout
+improves ideal results but increases noisy turnover and loses against simple
+controls;85 ideal closes hurt account profit. Full report and targeted audit
+request published. Diagnose these behaviors before model-specific selection.
+
 [Correction171](171_FROZEN_REFERENCE_ROLLOUT_PLAN.md): implement explicit
 nonrecursive reference-policy continuation instead of the two-order proxy.
 Tests and an unattended seven-policy fresh-world contrast include every
