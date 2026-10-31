@@ -63,8 +63,8 @@ are initial probe constants, not selected optima. Reference:
 4. Authenticate the real recipe, scaler provenance, selected columns, calendar,
    temporal support and inner-fold fit boundaries before real-data fits.
 
-Distributed jobs are partitioned, never duplicated: fastest device eight cells,
-middle device three, smallest device one. One process per host bounds RAM. A
+Distributed jobs are partitioned, never duplicated: final revision2 allocation
+is six/five/one cells after measured small-batch throughput (see174). One process per host bounds RAM. A
 persisted service serializes that host's cells, authenticates completed receipts,
 and retries process failures at most twice. Scientific failures remain failures.
 Host addresses and data paths stay in private deployment configuration.
