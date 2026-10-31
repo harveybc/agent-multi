@@ -4,6 +4,8 @@ RP02,Discrete SAC output surfaces,Two-position same-market routing and masked ca
 RP03,Real replay and checkpoint identity,Duration targets and exact reload plus artifact mutation,Finite updates and rejected changed evidence,REAL_PROBE,TESTED
 RP04,Native planted positive controls,Mirrored known signals through actual learned surfaces and native execution,Both directions and early closes profitable before real fit,REAL_PROBE,AUTOMATED_BEFORE_FINANCIAL
 RP05,No unearned heldout claim,Scaler period and feature risk exposure plus read cutoff,Only internal TRAIN evaluation with exposed upstream design declared,REAL_PROBE,TESTED
+RP06,Whole-account close diagnostic,tests/unit/test_curve_probe_followup.py and native exact preflight,Opening logits unchanged and native protection retained with exact baseline replay,REAL_PROBE_FOLLOWUP,TESTED
+RP07,Action-count entropy witness,Official TorchRL zero-reward target on two versus three legal actions,Structural effect separated from actual financial causation,REAL_PROBE_FOLLOWUP,TESTED
 MS01,20 experts and legal state alternatives,Enumerate IDs and flat long short masks,20 IDs and 11 6 6 alternatives,M0,DESIGNED_NOT_RUN
 MS02,Signal and uncertainty contract,Malformed probabilities timestamps scales and missing experts,Typed rejection or declared exclusion without confidence fabrication,M0,DESIGNED_NOT_RUN
 MS03,No illegal resource allocation,Slot margin loss budget lot step and third plus daily entry witnesses,No budget violation and no strategy-imposed daily entry cap,M1,DESIGNED_NOT_RUN

@@ -3,9 +3,11 @@
   "date": "2026-10-31",
   "timezone": "America/Bogota",
   "priority": 0,
-  "current_stage": "DISCRETE_SAC_CURVE_PROBE_R3_RUNNING",
+  "current_stage": "DISCRETE_SAC_FROZEN_FOLLOWUP_READY",
+  "real_output_probe_completed": {"models":12,"fleet_closed_utc":"2026-10-31T08:42:42Z","diagnosed_periods":24,"diagnosis_closed_utc":"2026-10-31T08:44:21Z","followup_tests_passed":22},
   "real_output_probe_correction": "../175_DISCRETE_SAC_EXPLORATION_CORRECTION.md",
   "real_output_probe_close_diagnosis": "../176_REAL_SAC_CLOSE_DIAGNOSIS.md",
+  "real_output_probe_automated_followup": "../177_AUTOMATED_PROBE_FOLLOWUP.md",
   "real_output_probe_launch": "../175_DISCRETE_SAC_EXPLORATION_CORRECTION.md",
   "real_output_probe_runtime": {"code":"2fb008d3","identity":"a3db51b29e88560464d8004e903d9a0c52746e9d3880d11ef8f2633d16f36c13","tests_passed":63,"gpu_units":[6,5,1],"persistent_workers":3,"persistent_collector":true,"memory_max_gib_per_worker":6,"mid_fit_resume_claimed":false,"test_access":false,"financial_training_after_qualification_only":true,"automatic_entropy":true,"entropy_fraction":0.6,"initial_alpha":1.0},
   "real_output_probe_plan": "../173_REAL_OUTPUT_PROBE_PLAN.md",
@@ -156,6 +158,7 @@
   },
   "bottom_up": "INDEPENDENT_REVIEWS_RECEIVED; FIVE_CONCRETE_DEFECTS_REPAIRED_AND_REPLAYED; COVERAGE_REVISION_REQUIRED",
   "next_allowed_actions": [
+    "177: after authenticated fleet and diagnosis closure run all frozen original/no-early-close account pairs, characterize actual policy and critic outputs, verify legal-action entropy witness, and generate final report plus audit request automatically; no hidden retraining or policy promotion",
     "176: automatically replay every completed probe account and attribute actual early closes against identical-position passive HOLD and intermediate optima; no policy changes or future information in observations; distinguish position attribution from whole-account effects",
     "173: execute frozen twelve-unit discrete SAC probe on three authorized devices; qualify each seed; then fresh real fits, sealed emissions and native TRAIN/INNER_A replay; collect all receipts automatically",
     "171 complete in172: inspect frozen report revisions and action switching; separate entry-driven turnover from close decisions; diagnose85 profit-harmful ideal closes before a fresh controlled correction; no retuning on confirmation",
@@ -179,7 +182,7 @@
     "Model-specific sequential floating selection",
     "Promotion of synthetic-oracle results as learned-model evidence"
   ],
-  "operations": "173 revision3 running with three persistent sequential workers and collector.175 records entropy/coverage correction and63 passing tests. Full seed43 network passed216 cases plus both native mirrored controls, then automatically started fresh real3h training. All12 cells remain automated; no intermediate approvals, floating selection or TEST access. Revision2 failed qualification evidence is preserved and not promoted.",
+  "operations": "173 revision3 completed all12 financial probes;176 completed24 period diagnoses with exact ledgers.177 is test-qualified with22 tests and an exact real-account preflight. Persistent CPU chain will run all24 paired full-account ablations and produce statistics/report/audit request without intermediate approval. No new financial training, changed policy, floating selection or TEST access.",
   "history": [
     {"date":"2026-10-30","event":"Owner objects to stopping after diagnosis. Implemented explicit nonrecursive frozen-reference native rollout with whole-ensemble carried forecasts and no future report callbacks.285 tests;21-account smoke;six actual adaptive close counterfactuals;one harmful close retained;authenticated resume. Published8c7d0f22 and started full1512-account service with automatic ideal-close attribution and final audit packet. Verified actual execution after runtime tests;no new owner decision required."},
     {"date":"2026-10-30","event":"Owner approves continuation after status. Published completed168 and executed169 end to end:72 exact baseline accounts;610 committed native plans reproduce ideal valuations withzero error;150/305 utility rankings reverse under actual hourly continuation. Identity residual<=1.78e-15.265 tests and authenticated resume.170 identifies valuation of a different continuation, not a price-model failure; next correction is explicit frozen-reference rollout with causal information tests."},
