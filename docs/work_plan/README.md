@@ -1,5 +1,16 @@
 # Adaptive Multi-Asset Trading Work Plan
 
+## Priority Update: 2026-10-31
+
+[Economic multihorizon pilot178](178_ECONOMIC_MULTIHORIZON_ARBITRATION.md)
+implements the approved hourly comparison of all four frozen SAC reporters.
+Same-position CLOSE/HOLD and opening bids use externally calibrated return and
+drawdown in common units, including a frozen continuation reference. No raw
+soft Q is interpreted as profit. Three seeds run sequentially through TRAIN
+calibration, internal account evaluation and retrospective close interventions.
+The complete frozen follow-up177 has finished; this is the next controlled
+experiment, before model-specific floating selection. No2024/TEST access.
+
 ## Priority update: 2026-10-30
 
 [Completed172](172_FROZEN_REFERENCE_ROLLOUT_RESULTS.md): all1,512 accounts and

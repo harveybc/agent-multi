@@ -1,0 +1,11 @@
+{
+  "schema": "economic_curve_arbiter.pilot.v1",
+  "seeds": [7, 19, 43],
+  "origin_offsets": [0, 48],
+  "position_ages": [1, 3, 6],
+  "calibration_cutoff": "2023-01-01",
+  "ridge_alpha": 1.0,
+  "minimum_fit_rows": 16,
+  "account_risk_weight": 1.0,
+  "periods": ["TRAIN", "INNER_A"]
+}
