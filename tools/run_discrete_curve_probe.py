@@ -27,6 +27,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DESIGN = dict(steps=32768, warmup=1024, update_every=4, batch_size=64,
               replay_size=8192, gamma=.99, alpha=.01, learning_rate=.0003,
               qualification_updates=2048, qualification_batch=96,
+              qualification_progress='uniform_0_1_all_segments',
               early_stopping=False, agent_feedback=False, learned_risk=False,
               algorithm='TorchRL_DiscreteSACLoss', branch_width=8, core_width=16,
               head_width=8, close_curve_knots=9)
@@ -161,7 +162,7 @@ def qualification_batch(recipe, rng, n, device):
     lags = rng.choice([0, 4, 8, 12], n)
     x[np.arange(n), shape[0] - 1 - lags, :] = signals[:, None]
     route = rng.integers(0, 3, n)
-    progress = rng.choice([.125, .875], n).astype(np.float32)
+    progress = rng.uniform(0., 1., n).astype(np.float32)
     expected = np.where(route == 0, np.where(signals == 1, 1, np.where(signals == -1, 2, 0)),
         np.where(((route == 1) & (signals == -1)) | ((route == 2) & (signals == 1))
                  | ((signals == 0) & (progress < .5)), 1, 0))
@@ -195,7 +196,7 @@ def qualify(model, recipe, seed, output):
     for lag in (0, 4, 8, 12):
         for route in range(3):
             for signal in (-1, 0, 1):
-                for progress in (.125, .875):
+                for progress in (.125, .25, .375, .625, .75, .875):
                     feature = np.zeros(shape, np.float32)
                     feature[-1 - lag, :] = signal
                     obs = tensor_observation(dict(features=feature, route=np.array([route]),

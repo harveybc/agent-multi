@@ -51,9 +51,10 @@ are initial probe constants, not selected optima. Reference:
 1. Verify encoder causality, two blocks at each level, input invariance under
    routing changes, exact save/reload, categorical codec and signal learning.
 2. Qualify each seed's network using a contextual planted-reward fixture with
-   lags0/4/8/12, both close directions and low/high position coordinates. These
+   lags0/4/8/12, both close directions and uniform position coordinates over
+   the whole0..1 interval (every interpolation segment receives learning). These
    are not financial horizons or demonstrations. Run2048 SAC updates, batch96;
-   all72 conditional cases must select the expected action with probability>0.6.
+   all216 conditional cases must select the expected action with probability>0.6.
    Reuse only authenticated qualification evidence on the same host, not weights.
 3. Replay those learned outputs through native accounting on two mirrored
    planted-price paths, including both directions and early closes. Both must
@@ -140,3 +141,10 @@ and writes a consolidated Markdown table, full JSON metrics and final closure.
 
 The complete strategy positive control remains distinct from encoder learning.
 Passing the latter alone must never be reported as passing the former.
+
+Pre-financial correction: the first qualification draft sampled only two
+position coordinates, leaving interior curve knots without direct coverage.
+The three qualification workers were stopped before any financial fit. Revision2
+samples the entire coordinate interval and tests six interior coordinates, with
+a regression proving coverage of all eight interpolation segments on each side.
+No financial result from the interrupted engineering queue is reused.
