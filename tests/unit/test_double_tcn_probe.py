@@ -87,6 +87,21 @@ def test_elapsed_discount_uses_native_duration():
         assert torch.allclose(model.loss._compute_target(td), torch.tensor([.2]))
 
 
+def test_entropy_target_tracks_legal_actions_and_temperature_learns():
+    from tools.run_discrete_curve_probe import transition
+    model = CurveSAC(probe_recipe())
+    for mask in ([True, False, False], [True, True, False], [True] * 3):
+        obs = dict(features=np.zeros((13, 2), np.float32), route=np.array([0]),
+                   progress=np.array([.5], np.float32), mask=np.array(mask))
+        batch = transition(obs, 0, obs, 0., True, 1)
+        before = model.loss.log_alpha.detach().clone()
+        values = model.update(batch)
+        assert np.isclose(values['target_entropy'], .6 * np.log(sum(mask)))
+        assert np.isfinite(values['alpha']) and values['alpha'] > 0
+        if sum(mask) > 1:
+            assert not torch.equal(before, model.loss.log_alpha.detach())
+
+
 def test_pointwise_group_preserved():
     r = probe_recipe()
     r['representation']['resolved']['kinds'] = ['pointwise']

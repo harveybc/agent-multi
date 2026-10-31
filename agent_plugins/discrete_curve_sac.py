@@ -51,9 +51,11 @@ class MarketSurface(nn.Module):
 
 
 class CurveSAC:
-    def __init__(self, recipe, device='cpu', seed=7, gamma=.99, alpha=.01, lr=3e-4):
+    def __init__(self, recipe, device='cpu', seed=7, gamma=.99, alpha=1., lr=3e-4,
+                 entropy_fraction=.6):
         torch.manual_seed(seed)
         self.recipe, self.device = recipe, torch.device(device)
+        self.entropy_fraction = entropy_fraction
         actor_net = MarketSurface(recipe).to(device)
         q_net = MarketSurface(recipe).to(device)
         actor_module = TensorDictModule(actor_net, in_keys=OBS_KEYS[:3], out_keys=['logits'])
@@ -62,7 +64,7 @@ class CurveSAC:
             distribution_kwargs={'neg_inf': -1e9})
         q_module = TensorDictModule(q_net, in_keys=OBS_KEYS[:3], out_keys=['action_value'])
         self.loss = DiscreteSACLoss(self.actor, q_module, action_space='categorical',
-            num_actions=3, num_qvalue_nets=2, alpha_init=alpha, fixed_alpha=True,
+            num_actions=3, num_qvalue_nets=2, alpha_init=alpha, fixed_alpha=False,
             delay_qvalue=True).to(device)
         self.loss.make_value_estimator(ValueEstimators.TD0, gamma=gamma)
         self.updater = SoftUpdate(self.loss, tau=.005)
@@ -88,8 +90,13 @@ class CurveSAC:
 
     def update(self, batch):
         self.optimizer.zero_grad(set_to_none=True)
+        # A forced NOP has zero available entropy, not log(3).
+        legal = batch['mask'].sum(-1).float()
+        if (legal < 1).any():
+            raise ValueError('EMPTY_LEGAL_ACTION_SET')
+        self.loss.target_entropy.copy_(self.entropy_fraction * legal.log().mean())
         values = self.loss(batch)
-        total = values['loss_actor'] + values['loss_qvalue']
+        total = values['loss_actor'] + values['loss_qvalue'] + values['loss_alpha']
         if not torch.isfinite(total):
             raise ValueError('NONFINITE_SAC_LOSS')
         total.backward()
@@ -97,7 +104,9 @@ class CurveSAC:
         self.optimizer.step()
         self.updater.step()
         return {'actor': float(values['loss_actor'].detach()),
-                'critic': float(values['loss_qvalue'].detach()), 'gradient_norm': float(grad)}
+                'critic': float(values['loss_qvalue'].detach()), 'gradient_norm': float(grad),
+                'alpha': float(self.loss.log_alpha.detach().exp()),
+                'target_entropy': float(self.loss.target_entropy)}
 
     def save(self, path):
         torch.save({'loss': self.loss.state_dict(), 'optimizer': self.optimizer.state_dict(),

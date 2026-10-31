@@ -25,9 +25,11 @@ from env_plugins.discrete_curve_native import native_environment
 
 ROOT = Path(__file__).resolve().parents[1]
 DESIGN = dict(steps=32768, warmup=1024, update_every=4, batch_size=64,
-              replay_size=8192, gamma=.99, alpha=.01, learning_rate=.0003,
+              replay_size=8192, gamma=.99, alpha=1., learning_rate=.0003,
+              automatic_entropy=True, entropy_fraction=.6,
               qualification_updates=2048, qualification_batch=96,
               qualification_progress='uniform_0_1_all_segments',
+              qualification_behavior='uniform_legal_off_policy',
               early_stopping=False, agent_feedback=False, learned_risk=False,
               algorithm='TorchRL_DiscreteSACLoss', branch_width=8, core_width=16,
               head_width=8, close_curve_knots=9)
@@ -155,6 +157,12 @@ def configure(seed):
     torch.manual_seed(seed)
 
 
+def probe_model(recipe, seed, device='cuda'):
+    return CurveSAC(recipe, device, seed=seed, gamma=DESIGN['gamma'],
+                    alpha=DESIGN['alpha'], lr=DESIGN['learning_rate'],
+                    entropy_fraction=DESIGN['entropy_fraction'])
+
+
 def qualification_batch(recipe, rng, n, device):
     shape = (recipe['tensor']['window']['observations'], recipe['list']['n'])
     x = np.zeros((n, *shape), np.float32)
@@ -178,10 +186,13 @@ def qualification_batch(recipe, rng, n, device):
 def qualify(model, recipe, seed, output):
     rng = np.random.default_rng(seed)
     start = time.monotonic()
+    coverage = Counter()
     for update in range(DESIGN['qualification_updates']):
         obs, expected = qualification_batch(recipe, rng, DESIGN['qualification_batch'], model.device)
-        with torch.no_grad():
-            action = model.distribution(obs).sample()
+        # Cover every legal action independently of the policy being qualified.
+        # Otherwise a collapsed early actor can permanently starve a Q action.
+        action = torch.distributions.Categorical(probs=obs['mask'].float()).sample()
+        coverage.update((int(r), int(a)) for r, a in zip(obs['route'].cpu().flatten(), action.cpu()))
         nxt = obs.clone()
         nxt['reward'] = torch.where(action == expected, 1., -1.)[:, None]
         nxt['done'] = torch.ones(len(action), 1, dtype=torch.bool, device=model.device)
@@ -209,7 +220,9 @@ def qualify(model, recipe, seed, output):
                         expected=expected, chosen=int(probs.argmax()), probabilities=probs.tolist()))
     passed = all(r['expected'] == r['chosen'] and r['probabilities'][r['expected']] > .6 for r in rows)
     write(output / 'QUALIFICATION.json', dict(scope='SYNTHETIC_LEARNABILITY_NOT_TRADING',
-        passed=passed, seed=seed, seconds=time.monotonic() - start, rows=rows))
+        passed=passed, seed=seed, seconds=time.monotonic() - start, rows=rows,
+        behavior='uniform legal actions; off-policy SAC updates; no imitation loss',
+        action_coverage={f'{r}:{a}': n for (r, a), n in sorted(coverage.items())}))
     model.save(output / 'qualification.pt')
     return passed
 
@@ -357,7 +370,7 @@ def worker(args):
         for name in cached['artifacts']:
             shutil.copy2(cache / name, output / name)
     else:
-        model = CurveSAC(recipe, 'cuda', seed=unit['seed'])
+        model = probe_model(recipe, unit['seed'])
         passed = qualify(model, recipe, unit['seed'], output)
         if passed:
             from app.curve_probe_control import planted_control
@@ -380,7 +393,7 @@ def worker(args):
                   qualification_passed=passed, financial_training=False)
     if passed:
         # Discard synthetic-trained weights and optimizer before real training.
-        model = CurveSAC(recipe, 'cuda', seed=unit['seed'])
+        model = probe_model(recipe, unit['seed'])
         market = RecipeMarket(spec)
         risk = read(spec['risk'])
         result['training'] = train(model, native_environment(market, risk, unit['horizon'], 'TRAIN'), output, unit['seed'])
@@ -465,7 +478,7 @@ def smoke(args):
     output.mkdir(exist_ok=False)
     recipe = read(spec['inputs']['recipe'])
     market, risk = RecipeMarket(spec), read(spec['risk'])
-    model = CurveSAC(recipe, 'cuda', seed=7)
+    model = probe_model(recipe, 7)
     env = native_environment(market, risk, 3, 'TRAIN')
     replay = TensorDictReplayBuffer(storage=LazyTensorStorage(128), batch_size=32)
     obs = env.reset()

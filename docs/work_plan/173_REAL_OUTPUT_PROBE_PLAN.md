@@ -41,10 +41,14 @@ occupied actions are 0 HOLD,1 CLOSE, with action2 masked. This is categorical
 sampling, never quantization of a continuous command.
 
 Use the official TorchRL0.14.0 DiscreteSACLoss, TensorDict0.14.2, twin critics,
-target tau0.005, gamma0.99, fixed entropy coefficient0.01, AdamW lr0.0003 and
+target tau0.005, gamma0.99, automatic entropy with initial alpha1, AdamW lr0.0003 and
 the inherited recipe weight decay. No dropout or BatchNorm is added. These
 are initial probe constants, not selected optima. Reference:
 [DiscreteSACLoss](https://docs.pytorch.org/rl/stable/reference/generated/torchrl.objectives.DiscreteSACLoss.html).
+The entropy target is0.6 times the batch mean log number of legal actions;
+forced NOP therefore contributes zero, not log3. The official temperature
+loss is optimized along with actor and twin-critic losses. All these settings
+are explicitly bound from the pinned design to the constructor.
 
 ## Automated Prerequisites
 
@@ -53,7 +57,10 @@ are initial probe constants, not selected optima. Reference:
 2. Qualify each seed's network using a contextual planted-reward fixture with
    lags0/4/8/12, both close directions and uniform position coordinates over
    the whole0..1 interval (every interpolation segment receives learning). These
-   are not financial horizons or demonstrations. Run2048 SAC updates, batch96;
+   are not financial horizons or demonstrations. Uniform legal-action behavior
+   covers every Q action independently of early actor collapse; rewards, not
+   supervised imitation loss, train the official off-policy SAC objective.
+   Run2048 SAC updates, batch96;
    all216 conditional cases must select the expected action with probability>0.6.
    Reuse only authenticated qualification evidence on the same host, not weights.
 3. Replay those learned outputs through native accounting on two mirrored
@@ -148,3 +155,10 @@ The three qualification workers were stopped before any financial fit. Revision2
 samples the entire coordinate interval and tests six interior coordinates, with
 a regression proving coverage of all eight interpolation segments on each side.
 No financial result from the interrupted engineering queue is reused.
+
+Revision3 corrects a second issue exposed by qualification: fixed alpha0.01
+and policy-only sampling saturated incorrect opening logits. The failed
+revision2 evidence is retained, and its workers were stopped before financial
+fits. Full legal-action coverage and mask-aware automatic entropy replace
+those engineering settings, without changing qualification expectations,
+financial data, reward, risk profiles or evaluation periods. See175.
