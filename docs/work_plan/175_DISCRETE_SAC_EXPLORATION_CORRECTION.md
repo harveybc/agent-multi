@@ -48,3 +48,22 @@ New immutable source, campaign identity and output roots are required for the
 corrected run. Completed evidence from earlier revisions cannot satisfy its
 receipts. Final allocation remains6/5/1 cells across the three authorized GPUs;
 each worker is sequential and the collector consolidates all12 outcomes.
+
+## Corrected Launch Evidence
+
+Immutable source: `2fb008d3`. Campaign identity:
+`a3db51b29e88560464d8004e903d9a0c52746e9d3880d11ef8f2633d16f36c13`.
+All three workers and the collector started successfully with zero restarts.
+An expanded CPU suite passed63 tests, no skips; scoped Ruff passed.
+
+The4090 seed43 full120-column network passed216/216 qualification cases,
+minimum expected-action probability0.788414. Both mirrored native controls
+passed:17 trades each, both directions, eight early closes per direction.
+Maximum cash discrepancy was1.23e-12USD. These controls use a planted causal
+signal and are not financial performance claims.
+
+That worker then automatically discarded the qualification weights and began
+the real3h seed43 fit, reaching1920/32768 decisions and225 replay updates.
+The other two workers continued their own qualification. The collector found
+zero receipt/transport issues. No financial candidate result was complete at
+this observation; the first engineering loss values are not trading metrics.
