@@ -2,7 +2,7 @@ requirement,description,test_design,expected_result,stage,evidence_status
 EC01,Common economic units and purged calibration,tests/unit/test_economic_curve_arbiter.py,Return and future drawdown at identical weekly boundary with TRAIN-only scale,ECONOMIC_PILOT,COMPONENT_TESTED
 EC02,Same-position four-horizon arbitration,tests/unit/test_economic_curve_arbiter.py,All reporters use identical live position with protections unchanged and no future reports,ECONOMIC_PILOT,COMPONENT_TESTED
 EC03,Native account and retrospective close audit,tests/unit/test_economic_curve_arbiter.py,Both directions execute with exact ledger replay and separate local versus account counterfactuals,ECONOMIC_PILOT,COMPONENT_TESTED
-EC04,Automated resumable pilot,docs/work_plan/178_ECONOMIC_MULTIHORIZON_ARBITRATION.md,Authenticated session batches then calibration and accounts across three seeds without promotion,ECONOMIC_PILOT,PREFLIGHT
+EC04,Automated resumable pilot,docs/work_plan/179_ECONOMIC_MULTIHORIZON_PILOT_LAUNCH.md,33 tests and persistent three-seed launch; first178 session batches and76 calibrators finished; no promotion,ECONOMIC_PILOT,RUNNING
 RP01,Market-only double TCN encoder,Structural count and suffix perturbation,Two causal residual blocks per temporal group and core with no state input,REAL_PROBE,TESTED
 RP02,Discrete SAC output surfaces,Two-position same-market routing and masked categorical losses,Position-sensitive decisions without learned state features or continuous command bins,REAL_PROBE,TESTED
 RP03,Real replay and checkpoint identity,Duration targets and exact reload plus artifact mutation,Finite updates and rejected changed evidence,REAL_PROBE,TESTED

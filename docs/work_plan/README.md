@@ -10,6 +10,9 @@ soft Q is interpreted as profit. Three seeds run sequentially through TRAIN
 calibration, internal account evaluation and retrospective close interventions.
 The complete frozen follow-up177 has finished; this is the next controlled
 experiment, before model-specific floating selection. No2024/TEST access.
+[Launch179](179_ECONOMIC_MULTIHORIZON_PILOT_LAUNCH.md): immutable `cff9af34`,
+33 passing tests, persistent sequential three-seed CPU service. First seed's178
+session batches and76 calibrators complete; native account evaluation running.
 
 ## Priority update: 2026-10-30
 
