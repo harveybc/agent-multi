@@ -1,9 +1,12 @@
 {
   "schema": "mechanism_synthesis.design_state.v1",
-  "date": "2026-10-30",
+  "date": "2026-10-31",
   "timezone": "America/Bogota",
   "priority": 0,
-  "current_stage": "FROZEN_REFERENCE_ROLLOUT_COMPLETE_ROBUSTNESS_DIAGNOSIS",
+  "current_stage": "OWNER_AUTHORIZED_DISCRETE_SAC_CURVE_PROBE_PREFLIGHT",
+  "real_output_probe_plan": "../173_REAL_OUTPUT_PROBE_PLAN.md",
+  "real_output_probe_authorization": {"date":"2026-10-31","algorithm":"DISCRETE_SAC","outputs":"categorical opening plus market-only CLOSE_HOLD curves evaluated by external controller","units":12,"horizons":[3,6,12,24],"seeds":[7,19,43],"steps":32768,"intermediate_approval_required":false,"test_access":false,"validation_2024_access":false,"floating_selection_authorized":false},
+  "real_output_probe_preflight": {"tests_passed":27,"smoke_real_transitions":128,"smoke_replay_updates":8,"smoke_emissions":24026,"native_cash_error_usd":4.547473508864641e-12,"smoke_scope":"engineering only; not candidate performance"},
   "reference_rollout_results": "../172_FROZEN_REFERENCE_ROLLOUT_RESULTS.md",
   "reference_rollout_audit": "../../audits/SATOSHI_AUDIT_REQUEST_REFERENCE_ROLLOUT_2026_10_30.md",
   "reference_rollout_completion": {"accounts":1512,"ideal_attribution_accounts":36,"close_interventions":235,"profit_helpful":150,"profit_harmful":85,"utility_helpful":149,"utility_harmful":86,"artifact_hashes_verified":1790,"tests_passed":285,"service_exit":0,"service_restarts":0,"completed_utc":"2026-10-30T23:18:56Z","resume_authenticated":true,"strategy_promoted":false},
@@ -130,7 +133,7 @@
   "scope": "Mechanism design, test-guided synthesis, finite-policy Nash checks and account Pareto analysis",
   "implementation_started": true,
   "experiments_started": true,
-  "experiment_scope": "TRAIN hindsight references plus synthetic native account allocation and Pareto optimization; no RL fit or feature selection",
+  "experiment_scope": "Completed synthetic reference work plus newly owner-authorized bounded discrete SAC probes on TRAIN/internal TRAIN after synthetic learning and native control qualification; no floating selection or TEST",
   "review_received": true,
   "review_identity": "Satoshi agent-multi 3326f898: REVISE before M1; M0 allowed",
   "theory_and_disposition": "../113_MECHANISM_THEORY_AND_AUDIT_DISPOSITION.md",
@@ -149,6 +152,7 @@
   },
   "bottom_up": "INDEPENDENT_REVIEWS_RECEIVED; FIVE_CONCRETE_DEFECTS_REPAIRED_AND_REPLAYED; COVERAGE_REVISION_REQUIRED",
   "next_allowed_actions": [
+    "173: execute frozen twelve-unit discrete SAC probe on three authorized devices; qualify each seed; then fresh real fits, sealed emissions and native TRAIN/INNER_A replay; collect all receipts automatically",
     "171 complete in172: inspect frozen report revisions and action switching; separate entry-driven turnover from close decisions; diagnose85 profit-harmful ideal closes before a fresh controlled correction; no retuning on confirmation",
     "164 and167 completed in168: preserve all frozen results and mixed resolution effects; do not repeat completed queues or tune on their confirmation",
     "Review170 and its targeted audit with the exact one-tick interventions and independently committed plans; retain both profit and drawdown evidence",
@@ -166,7 +170,7 @@
     "Extend paired scenario coverage and report learnability separately; do not reinterpret the empirical frontier as a certified global solution"
   ],
   "held_work": [
-    "New financial model training and architecture/input sweeps in this lane",
+    "Financial architecture/input sweeps outside the explicitly authorized bounded plan173 probe",
     "Model-specific sequential floating selection",
     "Promotion of synthetic-oracle results as learned-model evidence"
   ],

@@ -119,6 +119,7 @@ Campaign supervision and evidence tooling:
 - [`docs/audits/`](docs/audits/) and [`docs/handoffs/`](docs/handoffs/) —
   audit findings, evidence packets and handoff reports;
   [`docs/work_plan/`](docs/work_plan/) — the architecture/work-plan corpus.
+  Current bounded real-output probe: [discrete SAC and market-only close curves](docs/work_plan/173_REAL_OUTPUT_PROBE_PLAN.md), before floating feature selection.
 
 ## Prerequisites
 
