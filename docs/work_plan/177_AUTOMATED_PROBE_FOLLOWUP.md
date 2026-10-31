@@ -64,3 +64,8 @@ not used to choose parameters. Full comparisons are run for all models.
 was verified:12 financial probes at08:42:42UTC and24 fixed-position diagnoses
 at08:44:21UTC. The bounded CPU follow-up uses a separate persistent service,
 authenticated per-unit resumption and a final artifact manifest.
+
+Launched immutable41564284 at08:51:04UTC. Service active with zero restarts;
+first TRAIN account pair entered execution. Sequential24 pairs, CPU only,
+4GiB RAM cap. Outputs are RESULTS.md, RESULTS.json, SEED_SUMMARY.json,
+AUDIT_REQUEST.md and a hashed final CLOSE.json in the private result root.
