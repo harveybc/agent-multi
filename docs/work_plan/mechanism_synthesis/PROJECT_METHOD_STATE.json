@@ -5,6 +5,7 @@
   "priority": 0,
   "current_stage": "DISCRETE_SAC_CURVE_PROBE_R3_RUNNING",
   "real_output_probe_correction": "../175_DISCRETE_SAC_EXPLORATION_CORRECTION.md",
+  "real_output_probe_close_diagnosis": "../176_REAL_SAC_CLOSE_DIAGNOSIS.md",
   "real_output_probe_launch": "../175_DISCRETE_SAC_EXPLORATION_CORRECTION.md",
   "real_output_probe_runtime": {"code":"2fb008d3","identity":"a3db51b29e88560464d8004e903d9a0c52746e9d3880d11ef8f2633d16f36c13","tests_passed":63,"gpu_units":[6,5,1],"persistent_workers":3,"persistent_collector":true,"memory_max_gib_per_worker":6,"mid_fit_resume_claimed":false,"test_access":false,"financial_training_after_qualification_only":true,"automatic_entropy":true,"entropy_fraction":0.6,"initial_alpha":1.0},
   "real_output_probe_plan": "../173_REAL_OUTPUT_PROBE_PLAN.md",
@@ -155,6 +156,7 @@
   },
   "bottom_up": "INDEPENDENT_REVIEWS_RECEIVED; FIVE_CONCRETE_DEFECTS_REPAIRED_AND_REPLAYED; COVERAGE_REVISION_REQUIRED",
   "next_allowed_actions": [
+    "176: automatically replay every completed probe account and attribute actual early closes against identical-position passive HOLD and intermediate optima; no policy changes or future information in observations; distinguish position attribution from whole-account effects",
     "173: execute frozen twelve-unit discrete SAC probe on three authorized devices; qualify each seed; then fresh real fits, sealed emissions and native TRAIN/INNER_A replay; collect all receipts automatically",
     "171 complete in172: inspect frozen report revisions and action switching; separate entry-driven turnover from close decisions; diagnose85 profit-harmful ideal closes before a fresh controlled correction; no retuning on confirmation",
     "164 and167 completed in168: preserve all frozen results and mixed resolution effects; do not repeat completed queues or tune on their confirmation",
