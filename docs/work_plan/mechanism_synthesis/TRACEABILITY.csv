@@ -3,10 +3,10 @@ BS01,Three categorical market signals,tests/unit/test_three_signal_baseline.py,F
 BS02,Market-only encoder and critics,tests/unit/test_three_signal_baseline.py,Three logits and no state dependence with exact checkpoint reload,THREE_SIGNAL,TESTED
 BS03,Native sequential reward,tests/unit/test_three_signal_baseline.py,Fees and final settlement reconcile with equity reward,THREE_SIGNAL,TESTED
 BS04,Close diagnostic both directions,tests/unit/test_three_signal_baseline.py,Opposite-signal retrospective counterfactual preserves account and entropy computation,THREE_SIGNAL,TESTED
-BS05,Synthetic learning coverage,docs/work_plan/180_THREE_SIGNAL_SAC_BASELINE.md,Native episodic learning with both directions and explicit flat episodes,THREE_SIGNAL,EXECUTION_REQUIRED
+BS05,Synthetic learning coverage,docs/work_plan/181_THREE_SIGNAL_BASELINE_LAUNCH.md,Native episodic learning with both directions and explicit flat episodes,THREE_SIGNAL,RUNNING
 BS06,Internal monitor isolation,tests/unit/test_three_signal_baseline.py,Six disjoint eight-week blocks inside fit and internal selection periods; no2024 orTEST,THREE_SIGNAL,TESTED
 BS07,Stopping and inactive outcome,tests/unit/test_three_signal_baseline.py,Minimum budget plus patience; inactive checkpoints never substituted as eligible,THREE_SIGNAL,TESTED
-BS08,Immutable automated campaign,tools/run_three_signal_baseline.py,Source data and artifacts authenticated; independent seeds and bounded retries,THREE_SIGNAL,PREFLIGHT
+BS08,Immutable automated campaign,docs/work_plan/181_THREE_SIGNAL_BASELINE_LAUNCH.md,Source data and artifacts authenticated; independent seeds and bounded retries; two workers and collector active,THREE_SIGNAL,RUNNING
 EC01,Common economic units and purged calibration,tests/unit/test_economic_curve_arbiter.py,Return and future drawdown at identical weekly boundary with TRAIN-only scale,ECONOMIC_PILOT,COMPONENT_TESTED
 EC02,Same-position four-horizon arbitration,tests/unit/test_economic_curve_arbiter.py,All reporters use identical live position with protections unchanged and no future reports,ECONOMIC_PILOT,COMPONENT_TESTED
 EC03,Native account and retrospective close audit,tests/unit/test_economic_curve_arbiter.py,Both directions execute with exact ledger replay and separate local versus account counterfactuals,ECONOMIC_PILOT,COMPONENT_TESTED
