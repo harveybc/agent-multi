@@ -35,8 +35,8 @@ def test_action_trace_mismatch_rejected():
 
 
 @pytest.mark.parametrize('opening', [1, 2])
-def test_native_complete_replay_and_bad_ledger_rejected(curve_env, opening):
-    env = curve_env
+def test_native_complete_replay_and_bad_ledger_rejected(request, opening):
+    env = request.getfixturevalue('curve_env')
     obs = env.reset()
     actions = []
     while True:
