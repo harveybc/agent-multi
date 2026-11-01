@@ -2,6 +2,10 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "run_stopping_contrast.py": {
+   "purpose": "Owner-authorized paired six-rule stopping contrast on authenticated qualified three-signal SAC seeds; one shared trajectory per seed and full native account replay",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "mechanism synthesis"
+  },
   "run_three_signal_baseline.py": {
    "purpose": "Owner-authorized three-signal market-only discrete SAC with sequential native qualification, early-stopped financial learning and authenticated automated reports",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "mechanism synthesis"

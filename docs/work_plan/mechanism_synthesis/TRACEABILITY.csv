@@ -1,4 +1,10 @@
 requirement,description,test_design,expected_result,stage,evidence_status
+SC01,Original patience parity,tests/unit/test_stopping_contrast.py,Control3/5/10 equals original stopping on same observations,STOPPING_CONTRAST,TESTED
+SC02,Reject compensation by TRAIN gains,tests/unit/test_stopping_contrast.py,Guard rejects validation degradation and accepts joint improvement,STOPPING_CONTRAST,TESTED
+SC03,Frozen stopped rules,tests/unit/test_stopping_contrast.py,Future observations cannot alter earlier checkpoint or stop time,STOPPING_CONTRAST,TESTED
+SC04,Shared trajectory isolation,tests/unit/test_stopping_contrast.py,No RNG mutation; smoke passes inherited RNG guards,STOPPING_CONTRAST,TESTED
+SC05,Complete artifact contract,tests/unit/test_stopping_contrast.py,Altered checkpoint rejected; smoke seals18 artifacts including two full accounts,STOPPING_CONTRAST,TESTED
+SC06,Qualified seed provenance,tools/run_stopping_contrast.py,Authenticate original receipts and exclude failed43; persistent two-worker execution,STOPPING_CONTRAST,PREFLIGHT_COMPLETE
 BS01,Three categorical market signals,tests/unit/test_three_signal_baseline.py,Flat opens; opposite signal closes only; no same-tick reversal,THREE_SIGNAL,TESTED
 BS02,Market-only encoder and critics,tests/unit/test_three_signal_baseline.py,Three logits and no state dependence with exact checkpoint reload,THREE_SIGNAL,TESTED
 BS03,Native sequential reward,tests/unit/test_three_signal_baseline.py,Fees and final settlement reconcile with equity reward,THREE_SIGNAL,TESTED
