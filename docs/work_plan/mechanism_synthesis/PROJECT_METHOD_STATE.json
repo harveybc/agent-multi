@@ -4,6 +4,8 @@
   "timezone": "America/Bogota",
   "priority": 0,
   "current_stage": "THREE_SIGNAL_BASELINE_RUNNING",
+  "three_signal_stopping_diagnosis": "../182_THREE_SIGNAL_STOPPING_DIAGNOSIS.md",
+  "three_signal_partial_close": {"observed_utc":"2026-11-01T03:18:42Z","completed_seeds":[7,19],"active_seed":43,"completed_stop_reason":"patience","retrospective_patience5_changes_selected_weights":false,"phase2_evaluator_candidate":true,"new_training_authorized_by_status_request":false,"next_action":"Finish seed43 unchanged; compare stopping/checkpoint behavior before freezing the actual SAC evaluator for phase2."},
   "three_signal_baseline_launch": "../181_THREE_SIGNAL_BASELINE_LAUNCH.md",
   "three_signal_baseline_runtime": {"code":"606f3c6b","identity":"73892e698ce7a20c4a82d17eef047414ea199212860d38d03d9cdc5b7306e72d","started_utc":"2026-10-31T18:29:58Z","tests_passed":26,"gpu_workers":2,"persistent_collector":true,"intermediate_approval_required":false,"strategy_promoted":false},
   "three_signal_baseline_plan": "../180_THREE_SIGNAL_SAC_BASELINE.md",
