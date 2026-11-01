@@ -1,0 +1,14 @@
+{
+  "schema": "paired_ablation.design.v1",
+  "selector": "fixed_ablation",
+  "selector_params": {
+    "arms": [
+      {"name": "return_single", "drop": ["RAW_CLOSE_LOG_RETURN"]},
+      {"name": "clock_pair", "drop": ["hod_sin", "hod_cos"]},
+      {"name": "wavelet_branch", "drop_group": "wavelet/logret_1"}
+    ]
+  },
+  "steps": 524288,
+  "guarded_patience": 5,
+  "seeds": [7, 19]
+}

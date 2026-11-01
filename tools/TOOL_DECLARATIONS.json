@@ -2,6 +2,10 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "run_paired_ablation.py": {
+   "purpose": "Owner-authorized paired structural feature-ablation diagnostic on actual discrete SAC, authenticated control prefix reuse, two checkpoint selectors and native account reporting",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
+  },
   "run_stopping_contrast.py": {
    "purpose": "Owner-authorized paired six-rule stopping contrast on authenticated qualified three-signal SAC seeds; one shared trajectory per seed and full native account replay",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "mechanism synthesis"

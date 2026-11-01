@@ -1,4 +1,8 @@
 requirement,description,test_design,expected_result,stage,evidence_status
+FA01,Coherent input deletion and branch pruning,tests/unit/test_paired_ablation.py,Same support and fixed scales; smaller actual SAC; three categorical outputs,PAIRED_ABLATION,TESTED
+FA02,Shared fit and different selectors,tests/unit/test_paired_ablation.py,TRAIN selection continues while guarded patience freezes; fixed budget prefix only,PAIRED_ABLATION,TESTED
+FA03,No smoke promotion or unpaired emissions,tests/unit/test_paired_ablation.py,Reject engineering receipt and shifted timestamps; report paired deltas,PAIRED_ABLATION,TESTED
+FA04,Native learning and replay,docs/work_plan/185_PAIRED_FEATURE_ABLATION_PILOT.md,29 smoke updates and two full account evaluations with exact reload,PAIRED_ABLATION,SMOKE_TESTED
 SC01,Original patience parity,tests/unit/test_stopping_contrast.py,Control3/5/10 equals original stopping on same observations,STOPPING_CONTRAST,TESTED
 SC02,Reject compensation by TRAIN gains,tests/unit/test_stopping_contrast.py,Guard rejects validation degradation and accepts joint improvement,STOPPING_CONTRAST,TESTED
 SC03,Frozen stopped rules,tests/unit/test_stopping_contrast.py,Future observations cannot alter earlier checkpoint or stop time,STOPPING_CONTRAST,TESTED
