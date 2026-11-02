@@ -4,6 +4,7 @@
   "timezone": "America/Bogota",
   "priority": 0,
   "current_stage": "PAIRED_ABLATION_RUNNING_STOPPING_PREDECESSOR_UNCHANGED",
+  "phase2_prelaunch_communication": {"owner_requested":"2026-11-01 America/Bogota","notify_before_launch":true,"content":"Completed paired results and intended evaluator before full floating selection","pilot_autolaunches_phase2":false},
   "paired_ablation_launch": "../186_PAIRED_ABLATION_LAUNCH.md",
   "paired_ablation_runtime": {"code":"45ea82dd","selector_code":"00ec628","identity":"815ddbeed8242eb24e234c154f9e9dee658874b0a751163b31120be7632d0757","started_utc":"2026-11-01T10:39:40Z","native_tests_passed":33,"selector_tests_passed":47,"legacy_tests_skipped":4,"cpu_smoke_updates":29,"queues":2,"persistent_collector":true,"intermediate_approval_required":false,"final_selection":false},
   "paired_ablation_plan": "../185_PAIRED_FEATURE_ABLATION_PILOT.md",

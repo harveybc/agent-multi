@@ -38,3 +38,12 @@ Two seeds do not justify a significance or generalization claim. A negative
 baseline may still discriminate useful inputs; a high TRAIN score may instead
 reward memorization. This pilot tests those alternatives rather than assuming
 one is correct.
+
+## Owner notification before phase 2
+
+Owner instruction, 2026-11-01 (America/Bogota): report the completed paired
+comparison and intended evaluator to the owner immediately before launching
+the full floating search. The current queues end at pilot collection; they
+must not chain into phase 2. This is a pre-launch communication requirement,
+not permission to change the frozen running experiment or assume a winning
+evaluator before all six ablations close.
