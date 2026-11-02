@@ -117,5 +117,9 @@ def coherent_blocks(columns):
         if c not in remaining: continue
         paired=c[:-4]+'_cos' if c.endswith('_sin') else c[:-4]+'_sin' if c.endswith('_cos') else None
         block=[n for n in columns if n==c or n==paired] if paired in remaining else [c]
+        prefix, separator, suffix = c.rpartition('.p')
+        if separator and suffix.isdigit():
+            block = [n for n in columns if n.startswith(prefix+'.p')
+                     and n[len(prefix)+2:].isdigit()]
         blocks.append(block);remaining.difference_update(block)
     return blocks

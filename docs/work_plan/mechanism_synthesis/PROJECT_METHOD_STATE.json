@@ -15,18 +15,22 @@
     "implementation_status": "Implemented, tested and launched as the new paired-seed DEAP campaign. Historical pilot selectors remain unchanged.",
     "test_access": false
   },
-  "current_stage": "SIMPLE_SAC_DEAP_RUNNING_BEFORE_FLOATING",
+  "current_stage": "FROZEN_MASK_PREFLIGHT_BEFORE_DEAP",
   "mask_first_floating_authorization": {
     "accepted_date": "2026-11-02", "plan": "../190_MASK_FIRST_FLOATING_PLAN.md",
-    "freeze_deap_hyperparameters": true, "first_stage": "frozen_checkpoint_masks",
+    "freeze_existing_baseline_hyperparameters": true, "first_stage": "frozen_checkpoint_masks",
     "mask_value": "zero after fixed TRAIN scaling, whole temporal channel",
     "score_partitions": ["TRAIN", "INNER_A"],
     "confirmation": "few finalist subsets plus full control, fresh structural fits",
     "no_nested_deap": true, "notify_before_phase2": true,
-    "deap_changed": false,
+    "deap_changed": true,
+    "reorder": "New DEAP candidates stopped; two existing fits may finish. Existing paired full-input TRAIN-best pilot is the frozen mask baseline. DEAP follows selection.",
+    "native_mask_tests_passed": 31,
+    "native_mask_tool": "tools/run_frozen_mask_selection.py",
+    "mask_search": {"max_evaluations":16384,"tolerance":0.00001,"periods":"full original TRAIN and INNER_A","ranking":"mean INNER_A return/week; absolute gap tie-break","no_training_per_mask":true},
     "closure_briefing": {
       "tool": "tools/prepare_mask_selection_handoff.py", "tests_passed": 8,
-      "schedule": "every 20 minutes; CPU only; no experiment launch",
+      "schedule": "disabled by owner-approved reorder; DEAP closure no longer required",
       "output": "MASK_SELECTION_HANDOFF.json in the DEAP campaign root"
     }
   },

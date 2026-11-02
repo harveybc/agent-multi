@@ -1,19 +1,23 @@
-# Mask-first floating selection after DEAP
+# Mask-first floating selection before DEAP
 
-Owner accepted this sequence on 2026-11-02. The running DEAP campaign and
-its combined TRAIN/internal-validation patience remain unchanged.
+Owner revised the sequence on 2026-11-02: stop new DEAP candidates, retain
+existing artifacts and let the two already running fits finish independently.
+DEAP hyperparameter optimization moves AFTER feature selection. Do not reduce
+dates, temporal windows, costs or business controls to obtain a speedup.
 
-1. Finish the current search; authenticate its selected configuration and both
-   native checkpoint receipts. Freeze hyperparameters, strategy, feature order,
+1. Use the completed paired pilot's full-input TRAIN-best checkpoints (seeds
+   7 and 19, same 524288-decision budget and checkpoint rule), not whichever
+   single seed has a positive validation return. This is a frozen sensitivity
+   baseline, not a DEAP champion. Freeze hyperparameters, strategy, feature order,
    scaler, groups, calendar, costs, support and seeds. No nested DEAP per subset.
-2. Prepare the owner briefing automatically when CLOSE.json exists. If there is
-   no eligible champion, report that state without substituting a failed seed.
-   Preparation never launches phase 2. Preserve the requested prelaunch notice.
+2. Authenticate both pilot receipts and reproduce full-control actions and
+   native accounts before masks. Preserve the requested prelaunch notice.
+   The obsolete DEAP-closure timer is disabled; selection does not wait for it.
 3. Use feature_selector's floating search with a separately identified frozen-
    checkpoint evaluator. Zero removed channels AFTER fixed TRAIN scaling over
    the entire window. Preserve original tensor width, branches, weights and
    input-validity mask; a removed channel does not restore missing dates.
-4. Evaluate fresh native accounts on identical fixed TRAIN/INNER_A blocks for
+4. Evaluate fresh native accounts on the FULL original TRAIN/INNER_A periods for
    each new mask. Reuse a baseline only when checkpoint, inputs, support, mask,
    strategy, costs and evaluation interval all match. Report paired deltas by
    seed and period, not only their average or a small generalization gap.
@@ -36,11 +40,20 @@ its combined TRAIN/internal-validation patience remain unchanged.
 | Floating search | Remove/reinclude trace, evaluated subset cache, explicit finite budget and tolerance |
 | Confirmation | Fresh weights/replay, no absent-branch parameters, same per-seed comparison; all signs of deltas retained |
 
-The closure-to-briefing helper is implemented separately from the frozen running
-DEAP code. The native masked evaluator and refit queue must pass their acceptance
-tests before the phase-2 prelaunch briefing; this document does not claim those
-experiments have run. The maximum subset budget, ranking/tolerance and finalist
-identities are to be frozen in that briefing before inspecting masked outcomes.
+The historical closure-to-briefing helper is retained, but no longer gates masks.
+Native frozen-mask tests precede launch: no mutation, exact full-control native
+replay, no partial coding blocks, source/checkpoint/support cache invalidation,
+resume with no repeated evaluations, and failure on altered receipts.
+Rank by paired mean INNER_A return per week; report TRAIN separately and use
+absolute TRAIN-minus-INNER_A return/week gap only as a tie-breaker. Require
+more than two orders/week in both periods in both seeds. Freeze tolerance 1e-5,
+minimum one atomic block, and a 16384-unique-subset safety budget. A budget stop
+is explicitly incomplete, never a claim of exhaustive or globally optimal search.
+After each completed removal neighborhood, write a durable progress snapshot;
+resume replays search decisions from authenticated cached measurements.
+No gradient, replay buffer or early stopping exists in the mask evaluator.
+Final structural retraining is a separate confirmation stage, not implied by
+completion of masks.
 Do not silently reuse the generic rl_model receipt schema: it requires fresh
 training and is intentionally incompatible with a frozen-weight mask diagnostic.
 

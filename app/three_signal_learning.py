@@ -85,7 +85,7 @@ def emit(model, inputs, indices=None, twins=False):
     return logits,q
 
 
-def evaluate(env, logits, save=None, diagnose=False):
+def evaluate(env, logits, save=None, diagnose=False, prepared=None):
     obs = env.reset()
     actions = []
     signals, commands = Counter(), Counter()
@@ -93,23 +93,32 @@ def evaluate(env, logits, save=None, diagnose=False):
     closes = []
     while not env.finished:
         row = int(env.rows[env.bar]); raw = logits[row]
-        if not np.isfinite(raw).all(): raise ValueError('INVALID_SIGNAL_LOGITS')
-        ties = np.flatnonzero(np.isclose(raw,raw.max(),atol=1e-10,rtol=0))
-        action = int(ties[0]) if len(ties)==1 else 0
-        p = np.exp(raw-raw.max()); p = p/p.sum()
+        if prepared is None:
+            if not np.isfinite(raw).all(): raise ValueError('INVALID_SIGNAL_LOGITS')
+            ties = np.flatnonzero(np.isclose(raw,raw.max(),atol=1e-10,rtol=0))
+            action = int(ties[0]) if len(ties)==1 else 0
+            p = np.exp(raw-raw.max()); p = p/p.sum()
+        else:
+            if not prepared[3][row]: raise ValueError('INVALID_SIGNAL_LOGITS')
+            action = int(prepared[0][row])
         direction = 0 if env.engine.pos is None else env.engine.pos.direction
         if diagnose and direction and action == (2 if direction==1 else 1):
             from app.suppressed_close_counterfactuals import fixed_position_exits
             position = env.engine.pos
             closes.append(fixed_position_exits(env.engine,abs(position.entry_price-position.sl)*position.units))
-        pc = p if not direction else np.array([p[0]+p[1 if direction==1 else 2],p[2 if direction==1 else 1]])
-        entropy.append(float(-np.sum(p*np.log(np.maximum(p,1e-30)))))
-        command_entropy.append(float(-np.sum(pc*np.log(np.maximum(pc,1e-30)))))
+        if prepared is None:
+            pc = p if not direction else np.array([p[0]+p[1 if direction==1 else 2],p[2 if direction==1 else 1]])
+            entropy.append(float(-np.sum(p*np.log(np.maximum(p,1e-30)))))
+            command_entropy.append(float(-np.sum(pc*np.log(np.maximum(pc,1e-30)))))
+        else:
+            entropy.append(float(prepared[1][row]))
+            command_entropy.append(float(prepared[2][row, direction+1]))
         stamp = int(env.engine.v[env.bar])+HOUR
         obs,reward,done,duration = env.step(action)
         signals[str(action)] += 1; commands[str(env.last_command)] += 1
-        actions.append(dict(timestamp=stamp,position=direction,signal=action,command=env.last_command,
-                            reward=reward,duration=duration))
+        if save is not None:
+            actions.append(dict(timestamp=stamp,position=direction,signal=action,command=env.last_command,
+                                reward=reward,duration=duration))
     e = env.engine; trades = e.trades
     trace = np.asarray(env.equity_trace)
     peak = np.maximum.accumulate(trace[:,1])
