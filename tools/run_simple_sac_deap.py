@@ -132,7 +132,11 @@ def worker(args):
             return r
         factory=lambda episode:synthetic_env(recipe,risk,100000+seed*1000+episode,
             1 if episode%2==0 else -1,d['gamma'],flat=episode%5==4)[0]
-        _,history=train_loop(model,factory,d,seed,qualification_dir,qualify,True)
+        try:
+            _,history=train_loop(model,factory,d,seed,qualification_dir,qualify,True)
+        except ValueError as exc:
+            if str(exc)!='NONFINITE_SAC_LOSS': raise
+            finish(out,s,c,seed,eligible=False,status='NONFINITE_SAC_LOSS',stage='qualification'); return
         if not history[-1]['report']['passed']:
             finish(out,s,c,seed,eligible=False,status='SYNTHETIC_NOT_LEARNED'); return
         del model; torch.cuda.empty_cache(); configure(seed)
@@ -149,7 +153,11 @@ def worker(args):
             return dict(r,**v)
         factory=lambda episode:environment(market,risk,d['horizon'],
             recipe['split']['periods']['TRAIN'],d['gamma'])
-        train_loop(model,factory,d,seed,out,assess)
+        try:
+            train_loop(model,factory,d,seed,out,assess)
+        except ValueError as exc:
+            if str(exc)!='NONFINITE_SAC_LOSS': raise
+            finish(out,s,c,seed,eligible=False,status='NONFINITE_SAC_LOSS',stage='financial'); return
         if not best:
             finish(out,s,c,seed,eligible=False,status='NO_ACTIVE_CHECKPOINT'); return
         model.load(out/'best.pt')
@@ -218,7 +226,7 @@ def dispatch(node, task, root, s):
             try:
                 command(tokens,stdout=log,stderr=subprocess.STDOUT,timeout=259200)
             except subprocess.CalledProcessError as exc:
-                if exc.returncode==78: raise
+                if exc.returncode==78: raise ValueError('WORKER_CONTRACT_FAILURE:'+key) from exc
                 if attempt==2: raise
                 time.sleep(60); continue
         local.mkdir(parents=True,exist_ok=True)
