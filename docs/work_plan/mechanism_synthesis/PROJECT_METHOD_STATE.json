@@ -15,7 +15,8 @@
     "implementation_status": "Implemented, tested and launched as the new paired-seed DEAP campaign. Historical pilot selectors remain unchanged.",
     "test_access": false
   },
-  "current_stage": "FROZEN_MASK_FLOATING_RUNNING_BEFORE_DEAP",
+  "current_stage": "ORDERED_TWO_PASS_VERIFIED_FOR_NATIVE_LAUNCH",
+  "two_pass": {"report":"../192_ORDERED_TWO_PASS_SELECTION.md","owner_clarified":"2026-11-02","selector":"two_pass_greedy","feature_selector_version":"0.2.3","native_tests_passed":32,"package_tests_passed":51,"old_floating_queue":"stopped and disabled","cache_reuse":"same evaluator AST, source pins, observations, checkpoints and numerical device"},
   "mask_runtime": {"report":"../191_MASK_FIRST_EXECUTION.md","code":"5b65c8d1","identity":"13961f7797bff4c1f960f7df8ecbb0136ddb54453806111a569e6bab07773e5f","paired_seeds":[7,19],"native_preflight_passed":true,"tests_passed":31,"feature_count":120,"group_count":31,"atomic_blocks":111,"initial_seconds_per_subset":9.18,"persistent_service":true,"structural_confirmation":false},
   "mask_first_floating_authorization": {
     "accepted_date": "2026-11-02", "plan": "../190_MASK_FIRST_FLOATING_PLAN.md",
@@ -240,6 +241,7 @@
   },
   "bottom_up": "INDEPENDENT_REVIEWS_RECEIVED; FIVE_CONCRETE_DEFECTS_REPAIRED_AND_REPLAYED; COVERAGE_REVISION_REQUIRED",
   "next_allowed_actions": [
+    "192 overrides 191 traversal: execute exactly one ordered deletion pass and then one reinsertion pass over removed blocks. Accept only eligible strict score improvements; reuse identical authenticated measurements. Publish counts after each pass. No full-neighborhood floating loops.",
     "191 supersedes historical launch restrictions below: execute owner-authorized frozen-mask floating search automatically on paired existing checkpoints, full TRAIN/INNER_A and unchanged windows; then few structural refits; DEAP after selection. Do not dispatch new candidates from the stopped DEAP queue.",
     "183: execute the owner-approved paired six-rule stopping contrast on qualified seeds7/19 with one fresh financial trajectory each; preserve failed synthetic seed43; authenticate all selected checkpoints and full accounts; no2024/TEST or automatic floating selection",
     "178: qualify and launch the three-seed external economic calibration pilot; consult all four frozen reporters each hour; record native account outcomes and post-account CLOSE/HOLD interventions automatically; no2024/TEST or automatic floating selection",

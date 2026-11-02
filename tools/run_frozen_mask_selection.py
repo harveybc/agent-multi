@@ -1,5 +1,6 @@
 """Native frozen-checkpoint adapter for feature_selector floating backward search."""
 import argparse
+import ast
 import fcntl
 import copy
 from pathlib import Path
@@ -44,13 +45,14 @@ def prepare(args):
         if step is None: raise ValueError('MASK_NO_CHECKPOINT')
         witnesses.append(dict(seed=seed, folder=str(out.resolve()), step=step,
                               receipt_sha256=file_sha(out/'RESULT.json')))
-    _, plugin = resolve('selectors', 'floating_backward')
+    _, plugin = resolve('selectors', args.selector)
     dataset = copy.deepcopy(pilot['dataset'])
     dataset['blocks'] = coherent_blocks(dataset['features'])
     s = dict(schema='frozen_sac_mask_search.v1', parent=parent, pilot=pilot,
         baseline=witnesses, dataset=dataset, design=pilot['design'],
-        risk=read(risk_path), selector='floating_backward', plugin=plugin,
-        selector_params=dict(min_features=1, max_evaluations=16384, tolerance=1e-5),
+        risk=read(risk_path), selector=args.selector, plugin=plugin,
+        selector_params=(dict(min_features=1, tolerance=1e-5) if args.selector=='two_pass_greedy'
+                         else dict(min_features=1, max_evaluations=16384, tolerance=1e-5)),
         checkpoint_rule='paired full-input pilot TRAIN-best; fixed 524288 budget',
         ranking='paired mean INNER_A net return/week; absolute TRAIN-INNER_A gap tie-break',
         periods=['TRAIN', 'INNER_A'], device=args.device, created_at=now(),
@@ -59,6 +61,10 @@ def prepare(args):
         sources=pins(ROOT, ['app', 'agent_plugins', 'env_plugins', 'tools']),
         scope='FROZEN_MASK_DEVELOPMENT_NOT_STRUCTURAL_SELECTION; no TEST or new fitting')
     validate_dataset(s['dataset'])
+    if args.reuse:
+        s['reuse'] = dict(root=str(args.reuse.resolve()), runtime=str(args.reuse_runtime.resolve()),
+                          spec_sha256=file_sha(args.reuse/'SPEC.private.json'))
+        check_reuse(s)
     s['identity'] = digest(s)
     args.root.mkdir(parents=True)
     write(args.root/'SPEC.private.json', s)
@@ -82,7 +88,32 @@ def authenticate(root):
         f = Path(b['folder'])/'RESULT.json'
         if file_sha(f) != b['receipt_sha256'] or not verify_pilot(f, s['pilot'], f"full__{b['seed']}"):
             raise ValueError('MASK_BASELINE_CHANGED')
+    check_reuse(s)
     return s, plugin
+
+
+def compute_ast(path):
+    tree = ast.parse(Path(path).read_text())
+    nodes = [n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef) and n.name=='compute']
+    if len(nodes)!=1: raise ValueError('MASK_COMPUTE_DEFINITION')
+    return ast.dump(nodes[0], include_attributes=False)
+
+
+def check_reuse(s):
+    if 'reuse' not in s: return None
+    r=s['reuse']; root=Path(r['root']); old=read(root/'SPEC.private.json'); check_identity(old)
+    if file_sha(root/'SPEC.private.json')!=r['spec_sha256']: raise ValueError('MASK_REUSE_SPEC')
+    fields=('parent','pilot','baseline','dataset','design','risk','checkpoint_rule','periods',
+            'device','torch_version','numpy_version','inference_precision')
+    if any(s[k]!=old[k] for k in fields): raise ValueError('MASK_REUSE_EVALUATION_CONTRACT')
+    changed='tools/run_frozen_mask_selection.py'
+    if ({k:v for k,v in s['sources'].items() if k!=changed}
+            != {k:v for k,v in old['sources'].items() if k!=changed}):
+        raise ValueError('MASK_REUSE_EVALUATOR_SOURCES')
+    prior=Path(r['runtime'])/changed
+    if file_sha(prior)!=old['sources'][changed] or compute_ast(prior)!=compute_ast(ROOT/changed):
+        raise ValueError('MASK_REUSE_COMPUTE_CHANGED')
+    return old
 
 
 def exact_account_check(actual, expected):
@@ -115,6 +146,8 @@ def run(args):
             models.append(model)
         context = dict(spec=s['identity'], device=s['device'],
                        device_name=torch.cuda.get_device_name() if s['device']=='cuda' else 'cpu')
+        previous = check_reuse(s)
+        reuse_log = read(args.root/'REUSE.json') if (args.root/'REUSE.json').exists() else []
         completed = 0; times = []; started = time.monotonic()
 
         def compute(keep_columns):
@@ -180,7 +213,19 @@ def run(args):
 
         def measure(keep_columns):
             ordered = subset_view(s['dataset'], keep_columns)['features']
-            return cached_measurement(args.root/'cache', context, ordered, lambda: compute(ordered))
+            def fresh_or_reused():
+                if previous:
+                    old_context=dict(context,spec=previous['identity'])
+                    key=digest(dict(context=old_context,columns=ordered))
+                    old_root=Path(s['reuse']['root'])/'cache'
+                    if (old_root/(key+'.json')).exists():
+                        def missing(): raise ValueError('MASK_REUSE_DISAPPEARED')
+                        value=cached_measurement(old_root,old_context,ordered,missing)
+                        if key not in reuse_log:
+                            reuse_log.append(key); write(args.root/'REUSE.json',reuse_log)
+                        return value
+                return compute(ordered)
+            return cached_measurement(args.root/'cache', context, ordered, fresh_or_reused)
 
         # Full control must pass before any deletion or reinclusion is inspected.
         control = measure(columns)
@@ -190,8 +235,20 @@ def run(args):
             historical_account_reused=False, original_rows_and_windows=True))
         if args.preflight_only:
             return
-        result = selector.select(s['dataset'], measure, s['selector_params'])
+        if s['selector']=='two_pass_greedy':
+            result = selector.select(s['dataset'], measure, s['selector_params'],
+                progress=lambda r:write(args.root/'PASSES.json',dict(r,at=now(),reused=len(reuse_log))))
+        else:
+            result = selector.select(s['dataset'], measure, s['selector_params'])
         write(args.root/'RESULT.json', dict(identity=s['identity'], result=result))
+        if 'counts' in result:
+            manifest=read(s['parent']['inputs']['manifest'])
+            write(args.root/'FEATURE_COUNTS.json',dict(
+                store_inventory_columns=len(manifest['features']),
+                inventory_is_not_phase1_evaluated_count=True,
+                phase1_admitted=len(columns),phase2=result['counts'],
+                groups_final=sum(bool(set(g['columns'])&set(result['selected'] or []))
+                                 for g in s['dataset']['groups'])))
         write(args.root/'CLOSE.json', dict(identity=s['identity'], finished_at=now(),
             termination=result['termination'], evaluations=result['evaluations'], selected=result['selected'],
             result_sha256=file_sha(args.root/'RESULT.json'), structural_confirmation=False,
@@ -203,9 +260,14 @@ def main():
     a = sub.add_parser('prepare'); a.add_argument('--root', type=Path, required=True)
     for name in ('pilot', 'collection', 'parent'): a.add_argument('--'+name, type=Path, required=True)
     a.add_argument('--device', choices=['cpu','cuda'], default='cpu')
+    a.add_argument('--selector',choices=['floating_backward','two_pass_greedy'],default='two_pass_greedy')
+    a.add_argument('--reuse',type=Path)
+    a.add_argument('--reuse-runtime',type=Path)
     a = sub.add_parser('run'); a.add_argument('--root', type=Path, required=True)
     a.add_argument('--preflight-only', action='store_true')
     args = p.parse_args()
+    if args.command=='prepare' and bool(args.reuse)!=bool(args.reuse_runtime):
+        p.error('--reuse and --reuse-runtime must be provided together')
     (prepare if args.command == 'prepare' else run)(args)
 
 

@@ -95,3 +95,33 @@ def test_parity_cannot_ignore_trade_or_return_changes():
     exact_account_check(a, dict(a, mean_signal_entropy=.10000001))
     with pytest.raises(ValueError, match='FULL_ACCOUNT_PARITY'):
         exact_account_check(a, dict(a, trades=3))
+
+
+def test_cross_search_reuse_requires_same_evaluation_and_compute(tmp_path, monkeypatch):
+    from tools import run_frozen_mask_selection as runner
+    from app.rl_subset import digest
+    from app.frozen_recipe_inputs import file_sha
+    from tools.run_discrete_curve_probe import write
+    name='tools/run_frozen_mask_selection.py'
+    old=tmp_path/'old'; new=tmp_path/'new'; cache=tmp_path/'cache'
+    for root in (old,new):
+        (root/'tools').mkdir(parents=True)
+        (root/name).write_text('def outer():\n    def compute(x):\n        return x + 1\n')
+    cache.mkdir()
+    fields=('parent','pilot','baseline','dataset','design','risk','checkpoint_rule','periods',
+            'device','torch_version','numpy_version','inference_precision')
+    previous={k:'same' for k in fields}
+    previous['sources']={name:file_sha(old/name),'app/science.py':'samehash'}
+    previous['identity']=digest(previous)
+    write(cache/'SPEC.private.json',previous)
+    s=copy.deepcopy(previous)
+    s['reuse']=dict(root=str(cache),runtime=str(old),spec_sha256=file_sha(cache/'SPEC.private.json'))
+    monkeypatch.setattr(runner,'ROOT',new)
+    assert runner.check_reuse(s)['identity']==previous['identity']
+    s['dataset']='changed'
+    with pytest.raises(ValueError,match='EVALUATION_CONTRACT'): runner.check_reuse(s)
+    s['dataset']='same'; s['sources']['app/science.py']='changed'
+    with pytest.raises(ValueError,match='EVALUATOR_SOURCES'): runner.check_reuse(s)
+    s['sources']['app/science.py']='samehash'
+    (new/name).write_text('def outer():\n    def compute(x):\n        return x + 2\n')
+    with pytest.raises(ValueError,match='COMPUTE_CHANGED'): runner.check_reuse(s)

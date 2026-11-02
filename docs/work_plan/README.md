@@ -2,6 +2,12 @@
 
 ## Priority Update: 2026-11-02
 
+[Two-pass clarification192](192_ORDERED_TWO_PASS_SELECTION.md) now overrides
+191's traversal: ordered single-input/block removals, keeping only improvements,
+then one pass reinserting only removed blocks. The old full-neighborhood
+floating service is stopped. Data, evaluator and checkpoints stay fixed;
+authenticated matching cached measurements are reusable. At most 223 requests.
+
 [Mask-first execution191](191_MASK_FIRST_EXECUTION.md) supersedes the order
 "DEAP before floating". New DEAP candidates are stopped; existing fits and
 receipts are preserved. The actual paired discrete-SAC checkpoints now drive
