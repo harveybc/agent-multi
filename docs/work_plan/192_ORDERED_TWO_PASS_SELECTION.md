@@ -37,3 +37,15 @@ columns (317 including timestamp). That inventory is NOT proof that phase 1
 evaluated all 316. The admitted phase-1 recipe has 120 columns after removal of
 the constant px.er_1 from the prior 121-column recipe. Do not substitute an
 inventory count or an older pool revision for the phase-1 evaluated count.
+
+## Launch
+
+Runtime b3a421f3, installed feature-selector 0.2.3 in an isolated import location.
+32 native tests and 51 package tests pass (4 legacy fixture-dependent skips).
+Packaged synthetic CLI run/resume reproduces the result digest exactly.
+Real preflight passed and the paired control plus first deletion were reused
+from the prior authenticated cache. New persistent service started at21:38UTC,
+identity `17af7faa1555c4bea89b6b90757623d114fb5aaefe34424d1cf1590906464627`.
+The old service remains stopped/disabled. At the measured ~9.3 seconds per new
+paired subset, the two passes require no more than roughly35 minutes of native
+evaluation under similar load; this excludes later structural refits.
