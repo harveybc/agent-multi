@@ -16,6 +16,20 @@
     "test_access": false
   },
   "current_stage": "SIMPLE_SAC_DEAP_RUNNING_BEFORE_FLOATING",
+  "mask_first_floating_authorization": {
+    "accepted_date": "2026-11-02", "plan": "../190_MASK_FIRST_FLOATING_PLAN.md",
+    "freeze_deap_hyperparameters": true, "first_stage": "frozen_checkpoint_masks",
+    "mask_value": "zero after fixed TRAIN scaling, whole temporal channel",
+    "score_partitions": ["TRAIN", "INNER_A"],
+    "confirmation": "few finalist subsets plus full control, fresh structural fits",
+    "no_nested_deap": true, "notify_before_phase2": true,
+    "deap_changed": false,
+    "closure_briefing": {
+      "tool": "tools/prepare_mask_selection_handoff.py", "tests_passed": 8,
+      "schedule": "every 20 minutes; CPU only; no experiment launch",
+      "output": "MASK_SELECTION_HANDOFF.json in the DEAP campaign root"
+    }
+  },
   "simple_sac_deap_launch": "../189_SIMPLE_SAC_BATCH32_CORRECTION.md",
   "simple_sac_deap_runtime": {
     "code": "3a392cec", "identity": "9299390af8d328ab812ecdc3e2b401d01378cf81b315d12b908e8b82d90c17b5",
