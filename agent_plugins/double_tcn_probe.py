@@ -19,11 +19,13 @@ class ResidualTCN(nn.Module):
 
 
 class DoubleTCNExtractor(BaseFeaturesExtractor):
-    def __init__(self, observation_space, recipe, branch_width=8, core_width=16):
+    def __init__(self, observation_space, recipe, branch_width=8, core_width=16,
+                 branch_blocks=2, core_blocks=2):
         validate_recipe(recipe)
         self.shape = (recipe['tensor']['window']['observations'], recipe['list']['n'])
         require(observation_space['features'].shape == self.shape, 'OBSERVATION_SHAPE')
-        require(all(type(v) is int and v > 0 for v in (branch_width, core_width)), 'WIDTH')
+        require(all(type(v) is int and v > 0 for v in
+                    (branch_width, core_width, branch_blocks, core_blocks)), 'WIDTH')
         super().__init__(observation_space, self.shape[0] * core_width)
         groups = recipe['representation']['resolved']
         self.branches = nn.ModuleList()
@@ -32,10 +34,9 @@ class DoubleTCNExtractor(BaseFeaturesExtractor):
             kernel = 3 if kind == 'conv' else 1
             self.branches.append(nn.Sequential(
                 CausalConv1d(len(indices), branch_width, 1),
-                ResidualTCN(branch_width, 1, kernel),
-                ResidualTCN(branch_width, 2, kernel)))
+                *[ResidualTCN(branch_width, 2**j, kernel) for j in range(branch_blocks)]))
         self.fusion = CausalConv1d(len(self.branches) * branch_width, core_width, 1)
-        self.core = nn.Sequential(ResidualTCN(core_width, 1), ResidualTCN(core_width, 2))
+        self.core = nn.Sequential(*[ResidualTCN(core_width, 2**j) for j in range(core_blocks)])
 
     def sequence(self, observations):
         x = observations['features']
