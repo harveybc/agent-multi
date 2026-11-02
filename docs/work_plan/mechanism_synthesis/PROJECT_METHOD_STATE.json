@@ -12,10 +12,20 @@
     "evaluation_contract": "Evaluate the same candidate weights on both partitions with the same performance definition and units; validation performs no gradient updates and never enters replay.",
     "checkpoint_contract": "Track improvement against the best combined monitor, reset patience on improvement, otherwise increment; preserve both component scores and restore the best monitored checkpoint.",
     "counter_scope": "Candidate-training evaluation checks and evolutionary generation checks must be explicit separate counters. Do not reinterpret the requested patience as an unqualified ten-generation stagnation rule.",
-    "implementation_status": "Explicit effective genes and separate combined-metric counters implemented and tested; launch preflight in progress. Historical pilot selectors remain unchanged.",
+    "implementation_status": "Implemented, tested and launched as the new paired-seed DEAP campaign. Historical pilot selectors remain unchanged.",
     "test_access": false
   },
-  "current_stage": "SIMPLE_SAC_DEAP_PREFLIGHT_BEFORE_FLOATING",
+  "current_stage": "SIMPLE_SAC_DEAP_RUNNING_BEFORE_FLOATING",
+  "simple_sac_deap_launch": "../188_SIMPLE_SAC_DEAP_LAUNCH.md",
+  "simple_sac_deap_runtime": {
+    "code": "136930f5", "identity": "dc834f5e4efa368a14261f0e0e39120632490e0e33d06b7da46bf70a8386eae1",
+    "started_utc": "2026-11-02T06:08:17Z", "gpu_workers": 2,
+    "generation": 0, "initial_unique_seed_tasks": 40,
+    "smoke_configurations": 2, "smoke_updates": 4, "smoke_full_accounts": 12,
+    "verified_workers_started": 2, "service_restarts_at_verification": 0,
+    "persistent_sequential_queues": true, "phase2_autolaunch": false,
+    "checkpoint_mid_fit_resume": false
+  },
   "simple_sac_deap_plan": "../187_SIMPLE_SAC_DEAP_BEFORE_FLOATING.md",
   "simple_sac_deap_preflight": {
     "date": "2026-11-02", "tests_passed": 49,
