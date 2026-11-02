@@ -1,5 +1,15 @@
 # Adaptive Multi-Asset Trading Work Plan
 
+## Priority Update: 2026-11-02
+
+[Mask-first execution191](191_MASK_FIRST_EXECUTION.md) supersedes the order
+"DEAP before floating". New DEAP candidates are stopped; existing fits and
+receipts are preserved. The actual paired discrete-SAC checkpoints now drive
+the native frozen-mask adapter and `feature_selector` floating search, with
+full TRAIN/INNER_A support and no refitting per mask. Real parity preflight and
+31 tests passed. Final structural refits precede later hyperparameter DEAP.
+The running masks are diagnostic selection, not a completed feature release.
+
 ## Priority Update: 2026-10-31
 
 [Economic multihorizon pilot178](178_ECONOMIC_MULTIHORIZON_ARBITRATION.md)
