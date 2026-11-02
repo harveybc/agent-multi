@@ -22,6 +22,12 @@
     "supersedes_identity": "dc834f5e4efa368a14261f0e0e39120632490e0e33d06b7da46bf70a8386eae1",
     "started_utc": "2026-11-02T06:44:34Z", "gpu_workers": 2,
     "batch_choices": [32, 64, 128, 256], "first_candidate_batch": 32,
+    "allocation_correction_20261102": {
+      "finding": "Numeric CUDA device selection placed the primary in-flight fit on RTX5070Ti, not RTX5090; nvidia-smi physical process mapping verified this.",
+      "action": "Private fleet now selects physical GPU UUIDs. Coordinator reconnected through a wait-current-worker wrapper; existing fit PIDs and progress were preserved. The next primary fit targets RTX5090; the current fit remains on RTX5070Ti.",
+      "science_changed": false,
+      "completed_candidates_at_correction": 0
+    },
     "generation": 0, "initial_unique_seed_tasks": 40,
     "smoke_configurations": 3, "smoke_updates": 6, "smoke_full_accounts": 18,
     "verified_workers_started": 2, "service_restarts_at_verification": 0,
