@@ -16,19 +16,21 @@
     "test_access": false
   },
   "current_stage": "SIMPLE_SAC_DEAP_RUNNING_BEFORE_FLOATING",
-  "simple_sac_deap_launch": "../188_SIMPLE_SAC_DEAP_LAUNCH.md",
+  "simple_sac_deap_launch": "../189_SIMPLE_SAC_BATCH32_CORRECTION.md",
   "simple_sac_deap_runtime": {
-    "code": "136930f5", "identity": "dc834f5e4efa368a14261f0e0e39120632490e0e33d06b7da46bf70a8386eae1",
-    "started_utc": "2026-11-02T06:08:17Z", "gpu_workers": 2,
+    "code": "3a392cec", "identity": "9299390af8d328ab812ecdc3e2b401d01378cf81b315d12b908e8b82d90c17b5",
+    "supersedes_identity": "dc834f5e4efa368a14261f0e0e39120632490e0e33d06b7da46bf70a8386eae1",
+    "started_utc": "2026-11-02T06:44:34Z", "gpu_workers": 2,
+    "batch_choices": [32, 64, 128, 256], "first_candidate_batch": 32,
     "generation": 0, "initial_unique_seed_tasks": 40,
-    "smoke_configurations": 2, "smoke_updates": 4, "smoke_full_accounts": 12,
+    "smoke_configurations": 3, "smoke_updates": 6, "smoke_full_accounts": 18,
     "verified_workers_started": 2, "service_restarts_at_verification": 0,
     "persistent_sequential_queues": true, "phase2_autolaunch": false,
     "checkpoint_mid_fit_resume": false
   },
   "simple_sac_deap_plan": "../187_SIMPLE_SAC_DEAP_BEFORE_FLOATING.md",
   "simple_sac_deap_preflight": {
-    "date": "2026-11-02", "tests_passed": 49,
+    "date": "2026-11-02", "tests_passed": 51,
     "wavelet_selected_columns_recomputed_exactly": 19,
     "wavelet_prefix_future_positive_checks": 9,
     "population": 20, "maximum_generations": 2000,
