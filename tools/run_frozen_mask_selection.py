@@ -55,6 +55,7 @@ def prepare(args):
         ranking='paired mean INNER_A net return/week; absolute TRAIN-INNER_A gap tie-break',
         periods=['TRAIN', 'INNER_A'], device=args.device, created_at=now(),
         torch_version=torch.__version__, numpy_version=np.__version__,
+        inference_precision='float32; cudnn TF32 disabled; canonical device control re-evaluated',
         sources=pins(ROOT, ['app', 'agent_plugins', 'env_plugins', 'tools']),
         scope='FROZEN_MASK_DEVELOPMENT_NOT_STRUCTURAL_SELECTION; no TEST or new fitting')
     validate_dataset(s['dataset'])
@@ -96,6 +97,7 @@ def run(args):
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         s, selector = authenticate(args.root)
         configure(7)
+        torch.backends.cudnn.allow_tf32 = False
         market = RecipeMarket(s['parent']); d = s['design']; columns = s['dataset']['features']
         if (support_hash(market.inputs) != s['dataset']['support_hash']
                 or columns != market.recipe['list']['columns']
@@ -123,13 +125,24 @@ def run(args):
                 t = time.monotonic(); logits = masked_emit(model, market.inputs, keep)
                 inference_seconds += time.monotonic()-t
                 prepared = prepared_signals(logits)
+                replay = None
                 if full:
                     archive = np.load(Path(b['folder'])/'accounts'/str(b['step'])/'EMISSIONS.npz')
                     ix = archive['indices']
                     if not np.array_equal(ix, np.flatnonzero(market.inputs.valid)):
                         raise ValueError('MASK_CONTROL_SUPPORT')
-                    if not np.array_equal(prepared[0][ix], prepared_signals(archive['logits'])[0]):
-                        raise ValueError('MASK_CONTROL_ACTION_PARITY')
+                    if not np.allclose(logits[ix], archive['logits'], rtol=1e-4, atol=1e-4):
+                        raise ValueError('MASK_CONTROL_NUMERICAL_DRIFT')
+                    # Requalify cross-device inference once. Never reuse an old
+                    # account as the control when near ties change its actions.
+                    model.load(Path(b['folder'])/'checkpoints'/f"{b['step']}.pt")
+                    repeated = masked_emit(model, market.inputs, keep)
+                    if not np.array_equal(logits[ix], repeated[ix]):
+                        raise ValueError('MASK_RELOAD_LOGITS_CHANGED')
+                    old = np.full_like(logits, np.nan); old[ix] = archive['logits']
+                    replay = dict(changed_actions=int(np.sum(prepared[0][ix] != prepared_signals(old)[0][ix])),
+                        maximum_logit_difference=float(np.abs(logits[ix]-archive['logits']).max()),
+                        reload_exact=True, historical_account_reused=False, historical_metrics={})
                 metrics = {}
                 for period in s['periods']:
                     t = time.monotonic()
@@ -139,8 +152,12 @@ def run(args):
                     account_seconds += time.monotonic()-t
                     if full:
                         expected = read(Path(b['folder'])/'accounts'/str(b['step'])/period/'METRICS.json')
-                        exact_account_check(metrics[period], expected)
-                seeds.append(dict(seed=b['seed'], metrics=metrics))
+                        archived = evaluate(environment(market, s['risk'], d['horizon'],
+                            market.recipe['split']['periods'][period], d['gamma']), old,
+                            diagnose=True, prepared=prepared_signals(old))
+                        exact_account_check(archived, expected)
+                        replay['historical_metrics'][period] = archived
+                seeds.append(dict(seed=b['seed'], metrics=metrics, baseline_replay=replay))
             train = float(np.mean([r['metrics']['TRAIN']['return_per_week'] for r in seeds]))
             val = float(np.mean([r['metrics']['INNER_A']['return_per_week'] for r in seeds]))
             elapsed = time.monotonic()-start; times.append(elapsed); completed += 1
@@ -162,7 +179,8 @@ def run(args):
         control = measure(columns)
         write(args.root/'PREFLIGHT.json', dict(identity=s['identity'], passed=True,
             paired_seeds=[b['seed'] for b in s['baseline']], control=control,
-            full_control_native_parity=True, original_rows_and_windows=True))
+            archived_emission_native_parity=True, canonical_device_reload_exact=True,
+            historical_account_reused=False, original_rows_and_windows=True))
         if args.preflight_only:
             return
         result = selector.select(s['dataset'], measure, s['selector_params'])

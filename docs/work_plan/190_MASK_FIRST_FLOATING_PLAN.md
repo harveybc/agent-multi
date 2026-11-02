@@ -52,6 +52,14 @@ is explicitly incomplete, never a claim of exhaustive or globally optimal search
 After each completed removal neighborhood, write a durable progress snapshot;
 resume replays search decisions from authenticated cached measurements.
 No gradient, replay buffer or early stopping exists in the mask evaluator.
+Cross-device preflight exposed four changed near-tie actions in 24026 windows
+with default cuDNN TF32. Disable cuDNN TF32 in the new evaluator. Authenticate
+weights and compare logits to archived outputs (rtol/atol 1e-4), reproduce the
+historical native account from its archived emissions exactly, then establish
+a NEW control on the pinned inference device. Record every changed decision
+and both accounts. Repeated checkpoint loading must reproduce canonical logits
+bit for bit. Never reuse a historical account across different action vectors.
+This is numerical requalification, not retuning the policy's decision threshold.
 Final structural retraining is a separate confirmation stage, not implied by
 completion of masks.
 Do not silently reuse the generic rl_model receipt schema: it requires fresh
