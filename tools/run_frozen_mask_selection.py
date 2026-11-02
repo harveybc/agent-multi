@@ -131,8 +131,14 @@ def run(args):
                     ix = archive['indices']
                     if not np.array_equal(ix, np.flatnonzero(market.inputs.valid)):
                         raise ValueError('MASK_CONTROL_SUPPORT')
-                    if not np.allclose(logits[ix], archive['logits'], rtol=1e-4, atol=1e-4):
-                        raise ValueError('MASK_CONTROL_NUMERICAL_DRIFT')
+                    # The archived GPU may have used TF32. Check the new FP32
+                    # implementation against CPU, not a different arithmetic mode.
+                    reference = make_model(read(Path(b['folder'])/'RECIPE.json'), d, b['seed'], 'cpu')
+                    reference.load(Path(b['folder'])/'checkpoints'/f"{b['step']}.pt")
+                    cpu = masked_emit(reference, market.inputs, keep)
+                    if not np.allclose(logits[ix], cpu[ix], rtol=1e-4, atol=1e-4):
+                        raise ValueError('MASK_FP32_CPU_REFERENCE_DRIFT')
+                    del reference
                     # Requalify cross-device inference once. Never reuse an old
                     # account as the control when near ties change its actions.
                     model.load(Path(b['folder'])/'checkpoints'/f"{b['step']}.pt")
@@ -142,6 +148,7 @@ def run(args):
                     old = np.full_like(logits, np.nan); old[ix] = archive['logits']
                     replay = dict(changed_actions=int(np.sum(prepared[0][ix] != prepared_signals(old)[0][ix])),
                         maximum_logit_difference=float(np.abs(logits[ix]-archive['logits']).max()),
+                        maximum_cpu_logit_difference=float(np.abs(logits[ix]-cpu[ix]).max()),
                         reload_exact=True, historical_account_reused=False, historical_metrics={})
                 metrics = {}
                 for period in s['periods']:

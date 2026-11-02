@@ -54,7 +54,8 @@ resume replays search decisions from authenticated cached measurements.
 No gradient, replay buffer or early stopping exists in the mask evaluator.
 Cross-device preflight exposed four changed near-tie actions in 24026 windows
 with default cuDNN TF32. Disable cuDNN TF32 in the new evaluator. Authenticate
-weights and compare logits to archived outputs (rtol/atol 1e-4), reproduce the
+weights and compare new FP32 GPU logits to independent CPU inference
+(rtol/atol 1e-4), reproduce the
 historical native account from its archived emissions exactly, then establish
 a NEW control on the pinned inference device. Record every changed decision
 and both accounts. Repeated checkpoint loading must reproduce canonical logits
