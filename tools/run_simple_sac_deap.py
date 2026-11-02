@@ -23,7 +23,7 @@ from app.recipe_runtime import RecipeMarket, attach_engine
 from app.three_signal_learning import Patience, synthetic_env, environment, emit, evaluate
 from tools.run_discrete_curve_probe import read, write, now, pins, configure
 from tools.run_three_signal_baseline import (train_loop, monitor, synthetic_controls,
-    assess_synthetic, validate_monitor_scope)
+    assess_synthetic, validate_monitor_scope, configure_fresh_seed)
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -139,7 +139,7 @@ def worker(args):
             finish(out,s,c,seed,eligible=False,status='NONFINITE_SAC_LOSS',stage='qualification'); return
         if not history[-1]['report']['passed']:
             finish(out,s,c,seed,eligible=False,status='SYNTHETIC_NOT_LEARNED'); return
-        del model; torch.cuda.empty_cache(); configure(seed)
+        del model; torch.cuda.empty_cache(); configure_fresh_seed(seed)
         model=make_model(recipe,c,seed,'cuda'); market=RecipeMarket(parent)
         assert_consumed(model,c,d)
         stopping=Patience(d['minimum_steps'],10,d['min_delta']); best={}
@@ -258,7 +258,8 @@ def run(args):
         else:
             random.seed(settings['seed'])
             state=dict(identity=s['identity'],generation=0,bad=0,best=None,
-                population=[baseline_genome()]+[[random.random() for _ in GENES] for _ in range(19)],
+                population=[baseline_genome(batch_size=32),baseline_genome()]+
+                           [[random.random() for _ in GENES] for _ in range(18)],
                 random_state=random.getstate())
             write(statefile,state)
         while state['generation']<settings['max_generations']:
@@ -310,7 +311,8 @@ def smoke(args):
     market=RecipeMarket(s['parent']); risk=read(args.root/'RISK.json'); d=s['design']
     out=args.root/'SMOKE'; out.mkdir(exist_ok=False)
     rows=[]
-    for label,g in [('baseline',baseline_genome()),('upper', [1.]*len(GENES))]:
+    for label,g in [('batch32',baseline_genome(batch_size=32)),('baseline',baseline_genome()),('upper', [1.]*len(GENES))]:
+        configure_fresh_seed(7)
         c=decode(g); design=dict(d,**{k:c[k] for k in ('gamma','learning_rate','entropy_fraction','batch_size','update_every')})
         model=make_model(market.recipe,c,7,'cpu'); proof=assert_consumed(model,c,design)
         env=environment(market,risk,d['horizon'],market.recipe['split']['periods']['TRAIN'],c['gamma'])
@@ -331,7 +333,7 @@ def smoke(args):
             raise ValueError('MONITOR_MUTATED_TRAINING')
         rows.append(dict(label=label,proof=proof,losses=losses,monitor=report,transitions=count))
     write(out/'RESULT.json',dict(passed=True,scope='engineering only; not DEAP fitness',rows=rows))
-    print(json.dumps(dict(passed=True,configurations=2,updates=4,full_accounts=12)),flush=True)
+    print(json.dumps(dict(passed=True,configurations=3,updates=6,full_accounts=18)),flush=True)
 
 
 def main():

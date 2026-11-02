@@ -13,6 +13,29 @@ def test_baseline_roundtrip():
     assert decode(baseline_genome()) == BASELINE
 
 
+def test_batch32_is_exact_and_seeded_without_changing_other_genes():
+    assert decode(baseline_genome(batch_size=32)) == dict(BASELINE,batch_size=32)
+    gene=next(i for i,g in enumerate(GENES) if g[0]=='batch_size')
+    for i,value in enumerate((32,64,128,256)):
+        g=baseline_genome(); g[gene]=(i+.5)/4
+        assert decode(g)['batch_size']==value
+
+
+def test_worker_reseeds_without_reconfiguring_interop_threads():
+    import ast
+    import inspect
+    from tools.run_simple_sac_deap import worker
+    from tools.run_three_signal_baseline import configure_fresh_seed
+    tree=ast.parse(inspect.getsource(worker))
+    calls=[n.func.id for n in ast.walk(tree) if isinstance(n,ast.Call) and isinstance(n.func,ast.Name)]
+    assert calls.count('configure')==1
+    assert calls.count('configure_fresh_seed')==1
+    torch.randn(2,2) @ torch.randn(2,2)
+    configure_fresh_seed(7); a=torch.randn(4)
+    configure_fresh_seed(7); b=torch.randn(4)
+    assert torch.equal(a,b)
+
+
 @pytest.mark.parametrize('i', range(len(GENES)))
 def test_each_gene_endpoints_reach_real_consumers(i):
     lo, hi = baseline_genome(), baseline_genome()

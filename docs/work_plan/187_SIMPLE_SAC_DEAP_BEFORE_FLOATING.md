@@ -39,7 +39,7 @@ digits. Candidate identity includes the decoded configuration, not just genes.
 | Target update tau | 0.005 | 0.001 to 0.02 | log10 |
 | Entropy fraction of log(3) | 0.6 | 0.3 to 0.9 | linear |
 | AdamW weight decay | 0.01 | 0, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2 | choice |
-| Batch size | 128 | 64, 128, 256 | choice |
+| Batch size | 128 | 32, 64, 128, 256 | choice |
 | Update every decisions | 4 | 2, 4, 8 | choice |
 
 Actor and both critics use the same candidate architecture but independent
@@ -51,7 +51,8 @@ legacy representation widths are NOT effective parameters of this SAC.
 ## Evaluation and stopping
 
 Population 20; maximum 2000 generations; deterministic DEAP random seed.
-Initial population includes the unchanged baseline. Two paired training seeds
+Initial population includes the unchanged baseline AND an otherwise identical
+batch-32 candidate (evaluated first), following the owner's correction. Two paired training seeds
 (7 and 19) per candidate. New weights and replay for every candidate/seed.
 Keep the existing synthetic learning qualification and a fresh financial fit.
 Maximum financial decisions 1,048,576, minimum 131,072; checks every 32,768;

@@ -12,7 +12,7 @@ GENES = [
     ('tau', 'log', [-3., math.log10(.02)]),
     ('entropy_fraction', 'linear', [.3, .9]),
     ('weight_decay', 'choice', [0., 1e-6, 1e-5, 1e-4, 1e-3, 1e-2]),
-    ('batch_size', 'choice', [64, 128, 256]),
+    ('batch_size', 'choice', [32, 64, 128, 256]),
     ('update_every', 'choice', [2, 4, 8]),
 ]
 BASELINE = dict(branch_width=8, core_width=16, branch_blocks=2, core_blocks=2,
@@ -34,10 +34,10 @@ def decode(genome):
     return result
 
 
-def baseline_genome():
+def baseline_genome(batch_size=None):
     result = []
     for name, kind, bounds in GENES:
-        x = BASELINE[name]
+        x = batch_size if name == 'batch_size' and batch_size is not None else BASELINE[name]
         result.append((bounds.index(x)+.5)/len(bounds) if kind == 'choice' else
                       ((math.log10(x) if kind == 'log' else x)-bounds[0])/(bounds[1]-bounds[0]))
     return result
