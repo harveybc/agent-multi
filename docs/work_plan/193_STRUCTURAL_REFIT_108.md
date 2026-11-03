@@ -85,3 +85,36 @@ Native mirrored opening/closing and flat controls pass before financial fitting.
 The initial full-size108-channel inference bundle reloads exactly on CPU. This
 is an engineering check, not a trained result. Every selected trained checkpoint
 must independently pass its own reload check on the worker backend.
+
+## Execution And Inference
+
+Runtime84ee87a9 launched both seeds at2026-11-03T06:47UTC in independent
+persistent workers. The primary targets the physical RTX5090 and the secondary
+the RTX4090. A separate collector copies weights and reports every180seconds,
+excluding the large recovery replay. No intermediate approval is required.
+Run identity:
+`82cfdb8e75fb85fbdb64f4c978fab1ce88793e64f92e8163b53f90aa258a507e`.
+
+`BEST.json` points to the best immutable bundle. `HISTORY.json` contains both
+full-account metrics at each completed epoch; `PROGRESS.json` records the live
+epoch. `RESULT.json` is written only after stopping, restoring the best and
+evaluating its final accounts with close-counterfactual diagnostics.
+
+Inference does not enter the training runner:
+
+```python
+import torch
+from app.structural_refit import load_bundle
+
+model, manifest = load_bundle("<best-bundle-directory>", device="cpu")
+# windows: [batch,13,108], using RECIPE.json's ordered columns and fixed scaler.
+with torch.inference_mode():
+    logits = model.surfaces(torch.as_tensor(windows, dtype=torch.float32))
+```
+
+For native backtests and the next mask pass, reconstruct observations through
+the run's`SUPPORT_RECIPE.json` and project to its`RECIPE.json`, as`market_for`
+does. This preserves the accepted full-parent missing-observation support while
+feeding only108 actual channels. Loading only reduced raw columns must not
+silently change the comparison's decision dates. The inference probe verifies
+the trained network on normalized windows, not raw-data availability by itself.

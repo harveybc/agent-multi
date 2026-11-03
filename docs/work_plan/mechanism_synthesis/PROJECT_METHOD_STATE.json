@@ -15,7 +15,9 @@
     "implementation_status": "Implemented, tested and launched as the new paired-seed DEAP campaign. Historical pilot selectors remain unchanged.",
     "test_access": false
   },
-  "current_stage": "STRUCTURAL_108_REFIT_READY",
+  "current_stage": "STRUCTURAL_108_REFIT_RUNNING",
+  "structural_refit_runtime": {"code":"84ee87a9","identity":"82cfdb8e75fb85fbdb64f4c978fab1ce88793e64f92e8163b53f90aa258a507e","started_utc":"2026-11-03T06:47:09Z","seeds":[7,19],"persistent_workers":2,"collector":true,"inference_reload_required":true,"epoch_boundary_recovery":true,"intermediate_approval_required":false,"next_selection_autolaunch":false},
+  "two_pass_completion": {"finished_utc":"2026-11-02T21:56:02Z","features_initial":120,"features_after_removal":108,"features_final":108,"groups":31,"unique_evaluations":122,"zero_tolerance_nonworsening_replay":"same selected set; no additional evaluations","historical_runtime_running_flag_superseded":true},
   "structural_refit_verification": {"tests_passed":31,"real_native_controls_passed":true,"train_months":48,"validation_months":12,"train_decisions_per_epoch":24025,"validation_decisions":6207,"input_tensor_shape":[30859,13,108],"test_read":false,"initial_bundle_reload":"exact CPU; untrained engineering check"},
   "structural_refit": {"date":"2026-11-03","plan":"../193_STRUCTURAL_REFIT_108.md","features":108,"groups":31,"train":["2020-01-01","2024-01-01"],"validation":["2024-01-01","2025-01-01"],"test_closed_from":"2025-01-01","max_epochs":2000,"patience":20,"min_delta":1e-8,"monitor":"mean(full TRAIN return/week, full VALIDATION return/week)","fresh_weights":true,"physical_channel_removal":true,"preserve_best_for_next_mask_pass":true,"deap_champion_exists":false},
   "two_pass_runtime": {"code":"b3a421f3","identity":"17af7faa1555c4bea89b6b90757623d114fb5aaefe34424d1cf1590906464627","selector_version":"0.2.3","started_utc":"2026-11-02T21:38:03Z","preflight_passed":true,"first_control_and_deletion_reused":true,"service_enabled":true,"maximum_evaluation_requests":223,"passes":2,"initial_features":120,"phase2_complete":false},
@@ -244,6 +246,7 @@
   },
   "bottom_up": "INDEPENDENT_REVIEWS_RECEIVED; FIVE_CONCRETE_DEFECTS_REPAIRED_AND_REPLAYED; COVERAGE_REVISION_REQUIRED",
   "next_allowed_actions": [
+    "193 supersedes historical split and launch restrictions below: run the two fresh structural108-input fits on full TRAIN2020-2023 and VALIDATION2024, with2000 maximum epochs, patience20 and min_delta1e-8 on their mean return/week. Persist and verify best inference bundles, epoch recovery, and automatic collection. TEST2025 remains closed. Report initial measured ETA; do not auto-launch another feature pass or DEAP.",
     "192 overrides 191 traversal: execute exactly one ordered deletion pass and then one reinsertion pass over removed blocks. Accept only eligible strict score improvements; reuse identical authenticated measurements. Publish counts after each pass. No full-neighborhood floating loops.",
     "191 supersedes historical launch restrictions below: execute owner-authorized frozen-mask floating search automatically on paired existing checkpoints, full TRAIN/INNER_A and unchanged windows; then few structural refits; DEAP after selection. Do not dispatch new candidates from the stopped DEAP queue.",
     "183: execute the owner-approved paired six-rule stopping contrast on qualified seeds7/19 with one fresh financial trajectory each; preserve failed synthetic seed43; authenticate all selected checkpoints and full accounts; no2024/TEST or automatic floating selection",
