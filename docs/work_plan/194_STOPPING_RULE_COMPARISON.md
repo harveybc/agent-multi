@@ -56,3 +56,22 @@ No extension of a stopped arm is implied by its shadow monitor.
 | No input/split drift | Identical recipe, support, risk and effective-model digests |
 
 Best inference bundles and automatic remote collection remain mandatory.
+
+## Launch Receipt
+
+Runtime`e689390b`;36 focused tests pass, including actual interrupted/resumed
+native learning for all three stopping modes. Both complete real-data
+preflights pass. Recipe, input files, support, model configuration, source code
+and seed equality were checked before launch; only the stopping definition and
+hardware differ. The parent mean-only primary was stopped with29 full epochs
+recoverable; its retained inference bundles and the completed secondary's
+results were copied before the new comparison.
+
+Both new workers were verified training at2026-11-03T13:47UTC, with zero
+restarts and65 gradient updates each. Persistent services and a180-second
+collector preserve results without intermediate approval.
+
+| Arm | Identity |
+|---|---|
+| validation | `556e47c27dfde31d121b2e517cca230aef6a1c716e71c993d9e2af574e9dfc59` |
+| mean_no_regression | `97a4c2f8581a03e0083f15992e3d7310d094d67e4370e09ca93e6411f1b3dec0` |

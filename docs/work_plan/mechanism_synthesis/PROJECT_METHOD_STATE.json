@@ -15,7 +15,8 @@
     "implementation_status": "Implemented, tested and launched as the new paired-seed DEAP campaign. Historical pilot selectors remain unchanged.",
     "test_access": false
   },
-  "current_stage": "PAIRED_STOPPING_RULES_READY",
+  "current_stage": "PAIRED_STOPPING_RULES_RUNNING",
+  "stopping_rule_runtime": {"code":"e689390b","verified_training_utc":"2026-11-03T13:47:00Z","validation_identity":"556e47c27dfde31d121b2e517cca230aef6a1c716e71c993d9e2af574e9dfc59","guarded_identity":"97a4c2f8581a03e0083f15992e3d7310d094d67e4370e09ca93e6411f1b3dec0","same_inputs_model_seed_support_verified":true,"persistent_workers":2,"automatic_collector":true,"initial_gradient_updates_each":65},
   "stopping_rule_comparison": {"date":"2026-11-03","plan":"../194_STOPPING_RULE_COMPARISON.md","modes":["validation","mean_no_regression"],"seed":7,"fresh_weights":true,"patience":20,"min_delta":1e-8,"max_epochs":2000,"previous_reference":"immediately preceding evaluated epoch, even if rejected","guarded_new_best":"best accepted mean","tests_passed":36,"shadow_monitors":true,"prior_mean_only_primary":"stopped by owner-directed replacement; last complete epoch29 preserved","prior_mean_only_secondary":"completed epoch34; restored14; preserved"},
   "structural_refit_runtime": {"code":"84ee87a9","identity":"82cfdb8e75fb85fbdb64f4c978fab1ce88793e64f92e8163b53f90aa258a507e","started_utc":"2026-11-03T06:47:09Z","seeds":[7,19],"persistent_workers":2,"collector":true,"inference_reload_required":true,"epoch_boundary_recovery":true,"intermediate_approval_required":false,"next_selection_autolaunch":false},
   "two_pass_completion": {"finished_utc":"2026-11-02T21:56:02Z","features_initial":120,"features_after_removal":108,"features_final":108,"groups":31,"unique_evaluations":122,"zero_tolerance_nonworsening_replay":"same selected set; no additional evaluations","historical_runtime_running_flag_superseded":true},
@@ -247,6 +248,7 @@
   },
   "bottom_up": "INDEPENDENT_REVIEWS_RECEIVED; FIVE_CONCRETE_DEFECTS_REPAIRED_AND_REPLAYED; COVERAGE_REVISION_REQUIRED",
   "next_allowed_actions": [
+    "194 supersedes193 continuation: run validation-only stopping on the primary and guarded-mean stopping on the secondary, both fresh seed7 with identical108-input data/model contract. Preserve previous results; retain best bundles and shadow stopping traces. No change to TEST or automatic feature-selection launch.",
     "193 supersedes historical split and launch restrictions below: run the two fresh structural108-input fits on full TRAIN2020-2023 and VALIDATION2024, with2000 maximum epochs, patience20 and min_delta1e-8 on their mean return/week. Persist and verify best inference bundles, epoch recovery, and automatic collection. TEST2025 remains closed. Report initial measured ETA; do not auto-launch another feature pass or DEAP.",
     "192 overrides 191 traversal: execute exactly one ordered deletion pass and then one reinsertion pass over removed blocks. Accept only eligible strict score improvements; reuse identical authenticated measurements. Publish counts after each pass. No full-neighborhood floating loops.",
     "191 supersedes historical launch restrictions below: execute owner-authorized frozen-mask floating search automatically on paired existing checkpoints, full TRAIN/INNER_A and unchanged windows; then few structural refits; DEAP after selection. Do not dispatch new candidates from the stopped DEAP queue.",
