@@ -95,8 +95,13 @@ def prepare(args):
     write(root/'RECIPE.json', reduced)
     d0 = baseline['design']
     design = {k:d0[k] for k in ('batch_size','warmup','replay_size','update_every','horizon')}
-    design.update(max_epochs=2000, patience=20, min_delta=1e-8, seeds=[7,19],
-        epoch='one_complete_TRAIN_traversal', monitor='mean_full_TRAIN_VALIDATION_return_per_week',
+    mode = getattr(args,'monitor_mode','mean')
+    seeds = getattr(args,'seeds',[7,19])
+    if mode not in EpochPatience.MODES or not seeds or len(set(seeds)) != len(seeds):
+        raise ValueError('REFIT_MONITOR_OR_SEEDS')
+    design.update(max_epochs=2000, patience=20, min_delta=1e-8, seeds=seeds,
+        monitor_mode=mode, epoch='one_complete_TRAIN_traversal',
+        monitor=mode+'_full_accounts_return_per_week',
         hyperparameters_source='fixed_mask_baseline_not_completed_DEAP_optimum')
     effective = dict(architecture=dict(branch_width=8,core_width=16,branch_blocks=2,core_blocks=2,head_width=8),
         gamma=d0['gamma'],alpha=d0['alpha'],learning_rate=d0['learning_rate'],
@@ -169,12 +174,16 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
     rng = np.random.default_rng(seed)
     replay = TensorDictReplayBuffer(storage=LazyTensorStorage(design['replay_size'],device='cpu'),
                                    batch_size=design['batch_size'])
-    stopping = EpochPatience(design['patience'],design['min_delta'])
+    stopping = EpochPatience(design['patience'],design['min_delta'],design.get('monitor_mode','mean'))
+    shadows = {mode:EpochPatience(design['patience'],design['min_delta'],mode) for mode in EpochPatience.MODES}
     state = dict(identity=identity,seed=seed,epoch=0,steps=0,updates=0,history=[],
-                 best_bundle=None,stopping=vars(stopping).copy())
+                 best_bundle=None,stopping=vars(stopping).copy(),
+                 shadows={k:vars(v).copy() for k,v in shadows.items()})
     if (output/'RESUME.json').exists():
         state = load_recovery(output,model,replay,rng,identity)
         stopping.__dict__.update(state['stopping'])
+        for mode,monitor in shadows.items():
+            monitor.__dict__.update(state['shadows'][mode])
     # Anything newer than the atomic pointer is an interrupted, uncommitted epoch.
     for p in (output/'recovery').glob('epoch_*') if (output/'recovery').exists() else []:
         if int(p.name.split('_')[1].split('.')[0]) > state['epoch']:
@@ -212,9 +221,16 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
         if before['cuda'] and any(not torch.equal(a,b) for a,b in zip(before['cuda'],torch.cuda.get_rng_state_all())):
             raise ValueError('ASSESSMENT_MUTATED_CUDA_RNG')
         verdict = stopping.observe(metrics['TRAIN']['return_per_week'], metrics['VALIDATION']['return_per_week'])
+        shadow_verdicts = {}
+        for mode,monitor in shadows.items():
+            if monitor.bad < monitor.patience:
+                shadow_verdicts[mode] = monitor.observe(metrics['TRAIN']['return_per_week'],
+                                                      metrics['VALIDATION']['return_per_week'])
+            else:
+                shadow_verdicts[mode] = dict(stop=True,already_stopped=True,best=monitor.best,bad=monitor.bad)
         row = dict(epoch=epoch,steps=state['steps'],updates=state['updates'],decisions=decisions,
             training_seconds=training_seconds,evaluation_seconds=time.monotonic()-start-training_seconds,
-            metrics=metrics,monitor=verdict,finished_at=now())
+            metrics=metrics,monitor=verdict,shadow_monitors=shadow_verdicts,finished_at=now())
         if verdict['improved']:
             bundle = output/'bundles'/('epoch_%04d' % epoch)
             if bundle.exists():
@@ -222,7 +238,8 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
             receipt = export_bundle(bundle,model,probe,dict(epoch=epoch,score=verdict['score'],
                 run_identity=identity,seed=seed))
             state['best_bundle'] = dict(relative_path=str(bundle.relative_to(output)),**receipt)
-        state['history'].append(row); state.update(epoch=epoch,stopping=vars(stopping).copy())
+        state['history'].append(row); state.update(epoch=epoch,stopping=vars(stopping).copy(),
+            shadows={k:vars(v).copy() for k,v in shadows.items()})
         save_recovery(output,model,replay,rng,state)
         row['epoch_seconds'] = time.monotonic()-start
         write(output/'HISTORY.json',state['history'])
@@ -280,6 +297,8 @@ def main():
     p=sub.add_parser('prepare')
     for name in ('root','parent','selection','baseline'):
         p.add_argument('--'+name,type=Path,required=True)
+    p.add_argument('--monitor-mode',choices=EpochPatience.MODES,default='mean')
+    p.add_argument('--seeds',nargs='+',type=int,default=[7,19])
     p=sub.add_parser('worker'); p.add_argument('--root',type=Path,required=True)
     p.add_argument('--seed',type=int,required=True)
     args=parser.parse_args(); globals()[args.command](args)

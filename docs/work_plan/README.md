@@ -2,6 +2,12 @@
 
 ## Priority Update: 2026-11-03
 
+[Stopping comparison194](194_STOPPING_RULE_COMPARISON.md) now supersedes the
+remaining mean-only fit. Compare fresh seed7 validation-only stopping on the
+primary GPU against previous-epoch-nondecreasing guarded mean on the secondary.
+Data, inputs, architecture, patience20 and threshold1e-8 remain identical.
+The previous completed seed19 and interrupted seed7 checkpoints are preserved.
+
 [Structural refit193](193_STRUCTURAL_REFIT_108.md) follows the completed ordered
 two-pass selection:120 to108 columns,31 groups,122 unique evaluations.
 Fresh weights use108 actual input channels. Full TRAIN2020-2023 and

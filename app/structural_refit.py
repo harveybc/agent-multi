@@ -16,23 +16,44 @@ from tools.run_discrete_curve_probe import write
 
 
 class EpochPatience:
-    def __init__(self, patience=20, min_delta=1e-8):
-        if type(patience) is not int or patience < 1 or not np.isfinite(min_delta) or min_delta < 0:
+    MODES = ('mean', 'validation', 'mean_no_regression')
+
+    def __init__(self, patience=20, min_delta=1e-8, mode='mean'):
+        if (type(patience) is not int or patience < 1 or not np.isfinite(min_delta)
+                or min_delta < 0 or mode not in self.MODES):
             raise ValueError('EPOCH_STOPPING_CONFIG')
-        self.patience, self.min_delta = patience, min_delta
+        self.patience, self.min_delta, self.mode = patience, min_delta, mode
         self.best, self.bad = None, 0
+        self.previous_train = self.previous_validation = self.previous_mean = None
+        self.best_train = self.best_validation = None
 
     def observe(self, train, validation):
         if not np.isfinite([train, validation]).all():
             raise ValueError('EPOCH_MONITOR_NOT_FINITE')
-        score = .5 * float(train) + .5 * float(validation)
-        improved = self.best is None or score > self.best + self.min_delta
+        train, validation = float(train), float(validation)
+        mean = .5 * train + .5 * validation
+        score = validation if self.mode == 'validation' else mean
+        previous = dict(previous_train=self.previous_train,
+                        previous_validation=self.previous_validation,previous_mean=self.previous_mean)
+        rejections = []
+        if self.mode == 'mean_no_regression' and self.previous_mean is not None:
+            for value, old, name in ((train,self.previous_train,'TRAIN'),
+                                     (validation,self.previous_validation,'VALIDATION'),
+                                     (mean,self.previous_mean,'MEAN')):
+                if value < old:
+                    rejections.append(name+'_DECREASE')
+        if self.best is not None and score <= self.best + self.min_delta:
+            rejections.append('NO_NEW_BEST')
+        improved = not rejections
         if improved:
             self.best, self.bad = score, 0
+            self.best_train, self.best_validation = train, validation
         else:
             self.bad += 1
-        return dict(score=score, improved=improved, best=self.best, bad=self.bad,
-                    stop=self.bad >= self.patience)
+        self.previous_train, self.previous_validation, self.previous_mean = train, validation, mean
+        return dict(score=score, mean=mean, mode=self.mode, improved=improved, best=self.best,
+                    best_train=self.best_train,best_validation=self.best_validation,bad=self.bad,
+                    stop=self.bad >= self.patience,rejections=rejections,**previous)
 
 
 def capture_rng(rng):

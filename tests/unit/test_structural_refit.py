@@ -23,6 +23,42 @@ def test_patience_mean_tiny_improvement_reset_and_twenty_failures():
         p.observe(float('nan'), 0.)
 
 
+def test_validation_only_cannot_be_compensated_by_train():
+    p = EpochPatience(20,1e-8,mode='validation')
+    assert p.observe(0.,2.1)['improved']
+    assert not p.observe(10000.,-20.)['improved']
+    assert p.best == 2.1 and p.bad == 1
+    assert p.observe(-100.,2.1+2e-8)['improved'] and p.bad == 0
+
+
+def test_guarded_mean_vetoes_each_component_and_uses_previous_epoch():
+    p = EpochPatience(20,1e-8,mode='mean_no_regression')
+    assert p.observe(2.,2.)['improved']
+    a = p.observe(20.,1.)
+    assert not a['improved'] and 'VALIDATION_DECREASE' in a['rejections']
+    b = p.observe(19.,10.)
+    assert not b['improved'] and 'TRAIN_DECREASE' in b['rejections']
+    assert p.best == 2. and p.bad == 2
+    assert p.observe(20.,10.)['improved'] and p.bad == 0
+    assert not p.observe(20.,10.)['improved']  # Equality cannot establish a new best.
+    assert not p.observe(1.,1.)['improved']
+    a = p.observe(25.,9.)
+    assert a['improved'] and a['previous_validation'] == 1.
+    assert a['best_validation'] == 9.  # Explicitly not a best-checkpoint guard.
+
+
+def test_guarded_recovery_needs_new_historical_accepted_best():
+    p = EpochPatience(20,1e-8,mode='mean_no_regression')
+    p.observe(10.,10.); p.observe(1.,1.)
+    assert not p.observe(2.,2.)['improved']
+    assert p.bad == 2 and p.best == 10.
+    clone = EpochPatience(20,1e-8,mode='mean_no_regression')
+    clone.__dict__.update(p.__dict__)
+    assert clone.observe(11.,11.) == p.observe(11.,11.)
+    with pytest.raises(ValueError,match='CONFIG'):
+        EpochPatience(mode='unknown')
+
+
 def test_bundle_reload_is_exact_without_training_and_rejects_tampering(tmp_path):
     model = ThreeSignalSAC(probe_recipe())
     x = np.random.default_rng(7).normal(size=(4, 13, 2)).astype('float32')
@@ -56,7 +92,8 @@ def test_rng_restoration_repeats_samples():
     assert torch.equal(b, torch.rand(10))
 
 
-def test_epoch_resume_matches_uninterrupted_learning_and_preserves_best(tmp_path, request):
+@pytest.mark.parametrize('mode',['mean','validation','mean_no_regression'])
+def test_epoch_resume_matches_uninterrupted_learning_and_preserves_best(tmp_path, request, mode):
     from app.three_signal_learning import synthetic_env, emit, evaluate
     from tools.run_structural_sac_refit import fit_epochs
     torch.set_num_threads(1)
@@ -70,7 +107,7 @@ def test_epoch_resume_matches_uninterrupted_learning_and_preserves_best(tmp_path
             out[period] = evaluate(env,logits)
         return out
     d = dict(replay_size=64,batch_size=8,warmup=8,update_every=4,
-             max_epochs=2,patience=20,min_delta=1e-8)
+             max_epochs=2,patience=20,min_delta=1e-8,monitor_mode=mode)
     probe = factory().inputs.windows[30:34].copy()
     uninterrupted = ThreeSignalSAC(r,seed=7)
     a = fit_epochs(uninterrupted,factory,assess,d,7,tmp_path/'a','test-id',probe)

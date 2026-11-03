@@ -15,7 +15,8 @@
     "implementation_status": "Implemented, tested and launched as the new paired-seed DEAP campaign. Historical pilot selectors remain unchanged.",
     "test_access": false
   },
-  "current_stage": "STRUCTURAL_108_REFIT_RUNNING",
+  "current_stage": "PAIRED_STOPPING_RULES_READY",
+  "stopping_rule_comparison": {"date":"2026-11-03","plan":"../194_STOPPING_RULE_COMPARISON.md","modes":["validation","mean_no_regression"],"seed":7,"fresh_weights":true,"patience":20,"min_delta":1e-8,"max_epochs":2000,"previous_reference":"immediately preceding evaluated epoch, even if rejected","guarded_new_best":"best accepted mean","tests_passed":36,"shadow_monitors":true,"prior_mean_only_primary":"stopped by owner-directed replacement; last complete epoch29 preserved","prior_mean_only_secondary":"completed epoch34; restored14; preserved"},
   "structural_refit_runtime": {"code":"84ee87a9","identity":"82cfdb8e75fb85fbdb64f4c978fab1ce88793e64f92e8163b53f90aa258a507e","started_utc":"2026-11-03T06:47:09Z","seeds":[7,19],"persistent_workers":2,"collector":true,"inference_reload_required":true,"epoch_boundary_recovery":true,"intermediate_approval_required":false,"next_selection_autolaunch":false},
   "two_pass_completion": {"finished_utc":"2026-11-02T21:56:02Z","features_initial":120,"features_after_removal":108,"features_final":108,"groups":31,"unique_evaluations":122,"zero_tolerance_nonworsening_replay":"same selected set; no additional evaluations","historical_runtime_running_flag_superseded":true},
   "structural_refit_verification": {"tests_passed":31,"real_native_controls_passed":true,"train_months":48,"validation_months":12,"train_decisions_per_epoch":24025,"validation_decisions":6207,"input_tensor_shape":[30859,13,108],"test_read":false,"initial_bundle_reload":"exact CPU; untrained engineering check"},
