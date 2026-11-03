@@ -1,5 +1,28 @@
 # Paired stopping-rule comparison
 
+## Owner Amendment:20-Epoch Monitor Warm-up
+
+2026-11-03: epochs1-19 remain measured but cannot establish a selected best,
+increment patience or reset it. After completing epoch20, its score establishes
+the first best and counter0. Epoch21 is the first comparison. For the guarded
+arm, the first previous-epoch reference is20, not19. The earliest patience stop
+is epoch40. This monitor warm-up is distinct from4096 initial replay warm-up
+decisions; do not repeat the replay warm-up on continuation.
+
+Both runs were below20 when the owner requested the change. Preserve the9 and11
+complete learning epochs respectively, rather than retrain them. A new runtime
+and new run identities copy their last full-epoch weights, optimizer, replay,
+writer and RNG files byte-for-byte. Only monitor bookkeeping is recomputed from
+the existing per-epoch metrics, with best unset and patience0. Original metrics
+and original monitor decisions remain available. An unfinished epoch restarts
+from its committed boundary. Old early inference bundles remain historical,
+not candidates for the warmed-up selection.
+
+Migration refuses if the source is active, any source/data/recovery hash differs,
+or the available prefix reaches the new monitoring epoch.43 focused tests pass,
+including warm-up boundaries, exclusion of early transient maxima, bookkeeping
+rebasing, and exact learning resume under all stopping modes with/without warm-up.
+
 Owner request2026-11-03, superseding further execution of193's mean-only fit.
 The former checkpoints and results remain available. No DEAP or new selection.
 

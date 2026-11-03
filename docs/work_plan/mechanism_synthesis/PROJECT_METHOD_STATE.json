@@ -15,7 +15,8 @@
     "implementation_status": "Implemented, tested and launched as the new paired-seed DEAP campaign. Historical pilot selectors remain unchanged.",
     "test_access": false
   },
-  "current_stage": "PAIRED_STOPPING_RULES_RUNNING",
+  "current_stage": "PAIRED_STOPPING_WARMUP_MIGRATION_READY",
+  "stopping_monitor_warmup": {"owner_requested":"2026-11-03","monitor_start_epoch":20,"first_patience_comparison_epoch":21,"earliest_patience_stop_epoch":40,"early_checkpoint_selection":false,"completed_prefixes_preserved":[9,11],"migration":"new identities; learning files unchanged; monitor history recomputed","tests_passed":43},
   "stopping_rule_runtime": {"code":"e689390b","verified_training_utc":"2026-11-03T13:47:00Z","validation_identity":"556e47c27dfde31d121b2e517cca230aef6a1c716e71c993d9e2af574e9dfc59","guarded_identity":"97a4c2f8581a03e0083f15992e3d7310d094d67e4370e09ca93e6411f1b3dec0","same_inputs_model_seed_support_verified":true,"persistent_workers":2,"automatic_collector":true,"initial_gradient_updates_each":65},
   "stopping_rule_comparison": {"date":"2026-11-03","plan":"../194_STOPPING_RULE_COMPARISON.md","modes":["validation","mean_no_regression"],"seed":7,"fresh_weights":true,"patience":20,"min_delta":1e-8,"max_epochs":2000,"previous_reference":"immediately preceding evaluated epoch, even if rejected","guarded_new_best":"best accepted mean","tests_passed":36,"shadow_monitors":true,"prior_mean_only_primary":"stopped by owner-directed replacement; last complete epoch29 preserved","prior_mean_only_secondary":"completed epoch34; restored14; preserved"},
   "structural_refit_runtime": {"code":"84ee87a9","identity":"82cfdb8e75fb85fbdb64f4c978fab1ce88793e64f92e8163b53f90aa258a507e","started_utc":"2026-11-03T06:47:09Z","seeds":[7,19],"persistent_workers":2,"collector":true,"inference_reload_required":true,"epoch_boundary_recovery":true,"intermediate_approval_required":false,"next_selection_autolaunch":false},

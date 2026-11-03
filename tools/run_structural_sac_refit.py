@@ -18,7 +18,7 @@ from app.frozen_recipe_inputs import file_sha
 from app.frozen_signal_masks import prepared_signals
 from app.recipe_runtime import RecipeMarket
 from app.rl_subset import digest, seal_recipe, subset_recipe, refit_train_scaler, project_inputs, support_hash
-from app.structural_refit import (EpochPatience, capture_rng, restore_rng, build_model,
+from app.structural_refit import (EpochPatience, capture_rng, restore_rng, build_model, verify_files,
     export_bundle, load_bundle, save_recovery, load_recovery)
 from app.three_signal_learning import environment, emit, evaluate
 from agent_plugins.discrete_curve_sac import tensor_observation
@@ -100,7 +100,8 @@ def prepare(args):
     if mode not in EpochPatience.MODES or not seeds or len(set(seeds)) != len(seeds):
         raise ValueError('REFIT_MONITOR_OR_SEEDS')
     design.update(max_epochs=2000, patience=20, min_delta=1e-8, seeds=seeds,
-        monitor_mode=mode, epoch='one_complete_TRAIN_traversal',
+        monitor_mode=mode,monitor_start_epoch=getattr(args,'monitor_start_epoch',1),
+        epoch='one_complete_TRAIN_traversal',
         monitor=mode+'_full_accounts_return_per_week',
         hyperparameters_source='fixed_mask_baseline_not_completed_DEAP_optimum')
     effective = dict(architecture=dict(branch_width=8,core_width=16,branch_blocks=2,core_blocks=2,head_width=8),
@@ -169,13 +170,101 @@ def assess_full(model, market, risk, design, save=None, diagnose=False):
     return metrics
 
 
+def rebase_warmup_state(original, design, identity):
+    """Replay only monitor bookkeeping; never update weights, optimizer or RNG."""
+    start = design['monitor_start_epoch']
+    if not 1 <= original['epoch'] < start <= design['max_epochs']:
+        raise ValueError('WARMUP_MIGRATION_REQUIRES_PREMONITOR_PREFIX')
+    if [r['epoch'] for r in original['history']] != list(range(1,original['epoch']+1)):
+        raise ValueError('WARMUP_MIGRATION_HISTORY')
+    state = copy.deepcopy(original)
+    stopping = EpochPatience(design['patience'],design['min_delta'],design['monitor_mode'],start)
+    shadows = {m:EpochPatience(design['patience'],design['min_delta'],m,start) for m in EpochPatience.MODES}
+    for row in state['history']:
+        row['source_monitor'] = row['monitor']
+        row['source_shadow_monitors'] = row.get('shadow_monitors',{})
+        t,v = (row['metrics'][p]['return_per_week'] for p in ('TRAIN','VALIDATION'))
+        row['monitor'] = stopping.observe(t,v)
+        row['shadow_monitors'] = {m:p.observe(t,v) for m,p in shadows.items()}
+    state.update(identity=identity,best_bundle=None,stopping=vars(stopping).copy(),
+                 shadows={m:vars(p).copy() for m,p in shadows.items()})
+    return state
+
+
+def migrate_warmup(args):
+    source, root = args.source_root.resolve(), args.root.resolve()
+    original = read(source/'SPEC.json')
+    if original['identity'] != digest({k:v for k,v in original.items() if k != 'identity'}):
+        raise ValueError('WARMUP_SOURCE_IDENTITY')
+    verify_files(source,original['files'])
+    verify_files(args.source_runtime,original['sources'])
+    if args.seed not in original['design']['seeds'] or root.exists():
+        raise ValueError('WARMUP_SEED_OR_NEW_ROOT')
+    run = source/'runs'/('seed_%d' % args.seed)
+    with (run/'worker.lock').open('a') as lock:
+        fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+        pointer = read(run/'RESUME.json')
+        folder = run/'recovery'/pointer['directory']
+        if folder.parent.resolve() != (run/'recovery').resolve():
+            raise ValueError('WARMUP_SOURCE_PATH')
+        if file_sha(folder/'MANIFEST.json') != pointer['manifest_sha256']:
+            raise ValueError('WARMUP_SOURCE_MANIFEST')
+        manifest = read(folder/'MANIFEST.json')
+        if manifest['identity'] != original['identity']:
+            raise ValueError('WARMUP_RECOVERY_IDENTITY')
+        verify_files(folder,manifest['files'])
+        prior = read(folder/'STATE.json')
+        if prior['identity'] != original['identity'] or prior['seed'] != args.seed:
+            raise ValueError('WARMUP_SOURCE_STATE')
+        spec = copy.deepcopy(original)
+        spec['design']['monitor_start_epoch'] = args.monitor_start_epoch
+        spec['sources'] = {n:file_sha(ROOT/n) for n in SOURCES}
+        spec['created_at'] = now()
+        spec['warmup_migration'] = dict(source_identity=original['identity'],seed=args.seed,
+            completed_epoch=prior['epoch'],steps=prior['steps'],updates=prior['updates'],
+            source_recovery_manifest_sha256=pointer['manifest_sha256'],
+            model_sha256=manifest['files']['model.pt'],learning_sha256=manifest['files']['learning.pt'],
+            change='monitor bookkeeping only; full learning state copied byte-for-byte')
+        spec['identity'] = digest({k:v for k,v in spec.items() if k != 'identity'})
+        state = rebase_warmup_state(prior,spec['design'],spec['identity'])
+        root.mkdir()
+        for name in original['files']:
+            dest = root/name; dest.parent.mkdir(parents=True,exist_ok=True)
+            shutil.copy2(source/name,dest)
+        write(root/'SPEC.json',spec)
+        preflight = read(source/'PREFLIGHT.json')
+        preflight.update(identity=spec['identity'],fresh_training=False,
+                         continuation_of_fresh_fit=True,warmup_migration=spec['warmup_migration'])
+        write(root/'PREFLIGHT.json',preflight)
+        out = root/'runs'/('seed_%d' % args.seed)
+        dest = out/'recovery'/folder.name; dest.mkdir(parents=True)
+        for name in ('model.pt','learning.pt'):
+            shutil.copy2(folder/name,dest/name)
+            if file_sha(dest/name) != manifest['files'][name]:
+                raise ValueError('WARMUP_COPY_CHANGED')
+        write(dest/'STATE.json',state)
+        files = {p.name:file_sha(p) for p in dest.iterdir() if p.is_file()}
+        write(dest/'MANIFEST.json',dict(identity=spec['identity'],files=files))
+        from app.structural_refit import durable_files
+        durable_files(dest)
+        write(out/'RESUME.json',dict(directory=dest.name,manifest_sha256=file_sha(dest/'MANIFEST.json')))
+        write(out/'HISTORY.json',state['history'])
+        write(out/'BEST.json',dict(identity=spec['identity'],best=None,score=None))
+        write(out/'MIGRATION.json',spec['warmup_migration'])
+        write(out/'PROGRESS.json',dict(identity=spec['identity'],stage='MONITOR_WARMUP',
+            completed_epochs=state['epoch'],bad=0,best=None,monitor_start_epoch=args.monitor_start_epoch))
+        durable_files(out)
+        print(json.dumps(dict(identity=spec['identity'],**spec['warmup_migration'])),flush=True)
+
+
 def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe):
     output.mkdir(parents=True,exist_ok=True)
     rng = np.random.default_rng(seed)
     replay = TensorDictReplayBuffer(storage=LazyTensorStorage(design['replay_size'],device='cpu'),
                                    batch_size=design['batch_size'])
-    stopping = EpochPatience(design['patience'],design['min_delta'],design.get('monitor_mode','mean'))
-    shadows = {mode:EpochPatience(design['patience'],design['min_delta'],mode) for mode in EpochPatience.MODES}
+    start_epoch = design.get('monitor_start_epoch',1)
+    stopping = EpochPatience(design['patience'],design['min_delta'],design.get('monitor_mode','mean'),start_epoch)
+    shadows = {mode:EpochPatience(design['patience'],design['min_delta'],mode,start_epoch) for mode in EpochPatience.MODES}
     state = dict(identity=identity,seed=seed,epoch=0,steps=0,updates=0,history=[],
                  best_bundle=None,stopping=vars(stopping).copy(),
                  shadows={k:vars(v).copy() for k,v in shadows.items()})
@@ -248,6 +337,10 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
         print(json.dumps(dict(epoch=epoch,seed=seed,monitor=verdict,seconds=row['epoch_seconds'])),flush=True)
         if verdict['stop']:
             break
+    if state['best_bundle'] is None:
+        write(output/'TRAINING.json',dict(identity=identity,epochs=state['epoch'],
+            steps=state['steps'],stop_reason='epoch_budget_before_monitor',restored_best=False))
+        return state
     model.load(output/state['best_bundle']['relative_path']/'model.pt')
     write(output/'TRAINING.json',dict(identity=identity,epochs=state['epoch'],steps=state['steps'],
         stop_reason='patience' if stopping.bad>=stopping.patience else 'epoch_budget',
@@ -299,9 +392,15 @@ def main():
         p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--monitor-mode',choices=EpochPatience.MODES,default='mean')
     p.add_argument('--seeds',nargs='+',type=int,default=[7,19])
+    p.add_argument('--monitor-start-epoch',type=int,default=1)
+    p=sub.add_parser('migrate-warmup')
+    for name in ('source-root','source-runtime','root'):
+        p.add_argument('--'+name,type=Path,required=True)
+    p.add_argument('--seed',type=int,required=True)
+    p.add_argument('--monitor-start-epoch',type=int,default=20)
     p=sub.add_parser('worker'); p.add_argument('--root',type=Path,required=True)
     p.add_argument('--seed',type=int,required=True)
-    args=parser.parse_args(); globals()[args.command](args)
+    args=parser.parse_args(); globals()[args.command.replace('-','_')](args)
 
 
 if __name__ == '__main__':

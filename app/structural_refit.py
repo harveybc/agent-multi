@@ -18,11 +18,13 @@ from tools.run_discrete_curve_probe import write
 class EpochPatience:
     MODES = ('mean', 'validation', 'mean_no_regression')
 
-    def __init__(self, patience=20, min_delta=1e-8, mode='mean'):
+    def __init__(self, patience=20, min_delta=1e-8, mode='mean', start_epoch=1):
         if (type(patience) is not int or patience < 1 or not np.isfinite(min_delta)
-                or min_delta < 0 or mode not in self.MODES):
+                or min_delta < 0 or mode not in self.MODES
+                or type(start_epoch) is not int or start_epoch < 1):
             raise ValueError('EPOCH_STOPPING_CONFIG')
         self.patience, self.min_delta, self.mode = patience, min_delta, mode
+        self.start_epoch, self.epoch = start_epoch, 0
         self.best, self.bad = None, 0
         self.previous_train = self.previous_validation = self.previous_mean = None
         self.best_train = self.best_validation = None
@@ -33,8 +35,13 @@ class EpochPatience:
         train, validation = float(train), float(validation)
         mean = .5 * train + .5 * validation
         score = validation if self.mode == 'validation' else mean
+        self.epoch += 1
         previous = dict(previous_train=self.previous_train,
                         previous_validation=self.previous_validation,previous_mean=self.previous_mean)
+        if self.epoch < self.start_epoch:
+            return dict(score=score,mean=mean,mode=self.mode,improved=False,best=None,
+                        best_train=None,best_validation=None,bad=0,stop=False,
+                        epoch=self.epoch,warming_up=True,rejections=['MONITOR_WARMUP'],**previous)
         rejections = []
         if self.mode == 'mean_no_regression' and self.previous_mean is not None:
             for value, old, name in ((train,self.previous_train,'TRAIN'),
@@ -53,7 +60,8 @@ class EpochPatience:
         self.previous_train, self.previous_validation, self.previous_mean = train, validation, mean
         return dict(score=score, mean=mean, mode=self.mode, improved=improved, best=self.best,
                     best_train=self.best_train,best_validation=self.best_validation,bad=self.bad,
-                    stop=self.bad >= self.patience,rejections=rejections,**previous)
+                    stop=self.bad >= self.patience,rejections=rejections,
+                    epoch=self.epoch,warming_up=False,**previous)
 
 
 def capture_rng(rng):

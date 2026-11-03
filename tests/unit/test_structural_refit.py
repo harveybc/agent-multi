@@ -59,6 +59,38 @@ def test_guarded_recovery_needs_new_historical_accepted_best():
         EpochPatience(mode='unknown')
 
 
+@pytest.mark.parametrize('mode',EpochPatience.MODES)
+def test_twenty_epoch_warmup_excludes_transient_bests(mode):
+    p = EpochPatience(20,1e-8,mode=mode,start_epoch=20)
+    for _ in range(19):
+        r = p.observe(1000.,1000.)
+        assert r['warming_up'] and not r['improved'] and not r['stop']
+        assert p.best is None and p.bad == 0
+    r = p.observe(-1.,-1.)
+    assert r['improved'] and r['epoch'] == 20 and not r['warming_up']
+    assert r['previous_train'] is None and p.bad == 0 and p.best == -1.
+    for _ in range(19):
+        assert not p.observe(-2.,-2.)['stop']
+    assert p.observe(-2.,-2.)['stop'] and p.epoch == 40
+
+
+def test_rebase_keeps_history_and_learning_counters_but_drops_early_best():
+    from tools.run_structural_sac_refit import rebase_warmup_state
+    old = dict(identity='old',epoch=2,steps=48050,updates=11000,best_bundle={'path':'early'},
+        history=[dict(epoch=i,monitor={'score':100.},metrics={
+            'TRAIN':{'return_per_week':100.},'VALIDATION':{'return_per_week':100.}}) for i in [1,2]])
+    design = dict(monitor_start_epoch=20,max_epochs=2000,patience=20,min_delta=1e-8,monitor_mode='validation')
+    new = rebase_warmup_state(old,design,'new')
+    assert old['best_bundle'] == {'path':'early'}
+    assert new['best_bundle'] is None and new['stopping']['best'] is None
+    assert new['steps'] == old['steps'] and new['updates'] == old['updates']
+    assert new['stopping']['epoch'] == 2 and new['stopping']['bad'] == 0
+    assert all(r['monitor']['warming_up'] for r in new['history'])
+    assert [r['metrics'] for r in new['history']] == [r['metrics'] for r in old['history']]
+    with pytest.raises(ValueError,match='PREMONITOR'):
+        rebase_warmup_state(old,dict(design,monitor_start_epoch=2),'new')
+
+
 def test_bundle_reload_is_exact_without_training_and_rejects_tampering(tmp_path):
     model = ThreeSignalSAC(probe_recipe())
     x = np.random.default_rng(7).normal(size=(4, 13, 2)).astype('float32')
@@ -93,7 +125,8 @@ def test_rng_restoration_repeats_samples():
 
 
 @pytest.mark.parametrize('mode',['mean','validation','mean_no_regression'])
-def test_epoch_resume_matches_uninterrupted_learning_and_preserves_best(tmp_path, request, mode):
+@pytest.mark.parametrize('start_epoch',[1,2])
+def test_epoch_resume_matches_uninterrupted_learning_and_preserves_best(tmp_path, request, mode, start_epoch):
     from app.three_signal_learning import synthetic_env, emit, evaluate
     from tools.run_structural_sac_refit import fit_epochs
     torch.set_num_threads(1)
@@ -107,7 +140,7 @@ def test_epoch_resume_matches_uninterrupted_learning_and_preserves_best(tmp_path
             out[period] = evaluate(env,logits)
         return out
     d = dict(replay_size=64,batch_size=8,warmup=8,update_every=4,
-             max_epochs=2,patience=20,min_delta=1e-8,monitor_mode=mode)
+             max_epochs=2,patience=20,min_delta=1e-8,monitor_mode=mode,monitor_start_epoch=start_epoch)
     probe = factory().inputs.windows[30:34].copy()
     uninterrupted = ThreeSignalSAC(r,seed=7)
     a = fit_epochs(uninterrupted,factory,assess,d,7,tmp_path/'a','test-id',probe)

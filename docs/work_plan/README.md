@@ -7,6 +7,9 @@ remaining mean-only fit. Compare fresh seed7 validation-only stopping on the
 primary GPU against previous-epoch-nondecreasing guarded mean on the secondary.
 Data, inputs, architecture, patience20 and threshold1e-8 remain identical.
 The previous completed seed19 and interrupted seed7 checkpoints are preserved.
+Owner amendment: first monitoring reference after epoch20; epochs1-19 cannot
+select a best or consume patience. Preserve completed learning prefixes through
+authenticated recovery migration; do not restart training or replay warm-up.
 
 [Structural refit193](193_STRUCTURAL_REFIT_108.md) follows the completed ordered
 two-pass selection:120 to108 columns,31 groups,122 unique evaluations.
