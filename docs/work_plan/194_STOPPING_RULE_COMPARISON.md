@@ -23,6 +23,16 @@ or the available prefix reaches the new monitoring epoch.43 focused tests pass,
 including warm-up boundaries, exclusion of early transient maxima, bookkeeping
 rebasing, and exact learning resume under all stopping modes with/without warm-up.
 
+Warm-up runtime`ee6e71a0` resumed at2026-11-03T15:59UTC. Both workers advanced
+beyond their retained prefix with zero restarts: primary epoch10, secondary
+epoch12. Copied model and learning-state hashes match their source recovery
+receipts exactly. No early selected best is carried into the amended monitor.
+
+| Warmed-up arm | New identity |
+|---|---|
+| validation | `d53a3c061a816b7d5564cc0795cad540df82b94da65e33114d331c7930dddf96` |
+| mean_no_regression | `6dfead4e19c2fe0beffab3f2b05be4d214cb33b0627ccc5dc183e6459b1fc530` |
+
 Owner request2026-11-03, superseding further execution of193's mean-only fit.
 The former checkpoints and results remain available. No DEAP or new selection.
 
