@@ -118,3 +118,7 @@ does. This preserves the accepted full-parent missing-observation support while
 feeding only108 actual channels. Loading only reduced raw columns must not
 silently change the comparison's decision dates. The inference probe verifies
 the trained network on normalized windows, not raw-data availability by itself.
+For the next floating pass, freeze one numerical backend and first evaluate
+the unmasked108-input control on that backend. Do not compare CPU masked
+scores against archived GPU baseline scores without the paired replay check;
+near-tie categorical decisions can be sensitive to cross-device arithmetic.
