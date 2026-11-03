@@ -15,7 +15,9 @@
     "implementation_status": "Implemented, tested and launched as the new paired-seed DEAP campaign. Historical pilot selectors remain unchanged.",
     "test_access": false
   },
-  "current_stage": "ORDERED_TWO_PASS_NATIVE_RUNNING",
+  "current_stage": "STRUCTURAL_108_REFIT_READY",
+  "structural_refit_verification": {"tests_passed":31,"real_native_controls_passed":true,"train_months":48,"validation_months":12,"train_decisions_per_epoch":24025,"validation_decisions":6207,"input_tensor_shape":[30859,13,108],"test_read":false,"initial_bundle_reload":"exact CPU; untrained engineering check"},
+  "structural_refit": {"date":"2026-11-03","plan":"../193_STRUCTURAL_REFIT_108.md","features":108,"groups":31,"train":["2020-01-01","2024-01-01"],"validation":["2024-01-01","2025-01-01"],"test_closed_from":"2025-01-01","max_epochs":2000,"patience":20,"min_delta":1e-8,"monitor":"mean(full TRAIN return/week, full VALIDATION return/week)","fresh_weights":true,"physical_channel_removal":true,"preserve_best_for_next_mask_pass":true,"deap_champion_exists":false},
   "two_pass_runtime": {"code":"b3a421f3","identity":"17af7faa1555c4bea89b6b90757623d114fb5aaefe34424d1cf1590906464627","selector_version":"0.2.3","started_utc":"2026-11-02T21:38:03Z","preflight_passed":true,"first_control_and_deletion_reused":true,"service_enabled":true,"maximum_evaluation_requests":223,"passes":2,"initial_features":120,"phase2_complete":false},
   "two_pass": {"report":"../192_ORDERED_TWO_PASS_SELECTION.md","owner_clarified":"2026-11-02","selector":"two_pass_greedy","feature_selector_version":"0.2.3","native_tests_passed":32,"package_tests_passed":51,"old_floating_queue":"stopped and disabled","cache_reuse":"same evaluator AST, source pins, observations, checkpoints and numerical device"},
   "mask_runtime": {"report":"../191_MASK_FIRST_EXECUTION.md","code":"5b65c8d1","identity":"13961f7797bff4c1f960f7df8ecbb0136ddb54453806111a569e6bab07773e5f","paired_seeds":[7,19],"native_preflight_passed":true,"tests_passed":31,"feature_count":120,"group_count":31,"atomic_blocks":111,"initial_seconds_per_subset":9.18,"persistent_service":true,"structural_confirmation":false},

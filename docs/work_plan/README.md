@@ -1,5 +1,15 @@
 # Adaptive Multi-Asset Trading Work Plan
 
+## Priority Update: 2026-11-03
+
+[Structural refit193](193_STRUCTURAL_REFIT_108.md) follows the completed ordered
+two-pass selection:120 to108 columns,31 groups,122 unique evaluations.
+Fresh weights use108 actual input channels. Full TRAIN2020-2023 and
+VALIDATION2024 monitoring return for this fit, with2000 maximum epochs,
+patience20 and1e-8 improvement threshold on their mean return/week.
+The best checkpoint is exported with its recipe and reload proof for the next
+inference-only selection pass. TEST2025 remains closed; no DEAP restart.
+
 ## Priority Update: 2026-11-02
 
 [Two-pass clarification192](192_ORDERED_TWO_PASS_SELECTION.md) now overrides

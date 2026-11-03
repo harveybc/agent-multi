@@ -2,6 +2,10 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "run_structural_sac_refit.py": {
+   "purpose": "Owner-authorized fresh108-input discrete SAC refit with full4-year TRAIN/1-year validation monitoring, epoch recovery and authenticated inference bundles; no DEAP or TEST",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
+  },
   "run_frozen_mask_selection.py": {
    "purpose": "Owner-authorized frozen paired SAC mask evaluation using feature_selector floating search, full native accounts and authenticated subset cache; no training or DEAP",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
