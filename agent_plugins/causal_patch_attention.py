@@ -7,6 +7,7 @@ import math
 import torch
 from torch import nn
 from torch.nn import functional as F
+from torch.nn.attention import SDPBackend, sdpa_kernel
 
 
 class CausalPatchAttention(nn.Module):
@@ -40,6 +41,9 @@ class CausalPatchAttention(nn.Module):
         patches = F.pad(x,(self.patch_len-1,0)).unfold(-1,self.patch_len,1)
         tokens = self.patch_projection(patches.reshape(batch*channels,length,self.patch_len))
         tokens = tokens + self.positions.to(dtype=tokens.dtype)
-        encoded = self.encoder(tokens,src_mask=self.causal_mask)
+        # TorchRL vmaps twin critics; CUDA's fused bias kernel cannot align
+        # the 13-token mask in that path. Scope the portable backend here.
+        with sdpa_kernel(SDPBackend.MATH):
+            encoded = self.encoder(tokens,src_mask=self.causal_mask)
         correction = self.output(encoded).reshape(batch,channels,length)
         return x + self.gate*correction

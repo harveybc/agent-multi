@@ -62,6 +62,11 @@ is mandatory and covers every token. Gate0 is an exact bypass for tests.
 The adapter's random initialization is isolated so existing modules keep the
 same seed-dependent initialization before learning.
 
+CUDA integration caught an attention-bias stride alignment failure under
+TorchRL twin-critic vectorization at length13. The adapter scopes PyTorch's
+mathematical SDPA backend locally. The same CUDA update/checkpoint regression
+must pass before launch; no padding to a different market window is allowed.
+
 Same full TRAIN2020-2023 and VALIDATION2024 each epoch; TEST2025 closed.
 Same fixed TRAIN scaler and original support; no new rows after feature pruning.
 Batch128, replay65536, warmup4096, update every4,lr0.0003,wd0.01,gamma0.99,
