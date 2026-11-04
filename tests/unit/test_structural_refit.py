@@ -10,6 +10,53 @@ from app.structural_refit import EpochPatience, export_bundle, load_bundle, capt
 from tests.unit.test_discrete_curve_native import curve_env  # noqa: F401
 
 
+def selected_round_fixture():
+    from app.rl_subset import digest
+    r=split_recipe()
+    spec=dict(dataset=dict(features=r['list']['columns'],scaler_hash=digest(r['scaler'])))
+    spec['identity']=digest(spec)
+    result=dict(identity=spec['identity'],result=dict(selected=['y'],termination='TWO_PASSES_COMPLETE'),
+        original_support_preserved=True,unmasked_after_pass_exact=True,test_read=False,final=dict(eligible=True))
+    close=dict(identity=spec['identity'],termination='TWO_PASSES_COMPLETE')
+    return r,spec,result,close
+
+
+def test_selected_round_removes_channels_and_empty_branch_without_refitting_scale():
+    from tools.run_structural_sac_refit import selected_recipe_for_round
+    r,spec,result,close=selected_round_fixture()
+    out=selected_recipe_for_round(r,spec,result,close)
+    assert out['list']['columns']==['y']
+    assert out['representation']['resolved']['names']==['b']
+    assert out['scaler']['mean']==[r['scaler']['mean'][1]]
+    assert out['scaler']['std']==[r['scaler']['std'][1]]
+    assert r['list']['columns']==['x','y']
+
+
+@pytest.mark.parametrize('field,value',[('test_read',True),('original_support_preserved',False),
+                                      ('unmasked_after_pass_exact',False),('identity','wrong')])
+def test_selected_round_rejects_untrusted_receipt(field,value):
+    from tools.run_structural_sac_refit import selected_recipe_for_round
+    r,spec,result,close=selected_round_fixture(); result[field]=value
+    with pytest.raises(ValueError,match='RECEIPT'):
+        selected_recipe_for_round(r,spec,result,close)
+
+
+def test_selected_round_rejects_wrong_order_and_partial_encoding():
+    from tools.run_structural_sac_refit import selected_recipe_for_round
+    from app.rl_subset import digest
+    r,spec,result,close=selected_round_fixture()
+    result['result']['selected']=['y','x']
+    with pytest.raises(ValueError,match='SUBSET_ORDER'):
+        selected_recipe_for_round(r,spec,result,close)
+    r['list']['columns']=['hour_sin','hour_cos']
+    spec['dataset']['features']=r['list']['columns']
+    spec['identity']=digest({k:v for k,v in spec.items() if k!='identity'})
+    result['identity']=close['identity']=spec['identity']
+    result['result']['selected']=['hour_sin']
+    with pytest.raises(ValueError,match='PARTIAL_ENCODING'):
+        selected_recipe_for_round(r,spec,result,close)
+
+
 def test_patience_mean_tiny_improvement_reset_and_twenty_failures():
     p = EpochPatience(20, 1e-8)
     assert p.observe(2., -4.)['improved']

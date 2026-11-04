@@ -17,7 +17,7 @@ from torchrl.data import TensorDictReplayBuffer, LazyTensorStorage
 from app.frozen_recipe_inputs import file_sha
 from app.frozen_signal_masks import prepared_signals
 from app.recipe_runtime import RecipeMarket
-from app.rl_subset import digest, seal_recipe, subset_recipe, refit_train_scaler, project_inputs, support_hash
+from app.rl_subset import digest, seal_recipe, subset_recipe, refit_train_scaler, project_inputs, support_hash, coherent_blocks
 from app.structural_refit import (EpochPatience, capture_rng, restore_rng, build_model, verify_files,
     export_bundle, load_bundle, save_recovery, load_recovery)
 from app.three_signal_learning import environment, emit, evaluate
@@ -142,7 +142,7 @@ def prepare(args):
     print(json.dumps(read(root/'PREFLIGHT.json')),flush=True)
 
 
-def authenticate(root):
+def authenticate(root, source_root=None):
     spec = read(root/'SPEC.json')
     if spec['identity'] != digest({k:v for k,v in spec.items() if k != 'identity'}):
         raise ValueError('REFIT_SPEC_IDENTITY')
@@ -150,7 +150,7 @@ def authenticate(root):
         if file_sha(root/name) != sha:
             raise ValueError('REFIT_INPUT:' + name)
     for name,sha in spec['sources'].items():
-        if file_sha(ROOT/name) != sha:
+        if file_sha((source_root or ROOT)/name) != sha:
             raise ValueError('REFIT_SOURCE:' + name)
     for name,version in spec['software'].items():
         if importlib.metadata.version(name) != version:
@@ -159,6 +159,103 @@ def authenticate(root):
     if preflight['identity'] != spec['identity'] or not preflight['controls']['passed']:
         raise ValueError('REFIT_PREFLIGHT')
     return spec
+
+
+def selected_recipe_for_round(parent_recipe, selection_spec, result, close):
+    identity = selection_spec['identity']
+    if (identity != digest({k:v for k,v in selection_spec.items() if k != 'identity'})
+            or result['identity'] != identity or close['identity'] != identity
+            or close['termination'] != 'TWO_PASSES_COMPLETE'
+            or result['result']['termination'] != 'TWO_PASSES_COMPLETE'
+            or not result['original_support_preserved'] or not result['unmasked_after_pass_exact']
+            or result['test_read'] or not result['final']['eligible']):
+        raise ValueError('SELECTED_REFIT_RECEIPT')
+    columns = parent_recipe['list']['columns']
+    if (selection_spec['dataset']['features'] != columns
+            or selection_spec['dataset']['scaler_hash'] != digest(parent_recipe['scaler'])):
+        raise ValueError('SELECTED_REFIT_PARENT_RECIPE')
+    selected = result['result']['selected']
+    keep = set(selected)
+    if any(keep.intersection(b) and not set(b) <= keep for b in coherent_blocks(columns)):
+        raise ValueError('SELECTED_REFIT_PARTIAL_ENCODING')
+    return subset_recipe(parent_recipe, selected)
+
+
+def prepare_selected(args):
+    source, root = args.source_root.resolve(), args.root.resolve()
+    if root.exists():
+        raise ValueError('NEW_REFIT_ROOT_REQUIRED')
+    original = authenticate(source,args.source_runtime)
+    selection = args.selection.resolve()
+    ss, result, close = [read(selection/n) for n in ('SPEC.private.json','RESULT.json','CLOSE.json')]
+    if (file_sha(selection/'RESULT.json') != close['result_sha256']
+            or file_sha(source/'SPEC.json') != ss['parent_spec_sha256']
+            or file_sha(args.selection_runtime/'tools/run_refit_mask_pass.py') != ss['source_sha256']):
+        raise ValueError('SELECTED_REFIT_LINEAGE')
+    run = source/'runs'/('seed_%d' % ss['seed'])
+    for name,key in (('RESULT.json','parent_result_sha256'),('TRAINING.json','parent_training_sha256')):
+        if file_sha(run/name) != ss[key]:
+            raise ValueError('SELECTED_REFIT_PARENT_RESULT')
+    parent_result = read(run/'RESULT.json')
+    if (parent_result['identity'] != original['identity'] or
+            parent_result['best_bundle'] != ss['best_bundle'] or
+            result['parent_bundle'] != ss['best_bundle']):
+        raise ValueError('SELECTED_REFIT_PARENT_BUNDLE')
+    reduced = selected_recipe_for_round(read(source/'RECIPE.json'),ss,result,close)
+    preflight = read(source/'PREFLIGHT.json')
+    if preflight['support_sha256'] != ss['dataset']['support_hash']:
+        raise ValueError('SELECTED_REFIT_SUPPORT_LINEAGE')
+    root.mkdir()
+    for name in original['files']:
+        dest=root/name; dest.parent.mkdir(parents=True,exist_ok=True)
+        shutil.copy2(source/name,dest)
+    write(root/'RECIPE.json',reduced)
+    for src,dst in (('RESULT.json','SELECTION_RESULT.json'),('CLOSE.json','SELECTION_CLOSE.json'),
+                    ('SPEC.private.json','SELECTION_SPEC.private.json')):
+        shutil.copy2(selection/src,root/dst)
+    spec=copy.deepcopy(original)
+    spec.pop('identity',None); spec.pop('warmup_migration',None)
+    spec['created_at']=now()
+    spec['design'].update(seeds=args.seeds,monitor_mode='validation',monitor_start_epoch=20,
+        monitor='validation_full_accounts_return_per_week',max_epochs=2000,patience=20,min_delta=1e-8)
+    if not args.seeds or len(set(args.seeds))!=len(args.seeds):
+        raise ValueError('SELECTED_REFIT_SEEDS')
+    spec['sources']={n:file_sha(ROOT/n) for n in SOURCES}
+    spec['selection_identity']=ss['identity']
+    spec['parent_recipe_identity']=read(source/'RECIPE.json')['identity']
+    spec['structural_round']=dict(parent_identity=original['identity'],
+        selection_result_sha256=close['result_sha256'],features_before=len(ss['dataset']['features']),
+        features_after=reduced['list']['n'],fresh_weights=True,fresh_replay=True,
+        scaler='projected unchanged from parent TRAIN constants',
+        checkpoint_source='new initialization, not the masked winner weights')
+    spec['files']={str(p.relative_to(root)):file_sha(p) for p in root.rglob('*') if p.is_file()}
+    spec['identity']=digest(spec)
+    write(root/'SPEC.json',spec)
+    market=market_for(root,spec)
+    if support_hash(market.inputs)!=preflight['support_sha256']:
+        raise ValueError('SELECTED_REFIT_SUPPORT_CHANGED')
+    for period,(lo,hi) in reduced['split']['periods'].items():
+        chosen=market.inputs.period==period
+        stamps=pd.to_datetime(market.inputs.row_ts_ns[chosen],utc=True)
+        expected=list(pd.period_range(lo,pd.Timestamp(hi)-pd.Timedelta(days=1),freq='M').astype(str))
+        if sorted(set(stamps.strftime('%Y-%m')))!=expected:
+            raise ValueError('SELECTED_REFIT_MISSING_MONTH:'+period)
+        env=environment(market,read(root/'RISK.json'),spec['design']['horizon'],[lo,hi],spec['effective']['gamma'])
+        expected_counts=preflight['periods'][period]
+        if (int(chosen.sum())!=expected_counts['rows'] or
+                int((chosen & market.inputs.valid).sum())!=expected_counts['valid_windows'] or
+                int(env.valid[env.engine.first:env.engine.last].sum())!=expected_counts['decision_count']):
+            raise ValueError('SELECTED_REFIT_ROW_COUNTS')
+    controls=synthetic_controls(reduced,read(root/'RISK.json'),dict(gamma=spec['effective']['gamma']))
+    if not controls['passed']:
+        raise ValueError('SELECTED_REFIT_NATIVE_CONTROLS')
+    preflight.pop('warmup_migration',None); preflight.pop('continuation_of_fresh_fit',None)
+    preflight.update(identity=spec['identity'],features=reduced['list']['n'],
+        groups=len(reduced['representation']['resolved']['names']),
+        tensor_shape=list(market.inputs.windows.shape),controls=controls,
+        fresh_training=True,structural_round=spec['structural_round'])
+    write(root/'PREFLIGHT.json',preflight)
+    print(json.dumps(preflight),flush=True)
 
 
 def assess_full(model, market, risk, design, save=None, diagnose=False):
@@ -381,7 +478,7 @@ def worker(args):
         write(output/'RESULT.json',dict(identity=spec['identity'],seed=args.seed,
             best_bundle=state['best_bundle'],metrics=metrics,finished_at=now(),
             activity_admissible=all(m['orders_per_week']>2 for m in metrics.values()),
-            scope='fresh_structural_108_development_validation_2024_TEST_closed'))
+            scope=f"fresh_structural_{market.recipe['list']['n']}_development_validation_2024_TEST_closed"))
 
 
 def main():
@@ -393,6 +490,10 @@ def main():
     p.add_argument('--monitor-mode',choices=EpochPatience.MODES,default='mean')
     p.add_argument('--seeds',nargs='+',type=int,default=[7,19])
     p.add_argument('--monitor-start-epoch',type=int,default=1)
+    p=sub.add_parser('prepare-selected')
+    for name in ('source-root','source-runtime','selection','selection-runtime','root'):
+        p.add_argument('--'+name,type=Path,required=True)
+    p.add_argument('--seeds',nargs='+',type=int,default=[7])
     p=sub.add_parser('migrate-warmup')
     for name in ('source-root','source-runtime','root'):
         p.add_argument('--'+name,type=Path,required=True)

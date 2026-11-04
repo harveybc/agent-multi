@@ -15,7 +15,9 @@
     "implementation_status": "Implemented, tested and launched as the new paired-seed DEAP campaign. Historical pilot selectors remain unchanged.",
     "test_access": false
   },
-  "current_stage": "SECOND_STRUCTURAL_MASK_PASS_RUNNING",
+  "current_stage": "STRUCTURAL94_REFIT_PREPARATION",
+  "second_mask_completion": {"finished_utc":"2026-11-04T06:17:33Z","counts":[108,93,94],"groups":30,"evaluations":113,"validation_return_pct":10.447063500001423,"validation_sharpe":1.4495520975626104,"result_sha256":"ee172eb0f2f5e692196129cd457889579840dca211f6067d81d495f2dce3e065","structural_refit_performed":false},
+  "structural94_plan": {"plan":"../196_STRUCTURAL_REFIT_94.md","seed":7,"fresh_weights":true,"fresh_replay":true,"monitor":"validation","monitor_start_epoch":20,"patience":20,"min_delta":1e-8,"max_epochs":2000,"test_read":false},
   "second_mask_runtime": {"code":"bbe89daf","selector_code":"a53fbe0","selector_version":"0.2.4","identity":"b634709de2ff709847e7939ce79955dbe68e79a154c5b5f26cf8a7684876a61b","started_utc":"2026-11-04T06:14:42Z","preflight_exact":true,"native_tests_passed":31,"selector_tests_passed":54,"selector_legacy_skipped":4,"atomic_blocks":100,"maximum_requests":201,"measured_seconds_per_evaluation":1.37,"persistent_worker":true,"automatic_collector":true,"intermediate_approval_required":false},
   "second_mask_pass": {"date":"2026-11-04","plan":"../195_REFIT_SECOND_MASK_PASS.md","initial_features":108,"initial_groups":31,"checkpoint_epoch":28,"monitor_source":"validation","remove_on_tie":true,"reinsertion":"strict improvement","selection_period":"VALIDATION2024 development","test_read":false},
   "stopping_warmup_completion": {"epochs":[48,48],"selected_epochs":[28,28],"stop_reasons":["patience","patience"],"validation_returns_pct":[-3.4537430999985737,-16.464318549998517],"restored_best":true},
@@ -253,6 +255,7 @@
   },
   "bottom_up": "INDEPENDENT_REVIEWS_RECEIVED; FIVE_CONCRETE_DEFECTS_REPAIRED_AND_REPLAYED; COVERAGE_REVISION_REQUIRED",
   "next_allowed_actions": [
+    "196 owner authorizes fresh structural94-input seed7 fit, same complete support and strategy, validation-only warmup20/patience20/1e-8 stopping; retain checkpoint/replay recovery and final inference bundle. No new search or TEST access.",
     "195 supersedes earlier no-next-pass restrictions: owner authorizes second ordered frozen mask round on structural108 validation-only epoch28. Delete exact ties or improvements, reinsert strictly improving removed blocks, full TRAIN/VALIDATION on identical support. Run through final replay and counts without approvals; no retraining, DEAP or TEST in this round.",
     "194 owner warm-up amendment supersedes its original monitoring start: first accepted reference after epoch20; no patience or early best during epochs1-19; earliest patience stop40. Continue authenticated existing9/11-epoch learning prefixes in new runtime/identities, preserve model/replay/optimizer/RNG, keep both stopping modes and automatic collection. No new feature search or TEST.",
     "194 supersedes193 continuation: run validation-only stopping on the primary and guarded-mean stopping on the secondary, both fresh seed7 with identical108-input data/model contract. Preserve previous results; retain best bundles and shadow stopping traces. No change to TEST or automatic feature-selection launch.",

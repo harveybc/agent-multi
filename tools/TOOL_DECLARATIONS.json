@@ -7,7 +7,7 @@
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
   },
   "run_structural_sac_refit.py": {
-   "purpose": "Owner-authorized fresh108-input discrete SAC refit with full4-year TRAIN/1-year validation monitoring, epoch recovery and authenticated inference bundles; no DEAP or TEST",
+   "purpose": "Owner-authorized structural selected-input discrete SAC refit with full4-year TRAIN/1-year validation monitoring, authenticated successive selection receipts, epoch recovery and inference bundles; no DEAP or TEST",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
   },
   "run_frozen_mask_selection.py": {

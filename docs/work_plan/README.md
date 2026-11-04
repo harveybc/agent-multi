@@ -2,6 +2,11 @@
 
 ## Priority Update: 2026-11-04
 
+[Structural94 refit196](196_STRUCTURAL_REFIT_94.md) follows completed195:
+108 ->93 ->94 columns and30 groups. Owner authorizes fresh seed7 training with
+full TRAIN/VALIDATION and validation-only stopping (warmup20,patience20,1e-8).
+No mask remains in the input network; same support, scaler constants and strategy.
+
 [Second mask pass195](195_REFIT_SECOND_MASK_PASS.md): owner authorizes the next
 ordered removal/reinsertion round on the selected structural108 validation-only
 checkpoint. Both stopping comparisons completed epoch48 and restored epoch28.
