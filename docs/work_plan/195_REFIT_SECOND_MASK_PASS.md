@@ -62,3 +62,28 @@ at most201 evaluation requests. Initial measured rate1.37 seconds/subset;
 46 evaluations observed, no restarts, about1.7GB resident service memory.
 Automatic collection retains SPEC, PREFLIGHT, PASSES, cache, RESULT, FEATURE_COUNTS,
 final ledgers and CLOSE. No historical cache is reused with these new weights.
+
+## Completion
+
+Closed2026-11-04T06:17:33Z without errors or restarts.113 evaluations:
+108 ->93 ->94 features,30 final groups;12 accepted block removals and one
+single-column reinsertion (`cdl.close_minus_low_pips@asinh`). No accepted deletion
+was an exact tie. Final control replay and selected account replay were exact.
+Result digest `ee172eb0f2f5e692196129cd457889579840dca211f6067d81d495f2dce3e065`.
+
+| Metric | Unmasked108 | Active94 |
+|---|---:|---:|
+| TRAIN return % |367.43186|210.18694|
+| TRAIN Sharpe |4.67683|3.61645|
+| VALIDATION return % |-3.45374|10.44706|
+| VALIDATION Sharpe |-0.45088|1.44955|
+| VALIDATION drawdown % |8.77992|4.72764|
+| VALIDATION trades |321|298|
+| VALIDATION wins % |50.77882|57.71812|
+| VALIDATION trades/week |5.94444|5.51852|
+| VALIDATION harmful early closes |36/85|33/64|
+
+Early-close harm is versus the same position held to passive protection, not
+account continuation. Its fraction worsened despite better account-level results.
+These are selection-period, frozen-mask results; subsequent structural fit196 is
+required to assess the94-channel network, and does not make2024 an untouched holdout.

@@ -41,3 +41,15 @@ column order and scaler projection exact; empty branch removed;48/12 months and
 all original decision rows preserved; native synthetic controls pass; fresh model
 shape/parameter count measured; epoch resume and inference reload remain exact.
 This is a single-seed structural test, not evidence of robustness across seeds.
+
+## Verified execution
+
+Runtime `1431d492`,47 focused tests pass. Source receipts, original48 TRAIN
+months and12 VALIDATION months,24025/6207 actionable decisions and support digest
+are unchanged. Native synthetic controls pass. Actual input shape `[13,94]`,
+30 groups and96442 parameters (previous108-input model99586).
+Identity `410d64cc36705f5dbe7fb99c896fb88629dab9585aa0b7e6f7f1e16149717a0e`.
+Persistent primary-GPU worker started2026-11-04T07:38:43Z; first gradient update
+observed after the4096-transition replay warmup. Independent collector enabled.
+No prior weights or recovery state were copied. Runtime settings and code are
+pinned; reporting changes do not modify the running source tree.
