@@ -1,5 +1,14 @@
 # Adaptive Multi-Asset Trading Work Plan
 
+## Priority Update: 2026-11-04
+
+[Second mask pass195](195_REFIT_SECOND_MASK_PASS.md): owner authorizes the next
+ordered removal/reinsertion round on the selected structural108 validation-only
+checkpoint. Both stopping comparisons completed epoch48 and restored epoch28.
+Remove exact ties as requested; reinsert only on strict improvement. Full
+TRAIN/VALIDATION, frozen weights and support, no TEST or intermediate approvals.
+Native preflight must reproduce the original unmasked accounts before deletion.
+
 ## Priority Update: 2026-11-03
 
 [Stopping comparison194](194_STOPPING_RULE_COMPARISON.md) now supersedes the

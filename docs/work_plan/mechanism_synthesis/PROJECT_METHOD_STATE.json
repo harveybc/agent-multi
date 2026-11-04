@@ -15,7 +15,9 @@
     "implementation_status": "Implemented, tested and launched as the new paired-seed DEAP campaign. Historical pilot selectors remain unchanged.",
     "test_access": false
   },
-  "current_stage": "PAIRED_STOPPING_WARMUP_RUNNING",
+  "current_stage": "SECOND_STRUCTURAL_MASK_PASS_PREPARATION",
+  "second_mask_pass": {"date":"2026-11-04","plan":"../195_REFIT_SECOND_MASK_PASS.md","initial_features":108,"initial_groups":31,"checkpoint_epoch":28,"monitor_source":"validation","remove_on_tie":true,"reinsertion":"strict improvement","selection_period":"VALIDATION2024 development","test_read":false},
+  "stopping_warmup_completion": {"epochs":[48,48],"selected_epochs":[28,28],"stop_reasons":["patience","patience"],"validation_returns_pct":[-3.4537430999985737,-16.464318549998517],"restored_best":true},
   "stopping_warmup_runtime": {"code":"ee6e71a0","verified_resumed_utc":"2026-11-03T15:59:00Z","validation_identity":"d53a3c061a816b7d5564cc0795cad540df82b94da65e33114d331c7930dddf96","guarded_identity":"6dfead4e19c2fe0beffab3f2b05be4d214cb33b0627ccc5dc183e6459b1fc530","model_learning_files_identical_to_source":true,"retained_epochs":[9,11],"verified_running_epochs":[10,12],"persistent_workers":2,"automatic_collector":true},
   "stopping_monitor_warmup": {"owner_requested":"2026-11-03","monitor_start_epoch":20,"first_patience_comparison_epoch":21,"earliest_patience_stop_epoch":40,"early_checkpoint_selection":false,"completed_prefixes_preserved":[9,11],"migration":"new identities; learning files unchanged; monitor history recomputed","tests_passed":43},
   "stopping_rule_runtime": {"code":"e689390b","verified_training_utc":"2026-11-03T13:47:00Z","validation_identity":"556e47c27dfde31d121b2e517cca230aef6a1c716e71c993d9e2af574e9dfc59","guarded_identity":"97a4c2f8581a03e0083f15992e3d7310d094d67e4370e09ca93e6411f1b3dec0","same_inputs_model_seed_support_verified":true,"persistent_workers":2,"automatic_collector":true,"initial_gradient_updates_each":65},
