@@ -106,3 +106,35 @@ Only a subsequent controller experiment may consume uncertainty for risk decisio
 If indicated, complete the2x2 attention/head factorial to measure interactions;
 a single winner-plus-head comparison cannot establish the interaction effect.
 This is planned research, not another silently launched training arm.
+
+## Verified launch
+
+Runtime `9fb1e8d4`. Both fits started2026-11-04 21:31:25UTC.
+
+| Arm | GPU | Total trainable parameters | Identity |
+|---|---|---:|---|
+| Baseline | RTX4090 Laptop |96418|`8dbba165d61ffd873c857a38d6eb03852f9a03efadc917d3c38199feed544e44`|
+| Causal patch attention | RTX5090 |98344|`36adc294a76e011bde8e99213abcd1ad2ea4c230d96037297c80faa734aaefa4`|
+
+50 focused CPU tests passed;3 CUDA cases skipped in that CPU-only invocation.
+All12 adapter tests, including CPU and CUDA cases, passed on the assigned GPU.
+Authenticated paired files/scaler/column order/support and design are identical;
+effective learning configs differ only in the adapter. Native controls pass for
+both. Initial observed updates65 and129 respectively have finite losses and
+gradients; these are launch checks, not trading performance results.
+
+Both workers are persistent services with6GiB RAM limits, no swap, resource
+admission, bounded failure restart and full epoch recovery. An independent
+collector retrieves both arms automatically until their final results exist.
+No intermediate approval is required. Final ETA depends on full epoch duration
+and observed patience; replay-fill throughput is not used as a training estimate.
+
+The preflight inherits the parent's historical `continuation_of_fresh_fit` flag;
+this arm is NOT a weight continuation. Its governing `structural_round` records
+fresh weights and replay, and neither preparation nor worker imports the compact
+actor weights. That frozen reference remains unchanged.
+
+One seed across different GPU models is an initial architecture contrast, not
+proof that a performance difference exceeds training variability. Stronger
+claims require matched repetitions. No Bayesian head or controller adjustment
+is present in either run.
