@@ -20,7 +20,7 @@ class ResidualTCN(nn.Module):
 
 class DoubleTCNExtractor(BaseFeaturesExtractor):
     def __init__(self, observation_space, recipe, branch_width=8, core_width=16,
-                 branch_blocks=2, core_blocks=2):
+                 branch_blocks=2, core_blocks=2, temporal_attention=None):
         validate_recipe(recipe)
         self.shape = (recipe['tensor']['window']['observations'], recipe['list']['n'])
         require(observation_space['features'].shape == self.shape, 'OBSERVATION_SHAPE')
@@ -37,6 +37,15 @@ class DoubleTCNExtractor(BaseFeaturesExtractor):
                 *[ResidualTCN(branch_width, 2**j, kernel) for j in range(branch_blocks)]))
         self.fusion = CausalConv1d(len(self.branches) * branch_width, core_width, 1)
         self.core = nn.Sequential(*[ResidualTCN(core_width, 2**j) for j in range(core_blocks)])
+        self.post_fusion = nn.Identity()
+        if temporal_attention is not None:
+            from agent_plugins.causal_patch_attention import CausalPatchAttention
+            require(isinstance(temporal_attention,dict)
+                    and temporal_attention.get('kind')=='causal_patch', 'TEMPORAL_ATTENTION')
+            params={k:v for k,v in temporal_attention.items() if k!='kind'}
+            # Keep the random initialization of all existing modules unchanged.
+            with torch.random.fork_rng(devices=[]):
+                self.post_fusion=CausalPatchAttention(self.shape[0],**params)
 
     def sequence(self, observations):
         x = observations['features']
@@ -44,7 +53,7 @@ class DoubleTCNExtractor(BaseFeaturesExtractor):
         x = x.transpose(1, 2)
         grouped = [branch(x.index_select(1, getattr(self, f'indices_{i}')))
                    for i, branch in enumerate(self.branches)]
-        return self.core(F.silu(self.fusion(torch.cat(grouped, dim=1))))
+        return self.core(self.post_fusion(F.silu(self.fusion(torch.cat(grouped, dim=1)))))
 
     def forward(self, observations):
         return self.sequence(observations).flatten(1)

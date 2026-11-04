@@ -33,7 +33,8 @@ SOURCES = ['tools/run_structural_sac_refit.py', 'app/structural_refit.py',
     'agent_plugins/three_signal_sac.py', 'agent_plugins/discrete_curve_sac.py',
     'agent_plugins/double_tcn_probe.py', 'env_plugins/three_signal_native.py',
     'env_plugins/discrete_curve_native.py', 'tools/run_discrete_curve_probe.py',
-    'tools/run_three_signal_baseline.py']
+    'tools/run_three_signal_baseline.py', 'agent_plugins/temporal_features.py',
+    'agent_plugins/causal_patch_attention.py']
 SOFTWARE = ['torch', 'torchrl', 'tensordict', 'numpy', 'pandas', 'pyarrow']
 
 
@@ -256,6 +257,83 @@ def prepare_selected(args):
         fresh_training=True,structural_round=spec['structural_round'])
     write(root/'PREFLIGHT.json',preflight)
     print(json.dumps(preflight),flush=True)
+
+
+def compact_selected_recipe(source_recipe, selection, close, config):
+    if (selection['identity']!=close['identity'] or close['termination']!='TWO_PASSES_COMPLETE'
+            or selection['result']['termination']!='TWO_PASSES_COMPLETE'
+            or selection['test_read'] or selection['training']
+            or not selection['source_unchanged'] or not selection['original_support_preserved']
+            or not selection['full_reload_exact'] or not selection['compact_parity']['qualified']
+            or not selection['final']['eligible']
+            or not all(all(v.values()) for v in selection['ledgers'].values())
+            or config['source_recipe']!=source_recipe
+            or config['lineage']['selection_identity']!=selection['identity']):
+        raise ValueError('COMPACT_REFIT_RECEIPT')
+    selected=selection['result']['selected']
+    for block in coherent_blocks(source_recipe['list']['columns']):
+        if set(selected).intersection(block) and not set(block)<=set(selected):
+            raise ValueError('COMPACT_REFIT_PARTIAL_ENCODING')
+    reduced=subset_recipe(source_recipe,selected)
+    if reduced!=config['input_recipe']: raise ValueError('COMPACT_REFIT_RECIPE')
+    return reduced
+
+
+def prepare_compact(args):
+    root,source,selection=args.root.resolve(),args.source_root.resolve(),args.selection.resolve()
+    if root.exists(): raise ValueError('NEW_REFIT_ROOT_REQUIRED')
+    original=authenticate(source,args.source_runtime)
+    ss,result,close,config=[read(selection/n) for n in
+        ('SPEC.private.json','RESULT.json','CLOSE.json','bundle/CONFIG.json')]
+    verify_files(selection,close['files']); verify_files(args.selection_runtime,ss['sources'])
+    if (ss['identity']!=digest({k:v for k,v in ss.items() if k!='identity'})
+            or file_sha(selection/'RESULT.json')!=close['result_sha256']
+            or file_sha(source/'SPEC.json')!=ss['parent_spec_sha256']
+            or file_sha(source/'runs'/f"seed_{ss['seed']}"/'RESULT.json')!=ss['parent_result_sha256']):
+        raise ValueError('COMPACT_REFIT_LINEAGE')
+    reduced=compact_selected_recipe(read(source/'RECIPE.json'),result,close,config)
+    preflight=read(source/'PREFLIGHT.json')
+    if preflight['support_sha256']!=ss['dataset']['support_hash']: raise ValueError('COMPACT_REFIT_SUPPORT')
+    root.mkdir()
+    for name in original['files']:
+        dest=root/name; dest.parent.mkdir(parents=True,exist_ok=True); shutil.copy2(source/name,dest)
+    write(root/'RECIPE.json',reduced)
+    for name in ('RESULT.json','CLOSE.json','SPEC.private.json'):
+        shutil.copy2(selection/name,root/('SELECTION_'+name))
+    spec=copy.deepcopy(original); spec.pop('identity',None); spec.pop('warmup_migration',None)
+    spec['created_at']=now()
+    spec['design'].update(seeds=[7],monitor_mode='validation',monitor_start_epoch=20,
+        monitor='validation_full_accounts_return_per_week',max_epochs=2000,patience=20,min_delta=1e-8)
+    spec['effective']['architecture'].pop('temporal_attention',None)
+    if args.temporal_attention=='causal_patch':
+        spec['effective']['architecture']['temporal_attention']=dict(kind='causal_patch',
+            patch_len=3,embedding=8,heads=2,feedforward=16,gate_init=.1)
+    spec['sources']={n:file_sha(ROOT/n) for n in SOURCES}
+    spec['selection_identity']=ss['identity']
+    spec['structural_round']=dict(parent_identity=original['identity'],selection_result_sha256=close['result_sha256'],
+        features_before=len(ss['dataset']['features']),features_after=reduced['list']['n'],
+        fresh_weights=True,fresh_replay=True,variant=args.temporal_attention,
+        scaler='projected unchanged',checkpoint_source='fresh initialization; compact reference preserved')
+    spec['files']={str(p.relative_to(root)):file_sha(p) for p in root.rglob('*') if p.is_file()}
+    spec['identity']=digest(spec); write(root/'SPEC.json',spec)
+    market=market_for(root,spec)
+    if support_hash(market.inputs)!=preflight['support_sha256']: raise ValueError('COMPACT_REFIT_SUPPORT_CHANGED')
+    for period,(lo,hi) in reduced['split']['periods'].items():
+        chosen=market.inputs.period==period; stamps=pd.to_datetime(market.inputs.row_ts_ns[chosen],utc=True)
+        expected=list(pd.period_range(lo,pd.Timestamp(hi)-pd.Timedelta(days=1),freq='M').astype(str))
+        if sorted(set(stamps.strftime('%Y-%m')))!=expected: raise ValueError('COMPACT_REFIT_MONTHS')
+        env=environment(market,read(root/'RISK.json'),spec['design']['horizon'],[lo,hi],spec['effective']['gamma'])
+        old=preflight['periods'][period]
+        if (int(chosen.sum())!=old['rows'] or int((chosen&market.inputs.valid).sum())!=old['valid_windows']
+                or int(env.valid[env.engine.first:env.engine.last].sum())!=old['decision_count']):
+            raise ValueError('COMPACT_REFIT_ROWS')
+    controls=synthetic_controls(reduced,read(root/'RISK.json'),dict(gamma=spec['effective']['gamma']))
+    if not controls['passed']: raise ValueError('COMPACT_REFIT_NATIVE_CONTROLS')
+    preflight.pop('warmup_migration',None)
+    preflight.update(identity=spec['identity'],features=reduced['list']['n'],
+        groups=len(reduced['representation']['resolved']['names']),tensor_shape=list(market.inputs.windows.shape),
+        controls=controls,fresh_training=True,structural_round=spec['structural_round'])
+    write(root/'PREFLIGHT.json',preflight); print(json.dumps(preflight),flush=True)
 
 
 def assess_full(model, market, risk, design, save=None, diagnose=False):
@@ -494,6 +572,10 @@ def main():
     for name in ('source-root','source-runtime','selection','selection-runtime','root'):
         p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--seeds',nargs='+',type=int,default=[7])
+    p=sub.add_parser('prepare-compact')
+    for name in ('source-root','source-runtime','selection','selection-runtime','root'):
+        p.add_argument('--'+name,type=Path,required=True)
+    p.add_argument('--temporal-attention',choices=['none','causal_patch'],required=True)
     p=sub.add_parser('migrate-warmup')
     for name in ('source-root','source-runtime','root'):
         p.add_argument('--'+name,type=Path,required=True)
