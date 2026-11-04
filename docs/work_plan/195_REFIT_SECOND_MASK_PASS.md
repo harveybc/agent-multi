@@ -50,3 +50,15 @@ comparison; coherent blocks; validation ranking not compensated by TRAIN;
 activity boundary; nonfinite rejection; native-account parity; altered checkpoint
 and incomplete-parent rejection. Real probe/control replay is mandatory before
 the first deletion. The final count is measured, never targeted in advance.
+
+## Verified launch
+
+Runtime `bbe89daf`, feature_selector `a53fbe0` /0.2.4. Native31 tests and
+selector54 tests passed (4 legacy fixture-dependent skips). Actual selected
+bundle probe, unmasked emissions and full native accounts all replay exactly.
+Identity `b634709de2ff709847e7939ce79955dbe68e79a154c5b5f26cf8a7684876a61b`.
+Persistent worker started2026-11-04T06:14:42Z on RTX5090;100 coding blocks imply
+at most201 evaluation requests. Initial measured rate1.37 seconds/subset;
+46 evaluations observed, no restarts, about1.7GB resident service memory.
+Automatic collection retains SPEC, PREFLIGHT, PASSES, cache, RESULT, FEATURE_COUNTS,
+final ledgers and CLOSE. No historical cache is reused with these new weights.
