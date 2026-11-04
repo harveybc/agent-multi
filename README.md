@@ -11,6 +11,14 @@ and execution-policy plugins loaded from entry points.
 
 ## Status
 
+**Current selection diagnostic (2026-11-04):** the selected94-input frozen actor
+now preserves the masked108 policy exactly, including full TRAIN/VALIDATION
+trading accounts. See [plan197](docs/work_plan/197_FUNCTION_PRESERVING_COMPACTION.md)
+and [results198](docs/work_plan/198_FROZEN_COMPACTION_RESULTS.md) for the
+weight-space transformation, controls and saved inference artifact. This is
+preservation of a development-selected policy, not a new generalization result
+or a migrated trainable SAC checkpoint.
+
 **Publication scope (2026-09-14):** this default branch contains the platform
 described below. Subsequent campaign execution, data-readiness and accounting
 work is available in a [versioned research snapshot](https://github.com/harveybc/agent-multi/tree/909db61596b788b4cd78932babaa5d161ef843e1).
