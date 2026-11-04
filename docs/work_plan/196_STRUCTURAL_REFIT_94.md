@@ -53,3 +53,14 @@ Persistent primary-GPU worker started2026-11-04T07:38:43Z; first gradient update
 observed after the4096-transition replay warmup. Independent collector enabled.
 No prior weights or recovery state were copied. Runtime settings and code are
 pinned; reporting changes do not modify the running source tree.
+
+## Completed result
+
+Finished2026-11-04T19:11:54Z;50 epochs, patience20, restored checkpoint30.
+TRAIN return+93.2919%, Sharpe2.98747, DD4.19669%,727 trades.
+VALIDATION return-1.21136%, Sharpe-0.27965, DD4.60898%,112 trades,
+50.8929% win rate,2.07407 orders/week. BUY39/18 wins; SELL73/39 wins.
+Early closes23:12 helpful and11 harmful against passive protection.
+Reload exact; no TEST. The observed positive epoch13 was in the excluded
+monitor warmup, not the selected checkpoint. Plan197 investigates the
+masked-versus-retrained gap without modifying this completed experiment.

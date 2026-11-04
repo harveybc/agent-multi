@@ -1,4 +1,5 @@
 requirement,description,test_design,expected_result,stage,evidence_status
+W01_09,Frozen actor compaction with deterministic branch responses,docs/work_plan/197_FUNCTION_PRESERVING_COMPACTION.md,Effective weights; packing exact; compact actions and accounts exact; reload; no TEST,POST_SELECTION_DIAGNOSTIC,TEST_DESIGN_COMPLETE
 FA01,Coherent input deletion and branch pruning,tests/unit/test_paired_ablation.py,Same support and fixed scales; smaller actual SAC; three categorical outputs,PAIRED_ABLATION,TESTED
 FA02,Shared fit and different selectors,tests/unit/test_paired_ablation.py,TRAIN selection continues while guarded patience freezes; fixed budget prefix only,PAIRED_ABLATION,TESTED
 FA03,No smoke promotion or unpaired emissions,tests/unit/test_paired_ablation.py,Reject engineering receipt and shifted timestamps; report paired deltas,PAIRED_ABLATION,TESTED

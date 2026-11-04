@@ -15,7 +15,9 @@
     "implementation_status": "Implemented, tested and launched as the new paired-seed DEAP campaign. Historical pilot selectors remain unchanged.",
     "test_access": false
   },
-  "current_stage": "STRUCTURAL94_REFIT_RUNNING",
+  "current_stage": "WEIGHT_COMPACTION_TEST_DESIGN_COMPLETE",
+  "weight_compaction": {"plan":"../197_FUNCTION_PRESERVING_COMPACTION.md","authorized":true,"training":false,"test_access":false,"next_action":"Implement frozen actor compaction and falsification tests before full native replay","tolerance":{"atol":0.00001,"rtol":0.00001},"required":"Exact packing control; identical categorical actions and native accounts; report floating point drift separately"},
+  "structural94_completion": {"finished_utc":"2026-11-04T19:11:54Z","epochs":50,"selected_epoch":30,"stop_reason":"patience","train_return_pct":93.29191865,"validation_return_pct":-1.2113619,"validation_sharpe":-0.27964797,"training_active":false},
   "structural94_runtime": {"code":"1431d492","identity":"410d64cc36705f5dbe7fb99c896fb88629dab9585aa0b7e6f7f1e16149717a0e","started_utc":"2026-11-04T07:38:43Z","gpu":"RTX5090","features":94,"groups":30,"parameters":96442,"input_shape":[13,94],"tests_passed":47,"native_controls_passed":true,"same_support":true,"first_gradient_update_verified":true,"persistent_worker":true,"automatic_collector":true,"intermediate_approval_required":false},
   "second_mask_completion": {"finished_utc":"2026-11-04T06:17:33Z","counts":[108,93,94],"groups":30,"evaluations":113,"validation_return_pct":10.447063500001423,"validation_sharpe":1.4495520975626104,"result_sha256":"ee172eb0f2f5e692196129cd457889579840dca211f6067d81d495f2dce3e065","structural_refit_performed":false},
   "structural94_plan": {"plan":"../196_STRUCTURAL_REFIT_94.md","seed":7,"fresh_weights":true,"fresh_replay":true,"monitor":"validation","monitor_start_epoch":20,"patience":20,"min_delta":1e-8,"max_epochs":2000,"test_read":false},
