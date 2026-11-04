@@ -2,6 +2,10 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "run_compact_mask_pass.py": {
+   "purpose": "Owner-authorized ordered compact-actor removal/reinsertion with frozen weights, full native controls, cached evaluations and equivalent final artifact; no training or TEST",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
+  },
   "run_frozen_actor_compaction.py": {
    "purpose": "Owner-authorized inference-only masked actor projection, constant branch preservation, full native account parity and diagnostic ablations; no training or TEST",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
