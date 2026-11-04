@@ -48,3 +48,17 @@ names; learned groups and constant slots; TRAIN/VALIDATION return, Sharpe,
 drawdown, orders, wins, BUY/SELL and early-close diagnostics. Archive and publish
 the result, not an independent-generalization claim: this VALIDATION has been
 used repeatedly for development selection.
+
+## Execution
+
+Runtime `8f923c05`,30 focused tests pass. Authenticated baseline/probe and native
+accounts replay exactly.94 columns form89 atomic blocks; maximum179 requests
+including the baseline. First measured median1.09 seconds per uncached candidate.
+Primary-GPU sequential worker has6GiB RAM cap, no swap, bounded automatic retry
+and persisted per-subset results. Identity:
+`950512db554647ec71b728812805f43275250711ddef5913f5c7717679608f76`.
+
+Completed2026-11-04T21:10:22Z:94 ->93 ->93,90 unique evaluations,
+`RAW_ELAPSED_HOURS` removed, no reinsertion and no exact ties.
+Full final compact/native/reload parity and completed resume pass.
+See [results200](200_COMPACT93_TWO_PASS_RESULTS.md).

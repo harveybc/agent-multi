@@ -19,6 +19,12 @@ weight-space transformation, controls and saved inference artifact. This is
 preservation of a development-selected policy, not a new generalization result
 or a migrated trainable SAC checkpoint.
 
+The subsequent owner-authorized removal/reinsertion round is also complete:
+**94 ->93 ->93 inputs**,30 learned groups,90 authenticated evaluations and an
+exactly replayable93-input frozen actor. See
+[results200](docs/work_plan/200_COMPACT93_TWO_PASS_RESULTS.md) for TRAIN versus
+VALIDATION, the removed feature, trading detail and artifact identity.
+
 **Publication scope (2026-09-14):** this default branch contains the platform
 described below. Subsequent campaign execution, data-readiness and accounting
 work is available in a [versioned research snapshot](https://github.com/harveybc/agent-multi/tree/909db61596b788b4cd78932babaa5d161ef843e1).

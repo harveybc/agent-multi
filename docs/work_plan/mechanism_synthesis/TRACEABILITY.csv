@@ -1,5 +1,5 @@
 requirement,description,test_design,expected_result,stage,evidence_status
-CM01_06,Ordered compact94 deletion and reinsertion,docs/work_plan/199_COMPACT94_TWO_PASS.md,Authenticated exact baseline; same support; ties removed; strict reinsertion; no training; equivalent final bundle,POST_SELECTION_DIAGNOSTIC,TEST_DESIGN_COMPLETE
+CM01_06,Ordered compact94 deletion and reinsertion,docs/work_plan/200_COMPACT93_TWO_PASS_RESULTS.md,30 adapter tests plus7 pinned selector tests;90 authenticated evaluations;94 to93 to93; exact compact logits and native accounts; reload and resume; no training or TEST,POST_SELECTION_DIAGNOSTIC,COMPLETE_INFERENCE_ONLY
 W01_09,Frozen actor compaction with deterministic branch responses,docs/work_plan/198_FROZEN_COMPACTION_RESULTS.md,58 tests;30234 exact logits;12 native accounts;74 verified files; exact reload; source unchanged; no TEST,POST_SELECTION_DIAGNOSTIC,COMPLETE_INFERENCE_ONLY
 FA01,Coherent input deletion and branch pruning,tests/unit/test_paired_ablation.py,Same support and fixed scales; smaller actual SAC; three categorical outputs,PAIRED_ABLATION,TESTED
 FA02,Shared fit and different selectors,tests/unit/test_paired_ablation.py,TRAIN selection continues while guarded patience freezes; fixed budget prefix only,PAIRED_ABLATION,TESTED
