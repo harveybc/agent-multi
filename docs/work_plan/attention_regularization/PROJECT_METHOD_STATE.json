@@ -1,9 +1,12 @@
 {
   "schema": "attention_regularization_method.v1",
-  "current_stage": "CPU_ACCEPTANCE_GPU_ACCEPTANCE_NEXT",
+  "current_stage": "TWO_ARMS_RUNNING",
   "design": "../202_ATTENTION_REGULARIZATION_PLACEMENT.md",
-  "scope": "Current 93-input phase-2 representation; four fresh attention SAC arms; no TEST access",
-  "stages_passed": ["DISCOVERY", "REQUIREMENTS", "ACCEPTANCE_TEST_DESIGN", "ARCHITECTURE", "UNIT_IMPLEMENTATION", "CPU_INTEGRATION"],
+  "scope": "Current 93-input phase-2 representation; core dropout and post-core BatchNorm; reuse completed attention control; no TEST access",
+  "stages_passed": ["DISCOVERY", "REQUIREMENTS", "ACCEPTANCE_TEST_DESIGN", "ARCHITECTURE", "UNIT_IMPLEMENTATION", "CPU_INTEGRATION", "GPU_INTEGRATION"],
+  "verification": {"cpu_passed": 50, "cpu_skipped": 13, "gpu_primary_passed": 31, "gpu_secondary_passed": 31},
+  "authorized_arms": ["R1_core_dropout", "R3_head_batchnorm"],
+  "not_authorized": ["R0_retraining", "R2_head_dropout"],
   "requirements_to_evidence": {
     "explicit_online_target_inference_modes": "tests/unit/test_critic_regularization.py::test_real_twins_update_modes_buffers_and_reload",
     "restore_modes_on_exception": "tests/unit/test_critic_regularization.py::test_modes_restore_on_error_and_dropout_is_real",
@@ -13,6 +16,7 @@
     "plots_without_additional_evaluation": "tests/unit/test_training_diagnostics.py",
     "unchanged_support_and_native_business": "tools/run_structural_sac_refit.py::prepare_regularized"
   },
-  "next_allowed_actions": ["verify GPU update/reload on assigned devices", "prepare four pinned arms", "dispatch sequential resumable services", "collect full TRAIN and VALIDATION histories"],
+  "dispatch": {"date": "2026-11-05", "R1_core_dropout": "active on assigned primary accelerator", "R3_head_batchnorm": "active on assigned secondary accelerator", "restarts_at_dispatch_check": 0, "automatic_resume": true, "control_retraining": false},
+  "next_allowed_actions": ["collect full TRAIN and VALIDATION histories", "compare with completed attention history"],
   "excluded": ["combine dropout and BatchNorm", "change inputs or window", "fit scalers again", "read TEST", "use invalid prior campaigns as evidence"]
 }

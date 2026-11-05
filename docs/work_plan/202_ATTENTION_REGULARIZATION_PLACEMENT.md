@@ -44,20 +44,24 @@ sites for stochastic masks and target evaluation, authenticate each twin's BN
 buffers, update target buffers intentionally, and prove replay/save/load parity.
 Adding BatchNorm alone is not a CrossQ implementation.
 
-## Initial small contrast
+## Authorized contrast (owner correction2026-11-05)
 
 Keep attention,93 features,13x2 window,scaler,support,costs,wd0.01,batch128,
-learning rate,seed and business contract fixed. Fresh training for all arms.
+learning rate,seed and business contract fixed. Fresh training only for R1 and
+R3. Reuse the completed attention baseline as control; do not retrain R0.
 Use the core output flattened from[B,16,13] to[B,208] immediately BEFORE
 the existing dense8 head. This is downstream of temporal feature extraction,
 not noise on source data or on the final3 logits/Q outputs.
 
 | Arm | Actor | Online critics | Placement |
 |---|---|---|---|
-| R0 | none | none | matched control with new verified mode handling |
+| R0 | none | none | completed attention baseline; reuse history, no new fit |
 | R1 | none | Dropout p0.10 | twice inside each core residual branch |
-| R2 | none | Dropout p0.10 | after core flatten, before dense8 |
-| R3 | none | BatchNorm1d208 | same location, critics only |
+| R3 | none | BatchNorm1d208 | after core flatten, before dense8; critics only |
+
+The alternative post-core dropout arm R2 is not scheduled. Only R1 and R3
+are authorized. R1 runs on the primary accelerator and R3 on the secondary
+accelerator concurrently. No successor training is automatically authorized.
 
 R3 starts with affine=True,eps1e-5,momentum0.1,track_running_stats=True;
 these are declared starting values, not optimal values. Statistics update only
@@ -92,13 +96,17 @@ the latter transforms inputs at training and inference.
    positions before causal layers. Native trades and costs still pass controls.
 6. Same source/support/scaler/periods and matched monitor semantics in every arm.
    Compare full native TRAIN/VALIDATION, trade count, buy/sell wins, early closes,
-   net return, Sharpe, DD and inference overhead. R0-R3 do not read TEST.
+   net return, Sharpe, DD and inference overhead. These runs do not read TEST.
 
 Warm-up issue from201 is separate: retain the best inference checkpoint from
 epoch1 while delaying patience increments until epoch21. Before dispatch,
 specify and test which earlier best initializes the patience reference, including
-tie/min_delta boundaries; apply the same rule to R0-R3. Do not compare new arms
-to201 as though checkpoint selection had remained identical.
+tie/min_delta boundaries. Compare against201 at matched epochs and replay the
+new monitor over its existing TRAIN/VALIDATION history without training or
+additional evaluation; retain its original selected result separately. The
+reused control predates explicit train/eval mode handling; mathematical dropout0
+and no-BN behavior is unchanged, but no bit-identical new training trajectory is
+claimed across the mode implementation or device change.
 Save the best global checkpoint and separately the best checkpoint from epoch20
 onward. This diagnostic retention does not reset patience or change the primary
 selection rule. A transient early validation peak is not proof of learned skill;
@@ -120,13 +128,17 @@ fixed controller first; a later experiment can use uncertainty for sizing.
 - [DroQ](https://arxiv.org/abs/2110.02034): critic dropout plus LayerNorm is an
   established research direction, not evidence that our proposed placement wins.
 
-Status2026-11-05: owner approved R0-R3 dispatch. CPU acceptance verified;
-GPU acceptance and immutable runtime deployment precede real training.
+Status2026-11-05: exactly R1 and R3 are running on their assigned accelerators.
+Both services are enabled, with zero restarts at the dispatch check. CPU acceptance:
+50 passed,13 skipped. GPU acceptance:31 passed on each assigned accelerator.
+Both input preflights authenticated before native training started.
 The completed attention/control runs remain unchanged.
 
 ## Dispatch and diagnostic artifacts
 
-Owner-approved order: fast worker R1 then R2; secondary worker R0 then R3.
+Owner-corrected allocation: fast worker R1; secondary worker R3. R0 is reused;
+R2 is not launched. Each service resumes its own atomic epoch checkpoint after
+an interruption and stops when its one authorized arm finishes.
 Never overlap these workers with the preceding attention/control training.
 Each run writes TRAIN_VALIDATION.png, TRAINING_DIAGNOSTICS.png and EPOCHS.csv
 from already computed full-epoch accounts. No extra scoring, TEST access or
