@@ -1,0 +1,18 @@
+{
+  "schema": "attention_regularization_method.v1",
+  "current_stage": "CPU_ACCEPTANCE_GPU_ACCEPTANCE_NEXT",
+  "design": "../202_ATTENTION_REGULARIZATION_PLACEMENT.md",
+  "scope": "Current 93-input phase-2 representation; four fresh attention SAC arms; no TEST access",
+  "stages_passed": ["DISCOVERY", "REQUIREMENTS", "ACCEPTANCE_TEST_DESIGN", "ARCHITECTURE", "UNIT_IMPLEMENTATION", "CPU_INTEGRATION"],
+  "requirements_to_evidence": {
+    "explicit_online_target_inference_modes": "tests/unit/test_critic_regularization.py::test_real_twins_update_modes_buffers_and_reload",
+    "restore_modes_on_exception": "tests/unit/test_critic_regularization.py::test_modes_restore_on_error_and_dropout_is_real",
+    "matched_initialization": "tests/unit/test_critic_regularization.py::test_common_initial_weights_and_effective_metadata",
+    "early_checkpoint_and_delayed_patience": "tests/unit/test_critic_regularization.py::test_best_from_epoch_one_patience_only_after_twenty",
+    "patience_boundaries": "tests/unit/test_critic_regularization.py::test_warmup_monitor_ties_and_patience_limit",
+    "plots_without_additional_evaluation": "tests/unit/test_training_diagnostics.py",
+    "unchanged_support_and_native_business": "tools/run_structural_sac_refit.py::prepare_regularized"
+  },
+  "next_allowed_actions": ["verify GPU update/reload on assigned devices", "prepare four pinned arms", "dispatch sequential resumable services", "collect full TRAIN and VALIDATION histories"],
+  "excluded": ["combine dropout and BatchNorm", "change inputs or window", "fit scalers again", "read TEST", "use invalid prior campaigns as evidence"]
+}

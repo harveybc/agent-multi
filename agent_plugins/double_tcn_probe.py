@@ -9,18 +9,20 @@ from agent_plugins.temporal_features import CausalConv1d
 
 
 class ResidualTCN(nn.Module):
-    def __init__(self, width, dilation, kernel=3):
+    def __init__(self, width, dilation, kernel=3, dropout=0.):
         super().__init__()
         self.first = CausalConv1d(width, width, kernel, dilation)
         self.second = CausalConv1d(width, width, kernel, dilation)
+        self.dropout1 = nn.Dropout(dropout)
+        self.dropout2 = nn.Dropout(dropout)
 
     def forward(self, x):
-        return F.silu(x + self.second(F.silu(self.first(x))))
+        return F.silu(x + self.dropout2(self.second(self.dropout1(F.silu(self.first(x))))))
 
 
 class DoubleTCNExtractor(BaseFeaturesExtractor):
     def __init__(self, observation_space, recipe, branch_width=8, core_width=16,
-                 branch_blocks=2, core_blocks=2, temporal_attention=None):
+                 branch_blocks=2, core_blocks=2, temporal_attention=None, core_dropout=0.):
         validate_recipe(recipe)
         self.shape = (recipe['tensor']['window']['observations'], recipe['list']['n'])
         require(observation_space['features'].shape == self.shape, 'OBSERVATION_SHAPE')
@@ -36,7 +38,7 @@ class DoubleTCNExtractor(BaseFeaturesExtractor):
                 CausalConv1d(len(indices), branch_width, 1),
                 *[ResidualTCN(branch_width, 2**j, kernel) for j in range(branch_blocks)]))
         self.fusion = CausalConv1d(len(self.branches) * branch_width, core_width, 1)
-        self.core = nn.Sequential(*[ResidualTCN(core_width, 2**j) for j in range(core_blocks)])
+        self.core = nn.Sequential(*[ResidualTCN(core_width, 2**j, dropout=core_dropout) for j in range(core_blocks)])
         self.post_fusion = nn.Identity()
         if temporal_attention is not None:
             from agent_plugins.causal_patch_attention import CausalPatchAttention

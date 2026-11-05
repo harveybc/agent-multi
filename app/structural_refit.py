@@ -18,13 +18,15 @@ from tools.run_discrete_curve_probe import write
 class EpochPatience:
     MODES = ('mean', 'validation', 'mean_no_regression')
 
-    def __init__(self, patience=20, min_delta=1e-8, mode='mean', start_epoch=1):
+    def __init__(self, patience=20, min_delta=1e-8, mode='mean', start_epoch=1,
+                 select_during_warmup=False):
         if (type(patience) is not int or patience < 1 or not np.isfinite(min_delta)
                 or min_delta < 0 or mode not in self.MODES
                 or type(start_epoch) is not int or start_epoch < 1):
             raise ValueError('EPOCH_STOPPING_CONFIG')
         self.patience, self.min_delta, self.mode = patience, min_delta, mode
         self.start_epoch, self.epoch = start_epoch, 0
+        self.select_during_warmup = select_during_warmup
         self.best, self.bad = None, 0
         self.previous_train = self.previous_validation = self.previous_mean = None
         self.best_train = self.best_validation = None
@@ -38,7 +40,7 @@ class EpochPatience:
         self.epoch += 1
         previous = dict(previous_train=self.previous_train,
                         previous_validation=self.previous_validation,previous_mean=self.previous_mean)
-        if self.epoch < self.start_epoch:
+        if self.epoch < self.start_epoch and not self.select_during_warmup:
             return dict(score=score,mean=mean,mode=self.mode,improved=False,best=None,
                         best_train=None,best_validation=None,bad=0,stop=False,
                         epoch=self.epoch,warming_up=True,rejections=['MONITOR_WARMUP'],**previous)
@@ -55,13 +57,13 @@ class EpochPatience:
         if improved:
             self.best, self.bad = score, 0
             self.best_train, self.best_validation = train, validation
-        else:
+        elif not (self.select_during_warmup and self.epoch <= self.start_epoch):
             self.bad += 1
         self.previous_train, self.previous_validation, self.previous_mean = train, validation, mean
         return dict(score=score, mean=mean, mode=self.mode, improved=improved, best=self.best,
                     best_train=self.best_train,best_validation=self.best_validation,bad=self.bad,
                     stop=self.bad >= self.patience,rejections=rejections,
-                    epoch=self.epoch,warming_up=False,**previous)
+                    epoch=self.epoch,warming_up=self.select_during_warmup and self.epoch <= self.start_epoch,**previous)
 
 
 def capture_rng(rng):
@@ -82,7 +84,8 @@ def build_model(recipe, effective, seed=7, device='cpu'):
     return ThreeSignalSAC(recipe, device=device, seed=seed, gamma=effective['gamma'],
         alpha=effective['alpha'], lr=effective['learning_rate'],
         entropy_fraction=effective['entropy_fraction'], architecture=effective['architecture'],
-        tau=effective['tau'], weight_decay=effective['weight_decay'])
+        tau=effective['tau'], weight_decay=effective['weight_decay'],
+        critic_regularization=effective.get('critic_regularization'))
 
 
 def durable_files(directory):

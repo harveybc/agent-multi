@@ -14,11 +14,8 @@ These are different selected epochs from one seed; better fitting does not
 establish better useful pattern recognition. Compare matched epochs as well
 as checkpoint-selected outcomes. Retain Sharpe, drawdown, activity and cost.
 
-Plan47 describes dropout/L2/BatchNorm in older dense SAC critics with15 inputs.
-Plan65 describes critic-dropout removal under the old COMMANDS5 contract.
-Neither establishes the result of a core-placement comparison on current
-93-input discrete SAC, grouped TCNs and post-fusion attention. Those documents
-prove historical designs/deployments, not current-architecture final metrics.
+Invalidated earlier campaigns are not evidence for this comparison. This work
+remains in feature-selection phase2, with the current93-input representation.
 
 The prior warmed-up108-input stopping contrast (195) favored validation-only
 over guarded mean in observed validation return: -3.4537431% vs -16.46431855%.
@@ -58,8 +55,8 @@ not noise on source data or on the final3 logits/Q outputs.
 | Arm | Actor | Online critics | Placement |
 |---|---|---|---|
 | R0 | none | none | matched control with new verified mode handling |
-| R1 | none | Dropout p0.10 | after core flatten, before dense8 |
-| R2 | Dropout p0.10 | none | same location, actor only |
+| R1 | none | Dropout p0.10 | twice inside each core residual branch |
+| R2 | none | Dropout p0.10 | after core flatten, before dense8 |
 | R3 | none | BatchNorm1d208 | same location, critics only |
 
 R3 starts with affine=True,eps1e-5,momentum0.1,track_running_stats=True;
@@ -72,8 +69,9 @@ shift remains a measurable risk. Batch-size1 inference must work.
 
 Do not combine dropout and BatchNorm in this first contrast. Combining them is
 not mathematically forbidden, but separate arms identify effects more clearly.
-If useful, compare dropout0.05/0.20 and then place the same mechanism on the
-residual branches within the core; leave the identity shortcut untouched.
+R1 keeps the identity shortcut untouched and the existing SiLU activations.
+It applies dropout after the first activation and after the second convolution.
+If useful, subsequently compare dropout0.05/0.20.
 Only then consider the attention/core boundary or group extractors. These
 follow-up locations must be separate arms, not simultaneous hidden changes.
 Dropout on latent activations is not equivalent to moving-average smoothing:
@@ -94,13 +92,18 @@ the latter transforms inputs at training and inference.
    positions before causal layers. Native trades and costs still pass controls.
 6. Same source/support/scaler/periods and matched monitor semantics in every arm.
    Compare full native TRAIN/VALIDATION, trade count, buy/sell wins, early closes,
-   net return, Sharpe, DD and inference overhead. TEST remains closed.
+   net return, Sharpe, DD and inference overhead. R0-R3 do not read TEST.
 
 Warm-up issue from201 is separate: retain the best inference checkpoint from
-epoch1 while delaying patience-based stopping until epoch20. Before dispatch,
+epoch1 while delaying patience increments until epoch21. Before dispatch,
 specify and test which earlier best initializes the patience reference, including
 tie/min_delta boundaries; apply the same rule to R0-R3. Do not compare new arms
 to201 as though checkpoint selection had remained identical.
+Save the best global checkpoint and separately the best checkpoint from epoch20
+onward. This diagnostic retention does not reset patience or change the primary
+selection rule. A transient early validation peak is not proof of learned skill;
+inspect activity, drawdown and replication. An epoch spans the full TRAIN account,
+roughly24025 decisions and6006 replay updates, not a single gradient iteration.
 
 ## Bayesian sequence
 
@@ -117,5 +120,35 @@ fixed controller first; a later experiment can use uncertainty for sizing.
 - [DroQ](https://arxiv.org/abs/2110.02034): critic dropout plus LayerNorm is an
   established research direction, not evidence that our proposed placement wins.
 
-Status: design and acceptance requirements recorded. Regularized implementation
-and new GPU jobs are NOT claimed complete or launched.201 continues unchanged.
+Status2026-11-05: owner approved R0-R3 dispatch. CPU acceptance verified;
+GPU acceptance and immutable runtime deployment precede real training.
+The completed attention/control runs remain unchanged.
+
+## Dispatch and diagnostic artifacts
+
+Owner-approved order: fast worker R1 then R2; secondary worker R0 then R3.
+Never overlap these workers with the preceding attention/control training.
+Each run writes TRAIN_VALIDATION.png, TRAINING_DIAGNOSTICS.png and EPOCHS.csv
+from already computed full-epoch accounts. No extra scoring, TEST access or
+training RNG consumption is permitted. Return uses separate aligned axes for
+TRAIN and VALIDATION so large TRAIN gains cannot hide validation deterioration.
+Diagnostics include drawdown, Sharpe, orders/week, win rate, stopping score and
+patience. Mark the chosen checkpoint and warmup; missing metrics stay missing,
+never become zero. CSV records available per-epoch update diagnostics, explicitly
+labelled as last-update values rather than epoch means. Refresh by overwriting
+the same artifacts atomically; no per-epoch PNG accumulation or OLAP blobs.
+Backfill current attention and control from their immutable HISTORY.json files.
+
+Tests before dispatch: artifact values match history; generation is repeatable,
+works with one epoch and missing metrics, preserves RNG/source files, uses no
+GPU and marks the selected checkpoint (not just peak validation). Core and
+post-core regularization require real TorchRL twin-critic update/reload tests.
+
+CPU acceptance2026-11-05:50 passed,13 skipped (GPU/native fixtures).
+New regularized recovery tests cover all four arms, exact resumed weights,
+best-from-epoch1 retention and independent post-warmup bundles. Registration
+order keeps common twin-critic parameters identical across arms: TorchRL's
+functional expansion otherwise consumes extra random draws for BN parameters
+before initializing the dense head. Optional BN is registered after the head
+but evaluated before it. Config receipts name critic-only regularization and
+its actual probability/BN setting rather than retaining misleading defaults.

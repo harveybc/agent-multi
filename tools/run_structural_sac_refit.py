@@ -20,6 +20,7 @@ from app.recipe_runtime import RecipeMarket
 from app.rl_subset import digest, seal_recipe, subset_recipe, refit_train_scaler, project_inputs, support_hash, coherent_blocks
 from app.structural_refit import (EpochPatience, capture_rng, restore_rng, build_model, verify_files,
     export_bundle, load_bundle, save_recovery, load_recovery)
+from app.training_diagnostics import render_diagnostics
 from app.three_signal_learning import environment, emit, evaluate
 from agent_plugins.discrete_curve_sac import tensor_observation
 from tools.run_discrete_curve_probe import read, write, now, configure, transition
@@ -34,7 +35,8 @@ SOURCES = ['tools/run_structural_sac_refit.py', 'app/structural_refit.py',
     'agent_plugins/double_tcn_probe.py', 'env_plugins/three_signal_native.py',
     'env_plugins/discrete_curve_native.py', 'tools/run_discrete_curve_probe.py',
     'tools/run_three_signal_baseline.py', 'agent_plugins/temporal_features.py',
-    'agent_plugins/causal_patch_attention.py']
+    'agent_plugins/causal_patch_attention.py', 'agent_plugins/sac_critic_regularization.py',
+    'app/training_diagnostics.py']
 SOFTWARE = ['torch', 'torchrl', 'tensordict', 'numpy', 'pandas', 'pyarrow']
 
 
@@ -336,6 +338,45 @@ def prepare_compact(args):
     write(root/'PREFLIGHT.json',preflight); print(json.dumps(preflight),flush=True)
 
 
+def prepare_regularized(args):
+    root, source = args.root.resolve(), args.source_root.resolve()
+    if root.exists(): raise ValueError('NEW_REFIT_ROOT_REQUIRED')
+    original = authenticate(source, args.source_runtime)
+    result = read(source/'runs/seed_7/RESULT.json')
+    if result['identity'] != original['identity']:
+        raise ValueError('REGULARIZATION_PARENT_RESULT')
+    if original['effective']['architecture'].get('temporal_attention',{}).get('kind') != 'causal_patch':
+        raise ValueError('ATTENTION_PARENT_REQUIRED')
+    root.mkdir()
+    for name in original['files']:
+        dest = root/name; dest.parent.mkdir(parents=True,exist_ok=True)
+        shutil.copy2(source/name,dest)
+    spec = copy.deepcopy(original); spec.pop('identity',None); spec.pop('warmup_migration',None)
+    spec['created_at'] = now()
+    config = dict(kind=args.profile)
+    if 'dropout' in args.profile: config['p'] = .1
+    model = build_model(read(root/'RECIPE.json'), original['effective'] | {'critic_regularization':config})
+    spec['effective'] = model.effective
+    spec['design'].update(select_during_warmup=True, monitor_start_epoch=20,
+        diagnostics=True, seeds=[7], monitor_mode='validation', patience=20, min_delta=1e-8,
+        max_epochs=2000)
+    spec['structural_round'] = dict(parent_identity=original['identity'],
+        parent_result_sha256=file_sha(source/'runs/seed_7/RESULT.json'),
+        variant=args.profile,fresh_weights=True,fresh_replay=True,
+        scaler='unchanged',checkpoint_contract='best from epoch1; patience counted from epoch21')
+    spec['sources'] = {n:file_sha(ROOT/n) for n in SOURCES}
+    spec['files'] = {str(p.relative_to(root)):file_sha(p) for p in root.rglob('*') if p.is_file()}
+    spec['identity'] = digest(spec); write(root/'SPEC.json',spec)
+    market = market_for(root,spec); preflight = read(source/'PREFLIGHT.json')
+    if support_hash(market.inputs) != preflight['support_sha256']:
+        raise ValueError('REGULARIZATION_SUPPORT_CHANGED')
+    controls = synthetic_controls(market.recipe,read(root/'RISK.json'),dict(gamma=spec['effective']['gamma']))
+    if not controls['passed']: raise ValueError('REGULARIZATION_NATIVE_CONTROLS')
+    preflight.update(identity=spec['identity'],controls=controls,structural_round=spec['structural_round'])
+    write(root/'PREFLIGHT.json',preflight)
+    print(json.dumps(preflight),flush=True)
+
+
 def assess_full(model, market, risk, design, save=None, diagnose=False):
     logits,_ = emit(model,market.inputs)
     prepared = prepared_signals(logits)
@@ -438,8 +479,9 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
     replay = TensorDictReplayBuffer(storage=LazyTensorStorage(design['replay_size'],device='cpu'),
                                    batch_size=design['batch_size'])
     start_epoch = design.get('monitor_start_epoch',1)
-    stopping = EpochPatience(design['patience'],design['min_delta'],design.get('monitor_mode','mean'),start_epoch)
-    shadows = {mode:EpochPatience(design['patience'],design['min_delta'],mode,start_epoch) for mode in EpochPatience.MODES}
+    select_early = design.get('select_during_warmup',False)
+    stopping = EpochPatience(design['patience'],design['min_delta'],design.get('monitor_mode','mean'),start_epoch,select_early)
+    shadows = {mode:EpochPatience(design['patience'],design['min_delta'],mode,start_epoch,select_early) for mode in EpochPatience.MODES}
     state = dict(identity=identity,seed=seed,epoch=0,steps=0,updates=0,history=[],
                  best_bundle=None,stopping=vars(stopping).copy(),
                  shadows={k:vars(v).copy() for k,v in shadows.items()})
@@ -494,7 +536,7 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
                 shadow_verdicts[mode] = dict(stop=True,already_stopped=True,best=monitor.best,bad=monitor.bad)
         row = dict(epoch=epoch,steps=state['steps'],updates=state['updates'],decisions=decisions,
             training_seconds=training_seconds,evaluation_seconds=time.monotonic()-start-training_seconds,
-            metrics=metrics,monitor=verdict,shadow_monitors=shadow_verdicts,finished_at=now())
+            metrics=metrics,monitor=verdict,shadow_monitors=shadow_verdicts,finished_at=now(),last_update=last_loss or {})
         if verdict['improved']:
             bundle = output/'bundles'/('epoch_%04d' % epoch)
             if bundle.exists():
@@ -502,12 +544,28 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
             receipt = export_bundle(bundle,model,probe,dict(epoch=epoch,score=verdict['score'],
                 run_identity=identity,seed=seed))
             state['best_bundle'] = dict(relative_path=str(bundle.relative_to(output)),**receipt)
+        if select_early and epoch >= start_epoch:
+            late = state.get('best_after_warmup')
+            if late is None or verdict['score'] > late['score'] + design['min_delta']:
+                bundle = output/'bundles'/('epoch_%04d' % epoch)
+                if verdict['improved']:
+                    receipt = state['best_bundle'].copy()
+                else:
+                    if bundle.exists(): shutil.rmtree(bundle)
+                    receipt = export_bundle(bundle,model,probe,dict(epoch=epoch,score=verdict['score'],
+                        run_identity=identity,seed=seed,diagnostic='best_after_warmup'))
+                state['best_after_warmup'] = dict(relative_path=str(bundle.relative_to(output)),
+                    **{k:v for k,v in receipt.items() if k!='relative_path'},score=verdict['score'],epoch=epoch)
         state['history'].append(row); state.update(epoch=epoch,stopping=vars(stopping).copy(),
             shadows={k:vars(v).copy() for k,v in shadows.items()})
         save_recovery(output,model,replay,rng,state)
         row['epoch_seconds'] = time.monotonic()-start
         write(output/'HISTORY.json',state['history'])
         write(output/'BEST.json',dict(identity=identity,best=state['best_bundle'],score=stopping.best))
+        if select_early:
+            write(output/'BEST_AFTER_WARMUP.json',dict(identity=identity,best=state.get('best_after_warmup')))
+        if design.get('diagnostics',False):
+            render_diagnostics(state['history'],output/'diagnostics',design)
         write(output/'PROGRESS.json',dict(identity=identity,stage='EPOCH_COMPLETE',**row))
         print(json.dumps(dict(epoch=epoch,seed=seed,monitor=verdict,seconds=row['epoch_seconds'])),flush=True)
         if verdict['stop']:
@@ -516,6 +574,8 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
         write(output/'TRAINING.json',dict(identity=identity,epochs=state['epoch'],
             steps=state['steps'],stop_reason='epoch_budget_before_monitor',restored_best=False))
         return state
+    if design.get('diagnostics',False):
+        render_diagnostics(state['history'],output/'diagnostics',design)
     model.load(output/state['best_bundle']['relative_path']/'model.pt')
     write(output/'TRAINING.json',dict(identity=identity,epochs=state['epoch'],steps=state['steps'],
         stop_reason='patience' if stopping.bad>=stopping.patience else 'epoch_budget',
@@ -555,6 +615,7 @@ def worker(args):
         metrics = assess_full(model,market,risk,d,save=output/'final',diagnose=True)
         write(output/'RESULT.json',dict(identity=spec['identity'],seed=args.seed,
             best_bundle=state['best_bundle'],metrics=metrics,finished_at=now(),
+            best_after_warmup=state.get('best_after_warmup'),
             activity_admissible=all(m['orders_per_week']>2 for m in metrics.values()),
             scope=f"fresh_structural_{market.recipe['list']['n']}_development_validation_2024_TEST_closed"))
 
@@ -581,6 +642,10 @@ def main():
         p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--seed',type=int,required=True)
     p.add_argument('--monitor-start-epoch',type=int,default=20)
+    p=sub.add_parser('prepare-regularized')
+    for name in ('source-root','source-runtime','root'):
+        p.add_argument('--'+name,type=Path,required=True)
+    p.add_argument('--profile',choices=['none','core_dropout','head_dropout','head_batchnorm'],required=True)
     p=sub.add_parser('worker'); p.add_argument('--root',type=Path,required=True)
     p.add_argument('--seed',type=int,required=True)
     args=parser.parse_args(); globals()[args.command.replace('-','_')](args)
