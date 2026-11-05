@@ -16,8 +16,11 @@ class ResidualTCN(nn.Module):
         self.dropout1 = nn.Dropout(dropout)
         self.dropout2 = nn.Dropout(dropout)
 
-    def forward(self, x):
-        return F.silu(x + self.dropout2(self.second(self.dropout1(F.silu(self.first(x))))))
+    def forward(self, x, first_norm=None):
+        h = self.first(x)
+        if first_norm is not None:
+            h = first_norm(h)
+        return F.silu(x + self.dropout2(self.second(self.dropout1(F.silu(h)))))
 
 
 class DoubleTCNExtractor(BaseFeaturesExtractor):
@@ -49,13 +52,18 @@ class DoubleTCNExtractor(BaseFeaturesExtractor):
             with torch.random.fork_rng(devices=[]):
                 self.post_fusion=CausalPatchAttention(self.shape[0],**params)
 
-    def sequence(self, observations):
+    def sequence(self, observations, core_first_norm=None):
         x = observations['features']
         require(x.ndim == 3 and tuple(x.shape[1:]) == self.shape, 'OBSERVATION_SHAPE')
         x = x.transpose(1, 2)
         grouped = [branch(x.index_select(1, getattr(self, f'indices_{i}')))
                    for i, branch in enumerate(self.branches)]
-        return self.core(self.post_fusion(F.silu(self.fusion(torch.cat(grouped, dim=1)))))
+        x = self.post_fusion(F.silu(self.fusion(torch.cat(grouped, dim=1))))
+        if core_first_norm is None:
+            return self.core(x)
+        for i, block in enumerate(self.core):
+            x = block(x, first_norm=core_first_norm if i == 0 else None)
+        return x
 
     def forward(self, observations):
         return self.sequence(observations).flatten(1)

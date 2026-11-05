@@ -645,7 +645,7 @@ def main():
     p=sub.add_parser('prepare-regularized')
     for name in ('source-root','source-runtime','root'):
         p.add_argument('--'+name,type=Path,required=True)
-    p.add_argument('--profile',choices=['none','core_dropout','head_dropout','head_batchnorm'],required=True)
+    p.add_argument('--profile',choices=['none','core_dropout','head_dropout','head_batchnorm','core_first_batchnorm'],required=True)
     p=sub.add_parser('worker'); p.add_argument('--root',type=Path,required=True)
     p.add_argument('--seed',type=int,required=True)
     args=parser.parse_args(); globals()[args.command.replace('-','_')](args)

@@ -1,13 +1,17 @@
 {
   "schema": "attention_regularization_method.v1",
-  "current_stage": "TWO_ARMS_RUNNING",
+  "current_stage": "EARLY_CORE_BN_CPU_ACCEPTED_SUCCESSOR_DISPATCH",
   "design": "../202_ATTENTION_REGULARIZATION_PLACEMENT.md",
   "scope": "Current 93-input phase-2 representation; core dropout and post-core BatchNorm; reuse completed attention control; no TEST access",
   "stages_passed": ["DISCOVERY", "REQUIREMENTS", "ACCEPTANCE_TEST_DESIGN", "ARCHITECTURE", "UNIT_IMPLEMENTATION", "CPU_INTEGRATION", "GPU_INTEGRATION"],
   "verification": {"cpu_passed": 50, "cpu_skipped": 13, "gpu_primary_passed": 31, "gpu_secondary_passed": 31},
-  "authorized_arms": ["R1_core_dropout", "R3_head_batchnorm"],
+  "authorized_arms": ["R1_core_dropout", "R3_head_batchnorm", "R4_core_first_batchnorm_after_R3"],
+  "successor_verification": {"cpu_passed": 61, "cpu_skipped": 14, "gpu_acceptance": "automatic after predecessor exit, before training"},
   "not_authorized": ["R0_retraining", "R2_head_dropout"],
   "requirements_to_evidence": {
+    "early_core_placement_and_causality": "tests/unit/test_critic_regularization.py::test_core_first_bn_placement_and_temporal_causality",
+    "batch_only_position_statistics": "tests/unit/test_critic_regularization.py::test_position_batchnorm_statistics_do_not_mix_time",
+    "successful_predecessor_required": "tests/unit/test_regularization_successor.py",
     "explicit_online_target_inference_modes": "tests/unit/test_critic_regularization.py::test_real_twins_update_modes_buffers_and_reload",
     "restore_modes_on_exception": "tests/unit/test_critic_regularization.py::test_modes_restore_on_error_and_dropout_is_real",
     "matched_initialization": "tests/unit/test_critic_regularization.py::test_common_initial_weights_and_effective_metadata",
@@ -17,6 +21,6 @@
     "unchanged_support_and_native_business": "tools/run_structural_sac_refit.py::prepare_regularized"
   },
   "dispatch": {"date": "2026-11-05", "R1_core_dropout": "active on assigned primary accelerator", "R3_head_batchnorm": "active on assigned secondary accelerator", "restarts_at_dispatch_check": 0, "automatic_resume": true, "control_retraining": false},
-  "next_allowed_actions": ["collect full TRAIN and VALIDATION histories", "compare with completed attention history"],
+  "next_allowed_actions": ["deploy pinned R4 successor after R3", "collect full TRAIN and VALIDATION histories", "compare with completed attention history"],
   "excluded": ["combine dropout and BatchNorm", "change inputs or window", "fit scalers again", "read TEST", "use invalid prior campaigns as evidence"]
 }

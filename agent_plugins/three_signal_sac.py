@@ -11,7 +11,7 @@ from torchrl.objectives.utils import ValueEstimators
 from agent_plugins.double_tcn_probe import DoubleTCNExtractor
 from agent_plugins.discrete_curve_sac import CurveSAC
 from agent_plugins.sac_critic_regularization import (regularization_config, module_mode,
-    RegularizedDiscreteSACLoss, sync_target_statistics)
+    RegularizedDiscreteSACLoss, sync_target_statistics, PositionBatchNorm)
 
 
 class ThreeLogits(nn.Module):
@@ -24,6 +24,7 @@ class ThreeLogits(nn.Module):
         if type(head_width) is not int or head_width < 1:
             raise ValueError('THREE_SIGNAL_HEAD_WIDTH')
         config = regularization_config(critic_regularization or {'kind':'none'})
+        self.core_first_batchnorm = config['kind'] == 'core_first_batchnorm'
         if config['kind'] == 'core_dropout':
             architecture['core_dropout'] = config['p']
         self.encoder = DoubleTCNExtractor(space, recipe, **architecture)
@@ -36,8 +37,13 @@ class ThreeLogits(nn.Module):
         elif config['kind'] == 'head_batchnorm':
             self.regularizer = nn.BatchNorm1d(self.encoder.features_dim, eps=1e-5,
                 momentum=.1, affine=True, track_running_stats=True)
+        elif self.core_first_batchnorm:
+            self.regularizer = PositionBatchNorm(self.encoder.features_dim // shape[0], shape[0])
 
     def surface(self, features):
+        if self.core_first_batchnorm:
+            return self.head(self.encoder.sequence({'features':features},
+                core_first_norm=self.regularizer).flatten(1))
         return self.head(self.regularizer(self.encoder({'features':features})))
 
     def forward(self, features):
@@ -61,7 +67,7 @@ class ThreeSignalSAC(CurveSAC):
         if self.explicit_modes:
             self.effective['critic_regularization'] = critic_regularization
             self.effective['dropout'] = critic_regularization.get('p', 0.)
-            self.effective['batch_norm'] = critic_regularization['kind'] == 'head_batchnorm'
+            self.effective['batch_norm'] = 'batchnorm' in critic_regularization['kind']
             self.effective['regularization_scope'] = 'online_critics_only; actor unchanged'
             self.effective['mode_contract'] = 'online_q_train_target_and_actor_q_eval_v1'
             self.effective['target_bn_statistics'] = 'hard_copy_each_update'

@@ -19,7 +19,7 @@ def batch(device):
     return out.to(device)
 
 
-@pytest.mark.parametrize('kind',['none','core_dropout','head_dropout','head_batchnorm'])
+@pytest.mark.parametrize('kind',['none','core_dropout','head_dropout','head_batchnorm','core_first_batchnorm'])
 @pytest.mark.parametrize('device',['cpu','cuda'])
 def test_real_twins_update_modes_buffers_and_reload(kind,device,tmp_path):
     if device=='cuda' and not torch.cuda.is_available(): pytest.skip('CUDA unavailable')
@@ -31,7 +31,7 @@ def test_real_twins_update_modes_buffers_and_reload(kind,device,tmp_path):
     values=model.update(batch(device))
     assert np.isfinite(list(values.values())).all()
     state={k:v.clone() for k,v in model.loss.state_dict().items()}
-    if kind=='head_batchnorm':
+    if 'batchnorm' in kind:
         keys=[k for k in state if 'num_batches_tracked' in k and not k.startswith('target_')]
         assert keys and all(torch.equal(state[k],torch.ones_like(state[k])) for k in keys)
         for k,v in state.items():
@@ -80,7 +80,7 @@ def test_best_from_epoch_one_patience_only_after_twenty():
     assert monitor.bad==0
 
 
-@pytest.mark.parametrize('kind',['none','core_dropout','head_dropout','head_batchnorm'])
+@pytest.mark.parametrize('kind',['none','core_dropout','head_dropout','head_batchnorm','core_first_batchnorm'])
 def test_common_initial_weights_and_effective_metadata(kind):
     control=ThreeSignalSAC(probe_recipe(),architecture=ARCH,seed=7)
     candidate=ThreeSignalSAC(probe_recipe(),architecture=ARCH,seed=7,
@@ -89,7 +89,7 @@ def test_common_initial_weights_and_effective_metadata(kind):
     new=dict(candidate.loss.named_parameters())
     assert old.keys() <= new.keys()
     assert all(torch.equal(v,new[k]) for k,v in old.items())
-    assert candidate.effective['batch_norm']==(kind=='head_batchnorm')
+    assert candidate.effective['batch_norm']==('batchnorm' in kind)
     assert candidate.effective['dropout']==(.1 if 'dropout' in kind else 0.)
 
 
@@ -102,7 +102,7 @@ def test_warmup_monitor_ties_and_patience_limit():
     assert p.observe(1000,1)['stop']
 
 
-@pytest.mark.parametrize('kind',['none','core_dropout','head_dropout','head_batchnorm'])
+@pytest.mark.parametrize('kind',['none','core_dropout','head_dropout','head_batchnorm','core_first_batchnorm'])
 def test_regularized_epoch_recovery_and_separate_late_bundle(kind,tmp_path):
     from types import SimpleNamespace
     from tools.run_structural_sac_refit import fit_epochs
@@ -140,3 +140,51 @@ def test_regularized_epoch_recovery_and_separate_late_bundle(kind,tmp_path):
     assert two['best_after_warmup']['relative_path']=='bundles/epoch_0002'
     assert all(torch.equal(v,b.loss.state_dict()[k]) for k,v in a.loss.state_dict().items())
     assert (tmp_path/'resumed'/'BEST_AFTER_WARMUP.json').exists()
+
+
+@pytest.mark.parametrize('training',[True,False])
+def test_core_first_bn_placement_and_temporal_causality(training):
+    from agent_plugins.three_signal_sac import ThreeLogits
+    torch.manual_seed(7)
+    net=ThreeLogits(probe_recipe(),ARCH,dict(kind='core_first_batchnorm'))
+    net.train(training)
+    x=torch.randn(8,13,2)
+    changed=x.clone(); changed[:,7:]+=100*torch.randn_like(changed[:,7:])
+    seen={}
+    def capture(name):
+        def hook(module,args,out): seen[name]=out.detach().clone()
+        return hook
+    handles=[net.encoder.core[0].first.register_forward_hook(capture('conv')),
+             net.regularizer.register_forward_hook(capture('bn'))]
+    norm_inputs=[]
+    handles.append(net.regularizer.register_forward_pre_hook(
+        lambda module,args: norm_inputs.append(args[0].detach().clone())))
+    with torch.no_grad():
+        a=net.encoder.sequence({'features':x},core_first_norm=net.regularizer)
+        assert len(norm_inputs)==1
+        assert torch.equal(norm_inputs[0],seen['conv'])
+        assert seen['bn'].shape==seen['conv'].shape
+        b=net.encoder.sequence({'features':changed},core_first_norm=net.regularizer)
+        torch.testing.assert_close(a[:,:,:7],b[:,:,:7],rtol=0,atol=0)
+        assert not torch.equal(a[:,:,7:],b[:,:,7:])
+        norm_inputs.clear()
+        assert net(x).shape==(8,3)
+        assert len(norm_inputs)==1
+    for h in handles: h.remove()
+    bn=net.regularizer.bn
+    assert bn.num_features==16*13 and bn.eps==1e-5 and bn.momentum==.1
+    assert bn.affine and bn.track_running_stats
+
+
+def test_position_batchnorm_statistics_do_not_mix_time():
+    from agent_plugins.sac_critic_regularization import PositionBatchNorm
+    layer=PositionBatchNorm(2,3)
+    x=torch.arange(24,dtype=torch.float32).reshape(4,2,3)
+    layer(x)
+    torch.testing.assert_close(layer.bn.running_mean,.1*x.mean(0).flatten())
+    torch.testing.assert_close(layer.bn.running_var,.9+.1*x.var(0,unbiased=True).flatten())
+    layer.eval()
+    with torch.no_grad():
+        torch.testing.assert_close(layer(x)[:1],layer(x[:1]))
+    with pytest.raises(ValueError,match='POSITION_BN_SHAPE'):
+        layer(torch.zeros(4,2,2))

@@ -1,14 +1,29 @@
 """Explicit online-Q training and frozen target/actor-loss critic evaluations."""
 from contextlib import contextmanager
 
+from torch import nn
 from torchrl.objectives import DiscreteSACLoss
+
+
+class PositionBatchNorm(nn.Module):
+    """Batch statistics per channel and window position, never across time."""
+    def __init__(self, channels, steps):
+        super().__init__()
+        self.shape = (channels, steps)
+        self.bn = nn.BatchNorm1d(channels * steps, eps=1e-5, momentum=.1,
+                               affine=True, track_running_stats=True)
+
+    def forward(self, x):
+        if x.ndim != 3 or tuple(x.shape[1:]) != self.shape:
+            raise ValueError('POSITION_BN_SHAPE')
+        return self.bn(x.flatten(1)).reshape_as(x)
 
 
 def regularization_config(config):
     config = dict(config)
     kind = config.get('kind')
     allowed = {'kind', 'p'} if kind in ('core_dropout', 'head_dropout') else {'kind'}
-    if kind not in ('none', 'core_dropout', 'head_dropout', 'head_batchnorm') or set(config)-allowed:
+    if kind not in ('none', 'core_dropout', 'head_dropout', 'head_batchnorm', 'core_first_batchnorm') or set(config)-allowed:
         raise ValueError('CRITIC_REGULARIZATION_CONFIG')
     if 'dropout' in kind:
         p = config.get('p', .1)

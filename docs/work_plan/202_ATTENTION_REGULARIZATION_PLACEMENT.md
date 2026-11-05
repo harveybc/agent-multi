@@ -1,5 +1,27 @@
 # Attention baseline and regularization placement
 
+## Authorized successor: early-core BatchNorm
+
+Owner direction2026-11-05 adds R4 only after R3 finishes, on the same secondary
+accelerator. No additional control or dropout run. R1 remains unchanged.
+R4 moves the single critic BatchNorm from the flattened head input to after
+the first causal convolution of the first core residual block, before SiLU.
+The shortcut, second convolution, second core block and actor are unchanged.
+Normalize each (channel,time-position) independently across the batch: flatten
+[B,C,T] to [B,C*T] for BatchNorm and reshape back, never average across T.
+Use the same affine, eps1e-5, momentum0.1 and running-statistics settings as R3.
+Weights and replay start fresh; retain common initialization, data/support,
+scaler, attention, seed, optimizer, monitor and business rules.
+
+Acceptance before dispatch: tests verify exact placement and single application,
+TRAIN and eval suffix-perturbation invariance, per-position running statistics,
+unchanged common initialization, actual twin-critic updates, eval freezing,
+cold reload and interrupted-run parity. Dispatch must wait for the predecessor
+service to finish successfully and authenticate its result before starting R4.
+The R3 zero-trade selected checkpoint is an inadmissible activity outcome, not
+evidence of generalization. Moving BN is a placement experiment, not a claim
+that replay/target distribution mismatch has been solved.
+
 Owner direction2026-11-05: retain causal patch attention as the development
 baseline and isolate regularization mechanisms and their placement. This is
 an engineering choice, not a claim that attention has established predictive
