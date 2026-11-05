@@ -22,6 +22,14 @@ The R3 zero-trade selected checkpoint is an inadmissible activity outcome, not
 evidence of generalization. Moving BN is a placement experiment, not a claim
 that replay/target distribution mismatch has been solved.
 
+Deployment2026-11-05: code ed586112, CPU61 passed/14 skipped. Enabled resumable
+successor service reports WAITING_FOR_PREDECESSOR, zero restarts, while R3 is
+in epoch40 with patience19/20. The launcher authenticates R3 source/input/result
+and exported checkpoint, prepares R4 atomically, checks GPU readiness, runs
+CUDA acceptance, then starts the sole authorized fresh R4 fit. CPU tests also
+reject missing, failed and nonzero-exit predecessors. No overlap with R3 and
+no changes to R1. GPU acceptance and training have not yet run at this check.
+
 Owner direction2026-11-05: retain causal patch attention as the development
 baseline and isolate regularization mechanisms and their placement. This is
 an engineering choice, not a claim that attention has established predictive
