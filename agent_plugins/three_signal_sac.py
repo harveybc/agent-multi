@@ -18,8 +18,9 @@ class ThreeLogits(nn.Module):
     def __init__(self, recipe, architecture=None, critic_regularization=None):
         super().__init__()
         shape = (recipe['tensor']['window']['observations'], recipe['list']['n'])
-        space = gym.spaces.Dict({'features':gym.spaces.Box(-np.inf,np.inf,shape,np.float32)})
         architecture = dict(architecture or {})
+        transport_shape=(shape[0]*(2 if architecture.get('long_context') is not None else 1),shape[1])
+        space = gym.spaces.Dict({'features':gym.spaces.Box(-np.inf,np.inf,transport_shape,np.float32)})
         head_width = architecture.pop('head_width', 8)
         if type(head_width) is not int or head_width < 1:
             raise ValueError('THREE_SIGNAL_HEAD_WIDTH')
@@ -84,6 +85,22 @@ class ThreeSignalSAC(CurveSAC):
         self.updater = SoftUpdate(self.loss,tau=tau)
         self.optimizer = torch.optim.AdamW(self.loss.parameters(),lr=lr,
                                            weight_decay=self.effective['weight_decay'])
+        if (architecture or {}).get('long_context') is not None:
+            # TorchRL's twin expansion consumes RNG in parameter order. Adding
+            # context before the head must not change the paired common weights.
+            common={k:v for k,v in architecture.items() if k!='long_context'}
+            devices=[self.device.index or 0] if self.device.type=='cuda' else []
+            with torch.random.fork_rng(devices=devices):
+                reference=ThreeSignalSAC(recipe,device,seed,gamma,alpha,lr,entropy_fraction,
+                    common,tau,weight_decay,critic_regularization)
+                with torch.no_grad():
+                    current=self.loss.state_dict()
+                    for name,value in reference.loss.state_dict().items():
+                        current[name].copy_(value)
+                rng=torch.get_rng_state()
+                crng=torch.cuda.get_rng_state(self.device) if devices else None
+            torch.set_rng_state(rng)
+            if crng is not None: torch.cuda.set_rng_state(crng,self.device)
 
     def distribution(self, obs):
         if not self.explicit_modes:

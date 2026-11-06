@@ -25,10 +25,11 @@ class ResidualTCN(nn.Module):
 
 class DoubleTCNExtractor(BaseFeaturesExtractor):
     def __init__(self, observation_space, recipe, branch_width=8, core_width=16,
-                 branch_blocks=2, core_blocks=2, temporal_attention=None, core_dropout=0.):
+                 branch_blocks=2, core_blocks=2, temporal_attention=None, core_dropout=0.,long_context=None):
         validate_recipe(recipe)
         self.shape = (recipe['tensor']['window']['observations'], recipe['list']['n'])
-        require(observation_space['features'].shape == self.shape, 'OBSERVATION_SHAPE')
+        self.transport_shape=(self.shape[0]*(2 if long_context is not None else 1),self.shape[1])
+        require(observation_space['features'].shape == self.transport_shape, 'OBSERVATION_SHAPE')
         require(all(type(v) is int and v > 0 for v in
                     (branch_width, core_width, branch_blocks, core_blocks)), 'WIDTH')
         super().__init__(observation_space, self.shape[0] * core_width)
@@ -51,14 +52,27 @@ class DoubleTCNExtractor(BaseFeaturesExtractor):
             # Keep the random initialization of all existing modules unchanged.
             with torch.random.fork_rng(devices=[]):
                 self.post_fusion=CausalPatchAttention(self.shape[0],**params)
+        self.context=None
+        if long_context is not None:
+            from app.multiscale_context import context_config
+            from agent_plugins.multiscale_context import LongContext
+            config=context_config(long_context,self.shape[0],recipe['tensor']['window']['stride_rows'])
+            with torch.random.fork_rng(devices=[]):
+                self.context=LongContext(recipe,config,core_width,ResidualTCN)
 
     def sequence(self, observations, core_first_norm=None):
         x = observations['features']
-        require(x.ndim == 3 and tuple(x.shape[1:]) == self.shape, 'OBSERVATION_SHAPE')
+        require(x.ndim == 3 and tuple(x.shape[1:]) == self.transport_shape, 'OBSERVATION_SHAPE')
+        extra=None
+        if self.context is not None:
+            extra=self.context(x[:,self.shape[0]:])
+            x=x[:,:self.shape[0]]
         x = x.transpose(1, 2)
         grouped = [branch(x.index_select(1, getattr(self, f'indices_{i}')))
                    for i, branch in enumerate(self.branches)]
-        x = self.post_fusion(F.silu(self.fusion(torch.cat(grouped, dim=1))))
+        x = F.silu(self.fusion(torch.cat(grouped, dim=1)))
+        if extra is not None: x=x+extra
+        x = self.post_fusion(x)
         if core_first_norm is None:
             return self.core(x)
         for i, block in enumerate(self.core):

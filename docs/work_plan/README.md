@@ -13,6 +13,10 @@ and policy inactivity. Sequential CPU diagnostics completed; G2/G3 training
 has not started. Next: support-preserving multiscale implementation, not
 feature removal.
 
+[Automated G2 queue205](205_AUTOMATED_MULTISCALE_CONTRAST.md) specifies preserved
+baseline support, an optional causal context branch, fresh paired initialization,
+existing-control reuse, conditional paired seeds and persistent worker recovery.
+
 ## Priority Update: 2026-11-04
 
 [Structural94 refit196](196_STRUCTURAL_REFIT_94.md) follows completed195:

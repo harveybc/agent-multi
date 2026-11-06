@@ -36,7 +36,7 @@ SOURCES = ['tools/run_structural_sac_refit.py', 'app/structural_refit.py',
     'env_plugins/discrete_curve_native.py', 'tools/run_discrete_curve_probe.py',
     'tools/run_three_signal_baseline.py', 'agent_plugins/temporal_features.py',
     'agent_plugins/causal_patch_attention.py', 'agent_plugins/sac_critic_regularization.py',
-    'app/training_diagnostics.py']
+    'app/training_diagnostics.py','app/multiscale_context.py','agent_plugins/multiscale_context.py']
 SOFTWARE = ['torch', 'torchrl', 'tensordict', 'numpy', 'pandas', 'pyarrow']
 
 
@@ -47,6 +47,10 @@ def market_for(root, spec):
         recipe_sha256=spec['files']['SUPPORT_RECIPE.json']))
     rec = read(root/'RECIPE.json')
     market.inputs = project_inputs(market.inputs, rec)
+    context=spec['effective']['architecture'].get('long_context')
+    if context is not None:
+        from app.multiscale_context import pack_context
+        market.inputs=pack_context(market.inputs,context)
     market.recipe = rec
     return market
 

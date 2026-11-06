@@ -1,10 +1,11 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "G1_COMPLETE_G2_IMPLEMENTATION_NEXT",
+  "current_stage": "G2_CPU_VERIFIED_GPU_ACCEPTANCE_NEXT",
   "design": "../203_GENERALIZATION_DIAGNOSIS_AND_CONTRASTS.md",
   "stages_passed": ["DISCOVERY", "REQUIREMENTS", "ACCEPTANCE_TEST_DESIGN", "UNIT_TESTS", "REAL_REPLAY_AUTHENTICATION", "FROZEN_MODEL_DIAGNOSIS", "G1_REPORT"],
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
-  "next_allowed_actions": ["implement and test optional multiscale context without dropping baseline support", "audit coherent synthetic producer coverage", "investigate BN stability separately without promoting failed arms"],
+  "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
+  "next_allowed_actions": ["deploy immutable runtime and run CUDA acceptance", "launch G2 pilot with conditional paired replication", "run synthetic coverage audit without admitting incoherent data"],
   "training_launched": false,
   "excluded": ["TEST access", "change current workers", "invent replay sample history", "discard baseline rows", "launch incompatible synthetic feature training"]
 }
