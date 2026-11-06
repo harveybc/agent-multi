@@ -6,8 +6,10 @@ Keep93 selected inputs, train2020-2023, validation2024, fixed TRAIN scaler,
 market-only observations, attention, categorical SAC and current order logic.
 
 G1 executed2026-11-06: see [measured results](204_GENERALIZATION_DIAGNOSIS_RESULTS.md).
-The sequential CPU collector completed all three runs. G2/G3 training has NOT
-started. BN variants are not promoted: one has diverging critic values, the
+The sequential CPU collector completed all three runs. G2 is now running under
+[205](205_AUTOMATED_MULTISCALE_CONTRAST.md); G3 training is not admitted yet.
+The owner-authorized frozen R1 pass is tracked in
+[207](207_SNR_REVIEW_AND_NEXT_MASK_PASS.md). BN variants are not promoted: one has diverging critic values, the
 other collapses to inactivity. These are optimization-health findings, not
 evidence that the market inputs contain no useful information.
 

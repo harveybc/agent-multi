@@ -1,5 +1,10 @@
 # Capacity Contrast: 70x Hypothesis
 
+Review update: [207](207_SNR_REVIEW_AND_NEXT_MASK_PASS.md) identifies a different
+model and an unsupported information-to-weights deduction in the supplied report.
+This prepared contrast is NOT LAUNCHED; continue the independent G2 and frozen
+feature-selection work. The design below is a proposal, not executed evidence.
+
 ## Question and Scope
 
 The owner requests an empirical test of a proposed capacity deficit derived

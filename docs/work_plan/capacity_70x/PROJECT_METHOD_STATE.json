@@ -1,13 +1,14 @@
 {
   "schema": "capacity_70x.method.v1",
-  "current_stage": "CPU_VERIFIED_AWAITING_OWNER_ANALYSIS",
+  "current_stage": "NOT_LAUNCHED_RATIONALE_NOT_APPLICABLE",
   "design": "../206_CAPACITY_70X_CONTRAST.md",
   "stages_passed": ["DISCOVERY", "REQUIREMENTS", "ACCEPTANCE_TEST_DESIGN", "ARCHITECTURE", "SYSTEM_TEST_DESIGN", "COMPONENT_DESIGN", "INTEGRATION_TEST_DESIGN", "UNIT_TEST_DESIGN"],
-  "next_allowed_actions": ["read promised owner analysis and confirm capacity units", "immutable deployment and full-batch GPU acceptance", "pilot and conditional paired replication"],
+  "next_allowed_actions": ["continue independent generalization queue", "ordered frozen R1 removal/reinsertion pass"],
   "training_launched": false,
   "prepared_identity": "3dac82f39420558ecec1d14b96915ab101d8167ae4158ef3f7056d5e81a18bba",
   "prepared_parameters": {"baseline": 98344, "candidate": 7083946, "ratio": 72.03231513869682},
   "cpu_tests": {"capacity_queue_recovery_passed": 28, "cuda_skipped": 7},
-  "open_question": "Owner's SNR derivation and capacity units; experiment currently tests parameter-count proxy",
+  "review": "../207_SNR_REVIEW_AND_NEXT_MASK_PASS.md",
+  "decision": "Report identifies a historical15-input feedback model; mean/std-to-Shannon-to-weights deduction is not a sizing justification for current SAC. Prepared arm not launched.",
   "excluded": ["modify G2 workers", "change data or windows", "change optimizer or reward", "TEST access", "claim SNR proves70x", "silently reduce batch to fit"]
 }

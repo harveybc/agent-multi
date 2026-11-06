@@ -11,6 +11,18 @@ and execution-policy plugins loaded from entry points.
 
 ## Status
 
+**Generalization follow-up (2026-11-06):** completed regularization diagnostics
+are in [204](docs/work_plan/204_GENERALIZATION_DIAGNOSIS_RESULTS.md). The independent
+multiscale contrast is automated under [205](docs/work_plan/205_AUTOMATED_MULTISCALE_CONTRAST.md).
+The SNR/capacity review and next93-input frozen removal/reinsertion pass are
+tracked in [207](docs/work_plan/207_SNR_REVIEW_AND_NEXT_MASK_PASS.md).
+That pass is now complete: **93 ->76 ->76 inputs,28 groups**, with frozen-mask
+validation return+11.2871% and205 orders; see
+[208](docs/work_plan/208_R1_FROZEN_76_TWO_PASS_RESULTS.md) for the full comparison,
+native statistics and distinction from a fresh structural refit.
+The proposed70x-capacity arm has not been launched: the supplied analysis
+describes a different model and does not establish the required network size.
+
 **Current selection diagnostic (2026-11-04):** the selected94-input frozen actor
 now preserves the masked108 policy exactly, including full TRAIN/VALIDATION
 trading accounts. See [plan197](docs/work_plan/197_FUNCTION_PRESERVING_COMPACTION.md)
