@@ -1,5 +1,11 @@
 # Attention baseline and regularization placement
 
+Completion2026-11-06: R1/R3/R4 all finished at epoch40. The early-core successor
+ran automatically after R3. See [203](203_GENERALIZATION_DIAGNOSIS_AND_CONTRASTS.md)
+and [204](204_GENERALIZATION_DIAGNOSIS_RESULTS.md) for authenticated selected/final
+results, inactivity checks, replay coverage and BN instability measurements.
+The WAITING status below describes the earlier deployment check, not current work.
+
 ## Authorized successor: early-core BatchNorm
 
 Owner direction2026-11-05 adds R4 only after R3 finishes, on the same secondary

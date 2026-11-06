@@ -1,5 +1,18 @@
 # Adaptive Multi-Asset Trading Work Plan
 
+## Priority Update: 2026-11-06
+
+[Generalization203](203_GENERALIZATION_DIAGNOSIS_AND_CONTRASTS.md): owner approves
+read-only replay/stability/period diagnosis first, then independent multiscale
+and10% synthetic contrasts conditional on verified support and producer coverage.
+Keep current93 inputs and business rules; no new feature-selection pass yet.
+
+The [G1 results](204_GENERALIZATION_DIAGNOSIS_RESULTS.md) authenticate completed
+R1/R3/R4 and distinguish replay coverage, distribution shifts, BN instability
+and policy inactivity. Sequential CPU diagnostics completed; G2/G3 training
+has not started. Next: support-preserving multiscale implementation, not
+feature removal.
+
 ## Priority Update: 2026-11-04
 
 [Structural94 refit196](196_STRUCTURAL_REFIT_94.md) follows completed195:
