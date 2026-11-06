@@ -1,11 +1,16 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "G2_CPU_VERIFIED_GPU_ACCEPTANCE_NEXT",
+  "current_stage": "G2_PILOT_DEPLOYED_TRAINING",
   "design": "../203_GENERALIZATION_DIAGNOSIS_AND_CONTRASTS.md",
   "stages_passed": ["DISCOVERY", "REQUIREMENTS", "ACCEPTANCE_TEST_DESIGN", "UNIT_TESTS", "REAL_REPLAY_AUTHENTICATION", "FROZEN_MODEL_DIAGNOSIS", "G1_REPORT"],
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
-  "next_allowed_actions": ["deploy immutable runtime and run CUDA acceptance", "launch G2 pilot with conditional paired replication", "run synthetic coverage audit without admitting incoherent data"],
-  "training_launched": false,
+  "next_allowed_actions": ["complete authenticated G2 pilot", "apply frozen paired-replication gate automatically", "collect reports and checkpoints without another approval"],
+  "training_launched": true,
+  "runtime_commit": "633d5cc5",
+  "pilot_identity": "e1fd42873ee434118e736f52ff93e334e9b131ada3e5a525711a894016b02cc1",
+  "replication_control_identity": "34083774dea0f74182df32d82db7269bdc60d8cc0da1a8b202f71c4b83956f07",
+  "verification": {"focused_cpu_passed": 50, "cpu_cuda_skipped": 12, "primary_cuda_passed": 7, "real_train_canary": true, "first_sac_update": true},
+  "synthetic_training": "not admitted: coherent joint producer not implemented",
   "excluded": ["TEST access", "change current workers", "invent replay sample history", "discard baseline rows", "launch incompatible synthetic feature training"]
 }

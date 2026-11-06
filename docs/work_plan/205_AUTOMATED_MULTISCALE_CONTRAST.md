@@ -96,3 +96,21 @@ tested for initial equality; additional context gradients must become nonzero.
 | Reproducibility | same-device cold reload and interrupted replay test |
 | No duplicate control | frozen history replay for seed7; new seeds only after pilot gate |
 | No babysitting | persistent queue, locks, restart, collected reports and terminal status |
+
+## Deployment Receipt
+
+Immutable runtime `633d5cc5` is deployed to both GPU workers and the CPU
+coordinator. The focused CPU suites passed50 tests with12 CUDA-only skips;
+the primary worker passed7 CUDA tests and the real93-column canary. The pilot
+entered actual SAC updates on the primary GPU with file-backed replay.
+
+- G2 identity: `e1fd42873ee434118e736f52ff93e334e9b131ada3e5a525711a894016b02cc1`.
+- R0 replication identity: `34083774dea0f74182df32d82db7269bdc60d8cc0da1a8b202f71c4b83956f07`.
+- Automatic report: `/var/tmp/sac93-generalization-queue-v3-20261106/REPORT.md`.
+- Queue state and receipts: same directory, `QUEUE.json` and `receipts/`.
+- Synthetic audit: same directory, `SYNTHETIC_COVERAGE.json`; no synthetic
+  training is admitted by that audit.
+
+The first attempt ended before a completed epoch and is not a performance result.
+The deployed pilot starts fresh; the existing attention-only seed7 control is
+reused under the matched monitor. No TEST partition is opened by this queue.
