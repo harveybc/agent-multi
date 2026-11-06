@@ -1,6 +1,7 @@
 """Bounded G2 GPU queue, automatic paired replication and G3 coverage audit."""
 import argparse
 import copy
+from datetime import datetime,timezone
 import fcntl
 import hashlib
 import json
@@ -70,7 +71,8 @@ def prepare(args):
     for name in source['files']:
         dest=args.root/name;dest.parent.mkdir(parents=True,exist_ok=True)
         shutil.copy2(args.source_root/name,dest)
-    spec=copy.deepcopy(source);spec.pop('identity',None)
+    spec=copy.deepcopy(source);spec.pop('identity',None);spec.pop('warmup_migration',None)
+    spec['created_at']=datetime.now(timezone.utc).isoformat()
     architecture=copy.deepcopy(control['effective']['architecture'])
     if args.arm=='G2':
         architecture['long_context']=dict(observations=13,stride_rows=6,branch_width=4,branch_blocks=2)
@@ -94,11 +96,12 @@ def prepare(args):
     spec['files']={str(p.relative_to(args.root)):sha(p) for p in args.root.rglob('*') if p.is_file()}
     spec['identity']=digest(spec);write(args.root/'SPEC.json',spec)
     market=market_for(args.root,spec);pre=read(args.source_root/'PREFLIGHT.json')
+    pre.pop('continuation_of_fresh_fit',None);pre.pop('warmup_migration',None)
     if support_hash(market.inputs)!=pre['support_sha256']: raise ValueError('BASE_SUPPORT_CHANGED')
     if not np.isfinite(market.inputs.windows[market.inputs.valid,:13]).all():
         raise ValueError('BASE_INPUT_NONFINITE')
     pre.update(identity=spec['identity'],tensor_shape=list(market.inputs.windows.shape),
-        structural_round=spec['structural_round'],fresh_training=True)
+        structural_round=spec['structural_round'],fresh_training=True,native_controls_reused_from=source['identity'])
     if args.arm=='G2':
         pre['context_unavailable']={p:int(np.sum(market.inputs.valid & (market.inputs.period==p)
             & ~np.isfinite(market.inputs.windows[:,13:]).all((1,2)))) for p in ('TRAIN','VALIDATION')}
