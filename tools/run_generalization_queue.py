@@ -143,8 +143,12 @@ def task(args):
                 '--python',sys.executable,'--output-fs',str(args.root),
                 '--expected-artifact-bytes',str(6*1024**3)],cwd=ROOT,check=True)
             write(state,dict(status='CUDA_ACCEPTANCE',identity=spec['identity']))
-            test='tests/unit/test_capacity_contrast.py' if spec['structural_round']['variant']=='CAPACITY_70X' else 'tests/unit/test_multiscale_context.py'
-            subprocess.run([sys.executable,'-m','pytest',test,'-q'],cwd=ROOT,check=True)
+            variant=spec['structural_round'].get('variant')
+            tests=(['tests/unit/test_structural_refit.py','tests/unit/test_critic_regularization.py']
+                   if variant=='STRUCTURAL_SELECTED' else
+                   ['tests/unit/test_capacity_contrast.py'] if variant=='CAPACITY_70X' else
+                   ['tests/unit/test_multiscale_context.py'])
+            subprocess.run([sys.executable,'-m','pytest',*tests,'-q'],cwd=ROOT,check=True)
             subprocess.run([sys.executable,'-m','tools.run_generalization_queue','canary',
                 '--root',str(args.root),'--seed',str(args.seed)],cwd=ROOT,check=True)
             write(state,dict(status='TRAINING',identity=spec['identity']))
@@ -297,7 +301,7 @@ def render_report(out,state,reference):
         lines.append(f"| {arm} | {seed} | {epoch} | {m['TRAIN']['return_pct']:.4f} | {v['return_pct']:.4f} | "
             +(f'{s:.4f}' if s is not None else 'undefined')+f" | {v['trades']} | "
             +(f'{100*w:.2f}' if w is not None else 'undefined')+f" | {v['max_drawdown_pct']:.4f} |")
-    r=reference['matched_monitor']['selected'];row('R0 reused; matched monitor',7,r['epoch'],r['metrics'])
+    r=reference['matched_monitor']['selected'];row(reference.get('label','R0 reused; matched monitor'),7,r['epoch'],r['metrics'])
     for path in sorted((out/'receipts').glob('*.json')):
         r=read(path);row(path.stem,r['result']['seed'],r['selected_epoch'],r['result']['metrics'])
     lines.extend(['','G3: producer coverage audit is separate; no synthetic training is inferred from G2 completion.'])

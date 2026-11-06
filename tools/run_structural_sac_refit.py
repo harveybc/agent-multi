@@ -224,17 +224,22 @@ def prepare_selected(args):
     spec.pop('identity',None); spec.pop('warmup_migration',None)
     spec['created_at']=now()
     spec['design'].update(seeds=args.seeds,monitor_mode='validation',monitor_start_epoch=20,
-        monitor='validation_full_accounts_return_per_week',max_epochs=2000,patience=20,min_delta=1e-8)
+        monitor='validation_full_accounts_return_per_week',max_epochs=2000,patience=20,min_delta=1e-8,
+        select_during_warmup=True,replay_backend='memmap')
     if not args.seeds or len(set(args.seeds))!=len(args.seeds):
         raise ValueError('SELECTED_REFIT_SEEDS')
-    spec['sources']={n:file_sha(ROOT/n) for n in SOURCES}
+    spec['sources']={n:file_sha(ROOT/n) for n in SOURCES+['tools/run_generalization_queue.py']}
     spec['selection_identity']=ss['identity']
     spec['parent_recipe_identity']=read(source/'RECIPE.json')['identity']
-    spec['structural_round']=dict(parent_identity=original['identity'],
+    spec['structural_round']=dict(variant='STRUCTURAL_SELECTED',parent_identity=original['identity'],
         selection_result_sha256=close['result_sha256'],features_before=len(ss['dataset']['features']),
         features_after=reduced['list']['n'],fresh_weights=True,fresh_replay=True,
         scaler='projected unchanged from parent TRAIN constants',
         checkpoint_source='new initialization, not the masked winner weights')
+    write(root/'REFERENCE.json',dict(label='R1 masked selected inputs; frozen weights',
+        matched_monitor=dict(selected=dict(epoch=ss['checkpoint_epoch'],metrics=result['final']['metrics'])),
+        original_result=parent_result,selection_identity=ss['identity'],
+        scope='comparison to frozen masked selection, not a trained reduced-input model'))
     spec['files']={str(p.relative_to(root)):file_sha(p) for p in root.rglob('*') if p.is_file()}
     spec['identity']=digest(spec)
     write(root/'SPEC.json',spec)
