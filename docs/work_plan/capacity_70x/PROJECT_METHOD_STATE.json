@@ -1,0 +1,10 @@
+{
+  "schema": "capacity_70x.method.v1",
+  "current_stage": "S8_UNIT_TEST_DESIGN",
+  "design": "../206_CAPACITY_70X_CONTRAST.md",
+  "stages_passed": ["DISCOVERY", "REQUIREMENTS", "ACCEPTANCE_TEST_DESIGN", "ARCHITECTURE", "SYSTEM_TEST_DESIGN", "COMPONENT_DESIGN", "INTEGRATION_TEST_DESIGN", "UNIT_TEST_DESIGN"],
+  "next_allowed_actions": ["implement capacity-count preparation and tests", "CPU verification", "immutable deployment and full-batch GPU acceptance", "pilot and conditional paired replication"],
+  "training_launched": false,
+  "open_question": "Owner's SNR derivation and capacity units; experiment currently tests parameter-count proxy",
+  "excluded": ["modify G2 workers", "change data or windows", "change optimizer or reward", "TEST access", "claim SNR proves70x", "silently reduce batch to fit"]
+}

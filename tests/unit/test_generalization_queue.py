@@ -76,3 +76,17 @@ def test_coordinator_completes_paired_queues_and_resumes_without_recollecting(tm
     assert json.loads((out/'QUEUE.json').read_text())['status']=='COMPLETE'
     coordinator(SimpleNamespace(config=config))
     assert len(calls)==5
+
+
+@pytest.mark.parametrize('destination_state',['inactive','failed'])
+def test_migration_does_not_reset_healthy_unloaded_destination(tmp_path,monkeypatch,destination_state):
+    import tools.run_generalization_queue as queue
+    source=dict(key='G2-7',identity='same',host='primary',unit='sac-generalization-pilot',root='/source')
+    destination=dict(source,host='secondary',root='/destination')
+    calls=[]
+    monkeypatch.setattr(queue,'remote',lambda host,args,**kw:calls.append((host,args)))
+    monkeypatch.setattr(queue,'service_state',lambda host,unit:{'ActiveState':destination_state if host=='secondary' else 'inactive'})
+    monkeypatch.setattr(queue.subprocess,'run',lambda *a,**kw:None)
+    queue.migrate_pilot(source,destination,tmp_path)
+    resets=[c for c in calls if 'reset-failed' in c[1]]
+    assert len(resets)==(destination_state=='failed')

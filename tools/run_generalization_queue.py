@@ -143,7 +143,8 @@ def task(args):
                 '--python',sys.executable,'--output-fs',str(args.root),
                 '--expected-artifact-bytes',str(6*1024**3)],cwd=ROOT,check=True)
             write(state,dict(status='CUDA_ACCEPTANCE',identity=spec['identity']))
-            subprocess.run([sys.executable,'-m','pytest','tests/unit/test_multiscale_context.py','-q'],cwd=ROOT,check=True)
+            test='tests/unit/test_capacity_contrast.py' if spec['structural_round']['variant']=='CAPACITY_70X' else 'tests/unit/test_multiscale_context.py'
+            subprocess.run([sys.executable,'-m','pytest',test,'-q'],cwd=ROOT,check=True)
             subprocess.run([sys.executable,'-m','tools.run_generalization_queue','canary',
                 '--root',str(args.root),'--seed',str(args.seed)],cwd=ROOT,check=True)
             write(state,dict(status='TRAINING',identity=spec['identity']))
@@ -252,7 +253,10 @@ def migrate_pilot(source,destination,out):
                    check=True,timeout=1200)
     subprocess.run(['rsync','-a','--exclude=worker.lock','--exclude=replay_live/',str(staging)+'/',
                     destination['host']+':'+destination['root']+'/'],check=True,timeout=1200)
-    remote(destination['host'],['systemctl','--user','reset-failed',destination['unit']])
+    # Inactive units may be unloaded immediately after a query. reset-failed on
+    # such a healthy unit returns an error; only a failed destination needs it.
+    if service_state(destination['host'],destination['unit']).get('ActiveState')=='failed':
+        remote(destination['host'],['systemctl','--user','reset-failed',destination['unit']])
 
 
 def launch(job):
@@ -332,7 +336,7 @@ def coordinator(args):
                         if p['TASK.json'] and p['TASK.json']['status']=='COMPLETE':
                             fetch_receipt(job,out);state['completed'].append(job['key']);continue
                     if s.get('ActiveState')=='failed' or terminated:
-                        if job['key']==cfg['pilot']['key'] and not state.get('fallback_used') and guard_interrupted(job,s):
+                        if job['key']==cfg['pilot']['key'] and 'pilot_fallback' in cfg and not state.get('fallback_used') and guard_interrupted(job,s):
                             state['migration']=True;write(state_path,state);break
                         raise ValueError('WORKER_RETRIES_EXHAUSTED:'+job['key'])
                     launch(job);active.append(dict(key=job['key'],service=s,progress=p))
