@@ -69,3 +69,18 @@ continues unchanged. Do not combine capacity, new context and regularization.
 Failures in code, identities or resource acceptance stop that arm with an explicit
 error; they do not silently change the experiment. The existing G2 queue is
 independent. Synthetic generation is not part of this contrast.
+
+## Preparation Receipt
+
+The actual93-column recipe gives98,344 trainable parameters in the reference
+and7,083,946 in the widened model (72.0323x). Extractor/core/head widths are
+70/140/70; attention embedding/feedforward are70/140. The actor has2,361,315
+parameters; the two online critics4,722,630; temperature1. Target copies are
+not counted as additional trainable capacity.
+
+Prepared identity: `3dac82f39420558ecec1d14b96915ab101d8167ae4158ef3f7056d5e81a18bba`.
+CPU checks passed, including actual SAC updates, gradient coverage and exact
+cold reload. No capacity training has launched: the owner is supplying the
+analysis document so the proposed parameter-count test can be checked against
+its actual claim. The accompanying chat also discusses filtering and regime
+labels; neither intervention is included here.

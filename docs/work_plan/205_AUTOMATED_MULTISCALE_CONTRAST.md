@@ -114,3 +114,10 @@ entered actual SAC updates on the primary GPU with file-backed replay.
 The first attempt ended before a completed epoch and is not a performance result.
 The deployed pilot starts fresh; the existing attention-only seed7 control is
 reused under the matched monitor. No TEST partition is opened by this queue.
+
+The file-backed pilot also reached the host's low-available-RAM guard during
+epoch1. It is moved to the larger-RAM worker without changing its data or model.
+Migration regressions now cover two operational edges: resetting a healthy
+unloaded destination unit must not fail, and a copied TRAINING marker must not
+be mistaken for a crashed destination before that destination has been started.
+The start obligation is persisted separately after copying and before launch.

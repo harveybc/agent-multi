@@ -90,3 +90,28 @@ def test_migration_does_not_reset_healthy_unloaded_destination(tmp_path,monkeypa
     queue.migrate_pilot(source,destination,tmp_path)
     resets=[c for c in calls if 'reset-failed' in c[1]]
     assert len(resets)==(destination_state=='failed')
+
+
+def test_migrated_training_marker_is_launched_before_dead_worker_check(tmp_path,monkeypatch):
+    from types import SimpleNamespace
+    import tools.run_generalization_queue as queue
+    recipe=tmp_path/'recipe.json';recipe.write_text(json.dumps(dict(identity='r',list=dict(columns=['ATR']))))
+    reference=tmp_path/'reference.json';reference.write_text('{}')
+    out=tmp_path/'out';out.mkdir()
+    pilot=dict(key='G2-7',host='primary',unit='sac-generalization-pilot')
+    fallback=dict(pilot,host='secondary')
+    config=tmp_path/'config.json'
+    queue.write(config,dict(output=str(out),recipe=str(recipe),reference=str(reference),
+        pilot=pilot,pilot_fallback=fallback,replications=[],poll_seconds=0))
+    queue.write(out/'QUEUE.json',dict(config_sha256=queue.sha(config),status='PILOT',migration=True,completed=[]))
+    calls=[]
+    monkeypatch.setattr(queue,'migrate_pilot',lambda *a:calls.append('migrate'))
+    monkeypatch.setattr(queue,'launch',lambda j:calls.append('launch'))
+    def progress(j):
+        assert calls==['migrate','launch']
+        saved=queue.read(out/'QUEUE.json')
+        assert saved['fallback_used'] and 'migration' not in saved and 'fallback_launch_pending' not in saved
+        raise KeyboardInterrupt('stop after verified launch')
+    monkeypatch.setattr(queue,'progress',progress)
+    with pytest.raises(KeyboardInterrupt):
+        queue.coordinator(SimpleNamespace(config=config))

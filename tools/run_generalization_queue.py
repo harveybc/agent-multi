@@ -318,7 +318,11 @@ def coordinator(args):
                 if state.get('migration'):
                     migrate_pilot(cfg['pilot'],cfg['pilot_fallback'],out)
                     state['pilot_override']=cfg['pilot_fallback'];state['fallback_used']=True
+                    state['fallback_launch_pending']=True
                     state.pop('migration');write(state_path,state)
+                if state.get('fallback_launch_pending'):
+                    launch(state['pilot_override'])
+                    state.pop('fallback_launch_pending');write(state_path,state)
                 jobs=[state.get('pilot_override',cfg['pilot'])] if not state.get('replicate') else copy.deepcopy(cfg['replications'])
                 if state.get('fallback_used') and state.get('replicate'):
                     for job in jobs: job['host']=cfg['pilot_fallback']['host']
