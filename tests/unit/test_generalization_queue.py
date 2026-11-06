@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from tools.run_generalization_queue import matched_reference,pilot_gate,coverage,resource_failure,coordinator
+from tools.run_generalization_queue import matched_reference,pilot_gate,coverage,resource_failure,coordinator,memory_guard_overlap
 
 
 def metrics(score,activity=3):
@@ -39,7 +39,16 @@ def test_joint_coverage_cannot_silently_admit_price_only_generator(tmp_path):
 def test_only_resource_failures_trigger_fallback():
     assert resource_failure(dict(Result='oom-kill',ExecMainStatus='9'))
     assert resource_failure(dict(Result='start-limit-hit',ExecMainStatus='137'))
+    assert resource_failure(dict(Result='success',ExecMainCode='2',ExecMainStatus='15'))
     assert not resource_failure(dict(Result='exit-code',ExecMainStatus='1'))
+
+
+def test_memguard_success_exit_requires_actual_overlapping_event():
+    s=dict(ExecMainStartTimestampMonotonic='50000000',ExecMainExitTimestampMonotonic='60000000')
+    event=dict(__MONOTONIC_TIMESTAMP='59900000',MESSAGE='memguard: MemAvailable low; SIGTERM batch')
+    assert memory_guard_overlap(s,[event])
+    assert not memory_guard_overlap(s,[dict(event,__MONOTONIC_TIMESTAMP='10000000')])
+    assert not memory_guard_overlap(s,[dict(event,MESSAGE='normal service termination')])
 
 
 def test_coordinator_completes_paired_queues_and_resumes_without_recollecting(tmp_path,monkeypatch):

@@ -205,7 +205,12 @@ def load_recovery(output, model, replay, rng, identity):
     if state['identity'] != identity:
         raise ValueError('RECOVERY_STATE_IDENTITY')
     model.load(folder/'model.pt')
-    learning = torch.load(folder/'learning.pt', map_location='cpu', weights_only=False)
+    learning = torch.load(folder/'learning.pt', map_location='cpu', weights_only=False,mmap=True)
+    from torchrl.data import LazyMemmapStorage
+    from tensordict import TensorDict
+    if isinstance(replay._storage,LazyMemmapStorage) and not replay._storage.initialized:
+        saved=TensorDict().load_state_dict(learning['replay']['_storage']['_storage'],strict=False)
+        replay.extend(saved[:1])
     replay.load_state_dict(learning['replay'])
     restore_rng(learning['rng'], rng)
     return state

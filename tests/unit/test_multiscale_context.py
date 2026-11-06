@@ -88,7 +88,8 @@ def test_context_latent_alignment_and_prefix_causality():
     assert not torch.equal(a[:,:,7:],b[:,:,7:])
 
 
-def test_multiscale_interrupted_replay_matches_uninterrupted(tmp_path):
+@pytest.mark.parametrize('backend',['memory','memmap'])
+def test_multiscale_interrupted_replay_matches_uninterrupted(tmp_path,backend):
     from types import SimpleNamespace
     from tools.run_structural_sac_refit import fit_epochs
     torch.set_num_threads(1)
@@ -117,7 +118,7 @@ def test_multiscale_interrupted_replay_matches_uninterrupted(tmp_path):
     probe=np.zeros((2,26,2),np.float32);probe[0,13:]=np.nan
     a=create();first=fit_epochs(a,Env,evaluator(),design,7,tmp_path/'whole','same',probe)
     b=create();score=evaluator()
-    fit_epochs(b,Env,score,dict(design,max_epochs=1),7,tmp_path/'restart','same',probe)
-    b=create();second=fit_epochs(b,Env,score,design,7,tmp_path/'restart','same',probe)
+    fit_epochs(b,Env,score,dict(design,max_epochs=1,replay_backend=backend),7,tmp_path/'restart','same',probe)
+    b=create();second=fit_epochs(b,Env,score,dict(design,replay_backend=backend),7,tmp_path/'restart','same',probe)
     assert first['stopping']==second['stopping']
     assert all(torch.equal(v,b.loss.state_dict()[k]) for k,v in a.loss.state_dict().items())

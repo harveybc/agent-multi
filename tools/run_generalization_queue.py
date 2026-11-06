@@ -81,6 +81,7 @@ def prepare(args):
     spec['design'].update(seeds=[7,19,31] if args.arm=='G2' else [19,31],
         max_epochs=2000,patience=20,min_delta=1e-8,monitor_start_epoch=20,
         select_during_warmup=True,monitor_mode='validation',diagnostics=True)
+    spec['design']['replay_backend']='memmap'
     for key in ('batch_size','replay_size','warmup','update_every','horizon'):
         if spec['design'][key]!=control['design'][key]: raise ValueError('CONTROL_TRAINING:'+key)
     reference=matched_reference(read(args.control_root/'runs/seed_7/HISTORY.json'),spec['design'])
@@ -214,12 +215,29 @@ def remote(host,argv,timeout=90):
 
 def service_state(host,unit):
     data=remote(host,['systemctl','--user','show',unit,'-p','LoadState','-p','ActiveState',
-                            '-p','Result','-p','ExecMainStatus','-p','NRestarts'])
+                            '-p','Result','-p','ExecMainStatus','-p','ExecMainCode','-p','NRestarts',
+                            '-p','ExecMainStartTimestampMonotonic','-p','ExecMainExitTimestampMonotonic'])
     return dict(line.split('=',1) for line in data.splitlines() if '=' in line)
 
 
 def resource_failure(state):
-    return state.get('Result')=='oom-kill' or state.get('ExecMainStatus') in ('9','137')
+    return (state.get('Result')=='oom-kill' or state.get('ExecMainStatus') in ('9','137')
+            or (state.get('ExecMainCode')=='2' and state.get('ExecMainStatus')=='15'))
+
+
+def memory_guard_overlap(state,events):
+    start=int(state.get('ExecMainStartTimestampMonotonic','0'))
+    end=int(state.get('ExecMainExitTimestampMonotonic','0'))
+    return start>0 and end>=start and any(
+        start<=int(e.get('__MONOTONIC_TIMESTAMP','0'))<=end+2_000_000
+        and 'MemAvailable' in e.get('MESSAGE','') and 'SIGTERM' in e.get('MESSAGE','') for e in events)
+
+
+def guard_interrupted(job,state):
+    if resource_failure(state): return True
+    records=remote(job['host'],['journalctl','--user','-u','crispdm-memguard.service',
+        '--since=-15min','-n','50','-o','json','--no-pager'])
+    return memory_guard_overlap(state,[json.loads(line) for line in records.splitlines() if line.startswith('{')])
 
 
 def migrate_pilot(source,destination,out):
@@ -230,9 +248,9 @@ def migrate_pilot(source,destination,out):
     if service_state(source['host'],source['unit']).get('ActiveState') in ('active','activating','deactivating'):
         raise ValueError('MIGRATION_SOURCE_NOT_QUIESCENT')
     staging=out/'migration'/source['key'];staging.mkdir(parents=True,exist_ok=True)
-    subprocess.run(['rsync','-a','--exclude=worker.lock',source['host']+':'+source['root']+'/',str(staging)+'/'],
+    subprocess.run(['rsync','-a','--exclude=worker.lock','--exclude=replay_live/',source['host']+':'+source['root']+'/',str(staging)+'/'],
                    check=True,timeout=1200)
-    subprocess.run(['rsync','-a','--exclude=worker.lock',str(staging)+'/',
+    subprocess.run(['rsync','-a','--exclude=worker.lock','--exclude=replay_live/',str(staging)+'/',
                     destination['host']+':'+destination['root']+'/'],check=True,timeout=1200)
     remote(destination['host'],['systemctl','--user','reset-failed',destination['unit']])
 
@@ -258,7 +276,7 @@ def fetch_receipt(job,out):
     if receipt['identity']!=job['identity']: raise ValueError('QUEUE_RUN_IDENTITY')
     write(out/'receipts'/f"{job['key']}.json",receipt)
     dest=out/'collected'/job['key'];dest.mkdir(parents=True,exist_ok=True)
-    subprocess.run(['rsync','-a','--exclude=recovery/','--exclude=worker.lock',
+    subprocess.run(['rsync','-a','--exclude=recovery/','--exclude=replay_live/','--exclude=worker.lock',
         job['host']+':'+job['root']+'/runs/seed_'+str(job['seed'])+'/',str(dest)+'/'],check=True,timeout=600)
     if sha(dest/'RESULT.json')!=receipt['result_sha256'] or sha(dest/'HISTORY.json')!=receipt['history_sha256']:
         raise ValueError('COLLECTION_HASH')
@@ -308,8 +326,13 @@ def coordinator(args):
                     if p['TASK.json'] and p['TASK.json']['status']=='COMPLETE':
                         fetch_receipt(job,out);state['completed'].append(job['key']);continue
                     s=service_state(host,job['unit'])
-                    if s.get('ActiveState')=='failed':
-                        if job['key']==cfg['pilot']['key'] and not state.get('fallback_used') and resource_failure(s):
+                    terminated=s.get('ActiveState')=='inactive' and p['TASK.json'] is not None
+                    if terminated:
+                        p=progress(job)
+                        if p['TASK.json'] and p['TASK.json']['status']=='COMPLETE':
+                            fetch_receipt(job,out);state['completed'].append(job['key']);continue
+                    if s.get('ActiveState')=='failed' or terminated:
+                        if job['key']==cfg['pilot']['key'] and not state.get('fallback_used') and guard_interrupted(job,s):
                             state['migration']=True;write(state_path,state);break
                         raise ValueError('WORKER_RETRIES_EXHAUSTED:'+job['key'])
                     launch(job);active.append(dict(key=job['key'],service=s,progress=p))

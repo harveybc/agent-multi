@@ -12,7 +12,7 @@ import time
 import numpy as np
 import pandas as pd
 import torch
-from torchrl.data import TensorDictReplayBuffer, LazyTensorStorage
+from torchrl.data import TensorDictReplayBuffer, LazyTensorStorage, LazyMemmapStorage
 
 from app.frozen_recipe_inputs import file_sha
 from app.frozen_signal_masks import prepared_signals
@@ -480,7 +480,12 @@ def migrate_warmup(args):
 def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe):
     output.mkdir(parents=True,exist_ok=True)
     rng = np.random.default_rng(seed)
-    replay = TensorDictReplayBuffer(storage=LazyTensorStorage(design['replay_size'],device='cpu'),
+    backend=design.get('replay_backend','memory')
+    if backend not in ('memory','memmap'): raise ValueError('REPLAY_BACKEND')
+    storage=(LazyMemmapStorage(design['replay_size'],scratch_dir=str(output/'replay_live'),
+                              existsok=True,auto_cleanup=False) if backend=='memmap'
+             else LazyTensorStorage(design['replay_size'],device='cpu'))
+    replay = TensorDictReplayBuffer(storage=storage,
                                    batch_size=design['batch_size'])
     start_epoch = design.get('monitor_start_epoch',1)
     select_early = design.get('select_during_warmup',False)

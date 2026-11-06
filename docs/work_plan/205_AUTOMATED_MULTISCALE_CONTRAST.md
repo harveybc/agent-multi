@@ -67,6 +67,18 @@ and resume the same identity on the secondary worker. Later replications then
 share that worker sequentially. Never reduce batch size, inputs or window to fit.
 Generic code/identity errors are NOT treated as memory failures.
 
+Deployment correction: CUDA acceptance and the real-data canary passed, but
+anonymous replay allocation triggered the host memory guard before an epoch
+completed. The guard remains enabled. Both new arms now use file-backed replay
+with unchanged capacity, batch size, sampling and update cadence. Recovery loads
+checkpoint tensors with mmap and preallocates file-backed storage before restoring
+the replay. A regression compares interrupted file-backed training with an
+uninterrupted in-memory run, including weights and monitor state. Scratch replay
+files are rebuilt from durable recovery and are not copied into collected results.
+A guard-induced stop can be reported by systemd as success; the coordinator now
+checks the guard journal against the worker's monotonic execution interval before
+classifying that stop as a resource failure and moving the pilot.
+
 Initialization correction found by tests: TorchRL expands twin parameters in
 registration order. The new context otherwise changes common head weights even
 with zero context projection. Build the corresponding no-context initializer
