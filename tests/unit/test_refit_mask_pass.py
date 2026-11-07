@@ -1,8 +1,25 @@
 import copy
 import pytest
+import numpy as np
 
 from tools.run_refit_mask_pass import account_equal, score_metrics, authenticated_parent
 from tools.run_discrete_curve_probe import write
+
+
+def test_cross_device_probe_tolerance_never_allows_changed_actions():
+    from tools.run_refit_mask_pass import verify_probe
+    expected=np.array([[1.,2.,0.]],dtype=np.float32)
+    assert verify_probe(expected,expected,False)['exact']
+    actual=expected.copy(); actual[0,0]+=1e-7
+    with pytest.raises(ValueError,match='PROBE_NOT_EXACT'):
+        verify_probe(actual,expected,False)
+    assert not verify_probe(actual,expected,True)['exact']
+    with pytest.raises(ValueError,match='PROBE_TOLERANCE'):
+        verify_probe(expected+0.01,expected,True)
+    with pytest.raises(ValueError,match='PROBE_ACTION'):
+        verify_probe(np.array([[1.,1.+1e-7,0.]]),np.array([[1.+1e-7,1.,0.]]),True)
+    with pytest.raises(ValueError,match='PROBE_SHAPE_OR_FINITE'):
+        verify_probe(expected*np.nan,expected,True)
 
 
 def metrics(train=2., validation=-.1, activity=3.):

@@ -66,6 +66,21 @@ def score_metrics(metrics):
         metrics=metrics,frozen_weights=True,fresh_training=False)
 
 
+def verify_probe(actual, expected, cross_device=False):
+    if actual.shape!=expected.shape or not np.isfinite(actual).all() or not np.isfinite(expected).all():
+        raise ValueError('MASK_PROBE_SHAPE_OR_FINITE')
+    exact=np.array_equal(actual,expected)
+    if not exact and not cross_device:
+        raise ValueError('MASK_PROBE_NOT_EXACT')
+    if not np.allclose(actual,expected,rtol=1e-5,atol=1e-6):
+        raise ValueError('MASK_PROBE_TOLERANCE')
+    if not np.array_equal(actual.argmax(-1),expected.argmax(-1)):
+        raise ValueError('MASK_PROBE_ACTION')
+    return dict(exact=exact,cross_device_allowed=cross_device,
+                max_abs_error=float(np.max(np.abs(actual-expected))),
+                rtol=1e-5,atol=1e-6,actions_exact=True)
+
+
 def prepare(args):
     if args.root.exists():
         raise ValueError('NEW_MASK_ROOT_REQUIRED')
@@ -81,6 +96,7 @@ def prepare(args):
         parent_result_sha256=file_sha(out/'RESULT.json'),
         parent_training_sha256=file_sha(out/'TRAINING.json'),best_bundle=result['best_bundle'],
         dataset=dataset,plugin=plugin,device=args.device,
+        cross_device_probe=getattr(args,'cross_device_probe',False),
         selector_params=dict(min_features=1,tolerance=0.,remove_on_tie=True),
         source_sha256=file_sha(Path(__file__)),
         checkpoint_epoch=read(bundle/'MANIFEST.json')['checkpoint']['epoch'],
@@ -121,8 +137,7 @@ def run(args):
         probe=np.load(bundle/'PROBE.npz')
         with torch.inference_mode():
             logits=model.surfaces(torch.tensor(probe['inputs'],device=model.device)).cpu().numpy()
-        if not np.array_equal(logits,probe['logits']):
-            raise ValueError('MASK_PROBE_NOT_EXACT')
+        probe_check=verify_probe(logits,probe['logits'],s.get('cross_device_probe',False))
         columns=s['dataset']['features']; risk=read(parent/'RISK.json')
         context=dict(identity=s['identity'],device=s['device'],
             device_name=torch.cuda.get_device_name() if s['device']=='cuda' else 'cpu')
@@ -146,7 +161,8 @@ def run(args):
         for p,m in control['metrics'].items():
             account_equal(m,archived['metrics'][p])
         write(root/'PREFLIGHT.json',dict(identity=s['identity'],passed=True,control=control,
-            probe_exact=True,unmasked_account_exact=True,features=len(columns),
+            probe_exact=probe_check['exact'],probe_check=probe_check,
+            unmasked_account_exact=True,features=len(columns),
             support_hash=s['dataset']['support_hash'],test_read=False))
         if args.preflight_only:
             return
@@ -206,6 +222,7 @@ def main():
     p=sub.add_parser('prepare'); p.add_argument('--parent',type=Path,required=True)
     p.add_argument('--root',type=Path,required=True); p.add_argument('--seed',type=int,default=7)
     p.add_argument('--device',choices=['cpu','cuda'],default='cuda')
+    p.add_argument('--cross-device-probe',action='store_true')
     p=sub.add_parser('run'); p.add_argument('--root',type=Path,required=True)
     p.add_argument('--preflight-only',action='store_true')
     args=parser.parse_args()
