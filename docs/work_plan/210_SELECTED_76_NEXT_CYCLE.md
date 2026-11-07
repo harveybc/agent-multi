@@ -42,5 +42,16 @@ execution on restart. No later selection cycle is launched automatically.
 | Recovery without partial preparation | temporary preparation directory followed by atomic rename |
 | No manual transition between stages | one systemd chain, separate automatic collector |
 
-Focused CPU verification:35 passed,6 CUDA skips. Runtime evidence is produced by
+Focused CPU verification:36 passed,6 CUDA skips, including automatic stage order
+and no duplicate training after completion. Runtime evidence is produced by
 the chain; a launch is not a completed selection or a trained model result.
+
+## Launch Verification
+
+Runtime `ff7a137e`; cycle started2026-11-07 at13:04UTC on RTX5090 after the reboot.
+Selection identity `9be13b93b3d77efe644571313aa744e591bdc1ab8e6ccb47f216294540ada02b`.
+Cross-device maximum probe error was1.1920928955078125e-6, within the combined
+absolute/relative bound, with identical probe actions. Full native TRAIN and
+VALIDATION control accounts matched the archived parent exactly. Both cycle and
+collector services are enabled; primary user lingering is enabled. The obsolete
+strict cross-device attempt was stopped and disabled, not reused as evidence.
