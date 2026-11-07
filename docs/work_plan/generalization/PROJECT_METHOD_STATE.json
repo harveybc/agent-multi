@@ -1,6 +1,6 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "STRUCTURAL76_COMPLETE_NEXT_SELECTION_RUNNING",
+  "current_stage": "NEXT_SELECTION_COMPLETE_70_REFIT_TRAINING",
   "design": "../203_GENERALIZATION_DIAGNOSIS_AND_CONTRASTS.md",
   "stages_passed": ["DISCOVERY", "REQUIREMENTS", "ACCEPTANCE_TEST_DESIGN", "UNIT_TESTS", "REAL_REPLAY_AUTHENTICATION", "FROZEN_MODEL_DIAGNOSIS", "G1_REPORT"],
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
@@ -10,6 +10,8 @@
   "next_cycle_runtime": "ff7a137e",
   "next_cycle_selection_identity": "9be13b93b3d77efe644571313aa744e591bdc1ab8e6ccb47f216294540ada02b",
   "next_cycle_automated": true,
+  "next_cycle_selection_counts": {"initial": 76, "after_deletion": 69, "final": 70, "groups": 28, "evaluations": 80},
+  "next_cycle_refit_identity": "eb4179dc4d1058a4243f41da671f46f49b3010bae3c8037f1ab94609e66d03bf",
   "snr_review": "../207_SNR_REVIEW_AND_NEXT_MASK_PASS.md",
   "mask_results": "../208_R1_FROZEN_76_TWO_PASS_RESULTS.md",
   "mask_identity": "9b831ec28a336aa2585bbd5c36a9bc921bec2621c3ad3b61ca5eb21f7c98ffe3",

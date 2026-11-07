@@ -55,3 +55,22 @@ absolute/relative bound, with identical probe actions. Full native TRAIN and
 VALIDATION control accounts matched the archived parent exactly. Both cycle and
 collector services are enabled; primary user lingering is enabled. The obsolete
 strict cross-device attempt was stopped and disabled, not reused as evidence.
+
+## Completed Selection and Automatic Transition
+
+Both passes completed at13:06:53UTC:76 initial columns,69 after deletion,70 after
+reinsertion;28 groups retained,80 unique evaluations. All support and full-control
+account checks passed again after masking.
+
+| Frozen checkpoint treatment | TRAIN return % | VAL return % | VAL Sharpe | VAL orders | VAL win % | VAL max DD % |
+|---|---:|---:|---:|---:|---:|---:|
+| Parent76 inputs |10.8156|4.7357|0.7692|197|53.81|4.7188|
+| Selected70 inputs |11.5145|13.8085|2.0971|206|57.77|3.6249|
+
+These are interventions on frozen epoch6 weights, not fresh70-channel results.
+The chain automatically prepared the physical70-channel recipe and entered the
+training task at13:07UTC, without another operator command. Fresh-fit identity:
+`eb4179dc4d1058a4243f41da671f46f49b3010bae3c8037f1ab94609e66d03bf`.
+Real CUDA canary passed with128 transitions of shape13x70; first native SAC update
+observed after4,096 warmup steps. Cycle service active with zero restarts, about
+3.6GB aggregate RAM at launch. Training is running, not merely queued.
