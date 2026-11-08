@@ -50,3 +50,12 @@ This is an exploratory explanation of the existing snapshots, not an additional
 optimization arm or proof that replacing the twin minimum is appropriate.
 Its reconstruction must exactly match the native residual. The already running
 five-arm export remains pinned and unchanged.
+
+Predeclare a second, exploratory two-arm test starting from epoch40, where the
+value drift already exists: production twin-minimum versus mean-twin bootstrap,
+1024 identical TRAIN replay updates, actor40 and alpha frozen. Restore the same
+epoch40 optimizer state in both arms. The return reference is now the frozen
+epoch40 TRAIN sampling trace. No promotion: removing clipped-double-Q changes
+the estimator and can introduce overestimation. This is a causal intervention
+on the suspected pessimism feedback, not an endorsed SAC replacement. Current
+actor logits must remain identical in both arms.

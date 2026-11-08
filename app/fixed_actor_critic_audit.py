@@ -24,7 +24,7 @@ def backup_components(reward, terminated, duration, probability, target_q, onlin
 
 
 def configure_arm(model, arm):
-    if arm not in ARMS:
+    if arm not in (*ARMS, 'mean_target'):
         raise ValueError('CRITIC_AUDIT_ARM')
     set_arm(model, 'no_update' if arm == 'no_update' else 'critic_only')
     if arm == 'no_core_dropout':
@@ -34,6 +34,18 @@ def configure_arm(model, arm):
     if arm == 'no_weight_decay':
         for group in model.optimizer.param_groups:
             group['weight_decay'] = 0.
+    if arm == 'mean_target':
+        native_target = model.loss._compute_target
+        def mean_target(batch):
+            with torch.no_grad():
+                native = native_target(batch)
+                p = model.surfaces(batch['next','features']).softmax(-1)
+                q = target_surfaces(model,batch['next','features'])
+                discount = torch.pow(model.effective['gamma'],batch['steps_to_next_obs'].reshape(-1))
+                discount *= ~batch['next','terminated'].reshape(-1)
+                return native + discount*(p*(q.mean(0)-q.min(0).values)).sum(-1)
+        model.loss._compute_target = mean_target
+        model._audit_mean_target = True
 
 
 def algebra_audit(model, batch):

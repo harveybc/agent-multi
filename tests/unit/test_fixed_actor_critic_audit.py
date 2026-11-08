@@ -83,3 +83,20 @@ def test_minimum_penalty_decomposition_terminal_and_entropy():
     torch.testing.assert_close(c['residual'],expected)
     torch.testing.assert_close(c['minimum_twin_penalty'],torch.tensor([-(.99**4),0.]))
     assert c['entropy_bonus'][1]==0
+
+
+def test_mean_target_changes_only_bootstrap_and_preserves_terminal():
+    from app.fixed_actor_critic_audit import configure_arm
+    from app.selected_warm_start import target_surfaces
+    model,batch=fixture_model()
+    with torch.no_grad():
+        native=model.loss._compute_target(batch.clone())
+        p=model.surfaces(batch['next','features']).softmax(-1)
+        q=target_surfaces(model,batch['next','features'])
+        v=(p*(q.mean(0)-model.loss.log_alpha.exp()*p.log())).sum(-1)
+        expected=batch['next','reward'].reshape(-1)+(.99**batch['steps_to_next_obs'].reshape(-1))*(~batch['next','terminated'].reshape(-1))*v
+    configure_arm(model,'mean_target')
+    actual=model.loss._compute_target(batch.clone())
+    torch.testing.assert_close(actual,expected)
+    assert torch.equal(actual[4:],native[4:])
+    assert (actual[:4]>=native[:4]).all()

@@ -47,6 +47,9 @@ def measure(model, batch, panel):
         components = backup_components(batch['next','reward'],batch['next','terminated'],
             batch['steps_to_next_obs'],model.surfaces(batch['next','features']).softmax(-1),
             tq,chosen.mean(0),model.loss.log_alpha.exp(),model.effective['gamma'])
+        if getattr(model,'_audit_mean_target',False):
+            components['residual'] -= components['minimum_twin_penalty']
+            components['minimum_twin_penalty'] = torch.zeros_like(components['residual'])
         torch.testing.assert_close(components['residual'],expected-chosen.mean(0),atol=2e-5,rtol=2e-5)
         panel_q = model.q_surfaces(panel['features']).gather(-1,
             panel['action'].reshape(1,-1,1).expand(2,-1,1)).squeeze(-1).min(0).values
@@ -81,7 +84,7 @@ def run(args):
         raise ValueError('CRITIC_AUDIT_REPLAY')
     if read(args.calibration/'CONFIG.json')['initial_sha256'] != file_sha(bundle/'model.pt'):
         raise ValueError('CRITIC_AUDIT_RETURN_SOURCE')
-    z = np.load(args.calibration/'epoch_0000/stochastic_7/TRAIN/RETURN_TRACE.npz')
+    z = np.load(args.calibration/f'epoch_{args.start_epoch:04d}/stochastic_7/TRAIN/RETURN_TRACE.npz')
     ix = np.linspace(0,len(z['timestamp'])-1,512,dtype=int)
     rows = np.searchsorted(market.inputs.row_ts_ns,z['timestamp'][ix])
     if (not np.array_equal(market.inputs.row_ts_ns[rows],z['timestamp'][ix]) or
@@ -107,10 +110,13 @@ def run(args):
         sources={n:file_sha(ROOT/n) for n in ('app/fixed_actor_critic_audit.py',
             'tools/audit_fixed_actor_critics.py','agent_plugins/three_signal_sac.py',
             'agent_plugins/discrete_curve_sac.py','agent_plugins/sac_critic_regularization.py')},
-        inspection_only=args.inspection_only,
+        inspection_only=args.inspection_only,start_epoch=args.start_epoch,
         scope='TRAIN-only critic-head interventions; fixed actor/alpha; no account promotion')
     if args.inspection_only:
         config.update(arms=[],points=[],updates=0,scope='read-only critic snapshot arithmetic; no updates')
+    elif args.start_epoch==40:
+        config.update(arms=['production','mean_target'],
+            scope='exploratory epoch40 paired twin-minimum ablation; actor40 fixed; no promotion')
     config['identity'] = digest(config)
     if (args.output/'CONFIG.json').exists() and read(args.output/'CONFIG.json') != config:
         raise ValueError('CRITIC_AUDIT_CONFIG_CHANGED')
@@ -132,18 +138,20 @@ def run(args):
             terminal=algebra_audit(model,terminal),duration4=algebra_audit(model,duration),
             measures=measure(model,probe,panel))
         # Epoch6/40 actor differs: their fixed-policy panel is off-policy, not calibration.
-        inspection[str(epoch)]['panel_scope'] = ('on-policy epoch0' if epoch==0 else
-            'epoch0-policy return reference only; not on-policy calibration')
+        inspection[str(epoch)]['panel_scope'] = (f'on-policy epoch{args.start_epoch}' if epoch==args.start_epoch else
+            f'epoch{args.start_epoch}-policy return reference only; not on-policy calibration')
         del model
     write(args.output/'SNAPSHOT_AUDIT.json',inspection)
     records = {}
-    for arm in ([] if args.inspection_only else ARMS):
+    for arm in config['arms']:
         destination = args.output/(arm+'.json')
         if destination.exists():
             record=read(destination)
             if record['identity']!=config['identity']:raise ValueError('CRITIC_AUDIT_ARM_IDENTITY')
             records[arm]=record;continue
-        model,_=load_bundle(bundle,'cuda');configure_arm(model,arm);reset_learning_rng(7)
+        model,_=load_bundle(bundle,'cuda')
+        if args.start_epoch:model.load(snapshots[args.start_epoch][0]/'model.pt')
+        configure_arm(model,arm);reset_learning_rng(7)
         frozen=frozen_state(model)
         with torch.no_grad():actor=model.surfaces(panel['features']).clone()
         record=dict(identity=config['identity'],arm=arm,points=[])
@@ -184,6 +192,7 @@ def main():
         parser.add_argument('--'+name,type=Path,required=True)
     parser.add_argument('--snapshot',type=Path,action='append',required=True)
     parser.add_argument('--inspection-only',action='store_true')
+    parser.add_argument('--start-epoch',type=int,choices=[0,40],default=0)
     args=parser.parse_args();args.output.mkdir(parents=True,exist_ok=True)
     with (args.output/'worker.lock').open('a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
