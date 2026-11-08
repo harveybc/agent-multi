@@ -1,0 +1,46 @@
+{
+  "schema": "forward_model_pool_method.v1",
+  "updated_date": "2026-11-08",
+  "current_stage": "ACCEPTANCE_DESIGN_HANDOFF",
+  "implementation_owner": "Retsu",
+  "model_contract_reviewer": "Musashi",
+  "design": "../221_RETSU_FORWARD_MODEL_POOL_HANDOFF.md",
+  "traceability": "../221_RETSU_FORWARD_MODEL_POOL_HANDOFF.md#5-required-evidence-and-tests",
+  "discovery": {
+    "lts_revision": "12bce5f2c4fe2ab0e6a7433d7208d9e05a9cffaa",
+    "method": "read-only local source inspection; graph tools unavailable",
+    "legacy_continuous_sac_adapter_compatible": false,
+    "legacy_rolling_scaler_state_recipe_compatible": false,
+    "broker_state_inspected": false
+  },
+  "requirements": ["P01", "P02", "P03", "P04", "P05", "P06", "P07", "P08", "P09", "P10", "P11", "P12"],
+  "stages": {
+    "discovery": "DOCUMENTED",
+    "requirements": "DOCUMENTED",
+    "acceptance_test_design": "DOCUMENTED",
+    "component_and_unit_test_design": "ASSIGNED_TO_RETSU",
+    "implementation": "NOT_STARTED_IN_THIS_TRACK",
+    "offline_acceptance": "NOT_EXECUTED",
+    "forward_shadow": "NOT_ACTIVATED_BY_THIS_HANDOFF",
+    "paper_demo_execution": "NOT_ACTIVATED_BY_THIS_HANDOFF"
+  },
+  "next_allowed_actions": [
+    "Retsu verifies package availability and route capabilities read-only",
+    "Retsu completes component and unit test design, then implements offline adapters and independent shadows",
+    "Musashi supplies authenticated selected70 bundle and reviews parity evidence",
+    "retain existing research and operational workers unchanged"
+  ],
+  "excluded": [
+    "real-capital execution",
+    "reuse of legacy rolling normalization, state feedback or continuous-action thresholds",
+    "unverified route activation or capability bypass",
+    "replacement of a model managing an open position",
+    "claiming this assignment has been executed by Retsu"
+  ],
+  "history": [
+    {
+      "date": "2026-11-08",
+      "event": "Owner requests delegation of model-pool implementation to Retsu; Musashi records read-only discovery, acceptance design and parallel master-plan priority"
+    }
+  ]
+}

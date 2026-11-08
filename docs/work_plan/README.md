@@ -1,5 +1,22 @@
 # Adaptive Multi-Asset Trading Work Plan
 
+## Priority Update: 2026-11-08 - Parallel Paper Pool
+
+The owner requests an event-driven Paper/Demo model pool alongside the ongoing
+refinement diagnosis. [Retsu handoff221](221_RETSU_FORWARD_MODEL_POOL_HANDOFF.md)
+assigns implementation to Retsu and model-contract review to Musashi. Register
+verified, active candidates with nonnegative TRAIN and VALIDATION net returns;
+evaluate them hourly on shared causal snapshots with independent shadow accounts.
+Only one authorized executor may control an account. No real-capital activation,
+replacement of existing services, or automatic promotion from offline profit.
+
+The selected70-input epoch0 is the initial parity reference. The existing LTS
+continuous-SAC/rolling-scaler/state-feedback adapter is incompatible and must
+not be reused for this categorical model. Retsu first delivers offline parity,
+then recoverable forward shadows and the authorized Paper/Demo handover path.
+This parallel track does not wait for critic refinement, nor does it certify
+that refinement or a new live deployment has completed.
+
 ## Priority Update: 2026-11-06
 
 [Generalization203](203_GENERALIZATION_DIAGNOSIS_AND_CONTRASTS.md): owner approves
