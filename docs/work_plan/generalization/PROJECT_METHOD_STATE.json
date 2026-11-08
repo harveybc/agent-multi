@@ -7,6 +7,8 @@
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": ["continue G2 paired replications", "collect head-only refinement and verify frozen weights", "compare eligible selected checkpoint with preserved epoch0"],
   "priority_refinement_design": "../211_SELECTED_WEIGHT_PRESERVING_REFINEMENT.md",
+  "priority_drift_diagnosis_design": "../212_WARMSTART_DRIFT_DIAGNOSIS.md",
+  "priority_drift_diagnosis_stage": "PAIRED_OPERATOR_DEPLOYMENT",
   "priority_refinement_identity": "d4b260fffb17e0fcaddb0fe1c833493f30e28e942ffda4fbb36e5c3404a5f6e2",
   "priority_refinement_runtime": "1d3c5f71",
   "priority_refinement_verification": {"retained_tensors_exact": true, "full_support_rows": 30234, "action_disagreements": 0, "native_accounts_exact": true, "epoch_zero_reload_exact": true, "local_tests_passed": 44, "local_tests_skipped": 6, "worker_tests_passed": 23, "worker_tests_skipped": 6, "real_cuda_canary": true, "first_training_update": true, "trainable_parameters": 5097, "total_parameters": 92176},
