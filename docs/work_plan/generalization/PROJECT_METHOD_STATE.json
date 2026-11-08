@@ -1,7 +1,10 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "FULL_TRAIN_CRITIC_CONFIRMATION_TESTING",
+  "current_stage": "FULL_TRAIN_CRITIC_CONFIRMATION_RUNNING",
   "full_train_critic_design": "../218_FULL_TRAIN_CRITIC_CONFIRMATION.md",
+  "full_train_critic_identity": "7a82b3f3f1a963e9a09bbf560a9350965edf7b8df11080a4af2b34e75baeb754",
+  "full_train_critic_runtime": "bf44f2b9",
+  "full_train_critic_launch_verification": {"cpu_passed": 31, "cuda_only_skipped": 1, "native_replay_rows": 24025, "schedule_unique_rows": 24025, "terminal_count": 1, "reward_max_error": 0.0, "initial_calibration_parity": true, "first_update_completed": true},
   "critic_audit_design": "../216_FIXED_ACTOR_CRITIC_AUDIT.md",
   "critic_audit_results": "../217_FIXED_ACTOR_CRITIC_AUDIT_RESULTS.md",
   "critic_audit_verification": {"completed_arms": 7, "verified_output_files": 20, "focused_cpu_passed": 29, "cuda_test_skipped": 1, "real_cuda_diagnostics": true, "actor_unchanged": true, "model_promoted": false},

@@ -42,3 +42,15 @@ Publish bias, RMSE and tail errors for both target choices and all three action
 seeds, plus compute time. A directionally smaller bias is not sufficient for
 promotion if absolute calibration remains poor. A separate realized-return
 anchor contrast is the next diagnostic in that case, before joint refinement.
+
+## Launch Receipt
+
+Runtime `bf44f2b9`; identity
+`7a82b3f3f1a963e9a09bbf560a9350965edf7b8df11080a4af2b34e75baeb754`.
+Launched on RTX5090 at 16:55 UTC on2026-11-08. The two arms execute sequentially
+under a GPU lock and bounded-memory service with limited failure retries.
+Native reconstruction verified24025 decisions, one terminal and zero reward
+discrepancy; the schedule covers all24025 rows. Initial calibration matches the
+authenticated source for all three action seeds. The first update completed.
+Focused tests:31 passed, one CUDA-only test skipped; the actual worker uses CUDA.
+This is a launch receipt, not a completed-results claim.
