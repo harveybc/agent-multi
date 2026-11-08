@@ -225,7 +225,7 @@ def prepare_selected(args):
     spec['created_at']=now()
     spec['design'].update(seeds=args.seeds,monitor_mode='validation',monitor_start_epoch=20,
         monitor='validation_full_accounts_return_per_week',max_epochs=2000,patience=20,min_delta=1e-8,
-        select_during_warmup=True,replay_backend='memmap')
+        select_during_warmup=True,replay_backend='memmap',require_activity=True)
     if not args.seeds or len(set(args.seeds))!=len(args.seeds):
         raise ValueError('SELECTED_REFIT_SEEDS')
     spec['sources']={n:file_sha(ROOT/n) for n in SOURCES+['tools/run_generalization_queue.py']}
@@ -504,6 +504,26 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
         stopping.__dict__.update(state['stopping'])
         for mode,monitor in shadows.items():
             monitor.__dict__.update(state['shadows'][mode])
+    elif design.get('initialize_epoch_zero',False):
+        metrics=assess(model)
+        if not all(metrics[p]['orders_per_week']>2 for p in ('TRAIN','VALIDATION')):
+            raise ValueError('EPOCH_ZERO_ACTIVITY')
+        for monitor in [stopping,*shadows.values()]:
+            monitor.observe(metrics['TRAIN']['return_per_week'],metrics['VALIDATION']['return_per_week'])
+            monitor.epoch=0
+        bundle=output/'bundles'/'epoch_0000'
+        if bundle.exists():
+            restored,manifest=load_bundle(bundle,str(model.device))
+            if (manifest['checkpoint']['run_identity']!=identity or
+                    any(not torch.equal(v,restored.loss.state_dict()[k]) for k,v in model.loss.state_dict().items())):
+                raise ValueError('EPOCH_ZERO_RESTART_CHANGED')
+            receipt=dict(path=bundle.name,manifest_sha256=file_sha(bundle/'MANIFEST.json'),
+                         model_sha256=file_sha(bundle/'model.pt'),reload_exact=True)
+        else:
+            receipt=export_bundle(bundle,model,probe,dict(epoch=0,score=stopping.best,run_identity=identity,seed=seed))
+        state.update(best_bundle=dict(relative_path=str(bundle.relative_to(output)),**receipt),
+                     stopping=vars(stopping).copy(),shadows={k:vars(m).copy() for k,m in shadows.items()})
+        write(output/'EPOCH_ZERO.json',dict(identity=identity,metrics=metrics,best_bundle=state['best_bundle']))
     # Anything newer than the atomic pointer is an interrupted, uncommitted epoch.
     for p in (output/'recovery').glob('epoch_*') if (output/'recovery').exists() else []:
         if int(p.name.split('_')[1].split('.')[0]) > state['epoch']:
@@ -515,7 +535,7 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
         last_loss = None; decisions = 0
         while not env.finished:
             step = state['steps']+1
-            if step <= design['warmup']:
+            if step <= design['warmup'] and not design.get('warmup_policy',False):
                 action = int(rng.integers(0,3))
             else:
                 with torch.no_grad():
@@ -532,6 +552,9 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
                     native_bar=int(env.bar),last_native_bar=int(env.engine.last),
                     bad=stopping.bad,best=stopping.best,loss=last_loss))
         training_seconds = time.monotonic()-start
+        if design.get('head_only',False):
+            from app.selected_warm_start import verify_frozen
+            verify_frozen(model)
         write(output/'PROGRESS.json',dict(identity=identity,stage='FULL_TRAIN_VALIDATION',epoch=epoch,
                                          training_seconds=training_seconds))
         before = capture_rng(rng); replay_count = len(replay)
@@ -540,12 +563,14 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
             raise ValueError('ASSESSMENT_MUTATED_TRAINING')
         if before['cuda'] and any(not torch.equal(a,b) for a,b in zip(before['cuda'],torch.cuda.get_rng_state_all())):
             raise ValueError('ASSESSMENT_MUTATED_CUDA_RNG')
-        verdict = stopping.observe(metrics['TRAIN']['return_per_week'], metrics['VALIDATION']['return_per_week'])
+        eligible=(not design.get('require_activity',False) or
+                  all(metrics[p]['orders_per_week']>2 for p in ('TRAIN','VALIDATION')))
+        verdict = stopping.observe(metrics['TRAIN']['return_per_week'], metrics['VALIDATION']['return_per_week'],eligible)
         shadow_verdicts = {}
         for mode,monitor in shadows.items():
             if monitor.bad < monitor.patience:
                 shadow_verdicts[mode] = monitor.observe(metrics['TRAIN']['return_per_week'],
-                                                      metrics['VALIDATION']['return_per_week'])
+                                                      metrics['VALIDATION']['return_per_week'],eligible)
             else:
                 shadow_verdicts[mode] = dict(stop=True,already_stopped=True,best=monitor.best,bad=monitor.bad)
         row = dict(epoch=epoch,steps=state['steps'],updates=state['updates'],decisions=decisions,
@@ -558,7 +583,7 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
             receipt = export_bundle(bundle,model,probe,dict(epoch=epoch,score=verdict['score'],
                 run_identity=identity,seed=seed))
             state['best_bundle'] = dict(relative_path=str(bundle.relative_to(output)),**receipt)
-        if select_early and epoch >= start_epoch:
+        if select_early and epoch >= start_epoch and eligible:
             late = state.get('best_after_warmup')
             if late is None or verdict['score'] > late['score'] + design['min_delta']:
                 bundle = output/'bundles'/('epoch_%04d' % epoch)

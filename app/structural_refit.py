@@ -31,7 +31,7 @@ class EpochPatience:
         self.previous_train = self.previous_validation = self.previous_mean = None
         self.best_train = self.best_validation = None
 
-    def observe(self, train, validation):
+    def observe(self, train, validation, eligible=True):
         if not np.isfinite([train, validation]).all():
             raise ValueError('EPOCH_MONITOR_NOT_FINITE')
         train, validation = float(train), float(validation)
@@ -45,6 +45,8 @@ class EpochPatience:
                         best_train=None,best_validation=None,bad=0,stop=False,
                         epoch=self.epoch,warming_up=True,rejections=['MONITOR_WARMUP'],**previous)
         rejections = []
+        if not eligible:
+            rejections.append('ACTIVITY_INELIGIBLE')
         if self.mode == 'mean_no_regression' and self.previous_mean is not None:
             for value, old, name in ((train,self.previous_train,'TRAIN'),
                                      (validation,self.previous_validation,'VALIDATION'),

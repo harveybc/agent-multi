@@ -144,7 +144,9 @@ def task(args):
                 '--expected-artifact-bytes',str(6*1024**3)],cwd=ROOT,check=True)
             write(state,dict(status='CUDA_ACCEPTANCE',identity=spec['identity']))
             variant=spec['structural_round'].get('variant')
-            tests=(['tests/unit/test_structural_refit.py','tests/unit/test_critic_regularization.py']
+            tests=(['tests/unit/test_selected_warm_start.py','tests/unit/test_structural_refit.py']
+                   if variant=='WARMSTART_HEAD_ONLY' else
+                   ['tests/unit/test_structural_refit.py','tests/unit/test_critic_regularization.py']
                    if variant=='STRUCTURAL_SELECTED' else
                    ['tests/unit/test_capacity_contrast.py'] if variant=='CAPACITY_70X' else
                    ['tests/unit/test_multiscale_context.py'])
@@ -152,6 +154,8 @@ def task(args):
             subprocess.run([sys.executable,'-m','tools.run_generalization_queue','canary',
                 '--root',str(args.root),'--seed',str(args.seed)],cwd=ROOT,check=True)
             write(state,dict(status='TRAINING',identity=spec['identity']))
+            if variant=='WARMSTART_HEAD_ONLY':
+                from tools.run_selected_warm_start import worker
             worker(args)
             receipt=collect(args.root,args.seed)
             write(state,dict(status='COMPLETE',receipt=receipt))
