@@ -73,3 +73,13 @@ arms,256 updates per learning arm, one shared replay collection, full accounts
 at every diagnostic checkpoint, and no automatic hyperparameter sweep. Preserve
 all failures and results. A hypothesis is supported only by its paired measured
 effect; the first stage is single-seed engineering evidence, not replicated proof.
+
+## Launch Receipt
+
+Runtime `295a5ce8`, diagnostic identity
+`12cf2a447bfdf39f6393acb70c6a7e68f7e4802c3da56752c3e0552b5ca9351c`.
+Eight focused partition/probe tests passed. At08:09UTC on2026-11-08 the supervised
+RTX4070 worker passed GPU admission and began collecting the shared TRAIN replay;
+its first progress receipt contained256 transitions. The primary refinement and
+secondary R0 seed19 replication continued untouched. This receipt confirms
+execution started, not completion or a diagnosed cause.
