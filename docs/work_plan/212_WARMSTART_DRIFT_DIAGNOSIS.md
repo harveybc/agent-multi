@@ -83,3 +83,24 @@ RTX4070 worker passed GPU admission and began collecting the shared TRAIN replay
 its first progress receipt contained256 transitions. The primary refinement and
 secondary R0 seed19 replication continued untouched. This receipt confirms
 execution started, not completion or a diagnosed cause.
+
+## Diagnostic Runner Correction
+
+The first diagnostic run stopped during the no-update control and exhausted its
+three supervised restarts. Its original ETA was not met. No operator contrast
+completed in that attempt; only replay collection and initial/snapshot evaluations
+were valid outputs.
+
+The reproduced fault was a device mismatch in the state-value comparison:
+TorchRL lazily moves `_value_estimator.gamma` from CPU to CUDA when computing the
+TD target, preserving its value exactly. Runtime `8cb1a0bc` compares values on a
+common device, still rejects changed keys/dtypes/values, records device moves,
+and avoids repeatedly rebuilding the state dictionary for each tensor. Exceptions
+now write an explicit FAILED progress record. Ten focused tests passed, including
+the real-CUDA probe regression.
+
+The replacement diagnostic identity is
+`45883acada99460e1d1801fb24040f06256743084c9ebbe3cc457198fc5ef02c`.
+It reuses the original TRAIN replay only after verifying its file and tensor
+digests; no full-training worker or source checkpoint was modified. Its no-update
+control completed with exactly the original account and state values.
