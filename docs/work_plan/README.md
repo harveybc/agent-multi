@@ -2,6 +2,13 @@
 
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
+[Feed review223](223_SELECTED70_FORWARD_CLOCK_REVIEW.md): previous four
+counterexamples now pass and full historical input parity reproduces exactly.
+Musashi supplies LTS4b5a542 to separate forward inference from the historical
+split cutoff (30 tests). Retsu connects actual governed producers, frozen learned
+artifacts, native risk planning and the pool; the historical store is not a live
+feed. No broker service has been replaced.
+
 [Focused integration review222](222_RETSU_POOL_INTEGRATION_CORRECTIONS.md):
 Retsu's13 fixture tests pass, but four additional counterexamples reproduce
 missing70-column inference, lost unknown-effect state on restart, executor cash

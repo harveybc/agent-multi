@@ -1,7 +1,11 @@
 {
   "schema": "forward_model_pool_method.v1",
   "updated_date": "2026-11-08",
-  "current_stage": "OFFLINE_IMPLEMENTATION_REVIEW_REVISE",
+  "current_stage": "HISTORICAL_PARITY_VERIFIED_FORWARD_INTEGRATION",
+  "feed_review": "../223_SELECTED70_FORWARD_CLOCK_REVIEW.md",
+  "reviewed_feed_revision": "1cf67500a6feca0bbd8873fab5a0f5260ff1edc3",
+  "forward_clock_patch": "lts:4b5a542",
+  "feed_measurements": {"earlier_counterexamples_passed": 4, "existing_tests_passed": 23, "tests_with_forward_patch_passed": 30, "historical_rows": 30859, "valid_rows": 30234, "maximum_window_difference": 0.0, "model_probe_rows": 2, "actual_forward_ledger_events": 0},
   "integration_review": "../222_RETSU_POOL_INTEGRATION_CORRECTIONS.md",
   "reviewed_lts_revision": "ea340f8f11b5548a6c63ad408dc9a6714813c638",
   "review_measurements": {"fixture_tests_passed": 13, "additional_counterexamples": 4, "vm_running": true, "guest_agent_responded": true, "model_deployed": false},
@@ -22,13 +26,13 @@
     "requirements": "DOCUMENTED",
     "acceptance_test_design": "DOCUMENTED",
     "component_and_unit_test_design": "ASSIGNED_TO_RETSU",
-    "implementation": "RETSU_OFFLINE_SCAFFOLD_REQUIRES_INTEGRATION",
-    "offline_acceptance": "REVISE_F01_F02_F03_F04",
+    "implementation": "HISTORICAL_MODEL_AND_WINDOW_VERIFIED_FORWARD_PATH_NOT_CONNECTED",
+    "offline_acceptance": "F01_F04_CORRECTED_FULL_ACCOUNT_REPLAY_NOT_YET_VERIFIED",
     "forward_shadow": "NOT_ACTIVATED_BY_THIS_HANDOFF",
     "paper_demo_execution": "NOT_ACTIVATED_BY_THIS_HANDOFF"
   },
   "next_allowed_actions": [
-    "Retsu corrects F01-F04 with service-level regressions and native replay parity",
+    "Retsu integrates forward-clock patch4b5a542 and verifies full native account parity",
     "Retsu implements actual70-column inference and governed hourly shadow feed",
     "Retsu checks the existing MT5-specific route authorization read-only before requesting any owner action",
     "Musashi supplies authenticated selected70 bundle and reviews parity evidence",
@@ -49,6 +53,10 @@
     {
       "date": "2026-11-08",
       "event": "Read-only VM check and focused offline review: 13 existing tests passed; four integration/accounting counterexamples reproduced. Corrected work order222 assigned without modifying Retsu's checkout or broker services."
+    },
+    {
+      "date": "2026-11-08",
+      "event": "Previous witnesses now pass; full historical window parity and two model probes rerun. Forward-clock repair4b5a542 supplied with30 passing tests. Actual producers/pool/native planner integration remains assigned to Retsu."
     }
   ]
 }
