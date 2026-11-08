@@ -2,9 +2,16 @@
 import re
 from pathlib import Path
 import torch
+import numpy as np
 from app.rl_subset import subset_recipe
 from app.frozen_recipe_inputs import file_sha
 from agent_plugins.sac_critic_regularization import module_mode
+
+
+def reset_learning_rng(seed):
+    """Reseed after qualification without reconfiguring initialized thread pools."""
+    np.random.seed(seed)
+    torch.manual_seed(seed)
 
 
 def transfer_selected(source, dest):

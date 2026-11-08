@@ -10,7 +10,7 @@ import numpy as np
 import torch
 
 from app.structural_refit import build_model, load_bundle, verify_files
-from app.selected_warm_start import transfer_selected, configure_head_only, target_surfaces, export_components
+from app.selected_warm_start import transfer_selected, configure_head_only, target_surfaces, export_components, reset_learning_rng
 from app.frozen_actor_compaction import compare_logits
 from app.frozen_recipe_inputs import file_sha
 from app.rl_subset import digest,support_hash
@@ -106,7 +106,7 @@ def worker(args):
             parity=parity,initial_metrics=initial,full_accounts_exact=True,
             source_checkpoint_sha256=spec['structural_round']['source_checkpoint_sha256']))
         del source
-        configure(7)
+        reset_learning_rng(7)
         ix=np.flatnonzero(market.inputs.valid & (market.inputs.period=='TRAIN'))
         probe=market.inputs.windows[ix[np.linspace(0,len(ix)-1,32,dtype=int)]].copy()
         write(out/'EFFECTIVE.json',dict(identity=spec['identity'],effective=model.effective,

@@ -8,6 +8,14 @@ from app.structural_refit import EpochPatience, build_model, export_bundle, load
 from agent_plugins.three_signal_sac import ThreeSignalSAC
 
 
+def test_reseed_never_reconfigures_live_thread_pool(monkeypatch):
+    from app.selected_warm_start import reset_learning_rng
+    monkeypatch.setattr(torch,'set_num_interop_threads',lambda *a:pytest.fail('thread pool reconfigured'))
+    reset_learning_rng(7);a=torch.rand(4);b=np.random.rand(4)
+    reset_learning_rng(7)
+    assert torch.equal(a,torch.rand(4)) and np.array_equal(b,np.random.rand(4))
+
+
 def test_inactive_checkpoint_never_becomes_best_or_resets_patience():
     p=EpochPatience(patience=2,mode='validation')
     assert not p.observe(0.,0.,eligible=False)['improved']
