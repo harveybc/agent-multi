@@ -33,3 +33,20 @@ If calibration remains poor, inspect critic feature/target compatibility and
 optimization before changing actor capacity. If it improves, test a guarded
 joint-training correction separately: restoring calibration for a fixed policy
 does not alone establish a stable SAC learning recipe or profitable strategy.
+
+## Calibration References
+
+A constant-zero Q predictor has TRAIN soft-return RMSE0.295424,0.279264 and
+0.293172 for action seeds7/19/43. Using the seed7 mean return as a constant gives
+0.293706,0.277302 and0.291706. These are value-calibration references, not trading
+policies. Removing a large offset alone does not establish useful action ranking.
+
+## Launch Receipt
+
+Runtime `4ce3eba7`; identity
+`085b3c5b79768fea34f813693b59be3699de00af96e494f3c5cb9c70945c4305`.
+Launched on RTX5090 at17:24 UTC on2026-11-08. Source-control files authenticated,
+all24025 TRAIN rows covered, initial three-trajectory calibration reproduced,
+and the first256 updates completed with actor and encoders unchanged. The source
+replay is reused read-only. Focused tests:33 passed, one CUDA-only test skipped.
+This receipt does not assert the4096-update endpoint has completed.
