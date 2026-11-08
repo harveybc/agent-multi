@@ -1,7 +1,10 @@
 {
   "schema": "forward_model_pool_method.v1",
   "updated_date": "2026-11-08",
-  "current_stage": "ACCEPTANCE_DESIGN_HANDOFF",
+  "current_stage": "OFFLINE_IMPLEMENTATION_REVIEW_REVISE",
+  "integration_review": "../222_RETSU_POOL_INTEGRATION_CORRECTIONS.md",
+  "reviewed_lts_revision": "ea340f8f11b5548a6c63ad408dc9a6714813c638",
+  "review_measurements": {"fixture_tests_passed": 13, "additional_counterexamples": 4, "vm_running": true, "guest_agent_responded": true, "model_deployed": false},
   "implementation_owner": "Retsu",
   "model_contract_reviewer": "Musashi",
   "design": "../221_RETSU_FORWARD_MODEL_POOL_HANDOFF.md",
@@ -19,14 +22,15 @@
     "requirements": "DOCUMENTED",
     "acceptance_test_design": "DOCUMENTED",
     "component_and_unit_test_design": "ASSIGNED_TO_RETSU",
-    "implementation": "NOT_STARTED_IN_THIS_TRACK",
-    "offline_acceptance": "NOT_EXECUTED",
+    "implementation": "RETSU_OFFLINE_SCAFFOLD_REQUIRES_INTEGRATION",
+    "offline_acceptance": "REVISE_F01_F02_F03_F04",
     "forward_shadow": "NOT_ACTIVATED_BY_THIS_HANDOFF",
     "paper_demo_execution": "NOT_ACTIVATED_BY_THIS_HANDOFF"
   },
   "next_allowed_actions": [
-    "Retsu verifies package availability and route capabilities read-only",
-    "Retsu completes component and unit test design, then implements offline adapters and independent shadows",
+    "Retsu corrects F01-F04 with service-level regressions and native replay parity",
+    "Retsu implements actual70-column inference and governed hourly shadow feed",
+    "Retsu checks the existing MT5-specific route authorization read-only before requesting any owner action",
     "Musashi supplies authenticated selected70 bundle and reviews parity evidence",
     "retain existing research and operational workers unchanged"
   ],
@@ -35,12 +39,16 @@
     "reuse of legacy rolling normalization, state feedback or continuous-action thresholds",
     "unverified route activation or capability bypass",
     "replacement of a model managing an open position",
-    "claiming this assignment has been executed by Retsu"
+    "claiming fixture-only code is an operating model or broker route"
   ],
   "history": [
     {
       "date": "2026-11-08",
       "event": "Owner requests delegation of model-pool implementation to Retsu; Musashi records read-only discovery, acceptance design and parallel master-plan priority"
+    },
+    {
+      "date": "2026-11-08",
+      "event": "Read-only VM check and focused offline review: 13 existing tests passed; four integration/accounting counterexamples reproduced. Corrected work order222 assigned without modifying Retsu's checkout or broker services."
     }
   ]
 }

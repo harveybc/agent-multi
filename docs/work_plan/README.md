@@ -2,6 +2,14 @@
 
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
+[Focused integration review222](222_RETSU_POOL_INTEGRATION_CORRECTIONS.md):
+Retsu's13 fixture tests pass, but four additional counterexamples reproduce
+missing70-column inference, lost unknown-effect state on restart, executor cash
+copied from a shadow, and pre-entry OHLC applied to a new trade. The existing VM
+is responsive; restarting it is not the remedy. Retsu completes the real model
+and feed path, persistent accounting and MT5-specific qualification. The cited
+generic capability tool is IBKR-only and must not be prescribed for MT5.
+
 The owner requests an event-driven Paper/Demo model pool alongside the ongoing
 refinement diagnosis. [Retsu handoff221](221_RETSU_FORWARD_MODEL_POOL_HANDOFF.md)
 assigns implementation to Retsu and model-contract review to Musashi. Register
