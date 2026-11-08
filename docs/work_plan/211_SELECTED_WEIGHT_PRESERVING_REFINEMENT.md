@@ -58,3 +58,43 @@ acceptance, full real-data transfer and account parity are required by the worke
 before any optimization step; their receipts are stored with the run. Numerical
 logit parity allows atol1e-5/rtol1e-5 but requires zero action disagreements; Q
 parity allows atol1e-6/rtol1e-5. Retained tensor values themselves are exact.
+
+## Deployment and Verified Initial State
+
+Runtime `1d3c5f71`; experiment identity
+`d4b260fffb17e0fcaddb0fe1c833493f30e28e942ffda4fbb36e5c3404a5f6e2`.
+The supervised priority worker started on the primary RTX5090 on2026-11-08.
+At4096 transitions it completed its first real SAC update with finite losses
+and gradient norm0.08224. This is a launch receipt, not a trained result.
+
+- Exact retained tensors:943 copied;12 first-convolution tensors sliced
+  (four affected groups across actor, stacked critics and delayed critics).
+- All30234 valid windows compared:zero action disagreements; maximum actor
+  logit difference2.86103e-6 from changing convolution input width. Online and
+  delayed critic outputs matched exactly on this check.
+- Full TRAIN and VALIDATION native-account metrics matched the masked parent
+  exactly. TRAIN return11.51453%; VALIDATION return13.80849%, Sharpe2.09706,
+  206 orders,57.76699% wins and3.62493% maximum drawdown.
+- Physical model:70 inputs,28 groups,92176 trainable-or-frozen parameters;
+  only5097 head parameters are trainable. No retained group was removed.
+- Epoch0 bundle SHA256:
+  `079bef0ea6f3b9327772f4204e5d5dbbd4be69a5ab58c32b424aa3cb7c686404`.
+  Its32-row cold-reload probe is byte-identical, with zero maximum error.
+- Focused local tests:44 passed,6 fixture-dependent skips. Worker startup:
+  23 passed,6 skips; real-data CUDA integration update passed separately.
+
+Two pre-training startup failures were corrected before any learning updates:
+reinitializing PyTorch inter-op threads, and omission of parameter trainability
+from saved checkpoints. The latter changed attention dispatch on reload;
+checkpoint save/load now restores the validated trainability map, with legacy
+checkpoint compatibility and an attention-specific regression. Each fix was
+deployed under a new runtime and experiment identity; failed attempts were
+retained and their services disabled.
+
+Evidence beside the run: `TRANSFER.json`, `EPOCH_ZERO.json`, `CANARY.json`,
+`EFFECTIVE.json`, `bundles/epoch_0000/RELOAD.json`, and component manifests under
+`components_initial/`. The sequential worker writes epoch histories, plots,
+best bundles and recovery state; its separate supervisor collects and verifies
+the terminal result. The independent secondary replication was not interrupted.
+Next: finish head-only refinement, verify frozen weights each epoch, and compare
+the selected checkpoint against epoch0. No subsequent unfreezing is scheduled.
