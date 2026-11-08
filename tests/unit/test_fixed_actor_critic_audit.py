@@ -100,3 +100,11 @@ def test_mean_target_changes_only_bootstrap_and_preserves_terminal():
     torch.testing.assert_close(actual,expected)
     assert torch.equal(actual[4:],native[4:])
     assert (actual[:4]>=native[:4]).all()
+
+
+def test_residual_check_uses_target_scale_and_rejects_material_error():
+    from app.fixed_actor_critic_audit import verify_backup_identity
+    target=torch.tensor([-100.]);online=torch.tensor([-100.75])
+    assert verify_backup_identity({'residual':torch.tensor([.7500534])},online,target)<6e-5
+    with pytest.raises(AssertionError):
+        verify_backup_identity({'residual':torch.tensor([1.7500534])},online,target)

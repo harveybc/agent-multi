@@ -7,7 +7,8 @@ import time
 import numpy as np
 import torch
 
-from app.fixed_actor_critic_audit import ARMS, configure_arm, algebra_audit, checked_update, backup_components
+from app.fixed_actor_critic_audit import (ARMS, configure_arm, algebra_audit, checked_update,
+    backup_components, verify_backup_identity)
 from app.generalization_diagnostics import summary
 from app.policy_return_calibration import calibration
 from app.selected_warm_start import reset_learning_rng, target_surfaces
@@ -50,10 +51,11 @@ def measure(model, batch, panel):
         if getattr(model,'_audit_mean_target',False):
             components['residual'] -= components['minimum_twin_penalty']
             components['minimum_twin_penalty'] = torch.zeros_like(components['residual'])
-        torch.testing.assert_close(components['residual'],expected-chosen.mean(0),atol=2e-5,rtol=2e-5)
+        residual_roundoff = verify_backup_identity(components,chosen.mean(0),expected)
         panel_q = model.q_surfaces(panel['features']).gather(-1,
             panel['action'].reshape(1,-1,1).expand(2,-1,1)).squeeze(-1).min(0).values
-        return dict(backup_components={k:summary(v.cpu().numpy()) for k,v in components.items()},
+        return dict(residual_roundoff_max=residual_roundoff,
+            backup_components={k:summary(v.cpu().numpy()) for k,v in components.items()},
             online_eval_q=summary(q.cpu().numpy()),target_q=summary(tq.cpu().numpy()),
             bellman_target=summary(expected.cpu().numpy()),
             eval_td_error=summary((chosen-expected).cpu().numpy()),

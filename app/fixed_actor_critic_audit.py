@@ -23,6 +23,13 @@ def backup_components(reward, terminated, duration, probability, target_q, onlin
     return parts
 
 
+def verify_backup_identity(components, online_taken, native_target):
+    # Compare targets at their native scale: residuals can nearly cancel large Q.
+    reconstructed = components['residual'] + online_taken
+    torch.testing.assert_close(reconstructed,native_target,atol=2e-5,rtol=2e-5)
+    return float((components['residual']-(native_target-online_taken)).abs().max())
+
+
 def configure_arm(model, arm):
     if arm not in (*ARMS, 'mean_target'):
         raise ValueError('CRITIC_AUDIT_ARM')
