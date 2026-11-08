@@ -1,6 +1,7 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "FIXED_ACTOR_CRITIC_AUDIT_COMPLETE_PARTIAL_MECHANISM_IDENTIFIED",
+  "current_stage": "FULL_TRAIN_CRITIC_CONFIRMATION_TESTING",
+  "full_train_critic_design": "../218_FULL_TRAIN_CRITIC_CONFIRMATION.md",
   "critic_audit_design": "../216_FIXED_ACTOR_CRITIC_AUDIT.md",
   "critic_audit_results": "../217_FIXED_ACTOR_CRITIC_AUDIT_RESULTS.md",
   "critic_audit_verification": {"completed_arms": 7, "verified_output_files": 20, "focused_cpu_passed": 29, "cuda_test_skipped": 1, "real_cuda_diagnostics": true, "actor_unchanged": true, "model_promoted": false},

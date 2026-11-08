@@ -108,3 +108,37 @@ def test_residual_check_uses_target_scale_and_rejects_material_error():
     assert verify_backup_identity({'residual':torch.tensor([.7500534])},online,target)<6e-5
     with pytest.raises(AssertionError):
         verify_backup_identity({'residual':torch.tensor([1.7500534])},online,target)
+
+
+def test_covering_schedule_visits_every_row_and_reproduces():
+    import numpy as np
+    from tools.audit_fixed_actor_critics import covering_schedule
+    a=covering_schedule(23,5,8,7)
+    assert a.shape==(5,8) and set(a.ravel())==set(range(23))
+    assert np.array_equal(a,covering_schedule(23,5,8,7))
+    with pytest.raises(ValueError):covering_schedule(100,5,8,7)
+
+
+def test_native_full_replay_preserves_terminal_and_rejects_bad_receipt():
+    import numpy as np
+    from types import SimpleNamespace
+    from tools.audit_fixed_actor_critics import collect_full_replay
+    from env_plugins.discrete_curve_native import HOUR
+    class Env:
+        def __init__(self):
+            self.engine=SimpleNamespace(v=np.arange(4)*HOUR,pos=None)
+        def reset(self):
+            self.bar=0;self.finished=False
+            return self.obs()
+        def obs(self):return dict(features=np.full((13,2),self.bar,dtype=np.float32),mask=np.ones(3,bool))
+        def step(self,action):
+            self.last_command=action;self.bar+=1;self.finished=self.bar==3
+            return self.obs(),float(action),self.finished,1
+    trace=[dict(timestamp=(i+1)*HOUR,position=0,signal=i,command=i,reward=float(i),duration=1) for i in range(3)]
+    replay,receipt=collect_full_replay(Env(),trace)
+    assert len(replay)==3 and receipt['terminal_count']==1
+    assert replay['next','terminated'].reshape(-1).tolist()==[False,False,True]
+    assert replay['next','features'][-1,0,0]==3
+    bad=[dict(r) for r in trace];bad[1]['reward']=99
+    with pytest.raises(ValueError,match='REPLAY_REWARD'):collect_full_replay(Env(),bad)
+    with pytest.raises(ValueError,match='REPLAY_TERMINAL'):collect_full_replay(Env(),trace[:2])

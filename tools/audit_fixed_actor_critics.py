@@ -13,15 +13,45 @@ from app.generalization_diagnostics import summary
 from app.policy_return_calibration import calibration
 from app.selected_warm_start import reset_learning_rng, target_surfaces
 from app.structural_refit import load_bundle, build_model
+from app.three_signal_learning import environment
 from app.frozen_recipe_inputs import file_sha
 from app.rl_subset import digest, support_hash
 from agent_plugins.sac_critic_regularization import module_mode
 from tools.diagnose_warmstart_drift import tensor_digest, frozen_state, verify_frozen_state
-from tools.run_discrete_curve_probe import read, write, configure, now
+from tools.run_discrete_curve_probe import read, write, configure, now, transition
 from tools.run_structural_sac_refit import authenticate, market_for
 
 ROOT = Path(__file__).resolve().parents[1]
 POINTS = (0, 1, 64, 256, 1024)
+
+
+def covering_schedule(rows, updates, batch_size, seed):
+    total=updates*batch_size
+    if rows<1 or total<rows:raise ValueError('REPLAY_COVERAGE_BUDGET')
+    rng=np.random.default_rng(seed)
+    return np.concatenate([rng.permutation(rows) for _ in range((total+rows-1)//rows)])[:total].reshape(updates,batch_size)
+
+
+def collect_full_replay(env, trace):
+    from env_plugins.discrete_curve_native import HOUR
+    if not trace:raise ValueError('REPLAY_EMPTY')
+    obs=env.reset();replay=None;maximum=0.
+    for i,row in enumerate(trace):
+        if env.finished:raise ValueError('REPLAY_TERMINAL_EARLY')
+        position=0 if env.engine.pos is None else env.engine.pos.direction
+        if int(env.engine.v[env.bar])+HOUR!=row['timestamp'] or position!=row['position']:
+            raise ValueError('REPLAY_NATIVE_STATE')
+        action=int(row['signal']);nxt,reward,done,duration=env.step(action)
+        error=abs(reward-row['reward']);maximum=max(maximum,error)
+        if error>1e-12:raise ValueError('REPLAY_REWARD')
+        if duration!=row['duration'] or env.last_command!=row['command']:
+            raise ValueError('REPLAY_NATIVE_TRANSITION')
+        if bool(done)!=(i==len(trace)-1):raise ValueError('REPLAY_TERMINAL')
+        td=transition(obs,action,nxt,reward,done,duration)
+        if replay is None:replay=td.expand(len(trace)).clone()
+        replay[i:i+1]=td;obs=nxt
+    return replay,dict(rows=len(trace),terminal_count=int(replay['next','terminated'].sum()),
+        reward_max_error=maximum,native_duration=int(replay['steps_to_next_obs'].sum()))
 
 
 def verify_collection(root):
@@ -52,8 +82,16 @@ def measure(model, batch, panel):
             components['residual'] -= components['minimum_twin_penalty']
             components['minimum_twin_penalty'] = torch.zeros_like(components['residual'])
         residual_roundoff = verify_backup_identity(components,chosen.mean(0),expected)
-        panel_q = model.q_surfaces(panel['features']).gather(-1,
-            panel['action'].reshape(1,-1,1).expand(2,-1,1)).squeeze(-1).min(0).values
+        q_chunks=[]
+        for first in range(0,len(panel['features']),256):
+            q_chunks.append(model.q_surfaces(panel['features'][first:first+256]).cpu())
+        panel_surface=torch.cat(q_chunks,dim=1)
+        panel_q=panel_surface.gather(-1,
+            panel['action'].cpu().reshape(1,-1,1).expand(2,-1,1)).squeeze(-1).min(0).values
+        alternate={}
+        for seed,reference in panel.get('alternate',{}).items():
+            qa=panel_surface.gather(-1,reference['action'].reshape(1,-1,1).expand(2,-1,1)).squeeze(-1).min(0).values
+            alternate[str(seed)]=calibration(qa.numpy(),reference['returns'])
         return dict(residual_roundoff_max=residual_roundoff,
             backup_components={k:summary(v.cpu().numpy()) for k,v in components.items()},
             online_eval_q=summary(q.cpu().numpy()),target_q=summary(tq.cpu().numpy()),
@@ -61,7 +99,8 @@ def measure(model, batch, panel):
             eval_td_error=summary((chosen-expected).cpu().numpy()),
             train_minus_eval_q=summary((samples.mean(0)-q).cpu().numpy()),
             dropout_std=summary(samples.std(0).cpu().numpy()),
-            fixed_policy_train_panel=calibration(panel_q.cpu().numpy(),panel['returns']))
+            alternate_policy_trajectories=alternate,
+            fixed_policy_train_panel=calibration(panel_q.numpy(),panel['returns']))
 
 
 def run(args):
@@ -87,13 +126,21 @@ def run(args):
     if read(args.calibration/'CONFIG.json')['initial_sha256'] != file_sha(bundle/'model.pt'):
         raise ValueError('CRITIC_AUDIT_RETURN_SOURCE')
     z = np.load(args.calibration/f'epoch_{args.start_epoch:04d}/stochastic_7/TRAIN/RETURN_TRACE.npz')
-    ix = np.linspace(0,len(z['timestamp'])-1,512,dtype=int)
+    ix = (np.arange(len(z['timestamp'])) if args.full_train_replay else
+          np.linspace(0,len(z['timestamp'])-1,512,dtype=int))
     rows = np.searchsorted(market.inputs.row_ts_ns,z['timestamp'][ix])
     if (not np.array_equal(market.inputs.row_ts_ns[rows],z['timestamp'][ix]) or
             not (market.inputs.period[rows] == 'TRAIN').all() or not market.inputs.valid[rows].all()):
         raise ValueError('CRITIC_AUDIT_PANEL_SUPPORT')
     panel = dict(features=torch.tensor(market.inputs.windows[rows],device='cuda'),
         action=torch.tensor(z['signal'][ix],device='cuda'),returns=z['soft_return'][ix])
+    if args.full_train_replay:
+        if args.start_epoch!=40:raise ValueError('FULL_REPLAY_REQUIRES_EPOCH40')
+        panel['alternate']={}
+        for seed in (19,43):
+            alt=np.load(args.calibration/f'epoch_0040/stochastic_{seed}/TRAIN/RETURN_TRACE.npz')
+            if not np.array_equal(alt['timestamp'],z['timestamp']):raise ValueError('FULL_PANEL_SUPPORT')
+            panel['alternate'][seed]=dict(action=torch.tensor(alt['signal']),returns=alt['soft_return'])
     snapshots = {}
     for path in args.snapshot:
         m = read(path/'MANIFEST.json');s = read(path/'STATE.json')
@@ -103,12 +150,43 @@ def run(args):
             if file_sha(path/name) != m['files'][name]:raise ValueError('CRITIC_AUDIT_SNAPSHOT_HASH')
         snapshots[s['epoch']] = (path,m['files']['model.pt'])
     if set(snapshots) != {6,40}:raise ValueError('CRITIC_AUDIT_SNAPSHOTS')
-    schedule = np.random.default_rng(7).integers(0,len(replay),size=(1024,128))
+    full_receipt=None
+    if args.full_train_replay:
+        folder=args.calibration/'epoch_0040/stochastic_7/TRAIN'
+        trace=read(folder/'ACTIONS.json')
+        expected_count=read(args.source/'PREFLIGHT.json')['periods']['TRAIN']['decision_count']
+        if len(trace)!=expected_count or len(rows)!=expected_count:raise ValueError('FULL_REPLAY_COUNT')
+        receipt_path=args.output/'FULL_TRAIN_REPLAY.json';replay_path=args.output/'FULL_TRAIN_REPLAY.pt'
+        if receipt_path.exists():
+            full_receipt=read(receipt_path)
+            if (full_receipt['sha256']!=file_sha(replay_path) or
+                    full_receipt['source_trace_sha256']!=file_sha(folder/'ACTIONS.json') or
+                    full_receipt['source_checkpoint_sha256']!=snapshots[40][1] or
+                    full_receipt['period']!='TRAIN' or full_receipt['rows']!=expected_count):
+                raise ValueError('FULL_REPLAY_CACHE_IDENTITY')
+            replay=torch.load(replay_path,map_location='cpu',weights_only=False)
+            if tensor_digest(replay)!=full_receipt['tensor_digest']:raise ValueError('FULL_REPLAY_CACHE_CONTENT')
+        else:
+            if (args.output/'CONFIG.json').exists():raise ValueError('FULL_REPLAY_RECEIPT_MISSING')
+            env=environment(market,read(args.source/'RISK.json'),spec['design']['horizon'],
+                market.recipe['split']['periods']['TRAIN'],spec['effective']['gamma'])
+            replay,full_receipt=collect_full_replay(env,trace)
+            expected=read(folder/'METRICS.json')
+            if (abs(env.engine.balance-env.engine.cfg.capital-expected['net_profit_usd'])>1e-8 or
+                    len(env.engine.trades)!=expected['trades']):raise ValueError('FULL_REPLAY_ACCOUNT')
+            torch.save(replay,replay_path)
+            full_receipt.update(tensor_digest=tensor_digest(replay),sha256=file_sha(replay_path),
+                source_trace_sha256=file_sha(folder/'ACTIONS.json'),period='TRAIN',sampling_seed=7,
+                source_checkpoint_sha256=snapshots[40][1],account_net_profit_usd=expected['net_profit_usd'])
+            write(receipt_path,full_receipt)
+    schedule = (covering_schedule(len(replay),1024,128,7) if args.full_train_replay else
+                np.random.default_rng(7).integers(0,len(replay),size=(1024,128)))
     config = dict(source_identity=spec['identity'],initial_sha256=file_sha(bundle/'model.pt'),
         replay_identity=replay_receipt['identity'],return_identity=return_receipt['identity'],
         snapshot_sha256={str(e):h for e,(_,h) in snapshots.items()},
         schedule_sha256=digest(schedule.tolist()),arms=list(ARMS),points=list(POINTS),
-        train_panel_rows=512,train_panel_seed=7,updates=1024,batch_size=128,
+        train_panel_rows=len(rows),train_panel_seed=7,updates=1024,batch_size=128,
+        full_train_replay=full_receipt,schedule_unique_rows=len(np.unique(schedule)),
         sources={n:file_sha(ROOT/n) for n in ('app/fixed_actor_critic_audit.py',
             'tools/audit_fixed_actor_critics.py','agent_plugins/three_signal_sac.py',
             'agent_plugins/discrete_curve_sac.py','agent_plugins/sac_critic_regularization.py')},
@@ -155,7 +233,7 @@ def run(args):
         if args.start_epoch:model.load(snapshots[args.start_epoch][0]/'model.pt')
         configure_arm(model,arm);reset_learning_rng(7)
         frozen=frozen_state(model)
-        with torch.no_grad():actor=model.surfaces(panel['features']).clone()
+        with torch.no_grad():actor=model.surfaces(panel['features'][:512]).clone()
         record=dict(identity=config['identity'],arm=arm,points=[])
         targets = {k:v.clone() for k,v in model.loss.target_qvalue_network_params.items(True,True)}
         for step in range(1025):
@@ -171,9 +249,17 @@ def run(args):
             if step in POINTS:
                 verify_frozen_state(model,frozen)
                 with torch.no_grad():
-                    if not torch.equal(actor,model.surfaces(panel['features'])):
+                    if not torch.equal(actor,model.surfaces(panel['features'][:512])):
                         raise ValueError('CRITIC_AUDIT_ACTOR_MUTATED')
                 result=measure(model,probe,panel)
+                if step==0 and args.full_train_replay:
+                    for seed,measured in [(7,result['fixed_policy_train_panel']),
+                            *[(s,result['alternate_policy_trajectories'][str(s)]) for s in (19,43)]]:
+                        expected=read(args.calibration/f'epoch_0040/stochastic_{seed}/TRAIN/CALIBRATION.json')['min_q']
+                        for field in ('bias','mae','rmse','q_mean','return_mean'):
+                            if not np.isclose(measured[field],expected[field],rtol=1e-5,atol=1e-5):
+                                raise ValueError('FULL_PANEL_INITIAL_PARITY:'+field)
+                    result['initial_calibration_parity']=True
                 result.update(updates=step if arm!='no_update' else 0,schedule_position=step,
                     actor_exact=True,frozen_parameters_exact=True,
                     update=None if not step or arm=='no_update' else update)
@@ -195,6 +281,7 @@ def main():
     parser.add_argument('--snapshot',type=Path,action='append',required=True)
     parser.add_argument('--inspection-only',action='store_true')
     parser.add_argument('--start-epoch',type=int,choices=[0,40],default=0)
+    parser.add_argument('--full-train-replay',action='store_true')
     args=parser.parse_args();args.output.mkdir(parents=True,exist_ok=True)
     with (args.output/'worker.lock').open('a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
