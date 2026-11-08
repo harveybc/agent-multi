@@ -70,3 +70,16 @@ def test_measured_mode_gap_and_rng_isolation(dropout):
     assert torch.equal(rng,torch.get_rng_state())
     assert (result['dropout_std']['max']>0) == dropout
     if not dropout:assert abs(result['train_minus_eval_q']['max'])<1e-6
+
+
+def test_minimum_penalty_decomposition_terminal_and_entropy():
+    from app.fixed_actor_critic_audit import backup_components
+    from app.generalization_diagnostics import soft_td_target
+    p=torch.tensor([[.2,.3,.5],[.5,.25,.25]])
+    q=torch.tensor([[[1.,2.,3.],[1.,2.,3.]],[[3.,4.,5.],[5.,4.,3.]]])
+    r=torch.tensor([.3,-.1]); done=torch.tensor([False,True]); d=torch.tensor([4,1]); online=torch.tensor([1.,1.])
+    c=backup_components(r,done,d,p,q,online,.1,.99)
+    expected=soft_td_target(r,done,d,p,q,.1,.99)-online
+    torch.testing.assert_close(c['residual'],expected)
+    torch.testing.assert_close(c['minimum_twin_penalty'],torch.tensor([-(.99**4),0.]))
+    assert c['entropy_bonus'][1]==0

@@ -40,3 +40,13 @@ or an IID statistical sample. Report bias and RMSE, no significance claim.
 If an ablation isolates a problem, verify it in a second controlled test before
 changing the learning recipe. Never silently remove dropout, change costs, add
 agent-state observations or overwrite the selected checkpoint.
+
+## Follow-up Arithmetic Inspection
+
+After observing the snapshot twin disagreement, add a separately identified,
+read-only decomposition of the TD residual into reward, entropy bonus, mean-twin
+backup minus current online Q, and the penalty from taking the minimum twin.
+This is an exploratory explanation of the existing snapshots, not an additional
+optimization arm or proof that replacing the twin minimum is appropriate.
+Its reconstruction must exactly match the native residual. The already running
+five-arm export remains pinned and unchanged.

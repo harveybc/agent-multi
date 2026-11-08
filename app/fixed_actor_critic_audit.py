@@ -9,6 +9,20 @@ from tools.diagnose_warmstart_drift import set_arm
 ARMS = ('no_update', 'production', 'no_core_dropout', 'no_weight_decay', 'fixed_target')
 
 
+def backup_components(reward, terminated, duration, probability, target_q, online_taken, alpha, gamma):
+    """Exact additive decomposition of the minimum-twin soft TD residual."""
+    p = probability
+    discount = torch.pow(gamma, duration.reshape(-1)) * (~terminated.reshape(-1))
+    mean_value = (p * target_q.mean(0)).sum(-1)
+    minimum_value = (p * target_q.min(0).values).sum(-1)
+    entropy = -(p * p.clamp_min(1e-30).log()).sum(-1)
+    parts = dict(reward=reward.reshape(-1), entropy_bonus=discount*alpha*entropy,
+        mean_backup_minus_online=discount*mean_value-online_taken,
+        minimum_twin_penalty=-discount*(mean_value-minimum_value))
+    parts['residual'] = sum(parts.values())
+    return parts
+
+
 def configure_arm(model, arm):
     if arm not in ARMS:
         raise ValueError('CRITIC_AUDIT_ARM')

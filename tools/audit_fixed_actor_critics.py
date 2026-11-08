@@ -7,7 +7,7 @@ import time
 import numpy as np
 import torch
 
-from app.fixed_actor_critic_audit import ARMS, configure_arm, algebra_audit, checked_update
+from app.fixed_actor_critic_audit import ARMS, configure_arm, algebra_audit, checked_update, backup_components
 from app.generalization_diagnostics import summary
 from app.policy_return_calibration import calibration
 from app.selected_warm_start import reset_learning_rng, target_surfaces
@@ -44,9 +44,14 @@ def measure(model, batch, panel):
         samples = torch.stack(samples)
         index = batch['action'].reshape(1,-1,1).expand(2,-1,1)
         chosen = q.gather(-1,index).squeeze(-1)
+        components = backup_components(batch['next','reward'],batch['next','terminated'],
+            batch['steps_to_next_obs'],model.surfaces(batch['next','features']).softmax(-1),
+            tq,chosen.mean(0),model.loss.log_alpha.exp(),model.effective['gamma'])
+        torch.testing.assert_close(components['residual'],expected-chosen.mean(0),atol=2e-5,rtol=2e-5)
         panel_q = model.q_surfaces(panel['features']).gather(-1,
             panel['action'].reshape(1,-1,1).expand(2,-1,1)).squeeze(-1).min(0).values
-        return dict(online_eval_q=summary(q.cpu().numpy()),target_q=summary(tq.cpu().numpy()),
+        return dict(backup_components={k:summary(v.cpu().numpy()) for k,v in components.items()},
+            online_eval_q=summary(q.cpu().numpy()),target_q=summary(tq.cpu().numpy()),
             bellman_target=summary(expected.cpu().numpy()),
             eval_td_error=summary((chosen-expected).cpu().numpy()),
             train_minus_eval_q=summary((samples.mean(0)-q).cpu().numpy()),
@@ -102,7 +107,10 @@ def run(args):
         sources={n:file_sha(ROOT/n) for n in ('app/fixed_actor_critic_audit.py',
             'tools/audit_fixed_actor_critics.py','agent_plugins/three_signal_sac.py',
             'agent_plugins/discrete_curve_sac.py','agent_plugins/sac_critic_regularization.py')},
+        inspection_only=args.inspection_only,
         scope='TRAIN-only critic-head interventions; fixed actor/alpha; no account promotion')
+    if args.inspection_only:
+        config.update(arms=[],points=[],updates=0,scope='read-only critic snapshot arithmetic; no updates')
     config['identity'] = digest(config)
     if (args.output/'CONFIG.json').exists() and read(args.output/'CONFIG.json') != config:
         raise ValueError('CRITIC_AUDIT_CONFIG_CHANGED')
@@ -129,7 +137,7 @@ def run(args):
         del model
     write(args.output/'SNAPSHOT_AUDIT.json',inspection)
     records = {}
-    for arm in ARMS:
+    for arm in ([] if args.inspection_only else ARMS):
         destination = args.output/(arm+'.json')
         if destination.exists():
             record=read(destination)
@@ -175,6 +183,7 @@ def main():
     for name in ('source','source-runtime','replay','calibration','output'):
         parser.add_argument('--'+name,type=Path,required=True)
     parser.add_argument('--snapshot',type=Path,action='append',required=True)
+    parser.add_argument('--inspection-only',action='store_true')
     args=parser.parse_args();args.output.mkdir(parents=True,exist_ok=True)
     with (args.output/'worker.lock').open('a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
