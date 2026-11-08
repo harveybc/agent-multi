@@ -40,11 +40,13 @@ def test_arm_rejects_unknown():
         set_arm(ThreeSignalSAC(probe_recipe()),'other')
 
 
-def test_diagnostic_probe_and_tensor_digest_are_read_only():
-    from tools.diagnose_warmstart_drift import probes, tensor_digest
+@pytest.mark.parametrize('device',['cpu','cuda'])
+def test_diagnostic_probe_and_tensor_digest_are_read_only(device):
+    if device=='cuda' and not torch.cuda.is_available():pytest.skip('CUDA unavailable')
+    from tools.diagnose_warmstart_drift import probes, tensor_digest, state_value_drift
     from types import SimpleNamespace
     torch.set_num_threads(1)
-    model=ThreeSignalSAC(probe_recipe(),critic_regularization={'kind':'core_dropout','p':.1})
+    model=ThreeSignalSAC(probe_recipe(),device=device,critic_regularization={'kind':'core_dropout','p':.1})
     x=torch.randn(8,13,2)
     td=TensorDict({'features':x,'mask':torch.ones(8,3,dtype=torch.bool)},[8])
     td['action']=torch.arange(8)%3;td['steps_to_next_obs']=torch.ones(8,1,dtype=torch.long)
@@ -53,9 +55,22 @@ def test_diagnostic_probe_and_tensor_digest_are_read_only():
         'done':torch.zeros(8,1,dtype=torch.bool)},[8])
     inputs=SimpleNamespace(valid=np.ones(8,dtype=bool),period=np.array(['TRAIN']*4+['VALIDATION']*4),
                            windows=x.numpy())
+    td=td.to(device)
     before={k:v.clone() for k,v in model.loss.state_dict().items()};stamp=tensor_digest(td)
     result=probes(model,SimpleNamespace(inputs=inputs),model,td)
     assert tensor_digest(td)==stamp
-    assert all(torch.equal(v,model.loss.state_dict()[k]) for k,v in before.items())
+    drift=state_value_drift(before,model.loss.state_dict())
+    assert drift['changed']==[] and drift['max_abs']==0.
     assert result['TD']['native_target_max_error']<1e-5
     assert result['TRAIN']['kl_from_initial']['max']==0.
+
+
+def test_state_comparison_detects_values_types_and_keys():
+    from tools.diagnose_warmstart_drift import state_value_drift
+    old={'gamma':torch.tensor(.99),'index':torch.tensor(1)}
+    new={k:v.clone() for k,v in old.items()}
+    new['gamma'].add_(.1)
+    assert state_value_drift(old,new)['changed']==['gamma']
+    assert state_value_drift(old,dict(old,index=torch.tensor(1.)))['changed']==['index']
+    with pytest.raises(ValueError,match='DIAGNOSTIC_STATE_KEYS'):
+        state_value_drift(old,{'gamma':old['gamma']})

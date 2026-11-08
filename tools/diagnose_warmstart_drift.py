@@ -49,6 +49,20 @@ def verify_frozen_state(model,state):
         if not torch.equal(value,params[name]):raise ValueError('DIAGNOSTIC_FROZEN:'+name)
 
 
+def state_value_drift(before,after):
+    """Compare values, allowing lazy TD buffers to move from CPU to CUDA."""
+    if before.keys()!=after.keys():raise ValueError('DIAGNOSTIC_STATE_KEYS')
+    changed=[];moved=[];maximum=0.
+    for name,old in before.items():
+        new=after[name]
+        if old.device!=new.device:moved.append(name)
+        a,b=old.detach().cpu(),new.detach().cpu()
+        if a.shape!=b.shape or a.dtype!=b.dtype or not torch.equal(a,b):changed.append(name)
+        if a.is_floating_point() and a.shape==b.shape:
+            maximum=max(maximum,float((a-b).abs().max()))
+    return dict(changed=changed,device_moves=moved,max_abs=maximum)
+
+
 def tensor_digest(td):
     h=hashlib.sha256()
     for key in sorted(td.keys(True,True),key=str):
@@ -107,7 +121,11 @@ def main():
     args=parser.parse_args();args.output.mkdir(parents=True,exist_ok=True)
     with (args.output/'worker.lock').open('a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
-        run(args)
+        try:
+            run(args)
+        except Exception as exc:
+            write(args.output/'PROGRESS.json',dict(stage='FAILED',error=repr(exc),updated_at=now()))
+            raise
 
 
 def run(args):
@@ -194,12 +212,13 @@ def run(args):
                 result=evaluate(model,market,reference,probe_batch,risk,design)
                 if step==0 or arm=='no_update':
                     for period in result['metrics']:account_equal(result['metrics'][period],baseline['metrics'][period])
-                if arm=='no_update' and any(not torch.equal(v,model.loss.state_dict()[k]) for k,v in original.items()):
+                drift=state_value_drift(original,model.loss.state_dict())
+                if arm=='no_update' and drift['changed']:
                     raise ValueError('DIAGNOSTIC_CONTROL_MUTATED')
                 result.update(updates=step if arm!='no_update' else 0,
                     equivalent_schedule_position=step,
-                    max_parameter_change=max(float((v-model.loss.state_dict()[k]).abs().max())
-                        for k,v in original.items() if v.is_floating_point()),
+                    max_state_value_change=drift['max_abs'],
+                    state_device_moves=drift['device_moves'],
                     frozen_parameters_exact=True)
                 record['points'].append(result)
                 write(args.output/(arm+'.progress.json'),record)
