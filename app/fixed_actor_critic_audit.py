@@ -31,7 +31,7 @@ def verify_backup_identity(components, online_taken, native_target):
 
 
 def configure_arm(model, arm):
-    if arm not in (*ARMS, 'mean_target'):
+    if arm not in (*ARMS, 'mean_target', 'return_anchor'):
         raise ValueError('CRITIC_AUDIT_ARM')
     set_arm(model, 'no_update' if arm == 'no_update' else 'critic_only')
     if arm == 'no_core_dropout':
@@ -53,6 +53,20 @@ def configure_arm(model, arm):
                 return native + discount*(p*(q.mean(0)-q.min(0).values)).sum(-1)
         model.loss._compute_target = mean_target
         model._audit_mean_target = True
+    if arm == 'return_anchor':
+        model._audit_bootstrap_target=model.loss._compute_target
+        def realized_target(batch):
+            value=batch.get('realized_soft_return')
+            if value is None:raise ValueError('RETURN_TARGET_MISSING')
+            if value.shape not in ((len(batch),),(len(batch),1)) or not value.is_floating_point() or not torch.isfinite(value).all():
+                raise ValueError('RETURN_TARGET_INVALID')
+            value=value.detach().reshape(-1)
+            terminal=batch['next','terminated'].reshape(-1)
+            if not torch.allclose(value[terminal],batch['next','reward'].reshape(-1)[terminal],rtol=1e-6,atol=1e-6):
+                raise ValueError('RETURN_TARGET_TERMINAL')
+            return value
+        model.loss._compute_target=realized_target
+        model._audit_return_target=True
 
 
 def algebra_audit(model, batch):

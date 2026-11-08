@@ -1,6 +1,9 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "FULL_TRAIN_CRITIC_CONFIRMATION_RUNNING",
+  "current_stage": "REALIZED_RETURN_CRITIC_ANCHOR_TESTING",
+  "full_train_critic_results": "../219_FULL_TRAIN_CRITIC_RESULTS.md",
+  "full_train_critic_terminal": {"completed_at": "2026-11-08T16:59:15.933717+00:00", "seconds": 250.35534690099303, "verified_files": 8, "actor_unchanged": true, "model_promoted": false},
+  "return_anchor_design": "../220_REALIZED_RETURN_CRITIC_ANCHOR.md",
   "full_train_critic_design": "../218_FULL_TRAIN_CRITIC_CONFIRMATION.md",
   "full_train_critic_identity": "7a82b3f3f1a963e9a09bbf560a9350965edf7b8df11080a4af2b34e75baeb754",
   "full_train_critic_runtime": "bf44f2b9",

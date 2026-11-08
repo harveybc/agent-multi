@@ -81,7 +81,9 @@ def measure(model, batch, panel):
         if getattr(model,'_audit_mean_target',False):
             components['residual'] -= components['minimum_twin_penalty']
             components['minimum_twin_penalty'] = torch.zeros_like(components['residual'])
-        residual_roundoff = verify_backup_identity(components,chosen.mean(0),expected)
+        bootstrap_expected=(model._audit_bootstrap_target(batch.clone())
+                            if getattr(model,'_audit_return_target',False) else expected)
+        residual_roundoff = verify_backup_identity(components,chosen.mean(0),bootstrap_expected)
         q_chunks=[]
         for first in range(0,len(panel['features']),256):
             q_chunks.append(model.q_surfaces(panel['features'][first:first+256]).cpu())
@@ -92,19 +94,30 @@ def measure(model, batch, panel):
         for seed,reference in panel.get('alternate',{}).items():
             qa=panel_surface.gather(-1,reference['action'].reshape(1,-1,1).expand(2,-1,1)).squeeze(-1).min(0).values
             alternate[str(seed)]=calibration(qa.numpy(),reference['returns'])
+            alternate[str(seed)]['error_summary']=summary(qa.numpy()-reference['returns'])
+        primary=calibration(panel_q.numpy(),panel['returns'])
+        primary['error_summary']=summary(panel_q.numpy()-panel['returns'])
         return dict(residual_roundoff_max=residual_roundoff,
             backup_components={k:summary(v.cpu().numpy()) for k,v in components.items()},
             online_eval_q=summary(q.cpu().numpy()),target_q=summary(tq.cpu().numpy()),
-            bellman_target=summary(expected.cpu().numpy()),
-            eval_td_error=summary((chosen-expected).cpu().numpy()),
+            bellman_target=summary(bootstrap_expected.cpu().numpy()),
+            eval_td_error=summary((chosen-bootstrap_expected).cpu().numpy()),
+            training_target=summary(expected.cpu().numpy()),
+            training_target_kind='realized_soft_return' if getattr(model,'_audit_return_target',False) else 'bootstrap',
+            training_target_error=summary((chosen-expected).cpu().numpy()),
             train_minus_eval_q=summary((samples.mean(0)-q).cpu().numpy()),
             dropout_std=summary(samples.std(0).cpu().numpy()),
             alternate_policy_trajectories=alternate,
-            fixed_policy_train_panel=calibration(panel_q.numpy(),panel['returns']))
+            fixed_policy_train_panel=primary)
 
 
 def run(args):
     started = time.monotonic()
+    if args.return_anchor:
+        if not args.full_train_replay or args.start_epoch!=40 or args.anchor_control is None:
+            raise ValueError('RETURN_ANCHOR_CONTRACT')
+    elif args.anchor_control is not None or args.updates!=1024:
+        raise ValueError('EXTENDED_BUDGET_ANCHOR_ONLY')
     configure(7)
     torch.backends.cudnn.allow_tf32 = False
     if not torch.cuda.is_available():raise ValueError('CRITIC_AUDIT_GPU_REQUIRED')
@@ -116,6 +129,8 @@ def run(args):
         raise ValueError('CRITIC_AUDIT_SUPPORT')
     replay_receipt = verify_collection(args.replay)
     return_receipt = verify_collection(args.calibration)
+    anchor_receipt=verify_collection(args.anchor_control) if args.return_anchor else None
+    anchor_config=read(args.anchor_control/'CONFIG.json') if args.return_anchor else None
     meta = read(args.replay/'TRAIN_REPLAY.json')
     bundle = args.source/'runs/seed_7/bundles/epoch_0000'
     if meta['source_checkpoint_sha256'] != file_sha(bundle/'model.pt'):
@@ -156,7 +171,8 @@ def run(args):
         trace=read(folder/'ACTIONS.json')
         expected_count=read(args.source/'PREFLIGHT.json')['periods']['TRAIN']['decision_count']
         if len(trace)!=expected_count or len(rows)!=expected_count:raise ValueError('FULL_REPLAY_COUNT')
-        receipt_path=args.output/'FULL_TRAIN_REPLAY.json';replay_path=args.output/'FULL_TRAIN_REPLAY.pt'
+        cache=args.anchor_control if args.return_anchor else args.output
+        receipt_path=cache/'FULL_TRAIN_REPLAY.json';replay_path=cache/'FULL_TRAIN_REPLAY.pt'
         if receipt_path.exists():
             full_receipt=read(receipt_path)
             if (full_receipt['sha256']!=file_sha(replay_path) or
@@ -179,13 +195,25 @@ def run(args):
                 source_trace_sha256=file_sha(folder/'ACTIONS.json'),period='TRAIN',sampling_seed=7,
                 source_checkpoint_sha256=snapshots[40][1],account_net_profit_usd=expected['net_profit_usd'])
             write(receipt_path,full_receipt)
-    schedule = (covering_schedule(len(replay),1024,128,7) if args.full_train_replay else
+    if args.return_anchor:
+        if (anchor_config['source_identity']!=spec['identity'] or
+                anchor_config['return_identity']!=return_receipt['identity'] or
+                anchor_config['snapshot_sha256']['40']!=snapshots[40][1] or
+                anchor_config['full_train_replay']!=full_receipt or
+                anchor_config['updates']!=1024 or anchor_config['batch_size']!=128):
+            raise ValueError('RETURN_ANCHOR_CONTROL_IDENTITY')
+        replay['realized_soft_return']=torch.tensor(z['soft_return'],dtype=torch.float32).reshape(-1,1)
+    schedule = (covering_schedule(len(replay),args.updates,128,7) if args.full_train_replay else
                 np.random.default_rng(7).integers(0,len(replay),size=(1024,128)))
+    if args.return_anchor and digest(schedule[:1024].tolist())!=anchor_config['schedule_sha256']:
+        raise ValueError('RETURN_ANCHOR_SCHEDULE_PREFIX')
     config = dict(source_identity=spec['identity'],initial_sha256=file_sha(bundle/'model.pt'),
         replay_identity=replay_receipt['identity'],return_identity=return_receipt['identity'],
         snapshot_sha256={str(e):h for e,(_,h) in snapshots.items()},
         schedule_sha256=digest(schedule.tolist()),arms=list(ARMS),points=list(POINTS),
-        train_panel_rows=len(rows),train_panel_seed=7,updates=1024,batch_size=128,
+        train_panel_rows=len(rows),train_panel_seed=7,updates=args.updates,batch_size=128,
+        anchor_control_identity=anchor_receipt['identity'] if anchor_receipt else None,
+        replay_with_targets_digest=tensor_digest(replay) if args.return_anchor else None,
         full_train_replay=full_receipt,schedule_unique_rows=len(np.unique(schedule)),
         sources={n:file_sha(ROOT/n) for n in ('app/fixed_actor_critic_audit.py',
             'tools/audit_fixed_actor_critics.py','agent_plugins/three_signal_sac.py',
@@ -197,6 +225,9 @@ def run(args):
     elif args.start_epoch==40:
         config.update(arms=['production','mean_target'],
             scope='exploratory epoch40 paired twin-minimum ablation; actor40 fixed; no promotion')
+    if args.return_anchor:
+        config.update(arms=['return_anchor'],points=sorted(set(POINTS)|{2048,args.updates}) if args.updates>1024 else list(POINTS),
+            scope='realized TRAIN return critic anchor; actor40 fixed; no promotion')
     config['identity'] = digest(config)
     if (args.output/'CONFIG.json').exists() and read(args.output/'CONFIG.json') != config:
         raise ValueError('CRITIC_AUDIT_CONFIG_CHANGED')
@@ -236,17 +267,17 @@ def run(args):
         with torch.no_grad():actor=model.surfaces(panel['features'][:512]).clone()
         record=dict(identity=config['identity'],arm=arm,points=[])
         targets = {k:v.clone() for k,v in model.loss.target_qvalue_network_params.items(True,True)}
-        for step in range(1025):
+        for step in range(config['updates']+1):
             if step and arm != 'no_update':
                 batch=replay[schedule[step-1]].to('cuda')
-                if step in (1,1024):
+                if step in (1,1024,config['updates']):
                     update=checked_update(model,batch,arm)
                 else:
                     update=model.update(batch)
                     if arm=='fixed_target':
                         with torch.no_grad():
                             for k,v in targets.items():model.loss.target_qvalue_network_params[k].copy_(v)
-            if step in POINTS:
+            if step in config['points']:
                 verify_frozen_state(model,frozen)
                 with torch.no_grad():
                     if not torch.equal(actor,model.surfaces(panel['features'][:512])):
@@ -264,6 +295,8 @@ def run(args):
                     actor_exact=True,frozen_parameters_exact=True,
                     update=None if not step or arm=='no_update' else update)
                 record['points'].append(result)
+                if args.return_anchor and step in (1024,config['updates']):
+                    model.save(args.output/f'DIAGNOSTIC_CRITIC_{step:04d}.pt')
                 write(args.output/(arm+'.progress.json'),record)
                 progress('CRITIC_INTERVENTIONS',arm=arm,updates=step,completed_arms=list(records))
         write(destination,record);records[arm]=record;del model
@@ -282,6 +315,9 @@ def main():
     parser.add_argument('--inspection-only',action='store_true')
     parser.add_argument('--start-epoch',type=int,choices=[0,40],default=0)
     parser.add_argument('--full-train-replay',action='store_true')
+    parser.add_argument('--return-anchor',action='store_true')
+    parser.add_argument('--anchor-control',type=Path)
+    parser.add_argument('--updates',type=int,choices=[1024,4096],default=1024)
     args=parser.parse_args();args.output.mkdir(parents=True,exist_ok=True)
     with (args.output/'worker.lock').open('a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)

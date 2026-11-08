@@ -117,6 +117,40 @@ def test_covering_schedule_visits_every_row_and_reproduces():
     assert a.shape==(5,8) and set(a.ravel())==set(range(23))
     assert np.array_equal(a,covering_schedule(23,5,8,7))
     with pytest.raises(ValueError):covering_schedule(100,5,8,7)
+    assert np.array_equal(a,covering_schedule(23,20,8,7)[:5])
+
+
+def test_realized_return_target_is_detached_terminal_checked_and_actor_frozen():
+    from app.fixed_actor_critic_audit import configure_arm, checked_update
+    model,batch=fixture_model()
+    returns=torch.ones(8,1);returns[4:]=batch['next','reward'][4:]
+    batch['realized_soft_return']=returns.requires_grad_()
+    configure_arm(model,'return_anchor')
+    result=model.loss._compute_target(batch)
+    assert not result.requires_grad and torch.equal(result,returns.reshape(-1))
+    actor={n:p.clone() for n,p in model.loss.named_parameters() if n.startswith('actor_')}
+    checked_update(model,batch,'return_anchor')
+    assert all(torch.equal(v,dict(model.loss.named_parameters())[n]) for n,v in actor.items())
+    assert batch['realized_soft_return'].grad is None
+    with torch.no_grad():batch['realized_soft_return'][-1]=99.
+    with pytest.raises(ValueError,match='RETURN_TARGET_TERMINAL'):model.loss._compute_target(batch)
+    batch.del_('realized_soft_return')
+    with pytest.raises(ValueError,match='RETURN_TARGET_MISSING'):model.loss._compute_target(batch)
+
+
+def test_anchor_measure_separates_training_label_from_bootstrap():
+    from app.fixed_actor_critic_audit import configure_arm
+    from tools.audit_fixed_actor_critics import measure
+    model,batch=fixture_model()
+    labels=batch['next','reward'].clone();labels[:4]=2.
+    batch['realized_soft_return']=labels
+    configure_arm(model,'return_anchor')
+    panel=dict(features=batch['features'],action=batch['action'],returns=labels.reshape(-1).numpy())
+    result=measure(model,batch,panel)
+    assert result['training_target_kind']=='realized_soft_return'
+    assert result['training_target']['mean']==float(labels.double().mean())
+    assert result['training_target']['mean']!=result['bellman_target']['mean']
+    assert result['fixed_policy_train_panel']['error_summary']['n']==8
 
 
 def test_native_full_replay_preserves_terminal_and_rejects_bad_receipt():
