@@ -26,10 +26,14 @@ def test_inactive_checkpoint_never_becomes_best_or_resets_patience():
     assert p.observe(0.,100.,eligible=False)['stop']
 
 
-def test_projection_preserves_actor_twins_targets_and_retained_tensors(tmp_path):
+@pytest.mark.parametrize('attention',[False,True])
+def test_projection_preserves_actor_twins_targets_and_retained_tensors(tmp_path,attention):
     from app.selected_warm_start import transfer_selected, configure_head_only, target_surfaces
     torch.set_num_threads(1)
-    source=ThreeSignalSAC(probe_recipe(),critic_regularization={'kind':'core_dropout','p':.1})
+    architecture=({'temporal_attention':dict(kind='causal_patch',patch_len=3,
+        embedding=8,heads=2,feedforward=16)} if attention else {})
+    source=ThreeSignalSAC(probe_recipe(),architecture=architecture,
+        critic_regularization={'kind':'core_dropout','p':.1})
     recipe=subset_recipe(source.recipe,['y'])
     dest=build_model(recipe,dict(source.effective,learning_rate=3e-5))
     report=transfer_selected(source,dest)
@@ -55,7 +59,18 @@ def test_projection_preserves_actor_twins_targets_and_retained_tensors(tmp_path)
     assert any(not torch.equal(v,after[k]) for k,v in before.items() if '.head.' in k)
     export_bundle(tmp_path/'bundle',dest,x[:,:,1:].numpy(),{'epoch':0})
     restored,_=load_bundle(tmp_path/'bundle')
+    assert {n:p.requires_grad for n,p in restored.loss.named_parameters()}=={
+        n:p.requires_grad for n,p in dest.loss.named_parameters()}
     with torch.no_grad(): assert torch.equal(restored.surfaces(x[:,:,1:]),dest.surfaces(x[:,:,1:]))
+
+
+def test_checkpoint_rejects_invalid_trainability_and_accepts_legacy(tmp_path):
+    model=ThreeSignalSAC(probe_recipe());path=tmp_path/'model.pt';model.save(path)
+    state=torch.load(path,weights_only=False)
+    state['trainability']['unexpected']=False;torch.save(state,path)
+    with pytest.raises(ValueError,match='THREE_SIGNAL_TRAINABILITY'):model.load(path)
+    state.pop('trainability');torch.save(state,path)
+    model.load(path)
 
 
 def test_warmstart_epoch_zero_survives_inactive_training(tmp_path):

@@ -132,7 +132,8 @@ class ThreeSignalSAC(CurveSAC):
     def save(self, path):
         torch.save(dict(codec='NOP_BUY_SELL_CLOSE_OPPOSITE_V1',loss=self.loss.state_dict(),
             optimizer=self.optimizer.state_dict(),recipe_identity=self.recipe['identity'],
-            effective=self.effective),path)
+            effective=self.effective,
+            trainability={n:p.requires_grad for n,p in self.loss.named_parameters()}),path)
 
     def load(self, path):
         state = torch.load(path,map_location=self.device,weights_only=False)
@@ -140,4 +141,14 @@ class ThreeSignalSAC(CurveSAC):
             raise ValueError('THREE_SIGNAL_CHECKPOINT')
         if 'effective' in state and state['effective'] != self.effective:
             raise ValueError('THREE_SIGNAL_EFFECTIVE_CONFIG_CHANGED')
+        params=dict(self.loss.named_parameters())
+        trainability=state.get('trainability')
+        if trainability is not None:
+            if (set(trainability)!=set(params) or
+                    any(type(v) is not bool for v in trainability.values())):
+                raise ValueError('THREE_SIGNAL_TRAINABILITY')
         self.loss.load_state_dict(state['loss']); self.optimizer.load_state_dict(state['optimizer'])
+        # Freezing can change attention dispatch even in inference mode. Restore
+        # it as part of the checkpoint, not just as a training preference.
+        if trainability is not None:
+            for name,param in params.items():param.requires_grad_(trainability[name])
