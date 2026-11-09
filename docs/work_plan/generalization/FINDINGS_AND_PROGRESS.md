@@ -45,3 +45,15 @@ joint SAC remain questions for the controlled probe, not closed conclusions.
 
 Implementation and next experiment:[230](../230_CRITIC_REFINEMENT_POLICY_AND_PROBE.md).
 Original checkpoints and invalid/superseded evidence are not silently overwritten.
+
+## 2026-11-09: Exact Attribution Of Paired-Greedy Improvement
+
+F-RANKING-UPLIFT-ATTRIBUTED: [236](../236_RANKING_ATTRIBUTION_AND_REPLICATION.md)
+replayed both full accounts and reconciled native chronological interventions
+with zero error in all four reference/period contrasts. Validation uplift versus
+unchanged70 is+80.783650 USD from five nonzero changes, all SELL-to-NOP while
+flat: three helpful, two harmful. This is an entry-selection change, not evidence
+that early closing was repaired. Versus matched control32, validation improves
+190.262400 USD while TRAIN falls66.881150 USD. Two prespecified correction-seed
+replications and the entropy-separated stochastic arm now run automatically;
+neither dates nor labels are adapted to these attribution results.

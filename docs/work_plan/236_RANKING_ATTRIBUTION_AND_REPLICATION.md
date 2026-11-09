@@ -83,3 +83,26 @@ are the current execution authority, with per-replica shard and fit receipts.
 Pre-measurement estimate for the entire queue:35-50 minutes from launch,
 using measured prior shard runtimes,5:2 ownership and the additional fifth arm.
 This estimate is replaced by actual progress, not treated as an execution result.
+
+## Completed Attribution
+
+Finished2026-11-09T16:12:12Z in43.49 seconds; six JSON artifacts authenticated.
+Identity:`d2b104c63eada90fe49113339795ac1d83c02fa433d85d5ec992b6ec6e9145bb`.
+RESULT SHA256:`472e60f95d94226ec8fa379e392215538dcf4213e10679ccbc5588b6fc9855a7`.
+
+| Period | Reference | Changed signals | Nonzero chronological effects | Net difference USD | Reconciliation error USD |
+|---|---|---:|---:|---:|---:|
+| TRAIN | Unchanged70 |38|12|+6.360405|0|
+| TRAIN | Control32 |57|13|-66.881150|0|
+| VALIDATION | Unchanged70 |18|5|+80.783650|0|
+| VALIDATION | Control32 |32|8|+190.262400|0|
+
+All five economically effective validation changes versus unchanged70 are
+SELL-to-NOP while flat, not new early closes. Their chronological full-account
+effects are-0.606955,+77.522480,-52.289140,+0.576995,+55.580270 USD.
+These are complete-suffix effects, including later opportunities and sizing,
+not five isolated trade profits. Attribution order is chronological, not Shapley.
+Three changes help and two hurt. The correction improves the aggregate despite
+discarding a useful opening too; this does not prove universally better ranking.
+The two replication sets proceeded automatically without selecting or excluding
+dates from this attribution. Their outcomes are not available in this receipt.
