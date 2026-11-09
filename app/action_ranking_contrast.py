@@ -9,6 +9,32 @@ from tensordict import TensorDict
 from agent_plugins.sac_critic_regularization import module_mode
 
 
+def replication_design(name='original'):
+    base=dict(replica=name,anchor_seed=41,update_seed=7,chosen_action_seed=101,
+        seeds=[7,19,43,73],shard_weights=[1,1],
+        arms=['control','chosen_stochastic','paired_stochastic','paired_greedy'])
+    if name=='original':return base
+    variants={
+        'r19':dict(anchor_seed=101,update_seed=19,chosen_action_seed=751,seeds=[101,103,107,109]),
+        'r43':dict(anchor_seed=149,update_seed=43,chosen_action_seed=857,seeds=[211,223,227,229]),
+    }
+    if name not in variants:raise ValueError('RANKING_REPLICA')
+    return base|variants[name]|dict(shard_weights=[5,2],arms=base['arms']+['paired_stochastic_reward'])
+
+
+def shard_owner(index,weights):
+    if (len(weights)!=2 or any(type(v) is not int or v<1 for v in weights)
+            or type(index) is not int or index<0):raise ValueError('RANKING_SHARD_WEIGHTS')
+    return int(index%sum(weights)>=weights[0])
+
+
+def calibration_target(arm,greedy,stochastic,plain):
+    if arm=='paired_greedy':return greedy
+    if arm=='paired_stochastic_reward':return plain.mean(1)
+    if arm in ('control','chosen_stochastic','paired_stochastic'):return stochastic.mean(1)
+    raise ValueError('RANKING_ARM')
+
+
 def differentiable_q(model,features):
     # The inspection q_surfaces API installs parameter views for inference.
     # Native functional execution keeps gradients attached to optimizer tensors.

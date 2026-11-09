@@ -35,7 +35,7 @@ def export(root,output):
     for arm,value in result['arms'].items():
         for point in value['calibration']:
             for role in ('fit','monitor'):
-                for target in ('greedy','stochastic'):
+                for target in point['metrics'][role]['all']:
                     metrics=point['metrics'][role]['all'][target]
                     calibration.append(dict(arm=arm,updates=point['updates'],role=role,target=target,
                         **{k:metrics[k] for k in ('rmse','pairwise_accuracy','mean_regret','pairwise_comparisons')}))
@@ -44,8 +44,9 @@ def export(root,output):
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
-    fig,axes=plt.subplots(2,2,figsize=(12,8))
-    for ax,(role,target) in zip(axes.flat,[(r,t) for r in ('fit','monitor') for t in ('stochastic','greedy')]):
+    targets=sorted({r['target'] for r in calibration})
+    fig,axes=plt.subplots(2,len(targets),figsize=(6*len(targets),8))
+    for ax,(role,target) in zip(axes.flat,[(r,t) for r in ('fit','monitor') for t in targets]):
         for arm in result['arms']:
             selected=[r for r in calibration if r['arm']==arm and r['role']==role and r['target']==target]
             x=[r['updates'] for r in selected];y=[r['mean_regret'] for r in selected]

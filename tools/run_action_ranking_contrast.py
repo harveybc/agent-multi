@@ -10,7 +10,8 @@ import time
 import numpy as np
 import torch
 
-from app.action_ranking_contrast import select_anchors, target_loss, ranking_metrics, differentiable_q
+from app.action_ranking_contrast import (select_anchors, target_loss, ranking_metrics, differentiable_q,
+    replication_design,shard_owner,calibration_target)
 from app.actor_learning_diagnostics import clear_optimizer_memory
 from app.critic_refinement import sync_targets
 from app.decision_attribution import continuation
@@ -50,9 +51,8 @@ def prepare(args):
     if ac['probe']!=probe['identity'] or ac['source']!=spec['identity'] or pc['source_identity']!=spec['identity']:
         raise ValueError('RANKING_PARENT_CHAIN')
     config=dict(source_identity=spec['identity'],probe_identity=probe['identity'],
-        attribution_identity=attribution['identity'],seeds=list(SEEDS),arms=list(ARMS),
+        attribution_identity=attribution['identity'],**replication_design(getattr(args,'replica','original')),
         updates=4096,batch_size=128,actor_updates=[1,8,32],per_stratum=32,fit_per_stratum=24,
-        anchor_seed=41,chosen_action_seed=101,
         sources={n:file_sha(ROOT/n) for n in SOURCES})
     config['identity']=digest(config)
     market=market_for(args.source,spec)
@@ -84,7 +84,7 @@ def panel(args):
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);ensure_config(out,config)
         if (out/'DONE.json').exists():verify_collection(out);return
         trace=read(args.probe/'reference/TRAIN/ACTIONS.json')
-        cohort=select_anchors(trace,32,24,41)
+        cohort=select_anchors(trace,32,24,config['anchor_seed'])
         if {r['year'] for r in cohort}!={2020,2021,2022,2023}:
             raise ValueError('RANKING_FOUR_TRAIN_YEARS')
         indices=np.searchsorted(market.inputs.row_ts_ns,[r['timestamp'] for r in trace])
@@ -93,12 +93,12 @@ def panel(args):
         signals=prepared_signals(logits)[0]
         if not np.array_equal(signals[indices],[r['signal'] for r in trace]):
             raise ValueError('RANKING_REFERENCE_ACTIONS')
-        chosen,_=policy_signals(logits,101)
+        chosen,_=policy_signals(logits,config['chosen_action_seed'])
         for j,r in enumerate(cohort):
             r['id']=j;r['row']=int(indices[r['trace_index']]);r['chosen_action']=int(chosen[0][r['row']])
         write(out/'COHORT.json',cohort)
-        selected={r['trace_index']:r for r in cohort if r['id']%2==args.shard}
-        tapes={s:policy_signals(logits,s) for s in SEEDS}
+        selected={r['trace_index']:r for r in cohort if shard_owner(r['id'],config['shard_weights'])==args.shard}
+        tapes={s:policy_signals(logits,s) for s in config['seeds']}
         risk=read(args.source/'RISK.json')
         env=environment(market,risk,spec['design']['horizon'],market.recipe['split']['periods']['TRAIN'],spec['effective']['gamma'])
         env.reset();reference=read(args.probe/'reference/TRAIN/METRICS.json')['net_profit_usd'];done=0
@@ -112,7 +112,7 @@ def panel(args):
                             or record['sha256']!=digest(record['results'])):
                         raise ValueError('RANKING_CACHED_ROW')
                 else:
-                    result={'greedy':[], 'stochastic':{str(s):[] for s in SEEDS}}
+                    result={'greedy':[], 'stochastic':{str(s):[] for s in config['seeds']}}
                     for a in range(3):
                         result['greedy'].append(continuation(env,signals,a))
                         for s,(prepared,probs) in tapes.items():
@@ -129,7 +129,7 @@ def panel(args):
         seal(out,config['identity'],start);progress(out,start,'COMPLETE',completed=done,total=len(selected))
 
 
-def load_panel(root,identity):
+def load_panel(root,identity,seeds=SEEDS,weights=(1,1)):
     rows=[];cohort=None
     for shard in range(2):
         p=root/f'shard_{shard}';receipt=verify_collection(p)
@@ -137,7 +137,7 @@ def load_panel(root,identity):
         c=read(p/'COHORT.json')
         if cohort is not None and cohort!=c:raise ValueError('RANKING_COHORT_MISMATCH')
         cohort=c
-        expected={r['id'] for r in cohort if r['id']%2==shard};actual=set()
+        expected={r['id'] for r in cohort if shard_owner(r['id'],weights)==shard};actual=set()
         for f in sorted((p/'rows').glob('*.json')):
             row=read(f);idx=row['anchor']['id']
             if (idx in actual or idx not in expected or row['anchor']!=cohort[idx]
@@ -148,14 +148,14 @@ def load_panel(root,identity):
     rows.sort(key=lambda x:x['anchor']['id'])
     if len(rows)!=len(cohort):raise ValueError('RANKING_PANEL_COVERAGE')
     greedy=np.array([[v['reward_return'] for v in r['results']['greedy']] for r in rows])
-    stochastic=np.array([[[v['soft_return'] for v in r['results']['stochastic'][str(s)]] for s in SEEDS] for r in rows])
-    plain=np.array([[[v['reward_return'] for v in r['results']['stochastic'][str(s)]] for s in SEEDS] for r in rows])
+    stochastic=np.array([[[v['soft_return'] for v in r['results']['stochastic'][str(s)]] for s in seeds] for r in rows])
+    plain=np.array([[[v['reward_return'] for v in r['results']['stochastic'][str(s)]] for s in seeds] for r in rows])
     if not all(np.isfinite(x).all() for x in (greedy,stochastic,plain)):
         raise ValueError('RANKING_LABEL_FINITE')
     return cohort,greedy,stochastic,plain
 
 
-def panel_metrics(model,features,cohort,greedy,stochastic):
+def panel_metrics(model,features,cohort,greedy,stochastic,plain=None):
     with torch.no_grad():
         q=torch.cat([model.q_surfaces(features[i:i+128]).min(0).values for i in range(0,len(features),128)]).cpu().numpy()
     result={}
@@ -167,6 +167,8 @@ def panel_metrics(model,features,cohort,greedy,stochastic):
             if not mask.any():raise ValueError('RANKING_EMPTY_DIAGNOSTIC_GROUP')
             result[role][group]=dict(greedy=ranking_metrics(q[mask],greedy[mask]),
                 stochastic=ranking_metrics(q[mask],stochastic.mean(1)[mask]))
+            if plain is not None:
+                result[role][group]['stochastic_reward_only']=ranking_metrics(q[mask],plain.mean(1)[mask])
     return result
 
 
@@ -179,7 +181,7 @@ def fit(args):
     with (out/'worker.lock').open('a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         if (out/'DONE.json').exists():verify_collection(out);return
-        cohort,greedy,stochastic,plain=load_panel(args.output,config['identity'])
+        cohort,greedy,stochastic,plain=load_panel(args.output,config['identity'],config['seeds'],config['shard_weights'])
         write(out/'PANEL.json',dict(anchors=len(cohort),fit=sum(r['role']=='fit' for r in cohort),
             monitor=sum(r['role']=='monitor' for r in cohort),cohort_sha256=digest(cohort),
             mean_future_entropy_contribution=float((stochastic-plain).mean()),
@@ -196,22 +198,22 @@ def fit(args):
         if len(replay)!=read(args.source/'PREFLIGHT.json')['periods']['TRAIN']['decision_count']:
             raise ValueError('RANKING_FULL_TRAIN_REPLAY')
         write(out/'REPLAY.json',receipt)
-        actor_schedule=covering_schedule(len(replay),4096,128,7)
+        actor_schedule=covering_schedule(len(replay),4096,128,config['update_seed'])
         fit_ix=np.array([i for i,r in enumerate(cohort) if r['role']=='fit'])
-        schedule=fit_ix[covering_schedule(len(fit_ix),4096,128,7)]
+        schedule=fit_ix[covering_schedule(len(fit_ix),4096,128,config['update_seed'])]
         write(out/'SCHEDULE.json',dict(critic_sha256=digest(schedule.tolist()),actor_sha256=digest(actor_schedule.tolist())))
         features=torch.tensor(market.inputs.windows[[r['row'] for r in cohort]],device='cuda')
         chosen=torch.tensor([r['chosen_action'] for r in cohort],device='cuda',dtype=torch.int64)
         bundle=args.source/'runs/seed_7/bundles/epoch_0000';results={}
-        for arm in ARMS:
+        for arm in config['arms']:
             lane=out/arm;lane.mkdir(exist_ok=True)
             if (lane/'DONE.json').exists():
                 if verify_collection(lane)['identity']!=config['identity']:raise ValueError('RANKING_ARM_IDENTITY')
                 results[arm]=read(lane/'RESULT.json');continue
             model,_=load_bundle(bundle,'cuda');model.load(args.probe/'fresh/CALIBRATED.pt')
-            set_arm(model,'critic_only');clear_optimizer_memory(model.optimizer);reset_learning_rng(7)
+            set_arm(model,'critic_only');clear_optimizer_memory(model.optimizer);reset_learning_rng(config['update_seed'])
             frozen=frozen_state(model);initial_head={n:p.detach().clone() for n,p in model.loss.named_parameters() if p.requires_grad}
-            target=torch.tensor(greedy if arm=='paired_greedy' else stochastic.mean(1),device='cuda',dtype=torch.float32)
+            target=torch.tensor(calibration_target(arm,greedy,stochastic,plain),device='cuda',dtype=torch.float32)
             points=[]
             for step in range((0 if arm=='control' else 4096)+1):
                 if step:
@@ -224,22 +226,26 @@ def fit(args):
                     verify_frozen_state(model,frozen)
                     moved=sum(not torch.equal(p,initial_head[n]) for n,p in model.loss.named_parameters() if n in initial_head)
                     if step and not moved:raise ValueError('RANKING_CRITIC_DID_NOT_MOVE')
-                    point=dict(updates=step,head_tensors_changed=moved,metrics=panel_metrics(model,features,cohort,greedy,stochastic))
+                    point=dict(updates=step,head_tensors_changed=moved,metrics=panel_metrics(model,features,cohort,greedy,stochastic,plain))
                     points.append(point);write(lane/'CALIBRATION.json',points)
                     progress(out,start,'CALIBRATE',arm=arm,updates=step)
             sync_targets(model);model.save(lane/'CALIBRATED.pt')
             # Native actor updates are paired; no correction-fit optimizer history enters them.
-            set_arm(model,'actor_only');clear_optimizer_memory(model.optimizer);reset_learning_rng(7)
+            set_arm(model,'actor_only');clear_optimizer_memory(model.optimizer);reset_learning_rng(config['update_seed'])
             frozen=frozen_state(model);accounts=[]
             reference_logits,_=emit(model,market.inputs)
             if not np.array_equal(reference_logits[np.isfinite(logits).all(1)],logits[np.isfinite(logits).all(1)]):
                 raise ValueError('RANKING_CALIBRATION_CHANGED_ACTOR')
+            if arm=='control':
+                zero=assess_full(model,market,risk,design)
+                for period in zero:account_equal(zero[period],read(args.probe/'REFERENCE.json')[period])
+                write(lane/'EPOCH_ZERO.json',dict(metrics=zero,source_exact=True))
             for step in range(1,33):
                 model.update(replay[actor_schedule[step-1]].to('cuda'))
                 if step in (1,8,32):
                     verify_frozen_state(model,frozen);progress(out,start,'ACTOR_ACCOUNTS',arm=arm,updates=step)
                     metrics=assess_full(model,market,risk,design,save=lane/f'actor_{step:04d}',diagnose=True)
-                    if arm=='control':
+                    if arm=='control' and config['update_seed']==7:
                         expected=read(args.probe/'fresh/RESULT.json')['accounts']
                         previous=next(x for x in expected if x['updates']==step)['metrics']
                         for period in metrics:account_equal(metrics[period],previous[period])
@@ -251,14 +257,16 @@ def fit(args):
             write(lane/'RESULT.json',results[arm]);seal(lane,config['identity'],start);del model
         if file_sha(bundle/'model.pt')!=read(args.probe/'CONFIG.json')['source_sha256']:
             raise ValueError('RANKING_SOURCE_MUTATED')
-        write(out/'RESULT.json',dict(identity=config['identity'],arms=results,control_reproduced=True,
+        write(out/'RESULT.json',dict(identity=config['identity'],arms=results,
+            original_seed7_endpoint_reproduced=True if config['update_seed']==7 else None,control_epoch_zero_exact=True,
+            control_reproduced=True if config['update_seed']==7 else None,replica=config['replica'],
             no_test=True,fit_train_only=True,model_promoted=False))
         seal(out,config['identity'],start);progress(out,start,'COMPLETE')
 
 
 def shared_args(args):
     return sum(([f'--{n.replace("_","-")}',str(getattr(args,n))]
-        for n in ('source','source_runtime','probe','attribution','calibration','output')),[])
+        for n in ('source','source_runtime','probe','attribution','calibration','output')),[])+['--replica',getattr(args,'replica','original')]
 
 
 def queue(args):
@@ -303,6 +311,7 @@ def main():
     for n in ('source','source-runtime','probe','attribution','calibration','output'):
         p.add_argument('--'+n,type=Path,required=True)
     p.add_argument('--shard',type=int,choices=(0,1));p.add_argument('--expected-device-name',default='NVIDIA GeForce RTX 5090')
+    p.add_argument('--replica',choices=('original','r19','r43'),default='original')
     p.add_argument('--worker-host');p.add_argument('--worker-runtime');p.add_argument('--worker-python');p.add_argument('--gpu-id')
     a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
     if a.stage=='panel' and a.shard is None:p.error('--shard required')

@@ -33,7 +33,12 @@ are corrected, followed by matched bounded actor updates; no automatic promotion
 Paired greedy/32 reaches VAL14.61633%,Sharpe2.205,204 trades versus matched
 control12.71370%. Disjoint diagnostic-anchor ranking did not improve clearly;
 preserve this candidate,attribute and replicate before claiming a general repair.
-The source69/70 champions remain unchanged; no training queue is still active.
+The source69/70 champions remain unchanged.
+
+[Followup236](236_RANKING_ATTRIBUTION_AND_REPLICATION.md) adds exact improvement
+attribution, two fixed correction-seed replications and a reward-only stochastic
+control. One sequential supervisor collects and reports every arm without
+automatic policy promotion; its live receipt is the execution status authority.
 
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
