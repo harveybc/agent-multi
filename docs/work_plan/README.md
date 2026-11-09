@@ -51,6 +51,12 @@ preservation comparison, native vs learning-rate/3 vs frozen-parent KL penalty,
 two paired seeds, full native accounts through256 updates. No feature or strategy
 changes. Source parity and reproduction of prior1/8/32 native endpoints required.
 
+[Results239](239_ACTOR_PRESERVATION_RESULTS.md): all six arms complete and449
+files authenticated. Parent KL reduces probability drift about97% versus native;
+both KL and lower rate improve final validation over their native controls,
+but neither consistently improves the unchanged parent. Sources preserved;
+no automatic promotion or active training remains in this bounded queue.
+
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
 [Feed review223](223_SELECTED70_FORWARD_CLOCK_REVIEW.md): previous four

@@ -69,3 +69,14 @@ removal alone is not a supported repair. Greedy diagnostic accuracy improves
 modestly, whereas diagnostic regret has mixed changes. Preserve the source
 weights and evaluate subsequent refinement against unchanged-parent accounts
 as well as matched-update controls. This is not an early-close repair finding.
+
+## 2026-11-09: Actor Anchoring Mitigates Drift
+
+F-ACTOR-ANCHOR: [239](../239_ACTOR_PRESERVATION_RESULTS.md) completed all six arms
+with native checkpoint parity in both seeds. Beta1 KL(parent || current) reduced
+mean validation probability drift about97%, changing11/26 greedy actions versus
+65/113 for native. Both KL and learning-rate/3 improve the final256-update
+validation return against their native controls, but fail to outperform the
+untouched parent in both seeds. This supports drift mitigation, not a resolved
+refinement or generalization mechanism. Preserve source weights and inspect
+residual harmful action changes from stored endpoints before further fitting.
