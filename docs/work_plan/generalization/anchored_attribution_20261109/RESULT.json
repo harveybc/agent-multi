@@ -1,0 +1,100 @@
+{
+  "accounts": [
+    {
+      "cash_delta_usd": 63.61938500000906,
+      "cash_reward_conflicts": 1,
+      "changed_signals": 35,
+      "effective_changes": 14,
+      "effective_parent_probability_margin_max": 0.02318048465003103,
+      "effects": {
+        "added_entry": 3,
+        "suppressed_close_command": 2,
+        "suppressed_entry": 9
+      },
+      "harmful": 7,
+      "helpful": 7,
+      "period": "TRAIN",
+      "q_reward_conflicts": 5,
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": 63.61938500000906,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "replica": "r19"
+    },
+    {
+      "cash_delta_usd": 24.88898999999583,
+      "cash_reward_conflicts": 0,
+      "changed_signals": 11,
+      "effective_changes": 3,
+      "effective_parent_probability_margin_max": 0.005109447058337768,
+      "effects": {
+        "added_entry": 1,
+        "suppressed_entry": 2
+      },
+      "harmful": 1,
+      "helpful": 2,
+      "period": "VALIDATION",
+      "q_reward_conflicts": 1,
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": 24.88898999999583,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "replica": "r19"
+    },
+    {
+      "cash_delta_usd": 76.05625000003783,
+      "cash_reward_conflicts": 0,
+      "changed_signals": 84,
+      "effective_changes": 24,
+      "effective_parent_probability_margin_max": 0.015189689487785374,
+      "effects": {
+        "added_entry": 5,
+        "changed_entry_direction": 1,
+        "suppressed_close_command": 2,
+        "suppressed_entry": 16
+      },
+      "harmful": 13,
+      "helpful": 11,
+      "period": "TRAIN",
+      "q_reward_conflicts": 14,
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": 76.05625000003783,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "replica": "r43"
+    },
+    {
+      "cash_delta_usd": -96.90428999999494,
+      "cash_reward_conflicts": 0,
+      "changed_signals": 26,
+      "effective_changes": 10,
+      "effective_parent_probability_margin_max": 0.05278113941614099,
+      "effects": {
+        "added_close_command": 1,
+        "added_entry": 3,
+        "suppressed_entry": 6
+      },
+      "harmful": 6,
+      "helpful": 4,
+      "period": "VALIDATION",
+      "q_reward_conflicts": 6,
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": -96.90428999999494,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "replica": "r43"
+    }
+  ],
+  "identity": "3482b7b783b891d552bdbd6438a8574c11be850ae7ba54e9971b9b825a18b523",
+  "model_promoted": false,
+  "optimizer_steps": 0,
+  "source_weights_unchanged": true
+}

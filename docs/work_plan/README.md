@@ -62,6 +62,12 @@ KL endpoint action changes in both seeds/periods, reconcile native account effec
 and compare same-state reward gaps with critic ordering and actor margins.
 No training, new strategy thresholds or source checkpoint replacement.
 
+[Results241](241_ANCHORED_ACTION_ATTRIBUTION_RESULTS.md):156 changed decisions,
+624 native suffixes, four account reconciliations with zero error. Six of seven
+harmful validation occurrences have wrong critic action ordering; one actor
+change is contrary to critic preference. Small mean KL does not prevent local
+class changes. No validation-fitted filter, source replacement or training.
+
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
 [Feed review223](223_SELECTED70_FORWARD_CLOCK_REVIEW.md): previous four

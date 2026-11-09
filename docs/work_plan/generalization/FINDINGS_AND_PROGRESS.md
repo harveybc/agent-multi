@@ -80,3 +80,16 @@ validation return against their native controls, but fail to outperform the
 untouched parent in both seeds. This supports drift mitigation, not a resolved
 refinement or generalization mechanism. Preserve source weights and inspect
 residual harmful action changes from stored endpoints before further fitting.
+
+## 2026-11-09: Residual Anchored Losses Attributed Exactly
+
+F-ANCHORED-ORDERING: [241](../241_ANCHORED_ACTION_ATTRIBUTION_RESULTS.md) reconciles
+all four account differences exactly using624 suffix simulations. Among seven
+harmful validation event occurrences, six are favored by the minimum-twin
+critic despite negative matched realized discounted advantage. One NOP-to-BUY
+change occurs against critic preference. Twin disagreement covers4/7 harmful
+events but three are favored by both twins; consensus is not a sufficient fix.
+Small average KL hides local changes and not all affected rows are near ties.
+In this validation event panel cash and discounted-reward signs agree, so a
+different fitness is not indicated by that explanation. No training, new input,
+source mutation or validation-fitted margin threshold occurred.
