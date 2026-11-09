@@ -17,6 +17,7 @@ from app.three_signal_learning import environment
 from app.frozen_recipe_inputs import file_sha
 from app.rl_subset import digest, support_hash
 from agent_plugins.sac_critic_regularization import module_mode
+from app.actor_learning_diagnostics import clear_optimizer_memory
 from tools.diagnose_warmstart_drift import tensor_digest, frozen_state, verify_frozen_state
 from tools.run_discrete_curve_probe import read, write, configure, now, transition
 from tools.run_structural_sac_refit import authenticate, market_for
@@ -113,6 +114,9 @@ def measure(model, batch, panel):
 
 def run(args):
     started = time.monotonic()
+    reset_optimizer = getattr(args,'reset_optimizer',False)
+    if reset_optimizer and not args.return_anchor:
+        raise ValueError('OPTIMIZER_CONTRAST_REQUIRES_RETURN_ANCHOR')
     if args.return_anchor:
         if not args.full_train_replay or args.start_epoch!=40 or args.anchor_control is None:
             raise ValueError('RETURN_ANCHOR_CONTRACT')
@@ -219,6 +223,8 @@ def run(args):
             'tools/audit_fixed_actor_critics.py','agent_plugins/three_signal_sac.py',
             'agent_plugins/discrete_curve_sac.py','agent_plugins/sac_critic_regularization.py')},
         inspection_only=args.inspection_only,start_epoch=args.start_epoch,
+        reset_optimizer=reset_optimizer,
+        optimizer_diagnostic_sha256=file_sha(ROOT/'app/actor_learning_diagnostics.py'),
         scope='TRAIN-only critic-head interventions; fixed actor/alpha; no account promotion')
     if args.inspection_only:
         config.update(arms=[],points=[],updates=0,scope='read-only critic snapshot arithmetic; no updates')
@@ -232,7 +238,9 @@ def run(args):
     if (args.output/'CONFIG.json').exists() and read(args.output/'CONFIG.json') != config:
         raise ValueError('CRITIC_AUDIT_CONFIG_CHANGED')
     write(args.output/'CONFIG.json',config)
-    if (args.output/'DONE.json').exists():return
+    if (args.output/'DONE.json').exists():
+        verify_collection(args.output)
+        return
     def progress(stage,**fields):
         write(args.output/'PROGRESS.json',dict(identity=config['identity'],stage=stage,
             updated_at=now(),seconds=time.monotonic()-started,**fields))
@@ -262,10 +270,13 @@ def run(args):
             records[arm]=record;continue
         model,_=load_bundle(bundle,'cuda')
         if args.start_epoch:model.load(snapshots[args.start_epoch][0]/'model.pt')
-        configure_arm(model,arm);reset_learning_rng(7)
+        configure_arm(model,arm)
+        optimizer_reset = (clear_optimizer_memory(model.optimizer) if reset_optimizer else
+            dict(previous_states=len(model.optimizer.state),reset=False))
+        reset_learning_rng(7)
         frozen=frozen_state(model)
         with torch.no_grad():actor=model.surfaces(panel['features'][:512]).clone()
-        record=dict(identity=config['identity'],arm=arm,points=[])
+        record=dict(identity=config['identity'],arm=arm,points=[],optimizer_reset=optimizer_reset)
         targets = {k:v.clone() for k,v in model.loss.target_qvalue_network_params.items(True,True)}
         for step in range(config['updates']+1):
             if step and arm != 'no_update':
@@ -316,6 +327,7 @@ def main():
     parser.add_argument('--start-epoch',type=int,choices=[0,40],default=0)
     parser.add_argument('--full-train-replay',action='store_true')
     parser.add_argument('--return-anchor',action='store_true')
+    parser.add_argument('--reset-optimizer',action='store_true')
     parser.add_argument('--anchor-control',type=Path)
     parser.add_argument('--updates',type=int,choices=[1024,4096],default=1024)
     args=parser.parse_args();args.output.mkdir(parents=True,exist_ok=True)

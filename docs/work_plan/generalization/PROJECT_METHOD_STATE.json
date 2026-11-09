@@ -1,6 +1,7 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "PHASE2_SELECTED69_EXPORTED_WEIGHT_HEAD_INTERVENTIONS_COMPLETE",
+  "current_stage": "ACTOR_GRADIENT_OPTIMIZER_MEMORY_CONTRAST_IMPLEMENTED",
+  "actor_learning_contrast": {"design": "../226_ACTOR_GRADIENT_AND_OPTIMIZER_CONTRAST.md", "unit_tests_passed": 21, "gradient_snapshots": 3, "optimizer_arms": ["retained", "reset"], "updates_per_arm": 4096, "batch_size": 128, "source": "authenticated70_epoch40_for_failure_diagnosis", "selected69_unchanged": true, "training_launch_verified": false},
   "parallel_weight_space_design": "../224_PHASE2_AND_WEIGHT_SPACE_PARALLEL.md",
   "parallel_weight_space_results": "../225_PHASE2_69_AND_WEIGHT_SPACE_RESULTS.md",
   "selected69": {"selection_identity": "906c0dc6795b237722c12704b4fd243591a7e7b2d79244325d78dc223162a96e", "initial": 70, "after_deletion": 69, "after_reinsertion": 69, "groups": 28, "evaluations": 67, "train_return_pct": 10.792108450001816, "validation_return_pct": 14.591089649999939, "validation_trades": 206, "physical_export_complete": true, "action_disagreements": 0, "native_accounts_exact": true, "optimizer_steps": 0, "model_sha256": "8ab11f607dc18c53ce45b34dc628e21272767702d60e0bfbe272620761de4e40", "paper_promotion": false},
