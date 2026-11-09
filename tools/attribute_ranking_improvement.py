@@ -25,7 +25,12 @@ def account_check(env,metrics):
     return net
 
 
-def attribute_pair(make_env,row_timestamps,baseline,candidate,progress):
+def attribute_pair(make_env,row_timestamps,baseline,candidate,progress,calibration_signals=None):
+    if calibration_signals is not None:
+        calibration_signals=np.asarray(calibration_signals)
+        if (calibration_signals.shape!=(len(row_timestamps),)
+                or not np.isin(calibration_signals,[0,1,2]).all()):
+            raise ValueError('IMPROVEMENT_CALIBRATION_TAPE')
     traces=[read(p/'ACTIONS.json') for p in (baseline,candidate)]
     metrics=[read(p/'METRICS.json') for p in (baseline,candidate)]
     ts=np.array([r['timestamp'] for r in traces[0]],dtype=np.int64)
@@ -52,9 +57,14 @@ def attribute_pair(make_env,row_timestamps,baseline,candidate,progress):
             if abs(iso_old['net_usd']-reference)>1e-6 or abs(before['net_usd']-previous)>1e-6:
                 raise ValueError('IMPROVEMENT_CONTINUATION_CHAIN')
             contribution=after['net_usd']-before['net_usd'];previous=after['net_usd']
+            extra={}
+            if calibration_signals is not None:
+                extra=dict(isolated_state=state_view(snapshots[i]),
+                    calibration_old=continuation(snapshots[i],calibration_signals,old),
+                    calibration_new=continuation(snapshots[i],calibration_signals,new))
             events.append(dict(utc=pd.Timestamp(ts[i],tz='UTC').isoformat(),timestamp=int(ts[i]),
                 old_signal=old,new_signal=new,state=state_view(env),isolated_old=iso_old,isolated_new=iso_new,
-                prefix_old=before,prefix_new=after,contribution_usd=contribution))
+                prefix_old=before,prefix_new=after,contribution_usd=contribution,**extra))
             progress(events=len(events),total=len(changed))
         trace_check(env,row,row['signal'])
     new_net=account_check(env,metrics[1])

@@ -40,6 +40,23 @@ def event_metrics(event,parent,candidate,twins,alpha):
         cash_reward_sign_conflict=bool(cash*reward<0 and abs(cash)>1e-6 and abs(reward)>1e-8))
 
 
+def paired_event_metrics(event,parent,candidate,baseline_twins,candidate_twins,alpha):
+    """Keep account-policy and calibration-policy counterfactuals separate."""
+    current=event_metrics(event,parent,candidate,candidate_twins,alpha)
+    baseline=event_metrics(event,parent,candidate,baseline_twins,alpha)
+    gap=event['calibration_new']['reward_return']-event['calibration_old']['reward_return']
+    if not np.isfinite(gap):raise ValueError('PAIRED_CALIBRATION_GAP')
+    old,new=baseline['q_gap'],current['q_gap']
+    position=event['isolated_state']['position']
+    def conflict(q):return bool(abs(q)>1e-8 and abs(gap)>1e-8 and q*gap<0)
+    return dict(current,baseline_twins=baseline_twins.tolist(),baseline_q_gap=old,
+        baseline_twin_gaps=baseline['twin_gaps'],calibration_reward_gap=float(gap),
+        isolated_position=0 if position is None else position['direction'],
+        baseline_calibration_conflict=conflict(old),candidate_calibration_conflict=conflict(new),
+        baseline_gap_error=abs(old-gap),candidate_gap_error=abs(new-gap),
+        actor_change_against_candidate_q=bool(new< -1e-8))
+
+
 def summarize_events(rows):
     active=[r for r in rows if r['outcome']!='neutral']
     return dict(changed_signals=len(rows),effective_changes=len(active),

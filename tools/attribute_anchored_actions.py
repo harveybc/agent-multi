@@ -31,16 +31,17 @@ def check_trace(inputs,logits,trace):
         raise ValueError('ANCHORED_TRACE_PARITY')
 
 
-def export(root,accounts,events):
+def export(root,accounts,events,extra_keys=(),title='Anchored actor attribution'):
     keys=['replica','period','utc','old_signal','new_signal','position','effect','outcome','contribution_usd',
         'isolated_cash_gap','isolated_reward_gap','prefix_reward_gap','parent_pair_margin',
         'candidate_pair_margin','parent_probability_margin','candidate_probability_margin',
         'kl','q_gap','entropy_adjusted_parent_score_gap','q_reward_sign_conflict','cash_reward_sign_conflict']
+    keys+=list(extra_keys)
     with (root/'EVENTS.csv').open('w',newline='') as f:
         writer=csv.DictWriter(f,fieldnames=keys);writer.writeheader()
         writer.writerows({k:r[k] for k in keys} for r in events)
     write(root/'EVENTS.json',events)
-    lines=['# Anchored actor attribution','',
+    lines=['# '+title,'',
         'Retrospective diagnostics; no training, fitted thresholds or policy promotion.','',
         '| Seed | Period | Delta USD | Changed signals | Helpful | Harmful | Cash reconciliation error |',
         '|---|---|---:|---:|---:|---:|---:|']
