@@ -125,6 +125,10 @@ def run(args):
     configure(7)
     torch.backends.cudnn.allow_tf32 = False
     if not torch.cuda.is_available():raise ValueError('CRITIC_AUDIT_GPU_REQUIRED')
+    device_name=torch.cuda.get_device_name()
+    expected_device=getattr(args,'expected_device_name',None)
+    if expected_device is not None and device_name != expected_device:
+        raise ValueError('CRITIC_AUDIT_WRONG_GPU:'+device_name)
     spec = authenticate(args.source,args.source_runtime)
     market = market_for(args.source,spec)
     if set(market.recipe['split']['periods']) != {'TRAIN','VALIDATION'}:
@@ -223,7 +227,7 @@ def run(args):
             'tools/audit_fixed_actor_critics.py','agent_plugins/three_signal_sac.py',
             'agent_plugins/discrete_curve_sac.py','agent_plugins/sac_critic_regularization.py')},
         inspection_only=args.inspection_only,start_epoch=args.start_epoch,
-        reset_optimizer=reset_optimizer,
+        reset_optimizer=reset_optimizer,device_name=device_name,
         optimizer_diagnostic_sha256=file_sha(ROOT/'app/actor_learning_diagnostics.py'),
         scope='TRAIN-only critic-head interventions; fixed actor/alpha; no account promotion')
     if args.inspection_only:
@@ -328,6 +332,7 @@ def main():
     parser.add_argument('--full-train-replay',action='store_true')
     parser.add_argument('--return-anchor',action='store_true')
     parser.add_argument('--reset-optimizer',action='store_true')
+    parser.add_argument('--expected-device-name')
     parser.add_argument('--anchor-control',type=Path)
     parser.add_argument('--updates',type=int,choices=[1024,4096],default=1024)
     args=parser.parse_args();args.output.mkdir(parents=True,exist_ok=True)

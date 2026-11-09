@@ -63,7 +63,7 @@ def test_pair_rejects_different_learning_schedule():
     keys=('source_identity','initial_sha256','replay_identity','return_identity',
           'snapshot_sha256','schedule_sha256','updates','batch_size','train_panel_rows',
           'replay_with_targets_digest','full_train_replay','sources',
-          'optimizer_diagnostic_sha256','points','arms')
+          'optimizer_diagnostic_sha256','points','arms','device_name')
     a={k:'same' for k in keys};a['reset_optimizer']=False
     b=dict(a,reset_optimizer=True)
     validate_pair(a,b)

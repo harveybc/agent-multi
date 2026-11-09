@@ -15,7 +15,7 @@ def validate_pair(retained, reset):
     keys = ('source_identity','initial_sha256','replay_identity','return_identity',
             'snapshot_sha256','schedule_sha256','updates','batch_size','train_panel_rows',
             'replay_with_targets_digest','full_train_replay','sources',
-            'optimizer_diagnostic_sha256','points','arms')
+            'optimizer_diagnostic_sha256','points','arms','device_name')
     if any(retained[k] != reset[k] for k in keys):
         raise ValueError('OPTIMIZER_PAIR_NOT_MATCHED')
     if retained['reset_optimizer'] or not reset['reset_optimizer']:
@@ -27,6 +27,7 @@ def main():
     for name in ('source','source-runtime','replay','calibration','anchor-control','output'):
         parser.add_argument('--'+name,type=Path,required=True)
     parser.add_argument('--snapshot',type=Path,action='append',required=True)
+    parser.add_argument('--expected-device-name')
     args=parser.parse_args()
     args.output.mkdir(parents=True,exist_ok=True)
     root=Path(__file__).resolve().parents[1]
@@ -53,6 +54,8 @@ def main():
                     command += ['--output',str(destination),'--start-epoch','40',
                                 '--full-train-replay','--return-anchor','--updates','4096']
                     if arm=='reset':command+=['--reset-optimizer']
+                    if args.expected_device_name:
+                        command+=['--expected-device-name',args.expected_device_name]
                     write(args.output/'PROGRESS.json',dict(stage='RUNNING',arm=arm,at=now()))
                     with (args.output/(arm+'.log')).open('a') as log:
                         subprocess.run(command,stdout=log,stderr=subprocess.STDOUT,check=True,cwd=root)

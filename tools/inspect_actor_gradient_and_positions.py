@@ -10,6 +10,8 @@ from tensordict import TensorDict
 from app.actor_learning_diagnostics import actor_gradient_report, matched_position_summary
 from app.frozen_recipe_inputs import file_sha
 from app.structural_refit import load_bundle
+from app.policy_return_calibration import policy_signals
+from app.three_signal_learning import emit
 from tools.audit_fixed_actor_critics import verify_collection
 from tools.run_discrete_curve_probe import configure, read, write, now
 from tools.run_structural_sac_refit import authenticate, market_for
@@ -47,10 +49,31 @@ def main():
         if not all(torch.equal(p,before[n]) for n,p in model.loss.named_parameters()):
             raise ValueError('GRADIENT_WEIGHTS_CHANGED')
         del model
-    positions={}
+    positions={}; reproduction={}
     for epoch in (0,40):
         model,_=load_bundle(bundle,'cpu')
         if epoch:model.load(args.degraded)
+        with np.load(args.calibration/f'epoch_{epoch:04d}/SURFACES.npz') as archived:
+            timestamps=archived['timestamp'].copy()
+            archived_logits=archived['logits'].copy()
+            archived_valid=archived['valid'].copy()
+        if (not np.array_equal(timestamps,market.inputs.row_ts_ns)
+                or not np.array_equal(archived_valid,market.inputs.valid)):
+            raise ValueError('POSITION_SURFACE_SUPPORT')
+        _, archive_probability=policy_signals(archived_logits, None)
+        cpu_logits,_=emit(model,market.inputs)
+        _, cpu_probability=policy_signals(cpu_logits, None)
+        valid=market.inputs.valid
+        # Reuse the established cross-device actor tolerance; probabilities used
+        # for pairing below come exactly from the authenticated producing surfaces.
+        if (not np.allclose(cpu_probability[valid],archive_probability[valid],atol=1e-5,rtol=1e-5)
+                or not np.array_equal(cpu_logits[valid].argmax(-1),archived_logits[valid].argmax(-1))):
+            raise ValueError(f'POSITION_CROSS_DEVICE_POLICY epoch={epoch} '
+                f'max_error={np.max(np.abs(cpu_probability[valid]-archive_probability[valid]))} '
+                f'actions={np.count_nonzero(cpu_logits[valid].argmax(-1)!=archived_logits[valid].argmax(-1))}')
+        reproduction[str(epoch)]=dict(
+            probability_max_abs_error=float(np.max(np.abs(cpu_probability[valid]-archive_probability[valid]))),
+            greedy_action_disagreements=0,rtol=1e-5,atol=1e-5,archived_probabilities_exact=True)
         panels={}
         for seed in (7,19,43):
             directory=args.calibration/f'epoch_{epoch:04d}/stochastic_{seed}/TRAIN'
@@ -65,16 +88,9 @@ def main():
             if (not np.array_equal(market.inputs.row_ts_ns[loc],panel['timestamp'])
                     or not (market.inputs.period[loc]=='TRAIN').all() or not market.inputs.valid[loc].all()):
                 raise ValueError('POSITION_OBSERVATION_SUPPORT')
-            # Same market-only model; verify archived chosen probabilities per seed.
-            with torch.no_grad():
-                probs=[]
-                for start in range(0,len(loc),256):
-                    x=torch.tensor(market.inputs.windows[loc[start:start+256]])
-                    p=model.surfaces(x).softmax(-1).numpy()
-                    action=panel['signal'][start:start+len(x)]
-                    probs.extend(p[np.arange(len(x)),action].tolist())
-            if not np.allclose(probs,panel['action_probability'],atol=1e-6,rtol=1e-5):
-                raise ValueError('POSITION_POLICY_PROBABILITY')
+            probabilities=archive_probability[loc,panel['signal']]
+            if not np.array_equal(probabilities,panel['action_probability']):
+                raise ValueError('POSITION_ARCHIVED_PROBABILITY')
             panels[seed]=panel
         positions[str(epoch)]={f'{a}_{b}':matched_position_summary(panels[a],panels[b])
             for a,b in combinations(panels,2)}
@@ -84,7 +100,7 @@ def main():
     write(args.output/'REPORT.json',dict(source_hashes=hashes,source_identity=spec['identity'],
         tool_sha256=file_sha(Path(__file__)),
         helper_sha256=file_sha(Path(__file__).resolve().parents[1]/'app/actor_learning_diagnostics.py'),
-        gradients=gradients,positions=positions,rows=1024,batches=8,seed=7,
+        gradients=gradients,positions=positions,policy_reproduction=reproduction,rows=1024,batches=8,seed=7,
         optimizer_steps=0,source_unchanged=True,fit_period='TRAIN',model_promoted=False))
     write(args.output/'DONE.json',dict(report_sha256=file_sha(args.output/'REPORT.json'),finished_at=now()))
     print(dict(snapshots=len(gradients),gradient_batches=24,position_pairs=6,source_unchanged=True))
