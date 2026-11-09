@@ -1,0 +1,198 @@
+{
+  "accounts": [
+    {
+      "arm": "retained",
+      "candidate_net_usd": 1380.8488650000072,
+      "changed_signals": 0,
+      "effective_changes": 0,
+      "period": "VALIDATION",
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": 0.0,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "reference_net_usd": 1380.8488650000072,
+      "updates": 1
+    },
+    {
+      "arm": "retained",
+      "candidate_net_usd": 1267.332230000011,
+      "changed_signals": 3,
+      "effective_changes": 2,
+      "period": "VALIDATION",
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": -113.51663499999631,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "reference_net_usd": 1380.8488650000072,
+      "updates": 8
+    },
+    {
+      "arm": "retained",
+      "candidate_net_usd": 1267.332230000011,
+      "changed_signals": 8,
+      "effective_changes": 2,
+      "period": "VALIDATION",
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": -113.51663499999631,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "reference_net_usd": 1380.8488650000072,
+      "updates": 32
+    },
+    {
+      "arm": "fresh",
+      "candidate_net_usd": 1380.8488650000072,
+      "changed_signals": 0,
+      "effective_changes": 0,
+      "period": "VALIDATION",
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": 0.0,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "reference_net_usd": 1380.8488650000072,
+      "updates": 1
+    },
+    {
+      "arm": "fresh",
+      "candidate_net_usd": 1323.947635000006,
+      "changed_signals": 7,
+      "effective_changes": 1,
+      "period": "VALIDATION",
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": -56.901230000001306,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "reference_net_usd": 1380.8488650000072,
+      "updates": 8
+    },
+    {
+      "arm": "fresh",
+      "candidate_net_usd": 1271.3701150000034,
+      "changed_signals": 16,
+      "effective_changes": 3,
+      "period": "VALIDATION",
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": -109.47875000000386,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "reference_net_usd": 1380.8488650000072,
+      "updates": 32
+    },
+    {
+      "arm": "retained",
+      "candidate_net_usd": 1151.4527350001572,
+      "changed_signals": 1,
+      "effective_changes": 0,
+      "period": "TRAIN",
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": 0.0,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "reference_net_usd": 1151.4527350001572,
+      "updates": 1
+    },
+    {
+      "arm": "retained",
+      "candidate_net_usd": 1151.4527350001572,
+      "changed_signals": 3,
+      "effective_changes": 0,
+      "period": "TRAIN",
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": 0.0,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "reference_net_usd": 1151.4527350001572,
+      "updates": 8
+    },
+    {
+      "arm": "retained",
+      "candidate_net_usd": 1121.9263750001537,
+      "changed_signals": 24,
+      "effective_changes": 6,
+      "period": "TRAIN",
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": -29.52636000000348,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "reference_net_usd": 1151.4527350001572,
+      "updates": 32
+    },
+    {
+      "arm": "fresh",
+      "candidate_net_usd": 1194.572065000173,
+      "changed_signals": 2,
+      "effective_changes": 1,
+      "period": "TRAIN",
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": 43.11933000001591,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "reference_net_usd": 1151.4527350001572,
+      "updates": 1
+    },
+    {
+      "arm": "fresh",
+      "candidate_net_usd": 1151.1857950001686,
+      "changed_signals": 10,
+      "effective_changes": 1,
+      "period": "TRAIN",
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": -0.2669399999886082,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "reference_net_usd": 1151.4527350001572,
+      "updates": 8
+    },
+    {
+      "arm": "fresh",
+      "candidate_net_usd": 1224.694290000165,
+      "changed_signals": 39,
+      "effective_changes": 9,
+      "period": "TRAIN",
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": 73.24155500000779,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "reference_net_usd": 1151.4527350001572,
+      "updates": 32
+    }
+  ],
+  "chronological_order_dependent": true,
+  "event_occurrences": 113,
+  "finished_at": "2026-11-09T11:38:43.147517+00:00",
+  "identity": "c99582ba68f6daf8d9a30f802116154ad7a0cadaace5f4e3febecb12cf4d1416",
+  "isolated_effects_not_additive": true,
+  "model_promoted": false,
+  "no_test": true,
+  "no_training": true,
+  "seconds": 115.15363135799998,
+  "source_done_sha256": "5099f8bb6da728d25db518d7b081afbf66167132ffbc3ba70596667cd4eb8984",
+  "stochastic_draws": 3,
+  "three_draws_not_exact_expectation": true,
+  "unique_events": 72,
+  "verified_files": 103
+}

@@ -17,6 +17,12 @@ heads alone do not prevent small actor updates from reducing VALIDATION.
 changed action with same-state native continuations, chronological account
 reconciliation and frozen critic comparisons; no promotion or new training.
 
+[Results233](233_CHANGED_DECISION_ATTRIBUTION_RESULTS.md): attribution complete,
+12 accounts exact,113 changed-signal occurrences. Validation losses are localized
+to added short entries; TRAIN also exposes a harmful suppressed early close.
+The next refinement gate is alternative-action ranking and execution-policy
+consistency,not average critic RMSE alone. Both source champions remain intact.
+
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
 [Feed review223](223_SELECTED70_FORWARD_CLOCK_REVIEW.md): previous four

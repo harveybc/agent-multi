@@ -1,0 +1,9 @@
+{
+  "files": {
+    "DECISIONS.csv": "40fd89a9313e8a67edaa135ae3d4924bf2b02275d894602adfe359655b614000",
+    "SUMMARY.json": "bf26001b5ac4061a1bcb4f63617d51a0c3c6b1e4e8e78ba55c8582b93ce6bbac"
+  },
+  "producer_sha256": "267305512c592f8276a565be726f98bf70e901feb7639bf40eede619d26bd5ef",
+  "source_done_sha256": "5099f8bb6da728d25db518d7b081afbf66167132ffbc3ba70596667cd4eb8984",
+  "source_identity": "c99582ba68f6daf8d9a30f802116154ad7a0cadaace5f4e3febecb12cf4d1416"
+}
