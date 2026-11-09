@@ -40,6 +40,12 @@ attribution, two fixed correction-seed replications and a reward-only stochastic
 control. One sequential supervisor collects and reports every arm without
 automatic policy promotion; its live receipt is the execution status authority.
 
+[Results237](237_RANKING_REPLICATION_RESULTS.md): both replicas completed before
+the coordinator reboot;1190 files authenticated afterward. Greedy improves
+validation over its matched control in both replicas, but not consistently over
+the unchanged actor. Reward-only stochastic gains do not replicate in sign.
+All60 accounts meet activity; sources unchanged; the bounded queue is complete.
+
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
 [Feed review223](223_SELECTED70_FORWARD_CLOCK_REVIEW.md): previous four

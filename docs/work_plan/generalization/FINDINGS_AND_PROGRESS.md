@@ -57,3 +57,15 @@ that early closing was repaired. Versus matched control32, validation improves
 190.262400 USD while TRAIN falls66.881150 USD. Two prespecified correction-seed
 replications and the entropy-separated stochastic arm now run automatically;
 neither dates nor labels are adapted to these attribution results.
+
+## 2026-11-09: Correction Replication Completed Before Reboot
+
+F-RANKING-REPLICATION: [237](../237_RANKING_REPLICATION_RESULTS.md) authenticates
+1190 files after reboot, ten completed arms and60 eligible full accounts.
+Greedy correction validation improves versus matched controls in both new seeds
+(+1.34368/+0.23740pp), but not consistently versus the untouched source actor.
+The reward-only stochastic variant has opposing paired effects, so entropy
+removal alone is not a supported repair. Greedy diagnostic accuracy improves
+modestly, whereas diagnostic regret has mixed changes. Preserve the source
+weights and evaluate subsequent refinement against unchanged-parent accounts
+as well as matched-update controls. This is not an early-close repair finding.
