@@ -42,3 +42,23 @@ drawdown, orders, win rate and native early-close quality diagnostics. Parameter
 distance is not itself trading performance. Sequential RTX5090 workers, followed
 by automatic collection; no source or live-policy replacement. Resume accepts
 only completed, authenticated arms from the identical effective config.
+
+## Verified Launch
+
+Runtime418b5fb6 published to master. Focused CPU tests:37 passed. Actual RTX5090
+canary loaded the authentic r19 corrected critic and source actor; two anchored
+updates changed four actor-head tensors, preserved all frozen parameters and
+produced finite KL. This discarded in-memory canary is not experimental evidence.
+
+GPU readiness gate passed. The independent primary-host user service started
+2026-11-09T18:30:20Z; a secondary collector waits for the sealed terminal receipt.
+A coordinator reboot does not terminate the primary service. The r19 native
+arm reproduced the archived1/8/32 full accounts exactly and reached update128
+at27.2 seconds of runner elapsed time. Native rate actually read from AdamW:
+2.9999999999999997e-5; the lower-rate arm is configured by actual optimizer group.
+
+Measured launch estimate:5-10 minutes from13:30 Bogota, including report and
+collection, superseding the earlier pre-implementation estimate. This contrast
+reuses completed critic calibration; it is not an entire fresh training run.
+Private artifacts:`/var/tmp/sac70-actor-preservation-20261109`. Progress and
+terminal receipts, not this launch snapshot, determine current completion.
