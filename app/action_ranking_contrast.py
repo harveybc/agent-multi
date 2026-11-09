@@ -75,6 +75,37 @@ def target_loss(q,target,chosen=None):
     return F.smooth_l1_loss(q,target.unsqueeze(0).expand_as(q))
 
 
+def advantage_loss(q,target):
+    """Fit action differences while identifying each twin's common return level."""
+    if (q.ndim!=3 or q.shape[0]!=2 or q.shape[-1]!=3 or not q.shape[1]
+            or target.shape!=q.shape[1:] or not torch.isfinite(q).all()
+            or not torch.isfinite(target).all()):
+        raise ValueError('ADVANTAGE_TARGET_SHAPE_OR_FINITE')
+    pairs=((0,1),(0,2),(1,2))
+    predicted=torch.stack([q[...,a]-q[...,b] for a,b in pairs],-1)
+    wanted=torch.stack([target[...,a]-target[...,b] for a,b in pairs],-1)
+    gaps=F.smooth_l1_loss(predicted,wanted.unsqueeze(0).expand_as(predicted))
+    level=F.smooth_l1_loss(q.mean(-1),target.mean(-1).unsqueeze(0).expand_as(q.mean(-1)))
+    return gaps+level
+
+
+def calibration_indices(cohort,timestamps,valid,period):
+    """Authenticate fit/monitor row membership before constructing minibatches."""
+    rows=[r['row'] for r in cohort]
+    if not rows or len(set(rows))!=len(rows):raise ValueError('ADVANTAGE_COHORT_DUPLICATE')
+    for r in cohort:
+        i=r['row']
+        if (not isinstance(i,(int,np.integer)) or not 0<=i<len(timestamps)
+                or not valid[i] or period[i]!='TRAIN' or r['timestamp']!=int(timestamps[i])
+                or r['role'] not in ('fit','monitor') or r['year'] not in range(2020,2024)
+                or pd.Timestamp(r['timestamp'],tz='UTC').year!=r['year']):
+            raise ValueError('ADVANTAGE_COHORT_TRAIN_SUPPORT')
+    if ({r['year'] for r in cohort}!=set(range(2020,2024))
+            or {r['role'] for r in cohort}!={'fit','monitor'}):
+        raise ValueError('ADVANTAGE_COHORT_COVERAGE')
+    return np.array([i for i,r in enumerate(cohort) if r['role']=='fit'])
+
+
 def ranking_metrics(q,target):
     q,target=np.asarray(q,dtype=float),np.asarray(target,dtype=float)
     if q.shape!=target.shape or q.ndim!=2 or q.shape[1]!=3 or not len(q) or not np.isfinite([q,target]).all():

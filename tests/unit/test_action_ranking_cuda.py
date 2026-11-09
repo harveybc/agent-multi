@@ -7,14 +7,15 @@ import pytest
 import torch
 
 
-def test_real_calibrated_head_gradients_and_frozen_actor():
+@pytest.mark.parametrize('objective',['absolute','advantage'])
+def test_real_calibrated_head_gradients_and_frozen_actor(objective):
     root=os.environ.get('ACTION_RANKING_SOURCE')
     probe=os.environ.get('ACTION_RANKING_PROBE')
     surfaces=os.environ.get('ACTION_RANKING_SURFACES')
     runtime=os.environ.get('ACTION_RANKING_SOURCE_RUNTIME')
     if not all((root,probe,surfaces,runtime)):
         pytest.skip('explicit real diagnostic artifacts required')
-    from app.action_ranking_contrast import differentiable_q,target_loss
+    from app.action_ranking_contrast import differentiable_q,target_loss,advantage_loss
     from app.structural_refit import load_bundle
     from app.actor_learning_diagnostics import clear_optimizer_memory
     from app.frozen_recipe_inputs import file_sha
@@ -40,7 +41,7 @@ def test_real_calibrated_head_gradients_and_frozen_actor():
     torch.testing.assert_close(q,q0,rtol=2e-5,atol=2e-5)
     # Deliberate test target, not a financial training label.
     target=q0.mean(0)+torch.tensor([.1,-.1,.2],device='cuda')
-    target_loss(q,target).backward();model.optimizer.step()
+    (target_loss if objective=='absolute' else advantage_loss)(q,target).backward();model.optimizer.step()
     changed=[n for n,p in model.loss.named_parameters() if not torch.equal(p,before[n])]
     assert changed and all(n.startswith('qvalue_') and '.head.' in n for n in changed)
     with torch.no_grad():torch.testing.assert_close(model.surfaces(x),actor,rtol=0,atol=0)
