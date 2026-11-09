@@ -1,6 +1,8 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "CRITIC_HEAD_INITIALIZATION_CONTRAST_RUNNING",
+  "current_stage": "CRITIC_HEAD_INITIALIZATION_COMPLETE_BOUNDED_POLICY_RESTORATION_NEXT",
+  "critic_head_results": "../229_CRITIC_HEAD_INITIALIZATION_RESULTS.md",
+  "critic_head_terminal": {"finished_at": "2026-11-09T10:37:46.002956+00:00", "identity": "b101d65fa3e4ca65c9eb5136d9a0f6a4b5da56a6e9486eccc76fa60778bf20ab", "verified_files": 12, "retained_rmse": 6.062443507413188, "fresh_rmse": 0.2903185639945499, "zero_rmse": 0.295424, "actor_unchanged": true, "model_promoted": false, "successor_running": false},
   "critic_head_contrast": {"design": "../228_CRITIC_HEAD_AND_SELECTION_UNIVERSE.md", "tests_passed": 32, "arms": ["retained_head", "fresh_head"], "optimizer_state": "empty_both", "updates_each": 4096, "actor_and_encoders_unchanged": true, "launch_verified": true, "runtime": "3153f902", "device_name": "NVIDIA GeForce RTX 5090", "initial_control_identity": "b01719aefba16d8bb55db24f7b606ece56befdd231b4ebeff7e211d0fc6c34eb", "observed_control_updates": 256, "automatic_pair_verification": true},
   "selection_return_scope": {"current": "accepted removals in current deletion pass only", "last_counts": [70,69,69], "cumulative_phase2_readmission_executed": false, "next_design": "separate cumulative phase2 ledger and matched structural readmission; phase1 quality exclusions remain gated", "design": "../228_CRITIC_HEAD_AND_SELECTION_UNIVERSE.md"},
   "actor_learning_results": "../227_ACTOR_LEARNING_MECHANISM_RESULTS.md",
@@ -33,7 +35,7 @@
   "stages_passed": ["DISCOVERY", "REQUIREMENTS", "ACCEPTANCE_TEST_DESIGN", "UNIT_TESTS", "REAL_REPLAY_AUTHENTICATION", "FROZEN_MODEL_DIAGNOSIS", "G1_REPORT"],
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
-  "next_allowed_actions": ["preserve selected69 exact weight-transfer bundle and selected70 control", "contrast critic head initialization with encoder/actor fixed and per-action realized-return calibration", "isolate position ambiguity with native controlled counterfactuals before any observation change", "continue forward integration independently using explicit checkpoint identities"],
+  "next_allowed_actions": ["preserve selected69 exact weight-transfer bundle and selected70 control", "qualify bounded restoration on a preserved-policy copy using its own return calibration, actor drift/activity gates and full native accounts; verify bootstrap before long refinement", "isolate position ambiguity with native controlled counterfactuals before any observation change", "continue forward integration independently using explicit checkpoint identities"],
   "policy_return_calibration_results": "../215_FROZEN_POLICY_RETURN_CALIBRATION_RESULTS.md",
   "policy_return_calibration_identity": "ffa695f1f6032f288ab5c14b46d6d5de26100c18b1af3f02fbc3190a6d2c8aee",
   "policy_return_calibration_verification": {"accounts": 24, "verified_files": 153, "focused_tests_passed": 14, "independent_return_checks": 408, "maximum_return_discrepancy": 1.9984014443252818e-15, "weights_unchanged": true, "model_promoted": false},
