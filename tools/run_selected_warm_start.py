@@ -15,13 +15,18 @@ from app.frozen_actor_compaction import compare_logits
 from app.frozen_recipe_inputs import file_sha
 from app.rl_subset import digest,support_hash
 from app.three_signal_learning import emit,environment
+from app.critic_refinement import POLICY, begin_stage, fit_anchor, sync_targets
 from tools.run_discrete_curve_probe import read,write,now,configure
 from tools.run_structural_sac_refit import prepare_selected,authenticate,market_for,fit_epochs,assess_full
 from tools.run_refit_mask_pass import account_equal
 
 ROOT=Path(__file__).resolve().parents[1]
 EXTRA=['app/selected_warm_start.py','tools/run_selected_warm_start.py',
-       'app/frozen_actor_compaction.py','tools/run_refit_mask_pass.py']
+       'app/frozen_actor_compaction.py','tools/run_refit_mask_pass.py',
+       'app/critic_refinement.py','app/actor_learning_diagnostics.py',
+       'tools/run_preserved_policy_refinement_probe.py','tools/audit_fixed_actor_critics.py',
+       'app/fixed_actor_critic_audit.py','tools/diagnose_warmstart_drift.py',
+       'tools/audit_frozen_policy_returns.py','app/policy_return_calibration.py']
 
 
 def prepare(args):
@@ -38,6 +43,7 @@ def prepare(args):
     shutil.copytree(bundle,args.root/'SOURCE_BUNDLE')
     spec['effective']['learning_rate']=spec['effective']['learning_rate']/10
     spec['design'].update(require_activity=True,initialize_epoch_zero=True,warmup_policy=True,head_only=True)
+    spec['design']['critic_refinement']=dict(POLICY)
     spec['structural_round'].update(variant='WARMSTART_HEAD_ONLY',fresh_weights=False,
         checkpoint_source='selected masked parent checkpoint, structurally projected',
         source_checkpoint_sha256=ss['best_bundle']['model_sha256'])
@@ -79,6 +85,43 @@ def check_transfer(source,model,market):
     return dict(actor=report,**errors)
 
 
+def qualify_new_critics(model,market,risk,design,out,identity):
+    """Calibrate once on this transferred policy, never reset recovered learning."""
+    if (out/'RESUME.json').exists():return dict(mode='resume',reset=False)
+    if design.get('critic_refinement')!=POLICY:raise ValueError('WARM_CRITIC_POLICY_REQUIRED')
+    from tools.audit_fixed_actor_critics import collect_full_replay, covering_schedule, verify_collection
+    from tools.audit_frozen_policy_returns import account_calibration
+    from tools.run_preserved_policy_refinement_probe import calibration_panel
+    from app.policy_return_calibration import policy_signals
+    from app.three_signal_learning import evaluate
+    stage=out/'critic_initialization';stage.mkdir(exist_ok=True)
+    if (stage/'DONE.json').exists():
+        receipt=verify_collection(stage)
+        if receipt['identity']!=identity:raise ValueError('WARM_CRITIC_STAGE_IDENTITY')
+        model.load(stage/'CALIBRATED.pt')
+        return dict(mode='completed_stage_reload',reset=False)
+    logits,q=emit(model,market.inputs,twins=True)
+    prepared,probabilities=policy_signals(logits,7)
+    interval=market.recipe['split']['periods']['TRAIN'];gamma=model.effective['gamma']
+    env=lambda:environment(market,risk,design['horizon'],interval,gamma)
+    evaluate(env(),logits,save=stage/'policy_train',prepared=prepared)
+    account_calibration(stage/'policy_train',market.inputs,q,probabilities,gamma,
+                        float(model.loss.log_alpha.detach().exp()),True)
+    replay,receipt=collect_full_replay(env(),read(stage/'policy_train/ACTIONS.json'))
+    labels=np.load(stage/'policy_train/RETURN_TRACE.npz')['soft_return']
+    replay['realized_soft_return']=torch.tensor(labels,dtype=torch.float32).reshape(-1,1)
+    init=begin_stage(model,identity)
+    schedule=covering_schedule(len(replay),POLICY['updates'],POLICY['batch_size'],7)
+    points=fit_anchor(model,replay,schedule,lambda:calibration_panel(model,replay),
+        lambda r:write(stage/'PROGRESS.json',r))
+    sync=sync_targets(model);model.save(stage/'CALIBRATED.pt')
+    write(stage/'RESULT.json',dict(identity=identity,initialization=init,replay=receipt,
+        calibration=points,target_sync=sync,period='TRAIN',source_policy='transferred actor unchanged'))
+    write(stage/'DONE.json',dict(identity=identity,files={str(p.relative_to(stage)):file_sha(p)
+        for p in stage.rglob('*') if p.is_file() and p.name not in ('DONE.json','PROGRESS.json')}))
+    return dict(mode='new_refinement',reset=True,calibrated=True)
+
+
 def worker(args):
     spec=authenticate(args.root);out=args.root/'runs'/'seed_7';out.mkdir(parents=True,exist_ok=True)
     with (out/'worker.lock').open('a') as lock:
@@ -106,6 +149,8 @@ def worker(args):
             parity=parity,initial_metrics=initial,full_accounts_exact=True,
             source_checkpoint_sha256=spec['structural_round']['source_checkpoint_sha256']))
         del source
+        critic_stage=qualify_new_critics(model,market,risk,d,out,spec['identity'])
+        write(out/'CRITIC_POLICY.json',critic_stage)
         reset_learning_rng(7)
         ix=np.flatnonzero(market.inputs.valid & (market.inputs.period=='TRAIN'))
         probe=market.inputs.windows[ix[np.linspace(0,len(ix)-1,32,dtype=int)]].copy()

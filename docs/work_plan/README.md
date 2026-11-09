@@ -1,5 +1,16 @@
 # Adaptive Multi-Asset Trading Work Plan
 
+## Priority Update: 2026-11-09 - Critic Refinement
+
+[Findings and progress register](generalization/FINDINGS_AND_PROGRESS.md) records
+the selected69 gain and the critic-gradient, optimizer-memory and head-reset
+contrasts. Owner adopts [policy230](230_CRITIC_REFINEMENT_POLICY_AND_PROBE.md):
+new transferred SAC refinements reset critic heads, preserve actor/encoders and
+calibrate on their own policy's TRAIN returns before further policy learning.
+Inference, frozen selection and recovery never reset weights. The bounded
+preserved-policy probe tests native accounts and bootstrap recurrence;229 alone
+is not a trading improvement. Keep69 and70 reference artifacts unchanged.
+
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
 [Feed review223](223_SELECTED70_FORWARD_CLOCK_REVIEW.md): previous four
