@@ -72,3 +72,14 @@ Audit precedes training. The primary RTX5090 runs at most four arms sequentially
 Each completed arm is authenticated before resume. Interrupted current arms
 restart from their declared initial checkpoint; no partial optimizer recovery.
 Archive failures and never promote these diagnostic critic checkpoints.
+
+## Prelaunch Canary Correction
+
+The real-checkpoint CUDA canary initially passed both head-only cases but
+rejected full critic representation gradients: the functional twin forward
+selected `aten::_transformer_encoder_layer_fwd`, whose derivative is absent.
+The diagnostic now bypasses fused MHA fastpath ONLY inside trainable-encoder
+critic forwards, restoring the prior setting even on failure. Actor inference
+and head-only baselines retain their original dispatch. Verify numerical Q
+agreement and exact actor logits again before admitting the launch. This
+failure occurred before any experiment arm ran.

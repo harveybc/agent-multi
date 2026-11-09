@@ -2,8 +2,9 @@
 from collections import Counter
 
 import numpy as np
+import torch
 
-from app.action_ranking_contrast import ranking_metrics
+from app.action_ranking_contrast import ranking_metrics, differentiable_q
 
 
 def classify_anchor(record):
@@ -70,3 +71,17 @@ def set_scope(model,scope):
         param.requires_grad_(name.startswith('qvalue_network_params.') and
             ('.head.' in name or scope=='critic_representation'))
     for group in model.optimizer.param_groups:group['lr']=model.effective['learning_rate']
+
+
+def probe_q(model,features):
+    # Functional twin parameters can trigger the inference-only fused attention
+    # path even when encoder gradients are required. Limit its bypass to this
+    # critic forward and restore it before any actor or ordinary inference call.
+    encoder_grad=any(p.requires_grad and n.startswith('qvalue_network_params.') and '.encoder.' in n
+                     for n,p in model.loss.named_parameters())
+    previous=torch.backends.mha.get_fastpath_enabled()
+    try:
+        if encoder_grad:torch.backends.mha.set_fastpath_enabled(False)
+        return differentiable_q(model,features)
+    finally:
+        torch.backends.mha.set_fastpath_enabled(previous)

@@ -10,9 +10,9 @@ import time
 import numpy as np
 import torch
 
-from app.action_ranking_contrast import advantage_loss, calibration_indices, differentiable_q
+from app.action_ranking_contrast import advantage_loss, calibration_indices
 from app.actor_learning_diagnostics import clear_optimizer_memory
-from app.critic_fit_probe import classify_anchor, choose_small_set, fit_metrics, fit_passed, set_scope
+from app.critic_fit_probe import classify_anchor, choose_small_set, fit_metrics, fit_passed, set_scope, probe_q
 from app.decision_attribution import continuation
 from app.frozen_recipe_inputs import file_sha
 from app.rl_subset import digest, support_hash
@@ -186,7 +186,7 @@ def run(args):
             for step in range(4097):
                 if step:
                     model.optimizer.zero_grad(set_to_none=True)
-                    q=differentiable_q(model,features[chosen]);loss=advantage_loss(q,target[chosen])
+                    q=probe_q(model,features[chosen]);loss=advantage_loss(q,target[chosen])
                     loss.backward();gradient=float(torch.nn.utils.clip_grad_norm_(model.loss.parameters(),10.,error_if_nonfinite=True))
                     model.optimizer.step();losses.append(float(loss.detach()))
                 if step in POINTS:
@@ -195,7 +195,7 @@ def run(args):
                     if step and (not moved or (scope=='critic_representation' and not any('.encoder.' in n for n in moved))):
                         raise ValueError('FIT_PROBE_PARAMETERS_NOT_MOVING')
                     with torch.no_grad():
-                        q=torch.cat([differentiable_q(model,features[i:i+128]) for i in range(0,len(features),128)],dim=1).cpu().numpy()
+                        q=torch.cat([probe_q(model,features[i:i+128]) for i in range(0,len(features),128)],dim=1).cpu().numpy()
                     metrics={name:fit_metrics(q[:,ix],greedy[ix]) for name,ix in masks.items()}
                     points.append(dict(updates=step,gradient_norm=gradient,changed_tensors=len(moved),metrics=metrics))
                     write(lane/'CURVE.json',points);progress('FIT',replica=replica,scope=scope,updates=step,

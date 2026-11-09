@@ -65,3 +65,17 @@ def test_trainability_only_online_critic():
     set_scope(model,'critic_representation')
     assert sum(p.requires_grad for n,p in model.loss.named_parameters())==2
     with pytest.raises(ValueError):set_scope(model,'actor')
+
+
+def test_critic_gradient_dispatch_restores_fastpath_even_on_error(monkeypatch):
+    from types import SimpleNamespace
+    from app.critic_fit_probe import probe_q
+    p=torch.nn.Parameter(torch.ones(1))
+    model=SimpleNamespace(loss=SimpleNamespace(named_parameters=lambda:[('qvalue_network_params.module.encoder.weight',p)]))
+    previous=torch.backends.mha.get_fastpath_enabled()
+    def fail(*args):
+        assert not torch.backends.mha.get_fastpath_enabled()
+        raise ValueError('sentinel')
+    monkeypatch.setattr('app.critic_fit_probe.differentiable_q',fail)
+    with pytest.raises(ValueError,match='sentinel'):probe_q(model,torch.zeros(1))
+    assert torch.backends.mha.get_fastpath_enabled()==previous

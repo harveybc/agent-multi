@@ -16,13 +16,13 @@ def test_real_calibrated_head_gradients_and_frozen_actor(objective,scope):
     runtime=os.environ.get('ACTION_RANKING_SOURCE_RUNTIME')
     if not all((root,probe,surfaces,runtime)):
         pytest.skip('explicit real diagnostic artifacts required')
-    from app.action_ranking_contrast import differentiable_q,target_loss,advantage_loss
+    from app.action_ranking_contrast import target_loss,advantage_loss
     from app.structural_refit import load_bundle
     from app.actor_learning_diagnostics import clear_optimizer_memory
     from app.frozen_recipe_inputs import file_sha
     from app.three_signal_learning import emit
     from tools.diagnose_warmstart_drift import set_arm
-    from app.critic_fit_probe import set_scope
+    from app.critic_fit_probe import set_scope,probe_q
     from tools.run_structural_sac_refit import authenticate,market_for
     torch.set_num_threads(1)
     torch.backends.cuda.matmul.allow_tf32=False
@@ -39,7 +39,7 @@ def test_real_calibrated_head_gradients_and_frozen_actor(objective,scope):
     before={n:p.detach().clone() for n,p in model.loss.named_parameters()}
     set_scope(model,scope);clear_optimizer_memory(model.optimizer)
     model.optimizer.zero_grad(set_to_none=True)
-    q=differentiable_q(model,x)
+    q=probe_q(model,x)
     torch.testing.assert_close(q,q0,rtol=2e-5,atol=2e-5)
     # Deliberate test target, not a financial training label.
     target=q0.mean(0)+torch.tensor([.1,-.1,.2],device='cuda')
