@@ -104,3 +104,15 @@ Monitor ordering falls in one replica and rises in the other; early-close
 harmfulness counts are unchanged. No consistent improvement over the untouched
 parent is established. Preserve this candidate and inspect its changed actions
 before claiming that critic ordering or refinement has been repaired.
+
+## 2026-11-09: Paired Uplift Comes From Two Validation Entries
+
+F-PAIRED-ADVANTAGE-ATTRIBUTION: [245](../245_PAIRED_ADVANTAGE_ATTRIBUTION_RESULTS.md)
+reconciles all four account differences exactly with258 native continuations.
+Only9 of43 changed signals affect cash, all entry decisions from flat states.
+The r43 validation gain is+56.465540 minus44.610795 USD from two suppressed
+SELL entries. Both critic calibrations retain the wrong ranking in both cases;
+the useful abstention is against the new critic's preference. No Q-gap sign
+repair occurs in any of the9 effective events. Magnitude errors improve in5,
+not all. This does not demonstrate a resolved critic or actor update mechanism.
+Preserve source weights and inspect TRAIN fitting/coverage before another fit.

@@ -1,0 +1,112 @@
+{
+  "accounts": [
+    {
+      "cash_delta_usd": 25.602564999991955,
+      "cash_reward_conflicts": 0,
+      "changed_signals": 13,
+      "effective_changes": 2,
+      "effective_parent_probability_margin_max": 0.0013450930034008546,
+      "effects": {
+        "added_entry": 2
+      },
+      "harmful": 1,
+      "helpful": 1,
+      "paired_critic_diagnostics": {
+        "actor_change_against_candidate_q": 1,
+        "baseline_calibration_conflict": 0,
+        "candidate_calibration_conflict": 0
+      },
+      "period": "TRAIN",
+      "q_reward_conflicts": 0,
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": 25.602564999991955,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "replica": "r19"
+    },
+    {
+      "cash_delta_usd": 0.0,
+      "cash_reward_conflicts": 0,
+      "changed_signals": 3,
+      "effective_changes": 0,
+      "effective_parent_probability_margin_max": null,
+      "effects": {},
+      "harmful": 0,
+      "helpful": 0,
+      "paired_critic_diagnostics": {
+        "actor_change_against_candidate_q": 0,
+        "baseline_calibration_conflict": 0,
+        "candidate_calibration_conflict": 0
+      },
+      "period": "VALIDATION",
+      "q_reward_conflicts": 0,
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": 0.0,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "replica": "r19"
+    },
+    {
+      "cash_delta_usd": 97.23590999998669,
+      "cash_reward_conflicts": 0,
+      "changed_signals": 18,
+      "effective_changes": 5,
+      "effective_parent_probability_margin_max": 0.00274009410749787,
+      "effects": {
+        "added_entry": 1,
+        "suppressed_entry": 4
+      },
+      "harmful": 2,
+      "helpful": 3,
+      "paired_critic_diagnostics": {
+        "actor_change_against_candidate_q": 0,
+        "baseline_calibration_conflict": 2,
+        "candidate_calibration_conflict": 2
+      },
+      "period": "TRAIN",
+      "q_reward_conflicts": 2,
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": 97.23590999998669,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "replica": "r43"
+    },
+    {
+      "cash_delta_usd": 11.854745000002367,
+      "cash_reward_conflicts": 0,
+      "changed_signals": 9,
+      "effective_changes": 2,
+      "effective_parent_probability_margin_max": 0.004514379160819426,
+      "effects": {
+        "suppressed_entry": 2
+      },
+      "harmful": 1,
+      "helpful": 1,
+      "paired_critic_diagnostics": {
+        "actor_change_against_candidate_q": 1,
+        "baseline_calibration_conflict": 2,
+        "candidate_calibration_conflict": 2
+      },
+      "period": "VALIDATION",
+      "q_reward_conflicts": 2,
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": 11.854745000002367,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "replica": "r43"
+    }
+  ],
+  "identity": "89bc8a1f444bf3b050b81e0220b94df3ac7d9bb4b0cba1de9294c6832a46e3fe",
+  "model_promoted": false,
+  "optimizer_steps": 0,
+  "source_weights_unchanged": true,
+  "suffix_simulations": 258
+}
