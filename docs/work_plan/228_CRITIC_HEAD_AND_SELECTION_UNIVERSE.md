@@ -21,6 +21,12 @@ remain native but do not define the realized-return training labels. Same
 sampling/dropout RNG reset after intervention. Reuse of previous numeric results
 is descriptive only; run the paired control with this instrumented code.
 
+Verification:32 focused CPU tests passed. Pinned runtime3153f902 launched the
+sequential queue on the physically authenticated RTX5090; retained-head control
+passed source/calibration checks and reached256 updates with actor/encoder parity.
+The queue automatically verifies both receipts and writes the paired comparison.
+No numeric result for the fresh-head arm is claimed before its receipt exists.
+
 ## What the Current Return Pass Actually Does
 
 Verified in `feature_selector.search:TwoPassGreedy`: `removed` is initialized
@@ -32,6 +38,12 @@ Last authenticated selection therefore tested70 ->69 ->69. Its return pass
 tested RAW_CLOSE_LOG_RETURN only, not every feature removed during all earlier
 phase2 cycles. This is an ordered two-pass heuristic, not an exhaustive floating
 search or a proof that earlier removals cannot now help.
+
+The actual pinned plugin0.2.4 package digest was independently reproduced:
+`cbb9f0da336c2e593c3a0901bfe1b1d5f2dda542eb6936e49e8bd40fa6ec1cfb`.
+Its archived return-pass trace contains exactly that one reinsertion, rejected:
+score0.2702053639 before versus0.2557127528 with the column restored (VALIDATION
+return per week). This verifies execution scope, not just current source intent.
 
 ## Cumulative Readmission Design
 
