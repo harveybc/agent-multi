@@ -56,3 +56,13 @@ to the existing authenticated recovery. No modification to inference/load.
 Only the fresh-head arm is the newly adopted refinement policy; retained-head
 is the explicitly named diagnostic control. This bounded probe precedes long
 refinement. No phase2 cumulative readmission is claimed executed by this work.
+
+## Verified Launch
+
+Runtime4b72e549,readiness gate PASS,actual RTX5090 checked in worker.
+Identity:`7bb2154b3c0e4b76c69666edca8ac56296d3cd8ad66d39379a5541a94109fd1f`.
+Native full TRAIN replay authenticated; original TRAIN/VALIDATION greedy
+accounts reproduced before intervention. Retained-head calibration reached64
+updates with exact actor/encoder parity. Two arms and their full-account checks
+run sequentially without intermediate approval. Source69/70 remain unchanged.
+This records verified launch, not completed trading improvement.
