@@ -1,6 +1,8 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "ACTOR_GRADIENT_OPTIMIZER_MEMORY_CONTRAST_COMPLETE_RESET_NOT_ADOPTED",
+  "current_stage": "CRITIC_HEAD_INITIALIZATION_CONTRAST_VERIFIED_FOR_EXECUTION",
+  "critic_head_contrast": {"design": "../228_CRITIC_HEAD_AND_SELECTION_UNIVERSE.md", "tests_passed": 32, "arms": ["retained_head", "fresh_head"], "optimizer_state": "empty_both", "updates_each": 4096, "actor_and_encoders_unchanged": true, "launch_verified": false},
+  "selection_return_scope": {"current": "accepted removals in current deletion pass only", "last_counts": [70,69,69], "cumulative_phase2_readmission_executed": false, "next_design": "separate cumulative phase2 ledger and matched structural readmission; phase1 quality exclusions remain gated", "design": "../228_CRITIC_HEAD_AND_SELECTION_UNIVERSE.md"},
   "actor_learning_results": "../227_ACTOR_LEARNING_MECHANISM_RESULTS.md",
   "optimizer_memory_terminal": {"identity": "bad5ff2ad55e9431f56c5198de45f33cd5e872bfe96e0c03aa73f2ae69a2be74", "finished_at": "2026-11-09T09:25:24.393162+00:00", "arms": 2, "updates_each": 4096, "retained_rmse": 5.006719574358941, "reset_rmse": 6.062443507413188, "actor_unchanged": true, "model_promoted": false, "sequential_queue_complete": true},
   "actor_gradient_report_sha256": "7839447d3366feb55da9971109c2f6d8132d4bb07ba70464ccea03e1d56bdcd0",

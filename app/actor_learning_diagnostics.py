@@ -18,6 +18,41 @@ def clear_optimizer_memory(optimizer):
     return dict(previous_states=before, remaining_states=0, hyperparameters_unchanged=True)
 
 
+def initialize_critic_heads(model, seed):
+    """Reset effective online twin heads only, preserving RNG and parameter objects."""
+    params = model.loss.qvalue_network_params
+    weights = [(k,v) for k,v in params.items(True,True) if 'head' in k and k[-1]=='weight']
+    if len(weights)!=2 or any(v.ndim!=3 or v.shape[0]!=2 for _,v in weights):
+        raise ValueError('CRITIC_HEAD_LAYOUT')
+    devices = [model.device.index or 0] if model.device.type=='cuda' else []
+    changed=[]
+    with torch.random.fork_rng(devices=devices), torch.no_grad():
+        torch.manual_seed(seed)
+        for key,weight in weights:
+            bias_key=(*key[:-1],'bias');bias=params[bias_key]
+            if bias.shape!=weight.shape[:2]:raise ValueError('CRITIC_HEAD_BIAS_LAYOUT')
+            for twin in range(2):
+                layer=torch.nn.Linear(weight.shape[-1],weight.shape[-2],
+                                      device=weight.device,dtype=weight.dtype)
+                weight[twin].copy_(layer.weight);bias[twin].copy_(layer.bias)
+            changed.extend(['.'.join(key),'.'.join(bias_key)])
+    return dict(seed=seed,parameters=changed,twins=2,layers_per_twin=2,
+                initialization='native torch.nn.Linear',target_heads_reset=False)
+
+
+def action_calibration(q, returns, actions):
+    from app.policy_return_calibration import calibration
+    q,g,a=map(np.asarray,(q,returns,actions))
+    if q.ndim!=1 or q.shape!=g.shape or q.shape!=a.shape or not np.isin(a,[0,1,2]).all():
+        raise ValueError('ACTION_CALIBRATION_INPUT')
+    result={}
+    for signal,name in enumerate(('NOP','BUY','SELL')):
+        take=a==signal;n=int(take.sum())
+        result[name]=dict(rows=n,critic=calibration(q[take],g[take]) if n else None,
+            zero=calibration(np.zeros(n),g[take]) if n else None)
+    return result
+
+
 def actor_terms(logits, q, alpha):
     if logits.shape != q.shape or logits.ndim != 2 or logits.shape[1] != 3:
         raise ValueError('ACTOR_DIAGNOSTIC_SHAPE')

@@ -1,4 +1,4 @@
-"""Resumable, sequential retained/reset AdamW critic-anchor contrast."""
+"""Sequential critic-anchor contrasts: optimizer memory or head initialization."""
 import argparse
 import fcntl
 from pathlib import Path
@@ -11,15 +11,28 @@ from tools.audit_fixed_actor_critics import verify_collection
 from tools.run_discrete_curve_probe import read, write, now
 
 
-def validate_pair(retained, reset):
+def validate_common(retained, reset):
     keys = ('source_identity','initial_sha256','replay_identity','return_identity',
             'snapshot_sha256','schedule_sha256','updates','batch_size','train_panel_rows',
             'replay_with_targets_digest','full_train_replay','sources',
             'optimizer_diagnostic_sha256','points','arms','device_name')
     if any(retained[k] != reset[k] for k in keys):
         raise ValueError('OPTIMIZER_PAIR_NOT_MATCHED')
+
+
+def validate_pair(retained, reset):
+    validate_common(retained,reset)
     if retained['reset_optimizer'] or not reset['reset_optimizer']:
         raise ValueError('OPTIMIZER_PAIR_MODES')
+    if retained.get('head_init_seed') is not None or reset.get('head_init_seed') is not None:
+        raise ValueError('OPTIMIZER_PAIR_HEAD_CHANGED')
+
+
+def validate_head_pair(retained, fresh):
+    validate_common(retained,fresh)
+    if (not retained['reset_optimizer'] or not fresh['reset_optimizer']
+            or retained['head_init_seed'] is not None or fresh['head_init_seed']!=7):
+        raise ValueError('HEAD_PAIR_MODES')
 
 
 def main():
@@ -28,6 +41,7 @@ def main():
         parser.add_argument('--'+name,type=Path,required=True)
     parser.add_argument('--snapshot',type=Path,action='append',required=True)
     parser.add_argument('--expected-device-name')
+    parser.add_argument('--contrast',choices=['optimizer_memory','head_initialization'],default='optimizer_memory')
     args=parser.parse_args()
     for snapshot in args.snapshot:
         for name in ('MANIFEST.json','STATE.json','model.pt'):
@@ -39,7 +53,8 @@ def main():
                            for k,v in vars(args).items()},
         sources={n:file_sha(root/n) for n in ('tools/run_optimizer_memory_contrast.py',
             'tools/audit_fixed_actor_critics.py','app/actor_learning_diagnostics.py')},
-        order=['retained','reset'],updates=4096,batch_size=128)
+        order=(['retained','reset'] if args.contrast=='optimizer_memory' else ['retained_head','fresh_head']),
+        updates=4096,batch_size=128)
     config['identity']=digest(config)
     with (args.output/'queue.lock').open('a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
@@ -57,7 +72,8 @@ def main():
                     for path in args.snapshot:command+=['--snapshot',str(path)]
                     command += ['--output',str(destination),'--start-epoch','40',
                                 '--full-train-replay','--return-anchor','--updates','4096']
-                    if arm=='reset':command+=['--reset-optimizer']
+                    if arm=='reset' or args.contrast=='head_initialization':command+=['--reset-optimizer']
+                    if arm=='fresh_head':command+=['--head-init-seed','7']
                     if args.expected_device_name:
                         command+=['--expected-device-name',args.expected_device_name]
                     write(args.output/'PROGRESS.json',dict(stage='RUNNING',arm=arm,at=now()))
@@ -65,13 +81,14 @@ def main():
                         subprocess.run(command,stdout=log,stderr=subprocess.STDOUT,check=True,cwd=root)
                 verify_collection(destination)
             configs=[read(args.output/a/'CONFIG.json') for a in config['order']]
-            validate_pair(*configs)
+            (validate_pair if args.contrast=='optimizer_memory' else validate_head_pair)(*configs)
             records={a:read(args.output/a/'return_anchor.json') for a in config['order']}
             for a,r in records.items():
                 if not all(p['actor_exact'] and p['frozen_parameters_exact'] for p in r['points']):
                     raise ValueError('OPTIMIZER_FROZEN_FAILURE')
             write(args.output/'COMPARISON.json',dict(identity=config['identity'],matched=True,
-                arms={a:dict(optimizer=r['optimizer_reset'],points=[dict(updates=p['updates'],
+                contrast=args.contrast,
+                arms={a:dict(optimizer=r['optimizer_reset'],head_initialization=r.get('head_initialization'),points=[dict(updates=p['updates'],
                     calibration=p['fixed_policy_train_panel'],alternate=p['alternate_policy_trajectories'])
                     for p in r['points']]) for a,r in records.items()},
                 model_promoted=False,actor_unchanged=True))

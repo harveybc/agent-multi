@@ -17,7 +17,7 @@ from app.three_signal_learning import environment
 from app.frozen_recipe_inputs import file_sha
 from app.rl_subset import digest, support_hash
 from agent_plugins.sac_critic_regularization import module_mode
-from app.actor_learning_diagnostics import clear_optimizer_memory
+from app.actor_learning_diagnostics import clear_optimizer_memory, initialize_critic_heads, action_calibration
 from tools.diagnose_warmstart_drift import tensor_digest, frozen_state, verify_frozen_state
 from tools.run_discrete_curve_probe import read, write, configure, now, transition
 from tools.run_structural_sac_refit import authenticate, market_for
@@ -96,8 +96,10 @@ def measure(model, batch, panel):
             qa=panel_surface.gather(-1,reference['action'].reshape(1,-1,1).expand(2,-1,1)).squeeze(-1).min(0).values
             alternate[str(seed)]=calibration(qa.numpy(),reference['returns'])
             alternate[str(seed)]['error_summary']=summary(qa.numpy()-reference['returns'])
+            alternate[str(seed)]['by_action']=action_calibration(qa.numpy(),reference['returns'],reference['action'].numpy())
         primary=calibration(panel_q.numpy(),panel['returns'])
         primary['error_summary']=summary(panel_q.numpy()-panel['returns'])
+        primary['by_action']=action_calibration(panel_q.numpy(),panel['returns'],panel['action'].cpu().numpy())
         return dict(residual_roundoff_max=residual_roundoff,
             backup_components={k:summary(v.cpu().numpy()) for k,v in components.items()},
             online_eval_q=summary(q.cpu().numpy()),target_q=summary(tq.cpu().numpy()),
@@ -115,6 +117,9 @@ def measure(model, batch, panel):
 def run(args):
     started = time.monotonic()
     reset_optimizer = getattr(args,'reset_optimizer',False)
+    head_seed = getattr(args,'head_init_seed',None)
+    if head_seed is not None and (not reset_optimizer or not args.return_anchor):
+        raise ValueError('HEAD_INIT_REQUIRES_EMPTY_OPTIMIZER_RETURN_ANCHOR')
     if reset_optimizer and not args.return_anchor:
         raise ValueError('OPTIMIZER_CONTRAST_REQUIRES_RETURN_ANCHOR')
     if args.return_anchor:
@@ -228,6 +233,7 @@ def run(args):
             'agent_plugins/discrete_curve_sac.py','agent_plugins/sac_critic_regularization.py')},
         inspection_only=args.inspection_only,start_epoch=args.start_epoch,
         reset_optimizer=reset_optimizer,device_name=device_name,
+        head_init_seed=head_seed,
         optimizer_diagnostic_sha256=file_sha(ROOT/'app/actor_learning_diagnostics.py'),
         scope='TRAIN-only critic-head interventions; fixed actor/alpha; no account promotion')
     if args.inspection_only:
@@ -275,12 +281,22 @@ def run(args):
         model,_=load_bundle(bundle,'cuda')
         if args.start_epoch:model.load(snapshots[args.start_epoch][0]/'model.pt')
         configure_arm(model,arm)
+        initialization=None
+        if head_seed is not None:
+            before=measure(model,probe,panel)['fixed_policy_train_panel']
+            expected=read(args.calibration/'epoch_0040/stochastic_7/TRAIN/CALIBRATION.json')['min_q']
+            for field in ('bias','mae','rmse','q_mean','return_mean'):
+                if not np.isclose(before[field],expected[field],rtol=1e-5,atol=1e-5):
+                    raise ValueError('HEAD_SOURCE_CALIBRATION:'+field)
+            initialization=initialize_critic_heads(model,head_seed)
+            initialization['source_calibration_parity']=True
         optimizer_reset = (clear_optimizer_memory(model.optimizer) if reset_optimizer else
             dict(previous_states=len(model.optimizer.state),reset=False))
         reset_learning_rng(7)
         frozen=frozen_state(model)
         with torch.no_grad():actor=model.surfaces(panel['features'][:512]).clone()
-        record=dict(identity=config['identity'],arm=arm,points=[],optimizer_reset=optimizer_reset)
+        record=dict(identity=config['identity'],arm=arm,points=[],optimizer_reset=optimizer_reset,
+                    head_initialization=initialization)
         targets = {k:v.clone() for k,v in model.loss.target_qvalue_network_params.items(True,True)}
         for step in range(config['updates']+1):
             if step and arm != 'no_update':
@@ -298,7 +314,7 @@ def run(args):
                     if not torch.equal(actor,model.surfaces(panel['features'][:512])):
                         raise ValueError('CRITIC_AUDIT_ACTOR_MUTATED')
                 result=measure(model,probe,panel)
-                if step==0 and args.full_train_replay:
+                if step==0 and args.full_train_replay and head_seed is None:
                     for seed,measured in [(7,result['fixed_policy_train_panel']),
                             *[(s,result['alternate_policy_trajectories'][str(s)]) for s in (19,43)]]:
                         expected=read(args.calibration/f'epoch_0040/stochastic_{seed}/TRAIN/CALIBRATION.json')['min_q']
@@ -332,6 +348,7 @@ def main():
     parser.add_argument('--full-train-replay',action='store_true')
     parser.add_argument('--return-anchor',action='store_true')
     parser.add_argument('--reset-optimizer',action='store_true')
+    parser.add_argument('--head-init-seed',type=int)
     parser.add_argument('--expected-device-name')
     parser.add_argument('--anchor-control',type=Path)
     parser.add_argument('--updates',type=int,choices=[1024,4096],default=1024)

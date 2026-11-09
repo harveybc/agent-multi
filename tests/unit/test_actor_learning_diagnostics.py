@@ -5,7 +5,7 @@ import torch
 from tensordict import TensorDict
 
 from app.actor_learning_diagnostics import (actor_terms, clear_optimizer_memory,
-    matched_position_summary, actor_gradient_report)
+    matched_position_summary, actor_gradient_report, initialize_critic_heads, action_calibration)
 from agent_plugins.three_signal_sac import ThreeSignalSAC
 from tests.unit.test_double_tcn_probe import probe_recipe
 
@@ -94,3 +94,44 @@ def test_component_export_adds_weight_profile_without_changing_model(tmp_path):
     profile=json.loads((tmp_path/'WEIGHT_PROFILE.json').read_text())
     assert profile['components']['actor_network_params/head']
     assert all(torch.equal(v,before[k]) for k,v in model.loss.state_dict().items())
+
+
+def test_effective_critic_head_initialization_only_and_reproducible():
+    torch.set_num_threads(1)
+    model=ThreeSignalSAC(probe_recipe())
+    before={k:v.clone() for k,v in model.loss.state_dict().items()}
+    objects={n:id(p) for n,p in model.loss.named_parameters()}
+    rng=torch.get_rng_state().clone()
+    receipt=initialize_critic_heads(model,31)
+    first={k:v.clone() for k,v in model.loss.state_dict().items()}
+    assert torch.equal(rng,torch.get_rng_state())
+    changed=[k for k in first if not torch.equal(first[k],before[k])]
+    assert len(changed)==4 and all(k.startswith('qvalue_network_params.') and '.head.' in k for k in changed)
+    assert receipt['twins']==2
+    assert all(not torch.equal(first[k][0],first[k][1]) for k in changed)
+    initialize_critic_heads(model,31)
+    assert all(torch.equal(v,first[k]) for k,v in model.loss.state_dict().items())
+    assert objects=={n:id(p) for n,p in model.loss.named_parameters()}
+    initialize_critic_heads(model,43)
+    assert any(not torch.equal(model.loss.state_dict()[k],first[k]) for k in changed)
+
+
+def test_action_calibration_does_not_hide_missing_actions():
+    result=action_calibration([1.,2.,0.],[1.,0.,0.],[0,1,0])
+    assert result['NOP']['rows']==2 and result['NOP']['critic']['rmse']==0
+    assert result['BUY']['rows']==1 and result['BUY']['critic']['rmse']==2
+    assert result['SELL']==dict(rows=0,critic=None,zero=None)
+    with pytest.raises(ValueError):action_calibration([0],[0],[3])
+
+
+def test_head_contrast_requires_matched_optimizer_and_layout():
+    from tools.run_optimizer_memory_contrast import validate_head_pair
+    keys=('source_identity','initial_sha256','replay_identity','return_identity',
+          'snapshot_sha256','schedule_sha256','updates','batch_size','train_panel_rows',
+          'replay_with_targets_digest','full_train_replay','sources',
+          'optimizer_diagnostic_sha256','points','arms','device_name')
+    a={k:'same' for k in keys};a.update(reset_optimizer=True,head_init_seed=None)
+    b=dict(a,head_init_seed=7)
+    validate_head_pair(a,b)
+    b['reset_optimizer']=False
+    with pytest.raises(ValueError):validate_head_pair(a,b)
