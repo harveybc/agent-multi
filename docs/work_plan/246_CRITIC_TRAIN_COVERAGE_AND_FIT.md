@@ -83,3 +83,12 @@ critic forwards, restoring the prior setting even on failure. Actor inference
 and head-only baselines retain their original dispatch. Verify numerical Q
 agreement and exact actor logits again before admitting the launch. This
 failure occurred before any experiment arm ran.
+
+## Launch Verification
+
+Corrected runtime `04c2d215`: 25 CPU tests and8 worker tests passed, including
+three real-checkpoint CUDA gradient canaries. Both scope variants preserve
+the actor's full inference outputs exactly. GPU readiness gate passed.
+Sequential worker launched2026-11-09T22:31:13Z with an independent collector.
+The first replica passed its native-label replay audit and reached1024 head
+updates without a failure. Output root: `/var/tmp/sac70-critic-small-fit-20261109`.

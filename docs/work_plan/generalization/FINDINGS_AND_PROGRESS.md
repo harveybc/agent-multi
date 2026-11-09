@@ -116,3 +116,13 @@ the useful abstention is against the new critic's preference. No Q-gap sign
 repair occurs in any of the9 effective events. Magnitude errors improve in5,
 not all. This does not demonstrate a resolved critic or actor update mechanism.
 Preserve source weights and inspect TRAIN fitting/coverage before another fit.
+
+## 2026-11-09: Full-Critic Gradient Canary Catches Fused Inference Dispatch
+
+F-CRITIC-FIT-DISPATCH: The246 prelaunch canary passed head-only updates but
+failed when unfreezing the critic encoder: functional twin execution selected
+an inference-only fused transformer operator without an implemented derivative.
+The diagnostic now disables MHA fastpath only during that critic forward and
+restores it even on failure. Three real-checkpoint gradient canaries pass;
+actor outputs stay exact. This failure was caught before experiment launch
+and does not retroactively invalidate the completed head-only contrasts.

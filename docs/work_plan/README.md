@@ -88,6 +88,11 @@ signals,9 effective entry changes,258 suffixes, zero reconciliation error.
 The validation gain is two offsetting entry effects; neither has repaired Q
 ordering. Diagnostic and collector complete, original policies unchanged.
 
+[Critic diagnostic246](246_CRITIC_TRAIN_COVERAGE_AND_FIT.md) is running:
+native TRAIN coverage/label audit, then a fixed32-anchor fitting test in each
+replica. If heads alone fail the declared criterion, the same-start critic
+representation arm follows automatically. Actor and strategy are frozen.
+
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
 [Feed review223](223_SELECTED70_FORWARD_CLOCK_REVIEW.md): previous four
