@@ -16,6 +16,21 @@ results without treating a calibration result as a profit improvement.
 
 ## F-CRITIC-HEAD-RESET Details
 
+### 2026-11-09: Paired Action Correction
+
+F-PAIRED-ACTION-REPAIR: [235](../235_PAIRED_ACTION_RANKING_RESULTS.md) completed
+all four arms. At32 actor updates, paired stochastic correction preserves
+VAL13.80849% versus control12.71370%; paired greedy reaches14.61633%,Sharpe2.205,
+204 trades,58.33% wins and3.62490%DD. Greedy TRAIN11.57813% is below the matched
+control12.24694% but above unchanged-parent11.51453%. No source model replaced.
+
+F-RANKING-REPAIR-LIMIT: improved trading is not a demonstrated global ranking
+repair. Greedy monitor accuracy remains50.51% and regret worsens0.16274 ->0.18676;
+early-close diagnostic remains4 helpful/2 harmful. Replication and attribution,
+plus separation of continuation-policy and entropy effects, are the next gates.
+
+### Original Reset Finding
+
 Priority: critical to qualification of further phase2 refinement. Evidence:
 one initialization seed,4096 updates,24025 TRAIN transitions,unchanged actor,
 encoders and alpha; alternate action draws are not independent market holdouts.

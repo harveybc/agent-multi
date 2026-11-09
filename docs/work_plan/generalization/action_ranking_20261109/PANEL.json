@@ -1,0 +1,10 @@
+{
+  "anchors": 379,
+  "cohort_sha256": "c941cc2e39b346c5882798272fbc0e398e8b49a99a1e8e7a340fc21f79acc832",
+  "fit": 284,
+  "independent_market_holdout": false,
+  "mean_future_entropy_contribution": 0.3026798807475481,
+  "monitor": 95,
+  "monte_carlo_standard_deviation_mean": 0.6212399037987165,
+  "train_only": true
+}

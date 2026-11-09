@@ -29,6 +29,12 @@ four sequential arms compare the uncorrected control, chosen-action calibration,
 paired stochastic calibration and paired greedy calibration. Only critic heads
 are corrected, followed by matched bounded actor updates; no automatic promotion.
 
+[Results235](235_PAIRED_ACTION_RANKING_RESULTS.md): the four arms finished.
+Paired greedy/32 reaches VAL14.61633%,Sharpe2.205,204 trades versus matched
+control12.71370%. Disjoint diagnostic-anchor ranking did not improve clearly;
+preserve this candidate,attribute and replicate before claiming a general repair.
+The source69/70 champions remain unchanged; no training queue is still active.
+
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
 [Feed review223](223_SELECTED70_FORWARD_CLOCK_REVIEW.md): previous four
