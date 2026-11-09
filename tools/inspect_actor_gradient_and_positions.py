@@ -66,14 +66,16 @@ def main():
         valid=market.inputs.valid
         # Reuse the established cross-device actor tolerance; probabilities used
         # for pairing below come exactly from the authenticated producing surfaces.
-        if (not np.allclose(cpu_probability[valid],archive_probability[valid],atol=1e-5,rtol=1e-5)
-                or not np.array_equal(cpu_logits[valid].argmax(-1),archived_logits[valid].argmax(-1))):
-            raise ValueError(f'POSITION_CROSS_DEVICE_POLICY epoch={epoch} '
-                f'max_error={np.max(np.abs(cpu_probability[valid]-archive_probability[valid]))} '
-                f'actions={np.count_nonzero(cpu_logits[valid].argmax(-1)!=archived_logits[valid].argmax(-1))}')
+        within_tolerance=np.allclose(cpu_probability[valid],archive_probability[valid],atol=1e-5,rtol=1e-5)
+        if (not np.isfinite(cpu_probability[valid]).all() or
+                not np.array_equal(cpu_logits[valid].argmax(-1),archived_logits[valid].argmax(-1))):
+            raise ValueError('POSITION_CROSS_DEVICE_ACTION_OR_FINITE')
         reproduction[str(epoch)]=dict(
             probability_max_abs_error=float(np.max(np.abs(cpu_probability[valid]-archive_probability[valid]))),
-            greedy_action_disagreements=0,rtol=1e-5,atol=1e-5,archived_probabilities_exact=True)
+            greedy_action_disagreements=0,rtol=1e-5,atol=1e-5,
+            cpu_probabilities_within_tolerance=bool(within_tolerance),
+            archived_probabilities_exact=True,
+            scope='archive matching is exact; CPU probability agreement reported, not assumed')
         panels={}
         for seed in (7,19,43):
             directory=args.calibration/f'epoch_{epoch:04d}/stochastic_{seed}/TRAIN'

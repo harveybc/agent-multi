@@ -69,3 +69,28 @@ def test_pair_rejects_different_learning_schedule():
     validate_pair(a,b)
     b['schedule_sha256']='different'
     with pytest.raises(ValueError):validate_pair(a,b)
+
+
+def test_wrong_gpu_refused_before_loading_data(monkeypatch):
+    from types import SimpleNamespace
+    from tools import audit_fixed_actor_critics as runner
+    monkeypatch.setattr(runner,'configure',lambda seed:None)
+    monkeypatch.setattr(torch.cuda,'is_available',lambda:True)
+    monkeypatch.setattr(torch.cuda,'get_device_name',lambda:'different GPU')
+    args=SimpleNamespace(return_anchor=False,anchor_control=None,updates=1024,
+                         expected_device_name='requested GPU')
+    with pytest.raises(ValueError,match='WRONG_GPU'):
+        runner.run(args)
+
+
+def test_component_export_adds_weight_profile_without_changing_model(tmp_path):
+    import json
+    from app.selected_warm_start import export_components
+    from app.frozen_recipe_inputs import file_sha
+    model=ThreeSignalSAC(probe_recipe())
+    before={k:v.clone() for k,v in model.loss.state_dict().items()}
+    files=export_components(model,tmp_path)
+    assert files['WEIGHT_PROFILE.json']==file_sha(tmp_path/'WEIGHT_PROFILE.json')
+    profile=json.loads((tmp_path/'WEIGHT_PROFILE.json').read_text())
+    assert profile['components']['actor_network_params/head']
+    assert all(torch.equal(v,before[k]) for k,v in model.loss.state_dict().items())

@@ -1,5 +1,10 @@
 # Parallel Phase2 Selection and Module Weight-Space Diagnosis
 
+Hardware attribution correction2026-11-09: the launch used a CUDA ordinal,
+not a verified physical device. The RTX5090 attribution below is unverified;
+see226 for the discovered ordinal mismatch and enforced device-name gate.
+No numerical result or source checkpoint is changed by this correction.
+
 Owner priority2026-11-08: demo integration must not displace feature selection
 or direct analysis of learned weights. Continue both independently of Retsu.
 

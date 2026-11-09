@@ -1,5 +1,10 @@
 # Phase2 Selected69 and Direct Module Weight Diagnostics
 
+Hardware attribution correction2026-11-09: the RTX5090 name below was inferred
+from a CUDA ordinal. That is not a verified hardware identity; see226 for the
+ordinal mismatch found in the next run. Results and parity receipts remain
+unchanged; future runs require the actual device name before executing.
+
 Completed2026-11-08 local evening (receipts2026-11-09 UTC). This continues
 phase2 independently of the forward-model-pool integration. All results below
 are development results; no TEST access, new data, scaling, window or strategy

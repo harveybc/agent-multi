@@ -29,6 +29,10 @@ def main():
     parser.add_argument('--snapshot',type=Path,action='append',required=True)
     parser.add_argument('--expected-device-name')
     args=parser.parse_args()
+    for snapshot in args.snapshot:
+        for name in ('MANIFEST.json','STATE.json','model.pt'):
+            if not (snapshot/name).is_file():
+                raise ValueError('OPTIMIZER_SNAPSHOT_MISSING:'+str(snapshot/name))
     args.output.mkdir(parents=True,exist_ok=True)
     root=Path(__file__).resolve().parents[1]
     config=dict(arguments={k:([str(p) for p in v] if isinstance(v,list) else str(v))

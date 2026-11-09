@@ -80,6 +80,7 @@ def target_surfaces(model,features):
 
 def export_components(model,root):
     from tools.run_discrete_curve_probe import write
+    from app.weight_space_diagnostics import tensor_summary
     root=Path(root);root.mkdir(parents=True,exist_ok=True)
     components={}
     for name,value in model.loss.state_dict().items():
@@ -93,6 +94,13 @@ def export_components(model,root):
     for name,state in components.items():
         path=root/(name+'.pt');path.parent.mkdir(parents=True,exist_ok=True)
         torch.save(state,path);files[str(path.relative_to(root))]=file_sha(path)
+    profile={name:{key:tensor_summary(value) for key,value in state.items()
+                   if value.is_floating_point()} for name,state in components.items()}
+    profile_path=root/'WEIGHT_PROFILE.json'
+    write(profile_path,dict(schema='component_weight_profile.v1',components=profile,
+        scope='descriptive finite/norm/singular-value summaries; not feature importance or capacity',
+        matrix_layout='first tensor axis versus flattened remaining axes'))
+    files[profile_path.name]=file_sha(profile_path)
     write(root/'MANIFEST.json',dict(recipe=model.recipe,effective=model.effective,files=files,
           scope='component tensors from one coherent SAC checkpoint; full bundle is authoritative'))
     return files
