@@ -46,6 +46,11 @@ validation over its matched control in both replicas, but not consistently over
 the unchanged actor. Reward-only stochastic gains do not replicate in sign.
 All60 accounts meet activity; sources unchanged; the bounded queue is complete.
 
+[Contrast238](238_ACTOR_PRESERVATION_CONTRAST.md): authorized fixed-critic actor
+preservation comparison, native vs learning-rate/3 vs frozen-parent KL penalty,
+two paired seeds, full native accounts through256 updates. No feature or strategy
+changes. Source parity and reproduction of prior1/8/32 native endpoints required.
+
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
 [Feed review223](223_SELECTED70_FORWARD_CLOCK_REVIEW.md): previous four

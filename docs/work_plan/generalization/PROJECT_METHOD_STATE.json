@@ -1,6 +1,7 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "RANKING_REPLICATION_COMPLETE_PRESERVATION_NOT_YET_RESOLVED",
+  "current_stage": "ACTOR_PRESERVATION_CONTRAST_PREPARATION",
+  "actor_preservation": {"design": "../238_ACTOR_PRESERVATION_CONTRAST.md", "owner_authorized": true, "replicas": ["r19","r43"], "arms": ["native","lr_div3","kl_parent"], "launch_verified": false, "model_promoted": false},
   "ranking_replication_terminal": {"results": "../237_RANKING_REPLICATION_RESULTS.md", "identity": "36b1444e47a4fdf4c9fddd67bffa643786d6f3e0cd8e5aafd351f497687b0e4d", "finished_at": "2026-11-09T16:50:04.950236+00:00", "seconds": 2318.2065531859407, "verified_files": 1190, "completed_arms": 10, "accounts": 60, "all_accounts_eligible": true, "post_reboot_verified": true, "greedy_validation_return_pct": [14.05737855000003,12.951097500000106], "greedy_paired_mean_return_pp": 0.7905368750000337, "source_champions_unchanged": true, "model_promoted": false, "queue_running": false},
   "ranking_uplift_attribution": {"finished_at": "2026-11-09T16:12:12.365410+00:00", "identity": "d2b104c63eada90fe49113339795ac1d83c02fa433d85d5ec992b6ec6e9145bb", "verified_files": 6, "reconciliation_error_usd": 0.0, "validation_unchanged_delta_usd": 80.78365000000122, "validation_control32_delta_usd": 190.26240000000507, "validation_nonzero_changes": 5, "nonzero_change_kind": "flat SELL-to-NOP; three helpful and two harmful", "next_stage": "r19 CPU shards verified running"},
   "ranking_followup": {"design": "../236_RANKING_ATTRIBUTION_AND_REPLICATION.md", "replicas": ["r19", "r43"], "arms": 5, "launch_verified": true, "runtime": "c3fb4a69", "launched_at": "2026-11-09T16:11:19Z", "focused_tests_passed": 44, "gpu_gate": "PASS", "cpu_workers": 2, "cpu_shard_weights": [5,2], "source_champions_unchanged": true, "model_promoted": false},
@@ -47,7 +48,7 @@
   "stages_passed": ["DISCOVERY", "REQUIREMENTS", "ACCEPTANCE_TEST_DESIGN", "UNIT_TESTS", "REAL_REPLAY_AUTHENTICATION", "FROZEN_MODEL_DIAGNOSIS", "G1_REPORT"],
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
-  "next_allowed_actions": ["preserve selected69 and selected70 source champions plus all four bounded correction endpoints", "attribute greedy-correction account improvement and replicate correction with new TRAIN sampling/update seeds", "separate stochastic reward-only continuation from entropy and greedy-policy effects before claiming mechanism", "isolate position ambiguity without observation changes", "continue forward integration independently using explicit checkpoint identities"],
+  "next_allowed_actions": ["execute authorized238 fixed-critic actor preservation contrast with paired native parity", "preserve all source champions and correction endpoints", "isolate position ambiguity without observation changes", "continue forward integration independently using explicit checkpoint identities"],
   "policy_return_calibration_results": "../215_FROZEN_POLICY_RETURN_CALIBRATION_RESULTS.md",
   "policy_return_calibration_identity": "ffa695f1f6032f288ab5c14b46d6d5de26100c18b1af3f02fbc3190a6d2c8aee",
   "policy_return_calibration_verification": {"accounts": 24, "verified_files": 153, "focused_tests_passed": 14, "independent_return_checks": 408, "maximum_return_discrepancy": 1.9984014443252818e-15, "weights_unchanged": true, "model_promoted": false},
