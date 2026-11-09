@@ -65,3 +65,21 @@ Use mean, range and paired differences descriptively. Two new seeds do not
 support a broad robustness claim or independence assumption. Success requires
 looking at ranking and account behavior separately; neither alone proves the
 other. Retain reports of early-close counts and helpful/harmful outcomes.
+
+## Execution Receipt
+
+Runtime `c3fb4a69` published to master. Focused CPU verification:44 passed,
+including native attribution reconciliation, altered support rejection,
+seed forwarding, weighted ownership, critic gradient scope, ordered supervisor
+execution, negative-result retention and resume/config identity checks.
+Primary GPU launch gate passed with Torch CUDA and explicit RTX5090 identity.
+The persistent supervisor started2026-11-09T16:11:19Z; native attribution is
+the first stage. This is a launch receipt, not a replication completion claim.
+Both source champion file hashes remain unchanged. No successor policy is
+promoted automatically. Full private artifacts are under
+`/var/tmp/sac70-ranking-followup-20261109`; its PROGRESS/DONE/FAILED records
+are the current execution authority, with per-replica shard and fit receipts.
+
+Pre-measurement estimate for the entire queue:35-50 minutes from launch,
+using measured prior shard runtimes,5:2 ownership and the additional fifth arm.
+This estimate is replaced by actual progress, not treated as an execution result.
