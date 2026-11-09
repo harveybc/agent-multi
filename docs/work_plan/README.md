@@ -73,6 +73,11 @@ two replicas of absolute-return versus action-gap critic calibration, followed
 by identical KL-anchored actor updates. Sequential primary-GPU queue with
 automatic collection; source policies remain unchanged and no promotion occurs.
 
+[Results243](243_ACTION_ADVANTAGE_CALIBRATION_RESULTS.md): all four arms and
+125 artifacts verified; controls reproduced. New-minus-control validation
+effects are0 and+0.11855pp at the fixed endpoint. Monitor ranking is mixed;
+source policies remain intact. This bounded queue and collector have finished.
+
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
 [Feed review223](223_SELECTED70_FORWARD_CLOCK_REVIEW.md): previous four

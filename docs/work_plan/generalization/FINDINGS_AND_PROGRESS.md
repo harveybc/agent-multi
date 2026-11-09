@@ -93,3 +93,14 @@ Small average KL hides local changes and not all affected rows are near ties.
 In this validation event panel cash and discounted-reward signs agree, so a
 different fitness is not indicated by that explanation. No training, new input,
 source mutation or validation-fitted margin threshold occurred.
+
+## 2026-11-09: Action-Gap Calibration Has Small Mixed Benefit
+
+F-ACTION-GAP-CALIBRATION: [243](../243_ACTION_ADVANTAGE_CALIBRATION_RESULTS.md)
+authenticates all four arms and reproduces both absolute controls exactly.
+Pairwise-plus-mean calibration improves fit-anchor ordering and TRAIN return
+in both replicas. Fixed256 VALIDATION effects against control are0 and+0.11855pp.
+Monitor ordering falls in one replica and rises in the other; early-close
+harmfulness counts are unchanged. No consistent improvement over the untouched
+parent is established. Preserve this candidate and inspect its changed actions
+before claiming that critic ordering or refinement has been repaired.
