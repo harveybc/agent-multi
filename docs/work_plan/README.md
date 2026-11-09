@@ -57,6 +57,11 @@ both KL and lower rate improve final validation over their native controls,
 but neither consistently improves the unchanged parent. Sources preserved;
 no automatic promotion or active training remains in this bounded queue.
 
+[Attribution240](240_ANCHORED_ACTION_ATTRIBUTION.md) is authorized: inspect all
+KL endpoint action changes in both seeds/periods, reconcile native account effects,
+and compare same-state reward gaps with critic ordering and actor margins.
+No training, new strategy thresholds or source checkpoint replacement.
+
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
 [Feed review223](223_SELECTED70_FORWARD_CLOCK_REVIEW.md): previous four
