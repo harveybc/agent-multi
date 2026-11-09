@@ -93,3 +93,26 @@ caught before any contrast launch; it is not a finding about historical runs.
 The runtime pins source hashes and exports its complete effective design.
 The dedicated Ruff executable is absent in this checkout, so lint has not been
 claimed. CLI import and the focused pytest suite are the executable preflight.
+
+## Verified Launch
+
+Runtime `f6a78476`, started2026-11-09 at14:05:35UTC. Identity:
+`427ab5cd02858245e021ae98d2ab3a88f694bf6a34379230cfa1e61fb6de4b57`.
+Two CPU shards are producing receipts; the queue then copies and verifies the
+secondary shard, runs the four arms sequentially on RTX5090 and collects the
+complete sealed results. Actual cohort:379 states,284 fit and95 diagnostic.
+The2021 long stratum contains only27 eligible states, all included without
+duplication, instead of the maximum32. All four TRAIN years are represented.
+
+GPU readiness passed. A separate real-checkpoint CUDA canary verified numerical
+forward parity, nonzero updates to optimizer-owned critic-head tensors only,
+and exact frozen-actor logits across the entire original valid input support.
+No canary weights were saved. Focused CPU coverage totals39 tests, including
+table/PNG generation. The optional GPU test skips without explicit artifacts;
+it was separately executed successfully on the assigned device.
+
+The reporting utility produces `TRADING.csv`, `CALIBRATION.csv`,
+`ACTION_REGRET.png` and `TRADING_RETURNS.png` plus an independent hash receipt
+after successful queue completion. Fit artifacts remain sealed and unchanged.
+Plots use **update counts**, not fictitious epochs; calibration monitor anchors
+are explicitly distinct from annual trading validation.
