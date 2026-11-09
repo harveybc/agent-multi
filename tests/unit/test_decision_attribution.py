@@ -43,6 +43,7 @@ def test_native_telescoping_and_entropy_convention(curve_env):
         _,reward,_,duration=trial.step(0)
         expected+=discount*reward;discount*=trial.gamma**duration;first=False
     assert actual['soft_return']==pytest.approx(expected,abs=1e-12)
+    assert actual['reward_return']==pytest.approx(continuation(env,zero,0)['soft_return'],abs=1e-12)
     assert state_view(env)==before
     base=continuation(env,zero,0)['net_usd'];previous=base;contributions=[]
     while not env.finished:

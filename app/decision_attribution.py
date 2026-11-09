@@ -30,7 +30,7 @@ def continuation(snapshot,signals,first_action,probabilities=None,alpha=0.):
     if snapshot.finished:raise ValueError('ATTRIBUTION_TERMINAL_START')
     if first_action not in (0,1,2):raise ValueError('ATTRIBUTION_ACTION')
     before=state_view(snapshot);env=fork_env(snapshot);first=True
-    discount=1.;soft=0.;first_effect=None
+    discount=1.;soft=0.;reward_return=0.;first_effect=None
     while not env.finished:
         row=int(env.rows[env.bar]);action=int(first_action if first else signals[row])
         if not first and probabilities is not None:
@@ -40,7 +40,7 @@ def continuation(snapshot,signals,first_action,probabilities=None,alpha=0.):
         old_entries=env.engine.counts['entries'];old_closes=env.engine.counts['closes']
         old_counts=dict(env.engine.counts)
         _,reward,_,duration=env.step(action)
-        soft+=discount*reward;discount*=env.gamma**duration
+        soft+=discount*reward;reward_return+=discount*reward;discount*=env.gamma**duration
         if first:
             first_effect=dict(command=env.last_command,reward=float(reward),duration=duration,
                 entries=env.engine.counts['entries']-old_entries,
@@ -53,7 +53,7 @@ def continuation(snapshot,signals,first_action,probabilities=None,alpha=0.):
     if abs(net-sum(t['net_usd'] for t in e.trades))>1e-6:
         raise ValueError('ATTRIBUTION_CASH_IDENTITY')
     return dict(balance=float(e.balance),net_usd=net,trades=len(e.trades),
-        soft_return=float(soft),first_effect=first_effect,parent_unchanged=True)
+        soft_return=float(soft),reward_return=float(reward_return),first_effect=first_effect,parent_unchanged=True)
 
 
 def reconcile(contributions,reference,candidate,tolerance=1e-6):

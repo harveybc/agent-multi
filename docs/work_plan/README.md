@@ -23,6 +23,12 @@ to added short entries; TRAIN also exposes a harmful suppressed early close.
 The next refinement gate is alternative-action ranking and execution-policy
 consistency,not average critic RMSE alone. Both source champions remain intact.
 
+[Contrast234](234_PAIRED_ACTION_RANKING_CONTRAST.md) is owner-approved: two CPU
+shards generate preselected TRAIN same-state alternative-action outcomes, then
+four sequential arms compare the uncorrected control, chosen-action calibration,
+paired stochastic calibration and paired greedy calibration. Only critic heads
+are corrected, followed by matched bounded actor updates; no automatic promotion.
+
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
 [Feed review223](223_SELECTED70_FORWARD_CLOCK_REVIEW.md): previous four
