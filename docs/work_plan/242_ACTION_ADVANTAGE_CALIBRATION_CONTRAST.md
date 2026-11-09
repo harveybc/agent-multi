@@ -64,3 +64,13 @@ drawdown, buy/sell counts and harmful closure diagnostics in subsequent review.
 Do not equate lower calibration loss with better trading or infer that shared
 actor interference or position ambiguity has been solved. Preserve all arms
 and report inconsistent replicas. This experiment introduces no new signals.
+
+## Launch Receipt
+
+Runtime75a78cc4 launched2026-11-09T19:31:27Z on the primary RTX5090 after
+the GPU readiness gate passed. The first absolute arm reached256 critic
+updates with frozen-state checks. CPU suite:27 passed; worker suite:13 passed,
+including two real-checkpoint CUDA gradient/frozen-actor canaries. The packaged
+Ruff executable is absent in this checkout, so no lint-clean claim is made.
+Persistent sequential service and independent authenticated collector are
+active. Output root: `/var/tmp/sac70-advantage-calibration-20261109`.

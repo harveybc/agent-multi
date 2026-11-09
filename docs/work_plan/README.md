@@ -68,6 +68,11 @@ harmful validation occurrences have wrong critic action ordering; one actor
 change is contrary to critic preference. Small mean KL does not prevent local
 class changes. No validation-fitted filter, source replacement or training.
 
+[Contrast242](242_ACTION_ADVANTAGE_CALIBRATION_CONTRAST.md) is launched:
+two replicas of absolute-return versus action-gap critic calibration, followed
+by identical KL-anchored actor updates. Sequential primary-GPU queue with
+automatic collection; source policies remain unchanged and no promotion occurs.
+
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
 [Feed review223](223_SELECTED70_FORWARD_CLOCK_REVIEW.md): previous four
