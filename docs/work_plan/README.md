@@ -11,6 +11,12 @@ Inference, frozen selection and recovery never reset weights. The bounded
 preserved-policy probe tests native accounts and bootstrap recurrence;229 alone
 is not a trading improvement. Keep69 and70 reference artifacts unchanged.
 
+[Probe231](231_PRESERVED_POLICY_RESTORATION_RESULTS.md) is complete: fresh
+heads alone do not prevent small actor updates from reducing VALIDATION.
+[Attribution232](232_CHANGED_DECISION_ATTRIBUTION_PLAN.md) now identifies each
+changed action with same-state native continuations, chronological account
+reconciliation and frozen critic comparisons; no promotion or new training.
+
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
 [Feed review223](223_SELECTED70_FORWARD_CLOCK_REVIEW.md): previous four

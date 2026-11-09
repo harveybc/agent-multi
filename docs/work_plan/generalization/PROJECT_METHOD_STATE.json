@@ -1,6 +1,7 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "PRESERVED_POLICY_PROBE_COMPLETE_ACTION_SENSITIVITY_NEXT",
+  "current_stage": "CHANGED_DECISION_ATTRIBUTION_VERIFIED_READY",
+  "changed_decision_attribution": {"design": "../232_CHANGED_DECISION_ATTRIBUTION_PLAN.md", "unit_tests_passed": 23, "arms": ["retained", "fresh"], "actor_updates": [1, 8, 32], "periods": ["TRAIN", "VALIDATION"], "stochastic_seeds": [7,19,43], "model_promoted": false, "launch_verified": false},
   "preserved_policy_results": "../231_PRESERVED_POLICY_RESTORATION_RESULTS.md",
   "preserved_policy_terminal": {"finished_at": "2026-11-09T11:14:04.820428+00:00", "seconds": 563.253517006, "verified_files": 94, "retained_calibration_rmse": 0.6179071946120516, "fresh_calibration_rmse": 0.6179961077502819, "fresh_actor1_train_return_pct": 11.945720650001732, "fresh_actor1_validation_return_pct": 13.808488650000072, "fresh_actor32_validation_return_pct": 12.713701150000034, "all_candidate_accounts_active": true, "model_promoted": false, "successor_running": false},
   "findings_register": "FINDINGS_AND_PROGRESS.md",
