@@ -1,6 +1,7 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "REALIZED_RETURN_CRITIC_ANCHOR_RUNNING",
+  "current_stage": "REALIZED_RETURN_CRITIC_ANCHOR_COMPLETE_RESIDUAL_UNRESOLVED",
+  "return_anchor_terminal": {"finished_at": "2026-11-08T17:28:52.935828+00:00", "seconds": 262.2644313050114, "verified_files": 6, "updates": 4096, "train_bias_seed7": -2.4745314908830016, "train_rmse_seed7": 5.006719574358941, "actor_unchanged": true, "beats_constant_reference": false, "model_promoted": false, "successor_launched": false},
   "return_anchor_identity": "085b3c5b79768fea34f813693b59be3699de00af96e494f3c5cb9c70945c4305",
   "return_anchor_runtime": "4ce3eba7",
   "return_anchor_launch_verification": {"cpu_passed": 33, "cuda_only_skipped": 1, "train_rows": 24025, "schedule_prefix_matches_control": true, "first_updates_completed": 256, "actor_unchanged": true, "model_promoted": false},

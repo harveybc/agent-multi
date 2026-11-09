@@ -50,3 +50,32 @@ all24025 TRAIN rows covered, initial three-trajectory calibration reproduced,
 and the first256 updates completed with actor and encoders unchanged. The source
 replay is reused read-only. Focused tests:33 passed, one CUDA-only test skipped.
 This receipt does not assert the4096-update endpoint has completed.
+
+## Verified Completion
+
+The worker completed at2026-11-08T17:28:52.935828Z (12:28:52 America/Bogota),
+in262.264 seconds. All six files listed in DONE.json, including both critic
+checkpoints, were collected and independently checked against their SHA256
+digests. Actor and frozen-parameter equality hold at every recorded checkpoint.
+
+| Updates | TRAIN critic bias, seed7 | TRAIN critic RMSE, seed7 |
+|---:|---:|---:|
+| 0 | -25.021730 | 25.525045 |
+| 256 | -21.563786 | 22.132774 |
+| 1024 | -14.637509 | 15.427805 |
+| 2048 | -8.224373 | 9.448890 |
+| 4096 | -2.474531 | 5.006720 |
+
+At4096, alternate action trajectories19/43 have RMSE5.008122/5.001600.
+These are different action draws over the same TRAIN period, not independent
+market years. The endpoint remains worse than the constant-zero reference
+(seed7 RMSE0.295424). Reduced offset is therefore not sufficient calibration,
+and no trading-model promotion or generalization improvement follows.
+
+Interpretation: the critic heads can move substantially when trained against
+realized returns, unlike the earlier bootstrap controls at equal1024-update
+budget. The extended4096 result does not isolate why residual error remains.
+Next diagnostic design: separate retained optimizer/head initialization from
+feature-to-target fit on the same fixed replay, with actor/encoders frozen and
+constant predictors as explicit controls. No successor run was launched by
+this completion review; the selected epoch0 policy remains unchanged.
