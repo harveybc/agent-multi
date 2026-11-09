@@ -9,6 +9,7 @@ results without treating a calibration result as a profit improvement.
 |2026-11-09|F-CRITIC-GRADIENT|Degraded actor's critic-driven gradient norm78.27x entropy term; encoder fixed|[227](../227_ACTOR_LEARNING_MECHANISM_RESULTS.md)|Investigate critic action gaps; not evidence that inputs are useless|
 |2026-11-09|F-ADAM-RESET|Empty AdamW state alone worsens matched4096-update calibration:RMSE5.00672 ->6.06244|[227](../227_ACTOR_LEARNING_MECHANISM_RESULTS.md)|Do not treat optimizer-memory reset alone as the remedy|
 |2026-11-09|F-CRITIC-HEAD-RESET|Same frozen representation, empty optimizer in both arms: fresh online heads reduce final RMSE6.06244 ->0.29032; zero-Q reference0.29542|[229](../229_CRITIC_HEAD_INITIALIZATION_RESULTS.md)|Owner adopts fresh critic heads plus own-policy calibration for new transferred SAC refinements; never reset actor, inference, selection evaluation or resume|
+|2026-11-09|F-PRESERVED-HEAD-SCOPE|On preserved epoch0,retained/fresh heads converge to RMSE0.617907/0.617996; fresh/1 improves TRAIN with identical VAL,8/32 actor updates degrade VAL|[231](../231_PRESERVED_POLICY_RESTORATION_RESULTS.md)|Reset benefit is not universal; calibration alone has not solved refinement. Keep source champions and inspect action-gap/decision sensitivity before long joint training|
 
 ## F-CRITIC-HEAD-RESET Details
 
