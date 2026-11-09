@@ -2,6 +2,10 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "run_critic_fit_probe.py": {
+   "purpose": "Owner-authorized native TRAIN label coverage audit followed by fixed small-set critic-head and conditional critic-representation fitting, preserving actor and source weights",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
+  },
   "attribute_advantage_actions.py": {
    "purpose": "Frozen paired advantage-versus-absolute action attribution with exact native account reconciliation and separately matched critic-calibration continuations; no training",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"

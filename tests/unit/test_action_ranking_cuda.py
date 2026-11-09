@@ -7,8 +7,9 @@ import pytest
 import torch
 
 
-@pytest.mark.parametrize('objective',['absolute','advantage'])
-def test_real_calibrated_head_gradients_and_frozen_actor(objective):
+@pytest.mark.parametrize('objective,scope',[('absolute','heads'),('advantage','heads'),
+                                          ('advantage','critic_representation')])
+def test_real_calibrated_head_gradients_and_frozen_actor(objective,scope):
     root=os.environ.get('ACTION_RANKING_SOURCE')
     probe=os.environ.get('ACTION_RANKING_PROBE')
     surfaces=os.environ.get('ACTION_RANKING_SURFACES')
@@ -21,6 +22,7 @@ def test_real_calibrated_head_gradients_and_frozen_actor(objective):
     from app.frozen_recipe_inputs import file_sha
     from app.three_signal_learning import emit
     from tools.diagnose_warmstart_drift import set_arm
+    from app.critic_fit_probe import set_scope
     from tools.run_structural_sac_refit import authenticate,market_for
     torch.set_num_threads(1)
     torch.backends.cuda.matmul.allow_tf32=False
@@ -35,7 +37,7 @@ def test_real_calibrated_head_gradients_and_frozen_actor(objective):
         actor=model.surfaces(x).clone();q0=model.q_surfaces(x).clone()
     np.testing.assert_allclose(actor.cpu().numpy(),np.load(surfaces)['reference'][indices],rtol=2e-5,atol=2e-5)
     before={n:p.detach().clone() for n,p in model.loss.named_parameters()}
-    set_arm(model,'critic_only');clear_optimizer_memory(model.optimizer)
+    set_scope(model,scope);clear_optimizer_memory(model.optimizer)
     model.optimizer.zero_grad(set_to_none=True)
     q=differentiable_q(model,x)
     torch.testing.assert_close(q,q0,rtol=2e-5,atol=2e-5)
@@ -43,7 +45,9 @@ def test_real_calibrated_head_gradients_and_frozen_actor(objective):
     target=q0.mean(0)+torch.tensor([.1,-.1,.2],device='cuda')
     (target_loss if objective=='absolute' else advantage_loss)(q,target).backward();model.optimizer.step()
     changed=[n for n,p in model.loss.named_parameters() if not torch.equal(p,before[n])]
-    assert changed and all(n.startswith('qvalue_') and '.head.' in n for n in changed)
+    assert changed and all(n.startswith('qvalue_network_params.') for n in changed)
+    if scope=='heads':assert all('.head.' in n for n in changed)
+    else:assert any('.encoder.' in n for n in changed)
     with torch.no_grad():torch.testing.assert_close(model.surfaces(x),actor,rtol=0,atol=0)
     set_arm(model,'actor_only')
     full,_=emit(model,market.inputs)
