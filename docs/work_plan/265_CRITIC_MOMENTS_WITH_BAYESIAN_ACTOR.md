@@ -61,3 +61,12 @@ their pinned seed, without mixing evidence. Preserve selected69 and all264
 artifacts. Aggregate every seed, including inactive/regressing outcomes.
 Current master-plan position remains phase2 post-selection refinement;
 return to selection only after a qualified change to the preserved model.
+
+## Verified launch
+
+Runtime cb18787a; 2026-11-10 19:46:40 UTC / 14:46:40 Bogota.
+33 CPU tests passed,1 CUDA-only test skipped locally; all34 passed on the
+RTX4090 worker. GPU admission gate PASS. The archived SmoothL1 diagnostic
+completed with zero optimizer updates. M1 reached64 calibration updates with
+no service restart. Sequential worker, final aggregator and independent
+hash-verifying collector are running; no result was promoted at launch.
