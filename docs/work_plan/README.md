@@ -108,6 +108,10 @@ Monitor is held out of these updates, not untouched by source pretraining.
 but worsens monitor ordering, especially open-long decisions. Actor unchanged;
 no model promoted. CPU/GPU queue and collection completed successfully.
 
+[Partial critic250](250_PARTIAL_CRITIC_UNFREEZING.md): owner-authorized module
+restoration diagnosis and two last-core+head fits against the archived controls.
+Exact scope6534 parameters, unchanged panel and schedules, no actor updates.
+
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
 [Feed review223](223_SELECTED70_FORWARD_CLOCK_REVIEW.md): previous four

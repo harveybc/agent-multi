@@ -8,7 +8,7 @@ import torch
 
 
 @pytest.mark.parametrize('objective,scope',[('absolute','heads'),('advantage','heads'),
-                                          ('advantage','critic_representation')])
+                                          ('advantage','critic_representation'),('advantage','last_core')])
 def test_real_calibrated_head_gradients_and_frozen_actor(objective,scope):
     root=os.environ.get('ACTION_RANKING_SOURCE')
     probe=os.environ.get('ACTION_RANKING_PROBE')
@@ -37,7 +37,12 @@ def test_real_calibrated_head_gradients_and_frozen_actor(objective,scope):
         actor=model.surfaces(x).clone();q0=model.q_surfaces(x).clone()
     np.testing.assert_allclose(actor.cpu().numpy(),np.load(surfaces)['reference'][indices],rtol=2e-5,atol=2e-5)
     before={n:p.detach().clone() for n,p in model.loss.named_parameters()}
-    set_scope(model,scope);clear_optimizer_memory(model.optimizer)
+    if scope=='last_core':
+        from app.partial_critic import set_partial_scope
+        mapping=set_partial_scope(model)
+        assert sum(v['elements'] for v in mapping.values())==6534
+    else:set_scope(model,scope)
+    clear_optimizer_memory(model.optimizer)
     model.optimizer.zero_grad(set_to_none=True)
     q=probe_q(model,x)
     torch.testing.assert_close(q,q0,rtol=2e-5,atol=2e-5)
@@ -47,6 +52,10 @@ def test_real_calibrated_head_gradients_and_frozen_actor(objective,scope):
     changed=[n for n,p in model.loss.named_parameters() if not torch.equal(p,before[n])]
     assert changed and all(n.startswith('qvalue_network_params.') for n in changed)
     if scope=='heads':assert all('.head.' in n for n in changed)
+    elif scope=='last_core':
+        assert set(changed)<=set(mapping)
+        assert any('.core.1.' in n for n in changed)
+        assert any('.head.' in n for n in changed)
     else:assert any('.encoder.' in n for n in changed)
     with torch.no_grad():torch.testing.assert_close(model.surfaces(x),actor,rtol=0,atol=0)
     set_arm(model,'actor_only')
