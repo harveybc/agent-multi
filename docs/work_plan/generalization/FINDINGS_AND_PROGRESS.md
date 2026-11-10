@@ -259,3 +259,21 @@ Critic refinement and experimental controller integration remain separate.
 Existing predictor phase4 configurations and synthetic transport acceptance
 were read, not executed or admitted: their compatibility with current joint
 RL features is unverified. Audit real source coverage before choosing augmentation.
+
+## F-SELECTED69-OPENING-DRIFT-AND-MIXED-CRITIC-ERRORS
+
+Results267,2026-11-10:18 authenticated accounts,779 changed-signal occurrences,
+zero account attribution discrepancy. All58 harmful validation occurrences
+are added entries; no added early-close command explains this regression.
+In TRAIN,20/60 harmful occurrences conflict with all three matched soft-return
+draws,21 change against Q, and47 have a different position from calibration.
+These overlapping associations are not independent events or causal proof.
+TRAIN-only decision remains MIXED_MECHANISMS, not an automatic loss replacement.
+
+Weight/bias/posterior decomposition closes within7e-7. Posterior averaging's
+mean absolute boundary term2.58e-7 is far smaller than weight0.02966 and
+bias0.01064 terms. Reduced probability uncertainty did not improve trading;
+do not use confidence shrinkage or critic RMSE alone as a promotion criterion.
+Keep the69-input source. Next isolate flat-opening state/target consistency
+and actor movement against Q on TRAIN, with unchanged/helpful controls, before
+further refinement. All worker jobs and collection finished; no training launched.

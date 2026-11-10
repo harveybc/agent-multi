@@ -1,0 +1,11 @@
+{
+  "identities": {
+    "mean_var_05": "dda1e91fb35353f76871647b6ca62bf1bf2ac63d11da9fac874930f6b2bc48fb",
+    "mean_var_1": "cfd9239ae8d2bdb5974019676d2a856fe35bb314f39c140ed2d677f335c8f009",
+    "smooth_l1": "35620e0b3c773a1b8195346699e79e319de3a17c70269787893fd1301fc925fa"
+  },
+  "accounts": 18,
+  "event_occurrences": 779,
+  "recommendation": "MIXED_MECHANISMS: inspect matched TRAIN harmful events and alias strata; no justified single automatic training correction",
+  "model_promoted": false
+}

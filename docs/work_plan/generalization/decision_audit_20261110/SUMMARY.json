@@ -1,0 +1,659 @@
+{
+  "accounts": [
+    {
+      "delta_usd": -201.00307999994766,
+      "events": 53,
+      "flags_overlap": true,
+      "harmful": 9,
+      "harmful_counts": {
+        "actor_change_against_q": 1,
+        "all_soft_draws_favor_change": 0,
+        "calibration_position_mismatch": 2,
+        "entropy_score_favors_change": 8,
+        "q_soft_all_draws_conflict": 6
+      },
+      "harmful_loss_by_flag": {
+        "actor_change_against_q": 56.684260000001814,
+        "all_soft_draws_favor_change": 0.0,
+        "calibration_position_mismatch": 134.00883999999496,
+        "entropy_score_favors_change": 408.4652149999529,
+        "q_soft_all_draws_conflict": 321.2687599999517
+      },
+      "harmful_loss_usd": 465.1494749999547,
+      "helpful": 6,
+      "neutral": 38,
+      "objective": "smooth_l1",
+      "occurrences_not_independent": true,
+      "period": "VALIDATION",
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": -201.00307999994766,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "seed": 7
+    },
+    {
+      "delta_usd": -201.00307999994766,
+      "events": 53,
+      "flags_overlap": true,
+      "harmful": 9,
+      "harmful_counts": {
+        "actor_change_against_q": 1,
+        "all_soft_draws_favor_change": 0,
+        "calibration_position_mismatch": 2,
+        "entropy_score_favors_change": 8,
+        "q_soft_all_draws_conflict": 6
+      },
+      "harmful_loss_by_flag": {
+        "actor_change_against_q": 56.684260000001814,
+        "all_soft_draws_favor_change": 0.0,
+        "calibration_position_mismatch": 134.00883999999496,
+        "entropy_score_favors_change": 408.4652149999529,
+        "q_soft_all_draws_conflict": 321.2687599999517
+      },
+      "harmful_loss_usd": 465.1494749999547,
+      "helpful": 6,
+      "neutral": 38,
+      "objective": "smooth_l1",
+      "occurrences_not_independent": true,
+      "period": "VALIDATION",
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": -201.00307999994766,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "seed": 19
+    },
+    {
+      "delta_usd": -245.21966499995142,
+      "events": 55,
+      "flags_overlap": true,
+      "harmful": 10,
+      "harmful_counts": {
+        "actor_change_against_q": 1,
+        "all_soft_draws_favor_change": 0,
+        "calibration_position_mismatch": 2,
+        "entropy_score_favors_change": 9,
+        "q_soft_all_draws_conflict": 6
+      },
+      "harmful_loss_by_flag": {
+        "actor_change_against_q": 56.75197000001026,
+        "all_soft_draws_favor_change": 0.0,
+        "calibration_position_mismatch": 134.14987500000097,
+        "entropy_score_favors_change": 462.546244999985,
+        "q_soft_all_draws_conflict": 321.5036249999739
+      },
+      "harmful_loss_usd": 519.2982149999953,
+      "helpful": 7,
+      "neutral": 38,
+      "objective": "smooth_l1",
+      "occurrences_not_independent": true,
+      "period": "VALIDATION",
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": -245.21966499995142,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "seed": 43
+    },
+    {
+      "delta_usd": -79.41367499999978,
+      "events": 81,
+      "flags_overlap": true,
+      "harmful": 10,
+      "harmful_counts": {
+        "actor_change_against_q": 4,
+        "all_soft_draws_favor_change": 1,
+        "calibration_position_mismatch": 7,
+        "entropy_score_favors_change": 6,
+        "q_soft_all_draws_conflict": 4
+      },
+      "harmful_loss_by_flag": {
+        "actor_change_against_q": 83.51113500003703,
+        "all_soft_draws_favor_change": 0.2359299999952782,
+        "calibration_position_mismatch": 199.15589500003261,
+        "entropy_score_favors_change": 232.86476000001312,
+        "q_soft_all_draws_conflict": 177.82832500001314
+      },
+      "harmful_loss_usd": 316.37589500005015,
+      "helpful": 8,
+      "neutral": 63,
+      "objective": "smooth_l1",
+      "occurrences_not_independent": true,
+      "period": "TRAIN",
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": -79.41367499999978,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "seed": 7
+    },
+    {
+      "delta_usd": -24.90283500001715,
+      "events": 78,
+      "flags_overlap": true,
+      "harmful": 9,
+      "harmful_counts": {
+        "actor_change_against_q": 3,
+        "all_soft_draws_favor_change": 1,
+        "calibration_position_mismatch": 6,
+        "entropy_score_favors_change": 6,
+        "q_soft_all_draws_conflict": 4
+      },
+      "harmful_loss_by_flag": {
+        "actor_change_against_q": 28.98912999996719,
+        "all_soft_draws_favor_change": 0.240139999998064,
+        "calibration_position_mismatch": 145.21772999999484,
+        "entropy_score_favors_change": 234.0175350000154,
+        "q_soft_all_draws_conflict": 178.7066200000245
+      },
+      "harmful_loss_usd": 263.0066649999826,
+      "helpful": 8,
+      "neutral": 61,
+      "objective": "smooth_l1",
+      "occurrences_not_independent": true,
+      "period": "TRAIN",
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": -24.90283500001715,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "seed": 19
+    },
+    {
+      "delta_usd": -58.21332999999868,
+      "events": 91,
+      "flags_overlap": true,
+      "harmful": 13,
+      "harmful_counts": {
+        "actor_change_against_q": 5,
+        "all_soft_draws_favor_change": 1,
+        "calibration_position_mismatch": 9,
+        "entropy_score_favors_change": 8,
+        "q_soft_all_draws_conflict": 5
+      },
+      "harmful_loss_by_flag": {
+        "actor_change_against_q": 164.91241500000433,
+        "all_soft_draws_favor_change": 0.24000000000705768,
+        "calibration_position_mismatch": 335.9153899999619,
+        "entropy_score_favors_change": 296.12139999991814,
+        "q_soft_all_draws_conflict": 233.53544499992495
+      },
+      "harmful_loss_usd": 461.03381499992247,
+      "helpful": 11,
+      "neutral": 67,
+      "objective": "smooth_l1",
+      "occurrences_not_independent": true,
+      "period": "TRAIN",
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": -58.21332999999868,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "seed": 43
+    },
+    {
+      "delta_usd": -292.37681999997767,
+      "events": 16,
+      "flags_overlap": true,
+      "harmful": 5,
+      "harmful_counts": {
+        "actor_change_against_q": 1,
+        "all_soft_draws_favor_change": 1,
+        "calibration_position_mismatch": 2,
+        "entropy_score_favors_change": 4,
+        "q_soft_all_draws_conflict": 3
+      },
+      "harmful_loss_by_flag": {
+        "actor_change_against_q": 56.670994999998584,
+        "all_soft_draws_favor_change": 57.93661499999871,
+        "calibration_position_mismatch": 135.13156499999423,
+        "entropy_score_favors_change": 245.92304499999227,
+        "q_soft_all_draws_conflict": 187.98642999999356
+      },
+      "harmful_loss_usd": 302.59403999999085,
+      "helpful": 1,
+      "neutral": 10,
+      "objective": "mean_var_1",
+      "occurrences_not_independent": true,
+      "period": "VALIDATION",
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": -292.37681999997767,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "seed": 7
+    },
+    {
+      "delta_usd": -292.37681999997767,
+      "events": 16,
+      "flags_overlap": true,
+      "harmful": 5,
+      "harmful_counts": {
+        "actor_change_against_q": 1,
+        "all_soft_draws_favor_change": 1,
+        "calibration_position_mismatch": 2,
+        "entropy_score_favors_change": 4,
+        "q_soft_all_draws_conflict": 3
+      },
+      "harmful_loss_by_flag": {
+        "actor_change_against_q": 56.670994999998584,
+        "all_soft_draws_favor_change": 57.93661499999871,
+        "calibration_position_mismatch": 135.13156499999423,
+        "entropy_score_favors_change": 245.92304499999227,
+        "q_soft_all_draws_conflict": 187.98642999999356
+      },
+      "harmful_loss_usd": 302.59403999999085,
+      "helpful": 1,
+      "neutral": 10,
+      "objective": "mean_var_1",
+      "occurrences_not_independent": true,
+      "period": "VALIDATION",
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": -292.37681999997767,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "seed": 19
+    },
+    {
+      "delta_usd": -253.88540999998077,
+      "events": 17,
+      "flags_overlap": true,
+      "harmful": 5,
+      "harmful_counts": {
+        "actor_change_against_q": 1,
+        "all_soft_draws_favor_change": 1,
+        "calibration_position_mismatch": 2,
+        "entropy_score_favors_change": 4,
+        "q_soft_all_draws_conflict": 3
+      },
+      "harmful_loss_by_flag": {
+        "actor_change_against_q": 56.670994999998584,
+        "all_soft_draws_favor_change": 57.93661499999871,
+        "calibration_position_mismatch": 135.13156499999423,
+        "entropy_score_favors_change": 246.11758999999438,
+        "q_soft_all_draws_conflict": 188.18097499999567
+      },
+      "harmful_loss_usd": 302.78858499999296,
+      "helpful": 2,
+      "neutral": 10,
+      "objective": "mean_var_1",
+      "occurrences_not_independent": true,
+      "period": "VALIDATION",
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": -253.88540999998077,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "seed": 43
+    },
+    {
+      "delta_usd": 100.52309499995863,
+      "events": 34,
+      "flags_overlap": true,
+      "harmful": 3,
+      "harmful_counts": {
+        "actor_change_against_q": 1,
+        "all_soft_draws_favor_change": 1,
+        "calibration_position_mismatch": 3,
+        "entropy_score_favors_change": 2,
+        "q_soft_all_draws_conflict": 1
+      },
+      "harmful_loss_by_flag": {
+        "actor_change_against_q": 15.341294999998354,
+        "all_soft_draws_favor_change": 0.2694349999892438,
+        "calibration_position_mismatch": 97.91102500000125,
+        "entropy_score_favors_change": 82.56973000000289,
+        "q_soft_all_draws_conflict": 82.30029500001365
+      },
+      "harmful_loss_usd": 97.91102500000125,
+      "helpful": 7,
+      "neutral": 24,
+      "objective": "mean_var_1",
+      "occurrences_not_independent": true,
+      "period": "TRAIN",
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": 100.52309499995863,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "seed": 7
+    },
+    {
+      "delta_usd": 100.52309499995863,
+      "events": 35,
+      "flags_overlap": true,
+      "harmful": 3,
+      "harmful_counts": {
+        "actor_change_against_q": 1,
+        "all_soft_draws_favor_change": 1,
+        "calibration_position_mismatch": 3,
+        "entropy_score_favors_change": 2,
+        "q_soft_all_draws_conflict": 1
+      },
+      "harmful_loss_by_flag": {
+        "actor_change_against_q": 15.341294999998354,
+        "all_soft_draws_favor_change": 0.2694349999892438,
+        "calibration_position_mismatch": 97.91102500000125,
+        "entropy_score_favors_change": 82.56973000000289,
+        "q_soft_all_draws_conflict": 82.30029500001365
+      },
+      "harmful_loss_usd": 97.91102500000125,
+      "helpful": 7,
+      "neutral": 25,
+      "objective": "mean_var_1",
+      "occurrences_not_independent": true,
+      "period": "TRAIN",
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": 100.52309499995863,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "seed": 19
+    },
+    {
+      "delta_usd": 10.592834999981278,
+      "events": 40,
+      "flags_overlap": true,
+      "harmful": 5,
+      "harmful_counts": {
+        "actor_change_against_q": 1,
+        "all_soft_draws_favor_change": 1,
+        "calibration_position_mismatch": 4,
+        "entropy_score_favors_change": 4,
+        "q_soft_all_draws_conflict": 1
+      },
+      "harmful_loss_by_flag": {
+        "actor_change_against_q": 15.341294999998354,
+        "all_soft_draws_favor_change": 0.2694349999892438,
+        "calibration_position_mismatch": 152.7895649999955,
+        "entropy_score_favors_change": 174.2300800000121,
+        "q_soft_all_draws_conflict": 82.03359000000273
+      },
+      "harmful_loss_usd": 189.57137500001045,
+      "helpful": 8,
+      "neutral": 27,
+      "objective": "mean_var_1",
+      "occurrences_not_independent": true,
+      "period": "TRAIN",
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": 10.592834999981278,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "seed": 43
+    },
+    {
+      "delta_usd": -206.41475499997432,
+      "events": 23,
+      "flags_overlap": true,
+      "harmful": 5,
+      "harmful_counts": {
+        "actor_change_against_q": 1,
+        "all_soft_draws_favor_change": 1,
+        "calibration_position_mismatch": 2,
+        "entropy_score_favors_change": 4,
+        "q_soft_all_draws_conflict": 3
+      },
+      "harmful_loss_by_flag": {
+        "actor_change_against_q": 56.670994999998584,
+        "all_soft_draws_favor_change": 57.93661499999871,
+        "calibration_position_mismatch": 135.13156499999423,
+        "entropy_score_favors_change": 246.3442399999949,
+        "q_soft_all_draws_conflict": 188.4076249999962
+      },
+      "harmful_loss_usd": 303.0152349999935,
+      "helpful": 3,
+      "neutral": 15,
+      "objective": "mean_var_05",
+      "occurrences_not_independent": true,
+      "period": "VALIDATION",
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": -206.41475499997432,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "seed": 7
+    },
+    {
+      "delta_usd": -253.88540999998077,
+      "events": 21,
+      "flags_overlap": true,
+      "harmful": 5,
+      "harmful_counts": {
+        "actor_change_against_q": 1,
+        "all_soft_draws_favor_change": 1,
+        "calibration_position_mismatch": 2,
+        "entropy_score_favors_change": 4,
+        "q_soft_all_draws_conflict": 3
+      },
+      "harmful_loss_by_flag": {
+        "actor_change_against_q": 56.670994999998584,
+        "all_soft_draws_favor_change": 57.93661499999871,
+        "calibration_position_mismatch": 135.13156499999423,
+        "entropy_score_favors_change": 246.11758999999438,
+        "q_soft_all_draws_conflict": 188.18097499999567
+      },
+      "harmful_loss_usd": 302.78858499999296,
+      "helpful": 2,
+      "neutral": 14,
+      "objective": "mean_var_05",
+      "occurrences_not_independent": true,
+      "period": "VALIDATION",
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": -253.88540999998077,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "seed": 19
+    },
+    {
+      "delta_usd": -206.41475499997432,
+      "events": 26,
+      "flags_overlap": true,
+      "harmful": 5,
+      "harmful_counts": {
+        "actor_change_against_q": 1,
+        "all_soft_draws_favor_change": 1,
+        "calibration_position_mismatch": 2,
+        "entropy_score_favors_change": 4,
+        "q_soft_all_draws_conflict": 3
+      },
+      "harmful_loss_by_flag": {
+        "actor_change_against_q": 56.670994999998584,
+        "all_soft_draws_favor_change": 57.93661499999871,
+        "calibration_position_mismatch": 135.13156499999423,
+        "entropy_score_favors_change": 246.3442399999949,
+        "q_soft_all_draws_conflict": 188.4076249999962
+      },
+      "harmful_loss_usd": 303.0152349999935,
+      "helpful": 3,
+      "neutral": 18,
+      "objective": "mean_var_05",
+      "occurrences_not_independent": true,
+      "period": "VALIDATION",
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": -206.41475499997432,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "seed": 43
+    },
+    {
+      "delta_usd": 38.80685499996798,
+      "events": 44,
+      "flags_overlap": true,
+      "harmful": 5,
+      "harmful_counts": {
+        "actor_change_against_q": 2,
+        "all_soft_draws_favor_change": 1,
+        "calibration_position_mismatch": 5,
+        "entropy_score_favors_change": 3,
+        "q_soft_all_draws_conflict": 1
+      },
+      "harmful_loss_by_flag": {
+        "actor_change_against_q": 21.756445000015447,
+        "all_soft_draws_favor_change": 0.25256500000432425,
+        "calibration_position_mismatch": 159.533965000026,
+        "entropy_score_favors_change": 137.77752000001055,
+        "q_soft_all_draws_conflict": 82.24753500000406
+      },
+      "harmful_loss_usd": 159.533965000026,
+      "helpful": 7,
+      "neutral": 32,
+      "objective": "mean_var_05",
+      "occurrences_not_independent": true,
+      "period": "TRAIN",
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": 38.80685499996798,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "seed": 7
+    },
+    {
+      "delta_usd": 38.80685499996798,
+      "events": 43,
+      "flags_overlap": true,
+      "harmful": 5,
+      "harmful_counts": {
+        "actor_change_against_q": 2,
+        "all_soft_draws_favor_change": 1,
+        "calibration_position_mismatch": 5,
+        "entropy_score_favors_change": 3,
+        "q_soft_all_draws_conflict": 1
+      },
+      "harmful_loss_by_flag": {
+        "actor_change_against_q": 21.756445000015447,
+        "all_soft_draws_favor_change": 0.25256500000432425,
+        "calibration_position_mismatch": 159.533965000026,
+        "entropy_score_favors_change": 137.77752000001055,
+        "q_soft_all_draws_conflict": 82.24753500000406
+      },
+      "harmful_loss_usd": 159.533965000026,
+      "helpful": 7,
+      "neutral": 31,
+      "objective": "mean_var_05",
+      "occurrences_not_independent": true,
+      "period": "TRAIN",
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": 38.80685499996798,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "seed": 19
+    },
+    {
+      "delta_usd": 14.953489999965313,
+      "events": 53,
+      "flags_overlap": true,
+      "harmful": 7,
+      "harmful_counts": {
+        "actor_change_against_q": 2,
+        "all_soft_draws_favor_change": 1,
+        "calibration_position_mismatch": 5,
+        "entropy_score_favors_change": 5,
+        "q_soft_all_draws_conflict": 2
+      },
+      "harmful_loss_by_flag": {
+        "actor_change_against_q": 21.756445000015447,
+        "all_soft_draws_favor_change": 0.25256500000432425,
+        "calibration_position_mismatch": 158.7082500000197,
+        "entropy_score_favors_change": 205.94850000002953,
+        "q_soft_all_draws_conflict": 113.95798500001911
+      },
+      "harmful_loss_usd": 227.70494500004497,
+      "helpful": 9,
+      "neutral": 37,
+      "objective": "mean_var_05",
+      "occurrences_not_independent": true,
+      "period": "TRAIN",
+      "reconciliation": {
+        "chronological": true,
+        "delta_usd": 14.953489999965313,
+        "error_usd": 0.0,
+        "isolated_sum_is_account_effect": false
+      },
+      "seed": 43
+    }
+  ],
+  "by_period": {
+    "TRAIN": {
+      "delta_usd": 141.6763849997842,
+      "events": 499,
+      "flags_overlap": true,
+      "harmful": 60,
+      "harmful_counts": {
+        "actor_change_against_q": 21,
+        "all_soft_draws_favor_change": 9,
+        "calibration_position_mismatch": 47,
+        "entropy_score_favors_change": 39,
+        "q_soft_all_draws_conflict": 20
+      },
+      "harmful_loss_by_flag": {
+        "actor_change_against_q": 388.70590000004995,
+        "all_soft_draws_favor_change": 2.282069999981104,
+        "calibration_position_mismatch": 1506.676810000059,
+        "entropy_score_favors_change": 1583.8767750000152,
+        "q_soft_all_draws_conflict": 1115.1576250000198
+      },
+      "harmful_loss_usd": 1972.5826750000651,
+      "helpful": 72,
+      "neutral": 367,
+      "occurrences_not_independent": true
+    },
+    "VALIDATION": {
+      "delta_usd": -2152.5797949997122,
+      "events": 280,
+      "flags_overlap": true,
+      "harmful": 58,
+      "harmful_counts": {
+        "actor_change_against_q": 9,
+        "all_soft_draws_favor_change": 6,
+        "calibration_position_mismatch": 18,
+        "entropy_score_favors_change": 49,
+        "q_soft_all_draws_conflict": 36
+      },
+      "harmful_loss_by_flag": {
+        "actor_change_against_q": 510.1464600000054,
+        "all_soft_draws_favor_change": 347.61968999999226,
+        "calibration_position_mismatch": 1212.9569449999562,
+        "entropy_score_favors_change": 2756.246424999854,
+        "q_soft_all_draws_conflict": 2093.191204999848
+      },
+      "harmful_loss_usd": 3266.3928849998592,
+      "helpful": 31,
+      "neutral": 191,
+      "occurrences_not_independent": true
+    }
+  },
+  "event_occurrences": 779,
+  "identities": {
+    "mean_var_05": "dda1e91fb35353f76871647b6ca62bf1bf2ac63d11da9fac874930f6b2bc48fb",
+    "mean_var_1": "cfd9239ae8d2bdb5974019676d2a856fe35bb314f39c140ed2d677f335c8f009",
+    "smooth_l1": "35620e0b3c773a1b8195346699e79e319de3a17c70269787893fd1301fc925fa"
+  },
+  "model_promoted": false,
+  "optimizer_updates": 0,
+  "recommendation": "MIXED_MECHANISMS: inspect matched TRAIN harmful events and alias strata; no justified single automatic training correction",
+  "recommendation_scope": "TRAIN only; diagnostic, not a causal proof",
+  "unique_changed_events": 163
+}
