@@ -83,6 +83,7 @@ class FrozenRecipeInputs:
     @classmethod
     def from_frame(cls, recipe, frame):
         validate_recipe(recipe)
+        require('input_adapter' not in recipe['store'], 'EXPLICIT_INPUT_ADAPTER_REQUIRED')
         cols = recipe["tensor"]["columns"]
         names = [c["store_column"] for c in cols]
         ts = pd.DatetimeIndex(pd.to_datetime(frame.timestamp, utc=True)).as_unit("ns")
