@@ -88,7 +88,7 @@ signals,9 effective entry changes,258 suffixes, zero reconciliation error.
 The validation gain is two offsetting entry effects; neither has repaired Q
 ordering. Diagnostic and collector complete, original policies unchanged.
 
-[Critic diagnostic246](246_CRITIC_TRAIN_COVERAGE_AND_FIT.md) is running:
+[Critic diagnostic246](246_CRITIC_TRAIN_COVERAGE_AND_FIT.md), completed:
 native TRAIN coverage/label audit, then a fixed32-anchor fitting test in each
 replica. If heads alone fail the declared criterion, the same-start critic
 representation arm follows automatically. Actor and strategy are frozen.
@@ -97,6 +97,11 @@ representation arm follows automatically. Actor and strategy are frozen.
 Representation adaptation fits both32-example panels to100% pair ordering;
 heads-only does not. This confirms fitting capability, not generalization.
 Native label witnesses and original actor outputs remain exact. Queue complete.
+
+[Stratified contrast248](248_STRATIFIED_CRITIC_CONTRAST.md): authorized expanded
+native quarterly panels; fit2020-2022 and monitor2023 with disjoint label
+continuations. Compare heads versus representation, two seeds, unchanged actor.
+Monitor is held out of these updates, not untouched by source pretraining.
 
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
