@@ -128,6 +128,10 @@ incompatible exact action-gap targets. Identical-state controls and actor
 preservation pass. Large regret above the common-action bound remains; no claim
 that state aliasing explains all errors and no interface change deployed.
 
+[Role routing254](254_ROLE_ROUTED_CRITIC_CONTRAST.md): paired frozen-encoder
+shared versus externally routed value heads, six arms and native delayed-entry
+same-direction compatibility checks. Market inputs and actor remain unchanged.
+
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
 [Feed review223](223_SELECTED70_FORWARD_CLOCK_REVIEW.md): previous four
