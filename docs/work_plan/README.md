@@ -103,6 +103,11 @@ native quarterly panels; fit2020-2022 and monitor2023 with disjoint label
 continuations. Compare heads versus representation, two seeds, unchanged actor.
 Monitor is held out of these updates, not untouched by source pretraining.
 
+[Results249](249_STRATIFIED_CRITIC_RESULTS.md): all four arms completed and
+1500 artifacts verified. Critic representation adaptation improves fit ordering
+but worsens monitor ordering, especially open-long decisions. Actor unchanged;
+no model promoted. CPU/GPU queue and collection completed successfully.
+
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
 [Feed review223](223_SELECTED70_FORWARD_CLOCK_REVIEW.md): previous four

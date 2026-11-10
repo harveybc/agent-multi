@@ -139,3 +139,17 @@ The existing architecture can fit this diagnostic without growing. This is
 memorization, not generalization: monitor accuracy stays mixed, and monitor
 state distribution differs from the flat-only fitting set. Broaden coverage
 and compare trainability with state-specific monitors before actor refinement.
+# F-CRITIC-STRATIFIED-MONITOR-REGRESSION
+
+Results249,2026-11-10:1248/416 quota ceilings yielded1075 fit and351 monitor
+states across16 quarterly native episodes. All4278 action suffixes completed,
+witness error0.0. Identical initial metrics and minibatch schedules per seed.
+Full critic representation adaptation improved fit pair ordering to66.51/67.02%
+versus54.66/54.92% for heads, but monitor ordering fell to51.04/51.31% versus
+54.70/54.44%. The main deterioration is open-long decision ordering. Aggregate
+regret improves slightly, so do not collapse mixed metrics to one verdict.
+Early monitor gains decay with more updates while fit improves: evidence of
+overfitting in this calibration, not evidence that market inputs are useless.
+Source actors unchanged; diagnostic checkpoints not promoted. Follow-up should
+isolate module drift and state-dependent value conflicts before bounded actor
+refinement. Source pretraining already used the internal monitor year.
