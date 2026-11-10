@@ -82,3 +82,13 @@ CPU preflight: 30,234 valid windows, zero action disagreements after hidden
 embedding factorization, maximum logit difference 9.54e-7; TRAIN/VALIDATION
 accounts exactly reproduce the selected69 source. These are wiring results,
 not Bayesian trading results. No new training ran in this preflight.
+
+## Launch receipt
+
+Runtime `687a8ef3`, 2026-11-10 18:40:54 UTC (13:40:54 Bogota).
+RTX4090 Laptop gate PASS; native GPU reference passed; 64 common critic
+updates observed, actor unchanged, zero service restarts. Sequential six-arm
+worker and hash-verifying collector active. Worker has a 6 GiB memory ceiling,
+bounded failure restarts and completed-arm checksum verification. The collector
+copies final weights, arrays, plots and tables to the coordinator automatically.
+No Bayesian endpoint trading result existed at this launch receipt.
