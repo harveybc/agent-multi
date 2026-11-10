@@ -67,3 +67,39 @@ def test_transformed_recipe_rejects_raw_loader():
     rec=probe_recipe();rec['store']['input_adapter']={'kind':'causal_stl_seasonal_v1'};rec=seal_recipe(rec)
     with pytest.raises(ValueError,match='EXPLICIT_INPUT_ADAPTER'):
         FrozenRecipeInputs.from_frame(rec,None)
+
+
+def test_window_pack_preserves_stride_clock_and_shared_validity():
+    from tests.unit.test_frozen_recipe_inputs import recipe,frame
+    from app.frozen_recipe_inputs import FrozenRecipeInputs
+    from tools.run_causal_stl_lane import pack_inputs
+    from app.rl_subset import support_hash
+    base=FrozenRecipeInputs.from_frame(recipe(),frame())
+    values=np.arange(24,dtype=float).reshape(12,2)
+    values[6,0]=np.nan
+    filtered=pack_inputs(base,base.recipe,values,base.valid)
+    control=pack_inputs(base,base.recipe,np.nan_to_num(values),filtered.valid)
+    assert support_hash(filtered)==support_hash(control)
+    assert not filtered.valid[[6,8,10]].any()
+    assert filtered.valid[7] and filtered.valid[9] and filtered.valid[11]
+    assert np.array_equal(filtered.windows[11],values[[7,9,11]])
+    assert np.array_equal(filtered.slot_ts_ns,base.slot_ts_ns)
+
+
+def test_transformed_recipe_bundle_cold_reload_and_sac_update(tmp_path):
+    import torch
+    from tools.run_discrete_curve_probe import transition
+    from tests.unit.test_double_tcn_probe import probe_recipe
+    from app.rl_subset import seal_recipe
+    from app.structural_refit import export_bundle,load_bundle
+    from agent_plugins.three_signal_sac import ThreeSignalSAC
+    torch.set_num_threads(1)
+    rec=probe_recipe();rec['store']['input_adapter']={'kind':'causal_stl_seasonal_v1'}
+    model=ThreeSignalSAC(seal_recipe(rec))
+    x=np.random.default_rng(7).normal(size=(4,13,2)).astype('float32')
+    export_bundle(tmp_path/'bundle',model,x,dict(epoch=0))
+    loaded,_=load_bundle(tmp_path/'bundle','cpu')
+    assert torch.equal(model.surfaces(torch.tensor(x)),loaded.surfaces(torch.tensor(x)))
+    obs=dict(features=x[0],route=np.array([0]),progress=np.array([0.],np.float32),mask=np.ones(3,bool))
+    batch=torch.cat([transition(obs,0,obs,.01,False,1) for _ in range(4)],0)
+    assert all(np.isfinite(list(loaded.update(batch).values())))

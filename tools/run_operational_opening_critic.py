@@ -1,6 +1,7 @@
 """Main-lane bounded critic correction on flat-state paired native outcomes."""
 import argparse
 import fcntl
+import random
 from pathlib import Path
 import time
 
@@ -96,7 +97,9 @@ def run(args):
             for objective in cfg['losses']:
                 folder=args.output/f'{scope}_{objective}_{seed}'
                 if (folder/'DONE.json').exists():verify_done(folder,cfg['identity']);all_results.append(read(folder/'RESULT.json'));continue
-                configure(seed);model,_=load_bundle(args.bundle,'cuda');model.load(args.control/'common/CALIBRATED.pt')
+                # Interop threads are process-global and may only be configured once.
+                random.seed(seed);np.random.seed(seed);torch.manual_seed(seed);torch.cuda.manual_seed_all(seed)
+                model,_=load_bundle(args.bundle,'cuda');model.load(args.control/'common/CALIBRATED.pt')
                 set_scope(model,scope);clear_optimizer_memory(model.optimizer);fixed=frozen_state(model)
                 schedule=covering_schedule(len(masks['fit']),4096,128,seed);curve=[]
                 for step in range(4097):

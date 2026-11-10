@@ -26,3 +26,14 @@ source/actor hashes unchanged; both twins' fit/monitor ranking/regret and tie
 error. Check real parameters move and actor logits remain exact. No actor
 refinement or model promotion is triggered merely by lower training loss.
 Save diagnostic weights and a CPU-generated learning-curve plot.
+
+## Execution record
+
+Initial panel construction finished158 anchors, then stopped before the first
+optimizer update: the runner called the one-time PyTorch interop-thread setter
+again when reseeding an arm. Fixed by configuring process threads once and
+resetting only RNG seeds between arms. The failed attempt remains separate.
+The corrected run reconstructs the panel under a new identity:
+`aa6f79868bfe332b8c775a33264cb301df2af5844c3bcc0e554d97040d01c595`.
+Persistent primary-GPU worker started; the side-lane primary training queue
+waits for its authenticated terminal receipt. No actor update or promotion.

@@ -93,3 +93,24 @@ are CPU STL, not falsely advertised as GPU-accelerated. Per-column timings
 determine preprocessing ETA; epoch timings determine training ETA.
 
 Reference: https://www.statsmodels.org/stable/generated/statsmodels.tsa.seasonal.STL.html
+
+## Execution record
+
+Runtime a0c8f542, identity
+`04fb822af81df2708dae1fbf7bc1105e152760244d757e5d76a734b3ac6996b8`.
+Five persistent CPU queues launched2026-11-10T21:11Z across three workers.
+45 focused CPU tests pass, including common-support/stride parity, transformed
+checkpoint cold reload and a finite SAC update. Both remote consumers have the
+pinned runtime and data; secondary source verification returns30859x13x69.
+First three completed columns took113/186/173 seconds on their assigned CPUs;
+other robust fits are substantially slower. No trading result exists yet.
+
+Automatic dependency chain: all69 column receipts -> assembly/stream parity ->
+per-month common-support report (zero-availability month refuses training) ->
+two sequential GPU queues. Primary RTX5090: raw then ordinal, after271 completes.
+Secondary RTX4090: continuous then binary. Collector verifies hashes and gathers
+metrics, weights and plots, excluding multi-gigabyte mutable replay copies.
+Services survive a host restart; column checkpoints resume every256 rows and
+training restores committed epochs. Three failed automatic starts in one hour
+stop that service visibly rather than silently accepting an incomplete result.
+No changes to live trading, champion weights or the phase2 inclusion ledger.
