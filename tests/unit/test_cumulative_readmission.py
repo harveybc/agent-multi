@@ -91,3 +91,29 @@ def test_missing_donor_refuses_instead_of_random_connection():
     base=recipe(['a'],{'g':[0]}); full=recipe(['a','b'],{'g':[0,1]})
     with pytest.raises(ValueError,match='DONOR'):
         expand_actor(ToyActor(base),base,full,[])
+
+
+def test_zero_donor_weight_is_not_an_informative_return_test():
+    base=recipe(['a'],{'g':[0]});full=recipe(['a','b'],{'g':[0,1]})
+    donor=ToyActor(full)
+    with torch.no_grad():donor.encoder.branches[0][0].conv.weight[:,1]=0
+    with pytest.raises(ValueError,match='DONOR_WEIGHT'):
+        expand_actor(ToyActor(base),base,full,[(donor,full,'zero')])
+
+
+def test_active_scaling_cannot_change_during_restoration():
+    base=recipe(['a'],{'g':[0]});full=recipe(['a','b'],{'g':[0,1]},stds=[2.,1.])
+    with pytest.raises(ValueError,match='ACTIVE_SCALER'):
+        expand_actor(ToyActor(base),base,full,[(ToyActor(full),full,'donor')])
+
+
+def test_cached_restart_reproduces_every_decision():
+    calls=[];cache={}
+    def measure(cols):
+        key=tuple(cols)
+        if key not in cache:
+            calls.append(key);cache[key]=dict(score=float('c' in cols)-.1*len(cols),eligible=True)
+        return cache[key]
+    args=(['a','b','c'],[['a'],['b'],['c']],['a','b'],measure)
+    first=cumulative_pass(*args);count=len(calls);second=cumulative_pass(*args)
+    assert first==second and len(calls)==count

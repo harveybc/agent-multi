@@ -5,6 +5,8 @@ results without treating a calibration result as a profit improvement.
 
 | Date | ID | Finding or progress | Evidence | Operational disposition |
 |---|---|---|---|---|
+|2026-11-10|F-P2-CUMULATIVE|69 ->69 ->69; all51 historical phase2 removals tested in46 return blocks;112 evaluations; no accepted change|[263](../263_CUMULATIVE_PHASE2_RESULTS.md)|Keep current69/28 actor; frozen donor-assisted rejection is not evidence against matched retraining|
+|2026-11-10|F-WEIGHT-RESTORATION|All313 current actor tensors exact after restoring archived connections;30,234 windows give zero action differences and exact native accounts with absent channels masked|[262](../262_CUMULATIVE_PHASE2_RETURN.md), [263](../263_CUMULATIVE_PHASE2_RESULTS.md)|Historical readmission no longer silently limited to same-pass removals; preserve source and donor/scaler lineage|
 |2026-11-09|F-P2-69|Frozen70 ->69 ->69; VAL return13.80849% ->14.59109%, TRAIN11.51453% ->10.79211%; VAL DD3.62493% ->4.04467%|[225](../225_PHASE2_69_AND_WEIGHT_SPACE_RESULTS.md)|Preserve both models; tradeoff, not dominance on all metrics|
 |2026-11-09|F-CRITIC-GRADIENT|Degraded actor's critic-driven gradient norm78.27x entropy term; encoder fixed|[227](../227_ACTOR_LEARNING_MECHANISM_RESULTS.md)|Investigate critic action gaps; not evidence that inputs are useless|
 |2026-11-09|F-ADAM-RESET|Empty AdamW state alone worsens matched4096-update calibration:RMSE5.00672 ->6.06244|[227](../227_ACTOR_LEARNING_MECHANISM_RESULTS.md)|Do not treat optimizer-memory reset alone as the remedy|

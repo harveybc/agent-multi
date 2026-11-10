@@ -1,0 +1,121 @@
+feature,initially_active,selected,phase,block,candidate_score,baseline_score,eligible,accepted,donor,std_ratio
+OPEN@diff,False,False,REINSERT,OPEN@diff,0.26411601944444824,0.2702053638888878,True,False,original120,0.981152833822871
+HIGH@diff,False,False,REINSERT,HIGH@diff,0.1958778768518537,0.2702053638888878,True,False,original120,0.9817521657771613
+LOW@diff,False,False,REINSERT,LOW@diff,0.20756893888889186,0.2702053638888878,True,False,ancestor76,1.0
+CLOSE@diff,False,False,REINSERT,CLOSE@diff,0.186033283333338,0.2702053638888878,True,False,ancestor76,1.0
+RAW_BAR_LOG_RETURN,False,False,REINSERT,RAW_BAR_LOG_RETURN,0.2303246583333344,0.2702053638888878,True,False,original120,0.9821359999816882
+RAW_LOG_RANGE@log,True,True,DELETE,RAW_LOG_RANGE@log,0.21249323796296837,0.2702053638888878,True,False,current69,1.0
+RAW_CLOSE_LOG_RETURN,False,False,REINSERT,RAW_CLOSE_LOG_RETURN,0.2557127527777791,0.2702053638888878,True,False,ancestor76,1.0
+RAW_ELAPSED_HOURS,False,False,REINSERT,RAW_ELAPSED_HOURS,0.2702053638888878,0.2702053638888878,True,False,original120,1.0037337136185296
+ATR,True,True,DELETE,ATR,0.16347878888888906,0.2702053638888878,True,False,current69,1.0
+BB_Width,True,True,DELETE,BB_Width,0.19900632870370727,0.2702053638888878,True,False,current69,1.0
+ATR_ratio,True,True,DELETE,ATR_ratio,0.23144862777778077,0.2702053638888878,True,False,current69,1.0
+rolling_std_24,True,True,DELETE,rolling_std_24,0.21611852407407778,0.2702053638888878,True,False,current69,1.0
+RSI,False,False,REINSERT,RSI,0.24997959814815052,0.2702053638888878,True,False,original120,1.004918292449201
+Stochastic_K,False,False,REINSERT,Stochastic_K,0.22813013611111577,0.2702053638888878,True,False,ancestor76,1.0
+Stochastic_D,True,True,DELETE,Stochastic_D,0.2475021231481474,0.2702053638888878,True,False,current69,1.0
+CCI,True,True,DELETE,CCI,0.22957777500000096,0.2702053638888878,True,False,current69,1.0
+WilliamsR,False,False,REINSERT,WilliamsR,0.2274330055555607,0.2702053638888878,True,False,original120,1.0026518539145743
+ROC,False,False,REINSERT,ROC,0.24553354722222342,0.2702053638888878,True,False,original120,0.9880529442166568
+BB_position,True,True,DELETE,BB_position,0.25828411481481856,0.2702053638888878,True,False,current69,1.0
+price_minus_ema,False,False,REINSERT,price_minus_ema,0.24035554259259698,0.2702053638888878,True,False,original120,0.9874064439706162
+hod_sin,False,False,REINSERT,hod_sin | hod_cos,0.19382382962963607,0.2702053638888878,True,False,original120,1.000030714902805
+hod_cos,False,False,REINSERT,hod_sin | hod_cos,0.19382382962963607,0.2702053638888878,True,False,original120,0.9999689081401522
+dow_sin,False,False,REINSERT,dow_sin | dow_cos,0.1132572824074126,0.2702053638888878,True,False,original120,1.0003808799155938
+dow_cos,False,False,REINSERT,dow_sin | dow_cos,0.1132572824074126,0.2702053638888878,True,False,original120,0.9996478375319059
+cal.utc_hod_sin,False,False,REINSERT,cal.utc_hod_sin | cal.utc_hod_cos,0.20932327500000575,0.2702053638888878,True,False,original120,1.0000489534089052
+cal.utc_hod_cos,False,False,REINSERT,cal.utc_hod_sin | cal.utc_hod_cos,0.20932327500000575,0.2702053638888878,True,False,original120,0.9999506771047607
+cal.utc_dow_sin,False,False,REINSERT,cal.utc_dow_sin | cal.utc_dow_cos,0.0559746240740801,0.2702053638888878,True,False,original120,1.0003259996978633
+cal.utc_dow_cos,False,False,REINSERT,cal.utc_dow_sin | cal.utc_dow_cos,0.0559746240740801,0.2702053638888878,True,False,original120,0.9996607284210364
+cal.utc_session_asia,False,False,REINSERT,cal.utc_session_asia,0.2309809962962993,0.2702053638888878,True,False,original120,0.9999033488577942
+cal.utc_session_europe,True,True,DELETE,cal.utc_session_europe,0.15896424351852315,0.2702053638888878,True,False,current69,1.0
+cal.utc_session_us,False,False,REINSERT,cal.utc_session_us,0.2406075657407409,0.2702053638888878,True,False,original120,1.0000860797461915
+cal.london_hod_sin,True,True,DELETE,cal.london_hod_sin | cal.london_hod_cos,0.22636968055556214,0.2702053638888878,True,False,current69,1.0
+cal.london_hod_cos,True,True,DELETE,cal.london_hod_sin | cal.london_hod_cos,0.22636968055556214,0.2702053638888878,True,False,current69,1.0
+px.logret_1,True,True,DELETE,px.logret_1,0.2530889851851865,0.2702053638888878,True,False,current69,1.0
+px.logret_2,False,False,REINSERT,px.logret_2,0.2534053305555594,0.2702053638888878,True,False,original120,0.9842892705795815
+px.logret_4,True,True,DELETE,px.logret_4,0.14462211388889215,0.2702053638888878,True,False,current69,1.0
+px.logret_6,False,False,REINSERT,px.logret_6,0.20998091296296076,0.2702053638888878,True,False,original120,0.9864887203190095
+px.logret_12,False,False,REINSERT,px.logret_12,0.23745438611111475,0.2702053638888878,True,False,original120,0.9886543450550979
+px.logret_24,True,True,DELETE,px.logret_24,0.23928979537037237,0.2702053638888878,True,False,current69,1.0
+px.logret_48,False,False,REINSERT,px.logret_48,0.24208742962963192,0.2702053638888878,True,False,original120,0.9869028950925592
+px.range_1@log,True,True,DELETE,px.range_1@log,0.20110591111111414,0.2702053638888878,True,False,current69,1.0
+px.range_2@log,True,True,DELETE,px.range_2@log,0.22553086111111312,0.2702053638888878,True,False,current69,1.0
+px.range_4@log,True,True,DELETE,px.range_4@log,0.23208461851852344,0.2702053638888878,True,False,current69,1.0
+px.range_6@log,True,True,DELETE,px.range_6@log,0.13533595648148414,0.2702053638888878,True,False,current69,1.0
+px.range_12,True,True,DELETE,px.range_12,0.2621488759259271,0.2702053638888878,True,False,current69,1.0
+px.range_24,False,False,REINSERT,px.range_24,0.18495253703703754,0.2702053638888878,True,False,original120,0.9705710510101477
+px.range_48,True,True,DELETE,px.range_48,0.13574641388889547,0.2702053638888878,True,False,current69,1.0
+px.close_loc_1,True,True,DELETE,px.close_loc_1,0.17573474907408362,0.2702053638888878,True,False,current69,1.0
+px.close_loc_2,False,False,REINSERT,px.close_loc_2,0.06728463611111793,0.2702053638888878,True,False,original120,1.0032404424234622
+px.close_loc_4,True,True,DELETE,px.close_loc_4,0.23132726574074727,0.2702053638888878,True,False,current69,1.0
+px.close_loc_6,False,False,REINSERT,px.close_loc_6,0.046005035185196025,0.2702053638888878,True,False,original120,1.0020108672124037
+px.close_loc_12,True,True,DELETE,px.close_loc_12,0.1718409351851911,0.2702053638888878,True,False,current69,1.0
+px.close_loc_24,True,True,DELETE,px.close_loc_24,0.12961535370370425,0.2702053638888878,True,False,current69,1.0
+px.close_loc_48,True,True,DELETE,px.close_loc_48,0.18986150000000332,0.2702053638888878,True,False,current69,1.0
+px.er_2,True,True,DELETE,px.er_2,0.18020380833333718,0.2702053638888878,True,False,current69,1.0
+px.er_4,False,False,REINSERT,px.er_4,0.19263939814814976,0.2702053638888878,True,False,original120,0.9999528166862057
+px.er_6,True,True,DELETE,px.er_6,0.13472039537037508,0.2702053638888878,True,False,current69,1.0
+px.er_12,True,True,DELETE,px.er_12,0.19141605555556215,0.2702053638888878,True,False,current69,1.0
+px.er_24,False,False,REINSERT,px.er_24,0.17949927685185718,0.2702053638888878,True,False,original120,1.0048584980313502
+px.er_48,True,True,DELETE,px.er_48,0.09253977407407749,0.2702053638888878,True,False,current69,1.0
+px.hours_since_session_open,True,True,DELETE,px.hours_since_session_open,0.21191727870371022,0.2702053638888878,True,False,current69,1.0
+cdl.body_pips,True,True,DELETE,cdl.body_pips,0.13159541759259405,0.2702053638888878,True,False,current69,1.0
+cdl.upper_wick_pips@asinh,False,False,REINSERT,cdl.upper_wick_pips@asinh,0.19982847407408133,0.2702053638888878,True,False,original120,0.995297064539568
+cdl.lower_wick_pips@asinh,True,True,DELETE,cdl.lower_wick_pips@asinh,0.1395915231481518,0.2702053638888878,True,False,current69,1.0
+cdl.range_pips@asinh,True,True,DELETE,cdl.range_pips@asinh,0.21282508796296562,0.2702053638888878,True,False,current69,1.0
+cdl.close_minus_low_pips@asinh,True,True,DELETE,cdl.close_minus_low_pips@asinh,0.21540161481482015,0.2702053638888878,True,False,current69,1.0
+cdl.high_minus_close_pips@asinh,True,True,DELETE,cdl.high_minus_close_pips@asinh,0.23477991574074353,0.2702053638888878,True,False,current69,1.0
+dly.us10y.level@diff,False,False,REINSERT,dly.us10y.level@diff,0.20860670092592754,0.2702053638888878,True,False,original120,1.0239012363998452
+dly.us10y.chg_1d,True,True,DELETE,dly.us10y.chg_1d,0.21927983611112048,0.2702053638888878,True,False,current69,1.0
+dly.us10y.chg_5d,True,True,DELETE,dly.us10y.chg_5d,0.07820850000001243,0.2702053638888878,True,False,current69,1.0
+cot.eur.net_long,True,True,DELETE,cot.eur.net_long,0.09467792129631057,0.2702053638888878,True,False,current69,1.0
+cot.eur.net_change,False,False,REINSERT,cot.eur.net_change,0.22205999537037183,0.2702053638888878,True,False,ancestor76,1.0
+cot.eur.net_share,True,True,DELETE,cot.eur.net_share,0.05181831666666868,0.2702053638888878,False,False,current69,1.0
+cot.eur.net_z156,True,True,DELETE,cot.eur.net_z156,0.04616252129630455,0.2702053638888878,True,False,current69,1.0
+fac.fx_f1.ret_1,False,False,REINSERT,fac.fx_f1.ret_1,0.2584468009259271,0.2702053638888878,True,False,original120,0.9743263310213415
+fac.fx_f1.ret_4,True,True,DELETE,fac.fx_f1.ret_4,0.13891135277777722,0.2702053638888878,True,False,current69,1.0
+fac.fx_f1.ret_24,True,True,DELETE,fac.fx_f1.ret_24,0.17688252129629564,0.2702053638888878,True,False,current69,1.0
+fac.fx_f1.kalman_slope,False,False,REINSERT,fac.fx_f1.kalman_slope,0.25684050925926755,0.2702053638888878,True,False,original120,0.9767247256686792
+ev.tokyo_fix.hours_since,True,True,DELETE,ev.tokyo_fix.hours_since,0.22687174537037477,0.2702053638888878,True,False,current69,1.0
+ev.tokyo_fix.hours_to,True,True,DELETE,ev.tokyo_fix.hours_to,0.19666501203703976,0.2702053638888878,True,False,current69,1.0
+ev.london_fix.hours_since,False,False,REINSERT,ev.london_fix.hours_since,0.2289886981481548,0.2702053638888878,True,False,original120,1.0000961194033389
+ev.london_fix.hours_to,True,True,DELETE,ev.london_fix.hours_to,0.19952581944444991,0.2702053638888878,True,False,current69,1.0
+ev.ny_cut.hours_since,False,False,REINSERT,ev.ny_cut.hours_since,0.17914561481482014,0.2702053638888878,True,False,original120,1.0001003010065093
+ev.ny_cut.hours_to,True,True,DELETE,ev.ny_cut.hours_to,0.22384538333334028,0.2702053638888878,True,False,current69,1.0
+act.p_hit,True,True,DELETE,act.p_hit,0.10138997500000996,0.2702053638888878,True,False,current69,1.0
+ssa.trend_minus_close_pips,False,False,REINSERT,ssa.trend_minus_close_pips,0.22609820277778317,0.2702053638888878,True,False,original120,0.9874222010802347
+ssa.c2_pips,True,True,DELETE,ssa.c2_pips,0.1314970166666707,0.2702053638888878,True,False,current69,1.0
+ssa.c3_pips,True,True,DELETE,ssa.c3_pips,0.1416877500000023,0.2702053638888878,True,False,current69,1.0
+wv.lc.A4@diff,True,True,DELETE,wv.lc.A4@diff,0.19063987129629756,0.2702053638888878,True,False,current69,1.0
+wv.lc.D4,True,True,DELETE,wv.lc.D4,0.1480394370370427,0.2702053638888878,True,False,current69,1.0
+wv.lc.D3,True,True,DELETE,wv.lc.D3,0.1902176527777852,0.2702053638888878,True,False,current69,1.0
+wv.lc.D2,True,True,DELETE,wv.lc.D2,0.05672494444444931,0.2702053638888878,True,False,current69,1.0
+wv.lc.D1,False,False,REINSERT,wv.lc.D1,0.20172375000000978,0.2702053638888878,True,False,original120,0.9798575306668027
+wv.lc.energy_D4@log,False,False,REINSERT,wv.lc.energy_D4@log,0.08122837500000328,0.2702053638888878,True,False,original120,0.9514204816752081
+wv.lc.energy_D3@log,False,False,REINSERT,wv.lc.energy_D3@log,0.2465470925925931,0.2702053638888878,True,False,original120,0.9602076993648628
+wv.lc.energy_D2@log,True,True,DELETE,wv.lc.energy_D2@log,0.14261224722222898,0.2702053638888878,True,False,current69,1.0
+wv.lc.energy_D1@diff,True,True,DELETE,wv.lc.energy_D1@diff,0.19429085277778238,0.2702053638888878,True,False,current69,1.0
+wv.r1.A4,False,False,REINSERT,wv.r1.A4,0.1966703694444533,0.2702053638888878,True,False,original120,0.9835211702482258
+wv.r1.D4,False,False,REINSERT,wv.r1.D4,0.1979349407407483,0.2702053638888878,True,False,ancestor76,1.0
+wv.r1.D3,True,True,DELETE,wv.r1.D3,0.20466345555556306,0.2702053638888878,True,False,current69,1.0
+wv.r1.D2,False,False,REINSERT,wv.r1.D2,0.22918385740741237,0.2702053638888878,True,False,original120,0.983404671451161
+wv.r1.D1,False,False,REINSERT,wv.r1.D1,0.21282448148147995,0.2702053638888878,True,False,original120,0.9787553356961549
+wv.r1.energy_D4@log,False,False,REINSERT,wv.r1.energy_D4@log,0.23379151574074328,0.2702053638888878,True,False,ancestor76,1.0
+wv.r1.energy_D3@log,True,True,DELETE,wv.r1.energy_D3@log,0.17245868888889604,0.2702053638888878,True,False,current69,1.0
+wv.r1.energy_D2@log,True,True,DELETE,wv.r1.energy_D2@log,0.23186214722222825,0.2702053638888878,True,False,current69,1.0
+wv.r1.energy_D1@diff,True,True,DELETE,wv.r1.energy_D1@diff,0.26188589722222555,0.2702053638888878,True,False,current69,1.0
+hb.r1.phase_cos,True,True,DELETE,hb.r1.phase_cos | hb.r1.phase_sin,0.1123373314814917,0.2702053638888878,True,False,current69,1.0
+hb.r1.phase_sin,True,True,DELETE,hb.r1.phase_cos | hb.r1.phase_sin,0.1123373314814917,0.2702053638888878,True,False,current69,1.0
+hb.r1.inst_freq,False,False,REINSERT,hb.r1.inst_freq,0.20741843518518652,0.2702053638888878,True,False,original120,0.9976189440450668
+hb.lc_detr.inst_freq,True,True,DELETE,hb.lc_detr.inst_freq,0.22023399722222164,0.2702053638888878,True,False,current69,1.0
+wv.usd.A4,True,True,DELETE,wv.usd.A4,0.21139391388889434,0.2702053638888878,True,False,current69,1.0
+hb.eur.phase_cos,False,False,REINSERT,hb.eur.phase_cos | hb.eur.phase_sin,0.18974287870370468,0.2702053638888878,True,False,original120,0.9992246714811635
+hb.eur.phase_sin,False,False,REINSERT,hb.eur.phase_cos | hb.eur.phase_sin,0.18974287870370468,0.2702053638888878,True,False,original120,1.0007011781937913
+hb.eur.inst_freq,True,True,DELETE,hb.eur.inst_freq,0.14743574351852454,0.2702053638888878,True,False,current69,1.0
+kf.lc.level_minus_close,True,True,DELETE,kf.lc.level_minus_close,0.24727817592592716,0.2702053638888878,True,False,current69,1.0
+px.rv_24,False,False,REINSERT,px.rv_24,-0.09338022314812777,0.2702053638888878,True,False,original120,0.9653844822013299
+rg.gmm.p0,True,True,DELETE,rg.gmm.p0 | rg.gmm.p1 | rg.gmm.p2,0.2119406962963007,0.2702053638888878,True,False,current69,1.0
+rg.gmm.p1,True,True,DELETE,rg.gmm.p0 | rg.gmm.p1 | rg.gmm.p2,0.2119406962963007,0.2702053638888878,True,False,current69,1.0
+rg.gmm.p2,True,True,DELETE,rg.gmm.p0 | rg.gmm.p1 | rg.gmm.p2,0.2119406962963007,0.2702053638888878,True,False,current69,1.0
+rg.gmm.entropy,True,True,DELETE,rg.gmm.entropy,0.17341533888888921,0.2702053638888878,True,False,current69,1.0

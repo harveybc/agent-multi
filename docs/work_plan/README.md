@@ -853,9 +853,10 @@ The detailed gates and deliverables are in [08 Implementation Roadmap](08_IMPLEM
 ## Updating This Plan
 
 Current phase2 resume point (2026-11-10):
-[262 Cumulative Phase2 Return](262_CUMULATIVE_PHASE2_RETURN.md).
-Start from preserved69; the return inventory includes all51 historical phase2
-removals, with explicit frozen donor restoration and native parity gates.
+[263 Cumulative Phase2 Results](263_CUMULATIVE_PHASE2_RESULTS.md), completed
+69 ->69 ->69. All51 historical phase2 removals were tested;112 evaluations.
+Preserve the current actor and qualify bounded refinement as the next model
+experiment; no repeated unchanged mask pass or automatic long refit.
 [Retsu handoff](../handoffs/MUSASHI_TO_RETSU_SELECTED69_REAL_INPUTS_2026_11_10.md)
 owns the independent real-time producer/paper integration work.
 
