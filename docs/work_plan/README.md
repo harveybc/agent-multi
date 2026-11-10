@@ -852,6 +852,13 @@ The detailed gates and deliverables are in [08 Implementation Roadmap](08_IMPLEM
 
 ## Updating This Plan
 
+Current phase2 resume point (2026-11-10):
+[262 Cumulative Phase2 Return](262_CUMULATIVE_PHASE2_RETURN.md).
+Start from preserved69; the return inventory includes all51 historical phase2
+removals, with explicit frozen donor restoration and native parity gates.
+[Retsu handoff](../handoffs/MUSASHI_TO_RETSU_SELECTED69_REAL_INPUTS_2026_11_10.md)
+owns the independent real-time producer/paper integration work.
+
 - Add new detail to the owning document instead of expanding this index.
 - Record architectural changes in document 10 with date, rationale, and
   superseded decision.
