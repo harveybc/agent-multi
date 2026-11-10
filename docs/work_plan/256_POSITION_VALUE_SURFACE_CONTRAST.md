@@ -104,3 +104,17 @@ Both interface correctness and useful learned behavior are required before
 proposing actor transfer. These two coordinates may still omit funding, size,
 age or account opportunity costs. Do not promise complete sufficiency, and do
 not add those inputs silently if the present contrast fails.
+
+## Post-Primary Constant-Market Control
+
+Added after the eight primary fits completed, before running this control.
+The primary results distinguish geometry interfaces, but do not isolate whether
+their improvements require current market information. Repeat progress9 and
+surface81 for both seeds with the same initial heads, axes, labels, updates and
+bank schedules. Replace ONLY the diagnostic frozen embeddings by their fit-only
+bank-balanced mean, at both fit and monitor time. Preserve all native position
+queries. Do not alter the dataset, champion, primary evidence or actor.
+No monitor statistic participates in that mean. Record four additional arms
+under a new collection identity and report them separately as a post-primary
+negative control, not as preregistered primary results. This can expose a
+position-only effect and prevent attributing it to learned market patterns.
