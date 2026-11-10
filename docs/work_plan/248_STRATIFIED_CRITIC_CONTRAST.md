@@ -72,3 +72,19 @@ The next decision uses per-state held-out behavior AND fit behavior. Small-set
 fit alone cannot authorize actor refinement. If improvements remain confined
 to fit, inspect state-dependent aliasing and temporal drift before another
 feature-removal pass. No automatic actor update or production deployment.
+
+## Launch Verification
+
+Runtime `45b035cf`, authorized queue started2026-11-10T02:06:39Z.
+Focused CPU tests:24 passed. Worker tests:11 passed, including all three real
+CUDA gradient/preservation canaries. Native first-quarter canary selected98
+anchors; its rerun return/cash discrepancy was0.0. The first-quarter long
+stratum had26 available states rather than32; all26 were retained and the
+shortage recorded. No future-return filtering or synthetic replacement.
+
+RTX5090 worker and CPU collector are separate persistent user services, with
+6GiB worker memory cap, no worker swap, automatic sequential progression and
+bounded abnormal-exit restart. Completed quarters/arms are hash-verified on
+resume. Configuration or accounting failures stop explicitly rather than
+silently changing the experiment. Detailed artifacts:
+`/var/tmp/sac70-stratified-critic-20261109`.
