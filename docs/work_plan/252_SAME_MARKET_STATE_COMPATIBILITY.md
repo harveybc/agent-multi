@@ -76,3 +76,16 @@ If conflicts exist, separate exact-Q fitting incompatibility from actual
 action-choice incompatibility before proposing a remedy. This experiment does
 not authorize adding account-state feedback to the learned inputs. If none are
 observed, report that result without manufacturing more difficult states.
+
+## Launch Verification
+
+Runtime `0e3502c1`; worker started2026-11-10T08:47:33Z. Focused tests11 passed
+locally and11 on the worker, including native-history isolation and compatibility
+algebra. GPU launch gate and real-checkpoint repeated-input equality passed
+before native histories started. No gradient or optimizer step is executed.
+
+Persistent sequential worker and automatic collector are active. Completed
+quarters are sealed and verified on resume; unfinished origins have per-record
+digests. Abnormal-exit restart is bounded and accounting/identity failures stop
+explicitly. Worker memory cap6GiB, swap disabled. Artifact root:
+`/var/tmp/sac70-state-compat-20261110`.
