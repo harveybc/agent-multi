@@ -149,6 +149,10 @@ in both surface seeds. Learned opposed-choice witness still fails. A merged
 observation audit separates numerically unstable exact-gap fitting from feasible
 action signs. Actor and selected features unchanged; no promotion.
 
+[Decision-loss contrast258](258_POSITION_DECISION_LOSS_CONTRAST.md): cost-weighted
+action-sign loss, with/without opposed-position pairing, on the same frozen
+fields and constant-market controls. Sixteen sequential arms; no actor transfer.
+
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
 [Feed review223](223_SELECTED70_FORWARD_CLOCK_REVIEW.md): previous four
