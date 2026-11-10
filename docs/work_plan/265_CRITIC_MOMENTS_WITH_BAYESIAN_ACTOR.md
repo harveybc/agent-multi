@@ -70,3 +70,13 @@ RTX4090 worker. GPU admission gate PASS. The archived SmoothL1 diagnostic
 completed with zero optimizer updates. M1 reached64 calibration updates with
 no service restart. Sequential worker, final aggregator and independent
 hash-verifying collector are running; no result was promoted at launch.
+
+## Terminal result
+
+Both objectives completed, all6 new arms active, zero restarts; worker and
+collector exit0;553 files authenticated. Mean validation return / Sharpe:
+SmoothL1 12.433670% /1.772287; M1 11.795626% /1.756137;
+M05 12.368707% /1.830650. Posterior probability dispersion fell2.39% and1.95%
+respectively, without improving validation return. Validation critic RMSE
+changed only from0.643614 to0.643532 /0.643527. No promotion.
+Follow-up266 attributes the exact lost account performance before more fitting.

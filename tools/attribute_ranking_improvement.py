@@ -1,6 +1,7 @@
 """Exact native attribution of the fixed paired-greedy endpoint, no fitting."""
 import argparse
 import fcntl
+import hashlib
 from pathlib import Path
 import time
 
@@ -25,13 +26,28 @@ def account_check(env,metrics):
     return net
 
 
-def attribute_pair(make_env,row_timestamps,baseline,candidate,progress,calibration_signals=None):
+def attribute_pair(make_env,row_timestamps,baseline,candidate,progress,calibration_signals=None,
+                   soft_policies=None,alpha=0.,isolated_cache=None,cache_namespace=None):
+    if isolated_cache is not None and not cache_namespace:
+        raise ValueError('ATTRIBUTION_CACHE_NAMESPACE')
+    if not np.isfinite(alpha) or alpha<0:raise ValueError('ATTRIBUTION_ALPHA')
+    policies=soft_policies or {}
+    for tape,probability in policies.values():
+        if (np.asarray(tape).shape!=(len(row_timestamps),) or
+                np.asarray(probability).shape!=(len(row_timestamps),3) or
+                not np.isin(tape,[0,1,2]).all()):
+            raise ValueError('ATTRIBUTION_SOFT_POLICY')
     if calibration_signals is not None:
         calibration_signals=np.asarray(calibration_signals)
         if (calibration_signals.shape!=(len(row_timestamps),)
                 or not np.isin(calibration_signals,[0,1,2]).all()):
             raise ValueError('IMPROVEMENT_CALIBRATION_TAPE')
     traces=[read(p/'ACTIONS.json') for p in (baseline,candidate)]
+    cache={} if isolated_cache is None else isolated_cache
+    context=digest(dict(namespace=cache_namespace,trace=traces[0],alpha=alpha,
+        policies={str(k):dict(tape=digest(np.asarray(v[0]).tolist()),
+            probability_sha256=hashlib.sha256(np.asarray(v[1]).tobytes()).hexdigest())
+                  for k,v in policies.items()}))
     metrics=[read(p/'METRICS.json') for p in (baseline,candidate)]
     ts=np.array([r['timestamp'] for r in traces[0]],dtype=np.int64)
     if not np.array_equal(ts,[r['timestamp'] for r in traces[1]]):raise ValueError('IMPROVEMENT_SUPPORT')
@@ -51,13 +67,19 @@ def attribute_pair(make_env,row_timestamps,baseline,candidate,progress,calibrati
     for i,row in enumerate(traces[1]):
         if i in changed:
             old=int(traces[0][i]['signal']);new=int(row['signal'])
-            iso_old=continuation(snapshots[i],tapes[0],old)
-            iso_new=continuation(snapshots[i],tapes[0],new)
+            key=(context,i,old,new)
+            if key not in cache:
+                cache[key]=dict(old=continuation(snapshots[i],tapes[0],old),
+                    new=continuation(snapshots[i],tapes[0],new),
+                    soft=[dict(seed=int(seed),old=continuation(snapshots[i],tape,old,p,alpha),
+                               new=continuation(snapshots[i],tape,new,p,alpha))
+                          for seed,(tape,p) in policies.items()])
+            iso_old,iso_new=cache[key]['old'],cache[key]['new']
             before=continuation(env,tapes[0],old);after=continuation(env,tapes[0],new)
             if abs(iso_old['net_usd']-reference)>1e-6 or abs(before['net_usd']-previous)>1e-6:
                 raise ValueError('IMPROVEMENT_CONTINUATION_CHAIN')
             contribution=after['net_usd']-before['net_usd'];previous=after['net_usd']
-            extra={}
+            extra=dict(isolated_state=state_view(snapshots[i]),soft_continuations=cache[key]['soft']) if policies else {}
             if calibration_signals is not None:
                 extra=dict(isolated_state=state_view(snapshots[i]),
                     calibration_old=continuation(snapshots[i],calibration_signals,old),
