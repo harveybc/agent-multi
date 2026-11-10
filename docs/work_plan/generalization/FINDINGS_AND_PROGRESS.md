@@ -153,3 +153,16 @@ overfitting in this calibration, not evidence that market inputs are useless.
 Source actors unchanged; diagnostic checkpoints not promoted. Follow-up should
 isolate module drift and state-dependent value conflicts before bounded actor
 refinement. Source pretraining already used the internal monitor year.
+
+## F-PARTIAL-CRITIC-AND-FUSION-RESTORATION
+
+Results251,2026-11-10: two last-core+head fits (6534 parameters) completed
+against the exact archived controls and panel. Monitor pair ordering52.48/51.57%
+does not beat heads-only54.70/54.44%; source actor unchanged. Partial unfreezing
+reduces full-unfreezing gap-error deterioration but is not a generalization fix.
+The66 isolated parameter restorations show that resetting fusion reduces
+open-long monitor gap RMSE17.46/17.71%, yet worsens aggregate ordering and
+regret. This is a conditional module effect, not a global repair or a reason
+to discard fusion. All diagnostics and model weights preserved. Next proposed
+diagnosis: same-market Q-target compatibility across feasible account states,
+without adding state feedback or asserting the cause in advance.

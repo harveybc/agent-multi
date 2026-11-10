@@ -112,6 +112,11 @@ no model promoted. CPU/GPU queue and collection completed successfully.
 restoration diagnosis and two last-core+head fits against the archived controls.
 Exact scope6534 parameters, unchanged panel and schedules, no actor updates.
 
+[Results251](251_PARTIAL_CRITIC_RESULTS.md): two new fits and66 parameter
+restorations complete. Partial unfreezing does not beat heads-only on monitor.
+Restoring fusion helps open-long diagnostics but hurts aggregate ordering;
+no hybrid or trained checkpoint promoted. Source actors remain intact.
+
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
 [Feed review223](223_SELECTED70_FORWARD_CLOCK_REVIEW.md): previous four

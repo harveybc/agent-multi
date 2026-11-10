@@ -1,0 +1,24 @@
+{
+  "files": {
+    "CONFIG.json": "9f9989ec127e0d8cdc6659557ca69f8cd20da728bd2efc0e370aa884000c6bb3",
+    "CURVES.csv": "9ad4b6400ee05b2d91d49ca46e5bd253f5344f33825bb97488af8d31919053bc",
+    "FIT_MONITOR.png": "964c97b504905441defec87b6b006860ab32c023ba32d02c9bb7b93689468b31",
+    "RESULT.json": "3a861aa046fbbf41ee1477625492db917f219ac873513db59d092494dab1e82f",
+    "diagnosis/DONE.json": "3728e3c5cc5d9151829c98f83bbaff0ae84c1271bd74d5ab3d07ea027853ca51",
+    "diagnosis/RESTORATIONS.csv": "c79343eb316dc54d0cc8c4c3a6fae63195e683532d8581c7c3a1af862287b239",
+    "diagnosis/RESULT.json": "d100706311d0e918be960914b5586bfbecd081ea00d3d9f451818f4a8899426c",
+    "r19/last_core/CURVE.json": "4d5ea9e423ba5e3ac47fc0c0a3eef01f9bef98cd21fbd1a9115953aab68b4fe4",
+    "r19/last_core/DIAGNOSTIC.pt": "0c067f6d17427ac5b596c305ce53908b36a186359ebef5c2b64dbe10223b730e",
+    "r19/last_core/DONE.json": "4fa6772b699527388f23042fcb2d6000a7d88748709a44abc28d78b3c2f49106",
+    "r19/last_core/EFFECTIVE.json": "1ae05940853abec64fe9999c14a15397b0422ceccda2ad0cdf1c21616f4a3915",
+    "r19/last_core/RESULT.json": "5f92a7cfa6377a8e561173163392e00b12f21430d59c31d1c0d83cef3102dba3",
+    "r43/last_core/CURVE.json": "be0858aebcb226c3651057b9cd5ada200ca27912e4f3e71cc2c2048fabc71538",
+    "r43/last_core/DIAGNOSTIC.pt": "bd11730a5e306767cf54a9fa5d8ba34d8610379e840aa545bde6c34526ea3a06",
+    "r43/last_core/DONE.json": "43631c246b136072bfeb9ed45315d559283b83ce798daabe7ebab46812b1697e",
+    "r43/last_core/EFFECTIVE.json": "b2c94aff30e3f0f35ae8047b31d85ee3d6c6df3eec6dbed423333e2eec015e74",
+    "r43/last_core/RESULT.json": "84168bf733fbf4875588da35235ef15691b62038f41f618aaaf27074ce30cb11"
+  },
+  "finished_at": "2026-11-10T08:07:18.423841+00:00",
+  "identity": "af75f09efae8f60f3195687a3d1c88d4c8a4a41c9152117052302a628fcdd2f0",
+  "seconds": 191.25821608898696
+}
