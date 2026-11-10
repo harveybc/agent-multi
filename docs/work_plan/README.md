@@ -137,6 +137,11 @@ heads lower monitor regret3.71% versus equal parameter count, improving position
 management but worsening flat opening. Native same-direction audit still finds
 139/866 incompatible best-action banks; no global replacement or promotion.
 
+[Position-value surfaces256](256_POSITION_VALUE_SURFACE_CONTRAST.md): market-only
+close-minus-hold fields externally queried at actual native SL/TP distances.
+Eight paired diagnostic arms, frozen encoders/actor, explicit nodal-oracle
+expressivity checks and separate original-position harmful-close accounting.
+
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
 [Feed review223](223_SELECTED70_FORWARD_CLOCK_REVIEW.md): previous four
