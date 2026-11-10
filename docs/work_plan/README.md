@@ -153,6 +153,12 @@ action signs. Actor and selected features unchanged; no promotion.
 action-sign loss, with/without opposed-position pairing, on the same frozen
 fields and constant-market controls. Sixteen sequential arms; no actor transfer.
 
+[Results259](259_POSITION_DECISION_LOSS_RESULTS.md):16 arms completed. Surface
+paired loss reduces harmful closes306->241 and increases beneficial303->367
+over both seeds with609->608 total closes. Mean monitor regret improves2.58%,
+but constant-market benefit remains large and the critical witness still chooses
+HOLD for all three positions despite correct relative ranking. No actor change.
+
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
 [Feed review223](223_SELECTED70_FORWARD_CLOCK_REVIEW.md): previous four

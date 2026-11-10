@@ -219,3 +219,21 @@ finite-panel feasibility, not proof of neural learnability or generalization.
 Next contrast should target decision regret/signs and within-market position
 differences, retaining constant-market controls. No actor transfer or new
 feature-selection evaluator admitted.13 final focused tests pass.
+
+## F-PAIRED-DECISION-LOSS-AND-OFFSET
+
+Results259,2026-11-10:16 fixed-endpoint diagnostic head fits complete,21 final
+tests pass,158 files verified. Surface81 SIGN_PAIR lowers mean monitor regret
+0.132305->0.128891 versus SmoothL1. Across two seeds, harmful local closes
+306->241, beneficial303->367, total609->608: not merely suppressing action.
+Both seeds improve local close quality; account regret improves only in seed19.
+FIT conflicting-bank regret improves0.123920->0.097372 while other-bank regret
+worsens0.118294->0.148838. No global dominance or smaller-gap success claim.
+
+Constant-market SIGN_PAIR is almost as good (regret0.129421), so evidence for
+market-pattern use remains weak. Critical witness still fails: all three HOLD,
+but the required CLOSE position now has the highest score in both interfaces
+and both seeds. Pair ranking is invariant to a common offset; the sign term
+has not calibrated this witness's zero crossing. Next test should isolate
+fit-only offset calibration, not choose thresholds from monitor results.
+Actor, encoders and selected inputs remain untouched; no model promotion.

@@ -1,0 +1,402 @@
+{
+  "19:progress9:constant:sign": {
+    "close": [
+      true,
+      true,
+      true
+    ],
+    "passed": false,
+    "scores": [
+      [
+        0.27567586302757263,
+        0.12058918923139572,
+        0.11126947402954102
+      ],
+      [
+        0.2533816993236542,
+        0.11664537340402603,
+        0.10845576226711273
+      ]
+    ],
+    "target_close": [
+      true,
+      false,
+      false
+    ]
+  },
+  "19:progress9:constant:sign_pair": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      [
+        -0.00617260904982686,
+        -0.6463050246238708,
+        -0.6833013296127319
+      ],
+      [
+        -0.22631466388702393,
+        -0.6351326704025269,
+        -0.658624529838562
+      ]
+    ],
+    "target_close": [
+      true,
+      false,
+      false
+    ]
+  },
+  "19:progress9:market:sign": {
+    "close": [
+      true,
+      true,
+      true
+    ],
+    "passed": false,
+    "scores": [
+      [
+        0.22301024198532104,
+        0.15314753353595734,
+        0.1488218456506729
+      ],
+      [
+        0.21664537489414215,
+        0.08647438883781433,
+        0.07870766520500183
+      ]
+    ],
+    "target_close": [
+      true,
+      false,
+      false
+    ]
+  },
+  "19:progress9:market:sign_pair": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      [
+        -0.05097810924053192,
+        -0.6792763471603394,
+        -0.7155088782310486
+      ],
+      [
+        -0.20201615989208221,
+        -0.6002532839775085,
+        -0.6231377124786377
+      ]
+    ],
+    "target_close": [
+      true,
+      false,
+      false
+    ]
+  },
+  "19:surface81:constant:sign": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      [
+        -0.07535335421562195,
+        -0.18716970086097717,
+        -0.17807543277740479
+      ],
+      [
+        -0.008419230580329895,
+        -0.02898271381855011,
+        -0.024821877479553223
+      ]
+    ],
+    "target_close": [
+      true,
+      false,
+      false
+    ]
+  },
+  "19:surface81:constant:sign_pair": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      [
+        0.02483593299984932,
+        -0.07117532938718796,
+        -0.07207880914211273
+      ],
+      [
+        -0.12054210901260376,
+        -0.12900923192501068,
+        -0.12806323170661926
+      ]
+    ],
+    "target_close": [
+      true,
+      false,
+      false
+    ]
+  },
+  "19:surface81:market:sign": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      [
+        -0.05488055944442749,
+        -0.13159984350204468,
+        -0.1212301254272461
+      ],
+      [
+        0.027691930532455444,
+        0.011609181761741638,
+        0.015389084815979004
+      ]
+    ],
+    "target_close": [
+      true,
+      false,
+      false
+    ]
+  },
+  "19:surface81:market:sign_pair": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      [
+        0.015691664069890976,
+        -0.07322492450475693,
+        -0.0734499841928482
+      ],
+      [
+        -0.10025439411401749,
+        -0.13398368656635284,
+        -0.13389012217521667
+      ]
+    ],
+    "target_close": [
+      true,
+      false,
+      false
+    ]
+  },
+  "43:progress9:constant:sign": {
+    "close": [
+      true,
+      true,
+      true
+    ],
+    "passed": false,
+    "scores": [
+      [
+        0.4148213267326355,
+        0.22410087287425995,
+        0.2126026153564453
+      ],
+      [
+        0.10763611644506454,
+        0.05933017283678055,
+        0.056542329490184784
+      ]
+    ],
+    "target_close": [
+      true,
+      false,
+      false
+    ]
+  },
+  "43:progress9:constant:sign_pair": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      [
+        0.364503413438797,
+        -0.061481818556785583,
+        -0.08638989925384521
+      ],
+      [
+        -0.3787625730037689,
+        -0.5811776518821716,
+        -0.5924586057662964
+      ]
+    ],
+    "target_close": [
+      true,
+      false,
+      false
+    ]
+  },
+  "43:progress9:market:sign": {
+    "close": [
+      true,
+      true,
+      true
+    ],
+    "passed": false,
+    "scores": [
+      [
+        0.3347932994365692,
+        0.23040322959423065,
+        0.22397635877132416
+      ],
+      [
+        0.06997059285640717,
+        0.03418904170393944,
+        0.03214845806360245
+      ]
+    ],
+    "target_close": [
+      true,
+      false,
+      false
+    ]
+  },
+  "43:progress9:market:sign_pair": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      [
+        0.26187747716903687,
+        -0.18399794399738312,
+        -0.2098369002342224
+      ],
+      [
+        -0.3689577281475067,
+        -0.5677616596221924,
+        -0.5788300037384033
+      ]
+    ],
+    "target_close": [
+      true,
+      false,
+      false
+    ]
+  },
+  "43:surface81:constant:sign": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      [
+        -0.13392628729343414,
+        -0.2388702630996704,
+        -0.23932254314422607
+      ],
+      [
+        -0.09611459821462631,
+        -0.13860848546028137,
+        -0.13927462697029114
+      ]
+    ],
+    "target_close": [
+      true,
+      false,
+      false
+    ]
+  },
+  "43:surface81:constant:sign_pair": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      [
+        -0.14773187041282654,
+        -0.42860114574432373,
+        -0.43701860308647156
+      ],
+      [
+        -0.19882988929748535,
+        -0.3929014801979065,
+        -0.40388041734695435
+      ]
+    ],
+    "target_close": [
+      true,
+      false,
+      false
+    ]
+  },
+  "43:surface81:market:sign": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      [
+        -0.10008350014686584,
+        -0.19200599193572998,
+        -0.1918746829032898
+      ],
+      [
+        -0.09719444811344147,
+        -0.119001105427742,
+        -0.11873950064182281
+      ]
+    ],
+    "target_close": [
+      true,
+      false,
+      false
+    ]
+  },
+  "43:surface81:market:sign_pair": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      [
+        -0.13169583678245544,
+        -0.38987696170806885,
+        -0.3971104621887207
+      ],
+      [
+        -0.17651225626468658,
+        -0.34866753220558167,
+        -0.3591083884239197
+      ]
+    ],
+    "target_close": [
+      true,
+      false,
+      false
+    ]
+  }
+}

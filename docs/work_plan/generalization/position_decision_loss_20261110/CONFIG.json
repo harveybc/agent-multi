@@ -1,0 +1,37 @@
+{
+  "actor_updates": 0,
+  "batch_size": 128,
+  "calibrated_sha256": "c3e29c2296e2b8e5497d7ccc4bbe8d104d8d9407f1bcdbd67c827f6e55f5878c",
+  "constant": "ed82e61a7f88badfcf708a8913a06901e71411e951b424f944669167ae0353d2",
+  "embeddings": [
+    "market",
+    "constant"
+  ],
+  "encoder_updates": 0,
+  "identity": "a14b0d897d0523b53815ed7069d9c16bd0590712a14e0b568260a8a4a490d1e3",
+  "interfaces": [
+    "progress9",
+    "surface81"
+  ],
+  "learning_rate": 2.9999999999999997e-05,
+  "objectives": [
+    "sign",
+    "sign_pair"
+  ],
+  "pair_coefficient": 0.5,
+  "partner_seed_offset": 100000,
+  "primary": "ca2e70da1a63daf22afc9eb37b4f3f6ad8ff681c81ab2ce60ff792307b4a9a4c",
+  "score_semantics": "decision_score_not_Q_or_probability",
+  "seeds": [
+    19,
+    43
+  ],
+  "source": "d4b260fffb17e0fcaddb0fe1c833493f30e28e942ffda4fbb36e5c3404a5f6e2",
+  "source_sha256": "079bef0ea6f3b9327772f4204e5d5dbbd4be69a5ab58c32b424aa3cb7c686404",
+  "sources": {
+    "app/position_decision_loss.py": "0131cc4f9327242105fd8a474d040f4f86d1923b48d22ae17b2bf21b8fcbf62d",
+    "tools/run_position_decision_loss.py": "f56b9f6c45a57b98456d534c9cbbf4082a80283e7079ed3b217d197bc5cc0cdb"
+  },
+  "updates": 4096,
+  "weight_decay": 0.01
+}

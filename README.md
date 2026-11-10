@@ -11,6 +11,11 @@ and execution-policy plugins loaded from entry points.
 
 ## Status
 
+**Decision-loss follow-up (2026-11-10):** [results259](docs/work_plan/259_POSITION_DECISION_LOSS_RESULTS.md)
+complete16 paired head fits. The paired objective improves harmful-close counts
+at nearly unchanged closing activity, but ranking/threshold and constant-market
+controls still prevent actor promotion. The original policy remains untouched.
+
 **Critic/interface diagnostic (2026-11-10):** [results257](docs/work_plan/257_POSITION_VALUE_SURFACE_RESULTS.md)
 complete twelve market-only close/hold field contrasts with external position
 evaluation. Source actor and feature-selection artifacts remain unchanged.
