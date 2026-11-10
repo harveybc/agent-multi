@@ -6,6 +6,11 @@ import torch
 from torch import nn
 
 from app.decision_attribution import fork_env, state_view
+from app.rl_subset import digest
+
+
+def same_serialized_state(actual, archived):
+    return digest(actual)==digest(archived)
 
 
 class RoleHeads(nn.Module):

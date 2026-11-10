@@ -70,3 +70,12 @@ leave incompatible values for same-direction positions with different entry,
 barriers, age, balance or size. Report this limitation rather than silently
 introducing those variables into observations. Source continuation is fixed;
 end-to-end actor transfer requires a subsequent explicit design.
+
+## Pre-Training Execution Correction
+
+Runtime88388fab stopped before any head update at native-state equality. The
+state view records entries_day as tuples; JSON receipts deserialize those as
+lists. Compare canonical serialized content, preserving every field, rather
+than Python container-type equality. Regression accepts this roundtrip but
+rejects changed entry counts and cash. The failed collection remains intact;
+the corrected runtime uses a new output identity and root, not reused outputs.

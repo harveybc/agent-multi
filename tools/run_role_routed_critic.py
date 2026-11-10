@@ -18,7 +18,7 @@ from app.decision_attribution import continuation, state_view
 from app.frozen_recipe_inputs import file_sha
 from app.frozen_signal_masks import prepared_signals
 from app.rl_subset import digest, support_hash
-from app.role_routed_critic import RoleHeads, select_role, matched_schedule, delayed_histories
+from app.role_routed_critic import RoleHeads, select_role, matched_schedule, delayed_histories, same_serialized_state
 from app.state_compatibility import compatibility
 from app.structural_refit import load_bundle
 from app.three_signal_learning import emit, environment
@@ -121,7 +121,7 @@ def residual_audit(args,spec,market,signals,config,progress):
             reference.append(dict(row=row,signal=action,state=state_view(env)))
             if index in chosen:
                 o=chosen[index]
-                if state_view(env)!=o['initial_state']:raise ValueError('ROLE_RESIDUAL_REFERENCE')
+                if not same_serialized_state(state_view(env),o['initial_state']):raise ValueError('ROLE_RESIDUAL_REFERENCE')
                 path=root/p.parent.name/f'{index:05d}.json'
                 if path.exists():
                     item=read(path)

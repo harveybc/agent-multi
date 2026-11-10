@@ -10,6 +10,18 @@ from tests.unit.test_discrete_curve_native import curve_env
 from tests.unit.test_double_tcn_probe import probe_recipe
 
 
+def test_json_account_roundtrip_still_rejects_changed_content():
+    import json
+    from app.role_routed_critic import same_serialized_state
+    state=dict(entries_day=[('(6, 4)',2)],balance=10000.,position=None)
+    archived=json.loads(json.dumps(state))
+    assert state!=archived and same_serialized_state(state,archived)
+    archived['entries_day'][0][1]=3
+    assert not same_serialized_state(state,archived)
+    archived=json.loads(json.dumps(state));archived['balance']+=1
+    assert not same_serialized_state(state,archived)
+
+
 def test_all_heads_market_only_and_external_routing():
     template=nn.Sequential(nn.Linear(5,8),nn.SiLU(),nn.Linear(8,3))
     heads=RoleHeads(template,3,19)
