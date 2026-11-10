@@ -10,6 +10,7 @@ import torch
 
 from app.bayesian_actor_head import LastLayer, actor_objective, hidden, uncertainty
 from app.critic_refinement import begin_stage, fit_anchor, sync_targets
+from app.critic_moment_loss import moment_critic_objective
 from app.frozen_actor_compaction import effective_actor, compare_logits
 from app.frozen_recipe_inputs import file_sha
 from app.frozen_signal_masks import prepared_signals
@@ -53,12 +54,13 @@ def summary_report(output, config, results, reference):
             eligible=last['eligible'], uncertainty=last['uncertainty'],
             draw_action_disagreements=result['draw_action_disagreements']))
     paired = []
-    for seed in DESIGN['seeds']:
-        a, b = [next(v for v in endpoint if v['seed']==seed and v['arm']==arm)
-                for arm in DESIGN['arms']]
-        paired.append(dict(seed=seed, both_eligible=a['eligible'] and b['eligible'],
-            validation_return_delta_pp=b['metrics']['VALIDATION']['return_pct']-a['metrics']['VALIDATION']['return_pct'],
-            train_return_delta_pp=b['metrics']['TRAIN']['return_pct']-a['metrics']['TRAIN']['return_pct']))
+    if config['design']['arms']==['deterministic','bayesian']:
+        for seed in config['design']['seeds']:
+            a, b = [next(v for v in endpoint if v['seed']==seed and v['arm']==arm)
+                    for arm in config['design']['arms']]
+            paired.append(dict(seed=seed, both_eligible=a['eligible'] and b['eligible'],
+                validation_return_delta_pp=b['metrics']['VALIDATION']['return_pct']-a['metrics']['VALIDATION']['return_pct'],
+                train_return_delta_pp=b['metrics']['TRAIN']['return_pct']-a['metrics']['TRAIN']['return_pct']))
     write(output/'SUMMARY.json', dict(identity=config['identity'], reference=reference,
         endpoint=endpoint, paired=paired, model_promoted=False,
         interpretation='Three refinement seeds on one inherited representation; not independent pretrained-model replications. Uncertainty is not calibrated.'))
@@ -85,6 +87,8 @@ def summary_report(output, config, results, reference):
 
 def run(args):
     start = time.monotonic()
+    variance_weight={'smooth_l1':None,'mean_var_1':1.,'mean_var_05':.5}[args.critic_objective]
+    design=dict(DESIGN,arms=args.arms,critic_objective=args.critic_objective,variance_weight=variance_weight)
     configure(7);torch.backends.cudnn.allow_tf32=False
     device=args.device
     if device=='cpu' and not args.preflight_only:
@@ -104,10 +108,19 @@ def run(args):
     source_sha=file_sha(args.bundle/'model.pt')
     sources={str(p.relative_to(ROOT)):file_sha(p) for folder in ('app','agent_plugins','env_plugins','tools')
              for p in (ROOT/folder).rglob('*.py')}
-    config=dict(schema='bayesian_actor_probe.v1', design=DESIGN, source_sha256=source_sha,
+    config=dict(schema='bayesian_actor_probe.v1', design=design, source_sha256=source_sha,
         manifest_sha256=file_sha(args.bundle/'MANIFEST.json'), parent_identity=parent['identity'],
         support_sha256=support_hash(market.inputs), recipe_identity=model.recipe['identity'],
         sources=sources, torch=torch.__version__, device=torch.cuda.get_device_name() if device=='cuda' else 'cpu')
+    if args.control_diagnostics_from:
+        old=read(args.control_diagnostics_from/'CONFIG.json')
+        verify_done(args.control_diagnostics_from,old['identity'])
+        if args.critic_objective!='smooth_l1' or any(config[k]!=old[k] for k in
+                ('source_sha256','manifest_sha256','parent_identity','support_sha256','recipe_identity','torch','device')):
+            raise ValueError('BAYES_DIAGNOSTIC_CONTROL_MISMATCH')
+        if any(DESIGN[k]!=old['design'][k] for k in DESIGN):
+            raise ValueError('BAYES_DIAGNOSTIC_CONTROL_DESIGN')
+        config['control_diagnostics_identity']=old['identity']
     config['identity']=digest(config)
     if (args.output/'CONFIG.json').exists() and read(args.output/'CONFIG.json')!=config:
         raise ValueError('BAYES_CONFIG_CHANGED')
@@ -141,7 +154,7 @@ def run(args):
         parity=compare_logits(logits[ix],actor.head[-1](embeddings).cpu().numpy())
     if not parity['qualified']:raise ValueError('BAYES_HIDDEN_PARITY')
     write(args.output/'PREFLIGHT.json',dict(reference_accounts_exact=True,hidden_parity=parity,
-        columns=69,valid_windows=len(ix),source_sha256=source_sha,design=DESIGN))
+        columns=69,valid_windows=len(ix),source_sha256=source_sha,design=design))
     if args.preflight_only:
         progress('PREFLIGHT_PASS');return
     # Frozen policy generates the only critic-fitting trajectory, entirely in TRAIN.
@@ -161,13 +174,20 @@ def run(args):
     write(args.output/'REPLAY.json',dict(**receipt,period='TRAIN',alpha=alpha,
         trace_sha256=file_sha(args.output/'train_replay/ACTIONS.json'),source_sha256=source_sha))
     common=args.output/'common';common.mkdir(exist_ok=True)
-    if (common/'DONE.json').exists():
+    if args.control_diagnostics_from:
+        progress('REUSE_SEALED_CONTROL_NO_UPDATES')
+        source=args.control_diagnostics_from/'common'
+        for name in ('CALIBRATED.pt','CALIBRATION.json'):
+            shutil.copy2(source/name,common/name)
+        model.load(common/'CALIBRATED.pt')
+    elif (common/'DONE.json').exists():
         verify_done(common,config['identity']);model.load(common/'CALIBRATED.pt')
     else:
         initialization=begin_stage(model,config['identity'],seed=7)
-        schedule=covering_schedule(len(replay),DESIGN['critic_updates'],DESIGN['batch'],7)
-        points=fit_anchor(model,replay,schedule,lambda:calibration_panel(model,replay),
-            lambda r:(write(common/'PROGRESS.json',r),progress('CRITIC_CALIBRATION',updates=r['updates'])))
+        schedule=covering_schedule(len(replay),design['critic_updates'],design['batch'],7)
+        with moment_critic_objective(model,variance_weight):
+            points=fit_anchor(model,replay,schedule,lambda:calibration_panel(model,replay),
+                lambda r:(write(common/'PROGRESS.json',r),progress('CRITIC_CALIBRATION',updates=r['updates'])))
         sync_targets(model);model.save(common/'CALIBRATED.pt')
         write(common/'CALIBRATION.json',dict(initialization=initialization,points=points))
         seal(common,config['identity'])
@@ -180,24 +200,46 @@ def run(args):
     train_hidden=embeddings[torch.tensor(np.searchsorted(ix,rows),device='cuda')]
     if not torch.isfinite(q).all():raise ValueError('BAYES_Q_FINITE')
     write(common/'Q_TABLE.json',dict(shape=list(q.shape),note='Frozen Q common to both arms; no alternate-action ranking guarantee'))
+    progress('CRITIC_VALIDATION_DIAGNOSTIC')
+    # Diagnostic only: these transitions never enter an optimizer or fit schedule.
+    validation_env=environment(market,risk,d['horizon'],periods['VALIDATION'],gamma)
+    evaluate(validation_env,logits,prepared=prepared,save=args.output/'validation_replay')
+    validation_trace=read(args.output/'validation_replay/ACTIONS.json')
+    validation_replay,validation_receipt=collect_full_replay(
+        environment(market,risk,d['horizon'],periods['VALIDATION'],gamma),validation_trace)
+    vr=np.searchsorted(market.inputs.row_ts_ns,[r['timestamp'] for r in validation_trace])
+    va=np.array([r['signal'] for r in validation_trace])
+    validation_returns=discounted_returns([r['reward'] for r in validation_trace],
+        [r['duration'] for r in validation_trace],-np.log(prob[vr,va].clip(1e-30)),gamma,alpha)
+    validation_replay['realized_soft_return']=torch.tensor(validation_returns,dtype=torch.float32).reshape(-1,1)
+    write(common/'ERRORS.json',dict(TRAIN=calibration_panel(model,replay),
+        VALIDATION=calibration_panel(model,validation_replay),validation_receipt=validation_receipt,
+        validation_fitting=False,variance_weight=variance_weight))
+    del validation_replay
     # Reseal after the Q provenance was added, before any arm can consume it.
     seal(common,config['identity'])
+    if args.control_diagnostics_from:
+        write(args.output/'SUMMARY.json',dict(identity=config['identity'],optimizer_updates=0,
+            source_identity=config['control_diagnostics_identity'],errors=read(common/'ERRORS.json'),
+            model_promoted=False))
+        seal(args.output,config['identity']);progress('DIAGNOSTICS_COMPLETE',optimizer_updates=0)
+        return
     del replay, model
     period_indices={p:np.flatnonzero((market.inputs.row_ts_ns[ix]>=np.datetime64(interval[0],'ns').astype('int64')) &
         (market.inputs.row_ts_ns[ix]<np.datetime64(interval[1],'ns').astype('int64'))) for p,interval in periods.items()}
     results=[]
-    for seed in DESIGN['seeds']:
-        schedule=covering_schedule(len(train_hidden),DESIGN['updates'],DESIGN['batch'],seed)
-        for arm in DESIGN['arms']:
+    for seed in design['seeds']:
+        schedule=covering_schedule(len(train_hidden),design['updates'],design['batch'],seed)
+        for arm in design['arms']:
             out=args.output/f'{arm}_{seed}';out.mkdir(exist_ok=True)
             if (out/'DONE.json').exists():
                 verify_done(out,config['identity']);results.append(read(out/'RESULT.json'));continue
-            head=LastLayer(actor.head[-1],arm=='bayesian',DESIGN['prior_std'],DESIGN['posterior_std']).cuda()
-            opt=torch.optim.AdamW(head.parameters(),lr=DESIGN['lr'],weight_decay=DESIGN['weight_decay'])
+            head=LastLayer(actor.head[-1],arm=='bayesian',design['prior_std'],design['posterior_std']).cuda()
+            opt=torch.optim.AdamW(head.parameters(),lr=design['lr'],weight_decay=design['weight_decay'])
             checkpoints=[];history=[]
             def infer(eval_seed, mean_only=False):
                 chunks=[]
-                noise=head.draws(DESIGN['eval_draws'],eval_seed) if head.bayesian else None
+                noise=head.draws(design['eval_draws'],eval_seed) if head.bayesian else None
                 with torch.no_grad():
                     for x in embeddings.split(512):
                         z=head.mean_logits(x)[None] if mean_only else head.logits(x,noise)
@@ -205,31 +247,31 @@ def run(args):
                 u={k:torch.cat([c[k] for c in chunks]).numpy() for k in chunks[0]}
                 raw=np.full_like(logits,np.nan);raw[ix]=np.log(u['probability'].clip(1e-30))
                 return raw,u
-            for step in range(DESIGN['updates']+1):
+            for step in range(design['updates']+1):
                 if step:
                     batch=torch.tensor(schedule[step-1],device='cuda')
-                    noise=head.draws(DESIGN['train_draws'],seed*10000+step) if head.bayesian else None
+                    noise=head.draws(design['train_draws'],seed*10000+step) if head.bayesian else None
                     sac=actor_objective(head.logits(train_hidden[batch],noise),q[batch],alpha)
-                    kl=head.kl();total=sac+DESIGN['kl_coefficient']*kl/len(train_hidden)
+                    kl=head.kl();total=sac+design['kl_coefficient']*kl/len(train_hidden)
                     if not torch.isfinite(total):raise ValueError('BAYES_LOSS_FINITE')
                     opt.zero_grad(set_to_none=True);total.backward()
                     grad=torch.nn.utils.clip_grad_norm_(head.parameters(),10.,error_if_nonfinite=True);opt.step()
                     history.append(dict(updates=step,sac=float(sac.detach()),kl=float(kl.detach()),
                                         total=float(total.detach()),gradient_norm=float(grad)))
-                if step in DESIGN['points']:
+                if step in design['points']:
                     progress('ACCOUNTS',seed=seed,arm=arm,updates=step)
-                    raw,u=infer(DESIGN['eval_seed'])
+                    raw,u=infer(design['eval_seed'])
                     folder=out/f'update_{step:04d}'
                     metrics=accounts(raw,folder)
                     if arm=='deterministic' and step==0:
                         for p in periods:account_equal(metrics[p],reference[p])
                     np.savez_compressed(folder/'UNCERTAINTY.npz',row_indices=ix,**u)
                     torch.save(dict(head=head.state_dict(),optimizer=opt.state_dict(),updates=step,
-                        source_sha256=source_sha,design=DESIGN,bayesian=head.bayesian),folder/'HEAD.pt')
-                    restored=LastLayer(actor.head[-1],head.bayesian,DESIGN['prior_std'],DESIGN['posterior_std']).cuda()
+                        source_sha256=source_sha,design=design,bayesian=head.bayesian),folder/'HEAD.pt')
+                    restored=LastLayer(actor.head[-1],head.bayesian,design['prior_std'],design['posterior_std']).cuda()
                     restored.load_state_dict(torch.load(folder/'HEAD.pt',weights_only=False)['head'])
                     with torch.no_grad():
-                        noise=head.draws(32,DESIGN['eval_seed']) if head.bayesian else None
+                        noise=head.draws(32,design['eval_seed']) if head.bayesian else None
                         if not torch.equal(head.logits(embeddings[:256],noise),restored.logits(embeddings[:256],noise)):
                             raise ValueError('BAYES_RELOAD')
                     us={p:{k:float(v[indices].mean()) for k,v in u.items() if k!='probability'}
@@ -237,9 +279,9 @@ def run(args):
                     checkpoints.append(dict(updates=step,metrics=metrics,uncertainty=us,reload_exact=True,
                         eligible=all(m['orders_per_week']>2 for m in metrics.values())))
                     write(out/'POINTS.json',checkpoints);write(out/'LOSS.json',history)
-            alternate,_=infer(DESIGN['check_seed'])
+            alternate,_=infer(design['check_seed'])
             disagreement=int(np.count_nonzero(prepared_signals(raw)[0][ix]!=prepared_signals(alternate)[0][ix]))
-            mean_raw,_=infer(DESIGN['eval_seed'],True)
+            mean_raw,_=infer(design['eval_seed'],True)
             mean_metrics=accounts(mean_raw,out/'endpoint_mean_weights')
             result=dict(seed=seed,arm=arm,points=checkpoints,mean_weight_endpoint=mean_metrics,
                 draw_action_disagreements=disagreement,schedule_sha256=digest(schedule.tolist()),
@@ -259,6 +301,9 @@ def main():
     parser.add_argument('--expected-device-name',required=True)
     parser.add_argument('--device',choices=['cuda','cpu'],default='cuda')
     parser.add_argument('--preflight-only',action='store_true')
+    parser.add_argument('--critic-objective',choices=['smooth_l1','mean_var_1','mean_var_05'],default='smooth_l1')
+    parser.add_argument('--arms',nargs='+',choices=['deterministic','bayesian'],default=['deterministic','bayesian'])
+    parser.add_argument('--control-diagnostics-from',type=Path)
     args=parser.parse_args();args.output.mkdir(parents=True,exist_ok=True)
     with (args.output/'worker.lock').open('a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)

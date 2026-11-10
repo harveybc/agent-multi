@@ -92,3 +92,16 @@ worker and hash-verifying collector active. Worker has a 6 GiB memory ceiling,
 bounded failure restarts and completed-arm checksum verification. The collector
 copies final weights, arrays, plots and tables to the coordinator automatically.
 No Bayesian endpoint trading result existed at this launch receipt.
+
+## Completed result
+
+Finished18:44:52 UTC,235.67 seconds; all6 arms complete,475 files collected
+and hash-verified, zero restarts. Mean TRAIN return: deterministic10.195820%,
+Bayesian10.250342%. Both mean VALIDATION return12.433670%, Sharpe1.772287,
+214-215 trades, activity eligible in all seeds. Paired validation trading
+results are identical within each seed. The preserved source remains better
+in this comparison (VALIDATION14.591090%, Sharpe2.165596,206 trades).
+
+Bayesian mean validation probability std is approximately0.000427. This is
+not a confidence-calibration result. No model was promoted. Follow-up265
+changes only critic residual objectives while preserving the Bayesian head.
