@@ -37,3 +37,26 @@ The corrected run reconstructs the panel under a new identity:
 `aa6f79868bfe332b8c775a33264cb301df2af5844c3bcc0e554d97040d01c595`.
 Persistent primary-GPU worker started; the side-lane primary training queue
 waits for its authenticated terminal receipt. No actor update or promotion.
+
+### Inference dispatch repair
+
+The second attempt stopped after the first4096-update arm with
+`OPENING_CRITIC_ACTOR_CHANGED`. A controlled production probe localized this
+to changing requires_grad flags, BEFORE any optimizer update: original reload
+and calibrated checkpoint reproduce exactly; freezing actor parameters changes
+35542 logit entries by at most1.9073486328125e-6, with ZERO changed greedy
+decisions and all actor weights byte-identical. Four diagnostic critic updates
+leave that difference unchanged. This was not an actor-weight change.
+
+Do not relax the equality gate. `emit_actor_reference` temporarily restores
+the source trainability flags during inference and restores current fit flags
+in a finally block. Real GPU verification reproduces all24026 valid TRAIN
+rows exactly;9 focused tests pass, including exception restoration. New run
+identity572c6cfe079d27a38c2f42e6f966c770fa6d32a21ec604b834234244f07b84df
+replaces the failed attempt, which remains retained. Its actor remains frozen
+through every optimizer step. STL workers continue independently.
+
+The unqualified first arm reduced fit regret0.101733->0.037473 while internal
+monitor regret rose0.103982->0.138988. These are diagnostic Q-ranking regrets,
+not trading returns and not a selected model. Await all corrected arms before
+interpreting their comparative results.

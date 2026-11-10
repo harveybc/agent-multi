@@ -15,7 +15,7 @@ from app.actor_learning_diagnostics import clear_optimizer_memory
 from app.critic_fit_probe import fit_metrics,set_scope,probe_q
 from app.decision_attribution import continuation,state_view
 from app.frozen_recipe_inputs import file_sha
-from app.operational_opening_critic import validate_labels,BOUNDARY
+from app.operational_opening_critic import validate_labels,BOUNDARY,emit_actor_reference
 from app.policy_return_calibration import policy_signals
 from app.rl_subset import digest,project_inputs,support_hash
 from app.structural_refit import load_bundle,verify_files
@@ -42,7 +42,7 @@ def run(args):
     if source_sha!=control['source_sha256']:raise ValueError('OPENING_CRITIC_SOURCE')
     cfg=dict(source_sha256=source_sha,diagnostic=prior['identity'],control=control['identity'],
         seeds=[19,43],updates=4096,batch=128,losses=['absolute','pairwise'],scopes=['heads','critic_representation'],
-        actor_updates=0,sources={n:file_sha(ROOT/n) for n in ('tools/run_operational_opening_critic.py',
+        actor_updates=0,actor_reference='source_trainability_restored_during_inference',sources={n:file_sha(ROOT/n) for n in ('tools/run_operational_opening_critic.py',
             'app/operational_opening_critic.py','app/critic_fit_probe.py','app/action_ranking_contrast.py')})
     cfg['identity']=digest(cfg)
     if (args.output/'CONFIG.json').exists() and read(args.output/'CONFIG.json')!=cfg:raise ValueError('OPENING_CRITIC_CONFIG')
@@ -51,6 +51,7 @@ def run(args):
     def progress(stage,**kw):
         write(args.output/'PROGRESS.json',dict(stage=stage,seconds=time.monotonic()-started,at=now(),**kw));print(stage,kw,flush=True)
     train_ix=np.flatnonzero(market.inputs.valid & (market.inputs.period=='TRAIN'))
+    source_trainability={n:p.requires_grad for n,p in model.loss.named_parameters()}
     logits,_=emit(model,market.inputs,indices=train_ix);baseline=logits[train_ix].copy()
     policies={s:policy_signals(logits,s) for s in (7,19,43)};signals=policy_signals(logits,None)[0][0]
     alpha=float(model.loss.log_alpha.detach().exp());del model
@@ -113,7 +114,7 @@ def run(args):
                         metrics={k:fit_metrics(q[:,ix],targets[ix]) for k,ix in masks.items()}
                         curve.append(dict(updates=step,metrics=metrics));write(folder/'CURVE.json',curve)
                         progress('CRITIC_FIT',seed=seed,scope=scope,loss=objective,updates=step)
-                after,_=emit(model,market.inputs,indices=train_ix)
+                after,_=emit_actor_reference(model,market.inputs,train_ix,source_trainability)
                 if not np.array_equal(after[train_ix],baseline):raise ValueError('OPENING_CRITIC_ACTOR_CHANGED')
                 model.save(folder/'DIAGNOSTIC.pt')
                 result=dict(seed=seed,scope=scope,loss=objective,curve=curve,actor_unchanged=True,model_promoted=False)

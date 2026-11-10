@@ -5,6 +5,19 @@ BOUNDARY=1672531200000000000
 END=1704067200000000000
 
 
+def emit_actor_reference(model,inputs,indices,trainability):
+    """Compare actor outputs under identical kernel-dispatch conditions."""
+    from app.three_signal_learning import emit
+    params=dict(model.loss.named_parameters())
+    if params.keys()!=trainability.keys():raise ValueError('OPENING_REFERENCE_PARAMETERS')
+    previous={n:p.requires_grad for n,p in params.items()}
+    try:
+        for n,p in params.items():p.requires_grad_(trainability[n])
+        return emit(model,inputs,indices=indices)
+    finally:
+        for n,p in params.items():p.requires_grad_(previous[n])
+
+
 def validate_labels(records):
     if not records or {r['role'] for r in records}!={'fit','monitor'}:raise ValueError('OPENING_LABEL_ROLES')
     for r in records:
