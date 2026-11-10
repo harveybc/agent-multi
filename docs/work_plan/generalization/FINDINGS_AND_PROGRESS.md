@@ -166,3 +166,17 @@ regret. This is a conditional module effect, not a global repair or a reason
 to discard fusion. All diagnostics and model weights preserved. Next proposed
 diagnosis: same-market Q-target compatibility across feasible account states,
 without adding state feedback or asserting the cause in advance.
+
+## F-SAME-MARKET-STATE-COMPATIBILITY
+
+Results253,2026-11-10: native histories produced844 comparable identical-market
+banks;190 (22.51%) require incompatible optimal actions across flat/long/short
+states. All844 have nonzero shared-Q action-gap fitting floors, but654 still
+permit a common optimal action. Sixteen identical-state controls have zero
+error and all seven model checkpoints preserve identical outputs for identical
+inputs. This is an exact finite-panel interface limitation, not evidence that
+market inputs are useless or that every policy must fail. Actor mean regret
+remains far above the best common-action bound (monitor0.197915 versus0.016972).
+Proposed next design: externally role-routed value outputs without new model
+inputs, with explicit tests for residual same-direction position differences.
+No model or interface promoted; source weights and observations unchanged.

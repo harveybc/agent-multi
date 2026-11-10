@@ -122,6 +122,12 @@ native flat/long/short histories sharing identical observations, with separate
 value-offset, preference and optimal-action compatibility measures. No training
 or state feedback is introduced.
 
+[Results253](253_SAME_MARKET_COMPATIBILITY_RESULTS.md):7353 native suffixes,
+844 comparable same-input banks;190 have no common optimal action and all have
+incompatible exact action-gap targets. Identical-state controls and actor
+preservation pass. Large regret above the common-action bound remains; no claim
+that state aliasing explains all errors and no interface change deployed.
+
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
 [Feed review223](223_SELECTED70_FORWARD_CLOCK_REVIEW.md): previous four
