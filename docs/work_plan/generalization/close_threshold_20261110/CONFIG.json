@@ -1,0 +1,28 @@
+{
+  "baseline_threshold": 1e-08,
+  "fit_roles": [
+    "fit"
+  ],
+  "identity": "9d04a479b4d2203f73a4924cfb4f8bcc29005e2235a94e03a4c85585e9794bbe",
+  "model_promoted": false,
+  "modes": [
+    "baseline",
+    "common",
+    "directional"
+  ],
+  "monitor_roles": [
+    "monitor"
+  ],
+  "optimizer_steps": 0,
+  "parents": {
+    "constant": "ed82e61a7f88badfcf708a8913a06901e71411e951b424f944669167ae0353d2",
+    "decision": "a14b0d897d0523b53815ed7069d9c16bd0590712a14e0b568260a8a4a490d1e3",
+    "primary": "ca2e70da1a63daf22afc9eb37b4f3f6ad8ff681c81ab2ce60ff792307b4a9a4c"
+  },
+  "primary_comparison": "surface81:market:sign_pair:common_both_seeds",
+  "source_sha256": {
+    "app/close_threshold_calibration.py": "45c89a4975ced4a935a1ac6aa84cc163556ce42768d96b5d12318a5b0495b67a",
+    "tools/run_close_threshold_calibration.py": "a1b9044e25961749a845480e59256478bf8033c7763fdd3abfa7999d847903a5"
+  },
+  "tie_tolerance": 1e-12
+}

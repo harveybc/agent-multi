@@ -1,0 +1,1298 @@
+{
+  "19:progress9:constant:huber:baseline": {
+    "close": [
+      true,
+      true,
+      true
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      0.06614498794078827,
+      0.025171326473355293,
+      0.022733576595783234
+    ]
+  },
+  "19:progress9:constant:huber:common": {
+    "close": [
+      true,
+      true,
+      true
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      0.06614498794078827,
+      0.025171326473355293,
+      0.022733576595783234
+    ]
+  },
+  "19:progress9:constant:huber:directional": {
+    "close": [
+      true,
+      true,
+      true
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      0.06614498794078827,
+      0.025171326473355293,
+      0.022733576595783234
+    ]
+  },
+  "19:progress9:constant:sign:baseline": {
+    "close": [
+      true,
+      true,
+      true
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      0.2645287811756134,
+      0.11861728131771088,
+      0.10986261814832687
+    ]
+  },
+  "19:progress9:constant:sign:common": {
+    "close": [
+      true,
+      true,
+      true
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      0.2645287811756134,
+      0.11861728131771088,
+      0.10986261814832687
+    ]
+  },
+  "19:progress9:constant:sign:directional": {
+    "close": [
+      true,
+      true,
+      true
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      0.2645287811756134,
+      0.11861728131771088,
+      0.10986261814832687
+    ]
+  },
+  "19:progress9:constant:sign_pair:baseline": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.1162436380982399,
+      -0.6407188177108765,
+      -0.670962929725647
+    ]
+  },
+  "19:progress9:constant:sign_pair:common": {
+    "close": [
+      true,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": true,
+    "scores": [
+      -0.1162436380982399,
+      -0.6407188177108765,
+      -0.670962929725647
+    ]
+  },
+  "19:progress9:constant:sign_pair:directional": {
+    "close": [
+      true,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": true,
+    "scores": [
+      -0.1162436380982399,
+      -0.6407188177108765,
+      -0.670962929725647
+    ]
+  },
+  "19:progress9:market:huber:baseline": {
+    "close": [
+      true,
+      true,
+      true
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      0.047500114887952805,
+      0.016972647979855537,
+      0.015155947767198086
+    ]
+  },
+  "19:progress9:market:huber:common": {
+    "close": [
+      true,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": true,
+    "scores": [
+      0.047500114887952805,
+      0.016972647979855537,
+      0.015155947767198086
+    ]
+  },
+  "19:progress9:market:huber:directional": {
+    "close": [
+      true,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": true,
+    "scores": [
+      0.047500114887952805,
+      0.016972647979855537,
+      0.015155947767198086
+    ]
+  },
+  "19:progress9:market:sign:baseline": {
+    "close": [
+      true,
+      true,
+      true
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      0.219827800989151,
+      0.11981096118688583,
+      0.11376475542783737
+    ]
+  },
+  "19:progress9:market:sign:common": {
+    "close": [
+      true,
+      true,
+      true
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      0.219827800989151,
+      0.11981096118688583,
+      0.11376475542783737
+    ]
+  },
+  "19:progress9:market:sign:directional": {
+    "close": [
+      true,
+      true,
+      true
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      0.219827800989151,
+      0.11981096118688583,
+      0.11376475542783737
+    ]
+  },
+  "19:progress9:market:sign_pair:baseline": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.12649713456630707,
+      -0.6397647857666016,
+      -0.6693233251571655
+    ]
+  },
+  "19:progress9:market:sign_pair:common": {
+    "close": [
+      true,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": true,
+    "scores": [
+      -0.12649713456630707,
+      -0.6397647857666016,
+      -0.6693233251571655
+    ]
+  },
+  "19:progress9:market:sign_pair:directional": {
+    "close": [
+      true,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": true,
+    "scores": [
+      -0.12649713456630707,
+      -0.6397647857666016,
+      -0.6693233251571655
+    ]
+  },
+  "19:surface81:constant:huber:baseline": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.01500532403588295,
+      -0.014763034880161285,
+      -0.012511782348155975
+    ]
+  },
+  "19:surface81:constant:huber:common": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.01500532403588295,
+      -0.014763034880161285,
+      -0.012511782348155975
+    ]
+  },
+  "19:surface81:constant:huber:directional": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.01500532403588295,
+      -0.014763034880161285,
+      -0.012511782348155975
+    ]
+  },
+  "19:surface81:constant:sign:baseline": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.04188629239797592,
+      -0.10807620733976364,
+      -0.101448655128479
+    ]
+  },
+  "19:surface81:constant:sign:common": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.04188629239797592,
+      -0.10807620733976364,
+      -0.101448655128479
+    ]
+  },
+  "19:surface81:constant:sign:directional": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.04188629239797592,
+      -0.10807620733976364,
+      -0.101448655128479
+    ]
+  },
+  "19:surface81:constant:sign_pair:baseline": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.04785308986902237,
+      -0.10009227693080902,
+      -0.100071020424366
+    ]
+  },
+  "19:surface81:constant:sign_pair:common": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.04785308986902237,
+      -0.10009227693080902,
+      -0.100071020424366
+    ]
+  },
+  "19:surface81:constant:sign_pair:directional": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.04785308986902237,
+      -0.10009227693080902,
+      -0.100071020424366
+    ]
+  },
+  "19:surface81:market:huber:baseline": {
+    "close": [
+      false,
+      true,
+      true
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.002276809886097908,
+      0.0010845419019460678,
+      0.003253776580095291
+    ]
+  },
+  "19:surface81:market:huber:common": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.002276809886097908,
+      0.0010845419019460678,
+      0.003253776580095291
+    ]
+  },
+  "19:surface81:market:huber:directional": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.002276809886097908,
+      0.0010845419019460678,
+      0.003253776580095291
+    ]
+  },
+  "19:surface81:market:sign:baseline": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.013594314455986023,
+      -0.05999533087015152,
+      -0.052920520305633545
+    ]
+  },
+  "19:surface81:market:sign:common": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.013594314455986023,
+      -0.05999533087015152,
+      -0.052920520305633545
+    ]
+  },
+  "19:surface81:market:sign:directional": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.013594314455986023,
+      -0.05999533087015152,
+      -0.052920520305633545
+    ]
+  },
+  "19:surface81:market:sign_pair:baseline": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.042281366884708405,
+      -0.10360430181026459,
+      -0.10367005318403244
+    ]
+  },
+  "19:surface81:market:sign_pair:common": {
+    "close": [
+      true,
+      true,
+      true
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.042281366884708405,
+      -0.10360430181026459,
+      -0.10367005318403244
+    ]
+  },
+  "19:surface81:market:sign_pair:directional": {
+    "close": [
+      true,
+      true,
+      true
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.042281366884708405,
+      -0.10360430181026459,
+      -0.10367005318403244
+    ]
+  },
+  "43:progress9:constant:huber:baseline": {
+    "close": [
+      true,
+      true,
+      true
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      0.05042441561818123,
+      0.03004714846611023,
+      0.028810512274503708
+    ]
+  },
+  "43:progress9:constant:huber:common": {
+    "close": [
+      true,
+      true,
+      true
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      0.05042441561818123,
+      0.03004714846611023,
+      0.028810512274503708
+    ]
+  },
+  "43:progress9:constant:huber:directional": {
+    "close": [
+      true,
+      true,
+      true
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      0.05042441561818123,
+      0.03004714846611023,
+      0.028810512274503708
+    ]
+  },
+  "43:progress9:constant:sign:baseline": {
+    "close": [
+      true,
+      true,
+      true
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      0.2612287104129791,
+      0.14171552658081055,
+      0.13457247614860535
+    ]
+  },
+  "43:progress9:constant:sign:common": {
+    "close": [
+      true,
+      true,
+      true
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      0.2612287104129791,
+      0.14171552658081055,
+      0.13457247614860535
+    ]
+  },
+  "43:progress9:constant:sign:directional": {
+    "close": [
+      true,
+      true,
+      true
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      0.2612287104129791,
+      0.14171552658081055,
+      0.13457247614860535
+    ]
+  },
+  "43:progress9:constant:sign_pair:baseline": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.007129579782485962,
+      -0.3213297426700592,
+      -0.3394242525100708
+    ]
+  },
+  "43:progress9:constant:sign_pair:common": {
+    "close": [
+      true,
+      true,
+      true
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.007129579782485962,
+      -0.3213297426700592,
+      -0.3394242525100708
+    ]
+  },
+  "43:progress9:constant:sign_pair:directional": {
+    "close": [
+      true,
+      true,
+      true
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.007129579782485962,
+      -0.3213297426700592,
+      -0.3394242525100708
+    ]
+  },
+  "43:progress9:market:huber:baseline": {
+    "close": [
+      true,
+      true,
+      true
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      0.019782716408371925,
+      0.014621132984757423,
+      0.01428765058517456
+    ]
+  },
+  "43:progress9:market:huber:common": {
+    "close": [
+      true,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": true,
+    "scores": [
+      0.019782716408371925,
+      0.014621132984757423,
+      0.01428765058517456
+    ]
+  },
+  "43:progress9:market:huber:directional": {
+    "close": [
+      true,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": true,
+    "scores": [
+      0.019782716408371925,
+      0.014621132984757423,
+      0.01428765058517456
+    ]
+  },
+  "43:progress9:market:sign:baseline": {
+    "close": [
+      true,
+      true,
+      true
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      0.2023819386959076,
+      0.1322961300611496,
+      0.1280624121427536
+    ]
+  },
+  "43:progress9:market:sign:common": {
+    "close": [
+      true,
+      true,
+      true
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      0.2023819386959076,
+      0.1322961300611496,
+      0.1280624121427536
+    ]
+  },
+  "43:progress9:market:sign:directional": {
+    "close": [
+      true,
+      true,
+      true
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      0.2023819386959076,
+      0.1322961300611496,
+      0.1280624121427536
+    ]
+  },
+  "43:progress9:market:sign_pair:baseline": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.053540125489234924,
+      -0.37587979435920715,
+      -0.39433345198631287
+    ]
+  },
+  "43:progress9:market:sign_pair:common": {
+    "close": [
+      true,
+      true,
+      true
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.053540125489234924,
+      -0.37587979435920715,
+      -0.39433345198631287
+    ]
+  },
+  "43:progress9:market:sign_pair:directional": {
+    "close": [
+      true,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": true,
+    "scores": [
+      -0.053540125489234924,
+      -0.37587979435920715,
+      -0.39433345198631287
+    ]
+  },
+  "43:surface81:constant:huber:baseline": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.004697836935520172,
+      -0.010318929329514503,
+      -0.010271349921822548
+    ]
+  },
+  "43:surface81:constant:huber:common": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.004697836935520172,
+      -0.010318929329514503,
+      -0.010271349921822548
+    ]
+  },
+  "43:surface81:constant:huber:directional": {
+    "close": [
+      true,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": true,
+    "scores": [
+      -0.004697836935520172,
+      -0.010318929329514503,
+      -0.010271349921822548
+    ]
+  },
+  "43:surface81:constant:sign:baseline": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.11502043902873993,
+      -0.1887393742799759,
+      -0.1892985850572586
+    ]
+  },
+  "43:surface81:constant:sign:common": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.11502043902873993,
+      -0.1887393742799759,
+      -0.1892985850572586
+    ]
+  },
+  "43:surface81:constant:sign:directional": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.11502043902873993,
+      -0.1887393742799759,
+      -0.1892985850572586
+    ]
+  },
+  "43:surface81:constant:sign_pair:baseline": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.17328087985515594,
+      -0.4107513129711151,
+      -0.42044949531555176
+    ]
+  },
+  "43:surface81:constant:sign_pair:common": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.17328087985515594,
+      -0.4107513129711151,
+      -0.42044949531555176
+    ]
+  },
+  "43:surface81:constant:sign_pair:directional": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.17328087985515594,
+      -0.4107513129711151,
+      -0.42044949531555176
+    ]
+  },
+  "43:surface81:market:huber:baseline": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.008136673830449581,
+      -0.014957454055547714,
+      -0.0149729885160923
+    ]
+  },
+  "43:surface81:market:huber:common": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.008136673830449581,
+      -0.014957454055547714,
+      -0.0149729885160923
+    ]
+  },
+  "43:surface81:market:huber:directional": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.008136673830449581,
+      -0.014957454055547714,
+      -0.0149729885160923
+    ]
+  },
+  "43:surface81:market:sign:baseline": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.09863897413015366,
+      -0.1555035412311554,
+      -0.1553070843219757
+    ]
+  },
+  "43:surface81:market:sign:common": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.09863897413015366,
+      -0.1555035412311554,
+      -0.1553070843219757
+    ]
+  },
+  "43:surface81:market:sign:directional": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.09863897413015366,
+      -0.1555035412311554,
+      -0.1553070843219757
+    ]
+  },
+  "43:surface81:market:sign_pair:baseline": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.1541040539741516,
+      -0.36927223205566406,
+      -0.3781094253063202
+    ]
+  },
+  "43:surface81:market:sign_pair:common": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.1541040539741516,
+      -0.36927223205566406,
+      -0.3781094253063202
+    ]
+  },
+  "43:surface81:market:sign_pair:directional": {
+    "close": [
+      false,
+      false,
+      false
+    ],
+    "expected": [
+      true,
+      false,
+      false
+    ],
+    "passed": false,
+    "scores": [
+      -0.1541040539741516,
+      -0.36927223205566406,
+      -0.3781094253063202
+    ]
+  }
+}

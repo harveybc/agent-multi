@@ -11,6 +11,11 @@ and execution-policy plugins loaded from entry points.
 
 ## Status
 
+**Threshold calibration (2026-11-10):** [results261](docs/work_plan/261_CLOSE_THRESHOLD_RESULTS_AND_PHASE2_ROADMAP.md)
+complete48 fit-only calibrations on24 frozen heads. The primary monitor result
+worsens, so no calibration or model is promoted. The preserved69-input actor
+remains available for the next phase2 pass; data-expansion work is separate.
+
 **Decision-loss follow-up (2026-11-10):** [results259](docs/work_plan/259_POSITION_DECISION_LOSS_RESULTS.md)
 complete16 paired head fits. The paired objective improves harmful-close counts
 at nearly unchanged closing activity, but ranking/threshold and constant-market

@@ -164,6 +164,12 @@ common and directional thresholds on24 frozen endpoints, baseline and constant
 controls; no training. Also records the order of integration, phase2/weight-space
 work, historical source coverage and independently qualified synthetic augmentation.
 
+[Results261 and next roadmap](261_CLOSE_THRESHOLD_RESULTS_AND_PHASE2_ROADMAP.md):
+48 fit-only calibrations complete with72 evaluations. Primary monitor regret
+and harmful closes worsen; retain the original thresholds. Next recommended
+work is frozen selected69 deletion/reinsertion plus component diagnostics,
+independently of unqualified close-field/refinement research and data expansion.
+
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
 [Feed review223](223_SELECTED70_FORWARD_CLOCK_REVIEW.md): previous four

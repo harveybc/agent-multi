@@ -1,0 +1,1184 @@
+{
+  "calibrations": {
+    "19:progress9:constant:huber": {
+      "common": {
+        "artifact_sha256": "20c61ec6f991c2234e5762256d1992391f0f759bb438b488f5a88e523cb64284",
+        "mode": "common",
+        "prediction_sha256": "747e41c41b29c1af02c6bd6f246e11a7d5e1b6dd80eb2404a1b3b73d4cc41318",
+        "thresholds": {
+          "all": {
+            "banks": 659,
+            "baseline_fit_regret": 0.14210813054298943,
+            "fit_regret": 0.14043128078289357,
+            "fit_requested_closes": 1533,
+            "minimum_fit_regret": 0.1404312807828936,
+            "n": 1781,
+            "partitions": 1694,
+            "threshold": -0.03533292561769486,
+            "tie_tolerance": 1e-12
+          }
+        }
+      },
+      "directional": {
+        "artifact_sha256": "5de3cf2261ce622789696a523c416adc30857eb7a3b085f8091025768c6ac5e4",
+        "mode": "directional",
+        "prediction_sha256": "747e41c41b29c1af02c6bd6f246e11a7d5e1b6dd80eb2404a1b3b73d4cc41318",
+        "thresholds": {
+          "long": {
+            "banks": 330,
+            "baseline_fit_regret": 0.13382901185832796,
+            "fit_regret": 0.12764604739105712,
+            "fit_requested_closes": 699,
+            "minimum_fit_regret": 0.1276460473910571,
+            "n": 889,
+            "partitions": 851,
+            "threshold": -0.03533292561769486,
+            "tie_tolerance": 1e-12
+          },
+          "short": {
+            "banks": 329,
+            "baseline_fit_regret": 0.15041241372213315,
+            "fit_regret": 0.14897189720637516,
+            "fit_requested_closes": 686,
+            "minimum_fit_regret": 0.14897189720637516,
+            "n": 892,
+            "partitions": 844,
+            "threshold": 0.002358419355005026,
+            "tie_tolerance": 1e-12
+          }
+        }
+      }
+    },
+    "19:progress9:constant:sign": {
+      "common": {
+        "artifact_sha256": "2df60beb36ccd9ea4bd9832e1ad51ffa460a3af001bdf58f9c11137f3ee21741",
+        "mode": "common",
+        "prediction_sha256": "abd217f2e8cf641af6c9eb55e83dcc94adac21963ef37ab08d574fc9e2e303bb",
+        "thresholds": {
+          "all": {
+            "banks": 659,
+            "baseline_fit_regret": 0.14306607343551192,
+            "fit_regret": 0.14155196176610899,
+            "fit_requested_closes": 1446,
+            "minimum_fit_regret": 0.14155196176610899,
+            "n": 1781,
+            "partitions": 1694,
+            "threshold": -0.10055290162563325,
+            "tie_tolerance": 1e-12
+          }
+        }
+      },
+      "directional": {
+        "artifact_sha256": "6c0f43bc21f55ba5fe946ee47d5fc008d8d7edaef66ad45b0b143a8bb36a67a4",
+        "mode": "directional",
+        "prediction_sha256": "abd217f2e8cf641af6c9eb55e83dcc94adac21963ef37ab08d574fc9e2e303bb",
+        "thresholds": {
+          "long": {
+            "banks": 330,
+            "baseline_fit_regret": 0.13313381615701952,
+            "fit_regret": 0.12776539527597885,
+            "fit_requested_closes": 703,
+            "minimum_fit_regret": 0.12776539527597883,
+            "n": 889,
+            "partitions": 851,
+            "threshold": -0.19012269377708438,
+            "tie_tolerance": 1e-12
+          },
+          "short": {
+            "banks": 329,
+            "baseline_fit_regret": 0.1530285199458538,
+            "fit_regret": 0.14956514275702032,
+            "fit_requested_closes": 722,
+            "minimum_fit_regret": 0.14956514275702035,
+            "n": 892,
+            "partitions": 844,
+            "threshold": -0.030182903632521633,
+            "tie_tolerance": 1e-12
+          }
+        }
+      }
+    },
+    "19:progress9:constant:sign_pair": {
+      "common": {
+        "artifact_sha256": "4e4b0525794b011ac3021af5632938b71155902da22146e3138a4fe0d2d29516",
+        "mode": "common",
+        "prediction_sha256": "9a35c56a1ef0f3b9038751f081035155b7552156e13d7b7b0ac532c068acc894",
+        "thresholds": {
+          "all": {
+            "banks": 659,
+            "baseline_fit_regret": 0.1524464728835523,
+            "fit_regret": 0.1441032736871627,
+            "fit_requested_closes": 1186,
+            "minimum_fit_regret": 0.1441032736871627,
+            "n": 1781,
+            "partitions": 1694,
+            "threshold": -0.4304431080818177,
+            "tie_tolerance": 1e-12
+          }
+        }
+      },
+      "directional": {
+        "artifact_sha256": "8bfc3dea7c39c8ed87c9673f8c0358c2625533d66f7b9325cfb60232a018de91",
+        "mode": "directional",
+        "prediction_sha256": "9a35c56a1ef0f3b9038751f081035155b7552156e13d7b7b0ac532c068acc894",
+        "thresholds": {
+          "long": {
+            "banks": 330,
+            "baseline_fit_regret": 0.14182290636322395,
+            "fit_regret": 0.13353010526740672,
+            "fit_requested_closes": 499,
+            "minimum_fit_regret": 0.13353010526740672,
+            "n": 889,
+            "partitions": 851,
+            "threshold": -0.4066784083843232,
+            "tie_tolerance": 1e-12
+          },
+          "short": {
+            "banks": 329,
+            "baseline_fit_regret": 0.1631023298796263,
+            "fit_regret": 0.15260057891848675,
+            "fit_requested_closes": 694,
+            "minimum_fit_regret": 0.15260057891848675,
+            "n": 892,
+            "partitions": 844,
+            "threshold": -0.5484234094619752,
+            "tie_tolerance": 1e-12
+          }
+        }
+      }
+    },
+    "19:progress9:market:huber": {
+      "common": {
+        "artifact_sha256": "593f559efb2428caf74aa43fcdea0d67193fddbe16e87f9841bd5b47c2a9ce7d",
+        "mode": "common",
+        "prediction_sha256": "72a5ec92fad2ca4f6fd0f8c0a1eae5016118a33c5716cb6993018f003aa002ba",
+        "thresholds": {
+          "all": {
+            "banks": 659,
+            "baseline_fit_regret": 0.1327363035305749,
+            "fit_regret": 0.12979083213308665,
+            "fit_requested_closes": 974,
+            "minimum_fit_regret": 0.12979083213308665,
+            "n": 1781,
+            "partitions": 1773,
+            "threshold": 0.017906052991747856,
+            "tie_tolerance": 1e-12
+          }
+        }
+      },
+      "directional": {
+        "artifact_sha256": "22eaae91fe0a4594de76ecf01f1d6ad3763e655bb111383807da0db6ee5cbf60",
+        "mode": "directional",
+        "prediction_sha256": "72a5ec92fad2ca4f6fd0f8c0a1eae5016118a33c5716cb6993018f003aa002ba",
+        "thresholds": {
+          "long": {
+            "banks": 330,
+            "baseline_fit_regret": 0.12183130276275703,
+            "fit_regret": 0.1190135295048174,
+            "fit_requested_closes": 630,
+            "minimum_fit_regret": 0.11901352950481739,
+            "n": 889,
+            "partitions": 886,
+            "threshold": -0.018278183415532116,
+            "tie_tolerance": 1e-12
+          },
+          "short": {
+            "banks": 329,
+            "baseline_fit_regret": 0.14367445019738306,
+            "fit_regret": 0.1362801328874504,
+            "fit_requested_closes": 457,
+            "minimum_fit_regret": 0.13628013288745042,
+            "n": 892,
+            "partitions": 888,
+            "threshold": 0.023949816823005676,
+            "tie_tolerance": 1e-12
+          }
+        }
+      }
+    },
+    "19:progress9:market:sign": {
+      "common": {
+        "artifact_sha256": "2b0d6365497c50112070e081f42a6f53d3777b2df9b5463f439fd51cc719e4b2",
+        "mode": "common",
+        "prediction_sha256": "1a255ec86db20ab4728b38094da51758344e158969a01e354b195dfc13347d8f",
+        "thresholds": {
+          "all": {
+            "banks": 659,
+            "baseline_fit_regret": 0.13748162409847867,
+            "fit_regret": 0.13531839543510843,
+            "fit_requested_closes": 1039,
+            "minimum_fit_regret": 0.13531839543510843,
+            "n": 1781,
+            "partitions": 1773,
+            "threshold": 0.04791168123483658,
+            "tie_tolerance": 1e-12
+          }
+        }
+      },
+      "directional": {
+        "artifact_sha256": "b71cd2d648ebe319537bc72846f0a919553255351f106f69df6c8ec3aa5b5f1d",
+        "mode": "directional",
+        "prediction_sha256": "1a255ec86db20ab4728b38094da51758344e158969a01e354b195dfc13347d8f",
+        "thresholds": {
+          "long": {
+            "banks": 330,
+            "baseline_fit_regret": 0.130081316324725,
+            "fit_regret": 0.12205679326260051,
+            "fit_requested_closes": 697,
+            "minimum_fit_regret": 0.12205679326260051,
+            "n": 889,
+            "partitions": 886,
+            "threshold": -0.15937069058418277,
+            "tie_tolerance": 1e-12
+          },
+          "short": {
+            "banks": 329,
+            "baseline_fit_regret": 0.1449044252089307,
+            "fit_regret": 0.14083849426330206,
+            "fit_requested_closes": 647,
+            "minimum_fit_regret": 0.14083849426330208,
+            "n": 892,
+            "partitions": 888,
+            "threshold": 0.005999263375997543,
+            "tie_tolerance": 1e-12
+          }
+        }
+      }
+    },
+    "19:progress9:market:sign_pair": {
+      "common": {
+        "artifact_sha256": "0a47ecef4fd91afc7c204864465b66593cd05d74d93707ab736ab2f3d9af93a0",
+        "mode": "common",
+        "prediction_sha256": "23a5e87c44783ae4771af93bc18069b3de535fd336c8af988a4b2bddfe149824",
+        "thresholds": {
+          "all": {
+            "banks": 659,
+            "baseline_fit_regret": 0.15214432830361824,
+            "fit_regret": 0.1429476001177741,
+            "fit_requested_closes": 1216,
+            "minimum_fit_regret": 0.14294760011777413,
+            "n": 1781,
+            "partitions": 1773,
+            "threshold": -0.4735963344573975,
+            "tie_tolerance": 1e-12
+          }
+        }
+      },
+      "directional": {
+        "artifact_sha256": "1300655dab4cdeed1444120ea838eaabd51581e870885287863ab52696a09a40",
+        "mode": "directional",
+        "prediction_sha256": "23a5e87c44783ae4771af93bc18069b3de535fd336c8af988a4b2bddfe149824",
+        "thresholds": {
+          "long": {
+            "banks": 330,
+            "baseline_fit_regret": 0.14227371430658572,
+            "fit_regret": 0.13315836377433649,
+            "fit_requested_closes": 528,
+            "minimum_fit_regret": 0.13315836377433649,
+            "n": 889,
+            "partitions": 886,
+            "threshold": -0.4735963344573975,
+            "tie_tolerance": 1e-12
+          },
+          "short": {
+            "banks": 329,
+            "baseline_fit_regret": 0.1620449441669031,
+            "fit_regret": 0.15149229519271254,
+            "fit_requested_closes": 693,
+            "minimum_fit_regret": 0.15149229519271254,
+            "n": 892,
+            "partitions": 888,
+            "threshold": -0.5271939039230348,
+            "tie_tolerance": 1e-12
+          }
+        }
+      }
+    },
+    "19:surface81:constant:huber": {
+      "common": {
+        "artifact_sha256": "77518b9f7c4a281e8e5e4ed54671825cf27f3bad2700ab36fcf4088c8a1546e0",
+        "mode": "common",
+        "prediction_sha256": "7cb3d6eb6dfeaf2d4ced4ab3df6a4720addbb3f20b24f19a20ef72064f0f1cdd",
+        "thresholds": {
+          "all": {
+            "banks": 659,
+            "baseline_fit_regret": 0.1259025068448884,
+            "fit_regret": 0.1241972767853639,
+            "fit_requested_closes": 1021,
+            "minimum_fit_regret": 0.1241972767853639,
+            "n": 1781,
+            "partitions": 1773,
+            "threshold": -0.0044965893030166635,
+            "tie_tolerance": 1e-12
+          }
+        }
+      },
+      "directional": {
+        "artifact_sha256": "ba98a13d2f61c8653968913a587f5abdc65c8c820b9eb46af75a22e139c17ba8",
+        "mode": "directional",
+        "prediction_sha256": "7cb3d6eb6dfeaf2d4ced4ab3df6a4720addbb3f20b24f19a20ef72064f0f1cdd",
+        "thresholds": {
+          "long": {
+            "banks": 330,
+            "baseline_fit_regret": 0.120760191262055,
+            "fit_regret": 0.11813411276768528,
+            "fit_requested_closes": 543,
+            "minimum_fit_regret": 0.11813411276768528,
+            "n": 889,
+            "partitions": 886,
+            "threshold": -0.013970114290714266,
+            "tie_tolerance": 1e-12
+          },
+          "short": {
+            "banks": 329,
+            "baseline_fit_regret": 0.1310604525662715,
+            "fit_regret": 0.1296277838398038,
+            "fit_requested_closes": 511,
+            "minimum_fit_regret": 0.12962778383980383,
+            "n": 892,
+            "partitions": 888,
+            "threshold": -0.0044965893030166635,
+            "tie_tolerance": 1e-12
+          }
+        }
+      }
+    },
+    "19:surface81:constant:sign": {
+      "common": {
+        "artifact_sha256": "de52d2b00da603897e55a7196500dc02094c0aa36312cf478062d277e06bfe44",
+        "mode": "common",
+        "prediction_sha256": "6f935f2347ee9ce86e200c5a2c52f0ddad250c1ad1fb4b3a33a3e61d66baf7d7",
+        "thresholds": {
+          "all": {
+            "banks": 659,
+            "baseline_fit_regret": 0.1220530078426326,
+            "fit_regret": 0.1205144346051991,
+            "fit_requested_closes": 979,
+            "minimum_fit_regret": 0.12051443460519912,
+            "n": 1781,
+            "partitions": 1773,
+            "threshold": 0.021292373538017273,
+            "tie_tolerance": 1e-12
+          }
+        }
+      },
+      "directional": {
+        "artifact_sha256": "390f3523bc4065d6af2700e5998d80ad889c5a357ea5865f8a3b95768033a4ee",
+        "mode": "directional",
+        "prediction_sha256": "6f935f2347ee9ce86e200c5a2c52f0ddad250c1ad1fb4b3a33a3e61d66baf7d7",
+        "thresholds": {
+          "long": {
+            "banks": 330,
+            "baseline_fit_regret": 0.12122288841137263,
+            "fit_regret": 0.11341438367357197,
+            "fit_requested_closes": 378,
+            "minimum_fit_regret": 0.11341438367357196,
+            "n": 889,
+            "partitions": 886,
+            "threshold": 0.12943467497825623,
+            "tie_tolerance": 1e-12
+          },
+          "short": {
+            "banks": 329,
+            "baseline_fit_regret": 0.12288565043325807,
+            "fit_regret": 0.12031814115896519,
+            "fit_requested_closes": 505,
+            "minimum_fit_regret": 0.12031814115896519,
+            "n": 892,
+            "partitions": 888,
+            "threshold": 0.020710378885269165,
+            "tie_tolerance": 1e-12
+          }
+        }
+      }
+    },
+    "19:surface81:constant:sign_pair": {
+      "common": {
+        "artifact_sha256": "d6097b3d03fca1d5ba3118c697c449f64cb28e57b6ab75913983da2cd9ae0611",
+        "mode": "common",
+        "prediction_sha256": "74d6d4a405f5be65963d44e47c3e807c9caa4946eea133e8bdc5e39fef2c7b11",
+        "thresholds": {
+          "all": {
+            "banks": 659,
+            "baseline_fit_regret": 0.1415913565026874,
+            "fit_regret": 0.13846668760909517,
+            "fit_requested_closes": 734,
+            "minimum_fit_regret": 0.1384666876090952,
+            "n": 1781,
+            "partitions": 1773,
+            "threshold": 0.19903817772865295,
+            "tie_tolerance": 1e-12
+          }
+        }
+      },
+      "directional": {
+        "artifact_sha256": "d1f057f4f662e3f510ab8a801c58c9e08f780084ed63640790319e0ca3a32628",
+        "mode": "directional",
+        "prediction_sha256": "74d6d4a405f5be65963d44e47c3e807c9caa4946eea133e8bdc5e39fef2c7b11",
+        "thresholds": {
+          "long": {
+            "banks": 330,
+            "baseline_fit_regret": 0.1327925664322655,
+            "fit_regret": 0.1280555809723849,
+            "fit_requested_closes": 488,
+            "minimum_fit_regret": 0.1280555809723849,
+            "n": 889,
+            "partitions": 886,
+            "threshold": -0.11915071308612825,
+            "tie_tolerance": 1e-12
+          },
+          "short": {
+            "banks": 329,
+            "baseline_fit_regret": 0.15041689061587654,
+            "fit_regret": 0.14882947230909163,
+            "fit_requested_closes": 399,
+            "minimum_fit_regret": 0.14882947230909166,
+            "n": 892,
+            "partitions": 888,
+            "threshold": 0.19903817772865295,
+            "tie_tolerance": 1e-12
+          }
+        }
+      }
+    },
+    "19:surface81:market:huber": {
+      "common": {
+        "artifact_sha256": "6626fd366de5ad6da00ad8acd51c8a16fdd7927bc8f03baa6395d104727ce4b9",
+        "mode": "common",
+        "prediction_sha256": "675cadfbc75b436d1d4fe525715f3fee543f0aa682cc2b1ee9a1808a55991b9c",
+        "thresholds": {
+          "all": {
+            "banks": 659,
+            "baseline_fit_regret": 0.12150934821393365,
+            "fit_regret": 0.11913227440887915,
+            "fit_requested_closes": 881,
+            "minimum_fit_regret": 0.11913227440887915,
+            "n": 1781,
+            "partitions": 1773,
+            "threshold": 0.014383098110556602,
+            "tie_tolerance": 1e-12
+          }
+        }
+      },
+      "directional": {
+        "artifact_sha256": "05ea43357f21c90be45ffbe8f16a27ac74d5eeae2a6957c96c7df87fc98db94b",
+        "mode": "directional",
+        "prediction_sha256": "675cadfbc75b436d1d4fe525715f3fee543f0aa682cc2b1ee9a1808a55991b9c",
+        "thresholds": {
+          "long": {
+            "banks": 330,
+            "baseline_fit_regret": 0.11836944298409717,
+            "fit_regret": 0.11390794514205713,
+            "fit_requested_closes": 542,
+            "minimum_fit_regret": 0.11390794514205713,
+            "n": 889,
+            "partitions": 886,
+            "threshold": -0.01624655351042748,
+            "tie_tolerance": 1e-12
+          },
+          "short": {
+            "banks": 329,
+            "baseline_fit_regret": 0.12465879722866324,
+            "fit_regret": 0.12290002268101655,
+            "fit_requested_closes": 464,
+            "minimum_fit_regret": 0.12290002268101653,
+            "n": 892,
+            "partitions": 888,
+            "threshold": 0.008622299879789352,
+            "tie_tolerance": 1e-12
+          }
+        }
+      }
+    },
+    "19:surface81:market:sign": {
+      "common": {
+        "artifact_sha256": "e732182a298f38554547d9860accc3d16631c42be35e1bb4356d5ee143615284",
+        "mode": "common",
+        "prediction_sha256": "b7c56cc9adb2f4c74b642401fff69cde69eb05b9de7e67f2a6a29e053d83972c",
+        "thresholds": {
+          "all": {
+            "banks": 659,
+            "baseline_fit_regret": 0.11943640778657987,
+            "fit_regret": 0.11844365717056776,
+            "fit_requested_closes": 994,
+            "minimum_fit_regret": 0.11844365717056778,
+            "n": 1781,
+            "partitions": 1773,
+            "threshold": 0.006675705313682556,
+            "tie_tolerance": 1e-12
+          }
+        }
+      },
+      "directional": {
+        "artifact_sha256": "f27d61d67d436daa51262ce027f66d0dce57058dd5550ba4f8535c4f56cc2c08",
+        "mode": "directional",
+        "prediction_sha256": "b7c56cc9adb2f4c74b642401fff69cde69eb05b9de7e67f2a6a29e053d83972c",
+        "thresholds": {
+          "long": {
+            "banks": 330,
+            "baseline_fit_regret": 0.1170111522365795,
+            "fit_regret": 0.11179419890302816,
+            "fit_requested_closes": 378,
+            "minimum_fit_regret": 0.11179419890302815,
+            "n": 889,
+            "partitions": 886,
+            "threshold": 0.11028485000133514,
+            "tie_tolerance": 1e-12
+          },
+          "short": {
+            "banks": 329,
+            "baseline_fit_regret": 0.12186903493399664,
+            "fit_regret": 0.12014125624069352,
+            "fit_requested_closes": 535,
+            "minimum_fit_regret": 0.12014125624069354,
+            "n": 892,
+            "partitions": 888,
+            "threshold": -0.012620504945516588,
+            "tie_tolerance": 1e-12
+          }
+        }
+      }
+    },
+    "19:surface81:market:sign_pair": {
+      "common": {
+        "artifact_sha256": "c08d761134f6b14a34362724013eb231169fffbba220ec42294711618fac3482",
+        "mode": "common",
+        "prediction_sha256": "7e931614b9a1c4691551aa029b63fb4f0aa2fb4868fd099266baa328171ca1ab",
+        "thresholds": {
+          "all": {
+            "banks": 659,
+            "baseline_fit_regret": 0.14116210255247777,
+            "fit_regret": 0.13769890662647374,
+            "fit_requested_closes": 1070,
+            "minimum_fit_regret": 0.13769890662647374,
+            "n": 1781,
+            "partitions": 1773,
+            "threshold": -0.10507591068744661,
+            "tie_tolerance": 1e-12
+          }
+        }
+      },
+      "directional": {
+        "artifact_sha256": "41a7f9ead41c5ea4b020a405f99974dc2ca5f4d7cd2d0d3c7409a5c11973e8f0",
+        "mode": "directional",
+        "prediction_sha256": "7e931614b9a1c4691551aa029b63fb4f0aa2fb4868fd099266baa328171ca1ab",
+        "thresholds": {
+          "long": {
+            "banks": 330,
+            "baseline_fit_regret": 0.13229129951965252,
+            "fit_regret": 0.127583391813324,
+            "fit_requested_closes": 495,
+            "minimum_fit_regret": 0.12758339181332404,
+            "n": 889,
+            "partitions": 886,
+            "threshold": -0.1185349076986313,
+            "tie_tolerance": 1e-12
+          },
+          "short": {
+            "banks": 329,
+            "baseline_fit_regret": 0.15005986851245445,
+            "fit_regret": 0.1464024181012073,
+            "fit_requested_closes": 619,
+            "minimum_fit_regret": 0.1464024181012073,
+            "n": 892,
+            "partitions": 888,
+            "threshold": -0.1531287729740143,
+            "tie_tolerance": 1e-12
+          }
+        }
+      }
+    },
+    "43:progress9:constant:huber": {
+      "common": {
+        "artifact_sha256": "f267dd5667bee7b22045d174b727e17d89600d8134de0ce91c54e219f399db49",
+        "mode": "common",
+        "prediction_sha256": "81f315663b031c1223b570af8158449d93415e566d8cea76cd7714ab2503d97c",
+        "thresholds": {
+          "all": {
+            "banks": 659,
+            "baseline_fit_regret": 0.14600528093530135,
+            "fit_regret": 0.14286329754092975,
+            "fit_requested_closes": 1561,
+            "minimum_fit_regret": 0.14286329754092975,
+            "n": 1781,
+            "partitions": 1694,
+            "threshold": -0.027486376464366916,
+            "tie_tolerance": 1e-12
+          }
+        }
+      },
+      "directional": {
+        "artifact_sha256": "8d1fff194012c8e78b73caf0aa7b80949d0121aab70fe3ab180e34e1452d9713",
+        "mode": "directional",
+        "prediction_sha256": "81f315663b031c1223b570af8158449d93415e566d8cea76cd7714ab2503d97c",
+        "thresholds": {
+          "long": {
+            "banks": 330,
+            "baseline_fit_regret": 0.1407723142411694,
+            "fit_regret": 0.13201457810109826,
+            "fit_requested_closes": 706,
+            "minimum_fit_regret": 0.13201457810109826,
+            "n": 889,
+            "partitions": 851,
+            "threshold": -0.02806978486478329,
+            "tie_tolerance": 1e-12
+          },
+          "short": {
+            "banks": 329,
+            "baseline_fit_regret": 0.15125415330327566,
+            "fit_regret": 0.15054607814879634,
+            "fit_requested_closes": 769,
+            "minimum_fit_regret": 0.15054607814879634,
+            "n": 892,
+            "partitions": 844,
+            "threshold": -0.010490247979760172,
+            "tie_tolerance": 1e-12
+          }
+        }
+      }
+    },
+    "43:progress9:constant:sign": {
+      "common": {
+        "artifact_sha256": "9d9f853c8b933f8463e39fc878fdbcdf2192e42336e09522725cab92b99290ea",
+        "mode": "common",
+        "prediction_sha256": "e77756eab40ea60ee3857d673d7bd5f26f4df2f695811d328c0bd379173169dc",
+        "thresholds": {
+          "all": {
+            "banks": 659,
+            "baseline_fit_regret": 0.14542457206025097,
+            "fit_regret": 0.14309566182698907,
+            "fit_requested_closes": 1354,
+            "minimum_fit_regret": 0.1430956618269891,
+            "n": 1781,
+            "partitions": 1694,
+            "threshold": -0.030520968139171604,
+            "tie_tolerance": 1e-12
+          }
+        }
+      },
+      "directional": {
+        "artifact_sha256": "4fabb367d9ec2daa049d0db479e4a421423608a092757b2297b3786812f5ce57",
+        "mode": "directional",
+        "prediction_sha256": "e77756eab40ea60ee3857d673d7bd5f26f4df2f695811d328c0bd379173169dc",
+        "thresholds": {
+          "long": {
+            "banks": 330,
+            "baseline_fit_regret": 0.13562666292035747,
+            "fit_regret": 0.1329423419743935,
+            "fit_requested_closes": 767,
+            "minimum_fit_regret": 0.13294234197439347,
+            "n": 889,
+            "partitions": 851,
+            "threshold": -0.19207920134067538,
+            "tie_tolerance": 1e-12
+          },
+          "short": {
+            "banks": 329,
+            "baseline_fit_regret": 0.15525226207898912,
+            "fit_regret": 0.15046603059324434,
+            "fit_requested_closes": 653,
+            "minimum_fit_regret": 0.15046603059324434,
+            "n": 892,
+            "partitions": 844,
+            "threshold": 0.026781432330608368,
+            "tie_tolerance": 1e-12
+          }
+        }
+      }
+    },
+    "43:progress9:constant:sign_pair": {
+      "common": {
+        "artifact_sha256": "42de1e7c0a9000eb5fe7bbe54f038378e2e0ebadb1ae8e70b1d954ebdf4b0a8b",
+        "mode": "common",
+        "prediction_sha256": "09701db28b51b6e4c99d8242df8ffb38df046fcd405a4c6ac4f147c9a9bb0c56",
+        "thresholds": {
+          "all": {
+            "banks": 659,
+            "baseline_fit_regret": 0.15022690387748522,
+            "fit_regret": 0.14437457257347344,
+            "fit_requested_closes": 1300,
+            "minimum_fit_regret": 0.14437457257347344,
+            "n": 1781,
+            "partitions": 1694,
+            "threshold": -0.5804811120033265,
+            "tie_tolerance": 1e-12
+          }
+        }
+      },
+      "directional": {
+        "artifact_sha256": "3a9979e3bcf56f5790194fa1d3baef633cc200c873ca78163fc524779b2bc9f4",
+        "mode": "directional",
+        "prediction_sha256": "09701db28b51b6e4c99d8242df8ffb38df046fcd405a4c6ac4f147c9a9bb0c56",
+        "thresholds": {
+          "long": {
+            "banks": 330,
+            "baseline_fit_regret": 0.14163257572302726,
+            "fit_regret": 0.1352018002795417,
+            "fit_requested_closes": 543,
+            "minimum_fit_regret": 0.1352018002795417,
+            "n": 889,
+            "partitions": 851,
+            "threshold": -0.5799581408500672,
+            "tie_tolerance": 1e-12
+          },
+          "short": {
+            "banks": 329,
+            "baseline_fit_regret": 0.15884735460992025,
+            "fit_regret": 0.15182355608651277,
+            "fit_requested_closes": 714,
+            "minimum_fit_regret": 0.15182355608651277,
+            "n": 892,
+            "partitions": 844,
+            "threshold": -0.3632113635540009,
+            "tie_tolerance": 1e-12
+          }
+        }
+      }
+    },
+    "43:progress9:market:huber": {
+      "common": {
+        "artifact_sha256": "5ff940ed8ee69e1202d72a008108aeb2b93cdeecf9234bd492880d3a77556c8b",
+        "mode": "common",
+        "prediction_sha256": "b64bffb9526e60c9a3ea334c8111d399385ccf3b9675642d40e49caf6e9fb5c7",
+        "thresholds": {
+          "all": {
+            "banks": 659,
+            "baseline_fit_regret": 0.1338807680367444,
+            "fit_regret": 0.1269997147236929,
+            "fit_requested_closes": 869,
+            "minimum_fit_regret": 0.12699971472369292,
+            "n": 1781,
+            "partitions": 1773,
+            "threshold": 0.01754269003868103,
+            "tie_tolerance": 1e-12
+          }
+        }
+      },
+      "directional": {
+        "artifact_sha256": "7b400fa7fe1907e0a97b8bffd471bdc39e55898d55f9f35057f87ac63b4068d8",
+        "mode": "directional",
+        "prediction_sha256": "b64bffb9526e60c9a3ea334c8111d399385ccf3b9675642d40e49caf6e9fb5c7",
+        "thresholds": {
+          "long": {
+            "banks": 330,
+            "baseline_fit_regret": 0.12555222212678685,
+            "fit_regret": 0.12168296085740918,
+            "fit_requested_closes": 575,
+            "minimum_fit_regret": 0.12168296085740916,
+            "n": 889,
+            "partitions": 886,
+            "threshold": -0.007924911566078665,
+            "tie_tolerance": 1e-12
+          },
+          "short": {
+            "banks": 329,
+            "baseline_fit_regret": 0.14223462867591155,
+            "fit_regret": 0.12834627392107334,
+            "fit_requested_closes": 425,
+            "minimum_fit_regret": 0.1283462739210733,
+            "n": 892,
+            "partitions": 888,
+            "threshold": 0.01798308826982975,
+            "tie_tolerance": 1e-12
+          }
+        }
+      }
+    },
+    "43:progress9:market:sign": {
+      "common": {
+        "artifact_sha256": "7398c37f8ef96e86fc344361f4955159a6a754bcfd5042b772595cd6eee0c3a9",
+        "mode": "common",
+        "prediction_sha256": "1b6f701b5e1156347855237eacf9cbfecd153584074b8f75f7ac94fc73344158",
+        "thresholds": {
+          "all": {
+            "banks": 659,
+            "baseline_fit_regret": 0.14249908154018112,
+            "fit_regret": 0.13809402601488144,
+            "fit_requested_closes": 1055,
+            "minimum_fit_regret": 0.13809402601488144,
+            "n": 1781,
+            "partitions": 1773,
+            "threshold": 0.05616321042180061,
+            "tie_tolerance": 1e-12
+          }
+        }
+      },
+      "directional": {
+        "artifact_sha256": "021f0c32db64f7244d2bfd14b5423bf431048d38ddbae78c4e45d7073da339d1",
+        "mode": "directional",
+        "prediction_sha256": "1b6f701b5e1156347855237eacf9cbfecd153584074b8f75f7ac94fc73344158",
+        "thresholds": {
+          "long": {
+            "banks": 330,
+            "baseline_fit_regret": 0.13211870943606296,
+            "fit_regret": 0.12783097623104983,
+            "fit_requested_closes": 521,
+            "minimum_fit_regret": 0.12783097623104986,
+            "n": 889,
+            "partitions": 886,
+            "threshold": 0.020644307136535645,
+            "tie_tolerance": 1e-12
+          },
+          "short": {
+            "banks": 329,
+            "baseline_fit_regret": 0.15291100492729054,
+            "fit_regret": 0.14360187588312348,
+            "fit_requested_closes": 518,
+            "minimum_fit_regret": 0.14360187588312348,
+            "n": 892,
+            "partitions": 888,
+            "threshold": 0.0755453109741211,
+            "tie_tolerance": 1e-12
+          }
+        }
+      }
+    },
+    "43:progress9:market:sign_pair": {
+      "common": {
+        "artifact_sha256": "e4b25fe77336218fec9e613b83cd047ae0741375dab5115f4ae9c0fe5132bb7f",
+        "mode": "common",
+        "prediction_sha256": "6b8dd393d17fb2899b33b678b0526c4d78b04eb282e37126aef1724bb641a933",
+        "thresholds": {
+          "all": {
+            "banks": 659,
+            "baseline_fit_regret": 0.15021452970492294,
+            "fit_regret": 0.14424342801408727,
+            "fit_requested_closes": 1313,
+            "minimum_fit_regret": 0.14424342801408727,
+            "n": 1781,
+            "partitions": 1773,
+            "threshold": -0.5964043140411378,
+            "tie_tolerance": 1e-12
+          }
+        }
+      },
+      "directional": {
+        "artifact_sha256": "7a6b316a7d311c521155fb55882739e737b24baef7ce3e2c193e1b235e1716a4",
+        "mode": "directional",
+        "prediction_sha256": "6b8dd393d17fb2899b33b678b0526c4d78b04eb282e37126aef1724bb641a933",
+        "thresholds": {
+          "long": {
+            "banks": 330,
+            "baseline_fit_regret": 0.1409116941264865,
+            "fit_regret": 0.13311795614113134,
+            "fit_requested_closes": 546,
+            "minimum_fit_regret": 0.13311795614113134,
+            "n": 889,
+            "partitions": 886,
+            "threshold": -0.5893376469612123,
+            "tie_tolerance": 1e-12
+          },
+          "short": {
+            "banks": 329,
+            "baseline_fit_regret": 0.15954564137934246,
+            "fit_regret": 0.15186152917837714,
+            "fit_requested_closes": 708,
+            "minimum_fit_regret": 0.15186152917837717,
+            "n": 892,
+            "partitions": 888,
+            "threshold": -0.35187354683876043,
+            "tie_tolerance": 1e-12
+          }
+        }
+      }
+    },
+    "43:surface81:constant:huber": {
+      "common": {
+        "artifact_sha256": "0cf427f1fc78c02c2d48c009a2121960bdd4d7fa85ea8b3e724d59c935d7f3e1",
+        "mode": "common",
+        "prediction_sha256": "397f0d0caf1fbff42f00bfc9e26ca02ce060a90ebff2f8a58f9c097c6ab119a3",
+        "thresholds": {
+          "all": {
+            "banks": 659,
+            "baseline_fit_regret": 0.12674751274945023,
+            "fit_regret": 0.12471821338865745,
+            "fit_requested_closes": 1063,
+            "minimum_fit_regret": 0.12471821338865745,
+            "n": 1781,
+            "partitions": 1773,
+            "threshold": 0.005494031589478254,
+            "tie_tolerance": 1e-12
+          }
+        }
+      },
+      "directional": {
+        "artifact_sha256": "699bd7ddfc0b53eb2eccd3fce25cf94cd52b21dbb5a5d7b37370aaa8fdfd97e9",
+        "mode": "directional",
+        "prediction_sha256": "397f0d0caf1fbff42f00bfc9e26ca02ce060a90ebff2f8a58f9c097c6ab119a3",
+        "thresholds": {
+          "long": {
+            "banks": 330,
+            "baseline_fit_regret": 0.11969807878159201,
+            "fit_regret": 0.11736131786848254,
+            "fit_requested_closes": 392,
+            "minimum_fit_regret": 0.11736131786848253,
+            "n": 889,
+            "partitions": 886,
+            "threshold": 0.020178481936454773,
+            "tie_tolerance": 1e-12
+          },
+          "short": {
+            "banks": 329,
+            "baseline_fit_regret": 0.13381837356827453,
+            "fit_regret": 0.1299402479390744,
+            "fit_requested_closes": 666,
+            "minimum_fit_regret": 0.12994024793907444,
+            "n": 892,
+            "partitions": 888,
+            "threshold": -0.005863296799361707,
+            "tie_tolerance": 1e-12
+          }
+        }
+      }
+    },
+    "43:surface81:constant:sign": {
+      "common": {
+        "artifact_sha256": "0f958f820a14a812ba43a2c08ae07bc4d748a8f1d4fa0c33e1f013add9efea71",
+        "mode": "common",
+        "prediction_sha256": "32d5e2d3cd0d209033b0aaed3567540d3695f2127757fbb6e7168914518e0e1e",
+        "thresholds": {
+          "all": {
+            "banks": 659,
+            "baseline_fit_regret": 0.1258339253436214,
+            "fit_regret": 0.12470627888921995,
+            "fit_requested_closes": 840,
+            "minimum_fit_regret": 0.12470627888921995,
+            "n": 1781,
+            "partitions": 1773,
+            "threshold": 0.07725410908460617,
+            "tie_tolerance": 1e-12
+          }
+        }
+      },
+      "directional": {
+        "artifact_sha256": "8c025412ce721d58664e42da57adc5d00326ab0d170f3799ccf24b304549f5fc",
+        "mode": "directional",
+        "prediction_sha256": "32d5e2d3cd0d209033b0aaed3567540d3695f2127757fbb6e7168914518e0e1e",
+        "thresholds": {
+          "long": {
+            "banks": 330,
+            "baseline_fit_regret": 0.11866178954735408,
+            "fit_regret": 0.11599052978707307,
+            "fit_requested_closes": 390,
+            "minimum_fit_regret": 0.11599052978707307,
+            "n": 889,
+            "partitions": 886,
+            "threshold": 0.012792985886335373,
+            "tie_tolerance": 1e-12
+          },
+          "short": {
+            "banks": 329,
+            "baseline_fit_regret": 0.1330278609447406,
+            "fit_regret": 0.12839989338400695,
+            "fit_requested_closes": 527,
+            "minimum_fit_regret": 0.12839989338400695,
+            "n": 892,
+            "partitions": 888,
+            "threshold": 0.07725410908460617,
+            "tie_tolerance": 1e-12
+          }
+        }
+      }
+    },
+    "43:surface81:constant:sign_pair": {
+      "common": {
+        "artifact_sha256": "bf01a407754c784782ee5649f853b6416408b933b8139199fe8b6ac8c3efd36f",
+        "mode": "common",
+        "prediction_sha256": "e5dfb39aaf664845889139591cbaaed0c9c2d2b3682db9718356383ab7bb9b5c",
+        "thresholds": {
+          "all": {
+            "banks": 659,
+            "baseline_fit_regret": 0.13681439790712388,
+            "fit_regret": 0.1363981441321763,
+            "fit_requested_closes": 1085,
+            "minimum_fit_regret": 0.1363981441321763,
+            "n": 1781,
+            "partitions": 1773,
+            "threshold": -0.13062541186809543,
+            "tie_tolerance": 1e-12
+          }
+        }
+      },
+      "directional": {
+        "artifact_sha256": "2d454dce77f0ece24a85f57b98bbab4fe9ba28258fa77bdaad8922a5972253d8",
+        "mode": "directional",
+        "prediction_sha256": "e5dfb39aaf664845889139591cbaaed0c9c2d2b3682db9718356383ab7bb9b5c",
+        "thresholds": {
+          "long": {
+            "banks": 330,
+            "baseline_fit_regret": 0.13265909441298124,
+            "fit_regret": 0.12883716555539118,
+            "fit_requested_closes": 536,
+            "minimum_fit_regret": 0.12883716555539115,
+            "n": 889,
+            "partitions": 886,
+            "threshold": -0.2846170365810395,
+            "tie_tolerance": 1e-12
+          },
+          "short": {
+            "banks": 329,
+            "baseline_fit_regret": 0.14098233150307246,
+            "fit_regret": 0.14043988560245116,
+            "fit_requested_closes": 548,
+            "minimum_fit_regret": 0.14043988560245116,
+            "n": 892,
+            "partitions": 888,
+            "threshold": -0.002928361296653748,
+            "tie_tolerance": 1e-12
+          }
+        }
+      }
+    },
+    "43:surface81:market:huber": {
+      "common": {
+        "artifact_sha256": "39347b394b2c4fe07f92f03ac99a54b56944e7c4f08646163d50d2d944feb174",
+        "mode": "common",
+        "prediction_sha256": "efa3caed19021221d5bc7c52d152edfd9c1b8a4cfd764a1d255625b80e5da450",
+        "thresholds": {
+          "all": {
+            "banks": 659,
+            "baseline_fit_regret": 0.11695712095806349,
+            "fit_regret": 0.11638428869725075,
+            "fit_requested_closes": 1116,
+            "minimum_fit_regret": 0.11638428869725075,
+            "n": 1781,
+            "partitions": 1773,
+            "threshold": -0.000984298996627331,
+            "tie_tolerance": 1e-12
+          }
+        }
+      },
+      "directional": {
+        "artifact_sha256": "66d539f6bd307f392bb61a3be48b261df9a43fe3c614b2a553e8ef1977fdd352",
+        "mode": "directional",
+        "prediction_sha256": "efa3caed19021221d5bc7c52d152edfd9c1b8a4cfd764a1d255625b80e5da450",
+        "thresholds": {
+          "long": {
+            "banks": 330,
+            "baseline_fit_regret": 0.11444847061759526,
+            "fit_regret": 0.10983396203967777,
+            "fit_requested_closes": 410,
+            "minimum_fit_regret": 0.10983396203967777,
+            "n": 889,
+            "partitions": 886,
+            "threshold": 0.0165565125644207,
+            "tie_tolerance": 1e-12
+          },
+          "short": {
+            "banks": 329,
+            "baseline_fit_regret": 0.11947339637555442,
+            "fit_regret": 0.1190319563535503,
+            "fit_requested_closes": 620,
+            "minimum_fit_regret": 0.11903195635355032,
+            "n": 892,
+            "partitions": 888,
+            "threshold": -0.0008593900129199029,
+            "tie_tolerance": 1e-12
+          }
+        }
+      }
+    },
+    "43:surface81:market:sign": {
+      "common": {
+        "artifact_sha256": "503b01c712698f6edc3bc581e41c1fb1e91842542722aee248dae832a87ab800",
+        "mode": "common",
+        "prediction_sha256": "b98a6fed7f4fcb9cc6bbd416596b2fdfbb0ed6241c087037ed30011ccee875ad",
+        "thresholds": {
+          "all": {
+            "banks": 659,
+            "baseline_fit_regret": 0.12652915694993228,
+            "fit_regret": 0.12196764881283371,
+            "fit_requested_closes": 1214,
+            "minimum_fit_regret": 0.12196764881283373,
+            "n": 1781,
+            "partitions": 1773,
+            "threshold": -0.05647056549787522,
+            "tie_tolerance": 1e-12
+          }
+        }
+      },
+      "directional": {
+        "artifact_sha256": "edb238037d7bd90a4e687186530378bbc25009c6cc38c4edac9fd8eca477b6cf",
+        "mode": "directional",
+        "prediction_sha256": "b98a6fed7f4fcb9cc6bbd416596b2fdfbb0ed6241c087037ed30011ccee875ad",
+        "thresholds": {
+          "long": {
+            "banks": 330,
+            "baseline_fit_regret": 0.11987940178070546,
+            "fit_regret": 0.11406876747005683,
+            "fit_requested_closes": 593,
+            "minimum_fit_regret": 0.1140687674700568,
+            "n": 889,
+            "partitions": 886,
+            "threshold": -0.10407617688179018,
+            "tie_tolerance": 1e-12
+          },
+          "short": {
+            "banks": 329,
+            "baseline_fit_regret": 0.13319912414095003,
+            "fit_regret": 0.12687633384093963,
+            "fit_requested_closes": 704,
+            "minimum_fit_regret": 0.12687633384093963,
+            "n": 892,
+            "partitions": 888,
+            "threshold": -0.05604762583971024,
+            "tie_tolerance": 1e-12
+          }
+        }
+      }
+    },
+    "43:surface81:market:sign_pair": {
+      "common": {
+        "artifact_sha256": "4610b59abe0133d4c06955a4d38165961979c851bfffa70ada574b8baa7dbd5d",
+        "mode": "common",
+        "prediction_sha256": "97639a49c7a5a0f17d2c1aa70ddb397af8be17b8e8a3ba3d3d52e92df824e298",
+        "thresholds": {
+          "all": {
+            "banks": 659,
+            "baseline_fit_regret": 0.13933267513435554,
+            "fit_regret": 0.13555531662660916,
+            "fit_requested_closes": 1110,
+            "minimum_fit_regret": 0.13555531662660916,
+            "n": 1781,
+            "partitions": 1773,
+            "threshold": -0.14984661340713504,
+            "tie_tolerance": 1e-12
+          }
+        }
+      },
+      "directional": {
+        "artifact_sha256": "aedb76adf4a47a0c1a8436fb494ebe32e3d19851caa2b4ced40eb6ff547c2be6",
+        "mode": "directional",
+        "prediction_sha256": "97639a49c7a5a0f17d2c1aa70ddb397af8be17b8e8a3ba3d3d52e92df824e298",
+        "thresholds": {
+          "long": {
+            "banks": 330,
+            "baseline_fit_regret": 0.1353170817099949,
+            "fit_regret": 0.12635321250140688,
+            "fit_requested_closes": 468,
+            "minimum_fit_regret": 0.12635321250140688,
+            "n": 889,
+            "partitions": 886,
+            "threshold": -0.14984661340713504,
+            "tie_tolerance": 1e-12
+          },
+          "short": {
+            "banks": 329,
+            "baseline_fit_regret": 0.14336047400985408,
+            "fit_regret": 0.13994876511845242,
+            "fit_requested_closes": 556,
+            "minimum_fit_regret": 0.1399487651184524,
+            "n": 892,
+            "partitions": 888,
+            "threshold": -0.030057728290557865,
+            "tie_tolerance": 1e-12
+          }
+        }
+      }
+    }
+  },
+  "fit_completed_at": "2026-11-10T16:50:43.439246+00:00",
+  "identity": "9d04a479b4d2203f73a4924cfb4f8bcc29005e2235a94e03a4c85585e9794bbe",
+  "monitor_evaluations_so_far": 0,
+  "monitor_perturbation_canaries": 48
+}

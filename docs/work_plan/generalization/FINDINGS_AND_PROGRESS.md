@@ -237,3 +237,23 @@ and both seeds. Pair ranking is invariant to a common offset; the sign term
 has not calibrated this witness's zero crossing. Next test should isolate
 fit-only offset calibration, not choose thresholds from monitor results.
 Actor, encoders and selected inputs remain untouched; no model promotion.
+
+## F-FIT-ONLY-THRESHOLD-NOT-A-GENERAL-REPAIR
+
+Results261,2026-11-10:48 frozen-head fit-only calibrations,72 evaluations,
+84180 decision partitions.28 tests and48 monitor-perturbation controls pass;
+all original metrics and model artifacts reproduce unchanged. Primary surface81
+SIGN_PAIR monitor regret worsens0.128891->0.130963 (common) or0.129488
+(directional), despite improved FIT. Harmful close counts across seeds increase
+241->300/295. The critical primary witness still fails. Other interfaces can
+pass that witness without improving aggregate regret, so witness success alone
+does not justify promotion. Keep the original thresholds; do not chase offsets
+on monitor data. The learned ranking/representation problem is not reduced to
+this simple scalar calibration. No claim that more data necessarily fixes it.
+
+Recommended next work returns to frozen selected69 phase2 and component weight
+diagnostics, preserving exact functional export and historical donor identity.
+Critic refinement and experimental controller integration remain separate.
+Existing predictor phase4 configurations and synthetic transport acceptance
+were read, not executed or admitted: their compatibility with current joint
+RL features is unverified. Audit real source coverage before choosing augmentation.
