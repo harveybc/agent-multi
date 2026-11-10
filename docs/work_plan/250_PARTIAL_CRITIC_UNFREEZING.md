@@ -66,3 +66,17 @@ pretraining. Quarterly labels overlap within roles. These remain diagnostic
 comparisons, not an independent final performance test. If partial unfreezing
 fails, examine state-dependent value conflicts and label horizons separately;
 do not conclude that the market inputs have no useful information.
+
+## Launch Verification
+
+Runtime `0a487b30`; queue started2026-11-10T08:04:05Z. Focused CPU tests21
+passed. Worker tests9 passed, including four real CUDA gradient canaries;
+the last-core canary verified6534 trainable parameters, movement in both the
+selected core and heads, and exact actor output preservation. GPU gate passed.
+
+The worker began the33-component-per-seed restoration diagnostic; endpoint
+metric parity passed before the interventions. Two new fits follow sequentially
+without re-running the four archived controls. Persistent worker and collector
+services have bounded abnormal-exit restart, hash-verified completed-arm resume,
+and a6GiB worker memory cap without swap. Output root:
+`/var/tmp/sac70-partial-critic-20261110`.
