@@ -159,6 +159,11 @@ over both seeds with609->608 total closes. Mean monitor regret improves2.58%,
 but constant-market benefit remains large and the critical witness still chooses
 HOLD for all three positions despite correct relative ranking. No actor change.
 
+[Threshold calibration260](260_FIT_ONLY_CLOSE_THRESHOLD_CALIBRATION.md): fit-only
+common and directional thresholds on24 frozen endpoints, baseline and constant
+controls; no training. Also records the order of integration, phase2/weight-space
+work, historical source coverage and independently qualified synthetic augmentation.
+
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
 [Feed review223](223_SELECTED70_FORWARD_CLOCK_REVIEW.md): previous four
