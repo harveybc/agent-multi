@@ -197,3 +197,25 @@ tests before actor transfer. No extra account-state input introduced.15 tests
 passed on coordinator and worker;561 collected files verified, source actor
 exact. A tuple/list receipt comparison failure before fitting was corrected
 with canonical-content equality and regression, retained as execution history.
+
+## F-POSITION-FIELD-EXPRESSIVITY-VERSUS-LEARNING
+
+Results257,2026-11-10: eight primary and four post-primary constant-market
+fits complete with source actor/encoders unchanged. Surface81 mean monitor
+regret0.132305 versus equal-size mean810.140061 improves5.54%, but its paired
+constant-market control reaches0.129143 and wins in both seeds. Do not attribute
+this improvement to learned market patterns. Progress9 has modest market benefit,
+but neither learned interface resolves the critical CLOSE,HOLD,HOLD witness.
+Surface harmful-close fractions remain52.14%/48.63% in monitor.
+
+Per-bank exact-value oracles are insufficient evidence of simultaneous field
+sufficiency. Merging identical market windows and direction collapses866 banks
+to860 groups. Exact-value least squares can require6.15e11 coefficients and
+lose signs in float32 even when every target requests HOLD. A separate
+minimum-infinity-norm margin LP finds correct action signs for both geometric
+interfaces across all860 groups, with coefficients <=18.70/15.81 and no float32
+sign errors; scalar interfaces have138 infeasible groups. This is output-level
+finite-panel feasibility, not proof of neural learnability or generalization.
+Next contrast should target decision regret/signs and within-market position
+differences, retaining constant-market controls. No actor transfer or new
+feature-selection evaluator admitted.13 final focused tests pass.

@@ -142,6 +142,13 @@ close-minus-hold fields externally queried at actual native SL/TP distances.
 Eight paired diagnostic arms, frozen encoders/actor, explicit nodal-oracle
 expressivity checks and separate original-position harmful-close accounting.
 
+[Results257](257_POSITION_VALUE_SURFACE_RESULTS.md): eight primary fits plus
+four constant-market controls complete. Surface81 lowers monitor regret5.54%
+versus equal-size mean81, but constant market does better than actual embeddings
+in both surface seeds. Learned opposed-choice witness still fails. A merged
+observation audit separates numerically unstable exact-gap fitting from feasible
+action signs. Actor and selected features unchanged; no promotion.
+
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
 [Feed review223](223_SELECTED70_FORWARD_CLOCK_REVIEW.md): previous four

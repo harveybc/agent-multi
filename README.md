@@ -11,6 +11,12 @@ and execution-policy plugins loaded from entry points.
 
 ## Status
 
+**Critic/interface diagnostic (2026-11-10):** [results257](docs/work_plan/257_POSITION_VALUE_SURFACE_RESULTS.md)
+complete twelve market-only close/hold field contrasts with external position
+evaluation. Source actor and feature-selection artifacts remain unchanged.
+Constant-market and harmful-close controls prevent attributing the observed
+interface improvement to learned market patterns or promoting an unqualified head.
+
 **Generalization follow-up (2026-11-06):** completed regularization diagnostics
 are in [204](docs/work_plan/204_GENERALIZATION_DIAGNOSIS_RESULTS.md). The independent
 multiscale contrast is automated under [205](docs/work_plan/205_AUTOMATED_MULTISCALE_CONTRAST.md).

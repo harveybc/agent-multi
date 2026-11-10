@@ -1,0 +1,11 @@
+{
+  "files": {
+    "CONFIG.json": "56b249c7ea5114017053e27ed0efaeb1249f2b22ec6cb422866c61832711e3e3",
+    "GROUPS.json": "3ffd871d24b0936f37e9de9c64f2f297fddfb9d4540d4bacc20387508f01f435",
+    "ORACLES.json": "d8981bfa0c8f506e86a1d715bdb87ee222826d7054edf9ec7d18bbcc635c9179",
+    "RESULT.json": "deaeb72b24e9352be9be42edb8069cb569c0a42fd374dd004b5e32956072d7a9"
+  },
+  "finished_at": "2026-11-10T15:21:30.503468+00:00",
+  "identity": "1c35ef82c80d0821fe56b52aabf064b36ac5f9cba05e4e5f7b1e2e5ccb663480",
+  "seconds": 8.646893166005611
+}

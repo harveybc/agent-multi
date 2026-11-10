@@ -1,0 +1,74 @@
+{
+  "does_not_establish_learnability": true,
+  "future_label_oracle_only": true,
+  "identity": "1c35ef82c80d0821fe56b52aabf064b36ac5f9cba05e4e5f7b1e2e5ccb663480",
+  "max_group_size": 6,
+  "merged_groups": 6,
+  "mixed_role_groups": 0,
+  "model_promoted": false,
+  "native_banks": 866,
+  "observation_groups": 860,
+  "records": 2342,
+  "results": {
+    "mean81": {
+      "float32_max_error": 0.6066965375436869,
+      "float32_wrong_actions": 156,
+      "float32_wrong_groups": 138,
+      "groups": 860,
+      "max_error": 0.606696511630946,
+      "max_node_magnitude": 0.9508969276824276,
+      "sign_oracle": {
+        "float32_wrong_actions_in_feasible_groups": 0,
+        "infeasible_groups": 138,
+        "max_node_magnitude": 0.9999999999999979
+      },
+      "wrong_actions": 156,
+      "wrong_groups": 138
+    },
+    "progress9": {
+      "float32_max_error": 0.346008566901963,
+      "float32_wrong_actions": 1,
+      "float32_wrong_groups": 1,
+      "groups": 860,
+      "max_error": 0.34600858468294127,
+      "max_node_magnitude": 6588544594.721897,
+      "sign_oracle": {
+        "float32_wrong_actions_in_feasible_groups": 0,
+        "infeasible_groups": 0,
+        "max_node_magnitude": 18.70000000001688
+      },
+      "wrong_actions": 1,
+      "wrong_groups": 1
+    },
+    "scalar": {
+      "float32_max_error": 0.6066965077413645,
+      "float32_wrong_actions": 156,
+      "float32_wrong_groups": 138,
+      "groups": 860,
+      "max_error": 0.6066965116309463,
+      "max_node_magnitude": 0.9508969276824263,
+      "sign_oracle": {
+        "float32_wrong_actions_in_feasible_groups": 0,
+        "infeasible_groups": 138,
+        "max_node_magnitude": 1.0
+      },
+      "wrong_actions": 156,
+      "wrong_groups": 138
+    },
+    "surface81": {
+      "float32_max_error": 8192.470109633183,
+      "float32_wrong_actions": 1,
+      "float32_wrong_groups": 1,
+      "groups": 860,
+      "max_error": 6.580237377823428e-05,
+      "max_node_magnitude": 615171349657.6222,
+      "sign_oracle": {
+        "float32_wrong_actions_in_feasible_groups": 0,
+        "infeasible_groups": 0,
+        "max_node_magnitude": 15.814434997701493
+      },
+      "wrong_actions": 0,
+      "wrong_groups": 0
+    }
+  }
+}

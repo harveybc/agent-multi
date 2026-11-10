@@ -1,0 +1,34 @@
+{
+  "actor_updates": 0,
+  "arms": [
+    "scalar",
+    "mean81",
+    "progress9",
+    "surface81"
+  ],
+  "axes": "directional_fit_minmax_9",
+  "batch_size": 128,
+  "calibrated_sha256": "c3e29c2296e2b8e5497d7ccc4bbe8d104d8d9407f1bcdbd67c827f6e55f5878c",
+  "continuation": "archived_frozen_actor_to_quarter_end",
+  "encoder_updates": 0,
+  "identity": "ca2e70da1a63daf22afc9eb37b4f3f6ad8ff681c81ab2ce60ff792307b4a9a4c",
+  "learning_rate": 2.9999999999999997e-05,
+  "objective": "SmoothL1_gap_mean_twins",
+  "predecessor": "542ed938fedd5699335a603ace861d6da574875afa1f73dbe7ab09d18e8676e5",
+  "probe": "7bb2154b3c0e4b76c69666edca8ac56296d3cd8ad66d39379a5541a94109fd1f",
+  "seeds": [
+    19,
+    43
+  ],
+  "source": "d4b260fffb17e0fcaddb0fe1c833493f30e28e942ffda4fbb36e5c3404a5f6e2",
+  "source_sha256": "079bef0ea6f3b9327772f4204e5d5dbbd4be69a5ab58c32b424aa3cb7c686404",
+  "sources": {
+    "app/decision_attribution.py": "75b72b2ef400bde500753f7f2754746e58cf8f7d3f9234c3a10ca8633d77f013",
+    "app/position_value_surface.py": "af74f1d0841cf97ba077d3e991a6d995c555637366aa6dd17fb102fc9115b3e7",
+    "app/role_routed_critic.py": "d6db79275f78d684f58011c6ae978c77ca087d54442b49898676581f4e1fb732",
+    "tools/run_position_value_surface.py": "affff5d84a263774696a7c7a4b7b238f2702d1f4d18ced4e11e9f51d1132b771",
+    "tools/run_role_routed_critic.py": "e5b1eeee39f767effc31c8fb999c445ff06ade7d78b73aa4477f11e1d3e91ec9"
+  },
+  "updates": 4096,
+  "weight_decay": 0.01
+}

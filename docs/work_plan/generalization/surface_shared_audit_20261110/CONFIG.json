@@ -1,0 +1,11 @@
+{
+  "device": "cpu",
+  "identity": "1c35ef82c80d0821fe56b52aabf064b36ac5f9cba05e4e5f7b1e2e5ccb663480",
+  "interface_sha256": "af74f1d0841cf97ba077d3e991a6d995c555637366aa6dd17fb102fc9115b3e7",
+  "optimizer_steps": 0,
+  "post_primary_audit": true,
+  "primary": "ca2e70da1a63daf22afc9eb37b4f3f6ad8ff681c81ab2ce60ff792307b4a9a4c",
+  "source": "d4b260fffb17e0fcaddb0fe1c833493f30e28e942ffda4fbb36e5c3404a5f6e2",
+  "source_sha256": "e98b1ce817466a923c15c48ab24616bba2f0542b12ff91989544319614795fef",
+  "support_sha256": "28d6088a92173592f39e221c1c2ab1efc9094e614eeccb11c9ae23cf14878c98"
+}

@@ -1,0 +1,25 @@
+{
+  "arms": [
+    "progress9",
+    "surface81"
+  ],
+  "batch_size": 128,
+  "calibrated_sha256": "c3e29c2296e2b8e5497d7ccc4bbe8d104d8d9407f1bcdbd67c827f6e55f5878c",
+  "control": "fit_bank_balanced_constant_embedding",
+  "identity": "ed82e61a7f88badfcf708a8913a06901e71411e951b424f944669167ae0353d2",
+  "learning_rate": 2.9999999999999997e-05,
+  "model_promoted": false,
+  "post_primary_design": true,
+  "primary": "ca2e70da1a63daf22afc9eb37b4f3f6ad8ff681c81ab2ce60ff792307b4a9a4c",
+  "seeds": [
+    19,
+    43
+  ],
+  "source": "d4b260fffb17e0fcaddb0fe1c833493f30e28e942ffda4fbb36e5c3404a5f6e2",
+  "source_sha256": "079bef0ea6f3b9327772f4204e5d5dbbd4be69a5ab58c32b424aa3cb7c686404",
+  "sources": {
+    "tools/run_surface_market_control.py": "0d360ad3e2d74bab1c3b1db19a4119b0877eb2a94981274e1f8925c47c4863e3"
+  },
+  "updates": 4096,
+  "weight_decay": 0.01
+}
