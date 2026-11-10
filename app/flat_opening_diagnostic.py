@@ -49,3 +49,12 @@ def compare_pair(q,flat,calibration,old,new):
     return dict(q_gap=qgap,flat_gap=fg.tolist(),calibration_gap=cg.tolist(),
                 flat_q_conflict=conflict(fg),calibration_q_conflict=conflict(cg),
                 state_order_flip=flip,three_draws_not_exact_expectation=True)
+
+
+def gradient_strata(gradient,hidden,labels):
+    g,h,labels=np.asarray(gradient),np.asarray(hidden),np.asarray(labels)
+    if len(g)!=len(h) or len(labels)!=len(h):raise ValueError('OPENING_STRATA_SHAPE')
+    # Divide by the full support size, so strata sum to the original gradient.
+    return {str(label):dict(rows=int((labels==label).sum()),
+        weight=g[labels==label].T@h[labels==label]/len(h),
+        bias=g[labels==label].sum(0)/len(h)) for label in np.unique(labels)}

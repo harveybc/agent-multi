@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 from app.decision_attribution import continuation,state_view
-from app.flat_opening_diagnostic import select_panel,sac_gradients,compare_pair
+from app.flat_opening_diagnostic import select_panel,sac_gradients,compare_pair,gradient_strata
 from app.frozen_recipe_inputs import file_sha
 from app.policy_return_calibration import policy_signals
 from app.rl_subset import digest,project_inputs,support_hash
@@ -186,14 +186,63 @@ def aggregate(args):
     (output/'RESULTS.md').write_text('\n'.join(lines)+'\n');seal(output,first['identity'])
 
 
+def decompose(args):
+    cfg,parent,market,traces,calibration,events,surfaces,grads,alphas,policies=prepare(args)
+    original=read(args.output/'report/SUMMARY.json');verify_done(args.output/'report',original['identity'])
+    old=read(args.output/'shard_0/CONFIG.json')
+    for key in ('parent','audit','audit_identities','source_sha256','support_sha256','panel_sha256'):
+        if old[key]!=cfg[key]:raise ValueError('OPENING_STRATA_PARENT')
+    risk=read(args.parent/'RISK.json');interval=market.recipe['split']['periods']['TRAIN']
+    env=environment(market,risk,parent['design']['horizon'],interval,parent['effective']['gamma']);env.reset()
+    labels=[]
+    for row in calibration:
+        if env.engine.pos is not None:label='holding'
+        else:label='flat_entry_allowed' if env.engine.entry_gate(env.bar)[0] else 'flat_entry_forbidden'
+        labels.append(label);trace_check(env,row,row['signal'])
+    account_check(env,read(args.control/'train_replay/METRICS.json'))
+    rows=np.searchsorted(market.inputs.row_ts_ns,[r['timestamp'] for r in traces])
+    strata={}
+    for objective,surface in surfaces.items():
+        train_ix=np.searchsorted(surface['indices'],rows);h=surface['hidden'][train_ix].astype(float)
+        strata[objective]={k:gradient_strata(g['local'],h,labels) for k,g in grads[objective].items()}
+    contributions=[]
+    for anchor in read(args.output/'report/RESULTS.json'):
+        for pair in anchor['pairs']:
+            objective=pair['objective'];s=surfaces[objective]
+            ix=np.searchsorted(s['indices'],np.searchsorted(market.inputs.row_ts_ns,anchor['timestamp']))
+            h=s['hidden'][ix].astype(float);old_action,new=pair['old'],pair['new'];terms={}
+            for k,groups in strata[objective].items():
+                terms[k]={name:float(-((g['weight'][new]-g['weight'][old_action])@h+g['bias'][new]-g['bias'][old_action]))
+                          for name,g in groups.items()}
+                if not np.isclose(sum(terms[k].values()),pair['gradient'][k]['shared'],atol=1e-10,rtol=1e-8):
+                    raise ValueError('OPENING_STRATA_TELESCOPE')
+            contributions.append(dict(timestamp=anchor['timestamp'],kind=anchor['kind'],objective=objective,
+                old=old_action,new=new,observed=pair['observed'],shared=pair['gradient']['total']['shared'],terms=terms))
+    counts={str(k):labels.count(k) for k in sorted(set(labels))};bad=[]
+    for r in contributions:
+        for observed in r['observed']:
+            if observed['outcome']=='harmful':bad.append(r)
+    summary=dict(source_report=original['identity'],source_report_sha256=file_sha(args.output/'report/SUMMARY.json'),
+        sources=cfg['sources'],rows=len(labels),strata_counts=counts,optimizer_updates=0,model_promoted=False,
+        harmful_occurrences=len(bad),
+        harmful_positive_by_stratum={k:sum(r['terms']['total'][k]>0 for r in bad) for k in counts},
+        harmful_positive_without_forbidden=sum(sum(v for k,v in r['terms']['total'].items()
+                                                  if k!='flat_entry_forbidden')>0 for r in bad),
+        no_rows_removed=True,full_gradient_reconstructed=True,
+        interpretation='Frozen first-order decomposition; removing a contribution is NOT a trained counterfactual')
+    output=args.output/'gradient_strata';write(output/'SUMMARY.json',summary);write(output/'CONTRIBUTIONS.json',contributions)
+    seal(output,digest(summary));print(summary,flush=True)
+
+
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('command',choices=('run','aggregate'))
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('command',choices=('run','aggregate','decompose'))
     for n in ('parent','bundle','control','audit'):p.add_argument('--'+n,type=Path)
     p.add_argument('--output',type=Path,required=True);p.add_argument('--shard',type=int,default=0)
     p.add_argument('--shards',type=int,default=3);a=p.parse_args()
     if not 0<=a.shard<a.shards:p.error('invalid shard')
     if a.command=='aggregate':aggregate(a);return
     if any(getattr(a,k) is None for k in ('parent','bundle','control','audit')):p.error('missing run input')
+    if a.command=='decompose':decompose(a);return
     folder=a.output/f'shard_{a.shard}';folder.mkdir(parents=True,exist_ok=True)
     with (folder/'worker.lock').open('a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)

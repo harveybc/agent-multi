@@ -5,6 +5,15 @@ import torch
 from app.flat_opening_diagnostic import select_panel, sac_gradients, project_gradient, compare_pair
 
 
+def test_strata_sum_to_full_gradient_not_equal_class_weighting():
+    from app.flat_opening_diagnostic import gradient_strata
+    rng=np.random.default_rng(2);g=rng.normal(size=(10,3));h=rng.normal(size=(10,4))
+    groups=gradient_strata(g,h,['closed']*8+['open']*2)
+    assert np.allclose(sum(v['weight'] for v in groups.values()),g.T@h/10)
+    assert np.allclose(sum(v['bias'] for v in groups.values()),g.mean(0))
+    assert groups['closed']['rows']==8
+
+
 def test_panel_controls_do_not_depend_on_profit_or_event_order():
     traces=[dict(timestamp=i,year=2021,position=0,signal=0) for i in range(10)]
     events=[dict(timestamp=3,isolated_position=0,outcome='harmful'),

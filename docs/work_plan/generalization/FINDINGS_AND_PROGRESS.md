@@ -277,3 +277,24 @@ do not use confidence shrinkage or critic RMSE alone as a promotion criterion.
 Keep the69-input source. Next isolate flat-opening state/target consistency
 and actor movement against Q on TRAIN, with unchanged/helpful controls, before
 further refinement. All worker jobs and collection finished; no training launched.
+
+## F-OPENING-CONTEXT-AND-SHARED-GRADIENT
+
+Results269,2026-11-10:158 TRAIN anchors,2844 native suffixes,21 tests passing.
+All60 harmful opening occurrences reproduce. Of20 flat-state Q/soft conflicts,
+17 also conflict in the actual calibration history; only3 occur solely outside
+it. A concrete NOP->SELL witness reverses value across the two account contexts,
+but that ambiguity does not explain every ranking error. Unchanged eligible
+controls also expose critic ordering errors. Three draws are not exact Q truth.
+
+The full TRAIN initial mean-head gradient favors all60 harmful changes and all56
+helpful changes in the flat-anchor panel.21 harmful directions oppose the local
+gradient, showing shared-update interference in this first-order diagnostic,
+not a reconstruction of the256-step AdamW trajectory. Strata of11540 eligible
+flat,4828 forbidden flat and7657 holding rows sum exactly to the full gradient.
+Removing the forbidden-flat contribution algebraically still favors all60
+harmful changes: filtering those rows is not an established repair.
+
+Preserve selected69. Next qualify critic action ordering for actual opening
+contexts and equivalent actions before another actor update. No training,
+state inputs, model promotion or repeated unchanged floating pass performed.

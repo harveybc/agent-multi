@@ -1,0 +1,29 @@
+{
+  "full_gradient_reconstructed": true,
+  "harmful_occurrences": 60,
+  "harmful_positive_by_stratum": {
+    "flat_entry_allowed": 57,
+    "flat_entry_forbidden": 60,
+    "holding": 60
+  },
+  "harmful_positive_without_forbidden": 60,
+  "interpretation": "Frozen first-order decomposition; removing a contribution is NOT a trained counterfactual",
+  "model_promoted": false,
+  "no_rows_removed": true,
+  "optimizer_updates": 0,
+  "rows": 24025,
+  "source_report": "95b09ba9eded64e2d00c13bc7207a27a9ab337f95196fef8aaf64f280edf6a53",
+  "source_report_sha256": "8a1ceac788dc2825237217b9775275b25cd8ab4bb83ade3f3f0130a5d90319b7",
+  "sources": {
+    "app/decision_attribution.py": "75b72b2ef400bde500753f7f2754746e58cf8f7d3f9234c3a10ca8633d77f013",
+    "app/flat_opening_diagnostic.py": "9c0c20da8b4999576b4fa6af26c236c238f77a1d74363c40e6d2596a9e77a6ca",
+    "app/three_signal_learning.py": "0c0f53addffd1260a8572592b1c83a86514bd08f0c81a49bb8c21827ed549fe6",
+    "env_plugins/three_signal_native.py": "581236736e95fc0121599ab412484c307b58a200cf644647a115ec5cadc20fb3",
+    "tools/diagnose_flat_openings.py": "a8bda49eadc8deb430b165a695cbedb1bd18319b6b922a25f156cfefc952f78d"
+  },
+  "strata_counts": {
+    "flat_entry_allowed": 11540,
+    "flat_entry_forbidden": 4828,
+    "holding": 7657
+  }
+}

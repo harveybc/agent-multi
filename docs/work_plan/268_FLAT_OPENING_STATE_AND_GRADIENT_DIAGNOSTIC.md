@@ -52,3 +52,15 @@ to recompute networks. Automatic collection authenticates all shards and writes
 the report. No validation threshold fitting or new actor training is authorized
 by a diagnostic result alone. Next correction must address a reproduced
 mechanism and include unchanged/helpful controls, not only the failure examples.
+
+## Follow-up decomposition, defined after native panel completion
+
+The panel revealed many calendar-forbidden flat states. Before any new fit,
+decompose the FULL original TRAIN gradient by its actual calibration-history
+states: holding, flat/entry-allowed, flat/entry-forbidden. Each contribution
+keeps denominator N (not its class size), so their sum must equal the original
+gradient. Test this identity with deliberately unequal stratum sizes. Replay
+the complete calibration history; do not infer legality from signals alone.
+No rows are removed and this is not a training ablation. Report whether the
+remaining projected direction still favors harmful changes without the
+forbidden-flat contribution, without claiming that it predicts retraining.
