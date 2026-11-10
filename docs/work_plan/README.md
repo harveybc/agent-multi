@@ -117,6 +117,11 @@ restorations complete. Partial unfreezing does not beat heads-only on monitor.
 Restoring fusion helps open-long diagnostics but hurts aggregate ordering;
 no hybrid or trained checkpoint promoted. Source actors remain intact.
 
+[Same-market diagnosis252](252_SAME_MARKET_STATE_COMPATIBILITY.md): authorized
+native flat/long/short histories sharing identical observations, with separate
+value-offset, preference and optimal-action compatibility measures. No training
+or state feedback is introduced.
+
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
 [Feed review223](223_SELECTED70_FORWARD_CLOCK_REVIEW.md): previous four
