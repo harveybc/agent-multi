@@ -132,6 +132,11 @@ that state aliasing explains all errors and no interface change deployed.
 shared versus externally routed value heads, six arms and native delayed-entry
 same-direction compatibility checks. Market inputs and actor remain unchanged.
 
+[Results255](255_ROLE_ROUTED_CRITIC_RESULTS.md): six arms completed. Routed
+heads lower monitor regret3.71% versus equal parameter count, improving position
+management but worsening flat opening. Native same-direction audit still finds
+139/866 incompatible best-action banks; no global replacement or promotion.
+
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
 [Feed review223](223_SELECTED70_FORWARD_CLOCK_REVIEW.md): previous four

@@ -180,3 +180,20 @@ remains far above the best common-action bound (monitor0.197915 versus0.016972).
 Proposed next design: externally role-routed value outputs without new model
 inputs, with explicit tests for residual same-direction position differences.
 No model or interface promoted; source weights and observations unchanged.
+
+## F-ROLE-HEADS-AND-SAME-DIRECTION-RESIDUAL
+
+Results255,2026-11-10: six fresh-head diagnostic arms, frozen source critic
+encoders and actor. Role-routed heads lower2023 monitor bank-balanced regret
+from0.193136 to0.185970 (3.71%) versus the same three heads averaged without
+role selection. Both seeds improve management of long/short positions, but
+flat opening worsens and pairwise accuracy is lower; not global dominance.
+No policy or feature-selection evaluator substituted.7074 further native
+suffixes expose139/866 same-direction banks with incompatible best actions.
+Direction routing is therefore insufficient for all constructed positions.
+Next proposed design: market-only curves evaluated against actual native
+position constraints externally, with same-direction witness and harmful-close
+tests before actor transfer. No extra account-state input introduced.15 tests
+passed on coordinator and worker;561 collected files verified, source actor
+exact. A tuple/list receipt comparison failure before fitting was corrected
+with canonical-content equality and regression, retained as execution history.
