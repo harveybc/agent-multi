@@ -1,0 +1,33 @@
+{
+  "files": {
+    "CONFIG.json": "af7254aaefd95be55155c60d45b11b8b17a989d0e8cc3a6029098b2ab4a48815",
+    "CURVES.csv": "9a43bdd55cb5a109931e2aee2bc218bc474ad484f99af8c21b66a9e0879687a6",
+    "FIT_CURVES.png": "06df8693bd103af3fb5475daac97b8f3c499ce083f1cb5d015b31683a2f418a8",
+    "RESULT.json": "fa7de3f954b28f11fbbb813846883423f488aae7a6aaf491f86a4ece2d5ec159",
+    "r19/AUDIT.json": "90c5d672c4948179608cea317331ecfd23cdc79a3f93dc61b3f617f6c038443c",
+    "r19/critic_representation/CURVE.json": "a92acffc31f440609765c7f4d8a5ab2a02de6f405c4fffa15c3616e936fbe81f",
+    "r19/critic_representation/DIAGNOSTIC.pt": "5f3dbd85bf1c666aa5720fa777ac1193bfd78f06c01f6768a5f69b94a41d5121",
+    "r19/critic_representation/DONE.json": "0766f3af901461cee09f0518155de3f8941415d76150811aa6a2658983f77234",
+    "r19/critic_representation/EFFECTIVE.json": "6cdd3cc3ddec523869c69ffffe8c34346f9d246645cfddb5280755199d8f6e71",
+    "r19/critic_representation/RESULT.json": "bfcde5d18875df86fd316efc0517ed50ceea538c5296a30b42a1cbb73c15a294",
+    "r19/heads/CURVE.json": "f8b215130200eb5acff5154c015ba861146fcfd073ef98336c015ad3bacfbe01",
+    "r19/heads/DIAGNOSTIC.pt": "3ceb6521138c8ae60792f6921d5887dd460f8a1f0859c13c3c2b5562058ca5ee",
+    "r19/heads/DONE.json": "3b9e77f7024c804317c4e91b708bc30aab04cb108a8dd67ee630d3a1b3297bf1",
+    "r19/heads/EFFECTIVE.json": "7699e8e70a133a6d0852856e0a3ed6cdb925d3f1a8444fa1d127b838d8efe8a2",
+    "r19/heads/RESULT.json": "4803c4de0b65232619fef4dcd36c29d653e3dae26f77d76ce20ee13db706b82f",
+    "r43/AUDIT.json": "3e7483260e4720bd80fd34f456bbba2e2f31138808e0957aed1c1d631e9c6e71",
+    "r43/critic_representation/CURVE.json": "683ca89b94b2154ab3069de09f4c6c908c1aece4c1419e33d1c80ef1b20dc92b",
+    "r43/critic_representation/DIAGNOSTIC.pt": "d88c94812477f380e99d07ecb14823ee34f21d89eb295d2672fa1e0930149d95",
+    "r43/critic_representation/DONE.json": "6cbc0fd7a4e0bf4dcb19075a5288fab0f71e315fb7692baa50de857e503a7545",
+    "r43/critic_representation/EFFECTIVE.json": "6cdd3cc3ddec523869c69ffffe8c34346f9d246645cfddb5280755199d8f6e71",
+    "r43/critic_representation/RESULT.json": "cd09f4990ab939ac8874ee559deb31f4bf0b2547b758b44ea552057b995e6c32",
+    "r43/heads/CURVE.json": "152b89cc514e1a7be832124ddb88d559f09112a101cde14d9e3c66b9846c4e2b",
+    "r43/heads/DIAGNOSTIC.pt": "74c5936db0515c11a5aa32027319a9373947570746da84939f2996efd92149c6",
+    "r43/heads/DONE.json": "33bf12a964d2d6ff52614ef94618c6d4d77ad2a75f8dd0edb4161a9f26826741",
+    "r43/heads/EFFECTIVE.json": "7699e8e70a133a6d0852856e0a3ed6cdb925d3f1a8444fa1d127b838d8efe8a2",
+    "r43/heads/RESULT.json": "ebe4e41758bc446f9076c3f600826c7536fdf287cf4c1fe38eac3d0b0424477b"
+  },
+  "finished_at": "2026-11-09T22:39:10.867959+00:00",
+  "identity": "fe5e5cb33a14cb201e7aa83e8c7b2ca3c7b958928b49e7c495f5c05ee270d1a6",
+  "seconds": 472.9576497730159
+}

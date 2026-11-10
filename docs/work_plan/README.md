@@ -93,6 +93,11 @@ native TRAIN coverage/label audit, then a fixed32-anchor fitting test in each
 replica. If heads alone fail the declared criterion, the same-start critic
 representation arm follows automatically. Actor and strategy are frozen.
 
+[Results247](247_CRITIC_COVERAGE_AND_SMALL_FIT_RESULTS.md): four arms complete.
+Representation adaptation fits both32-example panels to100% pair ordering;
+heads-only does not. This confirms fitting capability, not generalization.
+Native label witnesses and original actor outputs remain exact. Queue complete.
+
 ## Priority Update: 2026-11-08 - Parallel Paper Pool
 
 [Feed review223](223_SELECTED70_FORWARD_CLOCK_REVIEW.md): previous four

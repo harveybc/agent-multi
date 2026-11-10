@@ -126,3 +126,16 @@ The diagnostic now disables MHA fastpath only during that critic forward and
 restores it even on failure. Three real-checkpoint gradient canaries pass;
 actor outputs stay exact. This failure was caught before experiment launch
 and does not retroactively invalidate the completed head-only contrasts.
+
+## 2026-11-09: Critic Representation Adaptation Passes Real-Label Memorization
+
+F-CRITIC-SMALL-FIT: [247](../247_CRITIC_COVERAGE_AND_SMALL_FIT_RESULTS.md)
+authenticates four arms and26 files. Real native-label witnesses reproduce
+with zero error. Only80/74 of284 fit anchors are permitted flat entry states.
+On32 fixed examples per replica, heads-only minimum-twin pair accuracy reaches
+86.46/85.42%; adapting the existing critic encoder and heads reaches100% in
+both, with gap RMSE0.000021/0.001334 and zero regret. Actor outputs remain exact.
+The existing architecture can fit this diagnostic without growing. This is
+memorization, not generalization: monitor accuracy stays mixed, and monitor
+state distribution differs from the flat-only fitting set. Broaden coverage
+and compare trainability with state-specific monitors before actor refinement.
