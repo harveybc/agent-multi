@@ -86,6 +86,24 @@ def test_window_pack_preserves_stride_clock_and_shared_validity():
     assert np.array_equal(filtered.slot_ts_ns,base.slot_ts_ns)
 
 
+def test_window_pack_keeps_history_before_first_evaluated_row():
+    from tests.unit.test_frozen_recipe_inputs import recipe,frame
+    from app.frozen_recipe_inputs import FrozenRecipeInputs
+    from tools.run_causal_stl_lane import pack_inputs
+    base=FrozenRecipeInputs.from_frame(recipe(),frame())
+    retained=FrozenRecipeInputs(base.recipe,base.row_ts_ns[4:],base.slot_ts_ns[4:],
+                               base.windows[4:],base.valid[4:],base.period[4:])
+    values=np.arange(24,dtype=float).reshape(12,2)
+    packed=pack_inputs(retained,retained.recipe,values,retained.valid,np.arange(4,12))
+    np.testing.assert_array_equal(packed.valid,retained.valid)
+    np.testing.assert_array_equal(packed.windows[0],values[[0,2,4]])
+    # This fixture has valid prehistory; the current real store has no such gain.
+    old=pack_inputs(retained,retained.recipe,values[4:],retained.valid)
+    assert int(packed.valid.sum()-old.valid.sum())==4
+    with pytest.raises(ValueError,match='SOURCE_INDICES'):
+        pack_inputs(retained,retained.recipe,values,retained.valid,np.arange(4,12)+1)
+
+
 def test_transformed_recipe_bundle_cold_reload_and_sac_update(tmp_path):
     import torch
     from tools.run_discrete_curve_probe import transition

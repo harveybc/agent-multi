@@ -5,6 +5,9 @@ results without treating a calibration result as a profit improvement.
 
 | Date | ID | Finding or progress | Evidence | Operational disposition |
 |---|---|---|---|---|
+|2026-11-11|F-STL-SOURCE-REPAIR|Four repaired FX inputs recover479 original windows under unchanged STL parameters;December2023 regains222 windows|[278](../278_STL_REPAIR_AND_PREHISTORY_RESULTS.md)|Separate diagnostic candidate;January2020 andJune2022 still have no common STL support;no training release|
+|2026-11-11|F-STL-PREHISTORY|Original producers reconstruct34/36 needed columns from1567 real pre-TRAIN rows;baseline error below4e-14,prefix error0|[278](../278_STL_REPAIR_AND_PREHISTORY_RESULTS.md)|Calendar and cross-fit activity scope remain unqualified;no synthetic context or admission|
+|2026-11-11|F-USDCHF-ZERO-VOLUME|Native missing-hour archive record is flat,zero-volume and equal to preceding close|[278](../278_STL_REPAIR_AND_PREHISTORY_RESULTS.md)|Reject carry-forward as a real observation;do not remove model inputs or overwrite the source|
 |2026-11-10|F-P2-CUMULATIVE|69 ->69 ->69; all51 historical phase2 removals tested in46 return blocks;112 evaluations; no accepted change|[263](../263_CUMULATIVE_PHASE2_RESULTS.md)|Keep current69/28 actor; frozen donor-assisted rejection is not evidence against matched retraining|
 |2026-11-10|F-WEIGHT-RESTORATION|All313 current actor tensors exact after restoring archived connections;30,234 windows give zero action differences and exact native accounts with absent channels masked|[262](../262_CUMULATIVE_PHASE2_RETURN.md), [263](../263_CUMULATIVE_PHASE2_RESULTS.md)|Historical readmission no longer silently limited to same-pass removals; preserve source and donor/scaler lineage|
 |2026-11-09|F-P2-69|Frozen70 ->69 ->69; VAL return13.80849% ->14.59109%, TRAIN11.51453% ->10.79211%; VAL DD3.62493% ->4.04467%|[225](../225_PHASE2_69_AND_WEIGHT_SPACE_RESULTS.md)|Preserve both models; tradeoff, not dominance on all metrics|

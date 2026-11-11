@@ -44,11 +44,12 @@ def prepare(args):
     expected=(x[indices]-np.array(rec['scaler']['mean']))/np.array(rec['scaler']['std'])
     if not np.allclose(expected,market.inputs.windows[:,-1,:],rtol=1e-5,atol=1e-5,equal_nan=True):
         raise ValueError('STL_ENCODED_INPUT_PARITY')
-    cfg=dict(schema='causal_stl_lane.v1',parent=spec['identity'],source_sha256=file_sha(args.bundle/'model.pt'),
+    cfg=dict(schema='causal_stl_lane.v2',parent=spec['identity'],source_sha256=file_sha(args.bundle/'model.pt'),
         recipe_sha256=file_sha(args.bundle/'RECIPE.json'),columns=rec['list']['columns'],
         original_support=support_hash(market.inputs),statsmodels=statsmodels.__version__,
         train_end=int(np.searchsorted(times,pd.Timestamp('2024-01-01',tz='UTC').value)),
         original_window=rec['tensor']['window'],period_clock='admitted observation rows, not wall-clock hours',
+        input_context='full producer grid; parent_indices select evaluated endpoints without a second warmup trim',
         grid=dict(period=[6,12,24,48,120],seasonal=[7,13],robust=[False,True],context='max(64,4*period)'),
         origins=16,forecast_horizon=24,variants=list(VARIANTS),seed=7,
         sources={n:file_sha(ROOT/n) for n in ('app/causal_stl_inputs.py','tools/run_causal_stl_lane.py',
@@ -117,8 +118,12 @@ def column(args):
         seal(out,cfg['identity']);progress('COMPLETE',completed=len(x),total=len(x))
 
 
-def pack_inputs(base,recipe,values,common):
-    w=base.recipe['tensor']['window'];slots=np.arange(len(values))[:,None]-w['stride_rows']*np.arange(w['observations']-1,-1,-1)
+def pack_inputs(base,recipe,values,common,source_indices=None):
+    indices=np.arange(len(values)) if source_indices is None else np.asarray(source_indices)
+    if (indices.shape!=(len(base.valid),) or not np.issubdtype(indices.dtype,np.integer)
+            or (indices<0).any() or (indices>=len(values)).any()
+            or (np.diff(indices)<=0).any()):raise ValueError('STL_SOURCE_INDICES')
+    w=base.recipe['tensor']['window'];slots=indices[:,None]-w['stride_rows']*np.arange(w['observations']-1,-1,-1)
     windows=values[slots.clip(0)].astype(np.float32)
     valid=base.valid & (slots[:,0]>=0) & np.isfinite(windows).all(axis=(1,2)) & common
     for a in (windows,valid):a.flags.writeable=False
@@ -135,10 +140,10 @@ def assemble(args):
     with np.load(args.root/'RAW.npz') as f:indices=f['parent_indices'];times=f['times'];raw=f['values']
     mask=times<pd.Timestamp('2024-01-01',tz='UTC').value
     enc=encode_seasonal(values,mask);parameters=[r['parameters'] for r in results]
-    original=(raw[indices]-np.array(rec['scaler']['mean']))/np.array(rec['scaler']['std'])
-    variants={'raw':original,**{k:enc[k][indices] for k in ('continuous','ordinal','binary')}}
+    original=(raw-np.array(rec['scaler']['mean']))/np.array(rec['scaler']['std'])
+    variants={'raw':original,**{k:enc[k] for k in ('continuous','ordinal','binary')}}
     common=market.inputs.valid.copy()
-    for k,v in variants.items():common &= pack_inputs(market.inputs,rec,v,common).valid
+    for k,v in variants.items():common &= pack_inputs(market.inputs,rec,v,common,indices).valid
     if not common.any():raise ValueError('STL_NO_COMMON_SUPPORT')
     live_checks=[]
     for t in np.flatnonzero(np.isfinite(values).all(1))[np.linspace(0,np.isfinite(values).all(1).sum()-1,5,dtype=int)]:
@@ -157,14 +162,14 @@ def assemble(args):
             source_recipe_identity=rec['identity'],parameters=parameters,encoding=enc['parameters'],
             identity=cfg['identity'],clock=cfg['period_clock'],common_history_gate=True,
             note='requires explicit adapter; raw store loader must refuse')
-        recipe=seal_recipe(recipe);inputs=pack_inputs(market.inputs,recipe,v,common)
+        recipe=seal_recipe(recipe);inputs=pack_inputs(market.inputs,recipe,v,common,indices)
         write(out/f'{k}_RECIPE.json',recipe)
         report[k]=dict(support=support_hash(inputs),shape=list(inputs.windows.shape),
             periods={p:dict(original=int((market.inputs.valid & (market.inputs.period==p)).sum()),
                 common=int((inputs.valid & (inputs.period==p)).sum()),
                 unavailable=int((market.inputs.valid & ~inputs.valid & (inputs.period==p)).sum())) for p in ('TRAIN','VALIDATION')})
     if len({r['support'] for r in report.values()})!=1:raise ValueError('STL_SUPPORT_UNPAIRED')
-    np.savez_compressed(out/'VALUES.npz',**variants,common=common)
+    np.savez_compressed(out/'VALUES.npz',**variants,common=common,parent_indices=indices)
     write(out/'RESULT.json',dict(identity=cfg['identity'],variants=report,columns=results,
         live_parity_rows=live_checks,all_features_replaced=True,no_imputation=True,
         diagnostic='seasonal-only may discard predictive trend/remainder; no automatic admission'))
@@ -176,7 +181,7 @@ def train(args):
     if not torch.cuda.is_available() or torch.cuda.get_device_name()!=args.expected_device_name:raise ValueError('STL_GPU_IDENTITY')
     spec,_,market=source(args);k=args.variant;recipe=read(args.root/'prepared'/f'{k}_RECIPE.json')
     with np.load(args.root/'prepared/VALUES.npz') as f:
-        market.inputs=pack_inputs(market.inputs,recipe,f[k],f['common'])
+        market.inputs=pack_inputs(market.inputs,recipe,f[k],f['common'],f['parent_indices'])
     market.recipe=recipe
     if support_hash(market.inputs)!=read(args.root/'prepared/RESULT.json')['variants'][k]['support']:raise ValueError('STL_TRAIN_SUPPORT')
     design=copy.deepcopy(spec['design']);design.update(head_only=False,initialize_epoch_zero=False,warmup_policy=False,

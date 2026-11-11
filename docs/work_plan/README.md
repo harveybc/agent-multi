@@ -2,6 +2,15 @@
 
 ## Execution Update: 2026-11-11
 
+[STL repair278](278_STL_REPAIR_AND_PREHISTORY_RESULTS.md) propagated the four
+repaired FX inputs through the frozen causal transform:479 original windows
+recovered, including all222 previously lost December2023 windows. Original
+producers reconstructed34 of36 needed pre-TRAIN columns as a separate candidate;
+calendar and supervised-activity history are not yet qualified. The native
+USDCHF archive exposes a zero-volume carry-forward, not the missing real quote.
+Both recovery scripts completed; no STL training or model promotion is claimed.
+These are side-lane data repairs, not a replacement for the main actor task below.
+
 [Recovery and attribution277](277_RECOVERY_AND_ATTRIBUTION_QUEUE.md) executed
 both independent tasks: four selected FX inputs rebuilt after exact baseline
 and prefix checks;16 saved actor accounts attributed with zero cash discrepancy.

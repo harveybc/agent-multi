@@ -2,6 +2,14 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "recover_stl_price_warmup.py": {
+   "purpose": "Reconstruct a separate pre-TRAIN feature candidate using original frozen producers and measured baseline/prefix parity, without inventing calendar or supervised-activity context",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
+  },
+  "propagate_stl_source_repair.py": {
+   "purpose": "Propagate authenticated source repairs through bounded frozen causal STL support, preserve untouched endpoints and report remaining coverage without training or promotion",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
+  },
   "run_recovery_queue.py": {
    "purpose": "Run an owner-configured finite resumable recovery queue with independent failures and content-hashed output receipts",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
