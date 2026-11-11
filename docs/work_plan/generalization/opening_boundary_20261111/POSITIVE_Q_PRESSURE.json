@@ -1,0 +1,119 @@
+{
+  "meaning": "Both native and Q gaps direction-minus-NOP >1e-8; total infinitesimal SGD margin derivative <-1e-10. Not a local-logit or AdamW causal decomposition.",
+  "arms": {
+    "boundary_pairwise_native_19": {
+      "gradient_sha256": "97a37a3190bf4059476e6ef632f6ef13bc12115ad1ca1278128b710da8dbf575",
+      "norms": {
+        "entropy": 0.0016556905376698418,
+        "total": 0.04382223730468927,
+        "value": 0.04441531896673098
+      },
+      "decomposition_max_error": 6.83940015733242e-09,
+      "flat_allowed": {
+        "fit": {
+          "native_and_q_beneficial": 26,
+          "both_beneficial_but_total_margin_down": 26
+        },
+        "monitor": {
+          "native_and_q_beneficial": 6,
+          "both_beneficial_but_total_margin_down": 6
+        }
+      }
+    },
+    "boundary_pairwise_native_43": {
+      "gradient_sha256": "de76ff52901a43617380e177c5fb07a9c495123b8967ef3e4e58a43ac3ab2038",
+      "norms": {
+        "entropy": 0.001593671623349672,
+        "total": 0.05034125048980265,
+        "value": 0.05113194103060395
+      },
+      "decomposition_max_error": 7.392372936010361e-09,
+      "flat_allowed": {
+        "fit": {
+          "native_and_q_beneficial": 9,
+          "both_beneficial_but_total_margin_down": 9
+        },
+        "monitor": {
+          "native_and_q_beneficial": 5,
+          "both_beneficial_but_total_margin_down": 5
+        }
+      }
+    },
+    "greedy_calibrated_native_19": {
+      "gradient_sha256": "2641a5d82fb4a6e57cf209273c9e9380634e883234940439168c745a07da1a0e",
+      "norms": {
+        "entropy": 0.0016556905376698418,
+        "total": 0.03580167064877513,
+        "value": 0.03640670481372487
+      },
+      "decomposition_max_error": 9.458744898438454e-09,
+      "flat_allowed": {
+        "fit": {
+          "native_and_q_beneficial": 26,
+          "both_beneficial_but_total_margin_down": 26
+        },
+        "monitor": {
+          "native_and_q_beneficial": 5,
+          "both_beneficial_but_total_margin_down": 5
+        }
+      }
+    },
+    "greedy_calibrated_native_43": {
+      "gradient_sha256": "bab89ea387b797d4dbc3a4c041abd59ac69669ce28674880733ae81550a55863",
+      "norms": {
+        "entropy": 0.001593671623349672,
+        "total": 0.06084500942990734,
+        "value": 0.061650613855859876
+      },
+      "decomposition_max_error": 5.602487362921238e-09,
+      "flat_allowed": {
+        "fit": {
+          "native_and_q_beneficial": 8,
+          "both_beneficial_but_total_margin_down": 8
+        },
+        "monitor": {
+          "native_and_q_beneficial": 1,
+          "both_beneficial_but_total_margin_down": 1
+        }
+      }
+    },
+    "retained_native_19": {
+      "gradient_sha256": "9797391582c937edaa96d0760ec7ef34c961b5e30e1c5460a8e06117e4c5f8b9",
+      "norms": {
+        "entropy": 0.0016556905376698418,
+        "total": 0.03004976037220533,
+        "value": 0.03049904670863482
+      },
+      "decomposition_max_error": 5.209585651755333e-09,
+      "flat_allowed": {
+        "fit": {
+          "native_and_q_beneficial": 26,
+          "both_beneficial_but_total_margin_down": 17
+        },
+        "monitor": {
+          "native_and_q_beneficial": 8,
+          "both_beneficial_but_total_margin_down": 6
+        }
+      }
+    },
+    "retained_native_43": {
+      "gradient_sha256": "f8dc1cb84acf40ddc5ec61ea1b0536bd3784d9f5edf774a60c2664820a9e7e11",
+      "norms": {
+        "entropy": 0.001593671623349672,
+        "total": 0.03169978350924455,
+        "value": 0.032204529139505646
+      },
+      "decomposition_max_error": 3.0850060284137726e-09,
+      "flat_allowed": {
+        "fit": {
+          "native_and_q_beneficial": 26,
+          "both_beneficial_but_total_margin_down": 17
+        },
+        "monitor": {
+          "native_and_q_beneficial": 8,
+          "both_beneficial_but_total_margin_down": 7
+        }
+      }
+    }
+  }
+}

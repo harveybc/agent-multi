@@ -1,0 +1,3518 @@
+{
+  "boundary_pairwise_native_19": {
+    "1": {
+      "fit:all": {
+        "beneficial": 87,
+        "harmful": 102,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 87
+          },
+          "entropy": {
+            "favors_harmful": 99,
+            "favors_helpful": 84,
+            "suppresses_helpful": 3
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 87
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 87
+          }
+        },
+        "q_favors_harmful": 9,
+        "reward_cash_opposed": 2,
+        "rows": 113
+      },
+      "fit:flat_allowed": {
+        "beneficial": 79,
+        "harmful": 86,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 79
+          },
+          "entropy": {
+            "favors_harmful": 83,
+            "favors_helpful": 76,
+            "suppresses_helpful": 3
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 79
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 79
+          }
+        },
+        "q_favors_harmful": 8,
+        "reward_cash_opposed": 2,
+        "rows": 83
+      },
+      "fit:flat_restricted": {
+        "beneficial": 0,
+        "harmful": 0,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "entropy": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 6
+      },
+      "fit:long": {
+        "beneficial": 2,
+        "harmful": 10,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 10,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 1,
+        "reward_cash_opposed": 0,
+        "rows": 12
+      },
+      "fit:short": {
+        "beneficial": 6,
+        "harmful": 6,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          },
+          "entropy": {
+            "favors_harmful": 6,
+            "favors_helpful": 6,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 12
+      },
+      "monitor:all": {
+        "beneficial": 28,
+        "harmful": 36,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 28
+          },
+          "entropy": {
+            "favors_harmful": 36,
+            "favors_helpful": 28,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 28
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 28
+          }
+        },
+        "q_favors_harmful": 5,
+        "reward_cash_opposed": 0,
+        "rows": 38
+      },
+      "monitor:flat_allowed": {
+        "beneficial": 24,
+        "harmful": 32,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 24
+          },
+          "entropy": {
+            "favors_harmful": 32,
+            "favors_helpful": 24,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 24
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 24
+          }
+        },
+        "q_favors_harmful": 4,
+        "reward_cash_opposed": 0,
+        "rows": 28
+      },
+      "monitor:flat_restricted": {
+        "beneficial": 0,
+        "harmful": 0,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "entropy": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 2
+      },
+      "monitor:long": {
+        "beneficial": 2,
+        "harmful": 2,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 2,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 1,
+        "reward_cash_opposed": 0,
+        "rows": 4
+      },
+      "monitor:short": {
+        "beneficial": 2,
+        "harmful": 2,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 2,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 4
+      }
+    },
+    "8": {
+      "fit:all": {
+        "beneficial": 87,
+        "harmful": 102,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 87
+          },
+          "entropy": {
+            "favors_harmful": 99,
+            "favors_helpful": 84,
+            "suppresses_helpful": 3
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 87
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 87
+          }
+        },
+        "q_favors_harmful": 9,
+        "reward_cash_opposed": 2,
+        "rows": 113
+      },
+      "fit:flat_allowed": {
+        "beneficial": 79,
+        "harmful": 86,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 79
+          },
+          "entropy": {
+            "favors_harmful": 83,
+            "favors_helpful": 76,
+            "suppresses_helpful": 3
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 79
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 79
+          }
+        },
+        "q_favors_harmful": 8,
+        "reward_cash_opposed": 2,
+        "rows": 83
+      },
+      "fit:flat_restricted": {
+        "beneficial": 0,
+        "harmful": 0,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "entropy": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 6
+      },
+      "fit:long": {
+        "beneficial": 2,
+        "harmful": 10,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 10,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 1,
+        "reward_cash_opposed": 0,
+        "rows": 12
+      },
+      "fit:short": {
+        "beneficial": 6,
+        "harmful": 6,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          },
+          "entropy": {
+            "favors_harmful": 6,
+            "favors_helpful": 6,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 12
+      },
+      "monitor:all": {
+        "beneficial": 28,
+        "harmful": 36,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 28
+          },
+          "entropy": {
+            "favors_harmful": 36,
+            "favors_helpful": 28,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 28
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 28
+          }
+        },
+        "q_favors_harmful": 5,
+        "reward_cash_opposed": 0,
+        "rows": 38
+      },
+      "monitor:flat_allowed": {
+        "beneficial": 24,
+        "harmful": 32,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 24
+          },
+          "entropy": {
+            "favors_harmful": 32,
+            "favors_helpful": 24,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 24
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 24
+          }
+        },
+        "q_favors_harmful": 4,
+        "reward_cash_opposed": 0,
+        "rows": 28
+      },
+      "monitor:flat_restricted": {
+        "beneficial": 0,
+        "harmful": 0,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "entropy": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 2
+      },
+      "monitor:long": {
+        "beneficial": 2,
+        "harmful": 2,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 2,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 1,
+        "reward_cash_opposed": 0,
+        "rows": 4
+      },
+      "monitor:short": {
+        "beneficial": 2,
+        "harmful": 2,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 2,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 4
+      }
+    }
+  },
+  "boundary_pairwise_native_43": {
+    "1": {
+      "fit:all": {
+        "beneficial": 87,
+        "harmful": 102,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 87
+          },
+          "entropy": {
+            "favors_harmful": 99,
+            "favors_helpful": 84,
+            "suppresses_helpful": 3
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 87
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 87
+          }
+        },
+        "q_favors_harmful": 2,
+        "reward_cash_opposed": 2,
+        "rows": 113
+      },
+      "fit:flat_allowed": {
+        "beneficial": 79,
+        "harmful": 86,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 79
+          },
+          "entropy": {
+            "favors_harmful": 83,
+            "favors_helpful": 76,
+            "suppresses_helpful": 3
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 79
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 79
+          }
+        },
+        "q_favors_harmful": 2,
+        "reward_cash_opposed": 2,
+        "rows": 83
+      },
+      "fit:flat_restricted": {
+        "beneficial": 0,
+        "harmful": 0,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "entropy": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 6
+      },
+      "fit:long": {
+        "beneficial": 2,
+        "harmful": 10,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 10,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 12
+      },
+      "fit:short": {
+        "beneficial": 6,
+        "harmful": 6,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          },
+          "entropy": {
+            "favors_harmful": 6,
+            "favors_helpful": 6,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 12
+      },
+      "monitor:all": {
+        "beneficial": 28,
+        "harmful": 36,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 28
+          },
+          "entropy": {
+            "favors_harmful": 36,
+            "favors_helpful": 28,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 28
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 28
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 38
+      },
+      "monitor:flat_allowed": {
+        "beneficial": 24,
+        "harmful": 32,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 24
+          },
+          "entropy": {
+            "favors_harmful": 32,
+            "favors_helpful": 24,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 24
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 24
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 28
+      },
+      "monitor:flat_restricted": {
+        "beneficial": 0,
+        "harmful": 0,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "entropy": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 2
+      },
+      "monitor:long": {
+        "beneficial": 2,
+        "harmful": 2,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 2,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 4
+      },
+      "monitor:short": {
+        "beneficial": 2,
+        "harmful": 2,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 2,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 4
+      }
+    },
+    "8": {
+      "fit:all": {
+        "beneficial": 87,
+        "harmful": 102,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 87
+          },
+          "entropy": {
+            "favors_harmful": 99,
+            "favors_helpful": 84,
+            "suppresses_helpful": 3
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 87
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 87
+          }
+        },
+        "q_favors_harmful": 2,
+        "reward_cash_opposed": 2,
+        "rows": 113
+      },
+      "fit:flat_allowed": {
+        "beneficial": 79,
+        "harmful": 86,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 79
+          },
+          "entropy": {
+            "favors_harmful": 83,
+            "favors_helpful": 76,
+            "suppresses_helpful": 3
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 79
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 79
+          }
+        },
+        "q_favors_harmful": 2,
+        "reward_cash_opposed": 2,
+        "rows": 83
+      },
+      "fit:flat_restricted": {
+        "beneficial": 0,
+        "harmful": 0,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "entropy": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 6
+      },
+      "fit:long": {
+        "beneficial": 2,
+        "harmful": 10,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 10,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 12
+      },
+      "fit:short": {
+        "beneficial": 6,
+        "harmful": 6,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          },
+          "entropy": {
+            "favors_harmful": 6,
+            "favors_helpful": 6,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 12
+      },
+      "monitor:all": {
+        "beneficial": 28,
+        "harmful": 36,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 28
+          },
+          "entropy": {
+            "favors_harmful": 36,
+            "favors_helpful": 28,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 28
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 28
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 38
+      },
+      "monitor:flat_allowed": {
+        "beneficial": 24,
+        "harmful": 32,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 24
+          },
+          "entropy": {
+            "favors_harmful": 32,
+            "favors_helpful": 24,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 24
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 24
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 28
+      },
+      "monitor:flat_restricted": {
+        "beneficial": 0,
+        "harmful": 0,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "entropy": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 2
+      },
+      "monitor:long": {
+        "beneficial": 2,
+        "harmful": 2,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 2,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 4
+      },
+      "monitor:short": {
+        "beneficial": 2,
+        "harmful": 2,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 2,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 4
+      }
+    }
+  },
+  "greedy_calibrated_native_19": {
+    "1": {
+      "fit:all": {
+        "beneficial": 87,
+        "harmful": 102,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 87
+          },
+          "entropy": {
+            "favors_harmful": 99,
+            "favors_helpful": 84,
+            "suppresses_helpful": 3
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 87
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 87
+          }
+        },
+        "q_favors_harmful": 10,
+        "reward_cash_opposed": 2,
+        "rows": 113
+      },
+      "fit:flat_allowed": {
+        "beneficial": 79,
+        "harmful": 86,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 79
+          },
+          "entropy": {
+            "favors_harmful": 83,
+            "favors_helpful": 76,
+            "suppresses_helpful": 3
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 79
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 79
+          }
+        },
+        "q_favors_harmful": 9,
+        "reward_cash_opposed": 2,
+        "rows": 83
+      },
+      "fit:flat_restricted": {
+        "beneficial": 0,
+        "harmful": 0,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "entropy": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 6
+      },
+      "fit:long": {
+        "beneficial": 2,
+        "harmful": 10,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 10,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 1,
+        "reward_cash_opposed": 0,
+        "rows": 12
+      },
+      "fit:short": {
+        "beneficial": 6,
+        "harmful": 6,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          },
+          "entropy": {
+            "favors_harmful": 6,
+            "favors_helpful": 6,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 12
+      },
+      "monitor:all": {
+        "beneficial": 28,
+        "harmful": 36,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 28
+          },
+          "entropy": {
+            "favors_harmful": 36,
+            "favors_helpful": 28,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 28
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 28
+          }
+        },
+        "q_favors_harmful": 5,
+        "reward_cash_opposed": 0,
+        "rows": 38
+      },
+      "monitor:flat_allowed": {
+        "beneficial": 24,
+        "harmful": 32,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 24
+          },
+          "entropy": {
+            "favors_harmful": 32,
+            "favors_helpful": 24,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 24
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 24
+          }
+        },
+        "q_favors_harmful": 4,
+        "reward_cash_opposed": 0,
+        "rows": 28
+      },
+      "monitor:flat_restricted": {
+        "beneficial": 0,
+        "harmful": 0,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "entropy": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 2
+      },
+      "monitor:long": {
+        "beneficial": 2,
+        "harmful": 2,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 2,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 1,
+        "reward_cash_opposed": 0,
+        "rows": 4
+      },
+      "monitor:short": {
+        "beneficial": 2,
+        "harmful": 2,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 2,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 4
+      }
+    },
+    "8": {
+      "fit:all": {
+        "beneficial": 87,
+        "harmful": 102,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 87
+          },
+          "entropy": {
+            "favors_harmful": 99,
+            "favors_helpful": 84,
+            "suppresses_helpful": 3
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 87
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 87
+          }
+        },
+        "q_favors_harmful": 10,
+        "reward_cash_opposed": 2,
+        "rows": 113
+      },
+      "fit:flat_allowed": {
+        "beneficial": 79,
+        "harmful": 86,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 79
+          },
+          "entropy": {
+            "favors_harmful": 83,
+            "favors_helpful": 76,
+            "suppresses_helpful": 3
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 79
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 79
+          }
+        },
+        "q_favors_harmful": 9,
+        "reward_cash_opposed": 2,
+        "rows": 83
+      },
+      "fit:flat_restricted": {
+        "beneficial": 0,
+        "harmful": 0,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "entropy": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 6
+      },
+      "fit:long": {
+        "beneficial": 2,
+        "harmful": 10,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 10,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 1,
+        "reward_cash_opposed": 0,
+        "rows": 12
+      },
+      "fit:short": {
+        "beneficial": 6,
+        "harmful": 6,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          },
+          "entropy": {
+            "favors_harmful": 6,
+            "favors_helpful": 6,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 12
+      },
+      "monitor:all": {
+        "beneficial": 28,
+        "harmful": 36,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 28
+          },
+          "entropy": {
+            "favors_harmful": 36,
+            "favors_helpful": 28,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 28
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 28
+          }
+        },
+        "q_favors_harmful": 5,
+        "reward_cash_opposed": 0,
+        "rows": 38
+      },
+      "monitor:flat_allowed": {
+        "beneficial": 24,
+        "harmful": 32,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 24
+          },
+          "entropy": {
+            "favors_harmful": 32,
+            "favors_helpful": 24,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 24
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 24
+          }
+        },
+        "q_favors_harmful": 4,
+        "reward_cash_opposed": 0,
+        "rows": 28
+      },
+      "monitor:flat_restricted": {
+        "beneficial": 0,
+        "harmful": 0,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "entropy": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 2
+      },
+      "monitor:long": {
+        "beneficial": 2,
+        "harmful": 2,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 2,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 1,
+        "reward_cash_opposed": 0,
+        "rows": 4
+      },
+      "monitor:short": {
+        "beneficial": 2,
+        "harmful": 2,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 2,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 4
+      }
+    }
+  },
+  "greedy_calibrated_native_43": {
+    "1": {
+      "fit:all": {
+        "beneficial": 87,
+        "harmful": 102,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 2,
+            "favors_helpful": 0,
+            "suppresses_helpful": 87
+          },
+          "entropy": {
+            "favors_harmful": 99,
+            "favors_helpful": 84,
+            "suppresses_helpful": 3
+          },
+          "total": {
+            "favors_harmful": 2,
+            "favors_helpful": 0,
+            "suppresses_helpful": 87
+          },
+          "value": {
+            "favors_harmful": 2,
+            "favors_helpful": 0,
+            "suppresses_helpful": 87
+          }
+        },
+        "q_favors_harmful": 11,
+        "reward_cash_opposed": 2,
+        "rows": 113
+      },
+      "fit:flat_allowed": {
+        "beneficial": 79,
+        "harmful": 86,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 2,
+            "favors_helpful": 0,
+            "suppresses_helpful": 79
+          },
+          "entropy": {
+            "favors_harmful": 83,
+            "favors_helpful": 76,
+            "suppresses_helpful": 3
+          },
+          "total": {
+            "favors_harmful": 2,
+            "favors_helpful": 0,
+            "suppresses_helpful": 79
+          },
+          "value": {
+            "favors_harmful": 2,
+            "favors_helpful": 0,
+            "suppresses_helpful": 79
+          }
+        },
+        "q_favors_harmful": 8,
+        "reward_cash_opposed": 2,
+        "rows": 83
+      },
+      "fit:flat_restricted": {
+        "beneficial": 0,
+        "harmful": 0,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "entropy": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 6
+      },
+      "fit:long": {
+        "beneficial": 2,
+        "harmful": 10,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 10,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 12
+      },
+      "fit:short": {
+        "beneficial": 6,
+        "harmful": 6,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          },
+          "entropy": {
+            "favors_harmful": 6,
+            "favors_helpful": 6,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          }
+        },
+        "q_favors_harmful": 3,
+        "reward_cash_opposed": 0,
+        "rows": 12
+      },
+      "monitor:all": {
+        "beneficial": 28,
+        "harmful": 36,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 1,
+            "suppresses_helpful": 27
+          },
+          "entropy": {
+            "favors_harmful": 36,
+            "favors_helpful": 28,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 28
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 28
+          }
+        },
+        "q_favors_harmful": 1,
+        "reward_cash_opposed": 0,
+        "rows": 38
+      },
+      "monitor:flat_allowed": {
+        "beneficial": 24,
+        "harmful": 32,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 1,
+            "suppresses_helpful": 23
+          },
+          "entropy": {
+            "favors_harmful": 32,
+            "favors_helpful": 24,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 24
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 24
+          }
+        },
+        "q_favors_harmful": 1,
+        "reward_cash_opposed": 0,
+        "rows": 28
+      },
+      "monitor:flat_restricted": {
+        "beneficial": 0,
+        "harmful": 0,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "entropy": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 2
+      },
+      "monitor:long": {
+        "beneficial": 2,
+        "harmful": 2,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 2,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 4
+      },
+      "monitor:short": {
+        "beneficial": 2,
+        "harmful": 2,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 2,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 4
+      }
+    },
+    "8": {
+      "fit:all": {
+        "beneficial": 87,
+        "harmful": 102,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 3,
+            "favors_helpful": 1,
+            "suppresses_helpful": 86
+          },
+          "entropy": {
+            "favors_harmful": 99,
+            "favors_helpful": 84,
+            "suppresses_helpful": 3
+          },
+          "total": {
+            "favors_harmful": 2,
+            "favors_helpful": 0,
+            "suppresses_helpful": 87
+          },
+          "value": {
+            "favors_harmful": 2,
+            "favors_helpful": 0,
+            "suppresses_helpful": 87
+          }
+        },
+        "q_favors_harmful": 11,
+        "reward_cash_opposed": 2,
+        "rows": 113
+      },
+      "fit:flat_allowed": {
+        "beneficial": 79,
+        "harmful": 86,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 3,
+            "favors_helpful": 1,
+            "suppresses_helpful": 78
+          },
+          "entropy": {
+            "favors_harmful": 83,
+            "favors_helpful": 76,
+            "suppresses_helpful": 3
+          },
+          "total": {
+            "favors_harmful": 2,
+            "favors_helpful": 0,
+            "suppresses_helpful": 79
+          },
+          "value": {
+            "favors_harmful": 2,
+            "favors_helpful": 0,
+            "suppresses_helpful": 79
+          }
+        },
+        "q_favors_harmful": 8,
+        "reward_cash_opposed": 2,
+        "rows": 83
+      },
+      "fit:flat_restricted": {
+        "beneficial": 0,
+        "harmful": 0,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "entropy": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 6
+      },
+      "fit:long": {
+        "beneficial": 2,
+        "harmful": 10,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 10,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 12
+      },
+      "fit:short": {
+        "beneficial": 6,
+        "harmful": 6,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          },
+          "entropy": {
+            "favors_harmful": 6,
+            "favors_helpful": 6,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          }
+        },
+        "q_favors_harmful": 3,
+        "reward_cash_opposed": 0,
+        "rows": 12
+      },
+      "monitor:all": {
+        "beneficial": 28,
+        "harmful": 36,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 1,
+            "suppresses_helpful": 27
+          },
+          "entropy": {
+            "favors_harmful": 36,
+            "favors_helpful": 28,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 28
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 28
+          }
+        },
+        "q_favors_harmful": 1,
+        "reward_cash_opposed": 0,
+        "rows": 38
+      },
+      "monitor:flat_allowed": {
+        "beneficial": 24,
+        "harmful": 32,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 1,
+            "suppresses_helpful": 23
+          },
+          "entropy": {
+            "favors_harmful": 32,
+            "favors_helpful": 24,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 24
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 24
+          }
+        },
+        "q_favors_harmful": 1,
+        "reward_cash_opposed": 0,
+        "rows": 28
+      },
+      "monitor:flat_restricted": {
+        "beneficial": 0,
+        "harmful": 0,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "entropy": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 2
+      },
+      "monitor:long": {
+        "beneficial": 2,
+        "harmful": 2,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 2,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 4
+      },
+      "monitor:short": {
+        "beneficial": 2,
+        "harmful": 2,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 2,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 4
+      }
+    }
+  },
+  "retained_native_19": {
+    "1": {
+      "fit:all": {
+        "beneficial": 87,
+        "harmful": 102,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 13,
+            "favors_helpful": 15,
+            "suppresses_helpful": 72
+          },
+          "entropy": {
+            "favors_harmful": 99,
+            "favors_helpful": 84,
+            "suppresses_helpful": 3
+          },
+          "total": {
+            "favors_harmful": 10,
+            "favors_helpful": 12,
+            "suppresses_helpful": 75
+          },
+          "value": {
+            "favors_harmful": 7,
+            "favors_helpful": 10,
+            "suppresses_helpful": 77
+          }
+        },
+        "q_favors_harmful": 35,
+        "reward_cash_opposed": 2,
+        "rows": 113
+      },
+      "fit:flat_allowed": {
+        "beneficial": 79,
+        "harmful": 86,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 12,
+            "favors_helpful": 14,
+            "suppresses_helpful": 65
+          },
+          "entropy": {
+            "favors_harmful": 83,
+            "favors_helpful": 76,
+            "suppresses_helpful": 3
+          },
+          "total": {
+            "favors_harmful": 10,
+            "favors_helpful": 12,
+            "suppresses_helpful": 67
+          },
+          "value": {
+            "favors_harmful": 7,
+            "favors_helpful": 10,
+            "suppresses_helpful": 69
+          }
+        },
+        "q_favors_harmful": 30,
+        "reward_cash_opposed": 2,
+        "rows": 83
+      },
+      "fit:flat_restricted": {
+        "beneficial": 0,
+        "harmful": 0,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "entropy": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 6
+      },
+      "fit:long": {
+        "beneficial": 2,
+        "harmful": 10,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 1,
+            "favors_helpful": 1,
+            "suppresses_helpful": 1
+          },
+          "entropy": {
+            "favors_harmful": 10,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 3,
+        "reward_cash_opposed": 0,
+        "rows": 12
+      },
+      "fit:short": {
+        "beneficial": 6,
+        "harmful": 6,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          },
+          "entropy": {
+            "favors_harmful": 6,
+            "favors_helpful": 6,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          }
+        },
+        "q_favors_harmful": 2,
+        "reward_cash_opposed": 0,
+        "rows": 12
+      },
+      "monitor:all": {
+        "beneficial": 28,
+        "harmful": 36,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 3,
+            "favors_helpful": 3,
+            "suppresses_helpful": 25
+          },
+          "entropy": {
+            "favors_harmful": 36,
+            "favors_helpful": 28,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 3,
+            "favors_helpful": 4,
+            "suppresses_helpful": 24
+          },
+          "value": {
+            "favors_harmful": 3,
+            "favors_helpful": 2,
+            "suppresses_helpful": 26
+          }
+        },
+        "q_favors_harmful": 12,
+        "reward_cash_opposed": 0,
+        "rows": 38
+      },
+      "monitor:flat_allowed": {
+        "beneficial": 24,
+        "harmful": 32,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 3,
+            "favors_helpful": 3,
+            "suppresses_helpful": 21
+          },
+          "entropy": {
+            "favors_harmful": 32,
+            "favors_helpful": 24,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 3,
+            "favors_helpful": 3,
+            "suppresses_helpful": 21
+          },
+          "value": {
+            "favors_harmful": 3,
+            "favors_helpful": 2,
+            "suppresses_helpful": 22
+          }
+        },
+        "q_favors_harmful": 11,
+        "reward_cash_opposed": 0,
+        "rows": 28
+      },
+      "monitor:flat_restricted": {
+        "beneficial": 0,
+        "harmful": 0,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "entropy": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 2
+      },
+      "monitor:long": {
+        "beneficial": 2,
+        "harmful": 2,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 2,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 1,
+        "reward_cash_opposed": 0,
+        "rows": 4
+      },
+      "monitor:short": {
+        "beneficial": 2,
+        "harmful": 2,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 2,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 1,
+            "suppresses_helpful": 1
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 4
+      }
+    },
+    "8": {
+      "fit:all": {
+        "beneficial": 87,
+        "harmful": 102,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 12,
+            "favors_helpful": 16,
+            "suppresses_helpful": 71
+          },
+          "entropy": {
+            "favors_harmful": 99,
+            "favors_helpful": 84,
+            "suppresses_helpful": 3
+          },
+          "total": {
+            "favors_harmful": 10,
+            "favors_helpful": 12,
+            "suppresses_helpful": 75
+          },
+          "value": {
+            "favors_harmful": 7,
+            "favors_helpful": 10,
+            "suppresses_helpful": 77
+          }
+        },
+        "q_favors_harmful": 35,
+        "reward_cash_opposed": 2,
+        "rows": 113
+      },
+      "fit:flat_allowed": {
+        "beneficial": 79,
+        "harmful": 86,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 11,
+            "favors_helpful": 15,
+            "suppresses_helpful": 64
+          },
+          "entropy": {
+            "favors_harmful": 83,
+            "favors_helpful": 76,
+            "suppresses_helpful": 3
+          },
+          "total": {
+            "favors_harmful": 10,
+            "favors_helpful": 12,
+            "suppresses_helpful": 67
+          },
+          "value": {
+            "favors_harmful": 7,
+            "favors_helpful": 10,
+            "suppresses_helpful": 69
+          }
+        },
+        "q_favors_harmful": 30,
+        "reward_cash_opposed": 2,
+        "rows": 83
+      },
+      "fit:flat_restricted": {
+        "beneficial": 0,
+        "harmful": 0,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "entropy": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 6
+      },
+      "fit:long": {
+        "beneficial": 2,
+        "harmful": 10,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 1,
+            "favors_helpful": 1,
+            "suppresses_helpful": 1
+          },
+          "entropy": {
+            "favors_harmful": 10,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 3,
+        "reward_cash_opposed": 0,
+        "rows": 12
+      },
+      "fit:short": {
+        "beneficial": 6,
+        "harmful": 6,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          },
+          "entropy": {
+            "favors_harmful": 6,
+            "favors_helpful": 6,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          }
+        },
+        "q_favors_harmful": 2,
+        "reward_cash_opposed": 0,
+        "rows": 12
+      },
+      "monitor:all": {
+        "beneficial": 28,
+        "harmful": 36,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 3,
+            "favors_helpful": 3,
+            "suppresses_helpful": 25
+          },
+          "entropy": {
+            "favors_harmful": 36,
+            "favors_helpful": 28,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 3,
+            "favors_helpful": 4,
+            "suppresses_helpful": 24
+          },
+          "value": {
+            "favors_harmful": 3,
+            "favors_helpful": 2,
+            "suppresses_helpful": 26
+          }
+        },
+        "q_favors_harmful": 12,
+        "reward_cash_opposed": 0,
+        "rows": 38
+      },
+      "monitor:flat_allowed": {
+        "beneficial": 24,
+        "harmful": 32,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 3,
+            "favors_helpful": 3,
+            "suppresses_helpful": 21
+          },
+          "entropy": {
+            "favors_harmful": 32,
+            "favors_helpful": 24,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 3,
+            "favors_helpful": 3,
+            "suppresses_helpful": 21
+          },
+          "value": {
+            "favors_harmful": 3,
+            "favors_helpful": 2,
+            "suppresses_helpful": 22
+          }
+        },
+        "q_favors_harmful": 11,
+        "reward_cash_opposed": 0,
+        "rows": 28
+      },
+      "monitor:flat_restricted": {
+        "beneficial": 0,
+        "harmful": 0,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "entropy": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 2
+      },
+      "monitor:long": {
+        "beneficial": 2,
+        "harmful": 2,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 2,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 1,
+        "reward_cash_opposed": 0,
+        "rows": 4
+      },
+      "monitor:short": {
+        "beneficial": 2,
+        "harmful": 2,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 2,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 1,
+            "suppresses_helpful": 1
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 4
+      }
+    }
+  },
+  "retained_native_43": {
+    "1": {
+      "fit:all": {
+        "beneficial": 87,
+        "harmful": 102,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 12,
+            "favors_helpful": 18,
+            "suppresses_helpful": 69
+          },
+          "entropy": {
+            "favors_harmful": 99,
+            "favors_helpful": 84,
+            "suppresses_helpful": 3
+          },
+          "total": {
+            "favors_harmful": 9,
+            "favors_helpful": 12,
+            "suppresses_helpful": 75
+          },
+          "value": {
+            "favors_harmful": 7,
+            "favors_helpful": 9,
+            "suppresses_helpful": 78
+          }
+        },
+        "q_favors_harmful": 35,
+        "reward_cash_opposed": 2,
+        "rows": 113
+      },
+      "fit:flat_allowed": {
+        "beneficial": 79,
+        "harmful": 86,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 11,
+            "favors_helpful": 15,
+            "suppresses_helpful": 64
+          },
+          "entropy": {
+            "favors_harmful": 83,
+            "favors_helpful": 76,
+            "suppresses_helpful": 3
+          },
+          "total": {
+            "favors_harmful": 9,
+            "favors_helpful": 11,
+            "suppresses_helpful": 68
+          },
+          "value": {
+            "favors_harmful": 7,
+            "favors_helpful": 9,
+            "suppresses_helpful": 70
+          }
+        },
+        "q_favors_harmful": 30,
+        "reward_cash_opposed": 2,
+        "rows": 83
+      },
+      "fit:flat_restricted": {
+        "beneficial": 0,
+        "harmful": 0,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "entropy": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 6
+      },
+      "fit:long": {
+        "beneficial": 2,
+        "harmful": 10,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 1,
+            "favors_helpful": 1,
+            "suppresses_helpful": 1
+          },
+          "entropy": {
+            "favors_harmful": 10,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 3,
+        "reward_cash_opposed": 0,
+        "rows": 12
+      },
+      "fit:short": {
+        "beneficial": 6,
+        "harmful": 6,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 2,
+            "suppresses_helpful": 4
+          },
+          "entropy": {
+            "favors_harmful": 6,
+            "favors_helpful": 6,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 1,
+            "suppresses_helpful": 5
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          }
+        },
+        "q_favors_harmful": 2,
+        "reward_cash_opposed": 0,
+        "rows": 12
+      },
+      "monitor:all": {
+        "beneficial": 28,
+        "harmful": 36,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 3,
+            "favors_helpful": 3,
+            "suppresses_helpful": 25
+          },
+          "entropy": {
+            "favors_harmful": 36,
+            "favors_helpful": 28,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 3,
+            "favors_helpful": 3,
+            "suppresses_helpful": 25
+          },
+          "value": {
+            "favors_harmful": 3,
+            "favors_helpful": 2,
+            "suppresses_helpful": 26
+          }
+        },
+        "q_favors_harmful": 12,
+        "reward_cash_opposed": 0,
+        "rows": 38
+      },
+      "monitor:flat_allowed": {
+        "beneficial": 24,
+        "harmful": 32,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 3,
+            "favors_helpful": 3,
+            "suppresses_helpful": 21
+          },
+          "entropy": {
+            "favors_harmful": 32,
+            "favors_helpful": 24,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 3,
+            "favors_helpful": 2,
+            "suppresses_helpful": 22
+          },
+          "value": {
+            "favors_harmful": 3,
+            "favors_helpful": 2,
+            "suppresses_helpful": 22
+          }
+        },
+        "q_favors_harmful": 11,
+        "reward_cash_opposed": 0,
+        "rows": 28
+      },
+      "monitor:flat_restricted": {
+        "beneficial": 0,
+        "harmful": 0,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "entropy": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 2
+      },
+      "monitor:long": {
+        "beneficial": 2,
+        "harmful": 2,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 2,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 1,
+        "reward_cash_opposed": 0,
+        "rows": 4
+      },
+      "monitor:short": {
+        "beneficial": 2,
+        "harmful": 2,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 2,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 1,
+            "suppresses_helpful": 1
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 4
+      }
+    },
+    "8": {
+      "fit:all": {
+        "beneficial": 87,
+        "harmful": 102,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 12,
+            "favors_helpful": 18,
+            "suppresses_helpful": 69
+          },
+          "entropy": {
+            "favors_harmful": 99,
+            "favors_helpful": 84,
+            "suppresses_helpful": 3
+          },
+          "total": {
+            "favors_harmful": 9,
+            "favors_helpful": 12,
+            "suppresses_helpful": 75
+          },
+          "value": {
+            "favors_harmful": 7,
+            "favors_helpful": 9,
+            "suppresses_helpful": 78
+          }
+        },
+        "q_favors_harmful": 35,
+        "reward_cash_opposed": 2,
+        "rows": 113
+      },
+      "fit:flat_allowed": {
+        "beneficial": 79,
+        "harmful": 86,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 11,
+            "favors_helpful": 15,
+            "suppresses_helpful": 64
+          },
+          "entropy": {
+            "favors_harmful": 83,
+            "favors_helpful": 76,
+            "suppresses_helpful": 3
+          },
+          "total": {
+            "favors_harmful": 9,
+            "favors_helpful": 11,
+            "suppresses_helpful": 68
+          },
+          "value": {
+            "favors_harmful": 7,
+            "favors_helpful": 9,
+            "suppresses_helpful": 70
+          }
+        },
+        "q_favors_harmful": 30,
+        "reward_cash_opposed": 2,
+        "rows": 83
+      },
+      "fit:flat_restricted": {
+        "beneficial": 0,
+        "harmful": 0,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "entropy": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 6
+      },
+      "fit:long": {
+        "beneficial": 2,
+        "harmful": 10,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 1,
+            "favors_helpful": 1,
+            "suppresses_helpful": 1
+          },
+          "entropy": {
+            "favors_harmful": 10,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 3,
+        "reward_cash_opposed": 0,
+        "rows": 12
+      },
+      "fit:short": {
+        "beneficial": 6,
+        "harmful": 6,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 2,
+            "suppresses_helpful": 4
+          },
+          "entropy": {
+            "favors_harmful": 6,
+            "favors_helpful": 6,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 1,
+            "suppresses_helpful": 5
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 6
+          }
+        },
+        "q_favors_harmful": 2,
+        "reward_cash_opposed": 0,
+        "rows": 12
+      },
+      "monitor:all": {
+        "beneficial": 28,
+        "harmful": 36,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 3,
+            "favors_helpful": 3,
+            "suppresses_helpful": 25
+          },
+          "entropy": {
+            "favors_harmful": 36,
+            "favors_helpful": 28,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 3,
+            "favors_helpful": 3,
+            "suppresses_helpful": 25
+          },
+          "value": {
+            "favors_harmful": 3,
+            "favors_helpful": 2,
+            "suppresses_helpful": 26
+          }
+        },
+        "q_favors_harmful": 12,
+        "reward_cash_opposed": 0,
+        "rows": 38
+      },
+      "monitor:flat_allowed": {
+        "beneficial": 24,
+        "harmful": 32,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 3,
+            "favors_helpful": 3,
+            "suppresses_helpful": 21
+          },
+          "entropy": {
+            "favors_harmful": 32,
+            "favors_helpful": 24,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 3,
+            "favors_helpful": 2,
+            "suppresses_helpful": 22
+          },
+          "value": {
+            "favors_harmful": 3,
+            "favors_helpful": 2,
+            "suppresses_helpful": 22
+          }
+        },
+        "q_favors_harmful": 11,
+        "reward_cash_opposed": 0,
+        "rows": 28
+      },
+      "monitor:flat_restricted": {
+        "beneficial": 0,
+        "harmful": 0,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "entropy": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 0
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 2
+      },
+      "monitor:long": {
+        "beneficial": 2,
+        "harmful": 2,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 2,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 1,
+        "reward_cash_opposed": 0,
+        "rows": 4
+      },
+      "monitor:short": {
+        "beneficial": 2,
+        "harmful": 2,
+        "pressure": {
+          "adam_margin": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          },
+          "entropy": {
+            "favors_harmful": 2,
+            "favors_helpful": 2,
+            "suppresses_helpful": 0
+          },
+          "total": {
+            "favors_harmful": 0,
+            "favors_helpful": 1,
+            "suppresses_helpful": 1
+          },
+          "value": {
+            "favors_harmful": 0,
+            "favors_helpful": 0,
+            "suppresses_helpful": 2
+          }
+        },
+        "q_favors_harmful": 0,
+        "reward_cash_opposed": 0,
+        "rows": 4
+      }
+    }
+  }
+}

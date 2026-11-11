@@ -1,0 +1,13 @@
+{
+  "worker_identity": "60a36773859b58500336c63964799e9d7d45db90514761cd2432cded95411ace",
+  "report_identity": "0f4919b3457191d71eefb3d87f1cb0d23bd46afa153aa49f3180afdbd4bdc4c4",
+  "worker_receipt_sha256": "eae38460a25112f6a5691eaeca436a5bf24c58bd82ba7ca39821d25c61a32482",
+  "report_receipt_sha256": "ae48574bc148c636637dcd8b93f819ecfff16d9fcb3725bbf4386f47737abc19",
+  "files": {
+    "BOUNDARY_GRADIENTS.json": "ef3e31cadf43d3e27206e644a29fbdbe77386b067459b42bf57990704fd6ae2b",
+    "CONSTANT_CONTROLS.json": "de0fe8056ed9b0b7a0c59928df37d957008d444f65e6ede0e013a35f07198c78",
+    "POSITIVE_Q_PRESSURE.json": "51a8a9fd12868963a5333f3eb6f0f82c4ae8402674916f3317f31664a66f178d",
+    "RETURNS.png": "8c2ae41a3e172cecdf35a0a4271402a7d8edfe9bd79c9b84b90793f5178f3f22",
+    "SUMMARY.json": "28f7bbc6e5ed80ee90294babf1548fde2ca4bc6ef74f9acd3648120454f8f2fd"
+  }
+}

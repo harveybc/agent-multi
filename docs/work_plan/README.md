@@ -2,14 +2,19 @@
 
 ## Execution Update: 2026-11-11
 
-[Opening-boundary contrast282](282_OPENING_BOUNDARY_REFINEMENT.md) is approved:
+[Opening-boundary contrast282](282_OPENING_BOUNDARY_REFINEMENT.md) completed:
 executable NOP/BUY/SELL boundaries chosen before outcomes, paired absolute/gap
 critic calibration and shared-head gradient decomposition, with holding controls.
 40 focused tests pass. Same69-input reference, full native accounts and automated
 endpoint attribution; no live promotion or feature-set change.
+Six arms in442.39seconds plus32.19seconds of reporting,529 authenticated files.
+Absolute calibration gives TRAIN12.392145%, VAL14.693262% in both seeds versus
+11.565540% /14.591090% reference. All12 account deltas reconcile exactly. Gradient
+audit also finds broad suppression of useful opening margins; next separate
+local action competition from shared-head coupling before changing refinement.
 
-[All-state refinement281](281_ALL_STATE_REFINEMENT_CONTRAST.md) is the approved
-next contrast: qualified69 frozen control versus retained/recalibrated critics
+[All-state refinement281](281_ALL_STATE_REFINEMENT_CONTRAST.md) compared
+qualified69 frozen control versus retained/recalibrated critics
 and native/zero actor entropy, with long/short holding as well as flat anchors.
 Fit2020-2022, monitor2023, full native TRAIN/VALIDATION accounts; no promotion.
 Completed: eight arms in271.39seconds,471 authenticated files,33 focused tests.
