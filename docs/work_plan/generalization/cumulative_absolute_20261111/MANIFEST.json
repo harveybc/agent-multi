@@ -1,0 +1,10 @@
+{
+  "files": {
+    "FEATURE_LEDGER.csv": "0a3688295bd2bd26ccd695f888f67f6cc832964141bf4f38f471e1a5628a05f9",
+    "SELECTION_TRACE.json": "3fec6b501dcc292c97e77936f0caeefb89ad3906745e974e99c590d13f37d75b",
+    "SUMMARY.json": "c5b0cf0d7653d881b86b0dad783cca73ab6c5b559c0058f9a4fc608a68bcaf2e",
+    "WEIGHT_SPACE.json": "9fc6167a5530a91cb0cbf5bfb273ebb7fdfc5ca7ed473ff67a8169de033ce84b",
+    "QUALIFICATION.json": "03d3a9fa80f56c94dccec7fca39322f4b2f881d006a3fb3632ea4a739bc07048"
+  },
+  "identity": "5fef129d3907b16dcaf4219bcd2ca9ab96151da67bf12864aec2898315ba881f"
+}

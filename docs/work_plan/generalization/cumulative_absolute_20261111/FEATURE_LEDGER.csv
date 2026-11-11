@@ -1,0 +1,121 @@
+feature,initially_active,selected,phase,block,candidate_score,baseline_score,eligible,accepted,donor,std_ratio
+OPEN@diff,False,False,REINSERT,OPEN@diff,0.2628001537037037,0.272097441666668,True,False,original120,0.981152833822871
+HIGH@diff,False,False,REINSERT,HIGH@diff,0.2089517981481492,0.272097441666668,True,False,original120,0.9817521657771613
+LOW@diff,False,False,REINSERT,LOW@diff,0.19688179166667025,0.272097441666668,True,False,ancestor76,1.0
+CLOSE@diff,False,False,REINSERT,CLOSE@diff,0.20332548240741136,0.272097441666668,True,False,ancestor76,1.0
+RAW_BAR_LOG_RETURN,False,False,REINSERT,RAW_BAR_LOG_RETURN,0.24303212314814962,0.272097441666668,True,False,original120,0.9821359999816882
+RAW_LOG_RANGE@log,True,True,DELETE,RAW_LOG_RANGE@log,0.20221945740741087,0.272097441666668,True,False,current69,1.0
+RAW_CLOSE_LOG_RETURN,False,False,REINSERT,RAW_CLOSE_LOG_RETURN,0.2709345240740734,0.272097441666668,True,False,ancestor76,1.0
+RAW_ELAPSED_HOURS,False,False,REINSERT,RAW_ELAPSED_HOURS,0.272097441666668,0.272097441666668,True,False,original120,1.0037337136185296
+ATR,True,True,DELETE,ATR,0.1634271824074094,0.272097441666668,True,False,current69,1.0
+BB_Width,True,True,DELETE,BB_Width,0.18961100462963323,0.272097441666668,True,False,current69,1.0
+ATR_ratio,True,True,DELETE,ATR_ratio,0.22211229259259804,0.272097441666668,True,False,current69,1.0
+rolling_std_24,True,True,DELETE,rolling_std_24,0.2192663212962978,0.272097441666668,True,False,current69,1.0
+RSI,False,False,REINSERT,RSI,0.26053950000000436,0.272097441666668,True,False,original120,1.004918292449201
+Stochastic_K,False,False,REINSERT,Stochastic_K,0.22438581574074304,0.272097441666668,True,False,ancestor76,1.0
+Stochastic_D,True,True,DELETE,Stochastic_D,0.2475021231481474,0.272097441666668,True,False,current69,1.0
+CCI,True,True,DELETE,CCI,0.20892448703703548,0.272097441666668,True,False,current69,1.0
+WilliamsR,False,False,REINSERT,WilliamsR,0.23106729444445018,0.272097441666668,True,False,original120,1.0026518539145743
+ROC,False,False,REINSERT,ROC,0.2512519481481468,0.272097441666668,True,False,original120,0.9880529442166568
+BB_position,True,True,DELETE,BB_position,0.25162964166667023,0.272097441666668,True,False,current69,1.0
+price_minus_ema,False,False,REINSERT,price_minus_ema,0.2687223564814849,0.272097441666668,True,False,original120,0.9874064439706162
+hod_sin,False,False,REINSERT,hod_sin | hod_cos,0.206071051851857,0.272097441666668,True,False,original120,1.000030714902805
+hod_cos,False,False,REINSERT,hod_sin | hod_cos,0.206071051851857,0.272097441666668,True,False,original120,0.9999689081401522
+dow_sin,False,False,REINSERT,dow_sin | dow_cos,0.10850414166667145,0.272097441666668,True,False,original120,1.0003808799155938
+dow_cos,False,False,REINSERT,dow_sin | dow_cos,0.10850414166667145,0.272097441666668,True,False,original120,0.9996478375319059
+cal.utc_hod_sin,False,False,REINSERT,cal.utc_hod_sin | cal.utc_hod_cos,0.19896391296296484,0.272097441666668,True,False,original120,1.0000489534089052
+cal.utc_hod_cos,False,False,REINSERT,cal.utc_hod_sin | cal.utc_hod_cos,0.19896391296296484,0.272097441666668,True,False,original120,0.9999506771047607
+cal.utc_dow_sin,False,False,REINSERT,cal.utc_dow_sin | cal.utc_dow_cos,0.058234456481487305,0.272097441666668,True,False,original120,1.0003259996978633
+cal.utc_dow_cos,False,False,REINSERT,cal.utc_dow_sin | cal.utc_dow_cos,0.058234456481487305,0.272097441666668,True,False,original120,0.9996607284210364
+cal.utc_session_asia,False,False,REINSERT,cal.utc_session_asia,0.19841042314815074,0.272097441666668,True,False,original120,0.9999033488577942
+cal.utc_session_europe,True,True,DELETE,cal.utc_session_europe,0.16658697592592842,0.272097441666668,True,False,current69,1.0
+cal.utc_session_us,False,False,REINSERT,cal.utc_session_us,0.2406075657407409,0.272097441666668,True,False,original120,1.0000860797461915
+cal.london_hod_sin,True,True,DELETE,cal.london_hod_sin | cal.london_hod_cos,0.23843383703704402,0.272097441666668,True,False,current69,1.0
+cal.london_hod_cos,True,True,DELETE,cal.london_hod_sin | cal.london_hod_cos,0.23843383703704402,0.272097441666668,True,False,current69,1.0
+px.logret_1,True,True,DELETE,px.logret_1,0.24338113425926233,0.272097441666668,True,False,current69,1.0
+px.logret_2,False,False,REINSERT,px.logret_2,0.24452445925926336,0.272097441666668,True,False,original120,0.9842892705795815
+px.logret_4,True,True,DELETE,px.logret_4,0.15914856388889081,0.272097441666668,True,False,current69,1.0
+px.logret_6,False,False,REINSERT,px.logret_6,0.22012413981481316,0.272097441666668,True,False,original120,0.9864887203190095
+px.logret_12,False,False,REINSERT,px.logret_12,0.24346348055555808,0.272097441666668,True,False,original120,0.9886543450550979
+px.logret_24,True,True,DELETE,px.logret_24,0.23993088888888991,0.272097441666668,True,False,current69,1.0
+px.logret_48,False,False,REINSERT,px.logret_48,0.2419703101851883,0.272097441666668,True,False,original120,0.9869028950925592
+px.range_1@log,True,True,DELETE,px.range_1@log,0.22165311851851988,0.272097441666668,True,False,current69,1.0
+px.range_2@log,True,True,DELETE,px.range_2@log,0.20627463796296372,0.272097441666668,True,False,current69,1.0
+px.range_4@log,True,True,DELETE,px.range_4@log,0.22566619351852382,0.272097441666668,True,False,current69,1.0
+px.range_6@log,True,True,DELETE,px.range_6@log,0.13529509814815086,0.272097441666668,True,False,current69,1.0
+px.range_12,True,True,DELETE,px.range_12,0.2621488759259271,0.272097441666668,True,False,current69,1.0
+px.range_24,False,False,REINSERT,px.range_24,0.18883162129629824,0.272097441666668,True,False,original120,0.9705710510101477
+px.range_48,True,True,DELETE,px.range_48,0.1626619731481572,0.272097441666668,True,False,current69,1.0
+px.close_loc_1,True,True,DELETE,px.close_loc_1,0.16781233055556186,0.272097441666668,True,False,current69,1.0
+px.close_loc_2,False,False,REINSERT,px.close_loc_2,0.07692778148148978,0.272097441666668,True,False,original120,1.0032404424234622
+px.close_loc_4,True,True,DELETE,px.close_loc_4,0.21498629074074313,0.272097441666668,True,False,current69,1.0
+px.close_loc_6,False,False,REINSERT,px.close_loc_6,0.034890579629644786,0.272097441666668,True,False,original120,1.0020108672124037
+px.close_loc_12,True,True,DELETE,px.close_loc_12,0.17027128148148793,0.272097441666668,True,False,current69,1.0
+px.close_loc_24,True,True,DELETE,px.close_loc_24,0.11523824444444708,0.272097441666668,True,False,current69,1.0
+px.close_loc_48,True,True,DELETE,px.close_loc_48,0.19499118425926035,0.272097441666668,True,False,current69,1.0
+px.er_2,True,True,DELETE,px.er_2,0.18020380833333718,0.272097441666668,True,False,current69,1.0
+px.er_4,False,False,REINSERT,px.er_4,0.18902994722222768,0.272097441666668,True,False,original120,0.9999528166862057
+px.er_6,True,True,DELETE,px.er_6,0.14305904444444928,0.272097441666668,True,False,current69,1.0
+px.er_12,True,True,DELETE,px.er_12,0.19141605555556215,0.272097441666668,True,False,current69,1.0
+px.er_24,False,False,REINSERT,px.er_24,0.18691217592593165,0.272097441666668,True,False,original120,1.0048584980313502
+px.er_48,True,True,DELETE,px.er_48,0.09666049074074652,0.272097441666668,True,False,current69,1.0
+px.hours_since_session_open,True,True,DELETE,px.hours_since_session_open,0.20547028425926697,0.272097441666668,True,False,current69,1.0
+cdl.body_pips,True,True,DELETE,cdl.body_pips,0.11318652870370359,0.272097441666668,True,False,current69,1.0
+cdl.upper_wick_pips@asinh,False,False,REINSERT,cdl.upper_wick_pips@asinh,0.20233709907408043,0.272097441666668,True,False,original120,0.995297064539568
+cdl.lower_wick_pips@asinh,True,True,DELETE,cdl.lower_wick_pips@asinh,0.13899461018518533,0.272097441666668,True,False,current69,1.0
+cdl.range_pips@asinh,True,True,DELETE,cdl.range_pips@asinh,0.21282508796296562,0.272097441666668,True,False,current69,1.0
+cdl.close_minus_low_pips@asinh,True,True,DELETE,cdl.close_minus_low_pips@asinh,0.23622830000000722,0.272097441666668,True,False,current69,1.0
+cdl.high_minus_close_pips@asinh,True,True,DELETE,cdl.high_minus_close_pips@asinh,0.2153694314814843,0.272097441666668,True,False,current69,1.0
+dly.us10y.level@diff,False,False,REINSERT,dly.us10y.level@diff,0.21246999629629804,0.272097441666668,True,False,original120,1.0239012363998452
+dly.us10y.chg_1d,True,True,DELETE,dly.us10y.chg_1d,0.23773277037038024,0.272097441666668,True,False,current69,1.0
+dly.us10y.chg_5d,True,True,DELETE,dly.us10y.chg_5d,0.0905426879629734,0.272097441666668,True,False,current69,1.0
+cot.eur.net_long,True,True,DELETE,cot.eur.net_long,0.09738957222223622,0.272097441666668,True,False,current69,1.0
+cot.eur.net_change,False,False,REINSERT,cot.eur.net_change,0.22205999537037183,0.272097441666668,True,False,ancestor76,1.0
+cot.eur.net_share,True,True,DELETE,cot.eur.net_share,0.05181831666666868,0.272097441666668,False,False,current69,1.0
+cot.eur.net_z156,True,True,DELETE,cot.eur.net_z156,0.027202483333340518,0.272097441666668,True,False,current69,1.0
+fac.fx_f1.ret_1,False,False,REINSERT,fac.fx_f1.ret_1,0.26176504444444654,0.272097441666668,True,False,original120,0.9743263310213415
+fac.fx_f1.ret_4,True,True,DELETE,fac.fx_f1.ret_4,0.13619618518518412,0.272097441666668,True,False,current69,1.0
+fac.fx_f1.ret_24,True,True,DELETE,fac.fx_f1.ret_24,0.14700799444444548,0.272097441666668,True,False,current69,1.0
+fac.fx_f1.kalman_slope,False,False,REINSERT,fac.fx_f1.kalman_slope,0.22153382500000454,0.272097441666668,True,False,original120,0.9767247256686792
+ev.tokyo_fix.hours_since,True,True,DELETE,ev.tokyo_fix.hours_since,0.2328892981481554,0.272097441666668,True,False,current69,1.0
+ev.tokyo_fix.hours_to,True,True,DELETE,ev.tokyo_fix.hours_to,0.21036276296296516,0.272097441666668,True,False,current69,1.0
+ev.london_fix.hours_since,False,False,REINSERT,ev.london_fix.hours_since,0.2289886981481548,0.272097441666668,True,False,original120,1.0000961194033389
+ev.london_fix.hours_to,True,True,DELETE,ev.london_fix.hours_to,0.1927134537037118,0.272097441666668,True,False,current69,1.0
+ev.ny_cut.hours_since,False,False,REINSERT,ev.ny_cut.hours_since,0.19632978518519142,0.272097441666668,True,False,original120,1.0001003010065093
+ev.ny_cut.hours_to,True,True,DELETE,ev.ny_cut.hours_to,0.22608270370370992,0.272097441666668,True,False,current69,1.0
+act.p_hit,True,True,DELETE,act.p_hit,0.1309814212963061,0.272097441666668,True,False,current69,1.0
+ssa.trend_minus_close_pips,False,False,REINSERT,ssa.trend_minus_close_pips,0.2682379342592642,0.272097441666668,True,False,original120,0.9874222010802347
+ssa.c2_pips,True,True,DELETE,ssa.c2_pips,0.1603447805555566,0.272097441666668,True,False,current69,1.0
+ssa.c3_pips,True,True,DELETE,ssa.c3_pips,0.14178872592592967,0.272097441666668,True,False,current69,1.0
+wv.lc.A4@diff,True,True,DELETE,wv.lc.A4@diff,0.2009030009259277,0.272097441666668,True,False,current69,1.0
+wv.lc.D4,True,True,DELETE,wv.lc.D4,0.15776467685185805,0.272097441666668,True,False,current69,1.0
+wv.lc.D3,True,True,DELETE,wv.lc.D3,0.1985581851851913,0.272097441666668,True,False,current69,1.0
+wv.lc.D2,True,True,DELETE,wv.lc.D2,0.04889862592593191,0.272097441666668,True,False,current69,1.0
+wv.lc.D1,False,False,REINSERT,wv.lc.D1,0.19503679722222841,0.272097441666668,True,False,original120,0.9798575306668027
+wv.lc.energy_D4@log,False,False,REINSERT,wv.lc.energy_D4@log,0.05760235277777981,0.272097441666668,True,False,original120,0.9514204816752081
+wv.lc.energy_D3@log,False,False,REINSERT,wv.lc.energy_D3@log,0.24746695092592677,0.272097441666668,True,False,original120,0.9602076993648628
+wv.lc.energy_D2@log,True,True,DELETE,wv.lc.energy_D2@log,0.16761805555556342,0.272097441666668,True,False,current69,1.0
+wv.lc.energy_D1@diff,True,True,DELETE,wv.lc.energy_D1@diff,0.23491071203703878,0.272097441666668,True,False,current69,1.0
+wv.r1.A4,False,False,REINSERT,wv.r1.A4,0.19160473240741338,0.272097441666668,True,False,original120,0.9835211702482258
+wv.r1.D4,False,False,REINSERT,wv.r1.D4,0.19999150833334103,0.272097441666668,True,False,ancestor76,1.0
+wv.r1.D3,True,True,DELETE,wv.r1.D3,0.20833959722222936,0.272097441666668,True,False,current69,1.0
+wv.r1.D2,False,False,REINSERT,wv.r1.D2,0.23245518796297027,0.272097441666668,True,False,original120,0.983404671451161
+wv.r1.D1,False,False,REINSERT,wv.r1.D1,0.23362687037036675,0.272097441666668,True,False,original120,0.9787553356961549
+wv.r1.energy_D4@log,False,False,REINSERT,wv.r1.energy_D4@log,0.23374879259259615,0.272097441666668,True,False,ancestor76,1.0
+wv.r1.energy_D3@log,True,True,DELETE,wv.r1.energy_D3@log,0.20600397037037646,0.272097441666668,True,False,current69,1.0
+wv.r1.energy_D2@log,True,True,DELETE,wv.r1.energy_D2@log,0.2199107305555622,0.272097441666668,True,False,current69,1.0
+wv.r1.energy_D1@diff,True,True,DELETE,wv.r1.energy_D1@diff,0.251319991666669,0.272097441666668,True,False,current69,1.0
+hb.r1.phase_cos,True,True,DELETE,hb.r1.phase_cos | hb.r1.phase_sin,0.12093753518519473,0.272097441666668,True,False,current69,1.0
+hb.r1.phase_sin,True,True,DELETE,hb.r1.phase_cos | hb.r1.phase_sin,0.12093753518519473,0.272097441666668,True,False,current69,1.0
+hb.r1.inst_freq,False,False,REINSERT,hb.r1.inst_freq,0.22494776388889107,0.272097441666668,True,False,original120,0.9976189440450668
+hb.lc_detr.inst_freq,True,True,DELETE,hb.lc_detr.inst_freq,0.2203393212962958,0.272097441666668,True,False,current69,1.0
+wv.usd.A4,True,True,DELETE,wv.usd.A4,0.20596706666667294,0.272097441666668,True,False,current69,1.0
+hb.eur.phase_cos,False,False,REINSERT,hb.eur.phase_cos | hb.eur.phase_sin,0.17395372037037204,0.272097441666668,True,False,original120,0.9992246714811635
+hb.eur.phase_sin,False,False,REINSERT,hb.eur.phase_cos | hb.eur.phase_sin,0.17395372037037204,0.272097441666668,True,False,original120,1.0007011781937913
+hb.eur.inst_freq,True,True,DELETE,hb.eur.inst_freq,0.13610194907408085,0.272097441666668,True,False,current69,1.0
+kf.lc.level_minus_close,True,True,DELETE,kf.lc.level_minus_close,0.2448691120370387,0.272097441666668,True,False,current69,1.0
+px.rv_24,False,False,REINSERT,px.rv_24,-0.09417814629627846,0.272097441666668,True,False,original120,0.9653844822013299
+rg.gmm.p0,True,True,DELETE,rg.gmm.p0 | rg.gmm.p1 | rg.gmm.p2,0.19463991018519025,0.272097441666668,True,False,current69,1.0
+rg.gmm.p1,True,True,DELETE,rg.gmm.p0 | rg.gmm.p1 | rg.gmm.p2,0.19463991018519025,0.272097441666668,True,False,current69,1.0
+rg.gmm.p2,True,True,DELETE,rg.gmm.p0 | rg.gmm.p1 | rg.gmm.p2,0.19463991018519025,0.272097441666668,True,False,current69,1.0
+rg.gmm.entropy,True,True,DELETE,rg.gmm.entropy,0.17331553055555593,0.272097441666668,True,False,current69,1.0
