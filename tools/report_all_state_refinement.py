@@ -27,7 +27,7 @@ def run(a):
     recipe=read(a.bundle/'RECIPE.json')
     if (parent['identity']!=cfg['parent_identity'] or file_sha(a.bundle/'model.pt')!=cfg['source_sha256']
             or recipe['identity']!=cfg['recipe_identity']):raise ValueError('ALL_STATE_REPORT_SOURCE')
-    market=market_for(a.parent,parent);market.inputs=project_inputs(market.inputs,recipe);market.recipe=recipe
+    market=market_for(a.parent,parent,selected_recipe=recipe);market.inputs=project_inputs(market.inputs,recipe);market.recipe=recipe
     if support_hash(market.inputs)!=cfg['support_sha256']:raise ValueError('ALL_STATE_REPORT_SUPPORT')
     config=dict(source=cfg['identity'],receipt_sha256=file_sha(a.source/'DONE.json'),
         code=file_sha(__file__),controls_code=file_sha(Path(__file__).resolve().parents[1]/'app/all_state_refinement.py'),

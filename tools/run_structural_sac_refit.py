@@ -40,12 +40,12 @@ SOURCES = ['tools/run_structural_sac_refit.py', 'app/structural_refit.py',
 SOFTWARE = ['torch', 'torchrl', 'tensordict', 'numpy', 'pandas', 'pyarrow']
 
 
-def market_for(root, spec):
+def market_for(root, spec, selected_recipe=None):
     paths = {k:str(root/v) for k,v in spec['inputs'].items()}
     paths['recipe'] = str(root/'SUPPORT_RECIPE.json')
     market = RecipeMarket(dict(inputs=paths, engine_root=str(root/'engine'),
         recipe_sha256=spec['files']['SUPPORT_RECIPE.json']))
-    rec = read(root/'RECIPE.json')
+    rec = read(root/'RECIPE.json') if selected_recipe is None else selected_recipe
     market.inputs = project_inputs(market.inputs, rec)
     context=spec['effective']['architecture'].get('long_context')
     if context is not None:

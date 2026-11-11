@@ -46,7 +46,7 @@ def run(a):
             model.q_net.encoder.load_state_dict(encoder,strict=True)
     sync_targets(model)
     with torch.no_grad():model.loss.log_alpha.copy_(base.loss.log_alpha)
-    parent=Path(spec['parent']);ps=read(parent/'SPEC.json');market=market_for(parent,ps)
+    parent=Path(spec['parent']);ps=read(parent/'SPEC.json');market=market_for(parent,ps,selected_recipe=model.recipe)
     market.inputs=project_inputs(market.inputs,model.recipe);market.recipe=model.recipe
     reference,_=load_selected(a.selection/'bundle','cpu')
     expected,_=emit(reference,market.inputs);z,_=emit(model,market.inputs)

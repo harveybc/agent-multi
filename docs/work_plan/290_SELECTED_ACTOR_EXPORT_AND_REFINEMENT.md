@@ -47,3 +47,10 @@ eligible for removal. Ordinary nonzero original-group responses still refuse.
 Full logit tolerance and exact decisions/accounts remain mandatory. A regression
 rejects a material1e-3 centered response. The first run is retained as stopped;
 the corrected export uses a fresh r2 identity, never overwriting its evidence.
+
+The next preflight caught an input-loader issue: projecting through the older
+parent's already-reduced recipe removes the readmitted RAW_BAR_LOG_RETURN.
+Export, refinement and reporting now project directly from authenticated full
+support to the selected recipe; the default old loader behavior is unchanged.
+A regression rejects traversal through the old subset. Use fresh r3 outputs;
+neither failed preflight produced a trained actor or replaces the saved selection.

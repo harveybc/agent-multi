@@ -66,7 +66,7 @@ def run(a):
             raise ValueError('NATIVE_QUALIFIED_SOURCE')
     if (parent['identity']!=source['parent_identity'] or (not target_contrast and source_sha!=source['source_sha256'])
             or (not refine and model.recipe['identity']!=source['recipe_identity'])):raise ValueError('FUNCTIONAL_LINEAGE')
-    market=market_for(a.parent,parent);market.inputs=project_inputs(market.inputs,model.recipe);market.recipe=model.recipe
+    market=market_for(a.parent,parent,selected_recipe=model.recipe);market.inputs=project_inputs(market.inputs,model.recipe);market.recipe=model.recipe
     if support_hash(market.inputs)!=source['support_sha256']:raise ValueError('FUNCTIONAL_SUPPORT')
     records=read(a.source/'panel/RECORDS.json');validate_panel(records)
     narrow_times={r['timestamp'] for r in records if r['role']=='fit'}
