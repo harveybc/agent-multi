@@ -1,8 +1,19 @@
 # STL activity producer recovery
 
+## Correction: retired producer, not the consumer
+
+The replay below is exact against the OLD `P_HIT.parquet`, but that column was
+replaced by the consumer-scoped, cross-fitted producer. Against the current
+consumer the old prediction differs by up to 0.6963831437035639. Consequently
+this export MUST NOT feed selected69, its warmup, or Retsu's live pipeline.
+The original recovery receipt is retained, not rewritten. The earlier claim
+that this closed the consumer dependency was incorrect. See
+[276](276_STL_CONSUMER_RECOVERY.md) for the correct six-estimator recovery and
+exact verification against the actual consumer store.
+
 ## Scope
 
-This closes the missing historical estimator export for `act.p_hit`. It does
+This recovers the retired historical estimator export for `act.p_hit`. It does
 not release the four STL training arms, change selected69, or promote a model.
 The main actor-refinement lane remains independent; its latest completed
 contrast and next action are recorded in [274](274_OPERATIONAL_CRITIC_ACTOR_TRANSFER.md).
@@ -65,7 +76,9 @@ permission to silently replace the sealed factor columns.
 
 ## Handoff to Retsu
 
-The previously reported missing classifier state now has a recovered artifact.
+This retired classifier must not be integrated. Use the consumer-scoped bundle
+and instructions in document276 instead. The following original instructions
+describe this historical replay only, not a consumer release.
 Use the receipt's ordered feature list and original row-lag semantics; do not
 replace row lags with elapsed-hour lags or substitute missing observations.
 Authenticate the three inputs and weights above and reproduce the sealed

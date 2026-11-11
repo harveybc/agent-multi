@@ -1,4 +1,4 @@
-"""Recover the historical activity estimator; export only on exact sealed parity."""
+"""Replay the RETIRED global activity estimator; NOT the current consumer producer."""
 import argparse
 import hashlib
 import json
@@ -56,7 +56,8 @@ def recover(screen, decision, reference, output):
     for name, path in inputs.items():
         if hashlib.sha256(path.read_bytes()).hexdigest() != digests[name]:
             raise ValueError('SOURCE_CHANGED_DURING_RECOVERY')
-    report = dict(schema='activity_recovery.v1', status='EXACT_HISTORICAL_REPLAY',
+    report = dict(schema='activity_recovery.v1', status='RETIRED_GLOBAL_REPLAY_ONLY',
+                  consumer_compatible=False,
                   sklearn_version=sklearn.__version__, inputs_sha256=digests,
                   features=list(X.columns), train_rows=int(train.sum()),
                   train_start=times[train].min().isoformat(),

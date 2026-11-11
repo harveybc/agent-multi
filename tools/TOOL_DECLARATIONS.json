@@ -2,8 +2,16 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "qualify_stl_recovery_sources.py": {
+   "purpose": "Verify exact OHLC aggregation and surrounding source identity, export separate historical repair candidates; never mutates admitted data or imputes prices",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
+  },
+  "recover_consumer_activity.py": {
+   "purpose": "Recover full and cross-fit activity estimators against the pinned current consumer store with exact reload parity, distinct from retired global predictions",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
+  },
   "recover_activity_producer.py": {
-   "purpose": "Reconstruct the original historical activity classifier and export only after exact sealed probability and reload parity; no source mutation or live promotion",
+   "purpose": "Reconstruct the retired global activity classifier for historical diagnosis only; explicitly not current-consumer compatible or eligible for live use",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
   },
   "run_operational_actor_transfer.py": {
