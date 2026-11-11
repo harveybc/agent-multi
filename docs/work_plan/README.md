@@ -2,6 +2,11 @@
 
 ## Execution Update: 2026-11-11
 
+[Cumulative pass280](280_ONE_UPDATE_CUMULATIVE_SELECTION.md) starts from the
+qualified one-update actor with a fresh cache. Ordered deletion is followed by
+the full historical phase2 return inventory, then cold export and independent
+decision/weight audit. Original69 remains the live-integration reference.
+
 [One-update qualification279](279_ONE_UPDATE_ACTOR_QUALIFICATION.md) implements
 the next independent phase2 task: authenticate both saved control checkpoints,
 export self-contained bundles and reproduce complete native accounts after cold

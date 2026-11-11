@@ -43,6 +43,8 @@ def test_partial_or_whole_branch_preserves_function_and_source(groups):
     assert info['parameters_after'] < info['parameters_before']
     assert len(info['constant_groups']) == groups - 1
     assert compact.encoder.shape == (13, 1)
+    assert compact.encoder.transport_shape == (13, 1)
+    assert actor.encoder.transport_shape == (13, 2)
     assert all(not p.requires_grad for p in compact.parameters())
     assert all(torch.equal(v, model.loss.state_dict()[k]) for k, v in before.items())
 
@@ -77,6 +79,15 @@ def test_effective_copy_follows_functional_parameters_and_is_independent():
         assert torch.equal(actor.surface(x), expected)
         next(actor.parameters()).add_(1)
         assert torch.equal(model.surfaces(x), expected)
+
+
+def test_long_context_cannot_be_silently_compacted():
+    r = probe_recipe()
+    actor = effective_actor(ThreeSignalSAC(r))
+    actor.encoder.context = torch.nn.Identity()
+    with pytest.raises(ValueError, match='COMPACT_LONG_CONTEXT_UNSUPPORTED'):
+        compact_actor(actor, r, ['x'])
+    assert actor.encoder.transport_shape == (13, 2)
 
 
 @pytest.mark.parametrize('columns', [[], ['y', 'x'], ['x', 'x'], ['unknown']])

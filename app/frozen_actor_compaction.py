@@ -56,6 +56,8 @@ def compact_actor(actor, source_recipe, selected):
     remap = {old: new for new, old in enumerate(take)}
     compact = copy.deepcopy(actor).eval().requires_grad_(False)
     encoder = compact.encoder
+    if getattr(encoder, 'context', None) is not None:
+        raise ValueError('COMPACT_LONG_CONTEXT_UNSUPPORTED')
     if encoder.shape != (source_recipe['tensor']['window']['observations'], len(names)):
         raise ValueError('COMPACT_SOURCE_SHAPE')
     groups = source_recipe['representation']['resolved']
@@ -82,6 +84,7 @@ def compact_actor(actor, source_recipe, selected):
             setattr(encoder, f'indices_{i}', torch.tensor(
                 [remap[old] for old in indices if old in remap], device=device, dtype=torch.long))
     encoder.shape = (encoder.shape[0], projected['list']['n'])
+    encoder.transport_shape = encoder.shape
     info = dict(parameters_before=sum(p.numel() for p in actor.parameters()),
         parameters_after=sum(p.numel() for p in compact.parameters()),
         constant_groups=constants, partial_groups=partial,
