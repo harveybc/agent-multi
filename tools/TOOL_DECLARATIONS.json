@@ -2,6 +2,18 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "run_recovery_queue.py": {
+   "purpose": "Run an owner-configured finite resumable recovery queue with independent failures and content-hashed output receipts",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
+  },
+  "attribute_operational_transfer.py": {
+   "purpose": "Attribute archived one-update and endpoint actor account differences through same-state native continuations without training or promotion",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
+  },
+  "rebuild_recovered_fx_features.py": {
+   "purpose": "Propagate qualified November price candidates through frozen FX factors and decompositions after baseline and prefix checks; separate candidate store only",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
+  },
   "qualify_stl_recovery_sources.py": {
    "purpose": "Verify exact OHLC aggregation and surrounding source identity, export separate historical repair candidates; never mutates admitted data or imputes prices",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"

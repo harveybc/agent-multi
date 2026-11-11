@@ -298,3 +298,24 @@ harmful changes: filtering those rows is not an established repair.
 Preserve selected69. Next qualify critic action ordering for actual opening
 contexts and equivalent actions before another actor update. No training,
 state inputs, model promotion or repeated unchanged floating pass performed.
+
+## F-OPERATIONAL-CORRECTION-CAN-SUPPRESS-USEFUL-ENTRIES
+
+Results277,2026-11-11:16 saved accounts, exact native attribution, maximum
+cash reconciliation discrepancy0USD. At32 updates, control validation losses
+come mainly from two new short entries; corrected-critic losses come mainly
+from suppressing three useful short entries. Improving critic calibration
+does not establish improvement of the induced actor. A shared final metric
+can hide opposite failure mechanisms; retain per-decision counterfactuals.
+
+The saved1-update control gives TRAIN11.565540% versus10.792108%, with
+VALIDATION unchanged14.591090% and206 trades. Two helpful effective TRAIN
+changes and no harmful ones explain its+77.34311USD. This is a preserved
+candidate, not a promoted model or proof of generalization gain. Both seeds
+give identical books; do not count duplicate books as independent evidence.
+
+The independent source repair rebuilt four selected FX inputs using verified
+November observations. It recovered5/25/257/129 missing values in factor4,
+factor24,wavelet,Hilbert respectively, preserving frozen parameters and all
+unaffected inputs. Missing USDCHF and pre-TRAIN coverage still prevent STL
+release; they are not grounds for halting the separate actor investigation.

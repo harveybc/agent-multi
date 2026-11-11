@@ -1,5 +1,17 @@
 # Adaptive Multi-Asset Trading Work Plan
 
+## Execution Update: 2026-11-11
+
+[Recovery and attribution277](277_RECOVERY_AND_ATTRIBUTION_QUEUE.md) executed
+both independent tasks: four selected FX inputs rebuilt after exact baseline
+and prefix checks;16 saved actor accounts attributed with zero cash discrepancy.
+Corrected32-update losses suppress useful SELL entries, whereas control32 losses
+add bad SELL entries. Keep these mechanisms distinct. The frozen69-input
+champion remains unchanged; the saved1-update control improves TRAIN without
+changing VALIDATION account performance and is retained for qualification.
+STL still requires USDCHF source qualification and real pre-TRAIN feature
+history. No manual owner download is requested; no STL training is claimed.
+
 ## Priority Update: 2026-11-09 - Critic Refinement
 
 [Findings and progress register](generalization/FINDINGS_AND_PROGRESS.md) records
