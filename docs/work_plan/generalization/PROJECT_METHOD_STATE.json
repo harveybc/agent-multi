@@ -1,6 +1,6 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "TRAIN_COVERAGE_CONTRAST_COMPLETE",
+  "current_stage": "COVERAGE_ACTOR_CUMULATIVE_SELECTION_COMPLETE",
   "train_coverage_288": {
     "document": "../288_TRAIN_COVERAGE_CONTRAST.md",
     "owner_approved": "2026-11-11",
@@ -1904,5 +1904,44 @@
     "invent replay sample history",
     "discard baseline rows",
     "launch incompatible synthetic feature training"
-  ]
+  ],
+  "coverage_selection_289": {
+    "document": "../289_COVERAGE_ACTOR_CUMULATIVE_SELECTION.md",
+    "owner_approved": "2026-11-11",
+    "qualification_identity": "5c6d28234200f58141ccbccec53b1d97d89ee7642f0cc155bfe559ba090a1943",
+    "qualified": true,
+    "features": 69,
+    "groups": 28,
+    "historical_absent": 51,
+    "seeds": [
+      19,
+      43
+    ],
+    "primary_seed": 19,
+    "optimizer_steps": 0,
+    "next_action": "Qualify changed-input trainable export preserving actor inference/account parity; do not assume old critic remains calibrated for changed input composition; frozen candidate control before further same-policy TRAIN calibration",
+    "status": "COMPLETE",
+    "selection_identity": "b04297ef6c108ae4be4d62e6d95995add99c5af28819bb0ede3ecda31c25ef96",
+    "counts": {
+      "after_deletion": 68,
+      "final": 69,
+      "initial": 69,
+      "universe": 120
+    },
+    "evaluations": 113,
+    "return_features": 52,
+    "removed": [
+      "px.range_12"
+    ],
+    "readmitted": [
+      "RAW_BAR_LOG_RETURN"
+    ],
+    "train_return_pct": 13.913055450002048,
+    "validation_return_pct": 16.33613924999989,
+    "train_max_dd_pct": 9.548436018197346,
+    "validation_max_dd_pct": 3.257322236726757,
+    "packed_cold_exact": true,
+    "retained_tensors_exact": 313,
+    "model_promoted": false
+  }
 }

@@ -2,9 +2,12 @@
 
 ## Execution Update: 2026-11-11
 
-[Coverage actor selection289](289_COVERAGE_ACTOR_CUMULATIVE_SELECTION.md):
-qualify saved288 narrow19/43, then primary19 fresh cumulative deletion/return
-including all historical phase2 removals. No new learning or live changes.
+[Coverage actor selection289](289_COVERAGE_ACTOR_CUMULATIVE_SELECTION.md)
+completed:69 ->68 ->69,28 groups,113 evaluations. Removed `px.range_12`,
+readmitted historical `RAW_BAR_LOG_RETURN`; all51 previous removals plus the
+new deletion tested. TRAIN13.913055%,VAL16.336139%; VAL DD3.257322%, but TRAIN
+DD9.548436% is worse.313 retained tensors and packed cold accounts exact.
+Next qualify trainable changed-input export before any further refinement.
 
 [TRAIN coverage288](288_TRAIN_COVERAGE_CONTRAST.md) completed:113 versus437 FIT
 anchors, two update seeds,32 accepted steps and eight exact account attributions.
