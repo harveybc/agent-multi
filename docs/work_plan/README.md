@@ -2,6 +2,12 @@
 
 ## Execution Update: 2026-11-11
 
+[TRAIN coverage288](288_TRAIN_COVERAGE_CONTRAST.md) is the next paired contrast:
+qualified287 source,113 inherited FIT anchors versus up to452 nested current-policy
+anchors, same frozen critic/AdamW/alpha and8x128 update budget. Both use the broad
+FIT support for trust checks; MONITOR timestamps stay fixed. No architecture,
+feature set, validation target or live-service change.
+
 [Bounded critic actor selection287](287_BOUNDED_CRITIC_ACTOR_SELECTION.md)
 completed: both saved286 endpoints qualified in30.86seconds, then fresh-cache
 primary19 pass in136.26seconds.69 ->69 ->69 inputs,28 groups,112 evaluations,

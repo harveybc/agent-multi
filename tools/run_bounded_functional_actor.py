@@ -16,6 +16,7 @@ from app.frozen_recipe_inputs import file_sha
 from app.frozen_signal_masks import prepared_signals
 from app.operational_opening_critic import emit_actor_reference
 from app.native_actor_targets import rebuild_panel, target_values, validate_anchor_identity
+from app.train_coverage import current_fit_trace, expand_coverage
 from app.rl_subset import digest, project_inputs, support_hash
 from app.selected_warm_start import reset_learning_rng
 from app.structural_refit import load_bundle, verify_files
@@ -33,12 +34,14 @@ ROOT=Path(__file__).resolve().parents[1]
 
 
 def run(a):
-    target_contrast=a.target_contrast
+    coverage=a.coverage_contrast
+    target_contrast=a.target_contrast or coverage
     started=time.monotonic();configure(284);torch.backends.cudnn.allow_tf32=False
     if not torch.cuda.is_available() or torch.cuda.get_device_name()!=a.expected_device_name:
         raise ValueError('FUNCTIONAL_DEVICE')
     source=read(a.source/'CONFIG.json');verify_done(a.source,source['identity'])
-    if source['schema']!='opening_boundary_refinement.v1':raise ValueError('FUNCTIONAL_SOURCE')
+    source_schema='native_target_geometry.v1' if coverage else 'opening_boundary_refinement.v1'
+    if source['schema']!=source_schema:raise ValueError('FUNCTIONAL_SOURCE')
     parent=read(a.parent/'SPEC.json');verify_files(a.parent,parent['files'])
     model,_=load_bundle(a.bundle,'cuda');flags={n:p.requires_grad for n,p in model.loss.named_parameters()}
     source_sha=file_sha(a.bundle/'model.pt')
@@ -46,7 +49,8 @@ def run(a):
     if target_contrast:
         qroot=a.bundle.parent.parent;qc=read(qroot/'CONFIG.json');qid=digest(qc)
         verify_done(qroot,qid);qualification=read(a.bundle.parent/'RESULT.json')
-        if (qc.get('profile')!='boundary_absolute8' or qc.get('source')!=source['identity']
+        profile='bounded_critic8' if coverage else 'boundary_absolute8'
+        if (qc.get('profile')!=profile or qc.get('source')!=source['identity']
                 or qc.get('updates')!=8 or qualification['seed']!=19
                 or not qualification['qualified'] or qualification['model_sha256']!=source_sha):
             raise ValueError('NATIVE_QUALIFIED_SOURCE')
@@ -55,6 +59,7 @@ def run(a):
     market=market_for(a.parent,parent);market.inputs=project_inputs(market.inputs,model.recipe);market.recipe=model.recipe
     if support_hash(market.inputs)!=source['support_sha256']:raise ValueError('FUNCTIONAL_SUPPORT')
     records=read(a.source/'panel/RECORDS.json');validate_panel(records)
+    narrow_times={r['timestamp'] for r in records if r['role']=='fit'}
     rows=np.array([r['row'] for r in records]);fit=np.array([i for i,r in enumerate(records) if r['role']=='fit'])
     if (not market.inputs.valid[rows].all() or not (market.inputs.period[rows]=='TRAIN').all()
             or not np.array_equal(market.inputs.row_ts_ns[rows],[r['timestamp'] for r in records])):
@@ -74,6 +79,13 @@ def run(a):
             critic='frozen qualified absolute19; same across schedule seeds',
             targets='native reward returns replaced on FIT only; recomputed current-policy continuations',
             fit_interval=['2020-01-01','2023-01-01'],monitor_interval=['2023-01-01','2024-01-01'])
+    if coverage:
+        cfg.update(schema='train_coverage_refinement.v1',modes=['critic_narrow','critic_broad'],
+            coverage_multiplier=4,coverage_seed=288,narrow_fit=len(narrow_times),
+            critic='frozen qualified287 critic; same in all arms',
+            targets='critic values only; refreshed native returns diagnostic only',
+            common_trust_support='all broad FIT anchors; neither MONITOR nor VALIDATION',
+            equal_update_budget='8 x 128; larger support has fewer repeats per anchor')
     cfg['identity']=digest(cfg)
     if (a.output/'CONFIG.json').exists() and read(a.output/'CONFIG.json')!=cfg:raise ValueError('FUNCTIONAL_CONFIG')
     write(a.output/'CONFIG.json',cfg)
@@ -95,6 +107,11 @@ def run(a):
     if target_contrast:
         panel=a.output/'panel'
         anchors=records
+        if coverage:
+            anchors,audit=expand_coverage(current_fit_trace(make,market.inputs,
+                prepared_signals(baseline)[0],baseline),anchors)
+            write(a.output/'COVERAGE.json',audit)
+            write(a.output/'COVERAGE_ANCHORS.json',anchors)
         if (panel/'DONE.json').exists():
             verify_done(panel,cfg['identity']);records=read(panel/'RECORDS.json')
         else:
@@ -103,6 +120,10 @@ def run(a):
             write(panel/'RECORDS.json',records);seal(panel,cfg['identity'])
         validate_panel(records)
         validate_anchor_identity(anchors,records)
+        if coverage:
+            rows=np.array([r['row'] for r in records])
+            fit=np.array([i for i,r in enumerate(records) if r['role']=='fit'])
+            if not market.inputs.valid[rows].all():raise ValueError('COVERAGE_INVALID_INPUT')
     x=torch.tensor(market.inputs.windows[rows],device='cuda');del model
     targets=np.array([[o['reward_return'] for o in r['outcomes']] for r in records])
     cash=np.array([[o['net_usd'] for o in r['outcomes']] for r in records])
@@ -114,10 +135,14 @@ def run(a):
     results=[]
     for seed in cfg['seeds']:
         old=a.source/f'greedy_calibrated_native_{seed}'
-        witness=read(old/'GRADIENT.json');schedule=covering_schedule(len(fit),8,128,seed)
-        if digest(schedule.tolist())!=read(old/'EFFECTIVE.json')['schedule_sha256']:
-            raise ValueError('FUNCTIONAL_SCHEDULE')
+        if not coverage:
+            witness=read(old/'GRADIENT.json');schedule=covering_schedule(len(fit),8,128,seed)
+            if digest(schedule.tolist())!=read(old/'EFFECTIVE.json')['schedule_sha256']:
+                raise ValueError('FUNCTIONAL_SCHEDULE')
         for mode in cfg['modes']:
+            train_fit=(np.array([i for i,r in enumerate(records) if r['role']=='fit' and
+                                r['timestamp'] in narrow_times]) if mode=='critic_narrow' else fit)
+            if coverage:schedule=covering_schedule(len(train_fit),8,128,seed)
             key=f'{mode}_{seed}';out=a.output/key
             if (out/'DONE.json').exists():verify_done(out,cfg['identity']);results.append(read(out/'RESULT.json'));continue
             progress('ARM',arm=key)
@@ -154,9 +179,11 @@ def run(a):
                 critic_sha256=source_sha if target_contrast else file_sha(a.source/f'critic_{seed}/MODEL.pt'),
                 target_kind=kind,predicted_q_sha256=digest(predicted_q.cpu().tolist()),
                 effective_target_sha256=digest(q.cpu().tolist()),
+                training_rows=rows[train_fit].tolist(),trust_rows=rows[fit].tolist(),
+                sampled_rows=rows[train_fit[schedule]].tolist(),
                 learning_rate=model.effective['learning_rate'],weight_decay=model.effective['weight_decay']))
             for step in range(1,9):
-                ix=torch.tensor(fit[schedule[step-1]],device='cuda')
+                ix=torch.tensor(train_fit[schedule[step-1]],device='cuda')
                 if any(records[i]['role']!='fit' for i in ix.tolist()):raise ValueError('FUNCTIONAL_FIT_ONLY')
                 before=[p.detach().clone() for p in params];theta=flat(params)
                 optimizer_before=copy.deepcopy(model.optimizer.state_dict())
@@ -249,7 +276,9 @@ if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for name in ('parent','bundle','source','output'):p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--expected-device-name',required=True)
-    p.add_argument('--target-contrast',action='store_true')
+    mode=p.add_mutually_exclusive_group()
+    mode.add_argument('--target-contrast',action='store_true')
+    mode.add_argument('--coverage-contrast',action='store_true')
     a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
     with (a.output/'worker.lock').open('a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)

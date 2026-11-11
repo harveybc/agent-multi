@@ -3,7 +3,7 @@
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
   "run_bounded_functional_actor.py": {
-   "purpose": "Owner-authorized bounded head updates and FIT-only native-return target contrasts with sealed sources, exact cold accounts and native attribution; no promotion",
+   "purpose": "Owner-authorized bounded head updates, TRAIN coverage and FIT-only native-return target contrasts with sealed sources, exact cold accounts and native attribution; no promotion",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
   },
   "report_actor_gradient_coupling.py": {
