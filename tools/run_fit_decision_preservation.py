@@ -19,6 +19,7 @@ from app.rl_subset import digest, support_hash
 from app.selected_input_market import market_for
 from app.selected_warm_start import reset_learning_rng
 from app.structural_refit import load_bundle, verify_files
+from app.targeted_fit_errors import correction_loss, error_targets, error_progress, requested_margins
 from app.three_signal_learning import environment, evaluate
 from tools.attribute_ranking_improvement import attribute_pair
 from tools.diagnose_warmstart_drift import set_arm, frozen_state, verify_frozen_state
@@ -65,6 +66,15 @@ def run(a):
     guard=dict(indices=protected.cpu().tolist(),actions=actions.cpu().tolist(),
         rows=rows[protected.cpu().numpy()].tolist(),source_margins=source_margins.cpu().tolist(),
         native_returns=native[protected].cpu().tolist(),tolerance=1e-7)
+    targeted=a.target_fit_errors
+    error_labels,error_weights=error_targets(source_z,native,records)
+    prior_guard=None
+    if targeted:
+        if a.prior_guard is None:raise ValueError('PRESERVE_PRIOR_REQUIRED')
+        prior_guard=read(a.prior_guard/'CONFIG.json');verify_done(a.prior_guard,prior_guard['identity'])
+        if (prior_guard['schema']!='fit_decision_preservation.v1'
+                or prior_guard['source_identity']!=source['identity']
+                or prior_guard['guard']!=guard):raise ValueError('PRESERVE_PRIOR_GUARD')
     cfg=dict(schema='fit_decision_preservation.v1',source_identity=source['identity'],
         source_receipt_sha256=file_sha(a.source/'DONE.json'),source_sha256=sha,
         export_identity=exported['identity'],parent_identity=parent['identity'],
@@ -74,6 +84,12 @@ def run(a):
         optimizer_rejection_restores_moments=True,critic_updates=0,model_promoted=False,test_read=False,
         sources={str(p.relative_to(ROOT)):file_sha(p) for folder in ('app','tools','agent_plugins','env_plugins')
                  for p in (ROOT/folder).rglob('*.py')})
+    if targeted:
+        cfg.update(schema='targeted_fit_error_correction.v1',modes=['error_project_guard'],
+            objective='advantage_weighted_fixed_fit_error_cross_entropy',
+            prior_guard_identity=prior_guard['identity'],
+            prior_guard_receipt_sha256=file_sha(a.prior_guard/'DONE.json'),
+            error_targets=error_labels.cpu().tolist(),error_weights=error_weights.cpu().tolist())
     cfg['identity']=digest(cfg)
     if (a.output/'CONFIG.json').exists() and read(a.output/'CONFIG.json')!=cfg:raise ValueError('PRESERVE_CONFIG')
     if (a.output/'DONE.json').exists():verify_done(a.output,cfg['identity']);return
@@ -131,17 +147,20 @@ def run(a):
                 before=[p.detach().clone() for p in params];optim_before=copy.deepcopy(model.optimizer.state_dict())
                 with torch.no_grad():before_z=model.surfaces(x).detach()
                 def objective(z):
+                    if targeted:return float(correction_loss(z.double(),error_labels,error_weights,ix))
                     v,e,_=actor_terms(z[ix].double(),q[ix].double(),alpha.double());return float(v+e)
                 loss_before=objective(before_z)
                 model.optimizer.zero_grad(set_to_none=True)
-                v,e,_=actor_terms(model.surfaces(x[ix]),q[ix],alpha);(v+e).backward()
+                if targeted:correction_loss(model.surfaces(x).double(),error_labels,error_weights,ix).backward()
+                else:
+                    v,e,_=actor_terms(model.surfaces(x[ix]),q[ix],alpha);(v+e).backward()
                 gradient=flat([p.grad for p in params])
                 norm=torch.nn.utils.clip_grad_norm_(params,10.,error_if_nonfinite=True)
                 model.optimizer.step();direction=flat(params)-theta
                 with torch.no_grad():
                     for p,old in zip(params,before):p.copy_(old)
                 projection=dict(success=True,nonzero=True,mode='unprojected')
-                if mode=='project_guard':
+                if mode in ('project_guard','error_project_guard'):
                     z=model.surfaces(x)
                     current=margins(z.double(),protected,actions)
                     jac=torch.stack([flat(torch.autograd.grad(value,params,retain_graph=True))
@@ -168,8 +187,21 @@ def run(a):
                 verify_frozen_state(model,fixed)
                 if any(not torch.equal(value,dict(model.loss.named_buffers())[name]) for name,value in buffers.items()):
                     raise ValueError('PRESERVE_FROZEN_BUFFER')
+                corrective={}
+                if targeted:
+                    with torch.no_grad():after_z=model.surfaces(x).detach()
+                    ids,requested=requested_margins(before_z,error_labels,error_weights,ix)
+                    actual=margins(after_z.double(),ids,error_labels[ids])-margins(before_z.double(),ids,error_labels[ids])
+                    def native_loss(z):
+                        v,e,_=actor_terms(z[ix].double(),q[ix].double(),alpha.double());return float(v+e)
+                    corrective=dict(error_rows=rows[ids.cpu().numpy()].tolist(),
+                        requested_margin_derivative=requested.cpu().tolist(),actual_margin_change=actual.cpu().tolist(),
+                        sign_agreement=float(((actual*requested)>0).double().mean()),
+                        loss_before=loss_before,loss_after=objective(after_z),
+                        native_loss_before=native_loss(before_z),native_loss_after=native_loss(after_z),
+                        progress=error_progress(source_z,after_z,native,records))
                 steps.append(dict(updates=step,gradient_norm=float(norm),projection=projection,
-                    final_guard=final_check['guard'],**result))
+                    final_guard=final_check['guard'],corrective=corrective,**result))
                 write(out/'STEPS.json',steps);progress('STEP',arm=key,updates=step,accepted=result['accepted'])
                 if step in (1,8):
                     z=logits(model);checkpoint=out/f'ACTOR_{step:04d}.pt';save_canonical(model,checkpoint,flags)
@@ -209,6 +241,7 @@ def run(a):
     axes[1].legend(fontsize=7);fig.tight_layout();fig.savefig(a.output/'RETURNS.png');plt.close(fig)
     if file_sha(a.bundle/'model.pt')!=sha:raise ValueError('PRESERVE_SOURCE_CHANGED')
     verify_done(a.source,source['identity']);verify_done(a.bundle.parent,exported['identity'])
+    if targeted:verify_done(a.prior_guard,prior_guard['identity'])
     write(a.output/'RESULT.json',dict(identity=cfg['identity'],reference=reference,arms=results,
         prior_controls=prior['arms'],attribution=attribution,protected_rows=len(protected),
         source_unchanged=True,test_read=False,model_promoted=False,seconds=time.monotonic()-started,finished_at=now()))
@@ -219,6 +252,8 @@ if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     for key in ('parent','bundle','source','output'):parser.add_argument('--'+key,type=Path,required=True)
     parser.add_argument('--expected-device-name',required=True)
+    parser.add_argument('--target-fit-errors',action='store_true')
+    parser.add_argument('--prior-guard',type=Path)
     args=parser.parse_args();args.output.mkdir(parents=True,exist_ok=True)
     with (args.output/'worker.lock').open('a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)

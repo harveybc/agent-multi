@@ -1,6 +1,20 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "FIT_DECISION_PRESERVATION_COMPLETE",
+  "current_stage": "TARGETED_FIT_ERROR_CORRECTION_READY",
+  "targeted_fit_error_correction_293": {
+    "document": "../293_TARGETED_FIT_ERROR_CORRECTION.md",
+    "status": "READY",
+    "features": 69,
+    "groups": 28,
+    "seeds": [19, 43],
+    "actor_update_budget": 8,
+    "protected_fit_rows": 26,
+    "objective": "advantage_weighted_fixed_fit_error_cross_entropy",
+    "tests_passed": 33,
+    "test_read": false,
+    "model_promoted": false,
+    "next_action": "Execute two fixed-budget projected-guard arms, audit checkpoints and full native accounts; reuse292 controls. Preserve source and do not repeat unchanged floating."
+  },
   "fit_decision_preservation_292": {
     "document": "../292_FIT_DECISION_PRESERVATION.md",
     "status": "COMPLETE",
