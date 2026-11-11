@@ -65,3 +65,12 @@ def policy_effect(before, after, target):
                 greedy_regret_before=float((y.max(-1)-y[ix,a.argmax(-1)]).mean()),
                 greedy_regret_after=float((y.max(-1)-y[ix,b.argmax(-1)]).mean()),
                 greedy_changes=int((a.argmax(-1)!=b.argmax(-1)).sum()))
+
+
+def constant_controls(target):
+    y=np.asarray(target,dtype=float)
+    if y.ndim!=2 or y.shape[-1]!=3 or not len(y) or not np.isfinite(y).all():
+        raise ValueError('ALL_STATE_CONSTANT_TARGET')
+    return {name:dict(mean_regret=float((y.max(-1)-y[:,a]).mean()),
+                      maximum_regret=float((y.max(-1)-y[:,a]).max()))
+            for a,name in enumerate(('NOP','BUY','SELL'))}

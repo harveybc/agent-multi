@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from app.all_state_refinement import choose_panel, validate_panel, policy_effect, qualification_identity
+from app.all_state_refinement import choose_panel, validate_panel, policy_effect, qualification_identity, constant_controls
 from app.rl_subset import digest
 
 
@@ -64,3 +64,11 @@ def test_policy_effect_distinguishes_regret_and_expected_change():
     assert result['expected_return_delta']>0
     assert result['greedy_regret_before']==2 and result['greedy_regret_after']==0
     with pytest.raises(ValueError):policy_effect(old,new,target[:,:2])
+
+
+def test_constant_control_handles_negative_and_tied_returns():
+    result=constant_controls([[-3,-1,-1],[0,2,1]])
+    assert result['BUY']['mean_regret']==0
+    assert result['SELL']['mean_regret']==.5
+    assert result['NOP']['mean_regret']==2
+    with pytest.raises(ValueError):constant_controls([[float('nan'),0,0]])

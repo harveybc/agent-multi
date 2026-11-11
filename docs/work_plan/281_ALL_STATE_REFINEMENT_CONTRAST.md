@@ -57,3 +57,20 @@ chronological native replay; the contribution sum must equal actual profit chang
 VALIDATION is descriptive for the fixed endpoints, not used to fit or choose them.
 No pass implies global feature optimality or a live-model release. A useful
 refinement requires a separate qualification before another changed-policy pass.
+
+## Launch Verification
+
+32 focused CPU/native-fixture tests pass; CLI import and authentication against
+the real qualified bundle also pass. First launch stopped before any training:
+the consumer expected an embedded identity while qualification279 uses the
+digest of its configuration. Corrected with a regression; failed run preserved.
+The corrected runtime is3170f91c, deployed to a new immutable directory and new
+output identity, not edited over the first attempt.
+
+Readiness verified the RTX5090 and available memory. Native baseline accounts
+match the qualified actor. The64-state real counterfactual panel has started;
+the finite service continues into critic calibration, the eight factorial arms,
+cold replay and chronological attribution. A separate finite collector transfers
+and verifies all terminal file hashes. Neither service requires a chat session.
+Experiment identity:
+`e0697e9f9fca6b3263bbd7fb85cfcc1bcf3a35026905253f4ade28d99213a8d4`.
