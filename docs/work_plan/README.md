@@ -2,6 +2,11 @@
 
 ## Execution Update: 2026-11-11
 
+[Absolute actor qualification and cumulative selection285](285_ABSOLUTE_ACTOR_CUMULATIVE_SELECTION.md)
+is authorized: saved282 endpoint8, both seeds, primary19; full cold/native parity
+then fresh-cache deletion and all historical phase2 readmissions. No retraining,
+TEST access or live promotion. Frozen contracts and acceptance gates precede launch.
+
 [Bounded functional contrast284](284_BOUNDED_FUNCTIONAL_ACTOR.md) completed:
 same sealed absolute critics, two seeds, bounded native head AdamW versus final
 layer only versus damped functional projection. FIT-only common drift gates,

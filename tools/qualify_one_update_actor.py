@@ -1,4 +1,4 @@
-"""Authenticate, export and cold-replay saved one-update actors on full accounts."""
+"""Authenticate and cold-replay explicitly pinned saved actor profiles; no fit."""
 import argparse
 import fcntl
 from pathlib import Path
@@ -8,7 +8,8 @@ import numpy as np
 import torch
 
 from app.actor_checkpoint_qualification import (
-    actor_difference, development_gate, exact_state, exact_trace, one_update_point,
+    actor_difference, development_gate, exact_state, exact_trace, saved_point,
+    qualification_profile,
 )
 from app.frozen_recipe_inputs import file_sha
 from app.frozen_signal_masks import prepared_signals
@@ -28,6 +29,9 @@ def run(a):
     torch.backends.cudnn.allow_tf32 = False
     parent = read(a.parent/'SPEC.json'); verify_files(a.parent, parent['files'])
     source = read(a.source/'CONFIG.json'); verify_done(a.source, source['identity'])
+    arm, updates = qualification_profile(source, a.profile)
+    checkpoint = f'ACTOR_{updates:04d}.pt'
+    trace_name = f'actor_{updates:04d}'
     model, _ = load_bundle(a.bundle, 'cpu')
     if (parent['identity'] != source['parent_identity'] or
             file_sha(a.bundle/'model.pt') != source['source_sha256']):
@@ -45,9 +49,11 @@ def run(a):
                   parent=parent['identity'], source_receipt=file_sha(a.source/'DONE.json'),
                   parent_spec=file_sha(a.parent/'SPEC.json'),
                   bundle_manifest=file_sha(a.bundle/'MANIFEST.json'), source_code=code,
-                  seeds=[19, 43], updates=1, arm='control', device='cpu', threads=a.threads,
+                  seeds=[19, 43], updates=updates, arm=arm, device='cpu', threads=a.threads,
                   recipe_identity=model.recipe['identity'], support=source['support_sha256'],
                   training=False, model_promoted=False)
+    if a.profile != 'one_update':
+        config.update(schema='saved_actor_qualification.v2', profile=a.profile)
     identity = digest(config)
     if (a.output/'CONFIG.json').exists():
         if read(a.output/'CONFIG.json') != config:
@@ -56,7 +62,10 @@ def run(a):
         raise ValueError('QUALIFY_UNKNOWN_OUTPUT')
     write(a.output/'CONFIG.json', config)
     if (a.output/'DONE.json').exists():
-        verify_done(a.output, identity); return
+        verify_done(a.output, identity)
+        if not read(a.output/'RESULT.json')['qualified']:
+            raise ValueError('QUALIFY_DEVELOPMENT_GATE')
+        return
 
     def progress(stage, **kw):
         value = dict(stage=stage, at=now(), seconds=time.monotonic()-start, **kw)
@@ -85,25 +94,25 @@ def run(a):
     ref_state = {n: v.detach().clone() for n, v in model.loss.state_dict().items()}
     records = []; first_actor = None
     for seed in config['seeds']:
-        out = a.output/f'control_{seed}'
+        out = a.output/f'{arm}_{seed}'
         if (out/'DONE.json').exists():
             verify_done(out, identity); records.append(read(out/'RESULT.json')); continue
-        origin = a.source/f'control_{seed}'
-        expected = one_update_point(read(origin/'POINTS.json'))
+        origin = a.source/f'{arm}_{seed}'
+        expected = saved_point(read(origin/'POINTS.json'), updates)
         progress('CANDIDATE_REPLAY', seed=seed)
-        model, _ = load_bundle(a.bundle, 'cpu'); model.load(origin/'ACTOR_0001.pt')
+        model, _ = load_bundle(a.bundle, 'cpu'); model.load(origin/checkpoint)
         differences = actor_difference(ref_state, model.loss.state_dict())
         actor_state = {n: v.detach().clone() for n, v in model.loss.state_dict().items() if n.startswith('actor_')}
         same_as_first = None if first_actor is None else all(torch.equal(v, first_actor[n]) for n, v in actor_state.items())
         if first_actor is None: first_actor = actor_state
         logits, _ = emit(model, market.inputs)
-        metrics = accounts(logits, out/'native', expected['metrics'], origin/'actor_0001')
+        metrics = accounts(logits, out/'native', expected['metrics'], origin/trace_name)
         ix = np.flatnonzero(market.inputs.valid & (market.inputs.period == 'TRAIN'))
         probe = market.inputs.windows[ix[np.linspace(0, len(ix)-1, 32, dtype=int)]].copy()
         if not (out/'bundle').exists():
             export_bundle(out/'bundle', model, probe, dict(identity=identity,
-                kind='QUALIFIED_SAVED_ONE_UPDATE_CONTROL', seed=seed, updates=1,
-                source_checkpoint_sha256=file_sha(origin/'ACTOR_0001.pt'),
+                kind='QUALIFIED_SAVED_ACTOR', profile=a.profile, seed=seed, updates=updates,
+                source_checkpoint_sha256=file_sha(origin/checkpoint),
                 new_optimizer_steps=0, research_only=True, model_promoted=False))
         reloaded, _ = load_bundle(out/'bundle', 'cpu')
         exact_state(reloaded.loss.state_dict(), model.loss.state_dict())
@@ -122,7 +131,7 @@ def run(a):
                    for p in metrics}
         record = dict(seed=seed, metrics=metrics, actor_difference=differences,
                       same_actor_as_first_seed=same_as_first, changed_signals=changes,
-                      source_checkpoint_sha256=file_sha(origin/'ACTOR_0001.pt'),
+                      source_checkpoint_sha256=file_sha(origin/checkpoint),
                       bundle_manifest_sha256=file_sha(out/'bundle/MANIFEST.json'),
                       model_sha256=file_sha(out/'bundle/model.pt'),
                       exact_native_accounts=True, exact_reload_logits=True,
@@ -144,6 +153,8 @@ def run(a):
                   seconds=time.monotonic()-start, finished_at=now())
     write(a.output/'RESULT.json', result); seal(a.output, identity)
     progress('COMPLETE', qualified=result['qualified'])
+    if not result['qualified']:
+        raise ValueError('QUALIFY_DEVELOPMENT_GATE')
 
 
 if __name__ == '__main__':
@@ -151,6 +162,7 @@ if __name__ == '__main__':
     for key in ('parent', 'source', 'bundle', 'output'):
         parser.add_argument('--'+key, type=Path, required=True)
     parser.add_argument('--threads', type=int, choices=range(1, 9), default=2)
+    parser.add_argument('--profile', choices=['one_update', 'boundary_absolute8'], default='one_update')
     args = parser.parse_args()
     for source_path in (args.parent, args.source, args.bundle, ROOT):
         if args.output.resolve().is_relative_to(source_path.resolve()):

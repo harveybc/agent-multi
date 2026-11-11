@@ -5,6 +5,7 @@ import torch
 
 from app.actor_checkpoint_qualification import (
     actor_difference, development_gate, exact_state, exact_trace, one_update_point,
+    qualification_profile, saved_point,
 )
 
 
@@ -34,6 +35,21 @@ def test_exactly_one_saved_point(points):
 
 def test_saved_point():
     assert one_update_point([{'updates': 0}, {'updates': 1, 'tag': 'correct'}])['tag'] == 'correct'
+
+
+def test_boundary_profile_pins_endpoint_not_best_saved_metric():
+    source = dict(schema='opening_boundary_refinement.v1', primary_endpoint=8,
+                  points=[0, 1, 8], seeds=[19, 43], test_read=False)
+    assert qualification_profile(source, 'boundary_absolute8') == ('greedy_calibrated_native', 8)
+    points = [{'updates': 1, 'score': 100}, {'updates': 8, 'score': 1}]
+    assert saved_point(points, 8)['score'] == 1
+    for key, value in [('schema', 'other'), ('primary_endpoint', 1),
+                       ('points', [0, 8]), ('seeds', [43]), ('test_read', True)]:
+        with pytest.raises(ValueError, match='QUALIFY_PROFILE'):
+            qualification_profile(dict(source, **{key: value}), 'boundary_absolute8')
+    for bad in [[], [{'updates': 1}], [{'updates': 8}, {'updates': 8}]]:
+        with pytest.raises(ValueError, match='QUALIFY_SAVED_POINT'):
+            saved_point(bad, 8)
 
 
 def test_activity_and_validation_are_not_compensated_by_train():

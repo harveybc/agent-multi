@@ -10,6 +10,28 @@ def one_update_point(points):
     return matches[0]
 
 
+def qualification_profile(source, profile):
+    if profile == 'one_update':
+        return 'control', 1
+    if (profile != 'boundary_absolute8' or
+            source.get('schema') != 'opening_boundary_refinement.v1' or
+            source.get('primary_endpoint') != 8 or
+            source.get('points') != [0, 1, 8] or
+            source.get('seeds') != [19, 43] or
+            source.get('test_read') is not False):
+        raise ValueError('QUALIFY_PROFILE')
+    return 'greedy_calibrated_native', 8
+
+
+def saved_point(points, updates):
+    if updates == 1:
+        return one_update_point(points)
+    matches = [p for p in points if p['updates'] == updates]
+    if len(matches) != 1:
+        raise ValueError('QUALIFY_SAVED_POINT')
+    return matches[0]
+
+
 def actor_difference(reference, candidate):
     if reference.keys() != candidate.keys():
         raise ValueError('QUALIFY_STATE_KEYS')
