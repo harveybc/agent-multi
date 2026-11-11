@@ -49,3 +49,14 @@ def test_bad_support_rejected(mutation):
     if mutation=='nan':trace[1]['logits']=[0.,float('nan'),1.]
     if mutation=='wrong_year':trace[1]['year']=2021
     with pytest.raises(ValueError):expand_coverage(trace,anchors)
+def test_runner_rebuilds_selected_anchors_not_inherited_records():
+    import ast
+    from pathlib import Path
+
+    tree=ast.parse((Path(__file__).resolve().parents[2]/'tools/run_bounded_functional_actor.py').read_text())
+    calls=[n for n in ast.walk(tree) if isinstance(n,ast.Call)
+           and isinstance(n.func,ast.Name) and n.func.id=='rebuild_panel']
+    assert len(calls)==1
+    assert isinstance(calls[0].args[3],ast.Name)
+    assert calls[0].args[3].id=='anchors'
+

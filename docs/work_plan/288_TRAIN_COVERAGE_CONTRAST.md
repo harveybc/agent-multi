@@ -52,4 +52,9 @@ authenticated collection. No default long refinement or automatic promotion.
 An improved candidate requires saved-weight qualification before another
 changed-policy floating pass. If unchanged, do not repeat the same screen.
 
-Preflight:38 focused unit tests passed; scoped Ruff and whitespace checks passed.
+Preflight:39 focused unit tests passed; scoped Ruff and whitespace checks passed.
+The first execution was stopped before actor updates: selection expanded the
+anchors but the continuation call still received inherited records. The call
+now receives expanded anchors, with a routing regression test. Preserve the
+initial artifacts as interrupted, not results; execute the correction in a
+fresh `r2` runtime/output identity.

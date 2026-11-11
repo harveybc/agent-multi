@@ -115,7 +115,7 @@ def run(a):
         if (panel/'DONE.json').exists():
             verify_done(panel,cfg['identity']);records=read(panel/'RECORDS.json')
         else:
-            records=rebuild_panel(make,market.inputs,prepared_signals(baseline)[0],records,
+            records=rebuild_panel(make,market.inputs,prepared_signals(baseline)[0],anchors,
                                   lambda **kw:progress('NATIVE_TARGETS',**kw))
             write(panel/'RECORDS.json',records);seal(panel,cfg['identity'])
         validate_panel(records)
