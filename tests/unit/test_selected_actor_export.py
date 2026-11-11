@@ -38,14 +38,13 @@ def test_centered_roundoff_recorded_but_material_response_rejected():
 
 def test_market_projects_directly_from_full_support(monkeypatch,tmp_path):
     from types import SimpleNamespace
-    import tools.run_structural_sac_refit as tool
+    import app.selected_input_market as tool
     seen=[];chosen={'list':{'columns':['restored']}}
     monkeypatch.setattr(tool,'RecipeMarket',lambda config:SimpleNamespace(inputs='FULL_SUPPORT'))
     def project(inputs,rec):
         assert inputs=='FULL_SUPPORT' and rec is chosen
         seen.append(rec);return 'SELECTED'
     monkeypatch.setattr(tool,'project_inputs',project)
-    monkeypatch.setattr(tool,'read',lambda path:pytest.fail('must not project through old recipe'))
     result=tool.market_for(tmp_path,dict(inputs={},files={'SUPPORT_RECIPE.json':'hash'},
         effective={'architecture':{}}),selected_recipe=chosen)
     assert result.inputs=='SELECTED' and result.recipe is chosen and len(seen)==1

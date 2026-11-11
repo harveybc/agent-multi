@@ -16,7 +16,7 @@ from tools.run_cumulative_mask_pass import authenticate,make_expanded,load_selec
 from tools.run_discrete_curve_probe import configure,read,write
 from tools.run_bayesian_head_contrast import seal,verify_done
 from tools.run_refit_mask_pass import account_equal
-from tools.run_structural_sac_refit import market_for
+from app.selected_input_market import market_for
 from app.actor_checkpoint_qualification import exact_trace,exact_state
 
 

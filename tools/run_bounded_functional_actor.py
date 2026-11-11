@@ -28,7 +28,7 @@ from tools.run_bayesian_head_contrast import seal, verify_done
 from tools.run_discrete_curve_probe import configure, read, write, now
 from tools.run_operational_actor_transfer import save_canonical
 from tools.run_refit_mask_pass import account_equal
-from tools.run_structural_sac_refit import market_for
+from app.selected_input_market import market_for
 
 ROOT=Path(__file__).resolve().parents[1]
 

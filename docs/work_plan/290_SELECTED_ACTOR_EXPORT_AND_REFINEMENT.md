@@ -54,3 +54,7 @@ Export, refinement and reporting now project directly from authenticated full
 support to the selected recipe; the default old loader behavior is unchanged.
 A regression rejects traversal through the old subset. Use fresh r3 outputs;
 neither failed preflight produced a trained actor or replaces the saved selection.
+
+The r3 provenance check refused changing the historical loader pinned by289.
+Keep that loader byte-identical and place selected-recipe loading in a separate
+module; r4 is the export runtime. No historical receipt is relaxed or rewritten.
