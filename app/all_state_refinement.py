@@ -8,6 +8,13 @@ BOUNDARY = 1672531200000000000
 END = 1704067200000000000
 
 
+def qualification_identity(config):
+    from app.rl_subset import digest
+    if config.get('schema')!='one_update_actor_qualification.v1':
+        raise ValueError('ALL_STATE_QUALIFICATION_SCHEMA')
+    return digest(config)
+
+
 def choose_panel(rows, seed=281):
     groups = defaultdict(list)
     seen = set()

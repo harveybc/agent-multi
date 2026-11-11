@@ -1,9 +1,14 @@
-import copy
-
 import numpy as np
 import pytest
 
-from app.all_state_refinement import choose_panel, validate_panel, policy_effect
+from app.all_state_refinement import choose_panel, validate_panel, policy_effect, qualification_identity
+from app.rl_subset import digest
+
+
+def test_qualification_identity_is_configuration_digest_not_embedded_field():
+    config=dict(schema='one_update_actor_qualification.v1',seeds=[19,43])
+    assert qualification_identity(config)==digest(config)
+    with pytest.raises(ValueError):qualification_identity(dict(schema='other'))
 
 
 def record(position=0, role='fit'):

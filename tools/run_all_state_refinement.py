@@ -10,7 +10,7 @@ import pandas as pd
 import torch
 
 from app.actor_learning_diagnostics import clear_optimizer_memory
-from app.all_state_refinement import BOUNDARY, choose_panel, validate_panel, policy_effect
+from app.all_state_refinement import BOUNDARY, choose_panel, validate_panel, policy_effect, qualification_identity
 from app.action_ranking_contrast import target_loss
 from app.critic_fit_probe import fit_metrics, probe_q, set_scope
 from app.critic_refinement import begin_stage
@@ -43,7 +43,8 @@ def run(a):
         raise ValueError('ALL_STATE_GPU')
     parent=read(a.parent/'SPEC.json');verify_files(a.parent,parent['files'])
     qualification_config=read(a.bundle.parent.parent/'CONFIG.json')
-    verify_done(a.bundle.parent.parent,qualification_config['identity'])
+    qualification_id=qualification_identity(qualification_config)
+    verify_done(a.bundle.parent.parent,qualification_id)
     qualified=read(a.bundle.parent/'RESULT.json')
     model,_=load_bundle(a.bundle,'cuda');source_sha=file_sha(a.bundle/'model.pt')
     flags={n:p.requires_grad for n,p in model.loss.named_parameters()}
@@ -52,7 +53,7 @@ def run(a):
     if len(model.recipe['list']['columns'])!=69 or set(model.recipe['split']['periods'])!={'TRAIN','VALIDATION'}:
         raise ValueError('ALL_STATE_RECIPE')
     cfg=dict(schema='all_state_refinement.v1',parent_identity=parent['identity'],source_sha256=source_sha,
-        qualification_identity=qualification_config['identity'],
+        qualification_identity=qualification_id,
         recipe_identity=model.recipe['identity'],support_sha256=support_hash(market.inputs),
         effective=model.effective,seeds=[19,43],critics=['retained','greedy_calibrated'],entropy=['native','zero'],
         points=list(POINTS),critic_updates=4096,primary_endpoint=8,batch=128,anchor_seed=281,
