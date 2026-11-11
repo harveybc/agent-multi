@@ -2,6 +2,11 @@
 
 ## Execution Update: 2026-11-11
 
+[Gradient coupling283](283_ACTOR_GRADIENT_COUPLING.md) is approved: separate
+local categorical competition, self/cross-row shared-head projections and AdamW
+using authenticated282 artifacts plus a native-return diagnostic control.
+33 focused tests pass. No new trained checkpoint or live promotion.
+
 [Opening-boundary contrast282](282_OPENING_BOUNDARY_REFINEMENT.md) completed:
 executable NOP/BUY/SELL boundaries chosen before outcomes, paired absolute/gap
 critic calibration and shared-head gradient decomposition, with holding controls.
