@@ -2,6 +2,7 @@
 import argparse
 from collections import Counter
 import fcntl
+import hashlib
 from pathlib import Path
 import time
 
@@ -9,15 +10,16 @@ import numpy as np
 import pandas as pd
 import torch
 
-from app.actor_learning_diagnostics import clear_optimizer_memory
+from app.actor_learning_diagnostics import clear_optimizer_memory, actor_terms
 from app.all_state_refinement import BOUNDARY, choose_panel, validate_panel, policy_effect, qualification_identity
-from app.action_ranking_contrast import target_loss
+from app.action_ranking_contrast import target_loss, advantage_loss
 from app.critic_fit_probe import fit_metrics, probe_q, set_scope
 from app.critic_refinement import begin_stage
-from app.decision_attribution import continuation, state_view
+from app.decision_attribution import continuation, state_view, fork_env
 from app.frozen_recipe_inputs import file_sha
 from app.frozen_signal_masks import prepared_signals
 from app.operational_actor_transfer import actor_loss
+from app.opening_boundary_refinement import choose_boundary_panel, margin_derivatives
 from app.operational_opening_critic import emit_actor_reference
 from app.rl_subset import digest, project_inputs, support_hash
 from app.selected_warm_start import reset_learning_rng
@@ -38,6 +40,7 @@ INTERVALS={'fit':['2020-01-01','2023-01-01'], 'monitor':['2023-01-01','2024-01-0
 
 
 def run(a):
+    boundary=getattr(a,'opening_boundary',False)
     started=time.monotonic();configure(281);torch.backends.cudnn.allow_tf32=False
     if not torch.cuda.is_available() or torch.cuda.get_device_name()!=a.expected_device_name:
         raise ValueError('ALL_STATE_GPU')
@@ -60,6 +63,12 @@ def run(a):
         per_year={'flat':8,'long':4,'short':4},fit_intervals=INTERVALS,model_promoted=False,test_read=False,
         sources={str(p.relative_to(ROOT)):file_sha(p) for folder in ('app','agent_plugins','env_plugins','tools')
                  for p in (ROOT/folder).rglob('*.py')})
+    if boundary:
+        cfg.update(schema='opening_boundary_refinement.v1',
+            critics=['retained','greedy_calibrated','boundary_pairwise'],entropy=['native'],
+            panel='executable_logit_boundaries',anchor_seed=282,
+            per_year=dict(per_boundary_side=6,far_flat=4,restricted=2,long=4,short=4),
+            gradient_scope='shared FIT first minibatch; per-row Q/entropy/total margin derivatives')
     cfg['identity']=digest(cfg)
     if (a.output/'CONFIG.json').exists() and read(a.output/'CONFIG.json')!=cfg:
         raise ValueError('ALL_STATE_CONFIG')
@@ -94,10 +103,20 @@ def run(a):
                 row=int(env.rows[env.bar]);ts=int(market.inputs.row_ts_ns[row])
                 window_start=int(market.inputs.slot_ts_ns[row,0])
                 if role!='monitor' or window_start>=BOUNDARY:
-                    trace.append(dict(row=row,timestamp=ts,window_start=window_start,role=role,
-                        year=pd.Timestamp(ts,tz='UTC').year,position=0 if env.engine.pos is None else env.engine.pos.direction))
+                    rec=dict(row=row,timestamp=ts,window_start=window_start,role=role,
+                        year=pd.Timestamp(ts,tz='UTC').year,position=0 if env.engine.pos is None else env.engine.pos.direction)
+                    if boundary:
+                        before=state_view(env);opened=[]
+                        if not rec['position']:
+                            for action in (1,2):
+                                fork=fork_env(env);n=fork.engine.counts['entries'];fork.step(action)
+                                opened.append(fork.engine.counts['entries']>n)
+                            if state_view(env)!=before:raise ValueError('BOUNDARY_PROBE_PARENT_CHANGED')
+                        rec.update(allowed=bool(opened and all(opened)),logits=baseline[row].tolist())
+                    trace.append(rec)
                 env.step(int(signals[row]))
-        chosen=choose_panel(trace);wanted={r['timestamp']:r for r in chosen}
+        chosen=choose_boundary_panel(trace) if boundary else choose_panel(trace)
+        wanted={r['timestamp']:r for r in chosen}
         write(panel_root/'ANCHORS.json',chosen)
         write(panel_root/'COVERAGE.json',dict(available=dict(Counter(f"{r['year']}:{r['position']}" for r in trace)),
                                             selected=dict(Counter(f"{r['year']}:{r['position']}" for r in chosen))))
@@ -121,6 +140,10 @@ def run(a):
                 env.step(int(signals[row]))
         validate_panel(records);write(panel_root/'RECORDS.json',records);seal(panel_root,cfg['identity'])
     validate_panel(records)
+    if boundary:
+        for r in records:
+            if r['position']==0 and r['allowed']!=all(o['first_effect']['entries']>0 for o in r['outcomes'][1:]):
+                raise ValueError('BOUNDARY_EXECUTION_PROBE_MISMATCH')
     rows=np.array([r['row'] for r in records])
     if (not market.inputs.valid[rows].all() or not (market.inputs.period[rows]=='TRAIN').all()
             or not np.array_equal(market.inputs.row_ts_ns[rows],[r['timestamp'] for r in records])):
@@ -135,6 +158,10 @@ def run(a):
             ix=np.array([i for i,r in enumerate(records) if r['role']==role and r['position']==pos])
             if not len(ix):raise ValueError('ALL_STATE_MISSING_POSITION')
             masks[f'{role}:position{pos}']=ix
+        if boundary:
+            for kind in sorted({k for r in records for k in r['boundary_strata']}):
+                ix=np.array([i for i,r in enumerate(records) if r['role']==role and kind in r['boundary_strata']])
+                if len(ix):masks[f'{role}:{kind}']=ix
     fit=masks['fit']
     def diagnostic(m,z):
         with torch.no_grad():q=m.q_surfaces(x).cpu().numpy()
@@ -142,21 +169,23 @@ def run(a):
             actor_reward=policy_effect(baseline[rows[ix]],z[rows[ix]],targets[ix]),
             actor_cash=policy_effect(baseline[rows[ix]],z[rows[ix]],cash[ix])) for key,ix in masks.items()}
 
-    results=[]
-    for seed in cfg['seeds']:
-        fitted=a.output/f'critic_{seed}'
+    def fit_critic(seed,objective,fitted):
         if (fitted/'DONE.json').exists():verify_done(fitted,cfg['identity'])
         else:
             model,_=load_bundle(a.bundle,'cuda')
             init=begin_stage(model,'all_state_greedy',seed=seed)
             set_scope(model,'heads');fixed=frozen_state(model)
+            head_hash=hashlib.sha256()
+            for name,p in sorted(model.loss.named_parameters()):
+                if p.requires_grad:
+                    head_hash.update(name.encode());head_hash.update(p.detach().cpu().contiguous().numpy().tobytes())
             buffers={n:v.detach().clone() for n,v in model.loss.named_buffers()}
             reset_learning_rng(seed);schedule=covering_schedule(len(fit),cfg['critic_updates'],128,seed)
             curve=[]
             for step in range(cfg['critic_updates']+1):
                 if step:
                     ix=fit[schedule[step-1]];model.optimizer.zero_grad(set_to_none=True)
-                    loss=target_loss(probe_q(model,x[ix]),y[ix]);loss.backward()
+                    loss=(advantage_loss if objective=='pairwise' else target_loss)(probe_q(model,x[ix]),y[ix]);loss.backward()
                     torch.nn.utils.clip_grad_norm_(model.loss.parameters(),10.,error_if_nonfinite=True)
                     model.optimizer.step()
                 if step in (0,64,256,1024,2048,4096):
@@ -165,13 +194,23 @@ def run(a):
                         raise ValueError('ALL_STATE_CRITIC_BUFFER')
                     with torch.no_grad():q=model.q_surfaces(x).cpu().numpy()
                     curve.append(dict(updates=step,metrics={k:fit_metrics(q[:,ix],targets[ix]) for k,ix in masks.items()}))
-                    write(fitted/'CURVE.json',curve);progress('CRITIC_FIT',seed=seed,updates=step)
+                    write(fitted/'CURVE.json',curve);progress('CRITIC_FIT',seed=seed,objective=objective,updates=step)
             if not np.array_equal(logits(model)[market.inputs.valid],baseline[market.inputs.valid]):
                 raise ValueError('ALL_STATE_CRITIC_CHANGED_ACTOR')
             save_canonical(model,fitted/'MODEL.pt',flags)
-            write(fitted/'RESULT.json',dict(initialization=init,curve=curve,schedule_sha256=digest(schedule.tolist()),
+            write(fitted/'RESULT.json',dict(initialization=init,initial_head_sha256=head_hash.hexdigest(),
+                                          curve=curve,schedule_sha256=digest(schedule.tolist()),
                                           actor_unchanged=True,frozen_exact=True))
             seal(fitted,cfg['identity']);del model
+    results=[]
+    for seed in cfg['seeds']:
+        fitted=a.output/f'critic_{seed}'
+        fit_critic(seed,'absolute',fitted)
+        if boundary:
+            paired=a.output/f'critic_pairwise_{seed}';fit_critic(seed,'pairwise',paired)
+            left,right=read(fitted/'RESULT.json'),read(paired/'RESULT.json')
+            for key in ('initial_head_sha256','schedule_sha256'):
+                if left[key]!=right[key]:raise ValueError('BOUNDARY_UNPAIRED_CRITIC:'+key)
         schedule=covering_schedule(len(fit),8,128,seed)
         for critic in cfg['critics']:
             for entropy in cfg['entropy']:
@@ -180,6 +219,7 @@ def run(a):
                     verify_done(out,cfg['identity']);results.append(read(out/'RESULT.json'));continue
                 model,_=load_bundle(a.bundle,'cuda')
                 if critic=='greedy_calibrated':model.load(fitted/'MODEL.pt')
+                if critic=='boundary_pairwise':model.load(a.output/f'critic_pairwise_{seed}/MODEL.pt')
                 if not np.array_equal(logits(model)[market.inputs.valid],baseline[market.inputs.valid]):
                     raise ValueError('ALL_STATE_INITIAL_ACTOR')
                 set_arm(model,'actor_only');clear_optimizer_memory(model.optimizer);reset_learning_rng(seed)
@@ -190,6 +230,15 @@ def run(a):
                 buffers={n:v.detach().clone() for n,v in model.loss.named_buffers()}
                 with torch.no_grad():q=model.q_surfaces(x).min(0).values.detach()
                 alpha=model.loss.log_alpha.detach().exp()*(1 if entropy=='native' else 0)
+                if boundary:
+                    z=model.surfaces(x);ix=fit[schedule[0]]
+                    value,ent,_=actor_terms(z[ix],q[ix],alpha)
+                    derivatives=margin_derivatives(z,list(params.values()),value,ent)
+                    write(out/'GRADIENT.json',dict(derivatives,rows=rows.tolist(),
+                        timestamps=[r['timestamp'] for r in records],fit_batch_indices=ix.tolist(),
+                        baseline_logits=z.detach().cpu().tolist(),q=q.cpu().tolist(),
+                        native_reward=targets.tolist(),native_cash=cash.tolist()))
+                    del z,value,ent
                 points=[dict(updates=0,metrics=base_metrics,diagnostic=diagnostic(model,baseline))]
                 write(out/'EFFECTIVE.json',dict(alpha=float(alpha),critic=critic,entropy=entropy,
                     schedule_sha256=digest(schedule.tolist()),fit_rows=len(fit),trainable=list(params),
@@ -208,6 +257,10 @@ def run(a):
                         if not np.array_equal(cold_z[market.inputs.valid],z[market.inputs.valid]):
                             raise ValueError('ALL_STATE_COLD_LOGITS')
                         metrics=measure(z,out/f'actor_{step:04d}')
+                        if boundary:
+                            write(out/f'MARGINS_{step:04d}.json',dict(rows=rows.tolist(),
+                                logits=z[rows].tolist(),margin_delta=((z[rows,1:]-z[rows,:1])-
+                                    (baseline[rows,1:]-baseline[rows,:1])).tolist()))
                         cold_metrics=measure(cold_z,out/f'cold_{step:04d}')
                         for period in metrics:account_equal(metrics[period],cold_metrics[period])
                         del cold
@@ -252,6 +305,7 @@ def run(a):
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for name in ('parent','bundle','output'):p.add_argument('--'+name,type=Path,required=True)
+    p.add_argument('--opening-boundary',action='store_true')
     p.add_argument('--expected-device-name',required=True);a=p.parse_args()
     a.output.mkdir(parents=True,exist_ok=True)
     with (a.output/'worker.lock').open('a') as lock:

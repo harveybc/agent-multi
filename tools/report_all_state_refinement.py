@@ -7,6 +7,7 @@ import time
 import numpy as np
 
 from app.all_state_refinement import constant_controls, validate_panel
+from app.opening_boundary_refinement import pressure_summary
 from app.frozen_recipe_inputs import file_sha
 from app.rl_subset import digest, project_inputs, support_hash
 from app.structural_refit import verify_files
@@ -30,6 +31,7 @@ def run(a):
     if support_hash(market.inputs)!=cfg['support_sha256']:raise ValueError('ALL_STATE_REPORT_SUPPORT')
     config=dict(source=cfg['identity'],receipt_sha256=file_sha(a.source/'DONE.json'),
         code=file_sha(__file__),controls_code=file_sha(Path(__file__).resolve().parents[1]/'app/all_state_refinement.py'),
+        boundary_code=file_sha(Path(__file__).resolve().parents[1]/'app/opening_boundary_refinement.py'),
         endpoint=8,periods=['TRAIN','VALIDATION'],seeds=[19,43],
         scope='post-run symmetric diagnostic; no fitting, checkpoint selection or promotion')
     identity=digest(config)
@@ -48,6 +50,15 @@ def run(a):
             controls[f'{role}:{state}']=dict(n=len(ix),reward=constant_controls(
                 [[o['reward_return'] for o in records[i]['outcomes']] for i in ix])) if ix else dict(n=0)
     write(a.output/'CONSTANT_CONTROLS.json',controls)
+    gradients={}
+    if cfg['schema']=='opening_boundary_refinement.v1':
+        for arm in result['arms']:
+            folder=a.source/arm['arm'];g=read(folder/'GRADIENT.json')
+            if any(records[i]['role']!='fit' for i in g['fit_batch_indices']):
+                raise ValueError('BOUNDARY_REPORT_GRADIENT_LEAK')
+            gradients[arm['arm']]={str(step):pressure_summary(records,g,read(folder/f'MARGINS_{step:04d}.json'))
+                                   for step in (1,8)}
+        write(a.output/'BOUNDARY_GRADIENTS.json',gradients)
     risk=read(a.parent/'RISK.json');accounts=[]
     for arm in result['arms']:
         for period in config['periods']:
@@ -75,7 +86,7 @@ def run(a):
             write(out/'EVENTS.json',events);write(out/'SUMMARY.json',summary);seal(out,identity);accounts.append(summary)
     summary=dict(identity=identity,source_identity=cfg['identity'],reference=result['reference'],
         endpoints=[dict(arm=r['arm'],seed=r['seed'],critic=r['critic'],entropy=r['entropy'],**r['points'][-1]) for r in result['arms']],
-        accounts=accounts,constant_controls=controls,source_unchanged=True,model_promoted=False,
+        accounts=accounts,constant_controls=controls,boundary_gradients=gradients,source_unchanged=True,model_promoted=False,
         worker_seconds=result['seconds'],report_seconds=time.monotonic()-started)
     verify_done(a.source,cfg['identity'])
     write(a.output/'SUMMARY.json',summary);seal(a.output,identity)

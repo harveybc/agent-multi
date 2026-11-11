@@ -2,6 +2,12 @@
 
 ## Execution Update: 2026-11-11
 
+[Opening-boundary contrast282](282_OPENING_BOUNDARY_REFINEMENT.md) is approved:
+executable NOP/BUY/SELL boundaries chosen before outcomes, paired absolute/gap
+critic calibration and shared-head gradient decomposition, with holding controls.
+40 focused tests pass. Same69-input reference, full native accounts and automated
+endpoint attribution; no live promotion or feature-set change.
+
 [All-state refinement281](281_ALL_STATE_REFINEMENT_CONTRAST.md) is the approved
 next contrast: qualified69 frozen control versus retained/recalibrated critics
 and native/zero actor entropy, with long/short holding as well as flat anchors.
