@@ -90,7 +90,7 @@ def run(a):
 
     progress('REFERENCE_REPLAY')
     baseline, _ = emit(model, market.inputs)
-    expected_reference = (read(a.source/'RESULT.json')['reference'] if a.profile == 'bounded_critic8'
+    expected_reference = (read(a.source/'RESULT.json')['reference'] if a.profile in ('bounded_critic8', 'coverage_narrow8')
                           else read(a.source/'REFERENCE.json'))
     reference = accounts(baseline, a.output/'reference', expected_reference, a.source/'reference')
     ref_state = {n: v.detach().clone() for n, v in model.loss.state_dict().items()}
@@ -164,7 +164,7 @@ if __name__ == '__main__':
     for key in ('parent', 'source', 'bundle', 'output'):
         parser.add_argument('--'+key, type=Path, required=True)
     parser.add_argument('--threads', type=int, choices=range(1, 9), default=2)
-    parser.add_argument('--profile', choices=['one_update', 'boundary_absolute8', 'bounded_critic8'], default='one_update')
+    parser.add_argument('--profile', choices=['one_update', 'boundary_absolute8', 'bounded_critic8', 'coverage_narrow8'], default='one_update')
     args = parser.parse_args()
     for source_path in (args.parent, args.source, args.bundle, ROOT):
         if args.output.resolve().is_relative_to(source_path.resolve()):

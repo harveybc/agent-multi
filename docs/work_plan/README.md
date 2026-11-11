@@ -2,6 +2,10 @@
 
 ## Execution Update: 2026-11-11
 
+[Coverage actor selection289](289_COVERAGE_ACTOR_CUMULATIVE_SELECTION.md):
+qualify saved288 narrow19/43, then primary19 fresh cumulative deletion/return
+including all historical phase2 removals. No new learning or live changes.
+
 [TRAIN coverage288](288_TRAIN_COVERAGE_CONTRAST.md) completed:113 versus437 FIT
 anchors, two update seeds,32 accepted steps and eight exact account attributions.
 All four arms:TRAIN13.201812%,VAL14.693262%; broader coverage adds no economic
