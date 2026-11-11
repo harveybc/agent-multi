@@ -2,11 +2,13 @@
 
 ## Execution Update: 2026-11-11
 
-[Target versus geometry286](286_CRITIC_TARGET_VS_UPDATE_GEOMETRY.md) is the next
-bounded contrast: qualified285 source, current-policy TRAIN continuations versus
-frozen critic values, each with native AdamW and damped projection. Eight arms,
-two schedule seeds, fixed endpoint8; fresh targets at the151 frozen anchor times.
-No repeated feature pass, critic fit, TEST access or live promotion.
+[Target versus geometry286](286_CRITIC_TARGET_VS_UPDATE_GEOMETRY.md) completed:
+eight arms,132.10seconds plus21.94seconds reporting,462 authenticated files,
+64 accepted bounded steps and16 exact account attributions. Critic/AdamW both
+seeds: TRAIN12.708707%, VAL14.693262%; TRAIN gain31.656215USD from one skipped
+harmful BUY, validation unchanged. Native FIT targets prevent projection's VAL
+losses but do not eliminate harmful TRAIN actions.86/151 refreshed return targets
+changed with the new policy. Next qualify saved critic/AdamW19/43 before floating.
 
 [Absolute actor qualification and cumulative selection285](285_ABSOLUTE_ACTOR_CUMULATIVE_SELECTION.md)
 completed: saved282 endpoint8 qualifies both seeds in31.36seconds; primary19

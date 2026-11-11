@@ -1,0 +1,166 @@
+{
+  "source_identity": "d700a518254a5962841c85de578bcdf0259516dc9aaaff6a3a504cf026692c43",
+  "arms": [
+    {
+      "arm": "critic_adamw_19",
+      "target_kind": "critic",
+      "fit_only_exact": true,
+      "accepted_steps": 8,
+      "minimum_fraction": 0.25,
+      "maximum_fraction": 0.25,
+      "strict_loss_descent": true,
+      "last_budget": {
+        "max_kl": 0.00013088728469009712,
+        "mean_kl": 4.9399749933166255e-06,
+        "relative_parameter_drift": 0.0004859457039170407,
+        "step_margin_rms": 0.0010885295142359548
+      },
+      "cold_exact": true,
+      "frozen_exact": true
+    },
+    {
+      "arm": "return_adamw_19",
+      "target_kind": "native_fit",
+      "fit_only_exact": true,
+      "accepted_steps": 8,
+      "minimum_fraction": 0.5,
+      "maximum_fraction": 0.5,
+      "strict_loss_descent": true,
+      "last_budget": {
+        "max_kl": 0.00033962364374165617,
+        "mean_kl": 9.484649328865027e-06,
+        "relative_parameter_drift": 0.000859590815573939,
+        "step_margin_rms": 0.0015885394781442654
+      },
+      "cold_exact": true,
+      "frozen_exact": true
+    },
+    {
+      "arm": "critic_project_19",
+      "target_kind": "critic",
+      "fit_only_exact": true,
+      "accepted_steps": 8,
+      "minimum_fraction": 1.0,
+      "maximum_fraction": 1.0,
+      "strict_loss_descent": true,
+      "last_budget": {
+        "max_kl": 0.0006994256814010363,
+        "mean_kl": 2.6328486086433887e-05,
+        "relative_parameter_drift": 0.0028906828571086873,
+        "step_margin_rms": 0.001649308717091154
+      },
+      "cold_exact": true,
+      "frozen_exact": true
+    },
+    {
+      "arm": "return_project_19",
+      "target_kind": "native_fit",
+      "fit_only_exact": true,
+      "accepted_steps": 8,
+      "minimum_fraction": 1.0,
+      "maximum_fraction": 1.0,
+      "strict_loss_descent": true,
+      "last_budget": {
+        "max_kl": 0.00021571085904292797,
+        "mean_kl": 1.0645602944078116e-05,
+        "relative_parameter_drift": 0.0031013039258202778,
+        "step_margin_rms": 0.0010408729211940412
+      },
+      "cold_exact": true,
+      "frozen_exact": true
+    },
+    {
+      "arm": "critic_adamw_43",
+      "target_kind": "critic",
+      "fit_only_exact": true,
+      "accepted_steps": 8,
+      "minimum_fraction": 0.25,
+      "maximum_fraction": 0.25,
+      "strict_loss_descent": true,
+      "last_budget": {
+        "max_kl": 0.00012292631322033572,
+        "mean_kl": 4.888598699045684e-06,
+        "relative_parameter_drift": 0.0004814899706893231,
+        "step_margin_rms": 0.0010795067968780178
+      },
+      "cold_exact": true,
+      "frozen_exact": true
+    },
+    {
+      "arm": "return_adamw_43",
+      "target_kind": "native_fit",
+      "fit_only_exact": true,
+      "accepted_steps": 8,
+      "minimum_fraction": 0.5,
+      "maximum_fraction": 0.5,
+      "strict_loss_descent": true,
+      "last_budget": {
+        "max_kl": 0.0003994559890646808,
+        "mean_kl": 1.0327618854693744e-05,
+        "relative_parameter_drift": 0.0008985293104557481,
+        "step_margin_rms": 0.0016201450751661538
+      },
+      "cold_exact": true,
+      "frozen_exact": true
+    },
+    {
+      "arm": "critic_project_43",
+      "target_kind": "critic",
+      "fit_only_exact": true,
+      "accepted_steps": 8,
+      "minimum_fraction": 1.0,
+      "maximum_fraction": 1.0,
+      "strict_loss_descent": true,
+      "last_budget": {
+        "max_kl": 0.0005349067003347259,
+        "mean_kl": 2.6808472358532647e-05,
+        "relative_parameter_drift": 0.002938688821775178,
+        "step_margin_rms": 0.0016146474893739024
+      },
+      "cold_exact": true,
+      "frozen_exact": true
+    },
+    {
+      "arm": "return_project_43",
+      "target_kind": "native_fit",
+      "fit_only_exact": true,
+      "accepted_steps": 8,
+      "minimum_fraction": 1.0,
+      "maximum_fraction": 1.0,
+      "strict_loss_descent": true,
+      "last_budget": {
+        "max_kl": 0.0002706636842422106,
+        "mean_kl": 1.0944506395155713e-05,
+        "relative_parameter_drift": 0.0031022290506708392,
+        "step_margin_rms": 0.0010062028911128032
+      },
+      "cold_exact": true,
+      "frozen_exact": true
+    }
+  ],
+  "all_targets_fit_only": true,
+  "same_predicted_q_all_arms": true,
+  "same_schedule_within_seed": true,
+  "accepted_steps": 64,
+  "fresh_positions_changed": 0,
+  "fresh_native_targets_changed": 86,
+  "target_diagnostics": {
+    "fit": {
+      "n": 113,
+      "critic_rmse": 0.5508878814863268,
+      "critic_bias": -0.06211755501565174,
+      "critic_greedy_native_regret": 0.16348067829421756,
+      "critic_greedy_native_optimal_count": 56
+    },
+    "monitor": {
+      "n": 38,
+      "critic_rmse": 0.6244312412824209,
+      "critic_bias": 0.17493484762249045,
+      "critic_greedy_native_regret": 0.21144046780721912,
+      "critic_greedy_native_optimal_count": 15
+    }
+  },
+  "account_attributions": 16,
+  "max_reconciliation_error": 0.0,
+  "scope": "post-run paired-target and schedule authentication; no selection or fitting"
+}
