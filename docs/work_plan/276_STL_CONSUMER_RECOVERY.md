@@ -88,6 +88,19 @@ For USDCHF2022-05-19T21:00Z:
 Sources: [FXCM candle format](https://github.com/fxcm/MarketData/blob/master/CandleData/README.md),
 [Forex Tester download contract](https://desktop.forextester.com/data/datasources).
 
+### Download failure correction, 2026-11-11
+
+The owner reported that the offered USDCHF download returns404. Independently
+confirmed at09:46:13UTC: HEAD on
+`https://desktop.forextester.com/templates/data/files/USDCHF.zip` returns
+HTTP404. The data page still lists USDCHF; that listing is not proof that its
+archive is downloadable. The manual owner download request is withdrawn.
+This is an unavailable provider route, not an owner approval or action blocker.
+No alternate Forex Tester URL has been verified. The next source task remains
+qualifying the already recovered Forexite observations' quote side and minute
+timestamp semantics, or obtaining another documented real source. The404 does
+not justify admitting those observations without qualification.
+
 ## Warmup and release conditions
 
 Real recovered EURUSD history contains 6226 observations from 2019-01-01T22:00Z
