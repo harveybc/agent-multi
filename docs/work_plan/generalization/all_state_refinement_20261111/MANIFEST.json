@@ -1,0 +1,11 @@
+{
+  "worker_identity": "e0697e9f9fca6b3263bbd7fb85cfcc1bcf3a35026905253f4ade28d99213a8d4",
+  "report_identity": "5a4b3c0d65597e24e60bdd43ab7a2b243b76ea7501ed4004ee7e52b7346f16f7",
+  "worker_receipt_sha256": "648cfd219da82d40ae923422c73824cbcd5be1abea752aa47d5a6df94f7aa438",
+  "report_receipt_sha256": "b6721b2c7d8c529b45ad2137f9c97a94ee4e82c667415c15c8d3ae2ee0f87662",
+  "files": {
+    "SUMMARY.json": "d3f9f4e277a3ab360ef6f8f5ac99d6e95eace3769b725a22255574c099e43485",
+    "CONSTANT_CONTROLS.json": "45eb8bccccc3e7708461f41cb011efe17a4c953551a8664ff20bad1b8962c71e",
+    "RETURNS.png": "fa40f18aa9c0aa08b0ac4b5565f9ac926a92bbe6dd417b15a9f178260f61feb4"
+  }
+}

@@ -6,8 +6,11 @@
 next contrast: qualified69 frozen control versus retained/recalibrated critics
 and native/zero actor entropy, with long/short holding as well as flat anchors.
 Fit2020-2022, monitor2023, full native TRAIN/VALIDATION accounts; no promotion.
-31 focused tests pass before launch. A sequential queue includes cold replay
-and chronological TRAIN profit attribution of the fixed endpoints.
+Completed: eight arms in271.39seconds,471 authenticated files,33 focused tests.
+An independent52.68second report attributes all16 TRAIN/VAL endpoint differences
+exactly. Calibrated seed43 reaches VAL14.69326% versus14.59109%, but TRAIN falls
+0.01972pp; the gain comes from avoiding one harmful early close. Seed19 does not
+replicate it. Preserved candidates only; full findings and next gate are in281.
 
 [Cumulative pass280](280_ONE_UPDATE_CUMULATIVE_SELECTION.md) completed on the
 qualified one-update actor:69 ->69 ->69 inputs,28 groups,112 fresh evaluations

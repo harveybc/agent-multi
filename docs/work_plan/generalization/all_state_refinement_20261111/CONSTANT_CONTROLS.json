@@ -1,0 +1,172 @@
+{
+  "fit:all": {
+    "n": 48,
+    "reward": {
+      "BUY": {
+        "maximum_regret": 1.0304967057982202,
+        "mean_regret": 0.21984796544776555
+      },
+      "NOP": {
+        "maximum_regret": 0.8386516937275745,
+        "mean_regret": 0.24266434003349643
+      },
+      "SELL": {
+        "maximum_regret": 0.9856944380429851,
+        "mean_regret": 0.2611142248532125
+      }
+    }
+  },
+  "fit:flat_allowed": {
+    "n": 21,
+    "reward": {
+      "BUY": {
+        "maximum_regret": 1.0304967057982202,
+        "mean_regret": 0.3710504459598513
+      },
+      "NOP": {
+        "maximum_regret": 0.4874679602440252,
+        "mean_regret": 0.35573899897217565
+      },
+      "SELL": {
+        "maximum_regret": 0.9856944380429851,
+        "mean_regret": 0.3903863603293286
+      }
+    }
+  },
+  "fit:flat_restricted": {
+    "n": 3,
+    "reward": {
+      "BUY": {
+        "maximum_regret": 0.0,
+        "mean_regret": 0.0
+      },
+      "NOP": {
+        "maximum_regret": 0.0,
+        "mean_regret": 0.0
+      },
+      "SELL": {
+        "maximum_regret": 0.0,
+        "mean_regret": 0.0
+      }
+    }
+  },
+  "fit:long": {
+    "n": 12,
+    "reward": {
+      "BUY": {
+        "maximum_regret": 0.8386516937275745,
+        "mean_regret": 0.1373317855547059
+      },
+      "NOP": {
+        "maximum_regret": 0.8386516937275745,
+        "mean_regret": 0.1373317855547059
+      },
+      "SELL": {
+        "maximum_regret": 0.4161298529534899,
+        "mean_regret": 0.1504984424585529
+      }
+    }
+  },
+  "fit:short": {
+    "n": 12,
+    "reward": {
+      "BUY": {
+        "maximum_regret": 0.37533597476499714,
+        "mean_regret": 0.0927217958066165
+      },
+      "NOP": {
+        "maximum_regret": 0.70798019552523,
+        "mean_regret": 0.21078232637797226
+      },
+      "SELL": {
+        "maximum_regret": 0.70798019552523,
+        "mean_regret": 0.21078232637797226
+      }
+    }
+  },
+  "monitor:all": {
+    "n": 16,
+    "reward": {
+      "BUY": {
+        "maximum_regret": 0.44007150507621073,
+        "mean_regret": 0.08834968117553174
+      },
+      "NOP": {
+        "maximum_regret": 0.6105145927810371,
+        "mean_regret": 0.22649428353053858
+      },
+      "SELL": {
+        "maximum_regret": 0.8945876357376037,
+        "mean_regret": 0.33017125898528343
+      }
+    }
+  },
+  "monitor:flat_allowed": {
+    "n": 6,
+    "reward": {
+      "BUY": {
+        "maximum_regret": 0.24930002891642128,
+        "mean_regret": 0.041550004819403547
+      },
+      "NOP": {
+        "maximum_regret": 0.41970621880865505,
+        "mean_regret": 0.3022887665811023
+      },
+      "SELL": {
+        "maximum_regret": 0.8945876357376037,
+        "mean_regret": 0.6744494086172713
+      }
+    }
+  },
+  "monitor:flat_restricted": {
+    "n": 2,
+    "reward": {
+      "BUY": {
+        "maximum_regret": 0.0,
+        "mean_regret": 0.0
+      },
+      "NOP": {
+        "maximum_regret": 0.0,
+        "mean_regret": 0.0
+      },
+      "SELL": {
+        "maximum_regret": 0.0,
+        "mean_regret": 0.0
+      }
+    }
+  },
+  "monitor:long": {
+    "n": 4,
+    "reward": {
+      "BUY": {
+        "maximum_regret": 0.44007150507621073,
+        "mean_regret": 0.2324059244587915
+      },
+      "NOP": {
+        "maximum_regret": 0.44007150507621073,
+        "mean_regret": 0.2324059244587915
+      },
+      "SELL": {
+        "maximum_regret": 0.3554914528940698,
+        "mean_regret": 0.08887286322351745
+      }
+    }
+  },
+  "monitor:short": {
+    "n": 4,
+    "reward": {
+      "BUY": {
+        "maximum_regret": 0.23467117205692062,
+        "mean_regret": 0.058667793014230155
+      },
+      "NOP": {
+        "maximum_regret": 0.6105145927810371,
+        "mean_regret": 0.2201380597917093
+      },
+      "SELL": {
+        "maximum_regret": 0.6105145927810371,
+        "mean_regret": 0.2201380597917093
+      }
+    }
+  }
+}
