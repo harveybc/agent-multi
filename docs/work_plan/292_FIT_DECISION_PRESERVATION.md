@@ -57,3 +57,14 @@ not retrained. Sequential GPU arms then symmetric account attribution on CPU.
 Protection applies only to sampled FIT continuations of the source policy, not
 to every market state or arbitrary later policy. Preserved margins alone do not
 guarantee account profit or generalization. No TEST access or live promotion.
+
+## Baseline Preflight Correction
+
+The first run stopped before accepting any update. Fixing the guard floor before
+setting actor-only trainability gave a different GPU kernel path: max logit
+change9.536743e-7, zero action changes. Loading the calibrated critic under the
+same actor-only scope gives exactly zero difference. Set actor-only scope before
+capturing the source panel and require bitwise-equal panel logits after each
+critic load. Compute constraint Jacobians on the same full panel, not a smaller
+protected-only batch. Keep the1e-7 preservation tolerance unchanged. The failed
+run is retained; the corrected runtime and output have new identities.

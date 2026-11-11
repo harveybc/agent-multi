@@ -56,6 +56,8 @@ def run(a):
         raise ValueError('PRESERVE_PANEL')
     x=torch.tensor(market.inputs.windows[rows],device='cuda')
     native=torch.tensor([[o['reward_return'] for o in r['outcomes']] for r in records],device='cuda',dtype=torch.double)
+    # Match trainability/kernel dispatch before fixing a sub-micro logit floor.
+    set_arm(model,'actor_only')
     with torch.no_grad():source_z=model.surfaces(x).detach()
     protected,actions=protected_actions(source_z,native,records)
     if not len(protected):raise ValueError('PRESERVE_NO_STRICT_FIT_OPTIMUM')
@@ -109,6 +111,9 @@ def run(a):
             if not np.array_equal(logits(model)[market.inputs.valid],baseline[market.inputs.valid]):
                 raise ValueError('PRESERVE_ACTOR_START')
             set_arm(model,'actor_only');clear_optimizer_memory(model.optimizer);reset_learning_rng(seed)
+            with torch.no_grad():initial_z=model.surfaces(x).detach()
+            if not torch.equal(initial_z,source_z):raise ValueError('PRESERVE_PANEL_START')
+            write(out/'INITIAL_GUARD.json',preservation(initial_z,source_margins,protected,actions))
             named=[(n,p) for n,p in model.loss.named_parameters() if p.requires_grad]
             if len(named)!=4 or any('.head.' not in n or not n.startswith('actor_') for n,_ in named):
                 raise ValueError('PRESERVE_SCOPE')
@@ -137,9 +142,8 @@ def run(a):
                     for p,old in zip(params,before):p.copy_(old)
                 projection=dict(success=True,nonzero=True,mode='unprojected')
                 if mode=='project_guard':
-                    z=model.surfaces(x[protected])
-                    localrows=torch.arange(len(protected),device='cuda')
-                    current=margins(z.double(),localrows,actions)
+                    z=model.surfaces(x)
+                    current=margins(z.double(),protected,actions)
                     jac=torch.stack([flat(torch.autograd.grad(value,params,retain_graph=True))
                                      for value in current.flatten()])
                     lower=(source_margins-current.detach()).flatten()
