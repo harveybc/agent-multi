@@ -1,0 +1,12 @@
+{
+  "worker_identity": "ed6134dc0327bf1ad630166d23765fc430304a1b3078edd173c1e9e08abe1846",
+  "report_identity": "0173d69d8fd1a000e0f723a08e68b67651b5d102fdab9cae8802f7dc016d612a",
+  "worker_receipt_sha256": "ab93ab6da4b1049735e94e29e25762b6fa9e4aec10df8a0eebf17ef0b8c1c20b",
+  "report_receipt_sha256": "e977231c19b20e9b9f127a218f843d2d5298d34086db5951017e5326d9bbe75f",
+  "files": {
+    "CONSTANT_CONTROLS.json": "de0fe8056ed9b0b7a0c59928df37d957008d444f65e6ede0e013a35f07198c78",
+    "RETURNS.png": "44f2974904473db0002f9ed80b2ecec64a4f1ae6c1f0ec47c59473f6c2642777",
+    "SUMMARY.json": "885bd9f7107f07764cd2eb216abfcc6b152a92b2140193b01d53fe4c94918c08",
+    "UPDATE_STEPS.json": "7cfeeb3e1204ab1fa26be53f2c400fac54bc693e3bb4d2f092868489a1fd32cb"
+  }
+}

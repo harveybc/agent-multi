@@ -2,11 +2,15 @@
 
 ## Execution Update: 2026-11-11
 
-[Bounded functional contrast284](284_BOUNDED_FUNCTIONAL_ACTOR.md) is approved:
+[Bounded functional contrast284](284_BOUNDED_FUNCTIONAL_ACTOR.md) completed:
 same sealed absolute critics, two seeds, bounded native head AdamW versus final
 layer only versus damped functional projection. FIT-only common drift gates,
 eight updates and full native accounts; historical unbounded control reused.
 40 focused tests and scoped lint pass. No live promotion or input change.
+Six arms in74.20seconds plus23.53seconds reporting;344 authenticated files and
+12 exact account attributions. Projection follows requested FIT changes but
+does not beat prior282 in both periods. Keep282 absolute19/43; next qualify its
+saved actor for changed-policy cumulative phase2 selection, not another refit.
 
 [Gradient coupling283](283_ACTOR_GRADIENT_COUPLING.md) completed: separate
 local categorical competition, self/cross-row shared-head projections and AdamW

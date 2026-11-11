@@ -1,0 +1,1357 @@
+{
+  "worker_identity": "ed6134dc0327bf1ad630166d23765fc430304a1b3078edd173c1e9e08abe1846",
+  "arms": [
+    {
+      "accepted_steps": 8,
+      "arm": "bounded_adamw_19",
+      "cold_exact": true,
+      "critic": "greedy_calibrated",
+      "entropy": "native",
+      "frozen_exact": true,
+      "mode": "bounded_adamw",
+      "model_promoted": false,
+      "seed": 19,
+      "steps": [
+        {
+          "accepted": true,
+          "attempts": 3,
+          "fraction": 0.25,
+          "loss_after": -0.15639947138288837,
+          "loss_before": -0.15639288414906652,
+          "metrics": {
+            "max_kl": 2.137398086055368e-06,
+            "mean_kl": 8.268942172439225e-08,
+            "relative_parameter_drift": 6.704713371294626e-05,
+            "step_margin_rms": 0.00113937956589252
+          },
+          "projection": {
+            "gradient_norm": 0.03580166772007942
+          },
+          "updates": 1
+        },
+        {
+          "accepted": true,
+          "attempts": 3,
+          "fraction": 0.25,
+          "loss_after": -0.16042874260616125,
+          "loss_before": -0.1604224412321071,
+          "metrics": {
+            "max_kl": 8.53539495932398e-06,
+            "mean_kl": 3.2766399694360926e-07,
+            "relative_parameter_drift": 0.00013059914821557205,
+            "step_margin_rms": 0.0011436246160730543
+          },
+          "projection": {
+            "gradient_norm": 0.03475719317793846
+          },
+          "updates": 2
+        },
+        {
+          "accepted": true,
+          "attempts": 3,
+          "fraction": 0.25,
+          "loss_after": -0.15501205295817982,
+          "loss_before": -0.1550039785851297,
+          "metrics": {
+            "max_kl": 1.8992810491859618e-05,
+            "mean_kl": 7.344524752636982e-07,
+            "relative_parameter_drift": 0.00019264337815497616,
+            "step_margin_rms": 0.0011268156175750913
+          },
+          "projection": {
+            "gradient_norm": 0.046255212277173996
+          },
+          "updates": 3
+        },
+        {
+          "accepted": true,
+          "attempts": 3,
+          "fraction": 0.25,
+          "loss_after": -0.17051993368968235,
+          "loss_before": -0.17051103302759732,
+          "metrics": {
+            "max_kl": 3.336302300984209e-05,
+            "mean_kl": 1.2797159305663349e-06,
+            "relative_parameter_drift": 0.0002525026986980517,
+            "step_margin_rms": 0.0010724969255644914
+          },
+          "projection": {
+            "gradient_norm": 0.05629590526223183
+          },
+          "updates": 4
+        },
+        {
+          "accepted": true,
+          "attempts": 3,
+          "fraction": 0.25,
+          "loss_after": -0.13992919339998094,
+          "loss_before": -0.13992554331700666,
+          "metrics": {
+            "max_kl": 4.905195307476238e-05,
+            "mean_kl": 1.938801238221241e-06,
+            "relative_parameter_drift": 0.0003092233626070293,
+            "step_margin_rms": 0.0010278217306789734
+          },
+          "projection": {
+            "gradient_norm": 0.026981059461832047
+          },
+          "updates": 5
+        },
+        {
+          "accepted": true,
+          "attempts": 3,
+          "fraction": 0.25,
+          "loss_after": -0.1323491417133597,
+          "loss_before": -0.13234296034173043,
+          "metrics": {
+            "max_kl": 6.816392159074381e-05,
+            "mean_kl": 2.7422545150802397e-06,
+            "relative_parameter_drift": 0.0003668718777068946,
+            "step_margin_rms": 0.0010420906549573343
+          },
+          "projection": {
+            "gradient_norm": 0.037737879902124405
+          },
+          "updates": 6
+        },
+        {
+          "accepted": true,
+          "attempts": 3,
+          "fraction": 0.25,
+          "loss_after": -0.19417526761805984,
+          "loss_before": -0.19416574341781476,
+          "metrics": {
+            "max_kl": 9.176837752777412e-05,
+            "mean_kl": 3.7150508574954683e-06,
+            "relative_parameter_drift": 0.0004260562562283135,
+            "step_margin_rms": 0.0010750685383462862
+          },
+          "projection": {
+            "gradient_norm": 0.05601774528622627
+          },
+          "updates": 7
+        },
+        {
+          "accepted": true,
+          "attempts": 3,
+          "fraction": 0.25,
+          "loss_after": -0.1554198990209145,
+          "loss_before": -0.15541393893786482,
+          "metrics": {
+            "max_kl": 0.0001189101481829922,
+            "mean_kl": 4.830219310515762e-06,
+            "relative_parameter_drift": 0.000485235266069157,
+            "step_margin_rms": 0.001071078649748234
+          },
+          "projection": {
+            "gradient_norm": 0.034972433000802994
+          },
+          "updates": 8
+        }
+      ]
+    },
+    {
+      "accepted_steps": 8,
+      "arm": "last_layer_19",
+      "cold_exact": true,
+      "critic": "greedy_calibrated",
+      "entropy": "native",
+      "frozen_exact": true,
+      "mode": "last_layer",
+      "model_promoted": false,
+      "seed": 19,
+      "steps": [
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.1563949779569851,
+          "loss_before": -0.15639288414906652,
+          "metrics": {
+            "max_kl": 2.484526416239997e-07,
+            "mean_kl": 1.381441110428456e-08,
+            "relative_parameter_drift": 3.381140319779145e-05,
+            "step_margin_rms": 0.0005554320780292423
+          },
+          "projection": {
+            "gradient_norm": 0.015716923400759697
+          },
+          "updates": 1
+        },
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.16041969567517309,
+          "loss_before": -0.16041792835254415,
+          "metrics": {
+            "max_kl": 9.10148261523084e-07,
+            "mean_kl": 5.369059486795523e-08,
+            "relative_parameter_drift": 6.645536935903256e-05,
+            "step_margin_rms": 0.0005586527985725663
+          },
+          "projection": {
+            "gradient_norm": 0.013914867304265499
+          },
+          "updates": 2
+        },
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.1549960814496883,
+          "loss_before": -0.15499333420965772,
+          "metrics": {
+            "max_kl": 2.020681815643804e-06,
+            "mean_kl": 1.198661640896727e-07,
+            "relative_parameter_drift": 9.931235107051122e-05,
+            "step_margin_rms": 0.0005536901216827202
+          },
+          "projection": {
+            "gradient_norm": 0.021428853273391724
+          },
+          "updates": 3
+        },
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.17049545596728352,
+          "loss_before": -0.17049264755742452,
+          "metrics": {
+            "max_kl": 3.531099910608843e-06,
+            "mean_kl": 2.0985981133400423e-07,
+            "relative_parameter_drift": 0.00013153425127608104,
+            "step_margin_rms": 0.0005407444289633073
+          },
+          "projection": {
+            "gradient_norm": 0.023746198043227196
+          },
+          "updates": 4
+        },
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.13991749069652148,
+          "loss_before": -0.13991610944122768,
+          "metrics": {
+            "max_kl": 5.229198337485799e-06,
+            "mean_kl": 3.1906413678537606e-07,
+            "relative_parameter_drift": 0.0001617012865920756,
+            "step_margin_rms": 0.00052476544640169
+          },
+          "projection": {
+            "gradient_norm": 0.012604872696101665
+          },
+          "updates": 5
+        },
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.1323217158087495,
+          "loss_before": -0.13231988914748605,
+          "metrics": {
+            "max_kl": 7.1882304207950606e-06,
+            "mean_kl": 4.503405044762423e-07,
+            "relative_parameter_drift": 0.0001920479676305834,
+            "step_margin_rms": 0.0005269050681898603
+          },
+          "projection": {
+            "gradient_norm": 0.015029252506792545
+          },
+          "updates": 6
+        },
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.19412772088884406,
+          "loss_before": -0.19412486456981548,
+          "metrics": {
+            "max_kl": 9.565509814375402e-06,
+            "mean_kl": 6.085159357156434e-07,
+            "relative_parameter_drift": 0.00022338764875625848,
+            "step_margin_rms": 0.0005374562759711154
+          },
+          "projection": {
+            "gradient_norm": 0.022763952612876892
+          },
+          "updates": 7
+        },
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.15538662277673282,
+          "loss_before": -0.15538475227273374,
+          "metrics": {
+            "max_kl": 1.2301217494967934e-05,
+            "mean_kl": 7.89930821297786e-07,
+            "relative_parameter_drift": 0.00025463360833307026,
+            "step_margin_rms": 0.0005344200389822774
+          },
+          "projection": {
+            "gradient_norm": 0.014940373599529266
+          },
+          "updates": 8
+        }
+      ]
+    },
+    {
+      "accepted_steps": 8,
+      "arm": "function_project_19",
+      "cold_exact": true,
+      "critic": "greedy_calibrated",
+      "entropy": "native",
+      "frozen_exact": true,
+      "mode": "function_project",
+      "model_promoted": false,
+      "seed": 19,
+      "steps": [
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.1564174484845743,
+          "loss_before": -0.15639288414906652,
+          "metrics": {
+            "max_kl": 1.392574334637027e-05,
+            "mean_kl": 4.97303278829345e-07,
+            "relative_parameter_drift": 0.0004106038591052224,
+            "step_margin_rms": 0.0016276426494937163
+          },
+          "projection": {
+            "actual_scaled_target_rmse": 0.0007591369239368817,
+            "actual_target_cosine": 0.9371162845420031,
+            "damping": 0.2433932577121683,
+            "residual_norm": 0.0010404309853921548,
+            "sample_unique": 113,
+            "target_norm": 0.0028284271247461905,
+            "zero_sensitivity": false
+          },
+          "updates": 1
+        },
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.1604622764190011,
+          "loss_before": -0.1604388842078226,
+          "metrics": {
+            "max_kl": 5.5883763792508034e-05,
+            "mean_kl": 1.9483678973157563e-06,
+            "relative_parameter_drift": 0.000781436726241282,
+            "step_margin_rms": 0.0016340259278794273
+          },
+          "projection": {
+            "actual_scaled_target_rmse": 0.0008256124390927112,
+            "actual_target_cosine": 0.9322343292289225,
+            "damping": 0.28212730536430136,
+            "residual_norm": 0.0011044409383819303,
+            "sample_unique": 103,
+            "target_norm": 0.0028284271247461905,
+            "zero_sensitivity": false
+          },
+          "updates": 2
+        },
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.15507314290742555,
+          "loss_before": -0.15504464565803808,
+          "metrics": {
+            "max_kl": 0.0001194194395900362,
+            "mean_kl": 4.239308616824847e-06,
+            "relative_parameter_drift": 0.0011273635268107454,
+            "step_margin_rms": 0.0015476581732104667
+          },
+          "projection": {
+            "actual_scaled_target_rmse": 0.0006625213028542111,
+            "actual_target_cosine": 0.9452117408392481,
+            "damping": 0.264002892311872,
+            "residual_norm": 0.000911697601315581,
+            "sample_unique": 96,
+            "target_norm": 0.0028284271247461905,
+            "zero_sensitivity": false
+          },
+          "updates": 3
+        },
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.1705939347416435,
+          "loss_before": -0.17056424812702584,
+          "metrics": {
+            "max_kl": 0.00022271998039432618,
+            "mean_kl": 6.907714598491314e-06,
+            "relative_parameter_drift": 0.0013919262813188139,
+            "step_margin_rms": 0.0015303665061769565
+          },
+          "projection": {
+            "actual_scaled_target_rmse": 0.0006943593912503697,
+            "actual_target_cosine": 0.9380379042624211,
+            "damping": 0.27655482489301303,
+            "residual_norm": 0.0009258911698108545,
+            "sample_unique": 95,
+            "target_norm": 0.0028284271247461896,
+            "zero_sensitivity": false
+          },
+          "updates": 4
+        },
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.1399972460217133,
+          "loss_before": -0.13997471049768997,
+          "metrics": {
+            "max_kl": 0.00022019335856358208,
+            "mean_kl": 9.589442116603001e-06,
+            "relative_parameter_drift": 0.0017922196489308108,
+            "step_margin_rms": 0.001577223202790603
+          },
+          "projection": {
+            "actual_scaled_target_rmse": 0.0007050895262076109,
+            "actual_target_cosine": 0.9408959366687408,
+            "damping": 0.20785712693431604,
+            "residual_norm": 0.0010104478827448608,
+            "sample_unique": 94,
+            "target_norm": 0.0028284271247461905,
+            "zero_sensitivity": false
+          },
+          "updates": 5
+        },
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.13244544647856918,
+          "loss_before": -0.13242035553601958,
+          "metrics": {
+            "max_kl": 0.00034347284802833424,
+            "mean_kl": 1.4319228817522475e-05,
+            "relative_parameter_drift": 0.0021646332683590854,
+            "step_margin_rms": 0.0016538098224713458
+          },
+          "projection": {
+            "actual_scaled_target_rmse": 0.0007875494143882136,
+            "actual_target_cosine": 0.9365590345779266,
+            "damping": 0.26737249958924875,
+            "residual_norm": 0.0010367550487591318,
+            "sample_unique": 99,
+            "target_norm": 0.0028284271247461905,
+            "zero_sensitivity": false
+          },
+          "updates": 6
+        },
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.19430754763963665,
+          "loss_before": -0.19427735959800915,
+          "metrics": {
+            "max_kl": 0.0004895270396532148,
+            "mean_kl": 1.967039735734833e-05,
+            "relative_parameter_drift": 0.0024851571381725303,
+            "step_margin_rms": 0.0015163338768820157
+          },
+          "projection": {
+            "actual_scaled_target_rmse": 0.0007068075526534758,
+            "actual_target_cosine": 0.9371916745865687,
+            "damping": 0.29803724814192323,
+            "residual_norm": 0.0009417666844721024,
+            "sample_unique": 107,
+            "target_norm": 0.0028284271247461905,
+            "zero_sensitivity": false
+          },
+          "updates": 7
+        },
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.15553936913316296,
+          "loss_before": -0.1555159141738262,
+          "metrics": {
+            "max_kl": 0.0006749134348474038,
+            "mean_kl": 2.6447251078642218e-05,
+            "relative_parameter_drift": 0.002900743906648376,
+            "step_margin_rms": 0.0016459615007022854
+          },
+          "projection": {
+            "actual_scaled_target_rmse": 0.0007796930946154807,
+            "actual_target_cosine": 0.9390308563299099,
+            "damping": 0.24470402473790226,
+            "residual_norm": 0.0011040014888332229,
+            "sample_unique": 113,
+            "target_norm": 0.0028284271247461905,
+            "zero_sensitivity": false
+          },
+          "updates": 8
+        }
+      ]
+    },
+    {
+      "accepted_steps": 8,
+      "arm": "bounded_adamw_43",
+      "cold_exact": true,
+      "critic": "greedy_calibrated",
+      "entropy": "native",
+      "frozen_exact": true,
+      "mode": "bounded_adamw",
+      "model_promoted": false,
+      "seed": 43,
+      "steps": [
+        {
+          "accepted": true,
+          "attempts": 2,
+          "fraction": 0.5,
+          "loss_after": -0.1410283711851732,
+          "loss_before": -0.14100734257532233,
+          "metrics": {
+            "max_kl": 7.804984836437155e-06,
+            "mean_kl": 2.9925303912813607e-07,
+            "relative_parameter_drift": 0.00013412409390008785,
+            "step_margin_rms": 0.001978365426076597
+          },
+          "projection": {
+            "gradient_norm": 0.06084500625729561
+          },
+          "updates": 1
+        },
+        {
+          "accepted": true,
+          "attempts": 2,
+          "fraction": 0.5,
+          "loss_after": -0.13618181784309466,
+          "loss_before": -0.13615884360444633,
+          "metrics": {
+            "max_kl": 3.085484934980346e-05,
+            "mean_kl": 1.1797829373353888e-06,
+            "relative_parameter_drift": 0.0002617402912752791,
+            "step_margin_rms": 0.001943219507834666
+          },
+          "projection": {
+            "gradient_norm": 0.06753690540790558
+          },
+          "updates": 2
+        },
+        {
+          "accepted": true,
+          "attempts": 2,
+          "fraction": 0.5,
+          "loss_after": -0.141868991512129,
+          "loss_before": -0.14184640215493177,
+          "metrics": {
+            "max_kl": 6.920748936269094e-05,
+            "mean_kl": 2.6262970678660876e-06,
+            "relative_parameter_drift": 0.0003864043083827587,
+            "step_margin_rms": 0.0018945601842305726
+          },
+          "projection": {
+            "gradient_norm": 0.06669578701257706
+          },
+          "updates": 3
+        },
+        {
+          "accepted": true,
+          "attempts": 2,
+          "fraction": 0.5,
+          "loss_after": -0.13413435898836798,
+          "loss_before": -0.13411785727841555,
+          "metrics": {
+            "max_kl": 0.0001170671065341385,
+            "mean_kl": 4.566971276207248e-06,
+            "relative_parameter_drift": 0.0005075330349789502,
+            "step_margin_rms": 0.0018522962401493546
+          },
+          "projection": {
+            "gradient_norm": 0.05206846445798874
+          },
+          "updates": 4
+        },
+        {
+          "accepted": true,
+          "attempts": 2,
+          "fraction": 0.5,
+          "loss_after": -0.1351401226681665,
+          "loss_before": -0.13511449660812339,
+          "metrics": {
+            "max_kl": 0.0001796245732767687,
+            "mean_kl": 7.066464023529538e-06,
+            "relative_parameter_drift": 0.0006299436595848441,
+            "step_margin_rms": 0.0018817732912381681
+          },
+          "projection": {
+            "gradient_norm": 0.08018503338098526
+          },
+          "updates": 5
+        },
+        {
+          "accepted": true,
+          "attempts": 2,
+          "fraction": 0.5,
+          "loss_after": -0.14476988294353532,
+          "loss_before": -0.1447493397292123,
+          "metrics": {
+            "max_kl": 0.00025254042545214215,
+            "mean_kl": 1.0087362982518366e-05,
+            "relative_parameter_drift": 0.0007504788121933218,
+            "step_margin_rms": 0.001853533263561408
+          },
+          "projection": {
+            "gradient_norm": 0.06524404883384705
+          },
+          "updates": 6
+        },
+        {
+          "accepted": true,
+          "attempts": 2,
+          "fraction": 0.5,
+          "loss_after": -0.13745756242557552,
+          "loss_before": -0.13743545424330592,
+          "metrics": {
+            "max_kl": 0.00034200845521709447,
+            "mean_kl": 1.3689137181124032e-05,
+            "relative_parameter_drift": 0.0008723382862887048,
+            "step_margin_rms": 0.0018711540258870528
+          },
+          "projection": {
+            "gradient_norm": 0.0653100535273552
+          },
+          "updates": 7
+        },
+        {
+          "accepted": true,
+          "attempts": 2,
+          "fraction": 0.5,
+          "loss_after": -0.13932849002568326,
+          "loss_before": -0.1393081917295027,
+          "metrics": {
+            "max_kl": 0.0004451319367854735,
+            "mean_kl": 1.783528409188842e-05,
+            "relative_parameter_drift": 0.0009944811707310183,
+            "step_margin_rms": 0.001873597551764963
+          },
+          "projection": {
+            "gradient_norm": 0.06116224080324173
+          },
+          "updates": 8
+        }
+      ]
+    },
+    {
+      "accepted_steps": 8,
+      "arm": "last_layer_43",
+      "cold_exact": true,
+      "critic": "greedy_calibrated",
+      "entropy": "native",
+      "frozen_exact": true,
+      "mode": "last_layer",
+      "model_promoted": false,
+      "seed": 43,
+      "steps": [
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.1410115093862179,
+          "loss_before": -0.14100734257532233,
+          "metrics": {
+            "max_kl": 2.487387533733638e-07,
+            "mean_kl": 1.4118920820874541e-08,
+            "relative_parameter_drift": 3.380642470201558e-05,
+            "step_margin_rms": 0.0005317149425011911
+          },
+          "projection": {
+            "gradient_norm": 0.032574716955423355
+          },
+          "updates": 1
+        },
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.13614461034757075,
+          "loss_before": -0.13614025197114618,
+          "metrics": {
+            "max_kl": 9.719123592535775e-07,
+            "mean_kl": 5.6018732899131675e-08,
+            "relative_parameter_drift": 6.738400645614866e-05,
+            "step_margin_rms": 0.0005298634037358277
+          },
+          "projection": {
+            "gradient_norm": 0.0341443233191967
+          },
+          "updates": 2
+        },
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.14181470343133953,
+          "loss_before": -0.14181013057997716,
+          "metrics": {
+            "max_kl": 2.1381077138243497e-06,
+            "mean_kl": 1.2442141321743832e-07,
+            "relative_parameter_drift": 0.00010016120070417471,
+            "step_margin_rms": 0.0005241206250775573
+          },
+          "projection": {
+            "gradient_norm": 0.037192463874816895
+          },
+          "updates": 3
+        },
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.1340816855503443,
+          "loss_before": -0.13407814488940398,
+          "metrics": {
+            "max_kl": 3.712217855398551e-06,
+            "mean_kl": 2.1766265581579644e-07,
+            "relative_parameter_drift": 0.0001320543512544885,
+            "step_margin_rms": 0.0005215156911708102
+          },
+          "projection": {
+            "gradient_norm": 0.02953287586569786
+          },
+          "updates": 4
+        },
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.1350347325771925,
+          "loss_before": -0.13502990475699195,
+          "metrics": {
+            "max_kl": 5.676174743981469e-06,
+            "mean_kl": 3.3721344018844e-07,
+            "relative_parameter_drift": 0.00016434040575849315,
+            "step_margin_rms": 0.0005249442913693783
+          },
+          "projection": {
+            "gradient_norm": 0.03865973651409149
+          },
+          "updates": 5
+        },
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.14467321327470414,
+          "loss_before": -0.14466860559954536,
+          "metrics": {
+            "max_kl": 8.138038075956432e-06,
+            "mean_kl": 4.837104628661184e-07,
+            "relative_parameter_drift": 0.00019665931018705813,
+            "step_margin_rms": 0.000523064701646893
+          },
+          "projection": {
+            "gradient_norm": 0.03831253945827484
+          },
+          "updates": 6
+        },
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.13733190925341354,
+          "loss_before": -0.13732752859851574,
+          "metrics": {
+            "max_kl": 1.1056551115054374e-05,
+            "mean_kl": 6.572827880101693e-07,
+            "relative_parameter_drift": 0.00022884727520255347,
+            "step_margin_rms": 0.0005273409722822914
+          },
+          "projection": {
+            "gradient_norm": 0.03474246338009834
+          },
+          "updates": 7
+        },
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.13919725245208028,
+          "loss_before": -0.13919320172547592,
+          "metrics": {
+            "max_kl": 1.440737703405472e-05,
+            "mean_kl": 8.566082616481903e-07,
+            "relative_parameter_drift": 0.0002610172605073463,
+            "step_margin_rms": 0.0005249189965289772
+          },
+          "projection": {
+            "gradient_norm": 0.03279896453022957
+          },
+          "updates": 8
+        }
+      ]
+    },
+    {
+      "accepted_steps": 8,
+      "arm": "function_project_43",
+      "cold_exact": true,
+      "critic": "greedy_calibrated",
+      "entropy": "native",
+      "frozen_exact": true,
+      "mode": "function_project",
+      "model_promoted": false,
+      "seed": 43,
+      "steps": [
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.14105457211275377,
+          "loss_before": -0.14100734257532233,
+          "metrics": {
+            "max_kl": 1.3890960923304378e-05,
+            "mean_kl": 4.5799524588332953e-07,
+            "relative_parameter_drift": 0.0003868004070242489,
+            "step_margin_rms": 0.0017059392817547125
+          },
+          "projection": {
+            "actual_scaled_target_rmse": 0.0006513347815477771,
+            "actual_target_cosine": 0.956626571916083,
+            "damping": 0.2522623597200825,
+            "residual_norm": 0.000895504614765149,
+            "sample_unique": 113,
+            "target_norm": 0.002828427124746191,
+            "zero_sensitivity": false
+          },
+          "updates": 1
+        },
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.13623580282188066,
+          "loss_before": -0.13618592233541893,
+          "metrics": {
+            "max_kl": 5.2690140982068236e-05,
+            "mean_kl": 1.7814877624736745e-06,
+            "relative_parameter_drift": 0.0007419044926998834,
+            "step_margin_rms": 0.001684081376443832
+          },
+          "projection": {
+            "actual_scaled_target_rmse": 0.0006525199656133235,
+            "actual_target_cosine": 0.9554149256824741,
+            "damping": 0.2714931565358973,
+            "residual_norm": 0.0008504489546387255,
+            "sample_unique": 102,
+            "target_norm": 0.0028284271247461905,
+            "zero_sensitivity": false
+          },
+          "updates": 2
+        },
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.14194034105602904,
+          "loss_before": -0.14189209580007334,
+          "metrics": {
+            "max_kl": 0.0001231752568344553,
+            "mean_kl": 4.0091647952932555e-06,
+            "relative_parameter_drift": 0.0011102978835616222,
+            "step_margin_rms": 0.0017400446534249691
+          },
+          "projection": {
+            "actual_scaled_target_rmse": 0.0006666183836854702,
+            "actual_target_cosine": 0.9588891826088557,
+            "damping": 0.24900658789051944,
+            "residual_norm": 0.0008746036740829516,
+            "sample_unique": 94,
+            "target_norm": 0.00282842712474619,
+            "zero_sensitivity": false
+          },
+          "updates": 3
+        },
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.13424090665459915,
+          "loss_before": -0.13419546430225568,
+          "metrics": {
+            "max_kl": 0.00022280751158404444,
+            "mean_kl": 7.170899928587934e-06,
+            "relative_parameter_drift": 0.0014769855487505126,
+            "step_margin_rms": 0.0018050889476519851
+          },
+          "projection": {
+            "actual_scaled_target_rmse": 0.0006878673939703517,
+            "actual_target_cosine": 0.9577517402494947,
+            "damping": 0.2729327484820392,
+            "residual_norm": 0.0008714945329713918,
+            "sample_unique": 94,
+            "target_norm": 0.00282842712474619,
+            "zero_sensitivity": false
+          },
+          "updates": 4
+        },
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.1353295889445601,
+          "loss_before": -0.13526916658659852,
+          "metrics": {
+            "max_kl": 0.00034077997730949487,
+            "mean_kl": 1.0763428425276e-05,
+            "relative_parameter_drift": 0.0018187620826125126,
+            "step_margin_rms": 0.0015269265262315907
+          },
+          "projection": {
+            "actual_scaled_target_rmse": 0.0005106250698428585,
+            "actual_target_cosine": 0.9623195696772326,
+            "damping": 0.2600346191929111,
+            "residual_norm": 0.0007680377879402397,
+            "sample_unique": 95,
+            "target_norm": 0.0028284271247461905,
+            "zero_sensitivity": false
+          },
+          "updates": 5
+        },
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.14491697899864758,
+          "loss_before": -0.14486928201676896,
+          "metrics": {
+            "max_kl": 0.0004964677503747714,
+            "mean_kl": 1.5589915840972215e-05,
+            "relative_parameter_drift": 0.0021892464394272404,
+            "step_margin_rms": 0.0017671816955895652
+          },
+          "projection": {
+            "actual_scaled_target_rmse": 0.000674758507827237,
+            "actual_target_cosine": 0.9580606644061088,
+            "damping": 0.25823591304876914,
+            "residual_norm": 0.0008774734237162617,
+            "sample_unique": 97,
+            "target_norm": 0.0028284271247461905,
+            "zero_sensitivity": false
+          },
+          "updates": 6
+        },
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.1376263873520643,
+          "loss_before": -0.13757818242120534,
+          "metrics": {
+            "max_kl": 0.0006746557025903641,
+            "mean_kl": 2.131378618518868e-05,
+            "relative_parameter_drift": 0.002563400476219327,
+            "step_margin_rms": 0.0016954087365477011
+          },
+          "projection": {
+            "actual_scaled_target_rmse": 0.0006512306432872186,
+            "actual_target_cosine": 0.9567452584535527,
+            "damping": 0.26088401234659503,
+            "residual_norm": 0.0008877588523331163,
+            "sample_unique": 108,
+            "target_norm": 0.002828427124746191,
+            "zero_sensitivity": false
+          },
+          "updates": 7
+        },
+        {
+          "accepted": true,
+          "attempts": 1,
+          "fraction": 1.0,
+          "loss_after": -0.13954236174457393,
+          "loss_before": -0.13949398576446215,
+          "metrics": {
+            "max_kl": 0.0008745851081845106,
+            "mean_kl": 2.786874269719316e-05,
+            "relative_parameter_drift": 0.0029430048585910892,
+            "step_margin_rms": 0.0016778180721688778
+          },
+          "projection": {
+            "actual_scaled_target_rmse": 0.0006253546768853155,
+            "actual_target_cosine": 0.9565312129757337,
+            "damping": 0.26041780194813724,
+            "residual_norm": 0.0009062188842471328,
+            "sample_unique": 113,
+            "target_norm": 0.00282842712474619,
+            "zero_sensitivity": false
+          },
+          "updates": 8
+        }
+      ]
+    }
+  ],
+  "historical_unbounded": [
+    {
+      "arm": "greedy_calibrated_native_19",
+      "seed": 19,
+      "endpoint": {
+        "TRAIN": {
+          "buy": {
+            "net_profit_usd": 968.3834100001577,
+            "trades": 231,
+            "wins": 154
+          },
+          "cash_error": 4.320099833421409e-12,
+          "close_reasons": {
+            "AGENT_CLOSE": 59,
+            "FORCED_FLAT": 61,
+            "SL": 222,
+            "TP": 401
+          },
+          "commands": {
+            "0": 21618,
+            "1": 510,
+            "2": 1838,
+            "3": 59
+          },
+          "costs": {
+            "commission_usd": 1099.1134,
+            "financing_usd": -37.227725,
+            "slippage_usd": 611.0673700000001,
+            "spread_usd": 685.638565
+          },
+          "early_by_side": {
+            "-1": 23,
+            "1": 36
+          },
+          "early_close_diagnostic": {
+            "harmful": 30,
+            "helpful": 29,
+            "mean_regret_risk": 0.3877622310127161,
+            "preempted": 0,
+            "proposals": 59,
+            "scope": "fixed position versus passive protection; not account continuation"
+          },
+          "max_drawdown_pct": 7.93029070370652,
+          "mean_requested_command_entropy": 0.543260705234194,
+          "mean_signal_entropy": 0.5876060933699633,
+          "median_holding_bars": 2.0,
+          "native_counts": {
+            "close_AGENT_CLOSE": 59,
+            "close_FORCED_FLAT": 61,
+            "close_MARGIN_CLOSEOUT": 0,
+            "close_REVERSAL": 0,
+            "close_SL": 222,
+            "close_TP": 401,
+            "closes": 743,
+            "decisions": 24894,
+            "entries": 743,
+            "ignored_same_direction": 0,
+            "levels_clipped": 0,
+            "refused_ABSOLUTE_ORDER": 0,
+            "refused_BEFORE_OPERATIONAL_START": 716,
+            "refused_DAILY_CAP": 0,
+            "refused_ENTRY_CUTOFF": 853,
+            "refused_FILL_DISTANCE": 0,
+            "refused_GAP_BEYOND_LEVEL": 0,
+            "refused_LEVELS": 0,
+            "refused_NO_SIGMA": 0,
+            "refused_POSITION_OCCUPIED": 0,
+            "refused_PRICE_TICK": 0,
+            "refused_RISK_BUDGET": 0,
+            "refused_RUIN": 0,
+            "refused_SESSION_END": 36,
+            "refused_UNITS": 0
+          },
+          "net_profit_usd": 1239.2144850001914,
+          "orders_per_week": 3.555023923444976,
+          "return_pct": 12.392144850001914,
+          "return_per_week": 0.05929255909091825,
+          "sell": {
+            "net_profit_usd": 270.8310750000294,
+            "trades": 512,
+            "wins": 303
+          },
+          "sharpe": 0.6172731219827013,
+          "signals": {
+            "0": 20858,
+            "1": 688,
+            "2": 2479
+          },
+          "trades": 743,
+          "weeks": 209,
+          "win_rate": 0.6150740242261103
+        },
+        "VALIDATION": {
+          "buy": {
+            "net_profit_usd": 231.47084000001863,
+            "trades": 24,
+            "wins": 15
+          },
+          "cash_error": 6.821210263296962e-13,
+          "close_reasons": {
+            "AGENT_CLOSE": 6,
+            "FORCED_FLAT": 26,
+            "SL": 67,
+            "TP": 107
+          },
+          "commands": {
+            "0": 5419,
+            "1": 51,
+            "2": 731,
+            "3": 6
+          },
+          "costs": {
+            "commission_usd": 374.11423,
+            "financing_usd": -43.069735,
+            "slippage_usd": 211.60967000000002,
+            "spread_usd": 211.609995
+          },
+          "early_by_side": {
+            "-1": 1,
+            "1": 5
+          },
+          "early_close_diagnostic": {
+            "harmful": 2,
+            "helpful": 4,
+            "mean_regret_risk": 0.17496843372447132,
+            "preempted": 0,
+            "proposals": 6,
+            "scope": "fixed position versus passive protection; not account continuation"
+          },
+          "max_drawdown_pct": 4.044574426609913,
+          "mean_requested_command_entropy": 0.5818018972800185,
+          "mean_signal_entropy": 0.6928083233551738,
+          "median_holding_bars": 3.0,
+          "native_counts": {
+            "close_AGENT_CLOSE": 6,
+            "close_FORCED_FLAT": 26,
+            "close_MARGIN_CLOSEOUT": 0,
+            "close_REVERSAL": 0,
+            "close_SL": 67,
+            "close_TP": 107,
+            "closes": 206,
+            "decisions": 6220,
+            "entries": 206,
+            "ignored_same_direction": 0,
+            "levels_clipped": 0,
+            "refused_ABSOLUTE_ORDER": 0,
+            "refused_BEFORE_OPERATIONAL_START": 233,
+            "refused_DAILY_CAP": 0,
+            "refused_ENTRY_CUTOFF": 333,
+            "refused_FILL_DISTANCE": 0,
+            "refused_GAP_BEYOND_LEVEL": 0,
+            "refused_LEVELS": 0,
+            "refused_NO_SIGMA": 0,
+            "refused_POSITION_OCCUPIED": 0,
+            "refused_PRICE_TICK": 0,
+            "refused_RISK_BUDGET": 0,
+            "refused_RUIN": 0,
+            "refused_SESSION_END": 10,
+            "refused_UNITS": 0
+          },
+          "net_profit_usd": 1469.3261850000072,
+          "orders_per_week": 3.814814814814815,
+          "return_pct": 14.693261850000072,
+          "return_per_week": 0.272097441666668,
+          "sell": {
+            "net_profit_usd": 1237.8553449999893,
+            "trades": 182,
+            "wins": 105
+          },
+          "sharpe": 2.179246983323604,
+          "signals": {
+            "0": 5084,
+            "1": 65,
+            "2": 1058
+          },
+          "trades": 206,
+          "weeks": 54,
+          "win_rate": 0.5825242718446602
+        }
+      }
+    },
+    {
+      "arm": "greedy_calibrated_native_43",
+      "seed": 43,
+      "endpoint": {
+        "TRAIN": {
+          "buy": {
+            "net_profit_usd": 968.3834100001577,
+            "trades": 231,
+            "wins": 154
+          },
+          "cash_error": 4.320099833421409e-12,
+          "close_reasons": {
+            "AGENT_CLOSE": 59,
+            "FORCED_FLAT": 61,
+            "SL": 222,
+            "TP": 401
+          },
+          "commands": {
+            "0": 21620,
+            "1": 510,
+            "2": 1836,
+            "3": 59
+          },
+          "costs": {
+            "commission_usd": 1099.1134,
+            "financing_usd": -37.227725,
+            "slippage_usd": 611.0673700000001,
+            "spread_usd": 685.638565
+          },
+          "early_by_side": {
+            "-1": 23,
+            "1": 36
+          },
+          "early_close_diagnostic": {
+            "harmful": 30,
+            "helpful": 29,
+            "mean_regret_risk": 0.3877622310127161,
+            "preempted": 0,
+            "proposals": 59,
+            "scope": "fixed position versus passive protection; not account continuation"
+          },
+          "max_drawdown_pct": 7.93029070370652,
+          "mean_requested_command_entropy": 0.5430538148428049,
+          "mean_signal_entropy": 0.5873886111289246,
+          "median_holding_bars": 2.0,
+          "native_counts": {
+            "close_AGENT_CLOSE": 59,
+            "close_FORCED_FLAT": 61,
+            "close_MARGIN_CLOSEOUT": 0,
+            "close_REVERSAL": 0,
+            "close_SL": 222,
+            "close_TP": 401,
+            "closes": 743,
+            "decisions": 24894,
+            "entries": 743,
+            "ignored_same_direction": 0,
+            "levels_clipped": 0,
+            "refused_ABSOLUTE_ORDER": 0,
+            "refused_BEFORE_OPERATIONAL_START": 716,
+            "refused_DAILY_CAP": 0,
+            "refused_ENTRY_CUTOFF": 851,
+            "refused_FILL_DISTANCE": 0,
+            "refused_GAP_BEYOND_LEVEL": 0,
+            "refused_LEVELS": 0,
+            "refused_NO_SIGMA": 0,
+            "refused_POSITION_OCCUPIED": 0,
+            "refused_PRICE_TICK": 0,
+            "refused_RISK_BUDGET": 0,
+            "refused_RUIN": 0,
+            "refused_SESSION_END": 36,
+            "refused_UNITS": 0
+          },
+          "net_profit_usd": 1239.2144850001914,
+          "orders_per_week": 3.555023923444976,
+          "return_pct": 12.392144850001914,
+          "return_per_week": 0.05929255909091825,
+          "sell": {
+            "net_profit_usd": 270.8310750000294,
+            "trades": 512,
+            "wins": 303
+          },
+          "sharpe": 0.6172731219827013,
+          "signals": {
+            "0": 20861,
+            "1": 688,
+            "2": 2476
+          },
+          "trades": 743,
+          "weeks": 209,
+          "win_rate": 0.6150740242261103
+        },
+        "VALIDATION": {
+          "buy": {
+            "net_profit_usd": 231.47084000001863,
+            "trades": 24,
+            "wins": 15
+          },
+          "cash_error": 6.821210263296962e-13,
+          "close_reasons": {
+            "AGENT_CLOSE": 6,
+            "FORCED_FLAT": 26,
+            "SL": 67,
+            "TP": 107
+          },
+          "commands": {
+            "0": 5418,
+            "1": 51,
+            "2": 732,
+            "3": 6
+          },
+          "costs": {
+            "commission_usd": 374.11423,
+            "financing_usd": -43.069735,
+            "slippage_usd": 211.60967000000002,
+            "spread_usd": 211.609995
+          },
+          "early_by_side": {
+            "-1": 1,
+            "1": 5
+          },
+          "early_close_diagnostic": {
+            "harmful": 2,
+            "helpful": 4,
+            "mean_regret_risk": 0.17496843372447132,
+            "preempted": 0,
+            "proposals": 6,
+            "scope": "fixed position versus passive protection; not account continuation"
+          },
+          "max_drawdown_pct": 4.044574426609913,
+          "mean_requested_command_entropy": 0.581742617026453,
+          "mean_signal_entropy": 0.6927215134466168,
+          "median_holding_bars": 3.0,
+          "native_counts": {
+            "close_AGENT_CLOSE": 6,
+            "close_FORCED_FLAT": 26,
+            "close_MARGIN_CLOSEOUT": 0,
+            "close_REVERSAL": 0,
+            "close_SL": 67,
+            "close_TP": 107,
+            "closes": 206,
+            "decisions": 6220,
+            "entries": 206,
+            "ignored_same_direction": 0,
+            "levels_clipped": 0,
+            "refused_ABSOLUTE_ORDER": 0,
+            "refused_BEFORE_OPERATIONAL_START": 233,
+            "refused_DAILY_CAP": 0,
+            "refused_ENTRY_CUTOFF": 334,
+            "refused_FILL_DISTANCE": 0,
+            "refused_GAP_BEYOND_LEVEL": 0,
+            "refused_LEVELS": 0,
+            "refused_NO_SIGMA": 0,
+            "refused_POSITION_OCCUPIED": 0,
+            "refused_PRICE_TICK": 0,
+            "refused_RISK_BUDGET": 0,
+            "refused_RUIN": 0,
+            "refused_SESSION_END": 10,
+            "refused_UNITS": 0
+          },
+          "net_profit_usd": 1469.3261850000072,
+          "orders_per_week": 3.814814814814815,
+          "return_pct": 14.693261850000072,
+          "return_per_week": 0.272097441666668,
+          "sell": {
+            "net_profit_usd": 1237.8553449999893,
+            "trades": 182,
+            "wins": 105
+          },
+          "sharpe": 2.179246983323604,
+          "signals": {
+            "0": 5083,
+            "1": 65,
+            "2": 1059
+          },
+          "trades": 206,
+          "weeks": 54,
+          "win_rate": 0.5825242718446602
+        }
+      }
+    }
+  ]
+}
