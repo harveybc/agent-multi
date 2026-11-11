@@ -2,6 +2,13 @@
 
 ## Execution Update: 2026-11-11
 
+[All-state refinement281](281_ALL_STATE_REFINEMENT_CONTRAST.md) is the approved
+next contrast: qualified69 frozen control versus retained/recalibrated critics
+and native/zero actor entropy, with long/short holding as well as flat anchors.
+Fit2020-2022, monitor2023, full native TRAIN/VALIDATION accounts; no promotion.
+31 focused tests pass before launch. A sequential queue includes cold replay
+and chronological TRAIN profit attribution of the fixed endpoints.
+
 [Cumulative pass280](280_ONE_UPDATE_CUMULATIVE_SELECTION.md) completed on the
 qualified one-update actor:69 ->69 ->69 inputs,28 groups,112 fresh evaluations
 including all51 historical phase2 removals. No accepted change; all decisions,
