@@ -2,10 +2,12 @@
 
 ## Execution Update: 2026-11-11
 
-[Bounded critic actor selection287](287_BOUNDED_CRITIC_ACTOR_SELECTION.md):
-qualify saved286 critic/AdamW endpoint8, seeds19/43, then fresh-cache primary19
-deletion and cumulative phase2 return. Exact full native and cold account gates;
-no retraining or live promotion.
+[Bounded critic actor selection287](287_BOUNDED_CRITIC_ACTOR_SELECTION.md)
+completed: both saved286 endpoints qualified in30.86seconds, then fresh-cache
+primary19 pass in136.26seconds.69 ->69 ->69 inputs,28 groups,112 evaluations,
+all51 historical removals tested, no accepted change. Full native and cold
+accounts plus313 retained tensors verified; TRAIN12.708707%, VAL14.693262%.
+No training or live promotion. Next design broadens TRAIN coverage with current-policy targets.
 
 [Target versus geometry286](286_CRITIC_TARGET_VS_UPDATE_GEOMETRY.md) completed:
 eight arms,132.10seconds plus21.94seconds reporting,462 authenticated files,

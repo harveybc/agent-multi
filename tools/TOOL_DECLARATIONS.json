@@ -23,7 +23,7 @@
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
   },
   "qualify_one_update_actor.py": {
-   "purpose": "Authenticate and export pinned one-update control or boundary absolute endpoint actors with exact full native account and cold-reload verification, without new learning or promotion",
+   "purpose": "Authenticate and export pinned control, absolute-calibrated or bounded critic-AdamW actors with exact full native account and cold-reload verification, without new learning or promotion",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
   },
   "recover_stl_price_warmup.py": {
