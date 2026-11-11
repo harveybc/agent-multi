@@ -34,19 +34,29 @@ ROOT=Path(__file__).resolve().parents[1]
 
 
 def run(a):
+    refine=a.refine_export
     coverage=a.coverage_contrast
-    target_contrast=a.target_contrast or coverage
+    target_contrast=a.target_contrast or coverage or refine
     started=time.monotonic();configure(284);torch.backends.cudnn.allow_tf32=False
     if not torch.cuda.is_available() or torch.cuda.get_device_name()!=a.expected_device_name:
         raise ValueError('FUNCTIONAL_DEVICE')
     source=read(a.source/'CONFIG.json');verify_done(a.source,source['identity'])
-    source_schema='native_target_geometry.v1' if coverage else 'opening_boundary_refinement.v1'
+    source_schema='native_target_geometry.v1' if coverage or refine else 'opening_boundary_refinement.v1'
     if source['schema']!=source_schema:raise ValueError('FUNCTIONAL_SOURCE')
     parent=read(a.parent/'SPEC.json');verify_files(a.parent,parent['files'])
     model,_=load_bundle(a.bundle,'cuda');flags={n:p.requires_grad for n,p in model.loss.named_parameters()}
     source_sha=file_sha(a.bundle/'model.pt')
     qualification=None
-    if target_contrast:
+    if refine:
+        qroot=a.bundle.parent;qc=read(qroot/'CONFIG.json');qid=digest(qc)
+        verify_done(qroot,qid);qualification=read(qroot/'RESULT.json')
+        if (qc.get('schema')!='selected_actor_sac_export.v1' or not qualification['qualified']
+                or qualification['export']['model_sha256']!=source_sha
+                or qc.get('recipe')!=model.recipe['identity']
+                or qc.get('parent')!=str(a.parent)
+                or qualification['support_sha256']!=source['support_sha256']):
+            raise ValueError('REFINE_EXPORT_SOURCE')
+    elif target_contrast:
         qroot=a.bundle.parent.parent;qc=read(qroot/'CONFIG.json');qid=digest(qc)
         verify_done(qroot,qid);qualification=read(a.bundle.parent/'RESULT.json')
         profile='bounded_critic8' if coverage else 'boundary_absolute8'
@@ -55,7 +65,7 @@ def run(a):
                 or not qualification['qualified'] or qualification['model_sha256']!=source_sha):
             raise ValueError('NATIVE_QUALIFIED_SOURCE')
     if (parent['identity']!=source['parent_identity'] or (not target_contrast and source_sha!=source['source_sha256'])
-            or model.recipe['identity']!=source['recipe_identity']):raise ValueError('FUNCTIONAL_LINEAGE')
+            or (not refine and model.recipe['identity']!=source['recipe_identity'])):raise ValueError('FUNCTIONAL_LINEAGE')
     market=market_for(a.parent,parent);market.inputs=project_inputs(market.inputs,model.recipe);market.recipe=model.recipe
     if support_hash(market.inputs)!=source['support_sha256']:raise ValueError('FUNCTIONAL_SUPPORT')
     records=read(a.source/'panel/RECORDS.json');validate_panel(records)
@@ -86,6 +96,10 @@ def run(a):
             targets='critic values only; refreshed native returns diagnostic only',
             common_trust_support='all broad FIT anchors; neither MONITOR nor VALIDATION',
             equal_update_budget='8 x 128; larger support has fewer repeats per anchor')
+    if refine:
+        cfg.update(schema='selected_input_bounded_refinement.v1',modes=['calibrated_adamw'],
+            critic='fresh heads on actor-initialized changed-input encoders; own-policy FIT calibration',
+            critic_updates=4096,targets='critic values after FIT-only calibration; MONITOR diagnostics only')
     cfg['identity']=digest(cfg)
     if (a.output/'CONFIG.json').exists() and read(a.output/'CONFIG.json')!=cfg:raise ValueError('FUNCTIONAL_CONFIG')
     write(a.output/'CONFIG.json',cfg)
@@ -135,18 +149,32 @@ def run(a):
     results=[]
     for seed in cfg['seeds']:
         old=a.source/f'greedy_calibrated_native_{seed}'
-        if not coverage:
+        if not coverage and not refine:
             witness=read(old/'GRADIENT.json');schedule=covering_schedule(len(fit),8,128,seed)
             if digest(schedule.tolist())!=read(old/'EFFECTIVE.json')['schedule_sha256']:
                 raise ValueError('FUNCTIONAL_SCHEDULE')
+        fitted=a.output/f'critic_{seed}'
+        if refine:
+            if (fitted/'DONE.json').exists():verify_done(fitted,cfg['identity'])
+            else:
+                from app.selected_critic_calibration import calibrate
+                fitted.mkdir(parents=True,exist_ok=True)
+                calibration_model,_=load_bundle(a.bundle,'cuda')
+                receipt=calibrate(calibration_model,x,records,seed,
+                    lambda point:progress('CRITIC_CALIBRATION',seed=seed,updates=point['updates']))
+                if not np.array_equal(logits(calibration_model)[market.inputs.valid],baseline[market.inputs.valid]):
+                    raise ValueError('REFINE_CRITIC_CHANGED_ACTOR')
+                save_canonical(calibration_model,fitted/'MODEL.pt',flags)
+                write(fitted/'RESULT.json',receipt);seal(fitted,cfg['identity']);del calibration_model
         for mode in cfg['modes']:
             train_fit=(np.array([i for i,r in enumerate(records) if r['role']=='fit' and
                                 r['timestamp'] in narrow_times]) if mode=='critic_narrow' else fit)
-            if coverage:schedule=covering_schedule(len(train_fit),8,128,seed)
+            if coverage or refine:schedule=covering_schedule(len(train_fit),8,128,seed)
             key=f'{mode}_{seed}';out=a.output/key
             if (out/'DONE.json').exists():verify_done(out,cfg['identity']);results.append(read(out/'RESULT.json'));continue
             progress('ARM',arm=key)
             model,_=load_bundle(a.bundle,'cuda')
+            if refine:model.load(fitted/'MODEL.pt')
             if not target_contrast:model.load(a.source/f'critic_{seed}/MODEL.pt')
             if not np.array_equal(logits(model)[market.inputs.valid],baseline[market.inputs.valid]):
                 raise ValueError('FUNCTIONAL_INITIAL_ACTOR')
@@ -176,7 +204,7 @@ def run(a):
             alpha=model.loss.log_alpha.detach().exp();points=[dict(updates=0,metrics=reference,diagnostic=diagnostic(baseline))];steps=[]
             write(out/'EFFECTIVE.json',dict(mode=mode,budget=BUDGET,alpha=float(alpha),
                 trainable=[n for n,_ in named],schedule_sha256=digest(schedule.tolist()),
-                critic_sha256=source_sha if target_contrast else file_sha(a.source/f'critic_{seed}/MODEL.pt'),
+                critic_sha256=file_sha(fitted/'MODEL.pt') if refine else source_sha if target_contrast else file_sha(a.source/f'critic_{seed}/MODEL.pt'),
                 target_kind=kind,predicted_q_sha256=digest(predicted_q.cpu().tolist()),
                 effective_target_sha256=digest(q.cpu().tolist()),
                 training_rows=rows[train_fit].tolist(),trust_rows=rows[fit].tolist(),
@@ -279,6 +307,7 @@ if __name__=='__main__':
     mode=p.add_mutually_exclusive_group()
     mode.add_argument('--target-contrast',action='store_true')
     mode.add_argument('--coverage-contrast',action='store_true')
+    mode.add_argument('--refine-export',action='store_true')
     a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
     with (a.output/'worker.lock').open('a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)

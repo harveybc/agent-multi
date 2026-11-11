@@ -26,6 +26,10 @@
    "purpose": "Authenticate and export pinned control, absolute-calibrated, bounded critic-AdamW or narrow-coverage actors with exact full native account and cold-reload verification, without new learning or promotion",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
   },
+  "export_cumulative_sac_actor.py": {
+   "purpose": "Owner-authorized physical selected-input actor export into trainable SAC with exact native account replay and explicit uncalibrated fresh critic heads",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
+  },
   "recover_stl_price_warmup.py": {
    "purpose": "Reconstruct a separate pre-TRAIN feature candidate using original frozen producers and measured baseline/prefix parity, without inventing calendar or supervised-activity context",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
