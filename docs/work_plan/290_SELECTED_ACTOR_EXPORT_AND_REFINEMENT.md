@@ -39,3 +39,11 @@ Execution: qualification on CPU, then sequential primary-GPU calibration/actor
 arms, independent attribution and finite authenticated collection.31-test prior
 qualification remains historical; the new scoped tests and full-data gates
 govern this export.
+
+The first CPU export stopped before learning: GPU-saved neutral buffers in
+three inactive centered donor branches leave CPU residuals3.5763e-7,2.9802e-8,
+2.9802e-8. Record these explicitly; only CenteredDonor roundoff up to1e-5 is
+eligible for removal. Ordinary nonzero original-group responses still refuse.
+Full logit tolerance and exact decisions/accounts remain mandatory. A regression
+rejects a material1e-3 centered response. The first run is retained as stopped;
+the corrected export uses a fresh r2 identity, never overwriting its evidence.

@@ -23,3 +23,14 @@ def test_removing_nonzero_original_group_rejected():
     selected=recipe(['a'],{'g':[0]})
     with pytest.raises(ValueError,match='NONZERO_REMOVED'):
         transfer_expanded_actor(ToyActor(full),ToyActor(selected),full,selected,['g','other'])
+
+
+def test_centered_roundoff_recorded_but_material_response_rejected():
+    full=recipe(['a','b'],{'g':[0],'extra':[1]});old=recipe(['a'],{'g':[0]})
+    expanded,info=expand_actor(ToyActor(old),old,full,[(ToyActor(full),full,'old')])
+    with torch.no_grad():expanded.encoder.branches[1].neutral.add_(1e-7)
+    result=transfer_expanded_actor(expanded,ToyActor(old),full,old,info['group_order'])
+    assert 0<result['centered_neutral_residuals']['extra']<1e-5
+    with torch.no_grad():expanded.encoder.branches[1].neutral.add_(1e-3)
+    with pytest.raises(ValueError,match='NONZERO_REMOVED'):
+        transfer_expanded_actor(expanded,ToyActor(old),full,old,info['group_order'])

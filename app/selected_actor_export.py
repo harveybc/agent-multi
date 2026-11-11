@@ -1,13 +1,14 @@
 """Project a donor-expanded actor into an ordinary selected-input architecture."""
 import re
 import torch
+from app.cumulative_readmission import CenteredDonor
 
 
 def transfer_expanded_actor(expanded, destination, universe, selected, group_order):
     names=universe['list']['columns']; groups=universe['representation']['resolved']
     columns={g:[names[j] for j in ix] for g,ix in zip(groups['names'],groups['indices'])}
     dg=selected['representation']['resolved']; active=selected['list']['columns']
-    source=expanded.state_dict(); target=destination.state_dict(); copied=[]
+    source=expanded.state_dict(); target=destination.state_dict(); copied=[];neutral_residuals={}
     width=expanded.encoder.fusion.conv.in_channels//len(group_order)
     if width*len(group_order)!=expanded.encoder.fusion.conv.in_channels:
         raise ValueError('EXPORT_FUSION_WIDTH')
@@ -20,7 +21,10 @@ def transfer_expanded_actor(expanded, destination, universe, selected, group_ord
         if g not in dg['names']:
             b=expanded.encoder.branches[i];p=next(b.parameters())
             with torch.no_grad():v=b(p.new_zeros(1,len(columns[g]),expanded.encoder.shape[0]))
-            if torch.count_nonzero(v):raise ValueError('EXPORT_NONZERO_REMOVED_GROUP')
+            residual=float(v.abs().max())
+            if torch.count_nonzero(v) and (not isinstance(b,CenteredDonor) or residual>1e-5):
+                raise ValueError('EXPORT_NONZERO_REMOVED_GROUP')
+            neutral_residuals[g]=residual
     with torch.no_grad():
         for key,value in target.items():
             if key.startswith('encoder.indices_'):continue
@@ -40,4 +44,6 @@ def transfer_expanded_actor(expanded, destination, universe, selected, group_ord
             if not torch.equal(value,old):raise ValueError('EXPORT_VALUE:'+key)
             copied.append(key)
     return dict(copied_exact=len(copied),names=copied,input_features=len(active),
-                groups=len(dg['names']),physical_input_width=destination.encoder.shape[-1])
+                groups=len(dg['names']),physical_input_width=destination.encoder.shape[-1],
+                centered_neutral_residuals=neutral_residuals,neutral_atol=1e-5,
+                full_logit_and_exact_account_gate_required=True)
