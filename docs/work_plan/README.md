@@ -2,6 +2,14 @@
 
 ## Execution Update: 2026-11-11
 
+[Selected refinement diagnosis291](291_SELECTED_REFINEMENT_CAUSE_DIAGNOSIS.md):
+COMPLETE. Both critic ranking errors and shared-head transfer are measured;
+native FIT targets alone do not prevent interference. Actual SELL-NOP margin
+crossings explain the omitted entries; first head weights contribute71-88% of
+their linear shift.24 tests,986 independent checks, source weights unchanged.
+Keep290 frozen export. Next: FIT-only decision-preservation feasibility before
+any new bounded candidate; no new training or live promotion in291.
+
 [Selected export/refinement290](290_SELECTED_ACTOR_EXPORT_AND_REFINEMENT.md):
 COMPLETE: physical69-input SAC export qualified;313 actor tensors copied exactly,
 full accounts and cold reload exact. Both fresh-critic bounded refinements improve

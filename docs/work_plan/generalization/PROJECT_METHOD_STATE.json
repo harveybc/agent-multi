@@ -1,6 +1,6 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "SELECTED_ACTOR_EXPORT_REFINEMENT_COMPLETE",
+  "current_stage": "SELECTED_REFINEMENT_CAUSE_DIAGNOSIS_COMPLETE",
   "train_coverage_288": {
     "document": "../288_TRAIN_COVERAGE_CONTRAST.md",
     "owner_approved": "2026-11-11",
@@ -1788,7 +1788,7 @@
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
     "preserve selected69 after complete cumulative phase2 screen; do not repeat unchanged mask pass or retrain an unchanged subset by default",
-    "qualify bounded selected69 refinement with fresh critic heads, own-policy calibration, alternate-action ranking and native account/activity checks; no automatic long degrading schedule",
+    "Design FIT-only source-correct decision-preservation constraint and nonzero feasibility test before new bounded refinement. Reuse290 control; never constrain validation timestamps. Preserve frozen export; do not repeat unchanged floating.",
     "keep donor-assisted screen distinct from matched restored-feature retraining",
     "reject primary threshold calibration and do not transfer unqualified close fields to actor",
     "audit real historical coverage and existing phase4 synthetic generator compatibility separately from phase2",
@@ -2337,5 +2337,19 @@
         "accepted_steps": 8
       }
     ]
+  },
+  "selected_refinement_diagnosis_291": {
+    "document": "../291_SELECTED_REFINEMENT_CAUSE_DIAGNOSIS.md",
+    "status": "COMPLETE",
+    "identity": "98ede2e1175ac62698eca86c4636232552d87f6d633569226522e0a04252f662",
+    "seconds": 2.940069972013589,
+    "features": 69,
+    "groups": 28,
+    "tests_passed": 24,
+    "independent_checks": 986,
+    "new_candidate": false,
+    "live_promoted": false,
+    "cause": "critic ranking errors plus shared-head transfer; saved actor margin crossings explain omitted SELL entries",
+    "next_action": "Design FIT-only source-correct decision-preservation constraint and nonzero feasibility test before new bounded refinement. Reuse290 control; never constrain validation timestamps. Preserve frozen export; do not repeat unchanged floating."
   }
 }
