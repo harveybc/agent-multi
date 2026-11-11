@@ -1,0 +1,84 @@
+{
+  "identity": "10670f6c027d39f0e776235aae72246333cdc8d6bd8230530f161b93adb0d405",
+  "report_identity": "999fa516a0ae6d8ac6d2881b56060baa150def826ca31163db169048dfddc4b0",
+  "arms": [
+    {
+      "arm": "critic_narrow_19",
+      "training_rows": 113,
+      "trust_rows": 437,
+      "samples": 1024,
+      "accepted_steps": 8,
+      "minimum_fraction": 0.25,
+      "maximum_fraction": 0.25,
+      "last_budget": {
+        "max_kl": 0.00015110001547090026,
+        "mean_kl": 3.35343057962368e-06,
+        "relative_parameter_drift": 0.00048608511695233283,
+        "step_margin_rms": 0.0011599201317499589
+      },
+      "cold_exact": true,
+      "frozen_exact": true
+    },
+    {
+      "arm": "critic_broad_19",
+      "training_rows": 437,
+      "trust_rows": 437,
+      "samples": 1024,
+      "accepted_steps": 8,
+      "minimum_fraction": 0.25,
+      "maximum_fraction": 0.5,
+      "last_budget": {
+        "max_kl": 0.00015160951347009018,
+        "mean_kl": 3.1704726093454938e-06,
+        "relative_parameter_drift": 0.00043959663300405385,
+        "step_margin_rms": 0.0010396798009915827
+      },
+      "cold_exact": true,
+      "frozen_exact": true
+    },
+    {
+      "arm": "critic_narrow_43",
+      "training_rows": 113,
+      "trust_rows": 437,
+      "samples": 1024,
+      "accepted_steps": 8,
+      "minimum_fraction": 0.25,
+      "maximum_fraction": 0.25,
+      "last_budget": {
+        "max_kl": 0.00014551516914354043,
+        "mean_kl": 3.296455868043324e-06,
+        "relative_parameter_drift": 0.00048154370368694484,
+        "step_margin_rms": 0.0011457938011687208
+      },
+      "cold_exact": true,
+      "frozen_exact": true
+    },
+    {
+      "arm": "critic_broad_43",
+      "training_rows": 437,
+      "trust_rows": 437,
+      "samples": 1024,
+      "accepted_steps": 8,
+      "minimum_fraction": 0.25,
+      "maximum_fraction": 0.25,
+      "last_budget": {
+        "max_kl": 0.00013172794751998505,
+        "mean_kl": 2.83901466982432e-06,
+        "relative_parameter_drift": 0.0004063051832412319,
+        "step_margin_rms": 0.0011049314916948454
+      },
+      "cold_exact": true,
+      "frozen_exact": true
+    }
+  ],
+  "narrow_fit": 113,
+  "broad_fit": 437,
+  "monitor": 38,
+  "monitor_support_unchanged": true,
+  "same_critic_targets_alpha_budget": true,
+  "common_trust_support": true,
+  "fit_only": true,
+  "complete_sample_coverage": true,
+  "account_attributions": 8,
+  "max_reconciliation_error": 0.0
+}

@@ -58,3 +58,92 @@ anchors but the continuation call still received inherited records. The call
 now receives expanded anchors, with a routing regression test. Preserve the
 initial artifacts as interrupted, not results; execute the correction in a
 fresh `r2` runtime/output identity.
+
+## Completed Results
+
+Corrected runtime6752d251 completed four arms in158.06seconds; independent
+account attribution took6.71seconds. Worker and collector exited0. Collection
+authenticated215 worker files and27 report files. All32 updates accepted real
+movement, strictly reduced their own batch loss and passed the frozen budgets.
+All eight endpoint account differences reconcile with exactly zero error.
+
+The outcome-blind expansion produced437 FIT anchors, not452. The2021 flat,
+entry-allowed, BUY-greedy stratum had only3 additional candidates for18 requested:
+shortfall15, no replacement. The original113 FIT anchors and38 MONITOR timestamps
+were retained. Every training row was visited within each arm's1024 samples.
+Critic values, alpha, architecture, budgets and437-row trust support match across
+all arms. Effective targets equal predicted Q exactly; native returns are only
+diagnostics. Cold inference/accounts and frozen components match exactly.
+
+| Arm | Schedule seed | TRAIN return % | VAL return % | TRAIN orders | VAL orders |
+|---|---:|---:|---:|---:|---:|
+| Qualified287 reference |19|12.708707|14.693262|743|206|
+| Narrow113 |19|13.201812|14.693262|741|206|
+| Broad437 |19|13.201812|14.693262|741|206|
+| Narrow113 |43|13.201812|14.693262|741|206|
+| Broad437 |43|13.201812|14.693262|741|206|
+
+Broader coverage adds no economic benefit in this bounded, equal-update probe.
+The common additional refinement gains49.310465USD TRAIN versus287, without a
+new validation gain. This is not evidence that coverage cannot help at another
+budget or with a better critic. The two seeds change update sampling, not the
+pretrained representation, critic or market sample.
+
+### Decision Attribution
+
+Every arm has the same three nonzero chronological TRAIN contributions:
+
+| Change | Account contribution USD |
+|---|---:|
+| Skip a profitable SELL | -36.462985 |
+| Skip a losing SELL | +56.446610 |
+| Skip a losing BUY | +29.326840 |
+| Total | +49.310465 |
+
+These are full account-continuation contributions in chronological order, not
+independently additive trade profits. Downstream positions and balance explain
+why three changed opening decisions produce a net reduction of two trades.
+Broad19 also changes one validation raw signal with no economic consequence.
+The other arms change no validation signals. Do not mistake changed logits or
+symbols for executed trades, or a net gain for improvement of every action.
+
+All four endpoint accounts have these metrics:
+
+| Metric | TRAIN | VALIDATION |
+|---|---:|---:|
+| Net return |13.201812%|14.693262%|
+| Net USD, initial10000 |1320.18|1469.33|
+| Sharpe |0.651837|2.179247|
+| Maximum DD |7.930285%|4.044574%|
+| Orders/week |3.5455|3.8148|
+| Win rate |61.8084%|58.2524%|
+| BUY orders/winners |229/154|24/15|
+| SELL orders/winners |512/304|182/105|
+| Early/TP/SL/forced exits |57/402/221/61|6/107/67/26|
+| Helpful/harmful early exits |28/29|4/2|
+
+Early-close quality has not improved: TRAIN helpful closes decrease29 to28,
+harmful remain29. The change in the set of entered positions must not be
+presented as an independently improved closer. Validation remains unchanged.
+Backtracking fractions were0.25 throughout except some broad19 steps at0.5;
+equal budget ceilings are not equal realized displacement.
+
+## Disposition And Next Step
+
+Keep all four saved endpoints plus287 unchanged. Choose narrow19 as the next
+research qualification candidate, with narrow43 as replication: broader input
+coverage did not improve these accounts. This choice does not promote a live
+model or prove global optimality. First export/qualify the exact saved weights
+with recipe, frozen tensors, cold logits and full account parity. Only then
+perform a changed-policy cumulative floating pass, including all previously
+removed phase2 inputs. Do not launch another long refit to recreate the weights.
+
+Evidence: [manifest](generalization/train_coverage_20261111/MANIFEST.json),
+[full metrics and attribution](generalization/train_coverage_20261111/SUMMARY.json),
+[coverage](generalization/train_coverage_20261111/COVERAGE.json),
+[integrity](generalization/train_coverage_20261111/INTEGRITY.json),
+[update steps](generalization/train_coverage_20261111/UPDATE_STEPS.json),
+[curves](generalization/train_coverage_20261111/RETURNS.png).
+
+Worker identity:`10670f6c027d39f0e776235aae72246333cdc8d6bd8230530f161b93adb0d405`.
+Report identity:`999fa516a0ae6d8ac6d2881b56060baa150def826ca31163db169048dfddc4b0`.

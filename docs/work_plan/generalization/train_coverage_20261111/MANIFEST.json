@@ -1,0 +1,11 @@
+{
+  "identity": "10670f6c027d39f0e776235aae72246333cdc8d6bd8230530f161b93adb0d405",
+  "runtime_commit": "6752d251",
+  "files": {
+    "COVERAGE.json": "8b7abe5ce707e7dbcefb47107a307a80eaa203a1137c52e5d92f5f0bc8fa344e",
+    "INTEGRITY.json": "3ad090ad5a1fd978f4be6404068d181f9551eaae8869475863f6c65b90b38e8a",
+    "RETURNS.png": "1cab4c339bc2bb29c1b497eb1ae5f0839832e1c34eb2665bacd2b99305feaf3d",
+    "SUMMARY.json": "6e3477e5a0ae7b2d2d5508bd128f116e17e019be071dd62970cc3b1ff3ab802e",
+    "UPDATE_STEPS.json": "cf5de62842cb1d961450d1bed8ef93fa5a5fddddf00a59d9de8725eec8d7e5e2"
+  }
+}

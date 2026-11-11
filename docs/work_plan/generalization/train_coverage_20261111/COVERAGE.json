@@ -1,0 +1,228 @@
+{
+  "all_original_timestamps_retained": true,
+  "broad_fit": 437,
+  "monitor": 38,
+  "multiplier": 4,
+  "narrow_fit": 113,
+  "outcomes_used": false,
+  "seed": 288,
+  "shortfall": 15,
+  "strata": [
+    {
+      "available_additional": 228,
+      "original": 4,
+      "requested_additional": 12,
+      "selected_additional": 12,
+      "stratum": [
+        2020,
+        -1,
+        false,
+        0
+      ]
+    },
+    {
+      "available_additional": 928,
+      "original": 2,
+      "requested_additional": 6,
+      "selected_additional": 6,
+      "stratum": [
+        2020,
+        0,
+        false,
+        0
+      ]
+    },
+    {
+      "available_additional": 4225,
+      "original": 14,
+      "requested_additional": 42,
+      "selected_additional": 42,
+      "stratum": [
+        2020,
+        0,
+        true,
+        0
+      ]
+    },
+    {
+      "available_additional": 75,
+      "original": 7,
+      "requested_additional": 21,
+      "selected_additional": 21,
+      "stratum": [
+        2020,
+        0,
+        true,
+        1
+      ]
+    },
+    {
+      "available_additional": 98,
+      "original": 7,
+      "requested_additional": 21,
+      "selected_additional": 21,
+      "stratum": [
+        2020,
+        0,
+        true,
+        2
+      ]
+    },
+    {
+      "available_additional": 71,
+      "original": 4,
+      "requested_additional": 12,
+      "selected_additional": 12,
+      "stratum": [
+        2020,
+        1,
+        false,
+        0
+      ]
+    },
+    {
+      "available_additional": 587,
+      "original": 4,
+      "requested_additional": 12,
+      "selected_additional": 12,
+      "stratum": [
+        2021,
+        -1,
+        false,
+        0
+      ]
+    },
+    {
+      "available_additional": 729,
+      "original": 2,
+      "requested_additional": 6,
+      "selected_additional": 6,
+      "stratum": [
+        2021,
+        0,
+        false,
+        0
+      ]
+    },
+    {
+      "available_additional": 4232,
+      "original": 16,
+      "requested_additional": 48,
+      "selected_additional": 48,
+      "stratum": [
+        2021,
+        0,
+        true,
+        0
+      ]
+    },
+    {
+      "available_additional": 3,
+      "original": 6,
+      "requested_additional": 18,
+      "selected_additional": 3,
+      "stratum": [
+        2021,
+        0,
+        true,
+        1
+      ]
+    },
+    {
+      "available_additional": 93,
+      "original": 6,
+      "requested_additional": 18,
+      "selected_additional": 18,
+      "stratum": [
+        2021,
+        0,
+        true,
+        2
+      ]
+    },
+    {
+      "available_additional": 23,
+      "original": 4,
+      "requested_additional": 12,
+      "selected_additional": 12,
+      "stratum": [
+        2021,
+        1,
+        false,
+        0
+      ]
+    },
+    {
+      "available_additional": 406,
+      "original": 4,
+      "requested_additional": 12,
+      "selected_additional": 12,
+      "stratum": [
+        2022,
+        -1,
+        false,
+        0
+      ]
+    },
+    {
+      "available_additional": 795,
+      "original": 2,
+      "requested_additional": 6,
+      "selected_additional": 6,
+      "stratum": [
+        2022,
+        0,
+        false,
+        0
+      ]
+    },
+    {
+      "available_additional": 3871,
+      "original": 19,
+      "requested_additional": 57,
+      "selected_additional": 57,
+      "stratum": [
+        2022,
+        0,
+        true,
+        0
+      ]
+    },
+    {
+      "available_additional": 102,
+      "original": 4,
+      "requested_additional": 12,
+      "selected_additional": 12,
+      "stratum": [
+        2022,
+        0,
+        true,
+        1
+      ]
+    },
+    {
+      "available_additional": 139,
+      "original": 4,
+      "requested_additional": 12,
+      "selected_additional": 12,
+      "stratum": [
+        2022,
+        0,
+        true,
+        2
+      ]
+    },
+    {
+      "available_additional": 221,
+      "original": 4,
+      "requested_additional": 12,
+      "selected_additional": 12,
+      "stratum": [
+        2022,
+        1,
+        false,
+        0
+      ]
+    }
+  ]
+}
