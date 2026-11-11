@@ -5,6 +5,7 @@ results without treating a calibration result as a profit improvement.
 
 | Date | ID | Finding or progress | Evidence | Operational disposition |
 |---|---|---|---|---|
+|2026-11-11|F-ONE-UPDATE-QUALIFIED|Both saved controls reproduce full accounts and cold logits;TRAIN10.792108% ->11.565540%,VAL14.591090% unchanged;4 head tensors changed,337 actor tensors exact|[279](../279_ONE_UPDATE_ACTOR_QUALIFICATION.md)|Preserve research bundles;fresh-cache cumulative floating can use changed actor;no live promotion or new validation gain|
 |2026-11-11|F-STL-SOURCE-REPAIR|Four repaired FX inputs recover479 original windows under unchanged STL parameters;December2023 regains222 windows|[278](../278_STL_REPAIR_AND_PREHISTORY_RESULTS.md)|Separate diagnostic candidate;January2020 andJune2022 still have no common STL support;no training release|
 |2026-11-11|F-STL-PREHISTORY|Original producers reconstruct34/36 needed columns from1567 real pre-TRAIN rows;baseline error below4e-14,prefix error0|[278](../278_STL_REPAIR_AND_PREHISTORY_RESULTS.md)|Calendar and cross-fit activity scope remain unqualified;no synthetic context or admission|
 |2026-11-11|F-USDCHF-ZERO-VOLUME|Native missing-hour archive record is flat,zero-volume and equal to preceding close|[278](../278_STL_REPAIR_AND_PREHISTORY_RESULTS.md)|Reject carry-forward as a real observation;do not remove model inputs or overwrite the source|
