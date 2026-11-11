@@ -2,6 +2,11 @@
 
 ## Execution Update: 2026-11-11
 
+[Bounded critic actor selection287](287_BOUNDED_CRITIC_ACTOR_SELECTION.md):
+qualify saved286 critic/AdamW endpoint8, seeds19/43, then fresh-cache primary19
+deletion and cumulative phase2 return. Exact full native and cold account gates;
+no retraining or live promotion.
+
 [Target versus geometry286](286_CRITIC_TARGET_VS_UPDATE_GEOMETRY.md) completed:
 eight arms,132.10seconds plus21.94seconds reporting,462 authenticated files,
 64 accepted bounded steps and16 exact account attributions. Critic/AdamW both

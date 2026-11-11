@@ -52,6 +52,17 @@ def test_boundary_profile_pins_endpoint_not_best_saved_metric():
             saved_point(bad, 8)
 
 
+def test_bounded_critic_profile_rejects_wrong_experiment_or_missing_arm():
+    source=dict(schema='native_target_geometry.v1',primary_endpoint=8,
+                points=[0,1,8],seeds=[19,43],test_read=False,
+                modes=['critic_adamw','return_adamw','critic_project','return_project'])
+    assert qualification_profile(source,'bounded_critic8')==('critic_adamw',8)
+    for key,value in [('schema','bounded_functional_actor.v1'),('primary_endpoint',1),
+                      ('points',[0,8]),('seeds',[43]),('test_read',True),('modes',['return_adamw'])]:
+        with pytest.raises(ValueError,match='QUALIFY_PROFILE'):
+            qualification_profile(dict(source,**{key:value}),'bounded_critic8')
+
+
 def test_activity_and_validation_are_not_compensated_by_train():
     ref = {p: dict(return_pct=10., orders_per_week=3.) for p in ('TRAIN', 'VALIDATION')}
     new = copy.deepcopy(ref); new['TRAIN']['return_pct'] = 100.

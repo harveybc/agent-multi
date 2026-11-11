@@ -13,6 +13,13 @@ def one_update_point(points):
 def qualification_profile(source, profile):
     if profile == 'one_update':
         return 'control', 1
+    if profile == 'bounded_critic8':
+        if (source.get('schema') != 'native_target_geometry.v1' or
+                source.get('primary_endpoint') != 8 or source.get('points') != [0,1,8] or
+                source.get('seeds') != [19,43] or source.get('test_read') is not False or
+                source.get('modes') != ['critic_adamw','return_adamw','critic_project','return_project']):
+            raise ValueError('QUALIFY_PROFILE')
+        return 'critic_adamw', 8
     if (profile != 'boundary_absolute8' or
             source.get('schema') != 'opening_boundary_refinement.v1' or
             source.get('primary_endpoint') != 8 or
