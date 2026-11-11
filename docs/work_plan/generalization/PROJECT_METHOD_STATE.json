@@ -1,6 +1,49 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "SELECTED_REFINEMENT_CAUSE_DIAGNOSIS_COMPLETE",
+  "current_stage": "FIT_DECISION_PRESERVATION_COMPLETE",
+  "fit_decision_preservation_292": {
+    "document": "../292_FIT_DECISION_PRESERVATION.md",
+    "status": "COMPLETE",
+    "runtime": "d8fc65c9",
+    "identity": "2bd36cbeb968ea1f3b16f5e7333c732d6e9762750ae726a3e835d430578ebafb",
+    "protected_fit_rows": 26,
+    "features": 69,
+    "groups": 28,
+    "seeds": [
+      19,
+      43
+    ],
+    "modes": [
+      "guard_only",
+      "project_guard"
+    ],
+    "critic_updates": 0,
+    "actor_update_budget": 8,
+    "test_read": false,
+    "model_promoted": false,
+    "next_action": "Design targeted FIT error correction with source-correct decision constraints, verify requested/actual margins and nonzero useful changes, then fixed-budget native accounts; reuse292 controls. No repeat unchanged floating or live promotion.",
+    "queue_running": false,
+    "collector_exit": 0,
+    "tests_passed": 28,
+    "worker_seconds": 53.00434135599062,
+    "report_seconds": 1.849334671976976,
+    "worker_files": 213,
+    "report_files": 27,
+    "independent_verified_files": 361,
+    "checkpoint_audits": 8,
+    "accepted_steps": {
+      "guard_only_19": 0,
+      "project_guard_19": 4,
+      "guard_only_43": 0,
+      "project_guard_43": 5
+    },
+    "account_attributions": 8,
+    "max_account_error_usd": 0.0,
+    "train_return_pct": 13.913055450002048,
+    "validation_return_pct": 16.33613924999989,
+    "changed_actions": 0,
+    "new_trading_gain": false
+  },
   "train_coverage_288": {
     "document": "../288_TRAIN_COVERAGE_CONTRAST.md",
     "owner_approved": "2026-11-11",
@@ -1788,7 +1831,7 @@
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
     "preserve selected69 after complete cumulative phase2 screen; do not repeat unchanged mask pass or retrain an unchanged subset by default",
-    "Design FIT-only source-correct decision-preservation constraint and nonzero feasibility test before new bounded refinement. Reuse290 control; never constrain validation timestamps. Preserve frozen export; do not repeat unchanged floating.",
+    "Design targeted FIT error correction with source-correct decision constraints, verify requested/actual margins and nonzero useful changes, then fixed-budget native accounts; reuse292 controls. No repeat unchanged floating or live promotion.",
     "keep donor-assisted screen distinct from matched restored-feature retraining",
     "reject primary threshold calibration and do not transfer unqualified close fields to actor",
     "audit real historical coverage and existing phase4 synthetic generator compatibility separately from phase2",

@@ -3,6 +3,7 @@ import pytest
 import torch
 
 from app.fit_decision_preservation import protected_actions, margins, preservation, project_step
+from app.all_state_refinement import policy_effect
 
 
 def test_only_fit_strict_source_optima_are_protected():
@@ -57,3 +58,10 @@ def test_infeasible_and_zero_only_are_not_reported_as_learning():
 
 def test_invalid_projection_rejected():
     with pytest.raises(ValueError):project_step(np.array([np.nan]),np.ones((1,1)),np.zeros(1))
+
+
+def test_unchanged_production_emissions_have_zero_policy_effect():
+    logits=np.array([[.1,.2,.3],[.9,-.1,.4]])
+    value=policy_effect(logits,logits.copy(),np.array([[0.,1.,2.],[1.,0.,2.]]))
+    assert value['expected_return_delta']==0.
+    assert value['greedy_changes']==0

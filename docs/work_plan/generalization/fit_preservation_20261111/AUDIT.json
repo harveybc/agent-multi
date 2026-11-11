@@ -1,0 +1,73 @@
+{
+  "identity": "2bd36cbeb968ea1f3b16f5e7333c732d6e9762750ae726a3e835d430578ebafb",
+  "verified_files": 361,
+  "protected_fit_rows": 26,
+  "checkpoint_checks": [
+    {
+      "arm": "guard_only_19",
+      "point": 1,
+      "accepted": 0,
+      "minimum_margin_change": 0.0,
+      "optimizer_step_count_exact": true,
+      "frozen_components_exact": true
+    },
+    {
+      "arm": "guard_only_19",
+      "point": 8,
+      "accepted": 0,
+      "minimum_margin_change": 0.0,
+      "optimizer_step_count_exact": true,
+      "frozen_components_exact": true
+    },
+    {
+      "arm": "project_guard_19",
+      "point": 1,
+      "accepted": 1,
+      "minimum_margin_change": -8.940696716308594e-08,
+      "optimizer_step_count_exact": true,
+      "frozen_components_exact": true
+    },
+    {
+      "arm": "project_guard_19",
+      "point": 8,
+      "accepted": 4,
+      "minimum_margin_change": -5.960464477539063e-08,
+      "optimizer_step_count_exact": true,
+      "frozen_components_exact": true
+    },
+    {
+      "arm": "guard_only_43",
+      "point": 1,
+      "accepted": 0,
+      "minimum_margin_change": 0.0,
+      "optimizer_step_count_exact": true,
+      "frozen_components_exact": true
+    },
+    {
+      "arm": "guard_only_43",
+      "point": 8,
+      "accepted": 0,
+      "minimum_margin_change": 0.0,
+      "optimizer_step_count_exact": true,
+      "frozen_components_exact": true
+    },
+    {
+      "arm": "project_guard_43",
+      "point": 1,
+      "accepted": 1,
+      "minimum_margin_change": -5.960464477539063e-08,
+      "optimizer_step_count_exact": true,
+      "frozen_components_exact": true
+    },
+    {
+      "arm": "project_guard_43",
+      "point": 8,
+      "accepted": 5,
+      "minimum_margin_change": -5.960464477539063e-08,
+      "optimizer_step_count_exact": true,
+      "frozen_components_exact": true
+    }
+  ],
+  "new_source_weights_unchanged": true,
+  "test_read": false
+}

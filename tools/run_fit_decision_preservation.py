@@ -178,7 +178,7 @@ def run(a):
                     metrics=measure(z,out/f'actor_{step:04d}')
                     cold_metrics=measure(cold_z,out/f'cold_{step:04d}')
                     for period,value in metrics.items():account_equal(value,cold_metrics[period])
-                    diagnostic={role:policy_effect(source_z.cpu().numpy()[ids],z[rows[ids]],native.cpu().numpy()[ids])
+                    diagnostic={role:policy_effect(baseline[rows[ids]],z[rows[ids]],native.cpu().numpy()[ids])
                         for role in ('fit','monitor')
                         for ids in [np.array([i for i,r in enumerate(records) if r['role']==role])]}
                     points.append(dict(updates=step,metrics=metrics,diagnostic=diagnostic,
@@ -205,7 +205,7 @@ def run(a):
     for arm in results:
         for ax,period in zip(axes,('TRAIN','VALIDATION')):
             ax.plot([p['updates'] for p in arm['points']],[p['metrics'][period]['return_pct'] for p in arm['points']],label=arm['arm'])
-            ax.set(title=period,xlabel='Actor updates',ylabel='Net return %')
+            ax.set(title=period,xlabel='Attempted actor updates',ylabel='Net return %')
     axes[1].legend(fontsize=7);fig.tight_layout();fig.savefig(a.output/'RETURNS.png');plt.close(fig)
     if file_sha(a.bundle/'model.pt')!=sha:raise ValueError('PRESERVE_SOURCE_CHANGED')
     verify_done(a.source,source['identity']);verify_done(a.bundle.parent,exported['identity'])

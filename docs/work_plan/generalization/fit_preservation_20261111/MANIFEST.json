@@ -1,0 +1,13 @@
+{
+  "runtime": "d8fc65c9",
+  "identity": "2bd36cbeb968ea1f3b16f5e7333c732d6e9762750ae726a3e835d430578ebafb",
+  "report_identity": "3a99ea22c4b5d7beaad071032ed2904bf63da11095e070b0a6e0a0fd9ecfb57b",
+  "files": {
+    "audit.py": "f8e3d48e9ae312f150eb16c2fa77eb93b5f69ed2f2f15623cf6fc0afdea813b7",
+    "RETURNS.png": "4baeda8d8cd50df91dd0c2a61cb3dfa1bd88c53b5a47b28306f0e746c3ddf79d",
+    "AUDIT.json": "a1eb06d2545b890bdc95e75e6f79c3f6f3b8100ab422325b048710ed497e2fb4",
+    "STEPS.json": "66faa3e0013e11fd4ae8d59579d4d7eeee7497b3f8d27026aaab158a8ba9562d",
+    "GUARD.json": "73e6dccca44908836d4977911caaf495cd2bbdfcad93cc444769b7cace7858a9",
+    "SUMMARY.json": "cb0ea1f16f9578bf3c8098df5a2c718a1db36ad502613c9feb0882fd6f9b4a54"
+  }
+}

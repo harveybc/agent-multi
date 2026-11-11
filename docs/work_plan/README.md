@@ -2,6 +2,13 @@
 
 ## Execution Update: 2026-11-11
 
+[FIT decision preservation292](292_FIT_DECISION_PRESERVATION.md) COMPLETE:
+26 FIT anchors preserved; guard-only accepts0/8 in both seeds, projection4/8
+and5/8. All full-period actions/accounts remain unchanged:TRAIN13.913055%,
+VAL16.336139%,739/207 orders. Feasible weight updates, no new trading gain.
+Eight cold checkpoints and frozen components audited;28 tests pass. Keep frozen
+export; next contrast targets incorrect FIT decisions with correct ones protected.
+
 [Selected refinement diagnosis291](291_SELECTED_REFINEMENT_CAUSE_DIAGNOSIS.md):
 COMPLETE. Both critic ranking errors and shared-head transfer are measured;
 native FIT targets alone do not prevent interference. Actual SELL-NOP margin
