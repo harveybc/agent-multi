@@ -15,6 +15,7 @@ from app.bounded_functional_actor import BUDGET, admissible, backtrack, budget_m
 from app.frozen_recipe_inputs import file_sha
 from app.frozen_signal_masks import prepared_signals
 from app.operational_opening_critic import emit_actor_reference
+from app.native_actor_targets import rebuild_panel, target_values, validate_anchor_identity
 from app.rl_subset import digest, project_inputs, support_hash
 from app.selected_warm_start import reset_learning_rng
 from app.structural_refit import load_bundle, verify_files
@@ -32,6 +33,7 @@ ROOT=Path(__file__).resolve().parents[1]
 
 
 def run(a):
+    target_contrast=a.target_contrast
     started=time.monotonic();configure(284);torch.backends.cudnn.allow_tf32=False
     if not torch.cuda.is_available() or torch.cuda.get_device_name()!=a.expected_device_name:
         raise ValueError('FUNCTIONAL_DEVICE')
@@ -39,7 +41,16 @@ def run(a):
     if source['schema']!='opening_boundary_refinement.v1':raise ValueError('FUNCTIONAL_SOURCE')
     parent=read(a.parent/'SPEC.json');verify_files(a.parent,parent['files'])
     model,_=load_bundle(a.bundle,'cuda');flags={n:p.requires_grad for n,p in model.loss.named_parameters()}
-    if (parent['identity']!=source['parent_identity'] or file_sha(a.bundle/'model.pt')!=source['source_sha256']
+    source_sha=file_sha(a.bundle/'model.pt')
+    qualification=None
+    if target_contrast:
+        qroot=a.bundle.parent.parent;qc=read(qroot/'CONFIG.json');qid=digest(qc)
+        verify_done(qroot,qid);qualification=read(a.bundle.parent/'RESULT.json')
+        if (qc.get('profile')!='boundary_absolute8' or qc.get('source')!=source['identity']
+                or qc.get('updates')!=8 or qualification['seed']!=19
+                or not qualification['qualified'] or qualification['model_sha256']!=source_sha):
+            raise ValueError('NATIVE_QUALIFIED_SOURCE')
+    if (parent['identity']!=source['parent_identity'] or (not target_contrast and source_sha!=source['source_sha256'])
             or model.recipe['identity']!=source['recipe_identity']):raise ValueError('FUNCTIONAL_LINEAGE')
     market=market_for(a.parent,parent);market.inputs=project_inputs(market.inputs,model.recipe);market.recipe=model.recipe
     if support_hash(market.inputs)!=source['support_sha256']:raise ValueError('FUNCTIONAL_SUPPORT')
@@ -49,18 +60,25 @@ def run(a):
             or not np.array_equal(market.inputs.row_ts_ns[rows],[r['timestamp'] for r in records])):
         raise ValueError('FUNCTIONAL_PANEL')
     cfg=dict(schema='bounded_functional_actor.v1',source_identity=source['identity'],
-        source_receipt_sha256=file_sha(a.source/'DONE.json'),source_sha256=source['source_sha256'],
+        source_receipt_sha256=file_sha(a.source/'DONE.json'),source_sha256=source_sha,
         parent_identity=parent['identity'],recipe_identity=model.recipe['identity'],
         support_sha256=source['support_sha256'],effective=model.effective,budget=BUDGET,
         modes=['bounded_adamw','last_layer','function_project'],seeds=[19,43],points=[0,1,8],
         primary_endpoint=8,batch=128,critic='sealed282 absolute',model_promoted=False,test_read=False,
         sources={str(p.relative_to(ROOT)):file_sha(p) for folder in ('app','agent_plugins','env_plugins','tools')
                  for p in (ROOT/folder).rglob('*.py')})
+    if target_contrast:
+        cfg.update(schema='native_target_geometry.v1',
+            modes=['critic_adamw','return_adamw','critic_project','return_project'],
+            qualification_identity=qid,qualification_receipt_sha256=file_sha(qroot/'DONE.json'),
+            critic='frozen qualified absolute19; same across schedule seeds',
+            targets='native reward returns replaced on FIT only; recomputed current-policy continuations',
+            fit_interval=['2020-01-01','2023-01-01'],monitor_interval=['2023-01-01','2024-01-01'])
     cfg['identity']=digest(cfg)
     if (a.output/'CONFIG.json').exists() and read(a.output/'CONFIG.json')!=cfg:raise ValueError('FUNCTIONAL_CONFIG')
     write(a.output/'CONFIG.json',cfg)
     if (a.output/'DONE.json').exists():verify_done(a.output,cfg['identity']);return
-    write(a.output/'panel/RECORDS.json',records)
+    if not target_contrast:write(a.output/'panel/RECORDS.json',records)
     def progress(stage,**kw):
         d=dict(stage=stage,at=now(),seconds=time.monotonic()-started,identity=cfg['identity'],**kw)
         write(a.output/'PROGRESS.json',d);print(d,flush=True)
@@ -72,7 +90,19 @@ def run(a):
         return {p:evaluate(make(interval),z,prepared=signals,save=path/p,diagnose=True)
                 for p,interval in market.recipe['split']['periods'].items()}
     progress('REFERENCE');baseline=logits(model);reference=measure(baseline,a.output/'reference')
-    for period,m in reference.items():account_equal(m,read(a.source/'REFERENCE.json')[period])
+    expected=qualification['metrics'] if target_contrast else read(a.source/'REFERENCE.json')
+    for period,m in reference.items():account_equal(m,expected[period])
+    if target_contrast:
+        panel=a.output/'panel'
+        anchors=records
+        if (panel/'DONE.json').exists():
+            verify_done(panel,cfg['identity']);records=read(panel/'RECORDS.json')
+        else:
+            records=rebuild_panel(make,market.inputs,prepared_signals(baseline)[0],records,
+                                  lambda **kw:progress('NATIVE_TARGETS',**kw))
+            write(panel/'RECORDS.json',records);seal(panel,cfg['identity'])
+        validate_panel(records)
+        validate_anchor_identity(anchors,records)
     x=torch.tensor(market.inputs.windows[rows],device='cuda');del model
     targets=np.array([[o['reward_return'] for o in r['outcomes']] for r in records])
     cash=np.array([[o['net_usd'] for o in r['outcomes']] for r in records])
@@ -91,7 +121,8 @@ def run(a):
             key=f'{mode}_{seed}';out=a.output/key
             if (out/'DONE.json').exists():verify_done(out,cfg['identity']);results.append(read(out/'RESULT.json'));continue
             progress('ARM',arm=key)
-            model,_=load_bundle(a.bundle,'cuda');model.load(a.source/f'critic_{seed}/MODEL.pt')
+            model,_=load_bundle(a.bundle,'cuda')
+            if not target_contrast:model.load(a.source/f'critic_{seed}/MODEL.pt')
             if not np.array_equal(logits(model)[market.inputs.valid],baseline[market.inputs.valid]):
                 raise ValueError('FUNCTIONAL_INITIAL_ACTOR')
             set_arm(model,'actor_only')
@@ -106,12 +137,23 @@ def run(a):
             source_theta=flat(all_head);fixed=frozen_state(model)
             buffers={n:v.detach().clone() for n,v in model.loss.named_buffers()}
             with torch.no_grad():q=model.q_surfaces(x).min(0).values.detach();source_z=model.surfaces(x).detach()
-            if not np.array_equal(q.cpu().numpy(),np.array(witness['q'],dtype=np.float32)):
+            predicted_q=q.detach().clone()
+            kind='native_fit' if mode.startswith('return_') else 'critic'
+            if target_contrast:q=target_values(q,records,kind)
+            if target_contrast:
+                write(out/'TARGETS.json',dict(kind=kind,roles=[r['role'] for r in records],
+                    predicted=predicted_q.cpu().tolist(),effective=q.cpu().tolist(),
+                    native_diagnostic=targets.tolist(),
+                    scope='only FIT effective rows enter actor objective; monitor native returns diagnostic only'))
+            projection_mode=mode=='function_project' or mode.endswith('_project')
+            if not target_contrast and not np.array_equal(q.cpu().numpy(),np.array(witness['q'],dtype=np.float32)):
                 raise ValueError('FUNCTIONAL_Q_PARITY')
             alpha=model.loss.log_alpha.detach().exp();points=[dict(updates=0,metrics=reference,diagnostic=diagnostic(baseline))];steps=[]
             write(out/'EFFECTIVE.json',dict(mode=mode,budget=BUDGET,alpha=float(alpha),
                 trainable=[n for n,_ in named],schedule_sha256=digest(schedule.tolist()),
-                critic_sha256=file_sha(a.source/f'critic_{seed}/MODEL.pt'),
+                critic_sha256=source_sha if target_contrast else file_sha(a.source/f'critic_{seed}/MODEL.pt'),
+                target_kind=kind,predicted_q_sha256=digest(predicted_q.cpu().tolist()),
+                effective_target_sha256=digest(q.cpu().tolist()),
                 learning_rate=model.effective['learning_rate'],weight_decay=model.effective['weight_decay']))
             for step in range(1,9):
                 ix=torch.tensor(fit[schedule[step-1]],device='cuda')
@@ -122,7 +164,7 @@ def run(a):
                 def objective(z):
                     v,e,_=actor_terms(z[ix].double(),q[ix].double(),alpha.double());return float(v+e)
                 before_loss=objective(before_z);projection={}
-                if mode=='function_project':
+                if projection_mode:
                     unique,count=torch.unique(ix,sorted=True,return_counts=True)
                     z=model.surfaces(x[unique]);grad=logit_terms(z.detach().double(),q[unique].double(),alpha.double())['total']
                     weight=count.double();desired=desired_margins(grad,weight,BUDGET['step_margin_rms'])
@@ -149,7 +191,7 @@ def run(a):
                         admissible(metrics,before_loss,after_loss)),metrics=metrics,loss_before=before_loss,loss_after=after_loss)
                 result=backtrack(params,direction,check,BUDGET['backtracks'])
                 if not result['accepted']:model.optimizer.load_state_dict(optimizer_before)
-                if mode=='function_project':
+                if projection_mode:
                     with torch.no_grad():actual=model.surfaces(x[unique]).double()
                     change=(actual[:,1:]-actual[:,:1])-(before_z[unique,1:]-before_z[unique,:1]).double()
                     wanted=desired*result['fraction']
@@ -171,7 +213,7 @@ def run(a):
                         changed_actions={p:int((z[market.inputs.valid&(market.inputs.period==p)].argmax(-1)!=
                             baseline[market.inputs.valid&(market.inputs.period==p)].argmax(-1)).sum()) for p in metrics}))
                     write(out/'POINTS.json',points);progress('POINT',arm=key,updates=step)
-            result=dict(arm=key,seed=seed,mode=mode,critic='greedy_calibrated',entropy='native',
+            result=dict(arm=key,seed=seed,mode=mode,critic=kind if target_contrast else 'greedy_calibrated',entropy='native',
                 points=points,steps=steps,accepted_steps=sum(s['accepted'] for s in steps),
                 frozen_exact=True,cold_exact=True,model_promoted=False)
             write(out/'RESULT.json',result);seal(out,cfg['identity']);results.append(result);del model
@@ -193,10 +235,11 @@ def run(a):
             ax.plot([p['updates'] for p in r['points']],[p['metrics'][period]['return_pct'] for p in r['points']],label=r['arm'])
             ax.set(title=period,xlabel='Additional actor updates',ylabel='Net return %')
     axes[1].legend(fontsize=6);fig.tight_layout();fig.savefig(a.output/'RETURNS.png');plt.close(fig)
-    if file_sha(a.bundle/'model.pt')!=source['source_sha256']:raise ValueError('FUNCTIONAL_SOURCE_CHANGED')
+    if file_sha(a.bundle/'model.pt')!=source_sha:raise ValueError('FUNCTIONAL_SOURCE_CHANGED')
+    if target_contrast:verify_done(qroot,qid)
     verify_done(a.source,source['identity'])
     write(a.output/'RESULT.json',dict(identity=cfg['identity'],reference=reference,arms=results,
-        historical_unbounded=[r for r in read(a.source/'RESULT.json')['arms'] if r['critic']=='greedy_calibrated'],
+        historical_unbounded=[] if target_contrast else [r for r in read(a.source/'RESULT.json')['arms'] if r['critic']=='greedy_calibrated'],
         attribution=attribution,model_promoted=False,test_read=False,source_unchanged=True,
         seconds=time.monotonic()-started,finished_at=now()))
     seal(a.output,cfg['identity']);progress('COMPLETE')
@@ -206,6 +249,7 @@ if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for name in ('parent','bundle','source','output'):p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--expected-device-name',required=True)
+    p.add_argument('--target-contrast',action='store_true')
     a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
     with (a.output/'worker.lock').open('a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)

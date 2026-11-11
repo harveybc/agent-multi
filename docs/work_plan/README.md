@@ -2,6 +2,12 @@
 
 ## Execution Update: 2026-11-11
 
+[Target versus geometry286](286_CRITIC_TARGET_VS_UPDATE_GEOMETRY.md) is the next
+bounded contrast: qualified285 source, current-policy TRAIN continuations versus
+frozen critic values, each with native AdamW and damped projection. Eight arms,
+two schedule seeds, fixed endpoint8; fresh targets at the151 frozen anchor times.
+No repeated feature pass, critic fit, TEST access or live promotion.
+
 [Absolute actor qualification and cumulative selection285](285_ABSOLUTE_ACTOR_CUMULATIVE_SELECTION.md)
 completed: saved282 endpoint8 qualifies both seeds in31.36seconds; primary19
 passes fresh-cache deletion and all historical phase2 readmissions in135.67seconds.
