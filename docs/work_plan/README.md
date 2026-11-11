@@ -2,6 +2,12 @@
 
 ## Execution Update: 2026-11-11
 
+[One-update qualification279](279_ONE_UPDATE_ACTOR_QUALIFICATION.md) implements
+the next independent phase2 task: authenticate both saved control checkpoints,
+export self-contained bundles and reproduce complete native accounts after cold
+reload. No new fit, data change, repeated unchanged selection or live promotion.
+The native-engine test fixture is explicitly supplied:36 focused tests pass.
+
 [Forward source disposition](../handoffs/MUSASHI_TO_RETSU_LIVE_SOURCE_RESOLUTION_2026_11_11.md)
 separates historical STL recovery from current69-input demo integration: use
 the recovered activity full estimator, its14 real lagged inputs, a current2026
