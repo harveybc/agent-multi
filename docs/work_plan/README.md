@@ -2,12 +2,19 @@
 
 ## Execution Update: 2026-11-11
 
+[Selected export/refinement290](290_SELECTED_ACTOR_EXPORT_AND_REFINEMENT.md):
+COMPLETE: physical69-input SAC export qualified;313 actor tensors copied exactly,
+full accounts and cold reload exact. Both fresh-critic bounded refinements improve
+TRAIN but lower VALIDATION (15.725127% /15.262069% versus16.336139%). Preserve
+frozen export; no live promotion.163 files verified, four account deltas reconcile
+exactly. Next isolate critic ranking versus shared-head update effects on FIT.
+
 [Coverage actor selection289](289_COVERAGE_ACTOR_CUMULATIVE_SELECTION.md)
 completed:69 ->68 ->69,28 groups,113 evaluations. Removed `px.range_12`,
 readmitted historical `RAW_BAR_LOG_RETURN`; all51 previous removals plus the
 new deletion tested. TRAIN13.913055%,VAL16.336139%; VAL DD3.257322%, but TRAIN
 DD9.548436% is worse.313 retained tensors and packed cold accounts exact.
-Next qualify trainable changed-input export before any further refinement.
+Trainable export and bounded refinement are now closed in290.
 
 [TRAIN coverage288](288_TRAIN_COVERAGE_CONTRAST.md) completed:113 versus437 FIT
 anchors, two update seeds,32 accepted steps and eight exact account attributions.
