@@ -2,10 +2,14 @@
 
 ## Execution Update: 2026-11-11
 
-[Gradient coupling283](283_ACTOR_GRADIENT_COUPLING.md) is approved: separate
+[Gradient coupling283](283_ACTOR_GRADIENT_COUPLING.md) completed: separate
 local categorical competition, self/cross-row shared-head projections and AdamW
 using authenticated282 artifacts plus a native-return diagnostic control.
-33 focused tests pass. No new trained checkpoint or live promotion.
+34 focused tests pass. Six exact saved-step replays in6.35seconds; no new trained
+checkpoint or live promotion. Native-return oracle local logits improve21/24
+optimal monitor openings with3 negligible changes; shared FIT-batch lowers23-24/24.
+AdamW replay is exact; local head Jacobian is full row rank. Diagnose shared
+update geometry, not missing data signal; see283 for the bounded next contrast.
 
 [Opening-boundary contrast282](282_OPENING_BOUNDARY_REFINEMENT.md) completed:
 executable NOP/BUY/SELL boundaries chosen before outcomes, paired absolute/gap

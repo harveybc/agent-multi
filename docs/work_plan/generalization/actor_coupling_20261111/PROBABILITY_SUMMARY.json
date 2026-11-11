@@ -1,0 +1,2752 @@
+{
+  "arms": {
+    "boundary_pairwise_native_19": {
+      "fit": {
+        "actual_adam_optimal_probability_down": 69,
+        "controls": {
+          "native_return_oracle": {
+            "layer_absolute_projection_shares": {
+              "actor_network_params.module.0.module.head.0.bias": 0.027787147113395094,
+              "actor_network_params.module.0.module.head.0.weight": 0.6206317818971048,
+              "actor_network_params.module.0.module.head.2.bias": 0.05963049283039099,
+              "actor_network_params.module.0.module.head.2.weight": 0.2919505781591091
+            },
+            "stages": {
+              "entropy:batch_self": {
+                "mean_native_expected_return_derivative": -4.465723714521257e-05,
+                "optimal_open_probability_down": 27,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 43
+              },
+              "entropy:cross": {
+                "mean_native_expected_return_derivative": 5.846429417032248e-06,
+                "optimal_open_probability_down": 1,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 72
+              },
+              "entropy:local_logit": {
+                "mean_native_expected_return_derivative": -9.140577336649573e-06,
+                "optimal_open_probability_down": 30,
+                "optimal_open_probability_negligible": 4,
+                "optimal_open_probability_up": 39
+              },
+              "entropy:self_alone": {
+                "mean_native_expected_return_derivative": -0.005655773076549119,
+                "optimal_open_probability_down": 27,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 44
+              },
+              "entropy:total": {
+                "mean_native_expected_return_derivative": -3.881080772818031e-05,
+                "optimal_open_probability_down": 2,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 71
+              },
+              "total:batch_self": {
+                "mean_native_expected_return_derivative": 0.010946220745094349,
+                "optimal_open_probability_down": 10,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 60
+              },
+              "total:cross": {
+                "mean_native_expected_return_derivative": -0.005340294744734983,
+                "optimal_open_probability_down": 70,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 3
+              },
+              "total:local_logit": {
+                "mean_native_expected_return_derivative": 0.017098348771423365,
+                "optimal_open_probability_down": 2,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 68
+              },
+              "total:self_alone": {
+                "mean_native_expected_return_derivative": 1.3286708263355163,
+                "optimal_open_probability_down": 11,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 60
+              },
+              "total:total": {
+                "mean_native_expected_return_derivative": 0.0056059260003593625,
+                "optimal_open_probability_down": 69,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 4
+              },
+              "value:batch_self": {
+                "mean_native_expected_return_derivative": 0.01099087798223956,
+                "optimal_open_probability_down": 12,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 59
+              },
+              "value:cross": {
+                "mean_native_expected_return_derivative": -0.00534614117415202,
+                "optimal_open_probability_down": 70,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 3
+              },
+              "value:local_logit": {
+                "mean_native_expected_return_derivative": 0.017107489348760017,
+                "optimal_open_probability_down": 2,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 68
+              },
+              "value:self_alone": {
+                "mean_native_expected_return_derivative": 1.3343265994120652,
+                "optimal_open_probability_down": 12,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 59
+              },
+              "value:total": {
+                "mean_native_expected_return_derivative": 0.005644736808087543,
+                "optimal_open_probability_down": 69,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 4
+              }
+            }
+          },
+          "recorded_q": {
+            "layer_absolute_projection_shares": {
+              "actor_network_params.module.0.module.head.0.bias": 0.03066491568717814,
+              "actor_network_params.module.0.module.head.0.weight": 0.6448748928730506,
+              "actor_network_params.module.0.module.head.2.bias": 0.07229642789872501,
+              "actor_network_params.module.0.module.head.2.weight": 0.2521637635410463
+            },
+            "stages": {
+              "entropy:batch_self": {
+                "mean_native_expected_return_derivative": -4.465723714521257e-05,
+                "optimal_open_probability_down": 27,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 43
+              },
+              "entropy:cross": {
+                "mean_native_expected_return_derivative": 5.846429417032248e-06,
+                "optimal_open_probability_down": 1,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 72
+              },
+              "entropy:local_logit": {
+                "mean_native_expected_return_derivative": -9.140577336649573e-06,
+                "optimal_open_probability_down": 30,
+                "optimal_open_probability_negligible": 4,
+                "optimal_open_probability_up": 39
+              },
+              "entropy:self_alone": {
+                "mean_native_expected_return_derivative": -0.005655773076549119,
+                "optimal_open_probability_down": 27,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 44
+              },
+              "entropy:total": {
+                "mean_native_expected_return_derivative": -3.881080772818031e-05,
+                "optimal_open_probability_down": 2,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 71
+              },
+              "total:batch_self": {
+                "mean_native_expected_return_derivative": 0.0029506580665881266,
+                "optimal_open_probability_down": 41,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 29
+              },
+              "total:cross": {
+                "mean_native_expected_return_derivative": -0.0006073941656441413,
+                "optimal_open_probability_down": 73,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              },
+              "total:local_logit": {
+                "mean_native_expected_return_derivative": 0.0020250286920735078,
+                "optimal_open_probability_down": 29,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 41
+              },
+              "total:self_alone": {
+                "mean_native_expected_return_derivative": 0.3646316704082734,
+                "optimal_open_probability_down": 42,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 29
+              },
+              "total:total": {
+                "mean_native_expected_return_derivative": 0.002343263900943986,
+                "optimal_open_probability_down": 72,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 1
+              },
+              "value:batch_self": {
+                "mean_native_expected_return_derivative": 0.002995315303733339,
+                "optimal_open_probability_down": 43,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 27
+              },
+              "value:cross": {
+                "mean_native_expected_return_derivative": -0.0006132405950611753,
+                "optimal_open_probability_down": 73,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              },
+              "value:local_logit": {
+                "mean_native_expected_return_derivative": 0.002034169269410157,
+                "optimal_open_probability_down": 32,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 38
+              },
+              "value:self_alone": {
+                "mean_native_expected_return_derivative": 0.3702874434848225,
+                "optimal_open_probability_down": 44,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 27
+              },
+              "value:total": {
+                "mean_native_expected_return_derivative": 0.002382074708672164,
+                "optimal_open_probability_down": 72,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 1
+              }
+            }
+          }
+        },
+        "decay_to_adaptive_projection_l2": 0.0007566361830565736,
+        "flat_allowed_rows": 83,
+        "native_optimal_openings": 73
+      },
+      "monitor": {
+        "actual_adam_optimal_probability_down": 21,
+        "controls": {
+          "native_return_oracle": {
+            "layer_absolute_projection_shares": {
+              "actor_network_params.module.0.module.head.0.bias": 0.030154330394270283,
+              "actor_network_params.module.0.module.head.0.weight": 0.5186093018781804,
+              "actor_network_params.module.0.module.head.2.bias": 0.0712485669825411,
+              "actor_network_params.module.0.module.head.2.weight": 0.37998780074500815
+            },
+            "stages": {
+              "entropy:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "entropy:cross": {
+                "mean_native_expected_return_derivative": -2.798824951573038e-05,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 24
+              },
+              "entropy:local_logit": {
+                "mean_native_expected_return_derivative": -1.6458196607457604e-06,
+                "optimal_open_probability_down": 7,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 14
+              },
+              "entropy:self_alone": {
+                "mean_native_expected_return_derivative": -0.00018216163867276457,
+                "optimal_open_probability_down": 5,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 19
+              },
+              "entropy:total": {
+                "mean_native_expected_return_derivative": -2.798824951573038e-05,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 24
+              },
+              "total:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "total:cross": {
+                "mean_native_expected_return_derivative": 0.00034311146941607757,
+                "optimal_open_probability_down": 24,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              },
+              "total:local_logit": {
+                "mean_native_expected_return_derivative": 0.013542491017733147,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 21
+              },
+              "total:self_alone": {
+                "mean_native_expected_return_derivative": 0.154292795512371,
+                "optimal_open_probability_down": 3,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 21
+              },
+              "total:total": {
+                "mean_native_expected_return_derivative": 0.00034311146941607757,
+                "optimal_open_probability_down": 24,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              },
+              "value:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "value:cross": {
+                "mean_native_expected_return_derivative": 0.0003710997189318079,
+                "optimal_open_probability_down": 24,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              },
+              "value:local_logit": {
+                "mean_native_expected_return_derivative": 0.01354413683739389,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 21
+              },
+              "value:self_alone": {
+                "mean_native_expected_return_derivative": 0.15447495715104378,
+                "optimal_open_probability_down": 4,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 20
+              },
+              "value:total": {
+                "mean_native_expected_return_derivative": 0.0003710997189318079,
+                "optimal_open_probability_down": 24,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              }
+            }
+          },
+          "recorded_q": {
+            "layer_absolute_projection_shares": {
+              "actor_network_params.module.0.module.head.0.bias": 0.03618482263912351,
+              "actor_network_params.module.0.module.head.0.weight": 0.529389685643129,
+              "actor_network_params.module.0.module.head.2.bias": 0.09419331804974519,
+              "actor_network_params.module.0.module.head.2.weight": 0.34023217366800224
+            },
+            "stages": {
+              "entropy:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "entropy:cross": {
+                "mean_native_expected_return_derivative": -2.798824951573038e-05,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 24
+              },
+              "entropy:local_logit": {
+                "mean_native_expected_return_derivative": -1.6458196607457604e-06,
+                "optimal_open_probability_down": 7,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 14
+              },
+              "entropy:self_alone": {
+                "mean_native_expected_return_derivative": -0.00018216163867276457,
+                "optimal_open_probability_down": 5,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 19
+              },
+              "entropy:total": {
+                "mean_native_expected_return_derivative": -2.798824951573038e-05,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 24
+              },
+              "total:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "total:cross": {
+                "mean_native_expected_return_derivative": 0.00040391515446922135,
+                "optimal_open_probability_down": 24,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              },
+              "total:local_logit": {
+                "mean_native_expected_return_derivative": 6.652672047366965e-05,
+                "optimal_open_probability_down": 17,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 4
+              },
+              "total:self_alone": {
+                "mean_native_expected_return_derivative": 0.009532940714270563,
+                "optimal_open_probability_down": 18,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 6
+              },
+              "total:total": {
+                "mean_native_expected_return_derivative": 0.00040391515446922135,
+                "optimal_open_probability_down": 24,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              },
+              "value:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "value:cross": {
+                "mean_native_expected_return_derivative": 0.00043190340398495164,
+                "optimal_open_probability_down": 24,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              },
+              "value:local_logit": {
+                "mean_native_expected_return_derivative": 6.817254013441538e-05,
+                "optimal_open_probability_down": 17,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 4
+              },
+              "value:self_alone": {
+                "mean_native_expected_return_derivative": 0.00971510235294332,
+                "optimal_open_probability_down": 19,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 5
+              },
+              "value:total": {
+                "mean_native_expected_return_derivative": 0.00043190340398495164,
+                "optimal_open_probability_down": 24,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              }
+            }
+          }
+        },
+        "decay_to_adaptive_projection_l2": 0.0009073218514380957,
+        "flat_allowed_rows": 28,
+        "native_optimal_openings": 24
+      }
+    },
+    "boundary_pairwise_native_43": {
+      "fit": {
+        "actual_adam_optimal_probability_down": 72,
+        "controls": {
+          "native_return_oracle": {
+            "layer_absolute_projection_shares": {
+              "actor_network_params.module.0.module.head.0.bias": 0.024775015115228515,
+              "actor_network_params.module.0.module.head.0.weight": 0.6428350106484501,
+              "actor_network_params.module.0.module.head.2.bias": 0.04599885122286197,
+              "actor_network_params.module.0.module.head.2.weight": 0.2863911230134594
+            },
+            "stages": {
+              "entropy:batch_self": {
+                "mean_native_expected_return_derivative": -4.423861900838515e-05,
+                "optimal_open_probability_down": 27,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 43
+              },
+              "entropy:cross": {
+                "mean_native_expected_return_derivative": 6.023587067622211e-06,
+                "optimal_open_probability_down": 1,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 72
+              },
+              "entropy:local_logit": {
+                "mean_native_expected_return_derivative": -9.140577336649573e-06,
+                "optimal_open_probability_down": 30,
+                "optimal_open_probability_negligible": 4,
+                "optimal_open_probability_up": 39
+              },
+              "entropy:self_alone": {
+                "mean_native_expected_return_derivative": -0.005655773076549119,
+                "optimal_open_probability_down": 27,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 44
+              },
+              "entropy:total": {
+                "mean_native_expected_return_derivative": -3.821503194076299e-05,
+                "optimal_open_probability_down": 3,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 70
+              },
+              "total:batch_self": {
+                "mean_native_expected_return_derivative": 0.01043111119123196,
+                "optimal_open_probability_down": 10,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 60
+              },
+              "total:cross": {
+                "mean_native_expected_return_derivative": -0.005198361542996019,
+                "optimal_open_probability_down": 67,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 6
+              },
+              "total:local_logit": {
+                "mean_native_expected_return_derivative": 0.017098348771423365,
+                "optimal_open_probability_down": 2,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 68
+              },
+              "total:self_alone": {
+                "mean_native_expected_return_derivative": 1.3286708263355163,
+                "optimal_open_probability_down": 11,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 60
+              },
+              "total:total": {
+                "mean_native_expected_return_derivative": 0.005232749648235939,
+                "optimal_open_probability_down": 61,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 12
+              },
+              "value:batch_self": {
+                "mean_native_expected_return_derivative": 0.010475349810240347,
+                "optimal_open_probability_down": 12,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 59
+              },
+              "value:cross": {
+                "mean_native_expected_return_derivative": -0.005204385130063644,
+                "optimal_open_probability_down": 68,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 5
+              },
+              "value:local_logit": {
+                "mean_native_expected_return_derivative": 0.017107489348760017,
+                "optimal_open_probability_down": 2,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 68
+              },
+              "value:self_alone": {
+                "mean_native_expected_return_derivative": 1.3343265994120652,
+                "optimal_open_probability_down": 12,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 59
+              },
+              "value:total": {
+                "mean_native_expected_return_derivative": 0.005270964680176703,
+                "optimal_open_probability_down": 61,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 12
+              }
+            }
+          },
+          "recorded_q": {
+            "layer_absolute_projection_shares": {
+              "actor_network_params.module.0.module.head.0.bias": 0.03679712081657948,
+              "actor_network_params.module.0.module.head.0.weight": 0.6377006231435107,
+              "actor_network_params.module.0.module.head.2.bias": 0.08890331785794833,
+              "actor_network_params.module.0.module.head.2.weight": 0.2365989381819615
+            },
+            "stages": {
+              "entropy:batch_self": {
+                "mean_native_expected_return_derivative": -4.423861900838515e-05,
+                "optimal_open_probability_down": 27,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 43
+              },
+              "entropy:cross": {
+                "mean_native_expected_return_derivative": 6.023587067622211e-06,
+                "optimal_open_probability_down": 1,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 72
+              },
+              "entropy:local_logit": {
+                "mean_native_expected_return_derivative": -9.140577336649573e-06,
+                "optimal_open_probability_down": 30,
+                "optimal_open_probability_negligible": 4,
+                "optimal_open_probability_up": 39
+              },
+              "entropy:self_alone": {
+                "mean_native_expected_return_derivative": -0.005655773076549119,
+                "optimal_open_probability_down": 27,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 44
+              },
+              "entropy:total": {
+                "mean_native_expected_return_derivative": -3.821503194076299e-05,
+                "optimal_open_probability_down": 3,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 70
+              },
+              "total:batch_self": {
+                "mean_native_expected_return_derivative": 0.0017836932512102863,
+                "optimal_open_probability_down": 54,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 16
+              },
+              "total:cross": {
+                "mean_native_expected_return_derivative": 0.00037922522421619196,
+                "optimal_open_probability_down": 73,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              },
+              "total:local_logit": {
+                "mean_native_expected_return_derivative": 0.002188216145541898,
+                "optimal_open_probability_down": 42,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 28
+              },
+              "total:self_alone": {
+                "mean_native_expected_return_derivative": 0.22781015713926078,
+                "optimal_open_probability_down": 55,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 16
+              },
+              "total:total": {
+                "mean_native_expected_return_derivative": 0.0021629184754264766,
+                "optimal_open_probability_down": 72,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 1
+              },
+              "value:batch_self": {
+                "mean_native_expected_return_derivative": 0.0018279318702186724,
+                "optimal_open_probability_down": 54,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 16
+              },
+              "value:cross": {
+                "mean_native_expected_return_derivative": 0.00037320163714856793,
+                "optimal_open_probability_down": 73,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              },
+              "value:local_logit": {
+                "mean_native_expected_return_derivative": 0.0021973567228785475,
+                "optimal_open_probability_down": 44,
+                "optimal_open_probability_negligible": 4,
+                "optimal_open_probability_up": 25
+              },
+              "value:self_alone": {
+                "mean_native_expected_return_derivative": 0.23346593021580997,
+                "optimal_open_probability_down": 55,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 16
+              },
+              "value:total": {
+                "mean_native_expected_return_derivative": 0.0022011335073672395,
+                "optimal_open_probability_down": 72,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 1
+              }
+            }
+          }
+        },
+        "decay_to_adaptive_projection_l2": 0.0007472161079000367,
+        "flat_allowed_rows": 83,
+        "native_optimal_openings": 73
+      },
+      "monitor": {
+        "actual_adam_optimal_probability_down": 24,
+        "controls": {
+          "native_return_oracle": {
+            "layer_absolute_projection_shares": {
+              "actor_network_params.module.0.module.head.0.bias": 0.028248776347916196,
+              "actor_network_params.module.0.module.head.0.weight": 0.5225145156979373,
+              "actor_network_params.module.0.module.head.2.bias": 0.05630130509388708,
+              "actor_network_params.module.0.module.head.2.weight": 0.39293540286025946
+            },
+            "stages": {
+              "entropy:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "entropy:cross": {
+                "mean_native_expected_return_derivative": -3.063706834788404e-05,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 24
+              },
+              "entropy:local_logit": {
+                "mean_native_expected_return_derivative": -1.6458196607457604e-06,
+                "optimal_open_probability_down": 7,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 14
+              },
+              "entropy:self_alone": {
+                "mean_native_expected_return_derivative": -0.00018216163867276457,
+                "optimal_open_probability_down": 5,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 19
+              },
+              "entropy:total": {
+                "mean_native_expected_return_derivative": -3.063706834788404e-05,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 24
+              },
+              "total:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "total:cross": {
+                "mean_native_expected_return_derivative": 0.0002693026922352913,
+                "optimal_open_probability_down": 23,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 1
+              },
+              "total:local_logit": {
+                "mean_native_expected_return_derivative": 0.013542491017733147,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 21
+              },
+              "total:self_alone": {
+                "mean_native_expected_return_derivative": 0.154292795512371,
+                "optimal_open_probability_down": 3,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 21
+              },
+              "total:total": {
+                "mean_native_expected_return_derivative": 0.0002693026922352913,
+                "optimal_open_probability_down": 23,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 1
+              },
+              "value:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "value:cross": {
+                "mean_native_expected_return_derivative": 0.00029993976058317466,
+                "optimal_open_probability_down": 23,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 1
+              },
+              "value:local_logit": {
+                "mean_native_expected_return_derivative": 0.01354413683739389,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 21
+              },
+              "value:self_alone": {
+                "mean_native_expected_return_derivative": 0.15447495715104378,
+                "optimal_open_probability_down": 4,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 20
+              },
+              "value:total": {
+                "mean_native_expected_return_derivative": 0.00029993976058317466,
+                "optimal_open_probability_down": 23,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 1
+              }
+            }
+          },
+          "recorded_q": {
+            "layer_absolute_projection_shares": {
+              "actor_network_params.module.0.module.head.0.bias": 0.04313431965504222,
+              "actor_network_params.module.0.module.head.0.weight": 0.5420917666632198,
+              "actor_network_params.module.0.module.head.2.bias": 0.11529654656439434,
+              "actor_network_params.module.0.module.head.2.weight": 0.2994773671173438
+            },
+            "stages": {
+              "entropy:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "entropy:cross": {
+                "mean_native_expected_return_derivative": -3.063706834788404e-05,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 24
+              },
+              "entropy:local_logit": {
+                "mean_native_expected_return_derivative": -1.6458196607457604e-06,
+                "optimal_open_probability_down": 7,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 14
+              },
+              "entropy:self_alone": {
+                "mean_native_expected_return_derivative": -0.00018216163867276457,
+                "optimal_open_probability_down": 5,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 19
+              },
+              "entropy:total": {
+                "mean_native_expected_return_derivative": -3.063706834788404e-05,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 24
+              },
+              "total:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "total:cross": {
+                "mean_native_expected_return_derivative": 0.0011316636296854455,
+                "optimal_open_probability_down": 24,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              },
+              "total:local_logit": {
+                "mean_native_expected_return_derivative": 0.00019131229235058283,
+                "optimal_open_probability_down": 17,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 4
+              },
+              "total:self_alone": {
+                "mean_native_expected_return_derivative": 0.012538297708638744,
+                "optimal_open_probability_down": 21,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 3
+              },
+              "total:total": {
+                "mean_native_expected_return_derivative": 0.0011316636296854455,
+                "optimal_open_probability_down": 24,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              },
+              "value:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "value:cross": {
+                "mean_native_expected_return_derivative": 0.0011623006980333306,
+                "optimal_open_probability_down": 24,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              },
+              "value:local_logit": {
+                "mean_native_expected_return_derivative": 0.00019295811201132832,
+                "optimal_open_probability_down": 17,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 4
+              },
+              "value:self_alone": {
+                "mean_native_expected_return_derivative": 0.012720459347311515,
+                "optimal_open_probability_down": 21,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 3
+              },
+              "value:total": {
+                "mean_native_expected_return_derivative": 0.0011623006980333306,
+                "optimal_open_probability_down": 24,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              }
+            }
+          }
+        },
+        "decay_to_adaptive_projection_l2": 0.0008651777959150878,
+        "flat_allowed_rows": 28,
+        "native_optimal_openings": 24
+      }
+    },
+    "greedy_calibrated_native_19": {
+      "fit": {
+        "actual_adam_optimal_probability_down": 72,
+        "controls": {
+          "native_return_oracle": {
+            "layer_absolute_projection_shares": {
+              "actor_network_params.module.0.module.head.0.bias": 0.027787147113395094,
+              "actor_network_params.module.0.module.head.0.weight": 0.6206317818971048,
+              "actor_network_params.module.0.module.head.2.bias": 0.05963049283039099,
+              "actor_network_params.module.0.module.head.2.weight": 0.2919505781591091
+            },
+            "stages": {
+              "entropy:batch_self": {
+                "mean_native_expected_return_derivative": -4.465723714521257e-05,
+                "optimal_open_probability_down": 27,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 43
+              },
+              "entropy:cross": {
+                "mean_native_expected_return_derivative": 5.846429417032248e-06,
+                "optimal_open_probability_down": 1,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 72
+              },
+              "entropy:local_logit": {
+                "mean_native_expected_return_derivative": -9.140577336649573e-06,
+                "optimal_open_probability_down": 30,
+                "optimal_open_probability_negligible": 4,
+                "optimal_open_probability_up": 39
+              },
+              "entropy:self_alone": {
+                "mean_native_expected_return_derivative": -0.005655773076549119,
+                "optimal_open_probability_down": 27,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 44
+              },
+              "entropy:total": {
+                "mean_native_expected_return_derivative": -3.881080772818031e-05,
+                "optimal_open_probability_down": 2,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 71
+              },
+              "total:batch_self": {
+                "mean_native_expected_return_derivative": 0.010946220745094349,
+                "optimal_open_probability_down": 10,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 60
+              },
+              "total:cross": {
+                "mean_native_expected_return_derivative": -0.005340294744734983,
+                "optimal_open_probability_down": 70,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 3
+              },
+              "total:local_logit": {
+                "mean_native_expected_return_derivative": 0.017098348771423365,
+                "optimal_open_probability_down": 2,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 68
+              },
+              "total:self_alone": {
+                "mean_native_expected_return_derivative": 1.3286708263355163,
+                "optimal_open_probability_down": 11,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 60
+              },
+              "total:total": {
+                "mean_native_expected_return_derivative": 0.0056059260003593625,
+                "optimal_open_probability_down": 69,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 4
+              },
+              "value:batch_self": {
+                "mean_native_expected_return_derivative": 0.01099087798223956,
+                "optimal_open_probability_down": 12,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 59
+              },
+              "value:cross": {
+                "mean_native_expected_return_derivative": -0.00534614117415202,
+                "optimal_open_probability_down": 70,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 3
+              },
+              "value:local_logit": {
+                "mean_native_expected_return_derivative": 0.017107489348760017,
+                "optimal_open_probability_down": 2,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 68
+              },
+              "value:self_alone": {
+                "mean_native_expected_return_derivative": 1.3343265994120652,
+                "optimal_open_probability_down": 12,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 59
+              },
+              "value:total": {
+                "mean_native_expected_return_derivative": 0.005644736808087543,
+                "optimal_open_probability_down": 69,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 4
+              }
+            }
+          },
+          "recorded_q": {
+            "layer_absolute_projection_shares": {
+              "actor_network_params.module.0.module.head.0.bias": 0.026478103928735085,
+              "actor_network_params.module.0.module.head.0.weight": 0.666927360081716,
+              "actor_network_params.module.0.module.head.2.bias": 0.059196883459613554,
+              "actor_network_params.module.0.module.head.2.weight": 0.24739765252993529
+            },
+            "stages": {
+              "entropy:batch_self": {
+                "mean_native_expected_return_derivative": -4.465723714521257e-05,
+                "optimal_open_probability_down": 27,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 43
+              },
+              "entropy:cross": {
+                "mean_native_expected_return_derivative": 5.846429417032248e-06,
+                "optimal_open_probability_down": 1,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 72
+              },
+              "entropy:local_logit": {
+                "mean_native_expected_return_derivative": -9.140577336649573e-06,
+                "optimal_open_probability_down": 30,
+                "optimal_open_probability_negligible": 4,
+                "optimal_open_probability_up": 39
+              },
+              "entropy:self_alone": {
+                "mean_native_expected_return_derivative": -0.005655773076549119,
+                "optimal_open_probability_down": 27,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 44
+              },
+              "entropy:total": {
+                "mean_native_expected_return_derivative": -3.881080772818031e-05,
+                "optimal_open_probability_down": 2,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 71
+              },
+              "total:batch_self": {
+                "mean_native_expected_return_derivative": 0.0016820597572004376,
+                "optimal_open_probability_down": 42,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 28
+              },
+              "total:cross": {
+                "mean_native_expected_return_derivative": -0.0001311185085293873,
+                "optimal_open_probability_down": 72,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 1
+              },
+              "total:local_logit": {
+                "mean_native_expected_return_derivative": 0.0009827138317496742,
+                "optimal_open_probability_down": 34,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 36
+              },
+              "total:self_alone": {
+                "mean_native_expected_return_derivative": 0.20638663386707554,
+                "optimal_open_probability_down": 42,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 29
+              },
+              "total:total": {
+                "mean_native_expected_return_derivative": 0.0015509412486710494,
+                "optimal_open_probability_down": 72,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 1
+              },
+              "value:batch_self": {
+                "mean_native_expected_return_derivative": 0.001726716994345651,
+                "optimal_open_probability_down": 45,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 25
+              },
+              "value:cross": {
+                "mean_native_expected_return_derivative": -0.00013696493794642005,
+                "optimal_open_probability_down": 72,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 1
+              },
+              "value:local_logit": {
+                "mean_native_expected_return_derivative": 0.0009918544090863235,
+                "optimal_open_probability_down": 44,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 26
+              },
+              "value:self_alone": {
+                "mean_native_expected_return_derivative": 0.2120424069436247,
+                "optimal_open_probability_down": 46,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 25
+              },
+              "value:total": {
+                "mean_native_expected_return_derivative": 0.0015897520563992276,
+                "optimal_open_probability_down": 72,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 1
+              }
+            }
+          }
+        },
+        "decay_to_adaptive_projection_l2": 0.000755372066063657,
+        "flat_allowed_rows": 83,
+        "native_optimal_openings": 73
+      },
+      "monitor": {
+        "actual_adam_optimal_probability_down": 23,
+        "controls": {
+          "native_return_oracle": {
+            "layer_absolute_projection_shares": {
+              "actor_network_params.module.0.module.head.0.bias": 0.030154330394270283,
+              "actor_network_params.module.0.module.head.0.weight": 0.5186093018781804,
+              "actor_network_params.module.0.module.head.2.bias": 0.0712485669825411,
+              "actor_network_params.module.0.module.head.2.weight": 0.37998780074500815
+            },
+            "stages": {
+              "entropy:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "entropy:cross": {
+                "mean_native_expected_return_derivative": -2.798824951573038e-05,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 24
+              },
+              "entropy:local_logit": {
+                "mean_native_expected_return_derivative": -1.6458196607457604e-06,
+                "optimal_open_probability_down": 7,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 14
+              },
+              "entropy:self_alone": {
+                "mean_native_expected_return_derivative": -0.00018216163867276457,
+                "optimal_open_probability_down": 5,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 19
+              },
+              "entropy:total": {
+                "mean_native_expected_return_derivative": -2.798824951573038e-05,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 24
+              },
+              "total:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "total:cross": {
+                "mean_native_expected_return_derivative": 0.00034311146941607757,
+                "optimal_open_probability_down": 24,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              },
+              "total:local_logit": {
+                "mean_native_expected_return_derivative": 0.013542491017733147,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 21
+              },
+              "total:self_alone": {
+                "mean_native_expected_return_derivative": 0.154292795512371,
+                "optimal_open_probability_down": 3,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 21
+              },
+              "total:total": {
+                "mean_native_expected_return_derivative": 0.00034311146941607757,
+                "optimal_open_probability_down": 24,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              },
+              "value:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "value:cross": {
+                "mean_native_expected_return_derivative": 0.0003710997189318079,
+                "optimal_open_probability_down": 24,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              },
+              "value:local_logit": {
+                "mean_native_expected_return_derivative": 0.01354413683739389,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 21
+              },
+              "value:self_alone": {
+                "mean_native_expected_return_derivative": 0.15447495715104378,
+                "optimal_open_probability_down": 4,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 20
+              },
+              "value:total": {
+                "mean_native_expected_return_derivative": 0.0003710997189318079,
+                "optimal_open_probability_down": 24,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              }
+            }
+          },
+          "recorded_q": {
+            "layer_absolute_projection_shares": {
+              "actor_network_params.module.0.module.head.0.bias": 0.03216827668055955,
+              "actor_network_params.module.0.module.head.0.weight": 0.5650247319590138,
+              "actor_network_params.module.0.module.head.2.bias": 0.07911101655672054,
+              "actor_network_params.module.0.module.head.2.weight": 0.32369597480370615
+            },
+            "stages": {
+              "entropy:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "entropy:cross": {
+                "mean_native_expected_return_derivative": -2.798824951573038e-05,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 24
+              },
+              "entropy:local_logit": {
+                "mean_native_expected_return_derivative": -1.6458196607457604e-06,
+                "optimal_open_probability_down": 7,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 14
+              },
+              "entropy:self_alone": {
+                "mean_native_expected_return_derivative": -0.00018216163867276457,
+                "optimal_open_probability_down": 5,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 19
+              },
+              "entropy:total": {
+                "mean_native_expected_return_derivative": -2.798824951573038e-05,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 24
+              },
+              "total:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "total:cross": {
+                "mean_native_expected_return_derivative": 0.0005045271478686355,
+                "optimal_open_probability_down": 24,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              },
+              "total:local_logit": {
+                "mean_native_expected_return_derivative": -1.797457918408877e-05,
+                "optimal_open_probability_down": 16,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 5
+              },
+              "total:self_alone": {
+                "mean_native_expected_return_derivative": 0.0019571848038378342,
+                "optimal_open_probability_down": 18,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 6
+              },
+              "total:total": {
+                "mean_native_expected_return_derivative": 0.0005045271478686355,
+                "optimal_open_probability_down": 24,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              },
+              "value:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "value:cross": {
+                "mean_native_expected_return_derivative": 0.0005325153973843661,
+                "optimal_open_probability_down": 24,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              },
+              "value:local_logit": {
+                "mean_native_expected_return_derivative": -1.632875952334308e-05,
+                "optimal_open_probability_down": 17,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 4
+              },
+              "value:self_alone": {
+                "mean_native_expected_return_derivative": 0.002139346442510595,
+                "optimal_open_probability_down": 21,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 3
+              },
+              "value:total": {
+                "mean_native_expected_return_derivative": 0.0005325153973843661,
+                "optimal_open_probability_down": 24,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              }
+            }
+          }
+        },
+        "decay_to_adaptive_projection_l2": 0.0009234927562019554,
+        "flat_allowed_rows": 28,
+        "native_optimal_openings": 24
+      }
+    },
+    "greedy_calibrated_native_43": {
+      "fit": {
+        "actual_adam_optimal_probability_down": 70,
+        "controls": {
+          "native_return_oracle": {
+            "layer_absolute_projection_shares": {
+              "actor_network_params.module.0.module.head.0.bias": 0.024775015115228515,
+              "actor_network_params.module.0.module.head.0.weight": 0.6428350106484501,
+              "actor_network_params.module.0.module.head.2.bias": 0.04599885122286197,
+              "actor_network_params.module.0.module.head.2.weight": 0.2863911230134594
+            },
+            "stages": {
+              "entropy:batch_self": {
+                "mean_native_expected_return_derivative": -4.423861900838515e-05,
+                "optimal_open_probability_down": 27,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 43
+              },
+              "entropy:cross": {
+                "mean_native_expected_return_derivative": 6.023587067622211e-06,
+                "optimal_open_probability_down": 1,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 72
+              },
+              "entropy:local_logit": {
+                "mean_native_expected_return_derivative": -9.140577336649573e-06,
+                "optimal_open_probability_down": 30,
+                "optimal_open_probability_negligible": 4,
+                "optimal_open_probability_up": 39
+              },
+              "entropy:self_alone": {
+                "mean_native_expected_return_derivative": -0.005655773076549119,
+                "optimal_open_probability_down": 27,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 44
+              },
+              "entropy:total": {
+                "mean_native_expected_return_derivative": -3.821503194076299e-05,
+                "optimal_open_probability_down": 3,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 70
+              },
+              "total:batch_self": {
+                "mean_native_expected_return_derivative": 0.01043111119123196,
+                "optimal_open_probability_down": 10,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 60
+              },
+              "total:cross": {
+                "mean_native_expected_return_derivative": -0.005198361542996019,
+                "optimal_open_probability_down": 67,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 6
+              },
+              "total:local_logit": {
+                "mean_native_expected_return_derivative": 0.017098348771423365,
+                "optimal_open_probability_down": 2,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 68
+              },
+              "total:self_alone": {
+                "mean_native_expected_return_derivative": 1.3286708263355163,
+                "optimal_open_probability_down": 11,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 60
+              },
+              "total:total": {
+                "mean_native_expected_return_derivative": 0.005232749648235939,
+                "optimal_open_probability_down": 61,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 12
+              },
+              "value:batch_self": {
+                "mean_native_expected_return_derivative": 0.010475349810240347,
+                "optimal_open_probability_down": 12,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 59
+              },
+              "value:cross": {
+                "mean_native_expected_return_derivative": -0.005204385130063644,
+                "optimal_open_probability_down": 68,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 5
+              },
+              "value:local_logit": {
+                "mean_native_expected_return_derivative": 0.017107489348760017,
+                "optimal_open_probability_down": 2,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 68
+              },
+              "value:self_alone": {
+                "mean_native_expected_return_derivative": 1.3343265994120652,
+                "optimal_open_probability_down": 12,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 59
+              },
+              "value:total": {
+                "mean_native_expected_return_derivative": 0.005270964680176703,
+                "optimal_open_probability_down": 61,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 12
+              }
+            }
+          },
+          "recorded_q": {
+            "layer_absolute_projection_shares": {
+              "actor_network_params.module.0.module.head.0.bias": 0.038356275922980805,
+              "actor_network_params.module.0.module.head.0.weight": 0.6125630302001714,
+              "actor_network_params.module.0.module.head.2.bias": 0.09650381320123504,
+              "actor_network_params.module.0.module.head.2.weight": 0.25257688067561274
+            },
+            "stages": {
+              "entropy:batch_self": {
+                "mean_native_expected_return_derivative": -4.423861900838515e-05,
+                "optimal_open_probability_down": 27,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 43
+              },
+              "entropy:cross": {
+                "mean_native_expected_return_derivative": 6.023587067622211e-06,
+                "optimal_open_probability_down": 1,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 72
+              },
+              "entropy:local_logit": {
+                "mean_native_expected_return_derivative": -9.140577336649573e-06,
+                "optimal_open_probability_down": 30,
+                "optimal_open_probability_negligible": 4,
+                "optimal_open_probability_up": 39
+              },
+              "entropy:self_alone": {
+                "mean_native_expected_return_derivative": -0.005655773076549119,
+                "optimal_open_probability_down": 27,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 44
+              },
+              "entropy:total": {
+                "mean_native_expected_return_derivative": -3.821503194076299e-05,
+                "optimal_open_probability_down": 3,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 70
+              },
+              "total:batch_self": {
+                "mean_native_expected_return_derivative": 0.0018035753859480664,
+                "optimal_open_probability_down": 59,
+                "optimal_open_probability_negligible": 4,
+                "optimal_open_probability_up": 10
+              },
+              "total:cross": {
+                "mean_native_expected_return_derivative": 4.1259057755698884e-05,
+                "optimal_open_probability_down": 72,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 1
+              },
+              "total:local_logit": {
+                "mean_native_expected_return_derivative": 0.0017704183624897489,
+                "optimal_open_probability_down": 48,
+                "optimal_open_probability_negligible": 4,
+                "optimal_open_probability_up": 21
+              },
+              "total:self_alone": {
+                "mean_native_expected_return_derivative": 0.23085383885639477,
+                "optimal_open_probability_down": 61,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 10
+              },
+              "total:total": {
+                "mean_native_expected_return_derivative": 0.0018448344437037676,
+                "optimal_open_probability_down": 72,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 1
+              },
+              "value:batch_self": {
+                "mean_native_expected_return_derivative": 0.0018478140049564514,
+                "optimal_open_probability_down": 60,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 10
+              },
+              "value:cross": {
+                "mean_native_expected_return_derivative": 3.5235470688079174e-05,
+                "optimal_open_probability_down": 72,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 1
+              },
+              "value:local_logit": {
+                "mean_native_expected_return_derivative": 0.0017795589398263982,
+                "optimal_open_probability_down": 50,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 20
+              },
+              "value:self_alone": {
+                "mean_native_expected_return_derivative": 0.2365096119329438,
+                "optimal_open_probability_down": 61,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 10
+              },
+              "value:total": {
+                "mean_native_expected_return_derivative": 0.0018830494756445308,
+                "optimal_open_probability_down": 72,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 1
+              }
+            }
+          }
+        },
+        "decay_to_adaptive_projection_l2": 0.0008562361840025912,
+        "flat_allowed_rows": 83,
+        "native_optimal_openings": 73
+      },
+      "monitor": {
+        "actual_adam_optimal_probability_down": 22,
+        "controls": {
+          "native_return_oracle": {
+            "layer_absolute_projection_shares": {
+              "actor_network_params.module.0.module.head.0.bias": 0.028248776347916196,
+              "actor_network_params.module.0.module.head.0.weight": 0.5225145156979373,
+              "actor_network_params.module.0.module.head.2.bias": 0.05630130509388708,
+              "actor_network_params.module.0.module.head.2.weight": 0.39293540286025946
+            },
+            "stages": {
+              "entropy:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "entropy:cross": {
+                "mean_native_expected_return_derivative": -3.063706834788404e-05,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 24
+              },
+              "entropy:local_logit": {
+                "mean_native_expected_return_derivative": -1.6458196607457604e-06,
+                "optimal_open_probability_down": 7,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 14
+              },
+              "entropy:self_alone": {
+                "mean_native_expected_return_derivative": -0.00018216163867276457,
+                "optimal_open_probability_down": 5,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 19
+              },
+              "entropy:total": {
+                "mean_native_expected_return_derivative": -3.063706834788404e-05,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 24
+              },
+              "total:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "total:cross": {
+                "mean_native_expected_return_derivative": 0.0002693026922352913,
+                "optimal_open_probability_down": 23,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 1
+              },
+              "total:local_logit": {
+                "mean_native_expected_return_derivative": 0.013542491017733147,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 21
+              },
+              "total:self_alone": {
+                "mean_native_expected_return_derivative": 0.154292795512371,
+                "optimal_open_probability_down": 3,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 21
+              },
+              "total:total": {
+                "mean_native_expected_return_derivative": 0.0002693026922352913,
+                "optimal_open_probability_down": 23,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 1
+              },
+              "value:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "value:cross": {
+                "mean_native_expected_return_derivative": 0.00029993976058317466,
+                "optimal_open_probability_down": 23,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 1
+              },
+              "value:local_logit": {
+                "mean_native_expected_return_derivative": 0.01354413683739389,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 21
+              },
+              "value:self_alone": {
+                "mean_native_expected_return_derivative": 0.15447495715104378,
+                "optimal_open_probability_down": 4,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 20
+              },
+              "value:total": {
+                "mean_native_expected_return_derivative": 0.00029993976058317466,
+                "optimal_open_probability_down": 23,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 1
+              }
+            }
+          },
+          "recorded_q": {
+            "layer_absolute_projection_shares": {
+              "actor_network_params.module.0.module.head.0.bias": 0.042640379906573725,
+              "actor_network_params.module.0.module.head.0.weight": 0.5384342746605782,
+              "actor_network_params.module.0.module.head.2.bias": 0.11888449654212119,
+              "actor_network_params.module.0.module.head.2.weight": 0.30004084889072696
+            },
+            "stages": {
+              "entropy:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "entropy:cross": {
+                "mean_native_expected_return_derivative": -3.063706834788404e-05,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 24
+              },
+              "entropy:local_logit": {
+                "mean_native_expected_return_derivative": -1.6458196607457604e-06,
+                "optimal_open_probability_down": 7,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 14
+              },
+              "entropy:self_alone": {
+                "mean_native_expected_return_derivative": -0.00018216163867276457,
+                "optimal_open_probability_down": 5,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 19
+              },
+              "entropy:total": {
+                "mean_native_expected_return_derivative": -3.063706834788404e-05,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 24
+              },
+              "total:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "total:cross": {
+                "mean_native_expected_return_derivative": 0.001079912128529695,
+                "optimal_open_probability_down": 24,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              },
+              "total:local_logit": {
+                "mean_native_expected_return_derivative": 0.00017273834358296953,
+                "optimal_open_probability_down": 17,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 4
+              },
+              "total:self_alone": {
+                "mean_native_expected_return_derivative": 0.020490590493960088,
+                "optimal_open_probability_down": 21,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 3
+              },
+              "total:total": {
+                "mean_native_expected_return_derivative": 0.001079912128529695,
+                "optimal_open_probability_down": 24,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              },
+              "value:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "value:cross": {
+                "mean_native_expected_return_derivative": 0.00111054919687758,
+                "optimal_open_probability_down": 24,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              },
+              "value:local_logit": {
+                "mean_native_expected_return_derivative": 0.00017438416324371537,
+                "optimal_open_probability_down": 19,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 2
+              },
+              "value:self_alone": {
+                "mean_native_expected_return_derivative": 0.02067275213263286,
+                "optimal_open_probability_down": 22,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 2
+              },
+              "value:total": {
+                "mean_native_expected_return_derivative": 0.00111054919687758,
+                "optimal_open_probability_down": 24,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              }
+            }
+          }
+        },
+        "decay_to_adaptive_projection_l2": 0.0008551357082640716,
+        "flat_allowed_rows": 28,
+        "native_optimal_openings": 24
+      }
+    },
+    "retained_native_19": {
+      "fit": {
+        "actual_adam_optimal_probability_down": 53,
+        "controls": {
+          "native_return_oracle": {
+            "layer_absolute_projection_shares": {
+              "actor_network_params.module.0.module.head.0.bias": 0.027787147113395094,
+              "actor_network_params.module.0.module.head.0.weight": 0.6206317818971048,
+              "actor_network_params.module.0.module.head.2.bias": 0.05963049283039099,
+              "actor_network_params.module.0.module.head.2.weight": 0.2919505781591091
+            },
+            "stages": {
+              "entropy:batch_self": {
+                "mean_native_expected_return_derivative": -4.465723714521257e-05,
+                "optimal_open_probability_down": 27,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 43
+              },
+              "entropy:cross": {
+                "mean_native_expected_return_derivative": 5.846429417032248e-06,
+                "optimal_open_probability_down": 1,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 72
+              },
+              "entropy:local_logit": {
+                "mean_native_expected_return_derivative": -9.140577336649573e-06,
+                "optimal_open_probability_down": 30,
+                "optimal_open_probability_negligible": 4,
+                "optimal_open_probability_up": 39
+              },
+              "entropy:self_alone": {
+                "mean_native_expected_return_derivative": -0.005655773076549119,
+                "optimal_open_probability_down": 27,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 44
+              },
+              "entropy:total": {
+                "mean_native_expected_return_derivative": -3.881080772818031e-05,
+                "optimal_open_probability_down": 2,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 71
+              },
+              "total:batch_self": {
+                "mean_native_expected_return_derivative": 0.010946220745094349,
+                "optimal_open_probability_down": 10,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 60
+              },
+              "total:cross": {
+                "mean_native_expected_return_derivative": -0.005340294744734983,
+                "optimal_open_probability_down": 70,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 3
+              },
+              "total:local_logit": {
+                "mean_native_expected_return_derivative": 0.017098348771423365,
+                "optimal_open_probability_down": 2,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 68
+              },
+              "total:self_alone": {
+                "mean_native_expected_return_derivative": 1.3286708263355163,
+                "optimal_open_probability_down": 11,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 60
+              },
+              "total:total": {
+                "mean_native_expected_return_derivative": 0.0056059260003593625,
+                "optimal_open_probability_down": 69,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 4
+              },
+              "value:batch_self": {
+                "mean_native_expected_return_derivative": 0.01099087798223956,
+                "optimal_open_probability_down": 12,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 59
+              },
+              "value:cross": {
+                "mean_native_expected_return_derivative": -0.00534614117415202,
+                "optimal_open_probability_down": 70,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 3
+              },
+              "value:local_logit": {
+                "mean_native_expected_return_derivative": 0.017107489348760017,
+                "optimal_open_probability_down": 2,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 68
+              },
+              "value:self_alone": {
+                "mean_native_expected_return_derivative": 1.3343265994120652,
+                "optimal_open_probability_down": 12,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 59
+              },
+              "value:total": {
+                "mean_native_expected_return_derivative": 0.005644736808087543,
+                "optimal_open_probability_down": 69,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 4
+              }
+            }
+          },
+          "recorded_q": {
+            "layer_absolute_projection_shares": {
+              "actor_network_params.module.0.module.head.0.bias": 0.01125743871975422,
+              "actor_network_params.module.0.module.head.0.weight": 0.7517759677828693,
+              "actor_network_params.module.0.module.head.2.bias": 0.023639131757776446,
+              "actor_network_params.module.0.module.head.2.weight": 0.21332746173960007
+            },
+            "stages": {
+              "entropy:batch_self": {
+                "mean_native_expected_return_derivative": -4.465723714521257e-05,
+                "optimal_open_probability_down": 27,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 43
+              },
+              "entropy:cross": {
+                "mean_native_expected_return_derivative": 5.846429417032248e-06,
+                "optimal_open_probability_down": 1,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 72
+              },
+              "entropy:local_logit": {
+                "mean_native_expected_return_derivative": -9.140577336649573e-06,
+                "optimal_open_probability_down": 30,
+                "optimal_open_probability_negligible": 4,
+                "optimal_open_probability_up": 39
+              },
+              "entropy:self_alone": {
+                "mean_native_expected_return_derivative": -0.005655773076549119,
+                "optimal_open_probability_down": 27,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 44
+              },
+              "entropy:total": {
+                "mean_native_expected_return_derivative": -3.881080772818031e-05,
+                "optimal_open_probability_down": 2,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 71
+              },
+              "total:batch_self": {
+                "mean_native_expected_return_derivative": -0.0004835968995985301,
+                "optimal_open_probability_down": 41,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 29
+              },
+              "total:cross": {
+                "mean_native_expected_return_derivative": 0.001085399381759665,
+                "optimal_open_probability_down": 55,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 18
+              },
+              "total:local_logit": {
+                "mean_native_expected_return_derivative": -0.0001569758387323389,
+                "optimal_open_probability_down": 41,
+                "optimal_open_probability_negligible": 4,
+                "optimal_open_probability_up": 28
+              },
+              "total:self_alone": {
+                "mean_native_expected_return_derivative": -0.06229315910869925,
+                "optimal_open_probability_down": 41,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 30
+              },
+              "total:total": {
+                "mean_native_expected_return_derivative": 0.0006018024821611352,
+                "optimal_open_probability_down": 55,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 18
+              },
+              "value:batch_self": {
+                "mean_native_expected_return_derivative": -0.00043893966245331774,
+                "optimal_open_probability_down": 41,
+                "optimal_open_probability_negligible": 4,
+                "optimal_open_probability_up": 28
+              },
+              "value:cross": {
+                "mean_native_expected_return_derivative": 0.0010795529523426337,
+                "optimal_open_probability_down": 55,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 18
+              },
+              "value:local_logit": {
+                "mean_native_expected_return_derivative": -0.00014783526139568935,
+                "optimal_open_probability_down": 43,
+                "optimal_open_probability_negligible": 4,
+                "optimal_open_probability_up": 26
+              },
+              "value:self_alone": {
+                "mean_native_expected_return_derivative": -0.05663738603215014,
+                "optimal_open_probability_down": 43,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 28
+              },
+              "value:total": {
+                "mean_native_expected_return_derivative": 0.0006406132898893166,
+                "optimal_open_probability_down": 55,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 18
+              }
+            }
+          }
+        },
+        "decay_to_adaptive_projection_l2": 0.0008655509043167189,
+        "flat_allowed_rows": 83,
+        "native_optimal_openings": 73
+      },
+      "monitor": {
+        "actual_adam_optimal_probability_down": 20,
+        "controls": {
+          "native_return_oracle": {
+            "layer_absolute_projection_shares": {
+              "actor_network_params.module.0.module.head.0.bias": 0.030154330394270283,
+              "actor_network_params.module.0.module.head.0.weight": 0.5186093018781804,
+              "actor_network_params.module.0.module.head.2.bias": 0.0712485669825411,
+              "actor_network_params.module.0.module.head.2.weight": 0.37998780074500815
+            },
+            "stages": {
+              "entropy:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "entropy:cross": {
+                "mean_native_expected_return_derivative": -2.798824951573038e-05,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 24
+              },
+              "entropy:local_logit": {
+                "mean_native_expected_return_derivative": -1.6458196607457604e-06,
+                "optimal_open_probability_down": 7,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 14
+              },
+              "entropy:self_alone": {
+                "mean_native_expected_return_derivative": -0.00018216163867276457,
+                "optimal_open_probability_down": 5,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 19
+              },
+              "entropy:total": {
+                "mean_native_expected_return_derivative": -2.798824951573038e-05,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 24
+              },
+              "total:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "total:cross": {
+                "mean_native_expected_return_derivative": 0.00034311146941607757,
+                "optimal_open_probability_down": 24,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              },
+              "total:local_logit": {
+                "mean_native_expected_return_derivative": 0.013542491017733147,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 21
+              },
+              "total:self_alone": {
+                "mean_native_expected_return_derivative": 0.154292795512371,
+                "optimal_open_probability_down": 3,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 21
+              },
+              "total:total": {
+                "mean_native_expected_return_derivative": 0.00034311146941607757,
+                "optimal_open_probability_down": 24,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              },
+              "value:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "value:cross": {
+                "mean_native_expected_return_derivative": 0.0003710997189318079,
+                "optimal_open_probability_down": 24,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              },
+              "value:local_logit": {
+                "mean_native_expected_return_derivative": 0.01354413683739389,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 21
+              },
+              "value:self_alone": {
+                "mean_native_expected_return_derivative": 0.15447495715104378,
+                "optimal_open_probability_down": 4,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 20
+              },
+              "value:total": {
+                "mean_native_expected_return_derivative": 0.0003710997189318079,
+                "optimal_open_probability_down": 24,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 0
+              }
+            }
+          },
+          "recorded_q": {
+            "layer_absolute_projection_shares": {
+              "actor_network_params.module.0.module.head.0.bias": 0.012818287990019155,
+              "actor_network_params.module.0.module.head.0.weight": 0.7097458395539684,
+              "actor_network_params.module.0.module.head.2.bias": 0.03414790838765428,
+              "actor_network_params.module.0.module.head.2.weight": 0.24328796406835812
+            },
+            "stages": {
+              "entropy:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "entropy:cross": {
+                "mean_native_expected_return_derivative": -2.798824951573038e-05,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 24
+              },
+              "entropy:local_logit": {
+                "mean_native_expected_return_derivative": -1.6458196607457604e-06,
+                "optimal_open_probability_down": 7,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 14
+              },
+              "entropy:self_alone": {
+                "mean_native_expected_return_derivative": -0.00018216163867276457,
+                "optimal_open_probability_down": 5,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 19
+              },
+              "entropy:total": {
+                "mean_native_expected_return_derivative": -2.798824951573038e-05,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 24
+              },
+              "total:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "total:cross": {
+                "mean_native_expected_return_derivative": 0.0010605813325804067,
+                "optimal_open_probability_down": 19,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 5
+              },
+              "total:local_logit": {
+                "mean_native_expected_return_derivative": -0.00011609000356662538,
+                "optimal_open_probability_down": 14,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 7
+              },
+              "total:self_alone": {
+                "mean_native_expected_return_derivative": 0.013629725977687381,
+                "optimal_open_probability_down": 17,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 7
+              },
+              "total:total": {
+                "mean_native_expected_return_derivative": 0.0010605813325804067,
+                "optimal_open_probability_down": 19,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 5
+              },
+              "value:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "value:cross": {
+                "mean_native_expected_return_derivative": 0.0010885695820961375,
+                "optimal_open_probability_down": 20,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 4
+              },
+              "value:local_logit": {
+                "mean_native_expected_return_derivative": -0.00011444418390587965,
+                "optimal_open_probability_down": 14,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 7
+              },
+              "value:self_alone": {
+                "mean_native_expected_return_derivative": 0.013811887616360142,
+                "optimal_open_probability_down": 18,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 6
+              },
+              "value:total": {
+                "mean_native_expected_return_derivative": 0.0010885695820961375,
+                "optimal_open_probability_down": 20,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 4
+              }
+            }
+          }
+        },
+        "decay_to_adaptive_projection_l2": 0.0011059909274655137,
+        "flat_allowed_rows": 28,
+        "native_optimal_openings": 24
+      }
+    },
+    "retained_native_43": {
+      "fit": {
+        "actual_adam_optimal_probability_down": 53,
+        "controls": {
+          "native_return_oracle": {
+            "layer_absolute_projection_shares": {
+              "actor_network_params.module.0.module.head.0.bias": 0.024775015115228515,
+              "actor_network_params.module.0.module.head.0.weight": 0.6428350106484501,
+              "actor_network_params.module.0.module.head.2.bias": 0.04599885122286197,
+              "actor_network_params.module.0.module.head.2.weight": 0.2863911230134594
+            },
+            "stages": {
+              "entropy:batch_self": {
+                "mean_native_expected_return_derivative": -4.423861900838515e-05,
+                "optimal_open_probability_down": 27,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 43
+              },
+              "entropy:cross": {
+                "mean_native_expected_return_derivative": 6.023587067622211e-06,
+                "optimal_open_probability_down": 1,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 72
+              },
+              "entropy:local_logit": {
+                "mean_native_expected_return_derivative": -9.140577336649573e-06,
+                "optimal_open_probability_down": 30,
+                "optimal_open_probability_negligible": 4,
+                "optimal_open_probability_up": 39
+              },
+              "entropy:self_alone": {
+                "mean_native_expected_return_derivative": -0.005655773076549119,
+                "optimal_open_probability_down": 27,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 44
+              },
+              "entropy:total": {
+                "mean_native_expected_return_derivative": -3.821503194076299e-05,
+                "optimal_open_probability_down": 3,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 70
+              },
+              "total:batch_self": {
+                "mean_native_expected_return_derivative": 0.01043111119123196,
+                "optimal_open_probability_down": 10,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 60
+              },
+              "total:cross": {
+                "mean_native_expected_return_derivative": -0.005198361542996019,
+                "optimal_open_probability_down": 67,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 6
+              },
+              "total:local_logit": {
+                "mean_native_expected_return_derivative": 0.017098348771423365,
+                "optimal_open_probability_down": 2,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 68
+              },
+              "total:self_alone": {
+                "mean_native_expected_return_derivative": 1.3286708263355163,
+                "optimal_open_probability_down": 11,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 60
+              },
+              "total:total": {
+                "mean_native_expected_return_derivative": 0.005232749648235939,
+                "optimal_open_probability_down": 61,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 12
+              },
+              "value:batch_self": {
+                "mean_native_expected_return_derivative": 0.010475349810240347,
+                "optimal_open_probability_down": 12,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 59
+              },
+              "value:cross": {
+                "mean_native_expected_return_derivative": -0.005204385130063644,
+                "optimal_open_probability_down": 68,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 5
+              },
+              "value:local_logit": {
+                "mean_native_expected_return_derivative": 0.017107489348760017,
+                "optimal_open_probability_down": 2,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 68
+              },
+              "value:self_alone": {
+                "mean_native_expected_return_derivative": 1.3343265994120652,
+                "optimal_open_probability_down": 12,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 59
+              },
+              "value:total": {
+                "mean_native_expected_return_derivative": 0.005270964680176703,
+                "optimal_open_probability_down": 61,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 12
+              }
+            }
+          },
+          "recorded_q": {
+            "layer_absolute_projection_shares": {
+              "actor_network_params.module.0.module.head.0.bias": 0.011011856320972707,
+              "actor_network_params.module.0.module.head.0.weight": 0.7533586642162529,
+              "actor_network_params.module.0.module.head.2.bias": 0.02230458977028099,
+              "actor_network_params.module.0.module.head.2.weight": 0.21332488969249344
+            },
+            "stages": {
+              "entropy:batch_self": {
+                "mean_native_expected_return_derivative": -4.423861900838515e-05,
+                "optimal_open_probability_down": 27,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 43
+              },
+              "entropy:cross": {
+                "mean_native_expected_return_derivative": 6.023587067622211e-06,
+                "optimal_open_probability_down": 1,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 72
+              },
+              "entropy:local_logit": {
+                "mean_native_expected_return_derivative": -9.140577336649573e-06,
+                "optimal_open_probability_down": 30,
+                "optimal_open_probability_negligible": 4,
+                "optimal_open_probability_up": 39
+              },
+              "entropy:self_alone": {
+                "mean_native_expected_return_derivative": -0.005655773076549119,
+                "optimal_open_probability_down": 27,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 44
+              },
+              "entropy:total": {
+                "mean_native_expected_return_derivative": -3.821503194076299e-05,
+                "optimal_open_probability_down": 3,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 70
+              },
+              "total:batch_self": {
+                "mean_native_expected_return_derivative": -0.0004867005275181201,
+                "optimal_open_probability_down": 41,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 29
+              },
+              "total:cross": {
+                "mean_native_expected_return_derivative": 0.0011464912335903414,
+                "optimal_open_probability_down": 55,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 18
+              },
+              "total:local_logit": {
+                "mean_native_expected_return_derivative": -0.0001569758387323389,
+                "optimal_open_probability_down": 41,
+                "optimal_open_probability_negligible": 4,
+                "optimal_open_probability_up": 28
+              },
+              "total:self_alone": {
+                "mean_native_expected_return_derivative": -0.06229315910869925,
+                "optimal_open_probability_down": 41,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 30
+              },
+              "total:total": {
+                "mean_native_expected_return_derivative": 0.0006597907060722202,
+                "optimal_open_probability_down": 55,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 18
+              },
+              "value:batch_self": {
+                "mean_native_expected_return_derivative": -0.00044246190850973533,
+                "optimal_open_probability_down": 41,
+                "optimal_open_probability_negligible": 4,
+                "optimal_open_probability_up": 28
+              },
+              "value:cross": {
+                "mean_native_expected_return_derivative": 0.0011404676465227176,
+                "optimal_open_probability_down": 55,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 18
+              },
+              "value:local_logit": {
+                "mean_native_expected_return_derivative": -0.00014783526139568935,
+                "optimal_open_probability_down": 43,
+                "optimal_open_probability_negligible": 4,
+                "optimal_open_probability_up": 26
+              },
+              "value:self_alone": {
+                "mean_native_expected_return_derivative": -0.05663738603215014,
+                "optimal_open_probability_down": 43,
+                "optimal_open_probability_negligible": 2,
+                "optimal_open_probability_up": 28
+              },
+              "value:total": {
+                "mean_native_expected_return_derivative": 0.0006980057380129835,
+                "optimal_open_probability_down": 55,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 18
+              }
+            }
+          }
+        },
+        "decay_to_adaptive_projection_l2": 0.0008730509879612095,
+        "flat_allowed_rows": 83,
+        "native_optimal_openings": 73
+      },
+      "monitor": {
+        "actual_adam_optimal_probability_down": 20,
+        "controls": {
+          "native_return_oracle": {
+            "layer_absolute_projection_shares": {
+              "actor_network_params.module.0.module.head.0.bias": 0.028248776347916196,
+              "actor_network_params.module.0.module.head.0.weight": 0.5225145156979373,
+              "actor_network_params.module.0.module.head.2.bias": 0.05630130509388708,
+              "actor_network_params.module.0.module.head.2.weight": 0.39293540286025946
+            },
+            "stages": {
+              "entropy:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "entropy:cross": {
+                "mean_native_expected_return_derivative": -3.063706834788404e-05,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 24
+              },
+              "entropy:local_logit": {
+                "mean_native_expected_return_derivative": -1.6458196607457604e-06,
+                "optimal_open_probability_down": 7,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 14
+              },
+              "entropy:self_alone": {
+                "mean_native_expected_return_derivative": -0.00018216163867276457,
+                "optimal_open_probability_down": 5,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 19
+              },
+              "entropy:total": {
+                "mean_native_expected_return_derivative": -3.063706834788404e-05,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 24
+              },
+              "total:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "total:cross": {
+                "mean_native_expected_return_derivative": 0.0002693026922352913,
+                "optimal_open_probability_down": 23,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 1
+              },
+              "total:local_logit": {
+                "mean_native_expected_return_derivative": 0.013542491017733147,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 21
+              },
+              "total:self_alone": {
+                "mean_native_expected_return_derivative": 0.154292795512371,
+                "optimal_open_probability_down": 3,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 21
+              },
+              "total:total": {
+                "mean_native_expected_return_derivative": 0.0002693026922352913,
+                "optimal_open_probability_down": 23,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 1
+              },
+              "value:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "value:cross": {
+                "mean_native_expected_return_derivative": 0.00029993976058317466,
+                "optimal_open_probability_down": 23,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 1
+              },
+              "value:local_logit": {
+                "mean_native_expected_return_derivative": 0.01354413683739389,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 21
+              },
+              "value:self_alone": {
+                "mean_native_expected_return_derivative": 0.15447495715104378,
+                "optimal_open_probability_down": 4,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 20
+              },
+              "value:total": {
+                "mean_native_expected_return_derivative": 0.00029993976058317466,
+                "optimal_open_probability_down": 23,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 1
+              }
+            }
+          },
+          "recorded_q": {
+            "layer_absolute_projection_shares": {
+              "actor_network_params.module.0.module.head.0.bias": 0.01249427981193372,
+              "actor_network_params.module.0.module.head.0.weight": 0.7103357719453676,
+              "actor_network_params.module.0.module.head.2.bias": 0.03187893665650582,
+              "actor_network_params.module.0.module.head.2.weight": 0.24529101158619296
+            },
+            "stages": {
+              "entropy:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "entropy:cross": {
+                "mean_native_expected_return_derivative": -3.063706834788404e-05,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 24
+              },
+              "entropy:local_logit": {
+                "mean_native_expected_return_derivative": -1.6458196607457604e-06,
+                "optimal_open_probability_down": 7,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 14
+              },
+              "entropy:self_alone": {
+                "mean_native_expected_return_derivative": -0.00018216163867276457,
+                "optimal_open_probability_down": 5,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 19
+              },
+              "entropy:total": {
+                "mean_native_expected_return_derivative": -3.063706834788404e-05,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 24
+              },
+              "total:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "total:cross": {
+                "mean_native_expected_return_derivative": 0.0011118260039748467,
+                "optimal_open_probability_down": 19,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 5
+              },
+              "total:local_logit": {
+                "mean_native_expected_return_derivative": -0.00011609000356662538,
+                "optimal_open_probability_down": 14,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 7
+              },
+              "total:self_alone": {
+                "mean_native_expected_return_derivative": 0.013629725977687381,
+                "optimal_open_probability_down": 17,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 7
+              },
+              "total:total": {
+                "mean_native_expected_return_derivative": 0.0011118260039748467,
+                "optimal_open_probability_down": 19,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 5
+              },
+              "value:batch_self": {
+                "mean_native_expected_return_derivative": 0.0,
+                "optimal_open_probability_down": 0,
+                "optimal_open_probability_negligible": 24,
+                "optimal_open_probability_up": 0
+              },
+              "value:cross": {
+                "mean_native_expected_return_derivative": 0.0011424630723227303,
+                "optimal_open_probability_down": 21,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 3
+              },
+              "value:local_logit": {
+                "mean_native_expected_return_derivative": -0.00011444418390587965,
+                "optimal_open_probability_down": 14,
+                "optimal_open_probability_negligible": 3,
+                "optimal_open_probability_up": 7
+              },
+              "value:self_alone": {
+                "mean_native_expected_return_derivative": 0.013811887616360142,
+                "optimal_open_probability_down": 18,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 6
+              },
+              "value:total": {
+                "mean_native_expected_return_derivative": 0.0011424630723227303,
+                "optimal_open_probability_down": 21,
+                "optimal_open_probability_negligible": 0,
+                "optimal_open_probability_up": 3
+              }
+            }
+          }
+        },
+        "decay_to_adaptive_projection_l2": 0.0011179262988636192,
+        "flat_allowed_rows": 28,
+        "native_optimal_openings": 24
+      }
+    }
+  },
+  "fit_jacobian": {
+    "caution": "Sensitivity spectrum at this checkpoint/panel only; not Shannon capacity or absent market signal",
+    "parameters": 1699,
+    "rank_relative_1e_6": 226,
+    "rows": 226,
+    "singular_values": [
+      128.30829435569257,
+      98.26444441833281,
+      63.19200756014252,
+      58.704556148646695,
+      53.684780063536344,
+      50.795671807068025,
+      47.23136797251657,
+      42.79308330085843,
+      34.96270832187408,
+      32.975158091781154,
+      30.607921393390598,
+      28.15338277046938,
+      26.39238278315374,
+      25.689201212362544,
+      23.925260013923456,
+      23.405365351219178,
+      22.382063380418494,
+      22.194278471180098,
+      20.948047250872204,
+      20.658578470406667,
+      19.41460665087501,
+      18.750594823389694,
+      18.22182179414959,
+      17.583895268244515,
+      16.80012990786626,
+      16.59663814784517,
+      16.276763194919628,
+      15.997369907981804,
+      15.49255001079517,
+      14.743861588352459,
+      14.461178614744092,
+      13.492951910528015,
+      13.325714983091725,
+      12.905935688579122,
+      12.813334843192369,
+      12.384538759003393,
+      12.266923831397245,
+      11.9393723353106,
+      11.486260810808238,
+      11.162449750159986,
+      11.033283499841447,
+      10.899982391768187,
+      10.720824765622002,
+      10.5341242484164,
+      10.130442059383572,
+      9.958222556079852,
+      9.634197270397708,
+      9.578358275131421,
+      9.38060596480771,
+      8.900454517672273,
+      8.844923081679976,
+      8.488759157066731,
+      8.299884707255021,
+      8.296288554418318,
+      8.074525994828754,
+      7.7816649676016025,
+      7.514823199403302,
+      7.433922267979313,
+      7.399119086807061,
+      7.165370980957412,
+      6.92454376887785,
+      6.722920039640612,
+      6.56155514872734,
+      6.451036431360178,
+      6.382722663702325,
+      6.308255222799014,
+      6.253250757785431,
+      5.9703918494896335,
+      5.950549970907279,
+      5.929614160798921,
+      5.847151320214782,
+      5.769894938660992,
+      5.674890656716514,
+      5.528826655973977,
+      5.409928957971176,
+      5.318277246273588,
+      5.165326119761039,
+      5.074583009709252,
+      5.035235132449343,
+      4.8888547613770665,
+      4.790371414158423,
+      4.7754653709647386,
+      4.719405876074622,
+      4.623112996610197,
+      4.519133848931315,
+      4.454627493213324,
+      4.4019236262334145,
+      4.270062477744004,
+      4.162156097477492,
+      4.153522512933572,
+      4.1220061303567554,
+      4.042411841054149,
+      3.9343481111951673,
+      3.8808197413054653,
+      3.8514279988722278,
+      3.813704604875409,
+      3.76654187199833,
+      3.749732084899032,
+      3.6806447383357774,
+      3.6498014574917654,
+      3.633020029960449,
+      3.5201866680100906,
+      3.4864226673711345,
+      3.445595425718914,
+      3.429259077120499,
+      3.3955470950311324,
+      3.3894582940643487,
+      3.3034534480496647,
+      3.268306517514072,
+      3.179037267002635,
+      3.12133763078762,
+      3.0639822023761223,
+      3.0543185244008444,
+      3.022420520816046,
+      2.976825568151861,
+      2.9151248662305003,
+      2.878857033322123,
+      2.826258006147717,
+      2.7762007096199204,
+      2.7342880885241803,
+      2.715923274525709,
+      2.7024868457854563,
+      2.6317137342055426,
+      2.6175617506462947,
+      2.5624830279052775,
+      2.533161392972831,
+      2.4853887803347585,
+      2.4641472169982075,
+      2.444413483426516,
+      2.398646779630535,
+      2.382465288884359,
+      2.330733447623816,
+      2.291815847279076,
+      2.268817674733854,
+      2.2358880092295252,
+      2.204624720468258,
+      2.1798393750278997,
+      2.168190735908606,
+      2.1395030741969627,
+      2.1336076163745346,
+      2.0814733632471314,
+      2.0118943992402873,
+      1.9956573343539603,
+      1.964909138037224,
+      1.942027940302831,
+      1.9348347392777234,
+      1.906093315636619,
+      1.8691058189797767,
+      1.85102735254599,
+      1.8306442845119144,
+      1.8259517611254372,
+      1.8155537163113797,
+      1.7595444222494518,
+      1.753951172003839,
+      1.729264579579776,
+      1.7056872920331267,
+      1.6936586694598392,
+      1.6702932271778068,
+      1.6500225213955775,
+      1.6195134103090163,
+      1.603845961663022,
+      1.5839938972527157,
+      1.5626088232036062,
+      1.5543812046361978,
+      1.5374048631101145,
+      1.521248695519362,
+      1.485110279907862,
+      1.4681708081349032,
+      1.4542066306127004,
+      1.4310306132212391,
+      1.3920645631540727,
+      1.3891093894103121,
+      1.3587004065125061,
+      1.35287384228403,
+      1.3366854134140536,
+      1.3133748764297422,
+      1.2885068801819393,
+      1.262328244230106,
+      1.2447313857607412,
+      1.2262591976068182,
+      1.213414295762238,
+      1.1760534718777478,
+      1.1664793336375543,
+      1.1508302601712554,
+      1.1451594232800286,
+      1.137404385222866,
+      1.116855680659425,
+      1.110859324359355,
+      1.0866801727280926,
+      1.0777443850885768,
+      1.054135762627403,
+      1.0202693232134297,
+      0.999894252813001,
+      0.9851098714036469,
+      0.9643932714928198,
+      0.9445625824977839,
+      0.9195578216930818,
+      0.9037786488209629,
+      0.8970997455002414,
+      0.8709605044496722,
+      0.8598681950969883,
+      0.840872206608274,
+      0.8365712321699641,
+      0.8006112113978562,
+      0.7817806238339042,
+      0.7759985850789974,
+      0.7623300412845799,
+      0.743186079742872,
+      0.7340986626182453,
+      0.7162590767800278,
+      0.7005797054012605,
+      0.6844625142659648,
+      0.6789118883403273,
+      0.6490954326114249,
+      0.6145415868302581,
+      0.5921619071926665,
+      0.5836687876978762,
+      0.5602608621930774,
+      0.5481987319785554,
+      0.5130169623738748,
+      0.48312895060690136,
+      0.4646850343470898,
+      0.45103357755006257,
+      0.4419588298866794,
+      0.3586288380987637,
+      0.3278863402554625
+    ],
+    "top5_squared_energy_fraction": 0.6163830190204885,
+    "top_squared_energy_fraction": 0.2784688612392506
+  },
+  "identity": "f4b8c27c03549cccec4e187e2c8fb59d15f2d93f951a0e0e069e56d8d227f9ac",
+  "meaning": "Native-optimal opening among three symbols on the same frozen-policy continuation; diagnostic only",
+  "seconds": 0.2959518150018994,
+  "source_identity": "49cbbecb0f8e6701475bcce863838331ae2bbad9ecb6477370110a5a3b7ec0ce"
+}

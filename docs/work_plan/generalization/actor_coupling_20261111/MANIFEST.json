@@ -1,0 +1,11 @@
+{
+  "worker_identity": "49cbbecb0f8e6701475bcce863838331ae2bbad9ecb6477370110a5a3b7ec0ce",
+  "report_identity": "f4b8c27c03549cccec4e187e2c8fb59d15f2d93f951a0e0e069e56d8d227f9ac",
+  "worker_receipt_sha256": "98884ed516703785603ce8eb80e12bddaff6116393919405633de450b01c6c8a",
+  "report_receipt_sha256": "1b72a3384c8ab35f16a5fe1ad978db33ed1987b1362e1aaaf1cda081def2fac4",
+  "private_decomposition_sha256": "5731255f2796d6809417eb660cda5fcfcc8b032831206f845224f38f501ebacf",
+  "files": {
+    "PROBABILITY_SUMMARY.json": "c7282f4d627fcbf990df875c3d3564dc403a60449099f8e2866bd03a5587d87b",
+    "GRADIENT_SUMMARY.json": "0d046c8b49f298d6d01c6eb0b5f216f9d10ff4b642134de803451e0c47b91266"
+  }
+}

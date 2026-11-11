@@ -1,7 +1,7 @@
 import pytest
 import torch
 
-from app.actor_gradient_coupling import decompose, first_adamw_delta, logit_terms
+from app.actor_gradient_coupling import decompose, first_adamw_delta, logit_terms, probability_derivative
 from app.actor_learning_diagnostics import actor_terms
 
 
@@ -59,3 +59,13 @@ def test_invalid_batch_and_nonfinite():
     z = torch.zeros(2, 3); j = torch.zeros(2, 3, 3)
     with pytest.raises(ValueError): decompose(z, z, 0., j, torch.tensor([2]))
     with pytest.raises(ValueError): logit_terms(z, z+float('nan'), 0.)
+
+
+def test_probability_derivative_and_gauge_invariance():
+    z = torch.tensor([[1., -.3, .7]],dtype=torch.double)
+    dz = torch.tensor([[.4, -.2, .9]],dtype=torch.double)
+    got = probability_derivative(z.softmax(-1),dz[:,1:]-dz[:,:1])
+    eps = 1e-6
+    expected = ((z+eps*dz).softmax(-1)-(z-eps*dz).softmax(-1))/(2*eps)
+    torch.testing.assert_close(got,expected,atol=1e-10,rtol=1e-8)
+    assert abs(float(got.sum())) < 1e-15

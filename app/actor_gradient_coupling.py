@@ -62,3 +62,15 @@ def classify_pressure(native, q, projections, mask):
             favors_harmful=int((take & bad & (v > 1e-10)).sum()),
             favors_helpful=int((take & good & (v > 1e-10)).sum()))
             for name, v in projections.items()})
+
+
+def probability_derivative(probability, margin_derivative):
+    if (probability.ndim != 2 or probability.shape[1] != 3
+            or margin_derivative.shape != (len(probability), 2)
+            or not torch.isfinite(probability).all()
+            or not torch.isfinite(margin_derivative).all()
+            or (probability < 0).any()):
+        raise ValueError('COUPLING_PROBABILITY')
+    torch.testing.assert_close(probability.sum(-1), torch.ones_like(probability[:,0]))
+    gauge = torch.cat([torch.zeros_like(probability[:,:1]), margin_derivative], dim=-1)
+    return probability*(gauge-(probability*gauge).sum(-1,keepdim=True))
