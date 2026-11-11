@@ -2,6 +2,13 @@
 
 ## Execution Update: 2026-11-11
 
+[Forward source disposition](../handoffs/MUSASHI_TO_RETSU_LIVE_SOURCE_RESOLUTION_2026_11_11.md)
+separates historical STL recovery from current69-input demo integration: use
+the recovered activity full estimator, its14 real lagged inputs, a current2026
+calendar and qualified live FX/release sources. The handoff is an execution
+contract, not evidence of an active current-hour feed. Source removal requires
+a separate matched candidate, never silently changing the frozen champion.
+
 [STL repair278](278_STL_REPAIR_AND_PREHISTORY_RESULTS.md) propagated the four
 repaired FX inputs through the frozen causal transform:479 original windows
 recovered, including all222 previously lost December2023 windows. Original
