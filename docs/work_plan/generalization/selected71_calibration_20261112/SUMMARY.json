@@ -1,0 +1,421 @@
+{
+  "actor_cold_exact": true,
+  "actor_updates": 0,
+  "checkpoint_checks": {
+    "19": {
+      "actor_exact": true,
+      "changed_tensors": [
+        "qvalue_network_params.module.head.0.weight",
+        "qvalue_network_params.module.head.0.bias",
+        "qvalue_network_params.module.head.2.weight",
+        "qvalue_network_params.module.head.2.bias",
+        "target_qvalue_network_params.module.head.0.weight",
+        "target_qvalue_network_params.module.head.0.bias",
+        "target_qvalue_network_params.module.head.2.weight",
+        "target_qvalue_network_params.module.head.2.bias"
+      ],
+      "checkpoint_sha256": "9aa43f658d2e669d671c711232405bfe828c913db46752c799c5a205e1662b2b",
+      "frozen_tensors": 1019,
+      "optimizer_steps": 4096
+    },
+    "43": {
+      "actor_exact": true,
+      "changed_tensors": [
+        "qvalue_network_params.module.head.0.weight",
+        "qvalue_network_params.module.head.0.bias",
+        "qvalue_network_params.module.head.2.weight",
+        "qvalue_network_params.module.head.2.bias",
+        "target_qvalue_network_params.module.head.0.weight",
+        "target_qvalue_network_params.module.head.0.bias",
+        "target_qvalue_network_params.module.head.2.weight",
+        "target_qvalue_network_params.module.head.2.bias"
+      ],
+      "checkpoint_sha256": "2a4968b42abddc4e001025df594a46998d7758545381c38aed72876e23b29727",
+      "frozen_tensors": 1019,
+      "optimizer_steps": 4096
+    }
+  },
+  "critic_updates": 4096,
+  "critics": {
+    "19": {
+      "fit": [
+        {
+          "gap_rmse": 0.466424821237619,
+          "level_rmse": 0.7153740083772945,
+          "maximum_regret": 0.9409192204475403,
+          "mean_regret": 0.22745138958850628,
+          "n": 113,
+          "pairwise_accuracy": 0.5288135593220339,
+          "pairwise_comparisons": 295,
+          "per_action_rmse": [
+            0.7682737658475054,
+            0.7491299787628665,
+            0.7754945035789593
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            73,
+            25,
+            15
+          ],
+          "rmse": 0.7643803654926292,
+          "target_ties": 44
+        },
+        {
+          "gap_rmse": 0.35409539593317313,
+          "level_rmse": 0.2723888333618606,
+          "maximum_regret": 0.9183695390820503,
+          "mean_regret": 0.08480658427507212,
+          "n": 113,
+          "pairwise_accuracy": 0.752542372881356,
+          "pairwise_comparisons": 295,
+          "per_action_rmse": [
+            0.27638915393802266,
+            0.37735200022035,
+            0.3594232637947937
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            44,
+            33,
+            36
+          ],
+          "rmse": 0.34057332986293226,
+          "target_ties": 44
+        }
+      ],
+      "monitor": [
+        {
+          "gap_rmse": 0.4496010906020204,
+          "level_rmse": 0.6161264108890416,
+          "maximum_regret": 0.7411966621875763,
+          "mean_regret": 0.21500896103680134,
+          "n": 38,
+          "pairwise_accuracy": 0.58,
+          "pairwise_comparisons": 100,
+          "per_action_rmse": [
+            0.6248903442639341,
+            0.6116913904766981,
+            0.7591588132386715
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            24,
+            3,
+            11
+          ],
+          "rmse": 0.6685747036932529,
+          "target_ties": 14
+        },
+        {
+          "gap_rmse": 0.4071878439733756,
+          "level_rmse": 0.6952625277552038,
+          "maximum_regret": 0.707413449883461,
+          "mean_regret": 0.1514198798686266,
+          "n": 38,
+          "pairwise_accuracy": 0.62,
+          "pairwise_comparisons": 100,
+          "per_action_rmse": [
+            0.7374179667115071,
+            0.729527309872085,
+            0.7348309562771685
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            18,
+            6,
+            14
+          ],
+          "rmse": 0.7339327598132661,
+          "target_ties": 14
+        }
+      ]
+    },
+    "43": {
+      "fit": [
+        {
+          "gap_rmse": 0.5560972829829033,
+          "level_rmse": 0.7752923121047683,
+          "maximum_regret": 1.0433808863162994,
+          "mean_regret": 0.2668756940360882,
+          "n": 113,
+          "pairwise_accuracy": 0.5254237288135594,
+          "pairwise_comparisons": 295,
+          "per_action_rmse": [
+            0.8423394090821488,
+            0.7815593562488778,
+            0.890004487816896
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            8,
+            104,
+            1
+          ],
+          "rmse": 0.8391421603374165,
+          "target_ties": 44
+        },
+        {
+          "gap_rmse": 0.3763922159498546,
+          "level_rmse": 0.4836171522962709,
+          "maximum_regret": 0.884493499994278,
+          "mean_regret": 0.14315419843568739,
+          "n": 113,
+          "pairwise_accuracy": 0.6915254237288135,
+          "pairwise_comparisons": 295,
+          "per_action_rmse": [
+            0.5295649660162969,
+            0.4859362219634778,
+            0.571624601609417
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            51,
+            57,
+            5
+          ],
+          "rmse": 0.5301973689778506,
+          "target_ties": 44
+        }
+      ],
+      "monitor": [
+        {
+          "gap_rmse": 0.5988452823378272,
+          "level_rmse": 0.587300785875422,
+          "maximum_regret": 0.88724485039711,
+          "mean_regret": 0.34118256325784485,
+          "n": 38,
+          "pairwise_accuracy": 0.4,
+          "pairwise_comparisons": 100,
+          "per_action_rmse": [
+            0.6010038060766152,
+            0.6162648423548073,
+            0.8077093416611966
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            0,
+            38,
+            0
+          ],
+          "rmse": 0.6815135878928942,
+          "target_ties": 14
+        },
+        {
+          "gap_rmse": 0.4636459375907762,
+          "level_rmse": 0.6561169289262075,
+          "maximum_regret": 0.88724485039711,
+          "mean_regret": 0.26785348179308993,
+          "n": 38,
+          "pairwise_accuracy": 0.49,
+          "pairwise_comparisons": 100,
+          "per_action_rmse": [
+            0.6333696086116659,
+            0.7052458917184887,
+            0.77968391019464
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            16,
+            21,
+            1
+          ],
+          "rmse": 0.7086220969165217,
+          "target_ties": 14
+        }
+      ]
+    }
+  },
+  "features": 71,
+  "fit_rows": 113,
+  "groups": 28,
+  "identity": "33052ae3718b91244982191afe5826ca088811b312291ce3f09bca8db05c9394",
+  "model_promoted": false,
+  "monitor_rows": 38,
+  "reference": {
+    "TRAIN": {
+      "buy": {
+        "net_profit_usd": 941.94674000017,
+        "trades": 229,
+        "wins": 153
+      },
+      "cash_error": 3.865352482534945e-12,
+      "close_reasons": {
+        "AGENT_CLOSE": 58,
+        "FORCED_FLAT": 61,
+        "SL": 219,
+        "TP": 407
+      },
+      "commands": {
+        "0": 21603,
+        "1": 512,
+        "2": 1852,
+        "3": 58
+      },
+      "costs": {
+        "commission_usd": 1124.28043,
+        "financing_usd": -40.989695,
+        "slippage_usd": 622.10947,
+        "spread_usd": 694.80493
+      },
+      "early_by_side": {
+        "-1": 26,
+        "1": 32
+      },
+      "early_close_diagnostic": {
+        "harmful": 29,
+        "helpful": 29,
+        "mean_regret_risk": 0.38059552357642823,
+        "preempted": 0,
+        "proposals": 58,
+        "scope": "fixed position versus passive protection; not account continuation"
+      },
+      "max_drawdown_pct": 9.358326177217492,
+      "mean_requested_command_entropy": 0.5422303928311514,
+      "mean_signal_entropy": 0.5859090052588922,
+      "median_holding_bars": 1.0,
+      "native_counts": {
+        "close_AGENT_CLOSE": 58,
+        "close_FORCED_FLAT": 61,
+        "close_MARGIN_CLOSEOUT": 0,
+        "close_REVERSAL": 0,
+        "close_SL": 219,
+        "close_TP": 407,
+        "closes": 745,
+        "decisions": 24894,
+        "entries": 745,
+        "ignored_same_direction": 0,
+        "levels_clipped": 0,
+        "refused_ABSOLUTE_ORDER": 0,
+        "refused_BEFORE_OPERATIONAL_START": 721,
+        "refused_DAILY_CAP": 0,
+        "refused_ENTRY_CUTOFF": 862,
+        "refused_FILL_DISTANCE": 0,
+        "refused_GAP_BEYOND_LEVEL": 0,
+        "refused_LEVELS": 0,
+        "refused_NO_SIGMA": 0,
+        "refused_POSITION_OCCUPIED": 0,
+        "refused_PRICE_TICK": 0,
+        "refused_RISK_BUDGET": 0,
+        "refused_RUIN": 0,
+        "refused_SESSION_END": 36,
+        "refused_UNITS": 0
+      },
+      "net_profit_usd": 1605.8223550002149,
+      "orders_per_week": 3.5645933014354068,
+      "return_pct": 16.05822355000215,
+      "return_per_week": 0.07683360550240263,
+      "sell": {
+        "net_profit_usd": 663.8756150000487,
+        "trades": 516,
+        "wins": 310
+      },
+      "sharpe": 0.7819691259276358,
+      "signals": {
+        "0": 20845,
+        "1": 692,
+        "2": 2488
+      },
+      "trades": 745,
+      "weeks": 209,
+      "win_rate": 0.6214765100671141
+    },
+    "VALIDATION": {
+      "buy": {
+        "net_profit_usd": 253.5218100000221,
+        "trades": 22,
+        "wins": 14
+      },
+      "cash_error": 1.6370904631912708e-11,
+      "close_reasons": {
+        "AGENT_CLOSE": 6,
+        "FORCED_FLAT": 25,
+        "SL": 64,
+        "TP": 112
+      },
+      "commands": {
+        "0": 5416,
+        "1": 50,
+        "2": 735,
+        "3": 6
+      },
+      "costs": {
+        "commission_usd": 378.59787,
+        "financing_usd": -45.126635,
+        "slippage_usd": 209.25108,
+        "spread_usd": 210.41999
+      },
+      "early_by_side": {
+        "-1": 2,
+        "1": 4
+      },
+      "early_close_diagnostic": {
+        "harmful": 2,
+        "helpful": 4,
+        "mean_regret_risk": 0.1851280081925366,
+        "preempted": 0,
+        "proposals": 6,
+        "scope": "fixed position versus passive protection; not account continuation"
+      },
+      "max_drawdown_pct": 3.257290042314253,
+      "mean_requested_command_entropy": 0.5796314956859792,
+      "mean_signal_entropy": 0.6914893471317171,
+      "median_holding_bars": 3.0,
+      "native_counts": {
+        "close_AGENT_CLOSE": 6,
+        "close_FORCED_FLAT": 25,
+        "close_MARGIN_CLOSEOUT": 0,
+        "close_REVERSAL": 0,
+        "close_SL": 64,
+        "close_TP": 112,
+        "closes": 207,
+        "decisions": 6220,
+        "entries": 207,
+        "ignored_same_direction": 0,
+        "levels_clipped": 0,
+        "refused_ABSOLUTE_ORDER": 0,
+        "refused_BEFORE_OPERATIONAL_START": 233,
+        "refused_DAILY_CAP": 0,
+        "refused_ENTRY_CUTOFF": 334,
+        "refused_FILL_DISTANCE": 0,
+        "refused_GAP_BEYOND_LEVEL": 0,
+        "refused_LEVELS": 0,
+        "refused_NO_SIGMA": 0,
+        "refused_POSITION_OCCUPIED": 0,
+        "refused_PRICE_TICK": 0,
+        "refused_RISK_BUDGET": 0,
+        "refused_RUIN": 0,
+        "refused_SESSION_END": 11,
+        "refused_UNITS": 0
+      },
+      "net_profit_usd": 1836.9945750000115,
+      "orders_per_week": 3.8333333333333335,
+      "return_pct": 18.369945750000117,
+      "return_per_week": 0.3401841805555577,
+      "sell": {
+        "net_profit_usd": 1583.472765000006,
+        "trades": 185,
+        "wins": 110
+      },
+      "sharpe": 2.690712133251012,
+      "signals": {
+        "0": 5078,
+        "1": 66,
+        "2": 1063
+      },
+      "trades": 207,
+      "weeks": 54,
+      "win_rate": 0.5990338164251208
+    }
+  },
+  "runtime_commit": "57497834",
+  "seconds": 196.1411238409928,
+  "seeds": [
+    19,
+    43
+  ],
+  "source_model_sha256": "69b5254489d224d4b20ac358956e4dd3b9a67a2f214a9aff98045c5def25a536",
+  "source_unchanged": true,
+  "test_read": false,
+  "verified_files": 20
+}

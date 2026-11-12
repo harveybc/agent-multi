@@ -3,9 +3,12 @@
 ## Execution Update: 2026-11-12
 
 [Selected71 critic calibration300](300_SELECTED71_CRITIC_CALIBRATION.md)
-AUTHORIZED: rebuild native TRAIN continuations for the new71 actor, two seeds,
-4096 critic-head updates each. Actor frozen, full-support cold parity required;
-FIT/MONITOR value and ranking diagnostics. Finite queue/report/collector.
+COMPLETE:151 rebuilt native TRAIN anchors; two seeds,4096 critic-head updates
+each,196.14s. MONITOR pair accuracy58->62% and40->49%, regret lower but value
+RMSE worse. Curves peak earlier in ranking; no retrospective endpoint change.
+1019 frozen state tensors and full actor/cold logits exact; unchanged returns
+16.058224% /18.369946%.23 files verified,6 tests plus wrong-source rejection.
+Next executable71-input boundary diagnosis before any bounded actor correction.
 
 [Refined72 cumulative selection299](299_SELECTED72_CUMULATIVE_SELECTION.md)
 COMPLETE:72 ->71 ->71,28 groups. Removed elapsed hours on a validation-return
