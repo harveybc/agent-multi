@@ -2,6 +2,12 @@
 
 ## Execution Update: 2026-11-12
 
+[Refined72 cumulative selection299](299_SELECTED72_CUMULATIVE_SELECTION.md)
+AUTHORIZED: qualify both298 step8 endpoints; primary19 fresh deletion and
+cumulative return of all48 historical phase2 absences, independent report and
+physical export.37 focused tests pass. Preserve controls; no new actor fit,
+test read or live promotion. Finite queue with authenticated collection.
+
 [Selected72 interior refinement298](298_SELECTED72_INTERIOR_REFINEMENT.md)
 COMPLETE: fresh25-row correct-decision guard and64 error targets;16/16 full
 steps accepted. Both seeds TRAIN15.612726 ->15.818189%,VAL18.369946% unchanged,

@@ -1,6 +1,18 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "SELECTED72_INTERIOR_REFINEMENT_COMPLETE",
+  "current_stage": "SELECTED72_CUMULATIVE_SELECTION_AUTHORIZED",
+  "selected72_cumulative_selection_299": {
+    "document": "../299_SELECTED72_CUMULATIVE_SELECTION.md",
+    "status": "READY",
+    "initial_features": 72,
+    "historical_phase2_absences": 48,
+    "primary_seed": 19,
+    "endpoint": 8,
+    "tests_passed": 37,
+    "test_read": false,
+    "model_promoted": false,
+    "next_action": "Qualify both298 endpoints, fresh cumulative deletion/readmission on primary19, independent report and physical export with cold/native parity. Finite automated queue; preserve all controls."
+  },
   "selected72_interior_refinement_298": {
     "document": "../298_SELECTED72_INTERIOR_REFINEMENT.md",
     "status": "COMPLETE",
@@ -2034,12 +2046,12 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
-    "preserve selected69 after complete cumulative phase2 screen; do not repeat unchanged mask pass or retrain an unchanged subset by default",
-    "Design targeted FIT error correction with source-correct decision constraints, verify requested/actual margins and nonzero useful changes, then fixed-budget native accounts; reuse292 controls. No repeat unchanged floating or live promotion.",
+    "Execute299 on qualified refined72 primary19: new cache, deletion then all historical phase2 readmissions, report and exact physical actor export; preserve both298 endpoints and frozen72 control",
+    "After299 inspect result and refresh selected native critic calibration before further actor correction; do not repeat an unchanged pass or reset learned actor",
     "keep donor-assisted screen distinct from matched restored-feature retraining",
     "reject primary threshold calibration and do not transfer unqualified close fields to actor",
     "audit real historical coverage and existing phase4 synthetic generator compatibility separately from phase2",
-    "Retsu owns live producer recovery under the selected69 handoff; no automatic model promotion"
+    "Retsu owns live producer recovery and COT source identity under the selected72 handoff; no automatic model promotion"
   ],
   "policy_return_calibration_results": "../215_FROZEN_POLICY_RETURN_CALIBRATION_RESULTS.md",
   "policy_return_calibration_identity": "ffa695f1f6032f288ab5c14b46d6d5de26100c18b1af3f02fbc3190a6d2c8aee",

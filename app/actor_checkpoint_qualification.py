@@ -13,8 +13,10 @@ def one_update_point(points):
 def qualification_profile(source, profile):
     if profile == 'one_update':
         return 'control', 1
-    if profile == 'interior_error8':
-        if (source.get('schema') != 'interior_fit_error_correction.v1' or
+    if profile in ('interior_error8', 'fresh_interior72_8'):
+        schema = ('fresh_calibrated_interior_correction.v1' if profile == 'fresh_interior72_8'
+                  else 'interior_fit_error_correction.v1')
+        if (source.get('schema') != schema or
                 source.get('primary_endpoint') != 8 or source.get('points') != [0,1,8] or
                 source.get('seeds') != [19,43] or source.get('test_read') is not False or
                 source.get('modes') != ['interior_error_project_guard']):
