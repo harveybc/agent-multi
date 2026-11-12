@@ -2,6 +2,12 @@
 
 ## Execution Update: 2026-11-12
 
+[Selected71 optimal-action-set correction302](302_SELECTED71_OPTIMAL_SET_REFINEMENT.md)
+IMPLEMENTED:47 focused tests pass; historical strict helpers retained. New
+set-aware guard covers equivalent HOLD actions and the loss includes tied
+optimal targets. Finite two-seed/eight-update contrast and native account
+verification follow; no automatic promotion or live change.
+
 [Selected71 decision diagnosis301](301_SELECTED71_DECISION_DIAGNOSIS.md)
 COMPLETE:2.98s CPU,26 tests;32 independent ranking checks and1440 derivative
 checks. On82 executable FIT openings actor optimal26,critics52/35; shared

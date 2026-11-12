@@ -1,6 +1,17 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "SELECTED71_DECISION_DIAGNOSIS_COMPLETE",
+  "current_stage": "SELECTED71_OPTIMAL_SET_REFINEMENT_IMPLEMENTATION",
+  "selected71_optimal_set_refinement_302": {
+    "document": "../302_SELECTED71_OPTIMAL_SET_REFINEMENT.md",
+    "status": "IMPLEMENTATION",
+    "source_export": "e02f424a02b8ef149a0206a1d229036adf4c558a60d66211d512726981826830",
+    "calibration": "33052ae3718b91244982191afe5826ca088811b312291ce3f09bca8db05c9394",
+    "diagnosis": "bd6cbb3a07edfab4aef3dec59eca96d5b378c077012b7a82e1aff82d5dd1224f",
+    "budget": "2 seeds, 8 attempted actor-head updates each; preserve existing interior trust limits",
+    "next_action": "Pass regression tests, seal code, execute finite refinement and account report, independently verify evidence before any promotion.",
+    "model_promoted": false,
+    "test_read": false
+  },
   "selected71_decision_diagnosis_301": {
     "document": "../301_SELECTED71_DECISION_DIAGNOSIS.md",
     "status": "COMPLETE",

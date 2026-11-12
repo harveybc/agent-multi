@@ -15,6 +15,7 @@ from app.fit_decision_preservation import protected_actions, margins, preservati
 from app.frozen_recipe_inputs import file_sha
 from app.frozen_signal_masks import prepared_signals
 from app.operational_opening_critic import emit_actor_reference
+from app import optimal_action_sets
 from app.rl_subset import digest, support_hash
 from app.selected_input_market import market_for
 from app.selected_warm_start import reset_learning_rng
@@ -41,6 +42,12 @@ def run(a):
         raise ValueError('PRESERVE_DEVICE')
     source=read(a.source/'CONFIG.json');verify_done(a.source,source['identity'])
     fresh=getattr(a,'fresh_calibrated',False)
+    sets=getattr(a,'optimal_action_sets',False)
+    if sets and not fresh:raise ValueError('OPTIMAL_SET_REQUIRES_FRESH')
+    target_builder=optimal_action_sets.error_targets if sets else error_targets
+    corrective_loss=optimal_action_sets.correction_loss if sets else correction_loss
+    corrective_request=optimal_action_sets.requested_margins if sets else requested_margins
+    corrective_progress=optimal_action_sets.error_progress if sets else error_progress
     diagnosis=None
     if fresh:
         if (not a.target_fit_errors or not a.interior_fit_guard or a.diagnosis is None
@@ -68,15 +75,21 @@ def run(a):
     # Match trainability/kernel dispatch before fixing a sub-micro logit floor.
     set_arm(model,'actor_only')
     with torch.no_grad():source_z=model.surfaces(x).detach()
-    protected,actions=protected_actions(source_z,native,records)
+    set_guard=optimal_action_sets.SetGuard(source_z,native,records) if sets else None
+    protected,actions=(set_guard.rows,set_guard.actions) if sets else protected_actions(source_z,native,records)
+    def guard_margins(z):return set_guard.margins(z) if sets else margins(z,protected,actions)
     if not len(protected):raise ValueError('PRESERVE_NO_STRICT_FIT_OPTIMUM')
-    source_margins=margins(source_z.double(),protected,actions).detach()
+    source_margins=guard_margins(source_z.double()).detach()
+    def guard_check(z):return set_guard.check(z) if sets else preservation(z,source_margins,protected,actions)
     guard=dict(indices=protected.cpu().tolist(),actions=actions.cpu().tolist(),
         rows=rows[protected.cpu().numpy()].tolist(),source_margins=source_margins.cpu().tolist(),
         native_returns=native[protected].cpu().tolist(),tolerance=1e-7)
     targeted=a.target_fit_errors;interior=a.interior_fit_guard
     if interior and (not targeted or (a.prior_targeted is None and not fresh)):raise ValueError('PRESERVE_INTERIOR_REQUIRES_TARGETED')
-    error_labels,error_weights=error_targets(source_z,native,records)
+    if sets:guard.update(optimal_actions=set_guard.optimal[protected].cpu().tolist(),
+        constraint_indices=set_guard.constraint_rows.cpu().tolist(),
+        constraint_preferred=set_guard.preferred.cpu().tolist(),constraint_suboptimal=set_guard.bad.cpu().tolist())
+    error_labels,error_weights=target_builder(source_z,native,records)
     prior_guard=None
     if targeted and not fresh:
         if a.prior_guard is None:raise ValueError('PRESERVE_PRIOR_REQUIRED')
@@ -91,7 +104,7 @@ def run(a):
                 or prior_targeted['error_targets']!=error_labels.cpu().tolist()
                 or prior_targeted['error_weights']!=error_weights.cpu().tolist()):
             raise ValueError('PRESERVE_INTERIOR_PRIOR')
-    if interior:buffer=interior_buffer(source_z,protected,actions)
+    if interior:buffer=set_guard.buffer if sets else interior_buffer(source_z,protected,actions)
     cfg=dict(schema='fit_decision_preservation.v1',source_identity=source['identity'],
         source_receipt_sha256=file_sha(a.source/'DONE.json'),source_sha256=sha,
         export_identity=exported['identity'],parent_identity=parent['identity'],
@@ -123,6 +136,10 @@ def run(a):
             interior_buffer=buffer.cpu().tolist(),
             interior_formula='8 * dtype_eps * (1 + abs(preferred_source_logit) + abs(other_source_logit))',
             minimum_linear_slack=-1e-10)
+    if sets:cfg.update(schema='optimal_action_set_interior_correction.v1',
+        objective='advantage_weighted_fixed_fit_error_negative_log_optimal_mass',
+        optimal_action_tolerance=1e-8,guard_semantics='source_optimal_vs_suboptimal_only_and_greedy_set_membership',
+        corrective_margin_semantics='logsumexp_optimal_minus_logsumexp_suboptimal')
     cfg['identity']=digest(cfg)
     if (a.output/'CONFIG.json').exists() and read(a.output/'CONFIG.json')!=cfg:raise ValueError('PRESERVE_CONFIG')
     if (a.output/'DONE.json').exists():verify_done(a.output,cfg['identity']);return
@@ -169,7 +186,7 @@ def run(a):
             set_arm(model,'actor_only');clear_optimizer_memory(model.optimizer);reset_learning_rng(seed)
             with torch.no_grad():initial_z=model.surfaces(x).detach()
             if not torch.equal(initial_z,source_z):raise ValueError('PRESERVE_PANEL_START')
-            write(out/'INITIAL_GUARD.json',preservation(initial_z,source_margins,protected,actions))
+            write(out/'INITIAL_GUARD.json',guard_check(initial_z))
             named=[(n,p) for n,p in model.loss.named_parameters() if p.requires_grad]
             if len(named)!=4 or any('.head.' not in n or not n.startswith('actor_') for n,_ in named):
                 raise ValueError('PRESERVE_SCOPE')
@@ -188,11 +205,11 @@ def run(a):
                 before=[p.detach().clone() for p in params];optim_before=copy.deepcopy(model.optimizer.state_dict())
                 with torch.no_grad():before_z=model.surfaces(x).detach()
                 def objective(z):
-                    if targeted:return float(correction_loss(z.double(),error_labels,error_weights,ix))
+                    if targeted:return float(corrective_loss(z.double(),error_labels,error_weights,ix))
                     v,e,_=actor_terms(z[ix].double(),q[ix].double(),alpha.double());return float(v+e)
                 loss_before=objective(before_z)
                 model.optimizer.zero_grad(set_to_none=True)
-                if targeted:correction_loss(model.surfaces(x).double(),error_labels,error_weights,ix).backward()
+                if targeted:corrective_loss(model.surfaces(x).double(),error_labels,error_weights,ix).backward()
                 else:
                     v,e,_=actor_terms(model.surfaces(x[ix]),q[ix],alpha);(v+e).backward()
                 gradient=flat([p.grad for p in params])
@@ -203,7 +220,7 @@ def run(a):
                 projection=dict(success=True,nonzero=True,mode='unprojected')
                 if mode in ('project_guard','error_project_guard','interior_error_project_guard'):
                     z=model.surfaces(x)
-                    current=margins(z.double(),protected,actions)
+                    current=guard_margins(z.double())
                     jac=torch.stack([flat(torch.autograd.grad(value,params,retain_graph=True))
                                      for value in current.flatten()])
                     lower=(source_margins+(buffer if interior else 0)-current.detach()).flatten()
@@ -220,11 +237,11 @@ def run(a):
                 def check():
                     with torch.no_grad():after=model.surfaces(x).detach()
                     metrics=budget_metrics(source_z[fit],before_z[fit],after[fit],theta0,flat(params))
-                    loss_after=objective(after);guard_check=preservation(after,source_margins,protected,actions)
+                    loss_after=objective(after);guard_result=guard_check(after)
                     moved=any(not torch.equal(p,old) for p,old in zip(params,before))
                     return dict(accepted=bool(moved and metrics['step_margin_rms']>=cfg['minimum_step_margin_rms']
-                        and guard_check['passed'] and admissible(metrics,loss_before,loss_after)),
-                        metrics=metrics,guard=guard_check,loss_before=loss_before,loss_after=loss_after)
+                        and guard_result['passed'] and admissible(metrics,loss_before,loss_after)),
+                        metrics=metrics,guard=guard_result,loss_before=loss_before,loss_after=loss_after)
                 trace=[]
                 def traced_check():
                     value=check()
@@ -241,8 +258,9 @@ def run(a):
                 corrective={}
                 if targeted:
                     with torch.no_grad():after_z=model.surfaces(x).detach()
-                    ids,requested=requested_margins(before_z,error_labels,error_weights,ix)
-                    actual=margins(after_z.double(),ids,error_labels[ids])-margins(before_z.double(),ids,error_labels[ids])
+                    ids,requested=corrective_request(before_z,error_labels,error_weights,ix)
+                    margin_fn=optimal_action_sets.set_margin if sets else margins
+                    actual=margin_fn(after_z.double(),ids,error_labels[ids])-margin_fn(before_z.double(),ids,error_labels[ids])
                     def native_loss(z):
                         v,e,_=actor_terms(z[ix].double(),q[ix].double(),alpha.double());return float(v+e)
                     corrective=dict(error_rows=rows[ids.cpu().numpy()].tolist(),
@@ -250,7 +268,7 @@ def run(a):
                         sign_agreement=float(((actual*requested)>0).double().mean()),
                         loss_before=loss_before,loss_after=objective(after_z),
                         native_loss_before=native_loss(before_z),native_loss_after=native_loss(after_z),
-                        progress=error_progress(source_z,after_z,native,records))
+                        progress=corrective_progress(source_z,after_z,native,records))
                 steps.append(dict(updates=step,gradient_norm=float(norm),projection=projection,
                     final_guard=final_check['guard'],corrective=corrective,backtracking_trace=trace,**result))
                 write(out/'STEPS.json',steps);progress('STEP',arm=key,updates=step,accepted=result['accepted'])
@@ -310,6 +328,7 @@ if __name__=='__main__':
     parser.add_argument('--interior-fit-guard',action='store_true')
     parser.add_argument('--prior-targeted',type=Path)
     parser.add_argument('--fresh-calibrated',action='store_true')
+    parser.add_argument('--optimal-action-sets',action='store_true')
     parser.add_argument('--diagnosis',type=Path)
     args=parser.parse_args();args.output.mkdir(parents=True,exist_ok=True)
     with (args.output/'worker.lock').open('a') as lock:
