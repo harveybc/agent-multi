@@ -1,0 +1,43 @@
+{
+  "identity": "9dc979acb7bab817a9a9b0628077690775f64629b52501fcc75c1372305193d1",
+  "verified_files": 262,
+  "protected_fit_rows": 26,
+  "target_fit_errors": 63,
+  "target_weight_sum": 22.833581003614892,
+  "checkpoint_checks": [
+    {
+      "arm": "error_project_guard_19",
+      "point": 1,
+      "accepted": 0,
+      "minimum_margin_change": 0.0,
+      "optimizer_step_count_exact": true,
+      "frozen_components_exact": true
+    },
+    {
+      "arm": "error_project_guard_19",
+      "point": 8,
+      "accepted": 0,
+      "minimum_margin_change": 0.0,
+      "optimizer_step_count_exact": true,
+      "frozen_components_exact": true
+    },
+    {
+      "arm": "error_project_guard_43",
+      "point": 1,
+      "accepted": 0,
+      "minimum_margin_change": 0.0,
+      "optimizer_step_count_exact": true,
+      "frozen_components_exact": true
+    },
+    {
+      "arm": "error_project_guard_43",
+      "point": 8,
+      "accepted": 0,
+      "minimum_margin_change": 0.0,
+      "optimizer_step_count_exact": true,
+      "frozen_components_exact": true
+    }
+  ],
+  "new_source_weights_unchanged": true,
+  "test_read": false
+}

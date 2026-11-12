@@ -1,9 +1,27 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "TARGETED_FIT_ERROR_CORRECTION_READY",
+  "current_stage": "TARGETED_FIT_ERROR_CORRECTION_COMPLETE",
   "targeted_fit_error_correction_293": {
     "document": "../293_TARGETED_FIT_ERROR_CORRECTION.md",
-    "status": "READY",
+    "status": "COMPLETE",
+    "identity": "9dc979acb7bab817a9a9b0628077690775f64629b52501fcc75c1372305193d1",
+    "runtime": "183255f5",
+    "worker_seconds": 28.476003821007907,
+    "report_seconds": 1.1216803540010005,
+    "target_fit_errors": 63,
+    "accepted_steps": {"19": 0, "43": 0},
+    "verified_files": 262,
+    "checkpoint_checks": 4,
+    "replayed_first_proposal_fractions": 48,
+    "account_attributions": 4,
+    "max_account_error_usd": 0.0,
+    "worker_files": 114,
+    "report_files": 15,
+    "queue_running": false,
+    "collector_exit": 0,
+    "train_return_pct": 13.913055450002048,
+    "validation_return_pct": 16.33613924999989,
+    "new_trading_gain": false,
     "features": 69,
     "groups": 28,
     "seeds": [19, 43],
@@ -13,7 +31,7 @@
     "tests_passed": 33,
     "test_read": false,
     "model_promoted": false,
-    "next_action": "Execute two fixed-budget projected-guard arms, audit checkpoints and full native accounts; reuse292 controls. Preserve source and do not repeat unchanged floating."
+    "next_action": "Design strictly interior projection or nonlinear FIT feasibility repair with unchanged1e-7 guard; first verify nonzero correction, then separate fixed-budget accounts. Preserve source; no unchanged floating repeat or default longer training."
   },
   "fit_decision_preservation_292": {
     "document": "../292_FIT_DECISION_PRESERVATION.md",

@@ -2,6 +2,14 @@
 
 ## Execution Update: 2026-11-11
 
+[Targeted FIT error correction293](293_TARGETED_FIT_ERROR_CORRECTION.md) COMPLETE:
+63 error targets,26 protected correct decisions; both schedules accept0/8
+updates. Saved weights and accounts unchanged (TRAIN13.913055%,
+VAL16.336139%). First-proposal replay isolates the nonlinear margin guard:
+loss improves and trust budgets pass, but tiny protected-margin decreases fail
+the fixed tolerance.262 files/four checkpoints independently audited. Next:
+interior feasibility repair, not more epochs or another unchanged floating pass.
+
 [FIT decision preservation292](292_FIT_DECISION_PRESERVATION.md) COMPLETE:
 26 FIT anchors preserved; guard-only accepts0/8 in both seeds, projection4/8
 and5/8. All full-period actions/accounts remain unchanged:TRAIN13.913055%,

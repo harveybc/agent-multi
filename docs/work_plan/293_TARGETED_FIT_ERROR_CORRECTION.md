@@ -44,3 +44,93 @@ Report decreases in correction loss separately from corrected greedy decisions
 and monetary gain. The native best action is conditional on the source-policy
 continuation, not a globally optimal trading policy. No validation-based target,
 step budget, coefficient choice or checkpoint selection; no TEST/live promotion.
+
+## Completed Results
+
+Runtime `183255f5`; identity
+`9dc979acb7bab817a9a9b0628077690775f64629b52501fcc75c1372305193d1`.
+Two arms completed automatically on the primary GPU in28.48seconds, followed
+by1.12seconds of full account attribution. Worker and collector exited0;
+114 worker files and15 report files passed collection hashes.33 focused tests
+and scoped Ruff passed before execution.
+
+There are63 fixed FIT mistakes (total native advantage22.833581),26 protected
+FIT decisions and23 diagnostic-only MONITOR mistakes. Targets are conditional
+native continuation returns, not hindsight features supplied to the model.
+
+| Arm | Accepted / attempted | Corrected FIT errors | TRAIN return % | VAL return % | TRAIN / VAL orders |
+|---|---:|---:|---:|---:|---:|
+| Frozen export |0 /0|0|13.913055|16.336139|739 /207|
+| Targeted projected19 |0 /8|0 /63|13.913055|16.336139|739 /207|
+| Targeted projected43 |0 /8|0 /63|13.913055|16.336139|739 /207|
+
+All16 linear projections solved successfully with nonzero proposals, but all
+16 nonlinear backtracking searches rejected. Rejected steps restore both
+weights and optimizer moments. No probabilities, greedy actions or trades
+changed at the saved endpoints. This is **not** an improvement in learning,
+profit or generalization; the protected reference remains the current model.
+
+Unchanged account details, including trading costs:
+
+| Metric | TRAIN2020-2023 | VALIDATION2024 |
+|---|---:|---:|
+| Profit USD |1391.305545|1633.613925|
+| Sharpe |0.685588|2.400526|
+| Maximum drawdown % |9.548436|3.257322|
+| BUY / SELL orders |224 /515|23 /184|
+| BUY / SELL wins |152 /304|14 /108|
+| Total win rate % |61.7050|58.9372|
+| Orders/week |3.5359|3.8333|
+| Early / TP / SL / forced closes |54 /403 /220 /62|6 /110 /66 /25|
+| Helpful / harmful early closes |25 /29|4 /2|
+
+## Rejection Diagnosis
+
+Independently replayed the first proposal for each schedule, including all24
+backtracking fractions, without saving any candidate or changing the sealed
+run. Both projection results and gradient norms reproduce exactly.
+
+| First full proposal | Schedule19 | Schedule43 |
+|---|---:|---:|
+| Correction loss before |2.879971396|2.821819637|
+| Correction loss after |2.879250116|2.821154884|
+| FIT margin RMS movement |0.001758367|0.001831531|
+| Worst protected margin change |-9.536743e-7|-3.278255e-7|
+| Protected action flips |0|0|
+| Failed gate |protected margin only|protected margin only|
+
+Both full proposals satisfy all trust ceilings and improve the intended loss.
+The linear projection lands on active guard boundaries (minimum predicted
+margin change approximately0), but the actual float32 network loses tiny
+protected margins. No useful first-step fraction passes: fractions down to
+2^-10 fail protection; smaller fractions fall below the1e-6 movement floor,
+with protection passing only once movement is effectively zero. All48 replayed
+trials preserve the26 protected greedy actions, but decision preservation alone
+is weaker than the fixed confidence-margin contract.
+
+This identifies the immediate obstruction in the first steps as the strict
+nonlinear margin gate, not a reversed loss or exhausted trust budget. It does
+not prove that every rejection is pure roundoff, that no feasible corrective
+direction exists, or that accepting these proposals would improve trading.
+The discrepancy includes finite-precision evaluation and nonlinear departure
+from a first-order boundary; those contributions are not separated here.
+
+## Integrity And Next Step
+
+Independent audit authenticates262 files and all four saved checkpoints;
+source-correct membership, fixed error labels/weights, monitor exclusion,
+source/final margins, untouched frozen tensors and zero accepted optimizer
+steps reproduce exactly. Four full-period account deltas reconcile with0 USD
+error. No live promotion, new floating pass or access to TEST.
+
+Next: design a strictly interior projected proposal or nonlinear feasibility
+repair on FIT, retaining the existing1e-7 acceptance tolerance and26 protected
+actions. First test nonzero feasible movement and the requested/actual error
+direction on this same panel, then use a separately identified fixed-budget
+contrast. Do not relax the gate after seeing validation, inflate training epochs,
+repeat the unchanged floating pass or discard the source weights.
+
+Evidence: [manifest](generalization/targeted_fit_20261111/MANIFEST.json),
+[summary](generalization/targeted_fit_20261111/SUMMARY.json),
+[audit](generalization/targeted_fit_20261111/AUDIT.json),
+[rejection traces](generalization/targeted_fit_20261111/REJECTION.json).

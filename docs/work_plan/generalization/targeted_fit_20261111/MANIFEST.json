@@ -1,0 +1,18 @@
+{
+  "identity": "9dc979acb7bab817a9a9b0628077690775f64629b52501fcc75c1372305193d1",
+  "runtime": "183255f5",
+  "source_receipt_sha256": "eb17e2ffbd27d415fe25d0d9d8567a5b722e16588e2130a23704eef95d56807b",
+  "report_receipt_sha256": "b897998ae8742bc6655327720ac1392759b1606bccc15eccfb8f24f1e3a79c27",
+  "files": {
+    "AUDIT.json": "2ebb9ad7d666647d4222a7580ab59bde5fcb8f1eb032ee1b9a54d7ee14a8ad59",
+    "REJECTION.json": "b8f65f604b768ba4e00a98a837e89eb086c4db983f3f6de74162fcb6b3204410",
+    "GUARD.json": "6c6fb477bb71a08c8e34017103b9771d646d5564afaf53e3894b6566a1ce9423",
+    "TARGETS.json": "ed48f98365609dc444f8ae32e415dee9971f2f93140c80be9c737002ab576761",
+    "SUMMARY.json": "2031b3e5d51c02b7060624999f41a392d4ce2f68789f3fe32099a6b975373f52",
+    "STEPS.json": "ac15b57ca36ec371f6e39ca190c001507e39c4a5eb0c4e291ad1dc7d399effb6",
+    "RETURNS.png": "6a85819d009c7003ef254db8377474c1ed7d09bbb0eed93709eae58342aa6482"
+  },
+  "source_unchanged": true,
+  "test_read": false,
+  "model_promoted": false
+}
