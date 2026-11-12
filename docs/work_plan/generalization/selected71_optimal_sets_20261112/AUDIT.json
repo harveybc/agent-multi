@@ -1,0 +1,205 @@
+{
+  "accounts": [
+    {
+      "arm": "interior_error_project_guard_19",
+      "delta_usd": -87.3267749999959,
+      "effective_event_count": 2,
+      "effective_events_outside_panel": 0,
+      "period": "TRAIN",
+      "reconciliation_error_usd": 0.0
+    },
+    {
+      "arm": "interior_error_project_guard_19",
+      "delta_usd": -24.091779999967912,
+      "effective_event_count": 3,
+      "effective_events_outside_panel": 3,
+      "period": "VALIDATION",
+      "reconciliation_error_usd": 0.0
+    },
+    {
+      "arm": "interior_error_project_guard_43",
+      "delta_usd": -87.3267749999959,
+      "effective_event_count": 2,
+      "effective_events_outside_panel": 0,
+      "period": "TRAIN",
+      "reconciliation_error_usd": 0.0
+    },
+    {
+      "arm": "interior_error_project_guard_43",
+      "delta_usd": -24.091779999967912,
+      "effective_event_count": 3,
+      "effective_events_outside_panel": 3,
+      "period": "VALIDATION",
+      "reconciliation_error_usd": 0.0
+    }
+  ],
+  "checkpoints": [
+    {
+      "accepted": 1,
+      "arm": "interior_error_project_guard_19",
+      "changed_head_tensors": [
+        "actor_network_params.module.0.module.head.0.weight",
+        "actor_network_params.module.0.module.head.0.bias",
+        "actor_network_params.module.0.module.head.2.weight",
+        "actor_network_params.module.0.module.head.2.bias"
+      ],
+      "corrected_fit_errors": 0,
+      "frozen_tensors_exact": 1023,
+      "full_fit_error_loss_after": 2.6552704134639167,
+      "full_fit_error_loss_before": 2.655644603752046,
+      "minimum_margin_change": 9.611248970031738e-07,
+      "optimizer_steps_exact": true,
+      "point": 1,
+      "protected_suboptimal": 0
+    },
+    {
+      "accepted": 8,
+      "arm": "interior_error_project_guard_19",
+      "changed_head_tensors": [
+        "actor_network_params.module.0.module.head.0.weight",
+        "actor_network_params.module.0.module.head.0.bias",
+        "actor_network_params.module.0.module.head.2.weight",
+        "actor_network_params.module.0.module.head.2.bias"
+      ],
+      "corrected_fit_errors": 0,
+      "frozen_tensors_exact": 1023,
+      "full_fit_error_loss_after": 2.65278779741889,
+      "full_fit_error_loss_before": 2.655644603752046,
+      "minimum_margin_change": 9.685754776000977e-07,
+      "optimizer_steps_exact": true,
+      "point": 8,
+      "protected_suboptimal": 0
+    },
+    {
+      "accepted": 1,
+      "arm": "interior_error_project_guard_43",
+      "changed_head_tensors": [
+        "actor_network_params.module.0.module.head.0.weight",
+        "actor_network_params.module.0.module.head.0.bias",
+        "actor_network_params.module.0.module.head.2.weight",
+        "actor_network_params.module.0.module.head.2.bias"
+      ],
+      "corrected_fit_errors": 0,
+      "frozen_tensors_exact": 1023,
+      "full_fit_error_loss_after": 2.6552798006658715,
+      "full_fit_error_loss_before": 2.655644603752046,
+      "minimum_margin_change": 9.760260581970215e-07,
+      "optimizer_steps_exact": true,
+      "point": 1,
+      "protected_suboptimal": 0
+    },
+    {
+      "accepted": 8,
+      "arm": "interior_error_project_guard_43",
+      "changed_head_tensors": [
+        "actor_network_params.module.0.module.head.0.weight",
+        "actor_network_params.module.0.module.head.0.bias",
+        "actor_network_params.module.0.module.head.2.weight",
+        "actor_network_params.module.0.module.head.2.bias"
+      ],
+      "corrected_fit_errors": 0,
+      "frozen_tensors_exact": 1023,
+      "full_fit_error_loss_after": 2.6527995834698497,
+      "full_fit_error_loss_before": 2.655644603752046,
+      "minimum_margin_change": 9.5367431640625e-07,
+      "optimizer_steps_exact": true,
+      "point": 8,
+      "protected_suboptimal": 0
+    }
+  ],
+  "constraint_count": 68,
+  "corrective_fit_rows": 65,
+  "differing_actor_head_tensors_between_seeds": 4,
+  "differing_endpoint_tensors_between_seeds": 12,
+  "full_fit_error_losses": [
+    [
+      2.655644603752046,
+      2.65278779741889
+    ],
+    [
+      2.655644603752046,
+      2.6527995834698497
+    ]
+  ],
+  "identity": "7e11c3363ba816788691b50ed2ce1df6178b9685d85cad6d8350c1e58d8f17c7",
+  "model_promoted": false,
+  "new_hold_guards": 16,
+  "panel_action_switches": [
+    {
+      "arm": "interior_error_project_guard_19",
+      "native_returns": [
+        0.9012073542958027,
+        0.613215091540304,
+        1.1631359192308934
+      ],
+      "new": 1,
+      "old": 0,
+      "optimal_mass_after": 0.06429560359813052,
+      "optimal_mass_before": 0.06390771637858231,
+      "panel_index": 107,
+      "role": "fit",
+      "source_optimal": false,
+      "timestamp": 1669712400000000000
+    },
+    {
+      "arm": "interior_error_project_guard_19",
+      "native_returns": [
+        0.0,
+        0.30730658808140143,
+        -0.45761232357562687
+      ],
+      "new": 2,
+      "old": 0,
+      "optimal_mass_after": 0.18378058376008855,
+      "optimal_mass_before": 0.1837744195202966,
+      "panel_index": 150,
+      "role": "monitor",
+      "source_optimal": false,
+      "timestamp": 1703617200000000000
+    },
+    {
+      "arm": "interior_error_project_guard_43",
+      "native_returns": [
+        0.9012073542958027,
+        0.613215091540304,
+        1.1631359192308934
+      ],
+      "new": 1,
+      "old": 0,
+      "optimal_mass_after": 0.06432009547802568,
+      "optimal_mass_before": 0.06390771637858231,
+      "panel_index": 107,
+      "role": "fit",
+      "source_optimal": false,
+      "timestamp": 1669712400000000000
+    },
+    {
+      "arm": "interior_error_project_guard_43",
+      "native_returns": [
+        0.0,
+        0.30730658808140143,
+        -0.45761232357562687
+      ],
+      "new": 2,
+      "old": 0,
+      "optimal_mass_after": 0.18379780273700067,
+      "optimal_mass_before": 0.1837744195202966,
+      "panel_index": 150,
+      "role": "monitor",
+      "source_optimal": false,
+      "timestamp": 1703617200000000000
+    }
+  ],
+  "protected_fit_rows": 42,
+  "reference_account_exact": true,
+  "reference_cross_runtime_entropy_deltas": {
+    "TRAIN:mean_requested_command_entropy": 4.3113735803679276e-08,
+    "TRAIN:mean_signal_entropy": 5.346821430052273e-08,
+    "VALIDATION:mean_requested_command_entropy": 7.139765800801001e-08,
+    "VALIDATION:mean_signal_entropy": 8.631387982127592e-08
+  },
+  "source_unchanged": true,
+  "test_read": false,
+  "tied_error_targets": 2,
+  "verified_files": 182
+}

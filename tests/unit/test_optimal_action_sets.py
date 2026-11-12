@@ -66,3 +66,17 @@ def test_optimal_mass_alone_is_not_greedy_acceptance():
     after=torch.tensor([[0.,0.,.1]])
     assert after.softmax(-1)[0,:2].sum()>.5
     assert not g.check(after)['passed']
+
+
+def test_measured_remaining_gap_error_can_switch_to_worse_with_lower_loss():
+    # Protecting correct rows is not a source-value floor for incorrect rows.
+    source=torch.tensor([[.5,.4,.1],[.1,.8,.1]],dtype=torch.double).log()
+    after=torch.tensor([[.4,.48,.12],[.1,.8,.1]],dtype=torch.double).log()
+    native=torch.tensor([[.9,.6,1.16],[0.,1.,0.]])
+    records=[{'role':'fit'}]*2
+    guard=SetGuard(source,native,records)
+    targets,weights=error_targets(source,native,records)
+    indices=torch.tensor([0,1])
+    assert correction_loss(after,targets,weights,indices)<correction_loss(source,targets,weights,indices)
+    assert guard.check(after)['passed']
+    assert native[0,after[0].argmax()]<native[0,source[0].argmax()]

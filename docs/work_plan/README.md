@@ -3,10 +3,13 @@
 ## Execution Update: 2026-11-12
 
 [Selected71 optimal-action-set correction302](302_SELECTED71_OPTIMAL_SET_REFINEMENT.md)
-IMPLEMENTED:47 focused tests pass; historical strict helpers retained. New
-set-aware guard covers equivalent HOLD actions and the loss includes tied
-optimal targets. Finite two-seed/eight-update contrast and native account
-verification follow; no automatic promotion or live change.
+COMPLETE:48 focused tests;42 protected FIT decisions,65 error targets,16/16
+accepted updates. Both endpoints lose87.326775USD TRAIN and24.091780USD VAL;
+control remains16.058224% /18.369946%.182 files independently verified,
+1023 frozen tensors/checkpoint exact, four account attributions reconcile.
+Remaining counterexample: an already-wrong decision switches to a worse
+action despite increased optimal probability. Next FIT source-value floor,
+not more unchanged floating or unconstrained training. No live change.
 
 [Selected71 decision diagnosis301](301_SELECTED71_DECISION_DIAGNOSIS.md)
 COMPLETE:2.98s CPU,26 tests;32 independent ranking checks and1440 derivative
