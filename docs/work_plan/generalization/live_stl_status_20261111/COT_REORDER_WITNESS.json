@@ -1,0 +1,29 @@
+{
+  "evidence": "SYNTHETIC_UNIT_FIXTURE_ONLY_NOT_TRAINING_OR_LIVE_DATA",
+  "finding": "duplicate-date values depend on input order; market code is not filtered",
+  "fixture": [
+    {
+      "CFTC_Contract_Market_Code": "099741",
+      "Date": "2024-01-02",
+      "EUR_Long": 200,
+      "EUR_Net_Long": 100,
+      "EUR_Short": 100
+    },
+    {
+      "CFTC_Contract_Market_Code": "299741",
+      "Date": "2024-01-02",
+      "EUR_Long": 20,
+      "EUR_Net_Long": -5,
+      "EUR_Short": 25
+    }
+  ],
+  "historical_impact_quantified": false,
+  "net_forward": [
+    -5.0
+  ],
+  "net_reversed": [
+    100.0
+  ],
+  "producer_sha256": "8b6e203e2d8b5cd4db415f7366b4bbca2b67f70fb978ea12126f2281a072e0af",
+  "schema": "cot_reorder_witness.v1"
+}

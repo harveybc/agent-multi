@@ -1,0 +1,996 @@
+{
+  "columns": [
+    {
+      "consumer_ops": [],
+      "store_column": "OPEN@diff",
+      "tensor_name": "OPEN@diff",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": true,
+        "decision": "DIFF",
+        "store_column": "OPEN@diff",
+        "suffix": "diff"
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "RAW_BAR_LOG_RETURN",
+      "tensor_name": "RAW_BAR_LOG_RETURN",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "RAW_BAR_LOG_RETURN",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "RAW_LOG_RANGE@log",
+      "tensor_name": "RAW_LOG_RANGE@log",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": true,
+        "decision": "LOG",
+        "store_column": "RAW_LOG_RANGE@log",
+        "suffix": "log"
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "RAW_CLOSE_LOG_RETURN",
+      "tensor_name": "RAW_CLOSE_LOG_RETURN",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "RAW_CLOSE_LOG_RETURN",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "RAW_ELAPSED_HOURS",
+      "tensor_name": "RAW_ELAPSED_HOURS",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "RAW_ELAPSED_HOURS",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "ATR",
+      "tensor_name": "ATR",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "ATR",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "BB_Width",
+      "tensor_name": "BB_Width",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "BB_Width",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "ATR_ratio",
+      "tensor_name": "ATR_ratio",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "ATR_ratio",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "rolling_std_24",
+      "tensor_name": "rolling_std_24",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "rolling_std_24",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "Stochastic_D",
+      "tensor_name": "Stochastic_D",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "Stochastic_D",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "CCI",
+      "tensor_name": "CCI",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "CCI",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "BB_position",
+      "tensor_name": "BB_position",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "BB_position",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "cal.utc_session_europe",
+      "tensor_name": "cal.utc_session_europe",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "cal.utc_session_europe",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "cal.london_hod_sin",
+      "tensor_name": "cal.london_hod_sin",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "cal.london_hod_sin",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "cal.london_hod_cos",
+      "tensor_name": "cal.london_hod_cos",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "cal.london_hod_cos",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "px.logret_1",
+      "tensor_name": "px.logret_1",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "px.logret_1",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "px.logret_4",
+      "tensor_name": "px.logret_4",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "px.logret_4",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "px.logret_24",
+      "tensor_name": "px.logret_24",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "px.logret_24",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "px.range_1@log",
+      "tensor_name": "px.range_1@log",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": true,
+        "decision": "LOG",
+        "store_column": "px.range_1@log",
+        "suffix": "log"
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "px.range_2@log",
+      "tensor_name": "px.range_2@log",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": true,
+        "decision": "LOG",
+        "store_column": "px.range_2@log",
+        "suffix": "log"
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "px.range_4@log",
+      "tensor_name": "px.range_4@log",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": true,
+        "decision": "LOG",
+        "store_column": "px.range_4@log",
+        "suffix": "log"
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "px.range_6@log",
+      "tensor_name": "px.range_6@log",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": true,
+        "decision": "LOG",
+        "store_column": "px.range_6@log",
+        "suffix": "log"
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "px.range_48",
+      "tensor_name": "px.range_48",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "px.range_48",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "px.close_loc_1",
+      "tensor_name": "px.close_loc_1",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "px.close_loc_1",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "px.close_loc_4",
+      "tensor_name": "px.close_loc_4",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "px.close_loc_4",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "px.close_loc_12",
+      "tensor_name": "px.close_loc_12",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "px.close_loc_12",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "px.close_loc_24",
+      "tensor_name": "px.close_loc_24",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "px.close_loc_24",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "px.close_loc_48",
+      "tensor_name": "px.close_loc_48",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "px.close_loc_48",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "px.er_2",
+      "tensor_name": "px.er_2",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "px.er_2",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "px.er_6",
+      "tensor_name": "px.er_6",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "px.er_6",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "px.er_12",
+      "tensor_name": "px.er_12",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "px.er_12",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "px.er_48",
+      "tensor_name": "px.er_48",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "px.er_48",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "px.hours_since_session_open",
+      "tensor_name": "px.hours_since_session_open",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "px.hours_since_session_open",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "cdl.body_pips",
+      "tensor_name": "cdl.body_pips",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "cdl.body_pips",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "cdl.lower_wick_pips@asinh",
+      "tensor_name": "cdl.lower_wick_pips@asinh",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": true,
+        "decision": "ASINH",
+        "store_column": "cdl.lower_wick_pips@asinh",
+        "suffix": "asinh"
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "cdl.range_pips@asinh",
+      "tensor_name": "cdl.range_pips@asinh",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": true,
+        "decision": "ASINH",
+        "store_column": "cdl.range_pips@asinh",
+        "suffix": "asinh"
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "cdl.close_minus_low_pips@asinh",
+      "tensor_name": "cdl.close_minus_low_pips@asinh",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": true,
+        "decision": "ASINH",
+        "store_column": "cdl.close_minus_low_pips@asinh",
+        "suffix": "asinh"
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "cdl.high_minus_close_pips@asinh",
+      "tensor_name": "cdl.high_minus_close_pips@asinh",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": true,
+        "decision": "ASINH",
+        "store_column": "cdl.high_minus_close_pips@asinh",
+        "suffix": "asinh"
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "dly.us10y.chg_1d",
+      "tensor_name": "dly.us10y.chg_1d",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "dly.us10y.chg_1d",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "dly.us10y.chg_5d",
+      "tensor_name": "dly.us10y.chg_5d",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "dly.us10y.chg_5d",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "cot.eur.net_long",
+      "tensor_name": "cot.eur.net_long",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "cot.eur.net_long",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "cot.eur.net_share",
+      "tensor_name": "cot.eur.net_share",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "cot.eur.net_share",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "cot.eur.net_z156",
+      "tensor_name": "cot.eur.net_z156",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "cot.eur.net_z156",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "fac.fx_f1.ret_4",
+      "tensor_name": "fac.fx_f1.ret_4",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "fac.fx_f1.ret_4",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "fac.fx_f1.ret_24",
+      "tensor_name": "fac.fx_f1.ret_24",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "fac.fx_f1.ret_24",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "ev.tokyo_fix.hours_since",
+      "tensor_name": "ev.tokyo_fix.hours_since",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "ev.tokyo_fix.hours_since",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "ev.tokyo_fix.hours_to",
+      "tensor_name": "ev.tokyo_fix.hours_to",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "ev.tokyo_fix.hours_to",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "ev.london_fix.hours_to",
+      "tensor_name": "ev.london_fix.hours_to",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "ev.london_fix.hours_to",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "ev.ny_cut.hours_to",
+      "tensor_name": "ev.ny_cut.hours_to",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "ev.ny_cut.hours_to",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "act.p_hit",
+      "tensor_name": "act.p_hit",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "fit_scope": {
+          "fit_window": {
+            "applies_to": [
+              "kalman",
+              "gmm",
+              "hmm",
+              "fracdiff"
+            ],
+            "end_exclusive": "2024-01-01 00:00:00+00:00",
+            "rows": 24895,
+            "start": "2020-01-01 00:00:00+00:00"
+          },
+          "note": "learned producers fitted on the consumer scope only"
+        },
+        "learned_producer": "activity",
+        "store_column": "act.p_hit",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "ssa.c2_pips",
+      "tensor_name": "ssa.c2_pips",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "ssa.c2_pips",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "ssa.c3_pips",
+      "tensor_name": "ssa.c3_pips",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "ssa.c3_pips",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "wv.lc.A4@diff",
+      "tensor_name": "wv.lc.A4@diff",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": true,
+        "decision": "DIFF",
+        "store_column": "wv.lc.A4@diff",
+        "suffix": "diff"
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "wv.lc.D4",
+      "tensor_name": "wv.lc.D4",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "wv.lc.D4",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "wv.lc.D3",
+      "tensor_name": "wv.lc.D3",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "wv.lc.D3",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "wv.lc.D2",
+      "tensor_name": "wv.lc.D2",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "wv.lc.D2",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "wv.lc.energy_D2@log",
+      "tensor_name": "wv.lc.energy_D2@log",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": true,
+        "decision": "LOG",
+        "store_column": "wv.lc.energy_D2@log",
+        "suffix": "log"
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "wv.lc.energy_D1@diff",
+      "tensor_name": "wv.lc.energy_D1@diff",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": true,
+        "decision": "DIFF",
+        "store_column": "wv.lc.energy_D1@diff",
+        "suffix": "diff"
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "wv.r1.D3",
+      "tensor_name": "wv.r1.D3",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "wv.r1.D3",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "wv.r1.energy_D3@log",
+      "tensor_name": "wv.r1.energy_D3@log",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": true,
+        "decision": "LOG",
+        "store_column": "wv.r1.energy_D3@log",
+        "suffix": "log"
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "wv.r1.energy_D2@log",
+      "tensor_name": "wv.r1.energy_D2@log",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": true,
+        "decision": "LOG",
+        "store_column": "wv.r1.energy_D2@log",
+        "suffix": "log"
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "wv.r1.energy_D1@diff",
+      "tensor_name": "wv.r1.energy_D1@diff",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": true,
+        "decision": "DIFF",
+        "store_column": "wv.r1.energy_D1@diff",
+        "suffix": "diff"
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "hb.r1.phase_cos",
+      "tensor_name": "hb.r1.phase_cos",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "hb.r1.phase_cos",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "hb.r1.phase_sin",
+      "tensor_name": "hb.r1.phase_sin",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "hb.r1.phase_sin",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "hb.lc_detr.inst_freq",
+      "tensor_name": "hb.lc_detr.inst_freq",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "hb.lc_detr.inst_freq",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "wv.usd.A4",
+      "tensor_name": "wv.usd.A4",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "wv.usd.A4",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "hb.eur.inst_freq",
+      "tensor_name": "hb.eur.inst_freq",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "store_column": "hb.eur.inst_freq",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "kf.lc.level_minus_close",
+      "tensor_name": "kf.lc.level_minus_close",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "fit_scope": {
+          "fit_window": {
+            "applies_to": [
+              "kalman",
+              "gmm",
+              "hmm",
+              "fracdiff"
+            ],
+            "end_exclusive": "2024-01-01 00:00:00+00:00",
+            "rows": 24895,
+            "start": "2020-01-01 00:00:00+00:00"
+          },
+          "note": "learned producers fitted on the consumer scope only"
+        },
+        "learned_producer": "kalman",
+        "store_column": "kf.lc.level_minus_close",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "rg.gmm.p0",
+      "tensor_name": "rg.gmm.p0",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "fit_scope": {
+          "fit_window": {
+            "applies_to": [
+              "kalman",
+              "gmm",
+              "hmm",
+              "fracdiff"
+            ],
+            "end_exclusive": "2024-01-01 00:00:00+00:00",
+            "rows": 24895,
+            "start": "2020-01-01 00:00:00+00:00"
+          },
+          "note": "learned producers fitted on the consumer scope only"
+        },
+        "learned_producer": "gmm",
+        "store_column": "rg.gmm.p0",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "rg.gmm.p1",
+      "tensor_name": "rg.gmm.p1",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "fit_scope": {
+          "fit_window": {
+            "applies_to": [
+              "kalman",
+              "gmm",
+              "hmm",
+              "fracdiff"
+            ],
+            "end_exclusive": "2024-01-01 00:00:00+00:00",
+            "rows": 24895,
+            "start": "2020-01-01 00:00:00+00:00"
+          },
+          "note": "learned producers fitted on the consumer scope only"
+        },
+        "learned_producer": "gmm",
+        "store_column": "rg.gmm.p1",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "rg.gmm.p2",
+      "tensor_name": "rg.gmm.p2",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "fit_scope": {
+          "fit_window": {
+            "applies_to": [
+              "kalman",
+              "gmm",
+              "hmm",
+              "fracdiff"
+            ],
+            "end_exclusive": "2024-01-01 00:00:00+00:00",
+            "rows": 24895,
+            "start": "2020-01-01 00:00:00+00:00"
+          },
+          "note": "learned producers fitted on the consumer scope only"
+        },
+        "learned_producer": "gmm",
+        "store_column": "rg.gmm.p2",
+        "suffix": null
+      }
+    },
+    {
+      "consumer_ops": [],
+      "store_column": "rg.gmm.entropy",
+      "tensor_name": "rg.gmm.entropy",
+      "then": "fixed TRAIN z with this recipe's constants",
+      "upstream": {
+        "applied_in_store": false,
+        "decision": "NONE",
+        "fit_scope": {
+          "fit_window": {
+            "applies_to": [
+              "kalman",
+              "gmm",
+              "hmm",
+              "fracdiff"
+            ],
+            "end_exclusive": "2024-01-01 00:00:00+00:00",
+            "rows": 24895,
+            "start": "2020-01-01 00:00:00+00:00"
+          },
+          "note": "learned producers fitted on the consumer scope only"
+        },
+        "learned_producer": "gmm",
+        "store_column": "rg.gmm.entropy",
+        "suffix": null
+      }
+    }
+  ],
+  "cot_columns": [
+    "cot.eur.net_long",
+    "cot.eur.net_share",
+    "cot.eur.net_z156"
+  ],
+  "live_readiness": "NOT_VERIFIED",
+  "model_sha256": "00f2fc65a39f9d5a53572ef915f433b57d5f7939b54699ad34e4274b0ac7874f",
+  "promotion_authorized": false,
+  "recipe": "recipe_a69bb5e4b50ed7a5",
+  "recipe_sha256": "5cefbb0b3152c1e69926ac2859d9655e6a973563c12420fe5fe4267459654718",
+  "schema": "selected72_live_handoff.v1",
+  "window": {
+    "elapsed_hours_first_to_last_slot": {
+      "max": 105.0,
+      "median": 24.0,
+      "min": 24.0
+    },
+    "includes_current_completed_bar": true,
+    "note": "no interpolation over closures; not a clock-hour window",
+    "observations": 13,
+    "row_unit": "observed admitted market bar (H1); closures occupy no slot",
+    "slot_offsets_rows": [
+      -24,
+      -22,
+      -20,
+      -18,
+      -16,
+      -14,
+      -12,
+      -10,
+      -8,
+      -6,
+      -4,
+      -2,
+      0
+    ],
+    "stride_rows": 2
+  }
+}

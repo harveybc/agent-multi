@@ -1,0 +1,385 @@
+{
+  "actor_cold_exact": true,
+  "actor_updates": 0,
+  "critic_updates": 4096,
+  "critics": {
+    "19": {
+      "fit": [
+        {
+          "gap_rmse": 0.464223876772682,
+          "level_rmse": 0.7004939192173387,
+          "maximum_regret": 0.9329627901315689,
+          "mean_regret": 0.22737878023655014,
+          "n": 113,
+          "pairwise_accuracy": 0.5220338983050847,
+          "pairwise_comparisons": 295,
+          "per_action_rmse": [
+            0.7533020715919013,
+            0.7359894377200724,
+            0.7605488392253996
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            73,
+            25,
+            15
+          ],
+          "rmse": 0.7500175554272626,
+          "target_ties": 44
+        },
+        {
+          "gap_rmse": 0.35152926100718995,
+          "level_rmse": 0.2665355733260571,
+          "maximum_regret": 0.9152028001844883,
+          "mean_regret": 0.08269531701782108,
+          "n": 113,
+          "pairwise_accuracy": 0.7627118644067796,
+          "pairwise_comparisons": 295,
+          "per_action_rmse": [
+            0.268578561517131,
+            0.37447446744842855,
+            0.3526058513575964
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            44,
+            33,
+            36
+          ],
+          "rmse": 0.33501067489907993,
+          "target_ties": 44
+        }
+      ],
+      "monitor": [
+        {
+          "gap_rmse": 0.44727362072525173,
+          "level_rmse": 0.6204676363356324,
+          "maximum_regret": 0.7411966621875763,
+          "mean_regret": 0.21886828394704744,
+          "n": 38,
+          "pairwise_accuracy": 0.58,
+          "pairwise_comparisons": 100,
+          "per_action_rmse": [
+            0.6317188507307319,
+            0.5992937818553448,
+            0.7725103311137124
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            24,
+            3,
+            11
+          ],
+          "rmse": 0.6720600060055292,
+          "target_ties": 14
+        },
+        {
+          "gap_rmse": 0.4039668523424956,
+          "level_rmse": 0.6906630029828276,
+          "maximum_regret": 0.7134552150964737,
+          "mean_regret": 0.15536274672730974,
+          "n": 38,
+          "pairwise_accuracy": 0.62,
+          "pairwise_comparisons": 100,
+          "per_action_rmse": [
+            0.7348975733739189,
+            0.7101673751354264,
+            0.7415006573170781
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            18,
+            6,
+            14
+          ],
+          "rmse": 0.7289799651703456,
+          "target_ties": 14
+        }
+      ]
+    },
+    "43": {
+      "fit": [
+        {
+          "gap_rmse": 0.5531357790607453,
+          "level_rmse": 0.760646444545672,
+          "maximum_regret": 1.0345431566238403,
+          "mean_regret": 0.2649691379999956,
+          "n": 113,
+          "pairwise_accuracy": 0.5254237288135594,
+          "pairwise_comparisons": 295,
+          "per_action_rmse": [
+            0.8252965852280452,
+            0.7704803109315914,
+            0.8757590237929264
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            8,
+            104,
+            1
+          ],
+          "rmse": 0.8249663085801452,
+          "target_ties": 44
+        },
+        {
+          "gap_rmse": 0.374131931647894,
+          "level_rmse": 0.4704585701424593,
+          "maximum_regret": 0.8813986480236053,
+          "mean_regret": 0.14364774030657995,
+          "n": 113,
+          "pairwise_accuracy": 0.6745762711864407,
+          "pairwise_comparisons": 295,
+          "per_action_rmse": [
+            0.5145994867005038,
+            0.4769467480267155,
+            0.5582809944592105
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            51,
+            58,
+            4
+          ],
+          "rmse": 0.51767702316536,
+          "target_ties": 44
+        }
+      ],
+      "monitor": [
+        {
+          "gap_rmse": 0.5980211504313518,
+          "level_rmse": 0.5923198820347049,
+          "maximum_regret": 0.8872449100017548,
+          "mean_regret": 0.3420656008743926,
+          "n": 38,
+          "pairwise_accuracy": 0.4,
+          "pairwise_comparisons": 100,
+          "per_action_rmse": [
+            0.61086691899174,
+            0.5954983981583869,
+            0.8260636109867034
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            0,
+            38,
+            0
+          ],
+          "rmse": 0.6856038273726447,
+          "target_ties": 14
+        },
+        {
+          "gap_rmse": 0.45780120770760374,
+          "level_rmse": 0.6512148420853839,
+          "maximum_regret": 0.8872449100017548,
+          "mean_regret": 0.2670989532611872,
+          "n": 38,
+          "pairwise_accuracy": 0.49,
+          "pairwise_comparisons": 100,
+          "per_action_rmse": [
+            0.6344348601579622,
+            0.673012478499421,
+            0.791435954095989
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            18,
+            19,
+            1
+          ],
+          "rmse": 0.7028096606800012,
+          "target_ties": 14
+        }
+      ]
+    }
+  },
+  "fit_rows": 113,
+  "identity": "71dfa35d9c1118b3e461e338bb5a97142c3001edd612741fd2e7d9c2dcd282fa",
+  "model_promoted": false,
+  "monitor_rows": 38,
+  "reference": {
+    "TRAIN": {
+      "buy": {
+        "net_profit_usd": 968.6293800001657,
+        "trades": 227,
+        "wins": 152
+      },
+      "cash_error": 1.4779288903810084e-11,
+      "close_reasons": {
+        "AGENT_CLOSE": 59,
+        "FORCED_FLAT": 61,
+        "SL": 220,
+        "TP": 406
+      },
+      "commands": {
+        "0": 21587,
+        "1": 524,
+        "2": 1855,
+        "3": 59
+      },
+      "costs": {
+        "commission_usd": 1120.41727,
+        "financing_usd": -40.846019999999996,
+        "slippage_usd": 620.8213800000001,
+        "spread_usd": 696.47795
+      },
+      "early_by_side": {
+        "-1": 27,
+        "1": 32
+      },
+      "early_close_diagnostic": {
+        "harmful": 30,
+        "helpful": 29,
+        "mean_regret_risk": 0.3790510856210732,
+        "preempted": 0,
+        "proposals": 59,
+        "scope": "fixed position versus passive protection; not account continuation"
+      },
+      "max_drawdown_pct": 9.46154379487817,
+      "mean_requested_command_entropy": 0.5412957169911379,
+      "mean_signal_entropy": 0.5853321028070241,
+      "median_holding_bars": 1.0,
+      "native_counts": {
+        "close_AGENT_CLOSE": 59,
+        "close_FORCED_FLAT": 61,
+        "close_MARGIN_CLOSEOUT": 0,
+        "close_REVERSAL": 0,
+        "close_SL": 220,
+        "close_TP": 406,
+        "closes": 746,
+        "decisions": 24894,
+        "entries": 746,
+        "ignored_same_direction": 0,
+        "levels_clipped": 0,
+        "refused_ABSOLUTE_ORDER": 0,
+        "refused_BEFORE_OPERATIONAL_START": 736,
+        "refused_DAILY_CAP": 0,
+        "refused_ENTRY_CUTOFF": 861,
+        "refused_FILL_DISTANCE": 0,
+        "refused_GAP_BEYOND_LEVEL": 0,
+        "refused_LEVELS": 0,
+        "refused_NO_SIGMA": 0,
+        "refused_POSITION_OCCUPIED": 0,
+        "refused_PRICE_TICK": 0,
+        "refused_RISK_BUDGET": 0,
+        "refused_RUIN": 0,
+        "refused_SESSION_END": 36,
+        "refused_UNITS": 0
+      },
+      "net_profit_usd": 1561.2725500002252,
+      "orders_per_week": 3.569377990430622,
+      "return_pct": 15.612725500002252,
+      "return_per_week": 0.07470203588517824,
+      "sell": {
+        "net_profit_usd": 592.6431700000447,
+        "trades": 519,
+        "wins": 311
+      },
+      "sharpe": 0.7575874273928208,
+      "signals": {
+        "0": 20830,
+        "1": 704,
+        "2": 2491
+      },
+      "trades": 746,
+      "weeks": 209,
+      "win_rate": 0.6206434316353887
+    },
+    "VALIDATION": {
+      "buy": {
+        "net_profit_usd": 253.5218100000221,
+        "trades": 22,
+        "wins": 14
+      },
+      "cash_error": 1.6370904631912708e-11,
+      "close_reasons": {
+        "AGENT_CLOSE": 6,
+        "FORCED_FLAT": 25,
+        "SL": 64,
+        "TP": 112
+      },
+      "commands": {
+        "0": 5421,
+        "1": 53,
+        "2": 727,
+        "3": 6
+      },
+      "costs": {
+        "commission_usd": 378.59787,
+        "financing_usd": -45.126635,
+        "slippage_usd": 209.25108,
+        "spread_usd": 210.41999
+      },
+      "early_by_side": {
+        "-1": 2,
+        "1": 4
+      },
+      "early_close_diagnostic": {
+        "harmful": 2,
+        "helpful": 4,
+        "mean_regret_risk": 0.1851280081925366,
+        "preempted": 0,
+        "proposals": 6,
+        "scope": "fixed position versus passive protection; not account continuation"
+      },
+      "max_drawdown_pct": 3.257290042314253,
+      "mean_requested_command_entropy": 0.5788150819226706,
+      "mean_signal_entropy": 0.6910343927964492,
+      "median_holding_bars": 3.0,
+      "native_counts": {
+        "close_AGENT_CLOSE": 6,
+        "close_FORCED_FLAT": 25,
+        "close_MARGIN_CLOSEOUT": 0,
+        "close_REVERSAL": 0,
+        "close_SL": 64,
+        "close_TP": 112,
+        "closes": 207,
+        "decisions": 6220,
+        "entries": 207,
+        "ignored_same_direction": 0,
+        "levels_clipped": 0,
+        "refused_ABSOLUTE_ORDER": 0,
+        "refused_BEFORE_OPERATIONAL_START": 230,
+        "refused_DAILY_CAP": 0,
+        "refused_ENTRY_CUTOFF": 333,
+        "refused_FILL_DISTANCE": 0,
+        "refused_GAP_BEYOND_LEVEL": 0,
+        "refused_LEVELS": 0,
+        "refused_NO_SIGMA": 0,
+        "refused_POSITION_OCCUPIED": 0,
+        "refused_PRICE_TICK": 0,
+        "refused_RISK_BUDGET": 0,
+        "refused_RUIN": 0,
+        "refused_SESSION_END": 10,
+        "refused_UNITS": 0
+      },
+      "net_profit_usd": 1836.9945750000115,
+      "orders_per_week": 3.8333333333333335,
+      "return_pct": 18.369945750000117,
+      "return_per_week": 0.3401841805555577,
+      "sell": {
+        "net_profit_usd": 1583.472765000006,
+        "trades": 185,
+        "wins": 110
+      },
+      "sharpe": 2.6922750901691317,
+      "signals": {
+        "0": 5078,
+        "1": 70,
+        "2": 1059
+      },
+      "trades": 207,
+      "weeks": 54,
+      "win_rate": 0.5990338164251208
+    }
+  },
+  "runtime_commit": "45739af3",
+  "seconds": 198.01482838997617,
+  "seeds": [
+    19,
+    43
+  ],
+  "source_model_sha256": "00f2fc65a39f9d5a53572ef915f433b57d5f7939b54699ad34e4274b0ac7874f",
+  "source_unchanged": true,
+  "test_read": false,
+  "verified_files": 20
+}

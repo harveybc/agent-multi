@@ -2,6 +2,21 @@
 
 ## Execution Update: 2026-11-11
 
+[Selected72 critic calibration296](296_SELECTED72_CRITIC_CALIBRATION.md)
+COMPLETE:4096 head updates per seed19/43,151 rebuilt TRAIN anchors,198.01s.
+Actor and cold logits unchanged; TRAIN15.612726%,VAL18.369946%,746/207 orders.
+FIT ranking improves; MONITOR ranking/regret improve but value RMSE worsens.
+20 files authenticated,12 tests. Next diagnose executable TRAIN boundaries
+before interior corrective refinement; retain all48 phase2 historical absences.
+
+[Live/STL handoff to Retsu](../handoffs/MUSASHI_TO_RETSU_SELECTED72_LIVE_GAPS_2026_11_11.md):
+STL training is not complete, despite479 recovered windows and34/36 rebuilt
+prehistory columns. Current actor does not useSTL. Current-hour feed is not
+qualified; actual broker heartbeats still name other models. Three COT inputs
+have an unresolved source-identity issue: producer order-dependence reproduced,
+Retsu's historical contract-mixture report needs raw-file impact audit. No
+synthetic/zero replacement and no claim that historical recovery enables demo.
+
 [Interior actor cumulative selection295](295_INTERIOR_ACTOR_CUMULATIVE_SELECTION.md)
 COMPLETE: qualified both294 endpoints; primary19 pass69 ->69 ->72,28 groups,
 112 evaluations, all51 historical removals tested. Added OPEN@diff,

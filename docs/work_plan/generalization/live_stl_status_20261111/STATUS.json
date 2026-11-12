@@ -1,0 +1,75 @@
+{
+  "activity": {
+    "live_ready": false,
+    "maximum_error": 0.0,
+    "reload_exact": true,
+    "rows": 31116,
+    "status": "EXACT_CONSUMER_REPLAY",
+    "weights_sha256": "fdc95a0cdabf9a5327c991187f62c8be928476f385551c7e8db3972045167d6b"
+  },
+  "broker_configuration_changed": false,
+  "live_feed_receipt": null,
+  "live_ready": false,
+  "model_sha256": "00f2fc65a39f9d5a53572ef915f433b57d5f7939b54699ad34e4274b0ac7874f",
+  "original_cot_csv_reverified": false,
+  "prehistory": {
+    "admitted": false,
+    "reconstructed": [
+      "Stochastic_D",
+      "CCI",
+      "BB_position",
+      "px.close_loc_1",
+      "px.close_loc_4",
+      "px.close_loc_12",
+      "px.close_loc_24",
+      "px.er_2",
+      "px.er_6",
+      "px.er_12",
+      "px.er_48",
+      "cdl.body_pips",
+      "cdl.close_minus_low_pips@asinh",
+      "fac.fx_f1.ret_4",
+      "fac.fx_f1.ret_24",
+      "ssa.c2_pips",
+      "ssa.c3_pips",
+      "wv.lc.A4@diff",
+      "wv.lc.D4",
+      "wv.lc.D3",
+      "wv.lc.D2",
+      "wv.lc.energy_D2@log",
+      "wv.lc.energy_D1@diff",
+      "wv.r1.D3",
+      "wv.r1.energy_D3@log",
+      "wv.r1.energy_D2@log",
+      "wv.r1.energy_D1@diff",
+      "hb.r1.phase_cos",
+      "hb.r1.phase_sin",
+      "hb.lc_detr.inst_freq",
+      "wv.usd.A4",
+      "hb.eur.inst_freq",
+      "rg.gmm.p1",
+      "rg.gmm.entropy"
+    ],
+    "rows": 1567,
+    "unresolved": [
+      "px.hours_since_session_open",
+      "act.p_hit"
+    ]
+  },
+  "recipe": "recipe_a69bb5e4b50ed7a5",
+  "schema": "stl_live_readiness_audit.v1",
+  "source_receipts": {
+    "activity": "d975fd07e7ad70ff416b4ec435ff52e097fb4d8f2e5c2cdced141a860ff718dd",
+    "prehistory": "8bbe1db06f81211eab37694a70d37fc849a5c4bd16323790fc76de9eff433754",
+    "stl_repair": "3528639fe0f7371422169f83bf8088128df868ece7bbb56486b44114e604b532"
+  },
+  "stl": {
+    "current_actor_uses_stl": false,
+    "empty_months": [
+      "2020-01",
+      "2022-06"
+    ],
+    "recovered_windows": 479,
+    "training_released": false
+  }
+}
