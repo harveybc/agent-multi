@@ -1,6 +1,15 @@
 # Adaptive Multi-Asset Trading Work Plan
 
-## Execution Update: 2026-11-11
+## Execution Update: 2026-11-12
+
+[Selected72 TRAIN boundary diagnosis297](297_SELECTED72_BOUNDARY_DIAGNOSIS.md)
+COMPLETE:151 TRAIN anchors,82 executable FIT openings. Critic optimal actions
+52/82 and34/82 versus actor25/82. Native targets alone leave shared-head
+interference (64/59 lowered optimal-probability masses in first-AdamW local
+projection); no policy update applied.2.91s CPU,12 tests,23 files authenticated,
+32 independent ranking checks. Next fresh72-input error/protection sets for
+fixed-budget interior correction, not unguarded training or unchanged floating.
+Historical source-identity/live feed restrictions remain in force.
 
 [Selected72 critic calibration296](296_SELECTED72_CRITIC_CALIBRATION.md)
 COMPLETE:4096 head updates per seed19/43,151 rebuilt TRAIN anchors,198.01s.

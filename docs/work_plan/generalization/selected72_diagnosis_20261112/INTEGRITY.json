@@ -1,0 +1,13 @@
+{
+  "actor_updates": 0,
+  "calibration_files": 20,
+  "diagnostic_files": 3,
+  "identity": "b79c3735a3559f2febd42c4b884a924c225679cd77e3c69327a301b0d83c2d38",
+  "independent_ranking_checks": 32,
+  "new_candidate": false,
+  "receipt_sha256": "24006fb4e52d3083426fe473b9c216e114674f1872abe029fe4f8dfd5a9e5227",
+  "runtime": "142a0b8c",
+  "source_identity": "71dfa35d9c1118b3e461e338bb5a97142c3001edd612741fd2e7d9c2dcd282fa",
+  "source_receipt_sha256": "6d48ad13d5f0fd7e871fdfdcd09952d5b392b550e727a2b0a16ffadd3839ee50",
+  "validation_read": false
+}

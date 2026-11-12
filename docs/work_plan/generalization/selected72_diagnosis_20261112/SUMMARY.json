@@ -1,0 +1,3557 @@
+{
+  "actor_updates": 0,
+  "arms": [
+    {
+      "actor_quality": {
+        "fit": {
+          "beneficial_gap_sign_errors": 67,
+          "beneficial_gaps": 87,
+          "mean_regret": 0.23180400352247102,
+          "native_actions": [
+            32,
+            41,
+            40
+          ],
+          "optimal_count": 47,
+          "predicted_actions": [
+            69,
+            19,
+            25
+          ],
+          "rows": 113,
+          "unique_native_optimum": 89
+        },
+        "fit:flat_allowed": {
+          "beneficial_gap_sign_errors": 59,
+          "beneficial_gaps": 79,
+          "mean_regret": 0.28191199989296006,
+          "native_actions": [
+            9,
+            35,
+            38
+          ],
+          "optimal_count": 25,
+          "predicted_actions": [
+            46,
+            15,
+            21
+          ],
+          "rows": 82,
+          "unique_native_optimum": 81
+        },
+        "monitor": {
+          "beneficial_gap_sign_errors": 21,
+          "beneficial_gaps": 29,
+          "mean_regret": 0.24695233531807562,
+          "native_actions": [
+            9,
+            11,
+            18
+          ],
+          "optimal_count": 15,
+          "predicted_actions": [
+            19,
+            5,
+            14
+          ],
+          "rows": 38,
+          "unique_native_optimum": 32
+        },
+        "monitor:flat_allowed": {
+          "beneficial_gap_sign_errors": 17,
+          "beneficial_gaps": 25,
+          "mean_regret": 0.2782263282491763,
+          "native_actions": [
+            3,
+            9,
+            16
+          ],
+          "optimal_count": 9,
+          "predicted_actions": [
+            11,
+            5,
+            12
+          ],
+          "rows": 28,
+          "unique_native_optimum": 28
+        }
+      },
+      "actor_updates": 0,
+      "alpha": 0.005312912631779909,
+      "arm": "calibrated_19",
+      "controls": {
+        "critic": {
+          "autograd_max_error": 8.694034417736085e-09,
+          "groups": {
+            "fit": {
+              "adam:adaptive": {
+                "lowers_native_optimal_probability": 62,
+                "mean_native_optimal_probability_derivative": 6.94518389158282e-05,
+                "raises_native_optimal_probability": 45,
+                "suppresses_beneficial_gaps": 64
+              },
+              "adam:cross": {
+                "lowers_native_optimal_probability": 75,
+                "mean_native_optimal_probability_derivative": -0.00023303057355029697,
+                "raises_native_optimal_probability": 32,
+                "suppresses_beneficial_gaps": 66
+              },
+              "adam:decay": {
+                "lowers_native_optimal_probability": 53,
+                "mean_native_optimal_probability_derivative": -5.381526628132768e-10,
+                "raises_native_optimal_probability": 51,
+                "suppresses_beneficial_gaps": 31
+              },
+              "adam:self": {
+                "lowers_native_optimal_probability": 36,
+                "mean_native_optimal_probability_derivative": 0.00030248241246612524,
+                "raises_native_optimal_probability": 68,
+                "suppresses_beneficial_gaps": 46
+              },
+              "adam:total": {
+                "lowers_native_optimal_probability": 62,
+                "mean_native_optimal_probability_derivative": 6.945130076316535e-05,
+                "raises_native_optimal_probability": 45,
+                "suppresses_beneficial_gaps": 64
+              },
+              "entropy:batch_self": {
+                "lowers_native_optimal_probability": 45,
+                "mean_native_optimal_probability_derivative": -1.4253924355039001e-05,
+                "raises_native_optimal_probability": 59,
+                "suppresses_beneficial_gaps": 17
+              },
+              "entropy:cross": {
+                "lowers_native_optimal_probability": 25,
+                "mean_native_optimal_probability_derivative": 0.00023760880736060452,
+                "raises_native_optimal_probability": 82,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:local_logit": {
+                "lowers_native_optimal_probability": 48,
+                "mean_native_optimal_probability_derivative": 8.145108522336604e-06,
+                "raises_native_optimal_probability": 56,
+                "suppresses_beneficial_gaps": 19
+              },
+              "entropy:self_alone": {
+                "lowers_native_optimal_probability": 45,
+                "mean_native_optimal_probability_derivative": -0.0019948974236714445,
+                "raises_native_optimal_probability": 60,
+                "suppresses_beneficial_gaps": 17
+              },
+              "entropy:total": {
+                "lowers_native_optimal_probability": 27,
+                "mean_native_optimal_probability_derivative": 0.00022335488300556552,
+                "raises_native_optimal_probability": 80,
+                "suppresses_beneficial_gaps": 1
+              },
+              "total:batch_self": {
+                "lowers_native_optimal_probability": 35,
+                "mean_native_optimal_probability_derivative": 0.007393413238425289,
+                "raises_native_optimal_probability": 69,
+                "suppresses_beneficial_gaps": 45
+              },
+              "total:cross": {
+                "lowers_native_optimal_probability": 70,
+                "mean_native_optimal_probability_derivative": -0.002507670051029133,
+                "raises_native_optimal_probability": 37,
+                "suppresses_beneficial_gaps": 70
+              },
+              "total:local_logit": {
+                "lowers_native_optimal_probability": 30,
+                "mean_native_optimal_probability_derivative": 0.0046685214777677075,
+                "raises_native_optimal_probability": 74,
+                "suppresses_beneficial_gaps": 41
+              },
+              "total:self_alone": {
+                "lowers_native_optimal_probability": 36,
+                "mean_native_optimal_probability_derivative": 0.9337894836857663,
+                "raises_native_optimal_probability": 69,
+                "suppresses_beneficial_gaps": 45
+              },
+              "total:total": {
+                "lowers_native_optimal_probability": 63,
+                "mean_native_optimal_probability_derivative": 0.004885743187396154,
+                "raises_native_optimal_probability": 44,
+                "suppresses_beneficial_gaps": 67
+              },
+              "value:batch_self": {
+                "lowers_native_optimal_probability": 37,
+                "mean_native_optimal_probability_derivative": 0.007407667162780331,
+                "raises_native_optimal_probability": 67,
+                "suppresses_beneficial_gaps": 48
+              },
+              "value:cross": {
+                "lowers_native_optimal_probability": 73,
+                "mean_native_optimal_probability_derivative": -0.002745278858389743,
+                "raises_native_optimal_probability": 34,
+                "suppresses_beneficial_gaps": 72
+              },
+              "value:local_logit": {
+                "lowers_native_optimal_probability": 35,
+                "mean_native_optimal_probability_derivative": 0.004660376369245371,
+                "raises_native_optimal_probability": 69,
+                "suppresses_beneficial_gaps": 44
+              },
+              "value:self_alone": {
+                "lowers_native_optimal_probability": 38,
+                "mean_native_optimal_probability_derivative": 0.9357843811094383,
+                "raises_native_optimal_probability": 67,
+                "suppresses_beneficial_gaps": 48
+              },
+              "value:total": {
+                "lowers_native_optimal_probability": 64,
+                "mean_native_optimal_probability_derivative": 0.004662388304390586,
+                "raises_native_optimal_probability": 43,
+                "suppresses_beneficial_gaps": 68
+              }
+            },
+            "fit:flat_allowed": {
+              "adam:adaptive": {
+                "lowers_native_optimal_probability": 52,
+                "mean_native_optimal_probability_derivative": 6.161763946133636e-05,
+                "raises_native_optimal_probability": 30,
+                "suppresses_beneficial_gaps": 56
+              },
+              "adam:cross": {
+                "lowers_native_optimal_probability": 57,
+                "mean_native_optimal_probability_derivative": -0.000222414520392677,
+                "raises_native_optimal_probability": 25,
+                "suppresses_beneficial_gaps": 58
+              },
+              "adam:decay": {
+                "lowers_native_optimal_probability": 38,
+                "mean_native_optimal_probability_derivative": 1.6968541889161887e-09,
+                "raises_native_optimal_probability": 41,
+                "suppresses_beneficial_gaps": 31
+              },
+              "adam:self": {
+                "lowers_native_optimal_probability": 33,
+                "mean_native_optimal_probability_derivative": 0.00028403215985401336,
+                "raises_native_optimal_probability": 46,
+                "suppresses_beneficial_gaps": 44
+              },
+              "adam:total": {
+                "lowers_native_optimal_probability": 52,
+                "mean_native_optimal_probability_derivative": 6.161933631552525e-05,
+                "raises_native_optimal_probability": 30,
+                "suppresses_beneficial_gaps": 56
+              },
+              "entropy:batch_self": {
+                "lowers_native_optimal_probability": 29,
+                "mean_native_optimal_probability_derivative": -1.5752109990629595e-05,
+                "raises_native_optimal_probability": 50,
+                "suppresses_beneficial_gaps": 17
+              },
+              "entropy:cross": {
+                "lowers_native_optimal_probability": 9,
+                "mean_native_optimal_probability_derivative": 0.0003821068816300639,
+                "raises_native_optimal_probability": 73,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:local_logit": {
+                "lowers_native_optimal_probability": 32,
+                "mean_native_optimal_probability_derivative": 1.4846678157885763e-05,
+                "raises_native_optimal_probability": 47,
+                "suppresses_beneficial_gaps": 19
+              },
+              "entropy:self_alone": {
+                "lowers_native_optimal_probability": 29,
+                "mean_native_optimal_probability_derivative": -0.0023210171891154792,
+                "raises_native_optimal_probability": 51,
+                "suppresses_beneficial_gaps": 17
+              },
+              "entropy:total": {
+                "lowers_native_optimal_probability": 10,
+                "mean_native_optimal_probability_derivative": 0.00036635477163943426,
+                "raises_native_optimal_probability": 72,
+                "suppresses_beneficial_gaps": 1
+              },
+              "total:batch_self": {
+                "lowers_native_optimal_probability": 32,
+                "mean_native_optimal_probability_derivative": 0.007443344791425023,
+                "raises_native_optimal_probability": 47,
+                "suppresses_beneficial_gaps": 43
+              },
+              "total:cross": {
+                "lowers_native_optimal_probability": 59,
+                "mean_native_optimal_probability_derivative": -0.0026101754247634923,
+                "raises_native_optimal_probability": 23,
+                "suppresses_beneficial_gaps": 62
+              },
+              "total:local_logit": {
+                "lowers_native_optimal_probability": 27,
+                "mean_native_optimal_probability_derivative": 0.005619317966252792,
+                "raises_native_optimal_probability": 52,
+                "suppresses_beneficial_gaps": 39
+              },
+              "total:self_alone": {
+                "lowers_native_optimal_probability": 33,
+                "mean_native_optimal_probability_derivative": 0.9366809338025994,
+                "raises_native_optimal_probability": 47,
+                "suppresses_beneficial_gaps": 43
+              },
+              "total:total": {
+                "lowers_native_optimal_probability": 53,
+                "mean_native_optimal_probability_derivative": 0.004833169366661528,
+                "raises_native_optimal_probability": 29,
+                "suppresses_beneficial_gaps": 59
+              },
+              "value:batch_self": {
+                "lowers_native_optimal_probability": 33,
+                "mean_native_optimal_probability_derivative": 0.007459096901415655,
+                "raises_native_optimal_probability": 46,
+                "suppresses_beneficial_gaps": 44
+              },
+              "value:cross": {
+                "lowers_native_optimal_probability": 62,
+                "mean_native_optimal_probability_derivative": -0.0029922823063935644,
+                "raises_native_optimal_probability": 20,
+                "suppresses_beneficial_gaps": 64
+              },
+              "value:local_logit": {
+                "lowers_native_optimal_probability": 29,
+                "mean_native_optimal_probability_derivative": 0.005604471288094905,
+                "raises_native_optimal_probability": 50,
+                "suppresses_beneficial_gaps": 40
+              },
+              "value:self_alone": {
+                "lowers_native_optimal_probability": 34,
+                "mean_native_optimal_probability_derivative": 0.9390019509917155,
+                "raises_native_optimal_probability": 46,
+                "suppresses_beneficial_gaps": 44
+              },
+              "value:total": {
+                "lowers_native_optimal_probability": 55,
+                "mean_native_optimal_probability_derivative": 0.00446681459502209,
+                "raises_native_optimal_probability": 27,
+                "suppresses_beneficial_gaps": 60
+              }
+            },
+            "monitor": {
+              "adam:adaptive": {
+                "lowers_native_optimal_probability": 24,
+                "mean_native_optimal_probability_derivative": -2.7178909991067223e-05,
+                "raises_native_optimal_probability": 12,
+                "suppresses_beneficial_gaps": 27
+              },
+              "adam:cross": {
+                "lowers_native_optimal_probability": 24,
+                "mean_native_optimal_probability_derivative": -2.7178909991067223e-05,
+                "raises_native_optimal_probability": 12,
+                "suppresses_beneficial_gaps": 27
+              },
+              "adam:decay": {
+                "lowers_native_optimal_probability": 19,
+                "mean_native_optimal_probability_derivative": -4.669303914656721e-09,
+                "raises_native_optimal_probability": 14,
+                "suppresses_beneficial_gaps": 9
+              },
+              "adam:self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "adam:total": {
+                "lowers_native_optimal_probability": 24,
+                "mean_native_optimal_probability_derivative": -2.7183579294981888e-05,
+                "raises_native_optimal_probability": 12,
+                "suppresses_beneficial_gaps": 27
+              },
+              "entropy:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:cross": {
+                "lowers_native_optimal_probability": 7,
+                "mean_native_optimal_probability_derivative": 0.00013901359016344804,
+                "raises_native_optimal_probability": 29,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:local_logit": {
+                "lowers_native_optimal_probability": 15,
+                "mean_native_optimal_probability_derivative": -1.8580080470761346e-06,
+                "raises_native_optimal_probability": 18,
+                "suppresses_beneficial_gaps": 8
+              },
+              "entropy:self_alone": {
+                "lowers_native_optimal_probability": 14,
+                "mean_native_optimal_probability_derivative": -0.0005182606627442074,
+                "raises_native_optimal_probability": 22,
+                "suppresses_beneficial_gaps": 7
+              },
+              "entropy:total": {
+                "lowers_native_optimal_probability": 7,
+                "mean_native_optimal_probability_derivative": 0.00013901359016344804,
+                "raises_native_optimal_probability": 29,
+                "suppresses_beneficial_gaps": 0
+              },
+              "total:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "total:cross": {
+                "lowers_native_optimal_probability": 26,
+                "mean_native_optimal_probability_derivative": -0.0022291724883693464,
+                "raises_native_optimal_probability": 10,
+                "suppresses_beneficial_gaps": 26
+              },
+              "total:local_logit": {
+                "lowers_native_optimal_probability": 18,
+                "mean_native_optimal_probability_derivative": -0.0018473309460336031,
+                "raises_native_optimal_probability": 16,
+                "suppresses_beneficial_gaps": 21
+              },
+              "total:self_alone": {
+                "lowers_native_optimal_probability": 25,
+                "mean_native_optimal_probability_derivative": -0.0022314571281759504,
+                "raises_native_optimal_probability": 11,
+                "suppresses_beneficial_gaps": 21
+              },
+              "total:total": {
+                "lowers_native_optimal_probability": 26,
+                "mean_native_optimal_probability_derivative": -0.0022291724883693464,
+                "raises_native_optimal_probability": 10,
+                "suppresses_beneficial_gaps": 26
+              },
+              "value:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "value:cross": {
+                "lowers_native_optimal_probability": 26,
+                "mean_native_optimal_probability_derivative": -0.0023681860785327944,
+                "raises_native_optimal_probability": 10,
+                "suppresses_beneficial_gaps": 26
+              },
+              "value:local_logit": {
+                "lowers_native_optimal_probability": 18,
+                "mean_native_optimal_probability_derivative": -0.0018454729379865278,
+                "raises_native_optimal_probability": 16,
+                "suppresses_beneficial_gaps": 21
+              },
+              "value:self_alone": {
+                "lowers_native_optimal_probability": 24,
+                "mean_native_optimal_probability_derivative": -0.0017131964654317415,
+                "raises_native_optimal_probability": 12,
+                "suppresses_beneficial_gaps": 21
+              },
+              "value:total": {
+                "lowers_native_optimal_probability": 26,
+                "mean_native_optimal_probability_derivative": -0.0023681860785327944,
+                "raises_native_optimal_probability": 10,
+                "suppresses_beneficial_gaps": 26
+              }
+            },
+            "monitor:flat_allowed": {
+              "adam:adaptive": {
+                "lowers_native_optimal_probability": 20,
+                "mean_native_optimal_probability_derivative": -4.170482555053725e-05,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 23
+              },
+              "adam:cross": {
+                "lowers_native_optimal_probability": 20,
+                "mean_native_optimal_probability_derivative": -4.170482555053725e-05,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 23
+              },
+              "adam:decay": {
+                "lowers_native_optimal_probability": 14,
+                "mean_native_optimal_probability_derivative": -2.9245073362753583e-09,
+                "raises_native_optimal_probability": 11,
+                "suppresses_beneficial_gaps": 9
+              },
+              "adam:self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "adam:total": {
+                "lowers_native_optimal_probability": 20,
+                "mean_native_optimal_probability_derivative": -4.170775005787352e-05,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 23
+              },
+              "entropy:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:cross": {
+                "lowers_native_optimal_probability": 3,
+                "mean_native_optimal_probability_derivative": 0.00020715016457880446,
+                "raises_native_optimal_probability": 25,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:local_logit": {
+                "lowers_native_optimal_probability": 11,
+                "mean_native_optimal_probability_derivative": 8.26548983760576e-06,
+                "raises_native_optimal_probability": 14,
+                "suppresses_beneficial_gaps": 8
+              },
+              "entropy:self_alone": {
+                "lowers_native_optimal_probability": 10,
+                "mean_native_optimal_probability_derivative": 0.00029076783468683917,
+                "raises_native_optimal_probability": 18,
+                "suppresses_beneficial_gaps": 7
+              },
+              "entropy:total": {
+                "lowers_native_optimal_probability": 3,
+                "mean_native_optimal_probability_derivative": 0.00020715016457880446,
+                "raises_native_optimal_probability": 25,
+                "suppresses_beneficial_gaps": 0
+              },
+              "total:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "total:cross": {
+                "lowers_native_optimal_probability": 22,
+                "mean_native_optimal_probability_derivative": -0.0033194343583737396,
+                "raises_native_optimal_probability": 6,
+                "suppresses_beneficial_gaps": 22
+              },
+              "total:local_logit": {
+                "lowers_native_optimal_probability": 16,
+                "mean_native_optimal_probability_derivative": -0.0031479755041135507,
+                "raises_native_optimal_probability": 10,
+                "suppresses_beneficial_gaps": 19
+              },
+              "total:self_alone": {
+                "lowers_native_optimal_probability": 21,
+                "mean_native_optimal_probability_derivative": -0.056209661809971743,
+                "raises_native_optimal_probability": 7,
+                "suppresses_beneficial_gaps": 19
+              },
+              "total:total": {
+                "lowers_native_optimal_probability": 22,
+                "mean_native_optimal_probability_derivative": -0.0033194343583737396,
+                "raises_native_optimal_probability": 6,
+                "suppresses_beneficial_gaps": 22
+              },
+              "value:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "value:cross": {
+                "lowers_native_optimal_probability": 22,
+                "mean_native_optimal_probability_derivative": -0.0035265845229525447,
+                "raises_native_optimal_probability": 6,
+                "suppresses_beneficial_gaps": 22
+              },
+              "value:local_logit": {
+                "lowers_native_optimal_probability": 16,
+                "mean_native_optimal_probability_derivative": -0.0031562409939511573,
+                "raises_native_optimal_probability": 10,
+                "suppresses_beneficial_gaps": 19
+              },
+              "value:self_alone": {
+                "lowers_native_optimal_probability": 21,
+                "mean_native_optimal_probability_derivative": -0.05650042964465851,
+                "raises_native_optimal_probability": 7,
+                "suppresses_beneficial_gaps": 19
+              },
+              "value:total": {
+                "lowers_native_optimal_probability": 22,
+                "mean_native_optimal_probability_derivative": -0.0035265845229525447,
+                "raises_native_optimal_probability": 6,
+                "suppresses_beneficial_gaps": 22
+              }
+            }
+          }
+        },
+        "critic_no_entropy": {
+          "autograd_max_error": 6.619243446328443e-09,
+          "groups": {
+            "fit": {
+              "adam:adaptive": {
+                "lowers_native_optimal_probability": 61,
+                "mean_native_optimal_probability_derivative": 6.631455875933791e-05,
+                "raises_native_optimal_probability": 46,
+                "suppresses_beneficial_gaps": 68
+              },
+              "adam:cross": {
+                "lowers_native_optimal_probability": 72,
+                "mean_native_optimal_probability_derivative": -0.00025350168536413366,
+                "raises_native_optimal_probability": 35,
+                "suppresses_beneficial_gaps": 66
+              },
+              "adam:decay": {
+                "lowers_native_optimal_probability": 53,
+                "mean_native_optimal_probability_derivative": -5.381526628132768e-10,
+                "raises_native_optimal_probability": 51,
+                "suppresses_beneficial_gaps": 31
+              },
+              "adam:self": {
+                "lowers_native_optimal_probability": 45,
+                "mean_native_optimal_probability_derivative": 0.0003198162441234716,
+                "raises_native_optimal_probability": 59,
+                "suppresses_beneficial_gaps": 50
+              },
+              "adam:total": {
+                "lowers_native_optimal_probability": 61,
+                "mean_native_optimal_probability_derivative": 6.631402060667509e-05,
+                "raises_native_optimal_probability": 46,
+                "suppresses_beneficial_gaps": 68
+              },
+              "entropy:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:cross": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:local_logit": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:self_alone": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:total": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "total:batch_self": {
+                "lowers_native_optimal_probability": 37,
+                "mean_native_optimal_probability_derivative": 0.007407667162780331,
+                "raises_native_optimal_probability": 67,
+                "suppresses_beneficial_gaps": 48
+              },
+              "total:cross": {
+                "lowers_native_optimal_probability": 73,
+                "mean_native_optimal_probability_derivative": -0.002745278858389743,
+                "raises_native_optimal_probability": 34,
+                "suppresses_beneficial_gaps": 72
+              },
+              "total:local_logit": {
+                "lowers_native_optimal_probability": 35,
+                "mean_native_optimal_probability_derivative": 0.004660376369245371,
+                "raises_native_optimal_probability": 69,
+                "suppresses_beneficial_gaps": 44
+              },
+              "total:self_alone": {
+                "lowers_native_optimal_probability": 38,
+                "mean_native_optimal_probability_derivative": 0.9357843811094383,
+                "raises_native_optimal_probability": 67,
+                "suppresses_beneficial_gaps": 48
+              },
+              "total:total": {
+                "lowers_native_optimal_probability": 64,
+                "mean_native_optimal_probability_derivative": 0.004662388304390586,
+                "raises_native_optimal_probability": 43,
+                "suppresses_beneficial_gaps": 68
+              },
+              "value:batch_self": {
+                "lowers_native_optimal_probability": 37,
+                "mean_native_optimal_probability_derivative": 0.007407667162780331,
+                "raises_native_optimal_probability": 67,
+                "suppresses_beneficial_gaps": 48
+              },
+              "value:cross": {
+                "lowers_native_optimal_probability": 73,
+                "mean_native_optimal_probability_derivative": -0.002745278858389743,
+                "raises_native_optimal_probability": 34,
+                "suppresses_beneficial_gaps": 72
+              },
+              "value:local_logit": {
+                "lowers_native_optimal_probability": 35,
+                "mean_native_optimal_probability_derivative": 0.004660376369245371,
+                "raises_native_optimal_probability": 69,
+                "suppresses_beneficial_gaps": 44
+              },
+              "value:self_alone": {
+                "lowers_native_optimal_probability": 38,
+                "mean_native_optimal_probability_derivative": 0.9357843811094383,
+                "raises_native_optimal_probability": 67,
+                "suppresses_beneficial_gaps": 48
+              },
+              "value:total": {
+                "lowers_native_optimal_probability": 64,
+                "mean_native_optimal_probability_derivative": 0.004662388304390586,
+                "raises_native_optimal_probability": 43,
+                "suppresses_beneficial_gaps": 68
+              }
+            },
+            "fit:flat_allowed": {
+              "adam:adaptive": {
+                "lowers_native_optimal_probability": 52,
+                "mean_native_optimal_probability_derivative": 5.6489109703314853e-05,
+                "raises_native_optimal_probability": 30,
+                "suppresses_beneficial_gaps": 60
+              },
+              "adam:cross": {
+                "lowers_native_optimal_probability": 56,
+                "mean_native_optimal_probability_derivative": -0.00026703879171023365,
+                "raises_native_optimal_probability": 26,
+                "suppresses_beneficial_gaps": 58
+              },
+              "adam:decay": {
+                "lowers_native_optimal_probability": 38,
+                "mean_native_optimal_probability_derivative": 1.6968541889161887e-09,
+                "raises_native_optimal_probability": 41,
+                "suppresses_beneficial_gaps": 31
+              },
+              "adam:self": {
+                "lowers_native_optimal_probability": 40,
+                "mean_native_optimal_probability_derivative": 0.00032352790141354856,
+                "raises_native_optimal_probability": 39,
+                "suppresses_beneficial_gaps": 46
+              },
+              "adam:total": {
+                "lowers_native_optimal_probability": 52,
+                "mean_native_optimal_probability_derivative": 5.649080655750378e-05,
+                "raises_native_optimal_probability": 30,
+                "suppresses_beneficial_gaps": 60
+              },
+              "entropy:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:cross": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:local_logit": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:self_alone": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:total": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "total:batch_self": {
+                "lowers_native_optimal_probability": 33,
+                "mean_native_optimal_probability_derivative": 0.007459096901415655,
+                "raises_native_optimal_probability": 46,
+                "suppresses_beneficial_gaps": 44
+              },
+              "total:cross": {
+                "lowers_native_optimal_probability": 62,
+                "mean_native_optimal_probability_derivative": -0.0029922823063935644,
+                "raises_native_optimal_probability": 20,
+                "suppresses_beneficial_gaps": 64
+              },
+              "total:local_logit": {
+                "lowers_native_optimal_probability": 29,
+                "mean_native_optimal_probability_derivative": 0.005604471288094905,
+                "raises_native_optimal_probability": 50,
+                "suppresses_beneficial_gaps": 40
+              },
+              "total:self_alone": {
+                "lowers_native_optimal_probability": 34,
+                "mean_native_optimal_probability_derivative": 0.9390019509917155,
+                "raises_native_optimal_probability": 46,
+                "suppresses_beneficial_gaps": 44
+              },
+              "total:total": {
+                "lowers_native_optimal_probability": 55,
+                "mean_native_optimal_probability_derivative": 0.00446681459502209,
+                "raises_native_optimal_probability": 27,
+                "suppresses_beneficial_gaps": 60
+              },
+              "value:batch_self": {
+                "lowers_native_optimal_probability": 33,
+                "mean_native_optimal_probability_derivative": 0.007459096901415655,
+                "raises_native_optimal_probability": 46,
+                "suppresses_beneficial_gaps": 44
+              },
+              "value:cross": {
+                "lowers_native_optimal_probability": 62,
+                "mean_native_optimal_probability_derivative": -0.0029922823063935644,
+                "raises_native_optimal_probability": 20,
+                "suppresses_beneficial_gaps": 64
+              },
+              "value:local_logit": {
+                "lowers_native_optimal_probability": 29,
+                "mean_native_optimal_probability_derivative": 0.005604471288094905,
+                "raises_native_optimal_probability": 50,
+                "suppresses_beneficial_gaps": 40
+              },
+              "value:self_alone": {
+                "lowers_native_optimal_probability": 34,
+                "mean_native_optimal_probability_derivative": 0.9390019509917155,
+                "raises_native_optimal_probability": 46,
+                "suppresses_beneficial_gaps": 44
+              },
+              "value:total": {
+                "lowers_native_optimal_probability": 55,
+                "mean_native_optimal_probability_derivative": 0.00446681459502209,
+                "raises_native_optimal_probability": 27,
+                "suppresses_beneficial_gaps": 60
+              }
+            },
+            "monitor": {
+              "adam:adaptive": {
+                "lowers_native_optimal_probability": 24,
+                "mean_native_optimal_probability_derivative": -2.8946894328627028e-05,
+                "raises_native_optimal_probability": 12,
+                "suppresses_beneficial_gaps": 27
+              },
+              "adam:cross": {
+                "lowers_native_optimal_probability": 24,
+                "mean_native_optimal_probability_derivative": -2.8946894328627028e-05,
+                "raises_native_optimal_probability": 12,
+                "suppresses_beneficial_gaps": 27
+              },
+              "adam:decay": {
+                "lowers_native_optimal_probability": 19,
+                "mean_native_optimal_probability_derivative": -4.669303914656721e-09,
+                "raises_native_optimal_probability": 14,
+                "suppresses_beneficial_gaps": 9
+              },
+              "adam:self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "adam:total": {
+                "lowers_native_optimal_probability": 24,
+                "mean_native_optimal_probability_derivative": -2.8951563632541682e-05,
+                "raises_native_optimal_probability": 12,
+                "suppresses_beneficial_gaps": 27
+              },
+              "entropy:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:cross": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:local_logit": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:self_alone": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:total": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "total:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "total:cross": {
+                "lowers_native_optimal_probability": 26,
+                "mean_native_optimal_probability_derivative": -0.0023681860785327944,
+                "raises_native_optimal_probability": 10,
+                "suppresses_beneficial_gaps": 26
+              },
+              "total:local_logit": {
+                "lowers_native_optimal_probability": 18,
+                "mean_native_optimal_probability_derivative": -0.0018454729379865278,
+                "raises_native_optimal_probability": 16,
+                "suppresses_beneficial_gaps": 21
+              },
+              "total:self_alone": {
+                "lowers_native_optimal_probability": 24,
+                "mean_native_optimal_probability_derivative": -0.0017131964654317415,
+                "raises_native_optimal_probability": 12,
+                "suppresses_beneficial_gaps": 21
+              },
+              "total:total": {
+                "lowers_native_optimal_probability": 26,
+                "mean_native_optimal_probability_derivative": -0.0023681860785327944,
+                "raises_native_optimal_probability": 10,
+                "suppresses_beneficial_gaps": 26
+              },
+              "value:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "value:cross": {
+                "lowers_native_optimal_probability": 26,
+                "mean_native_optimal_probability_derivative": -0.0023681860785327944,
+                "raises_native_optimal_probability": 10,
+                "suppresses_beneficial_gaps": 26
+              },
+              "value:local_logit": {
+                "lowers_native_optimal_probability": 18,
+                "mean_native_optimal_probability_derivative": -0.0018454729379865278,
+                "raises_native_optimal_probability": 16,
+                "suppresses_beneficial_gaps": 21
+              },
+              "value:self_alone": {
+                "lowers_native_optimal_probability": 24,
+                "mean_native_optimal_probability_derivative": -0.0017131964654317415,
+                "raises_native_optimal_probability": 12,
+                "suppresses_beneficial_gaps": 21
+              },
+              "value:total": {
+                "lowers_native_optimal_probability": 26,
+                "mean_native_optimal_probability_derivative": -0.0023681860785327944,
+                "raises_native_optimal_probability": 10,
+                "suppresses_beneficial_gaps": 26
+              }
+            },
+            "monitor:flat_allowed": {
+              "adam:adaptive": {
+                "lowers_native_optimal_probability": 20,
+                "mean_native_optimal_probability_derivative": -4.420396952503501e-05,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 23
+              },
+              "adam:cross": {
+                "lowers_native_optimal_probability": 20,
+                "mean_native_optimal_probability_derivative": -4.420396952503501e-05,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 23
+              },
+              "adam:decay": {
+                "lowers_native_optimal_probability": 14,
+                "mean_native_optimal_probability_derivative": -2.9245073362753583e-09,
+                "raises_native_optimal_probability": 11,
+                "suppresses_beneficial_gaps": 9
+              },
+              "adam:self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "adam:total": {
+                "lowers_native_optimal_probability": 20,
+                "mean_native_optimal_probability_derivative": -4.420689403237129e-05,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 23
+              },
+              "entropy:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:cross": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:local_logit": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:self_alone": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:total": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "total:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "total:cross": {
+                "lowers_native_optimal_probability": 22,
+                "mean_native_optimal_probability_derivative": -0.0035265845229525447,
+                "raises_native_optimal_probability": 6,
+                "suppresses_beneficial_gaps": 22
+              },
+              "total:local_logit": {
+                "lowers_native_optimal_probability": 16,
+                "mean_native_optimal_probability_derivative": -0.0031562409939511573,
+                "raises_native_optimal_probability": 10,
+                "suppresses_beneficial_gaps": 19
+              },
+              "total:self_alone": {
+                "lowers_native_optimal_probability": 21,
+                "mean_native_optimal_probability_derivative": -0.05650042964465851,
+                "raises_native_optimal_probability": 7,
+                "suppresses_beneficial_gaps": 19
+              },
+              "total:total": {
+                "lowers_native_optimal_probability": 22,
+                "mean_native_optimal_probability_derivative": -0.0035265845229525447,
+                "raises_native_optimal_probability": 6,
+                "suppresses_beneficial_gaps": 22
+              },
+              "value:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "value:cross": {
+                "lowers_native_optimal_probability": 22,
+                "mean_native_optimal_probability_derivative": -0.0035265845229525447,
+                "raises_native_optimal_probability": 6,
+                "suppresses_beneficial_gaps": 22
+              },
+              "value:local_logit": {
+                "lowers_native_optimal_probability": 16,
+                "mean_native_optimal_probability_derivative": -0.0031562409939511573,
+                "raises_native_optimal_probability": 10,
+                "suppresses_beneficial_gaps": 19
+              },
+              "value:self_alone": {
+                "lowers_native_optimal_probability": 21,
+                "mean_native_optimal_probability_derivative": -0.05650042964465851,
+                "raises_native_optimal_probability": 7,
+                "suppresses_beneficial_gaps": 19
+              },
+              "value:total": {
+                "lowers_native_optimal_probability": 22,
+                "mean_native_optimal_probability_derivative": -0.0035265845229525447,
+                "raises_native_optimal_probability": 6,
+                "suppresses_beneficial_gaps": 22
+              }
+            }
+          }
+        },
+        "native_fit": {
+          "autograd_max_error": 1.618514951316069e-08,
+          "groups": {
+            "fit": {
+              "adam:adaptive": {
+                "lowers_native_optimal_probability": 73,
+                "mean_native_optimal_probability_derivative": 2.3052470426567227e-05,
+                "raises_native_optimal_probability": 34,
+                "suppresses_beneficial_gaps": 81
+              },
+              "adam:cross": {
+                "lowers_native_optimal_probability": 90,
+                "mean_native_optimal_probability_derivative": -0.0003792983533793969,
+                "raises_native_optimal_probability": 17,
+                "suppresses_beneficial_gaps": 81
+              },
+              "adam:decay": {
+                "lowers_native_optimal_probability": 53,
+                "mean_native_optimal_probability_derivative": -5.381526628132768e-10,
+                "raises_native_optimal_probability": 51,
+                "suppresses_beneficial_gaps": 31
+              },
+              "adam:self": {
+                "lowers_native_optimal_probability": 8,
+                "mean_native_optimal_probability_derivative": 0.00040235082380596425,
+                "raises_native_optimal_probability": 96,
+                "suppresses_beneficial_gaps": 17
+              },
+              "adam:total": {
+                "lowers_native_optimal_probability": 73,
+                "mean_native_optimal_probability_derivative": 2.305193227390443e-05,
+                "raises_native_optimal_probability": 34,
+                "suppresses_beneficial_gaps": 81
+              },
+              "entropy:batch_self": {
+                "lowers_native_optimal_probability": 45,
+                "mean_native_optimal_probability_derivative": -1.4253924355039001e-05,
+                "raises_native_optimal_probability": 59,
+                "suppresses_beneficial_gaps": 17
+              },
+              "entropy:cross": {
+                "lowers_native_optimal_probability": 25,
+                "mean_native_optimal_probability_derivative": 0.00023760880736060452,
+                "raises_native_optimal_probability": 82,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:local_logit": {
+                "lowers_native_optimal_probability": 48,
+                "mean_native_optimal_probability_derivative": 8.145108522336604e-06,
+                "raises_native_optimal_probability": 56,
+                "suppresses_beneficial_gaps": 19
+              },
+              "entropy:self_alone": {
+                "lowers_native_optimal_probability": 45,
+                "mean_native_optimal_probability_derivative": -0.0019948974236714445,
+                "raises_native_optimal_probability": 60,
+                "suppresses_beneficial_gaps": 17
+              },
+              "entropy:total": {
+                "lowers_native_optimal_probability": 27,
+                "mean_native_optimal_probability_derivative": 0.00022335488300556552,
+                "raises_native_optimal_probability": 80,
+                "suppresses_beneficial_gaps": 1
+              },
+              "total:batch_self": {
+                "lowers_native_optimal_probability": 10,
+                "mean_native_optimal_probability_derivative": 0.010633664970858974,
+                "raises_native_optimal_probability": 94,
+                "suppresses_beneficial_gaps": 20
+              },
+              "total:cross": {
+                "lowers_native_optimal_probability": 81,
+                "mean_native_optimal_probability_derivative": -0.008663272621934762,
+                "raises_native_optimal_probability": 26,
+                "suppresses_beneficial_gaps": 87
+              },
+              "total:local_logit": {
+                "lowers_native_optimal_probability": 4,
+                "mean_native_optimal_probability_derivative": 0.016694749217231086,
+                "raises_native_optimal_probability": 100,
+                "suppresses_beneficial_gaps": 16
+              },
+              "total:self_alone": {
+                "lowers_native_optimal_probability": 11,
+                "mean_native_optimal_probability_derivative": 1.3238788605606588,
+                "raises_native_optimal_probability": 94,
+                "suppresses_beneficial_gaps": 20
+              },
+              "total:total": {
+                "lowers_native_optimal_probability": 79,
+                "mean_native_optimal_probability_derivative": 0.0019703923489242134,
+                "raises_native_optimal_probability": 28,
+                "suppresses_beneficial_gaps": 87
+              },
+              "value:batch_self": {
+                "lowers_native_optimal_probability": 11,
+                "mean_native_optimal_probability_derivative": 0.010647918895214005,
+                "raises_native_optimal_probability": 93,
+                "suppresses_beneficial_gaps": 20
+              },
+              "value:cross": {
+                "lowers_native_optimal_probability": 81,
+                "mean_native_optimal_probability_derivative": -0.008900881429295359,
+                "raises_native_optimal_probability": 26,
+                "suppresses_beneficial_gaps": 87
+              },
+              "value:local_logit": {
+                "lowers_native_optimal_probability": 3,
+                "mean_native_optimal_probability_derivative": 0.01668660410870875,
+                "raises_native_optimal_probability": 101,
+                "suppresses_beneficial_gaps": 17
+              },
+              "value:self_alone": {
+                "lowers_native_optimal_probability": 12,
+                "mean_native_optimal_probability_derivative": 1.325873757984329,
+                "raises_native_optimal_probability": 93,
+                "suppresses_beneficial_gaps": 20
+              },
+              "value:total": {
+                "lowers_native_optimal_probability": 79,
+                "mean_native_optimal_probability_derivative": 0.001747037465918646,
+                "raises_native_optimal_probability": 28,
+                "suppresses_beneficial_gaps": 87
+              }
+            },
+            "fit:flat_allowed": {
+              "adam:adaptive": {
+                "lowers_native_optimal_probability": 64,
+                "mean_native_optimal_probability_derivative": -2.516338821026835e-06,
+                "raises_native_optimal_probability": 18,
+                "suppresses_beneficial_gaps": 73
+              },
+              "adam:cross": {
+                "lowers_native_optimal_probability": 73,
+                "mean_native_optimal_probability_derivative": -0.00037554652793925436,
+                "raises_native_optimal_probability": 9,
+                "suppresses_beneficial_gaps": 73
+              },
+              "adam:decay": {
+                "lowers_native_optimal_probability": 38,
+                "mean_native_optimal_probability_derivative": 1.6968541889161887e-09,
+                "raises_native_optimal_probability": 41,
+                "suppresses_beneficial_gaps": 31
+              },
+              "adam:self": {
+                "lowers_native_optimal_probability": 7,
+                "mean_native_optimal_probability_derivative": 0.0003730301891182276,
+                "raises_native_optimal_probability": 72,
+                "suppresses_beneficial_gaps": 17
+              },
+              "adam:total": {
+                "lowers_native_optimal_probability": 64,
+                "mean_native_optimal_probability_derivative": -2.5146419668379096e-06,
+                "raises_native_optimal_probability": 18,
+                "suppresses_beneficial_gaps": 73
+              },
+              "entropy:batch_self": {
+                "lowers_native_optimal_probability": 29,
+                "mean_native_optimal_probability_derivative": -1.5752109990629595e-05,
+                "raises_native_optimal_probability": 50,
+                "suppresses_beneficial_gaps": 17
+              },
+              "entropy:cross": {
+                "lowers_native_optimal_probability": 9,
+                "mean_native_optimal_probability_derivative": 0.0003821068816300639,
+                "raises_native_optimal_probability": 73,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:local_logit": {
+                "lowers_native_optimal_probability": 32,
+                "mean_native_optimal_probability_derivative": 1.4846678157885763e-05,
+                "raises_native_optimal_probability": 47,
+                "suppresses_beneficial_gaps": 19
+              },
+              "entropy:self_alone": {
+                "lowers_native_optimal_probability": 29,
+                "mean_native_optimal_probability_derivative": -0.0023210171891154792,
+                "raises_native_optimal_probability": 51,
+                "suppresses_beneficial_gaps": 17
+              },
+              "entropy:total": {
+                "lowers_native_optimal_probability": 10,
+                "mean_native_optimal_probability_derivative": 0.00036635477163943426,
+                "raises_native_optimal_probability": 72,
+                "suppresses_beneficial_gaps": 1
+              },
+              "total:batch_self": {
+                "lowers_native_optimal_probability": 9,
+                "mean_native_optimal_probability_derivative": 0.011432920233322697,
+                "raises_native_optimal_probability": 70,
+                "suppresses_beneficial_gaps": 20
+              },
+              "total:cross": {
+                "lowers_native_optimal_probability": 71,
+                "mean_native_optimal_probability_derivative": -0.010805873575661491,
+                "raises_native_optimal_probability": 11,
+                "suppresses_beneficial_gaps": 79
+              },
+              "total:local_logit": {
+                "lowers_native_optimal_probability": 3,
+                "mean_native_optimal_probability_derivative": 0.020573877062904086,
+                "raises_native_optimal_probability": 76,
+                "suppresses_beneficial_gaps": 16
+              },
+              "total:self_alone": {
+                "lowers_native_optimal_probability": 10,
+                "mean_native_optimal_probability_derivative": 1.4145450131342614,
+                "raises_native_optimal_probability": 70,
+                "suppresses_beneficial_gaps": 20
+              },
+              "total:total": {
+                "lowers_native_optimal_probability": 70,
+                "mean_native_optimal_probability_derivative": 0.0006270466576612043,
+                "raises_native_optimal_probability": 12,
+                "suppresses_beneficial_gaps": 79
+              },
+              "value:batch_self": {
+                "lowers_native_optimal_probability": 11,
+                "mean_native_optimal_probability_derivative": 0.01144867234331332,
+                "raises_native_optimal_probability": 68,
+                "suppresses_beneficial_gaps": 20
+              },
+              "value:cross": {
+                "lowers_native_optimal_probability": 71,
+                "mean_native_optimal_probability_derivative": -0.011187980457291554,
+                "raises_native_optimal_probability": 11,
+                "suppresses_beneficial_gaps": 79
+              },
+              "value:local_logit": {
+                "lowers_native_optimal_probability": 3,
+                "mean_native_optimal_probability_derivative": 0.0205590303847462,
+                "raises_native_optimal_probability": 76,
+                "suppresses_beneficial_gaps": 17
+              },
+              "value:self_alone": {
+                "lowers_native_optimal_probability": 12,
+                "mean_native_optimal_probability_derivative": 1.416866030323376,
+                "raises_native_optimal_probability": 68,
+                "suppresses_beneficial_gaps": 20
+              },
+              "value:total": {
+                "lowers_native_optimal_probability": 70,
+                "mean_native_optimal_probability_derivative": 0.00026069188602176937,
+                "raises_native_optimal_probability": 12,
+                "suppresses_beneficial_gaps": 79
+              }
+            },
+            "monitor": {
+              "adam:adaptive": {
+                "lowers_native_optimal_probability": 30,
+                "mean_native_optimal_probability_derivative": -4.991904983535759e-05,
+                "raises_native_optimal_probability": 6,
+                "suppresses_beneficial_gaps": 29
+              },
+              "adam:cross": {
+                "lowers_native_optimal_probability": 30,
+                "mean_native_optimal_probability_derivative": -4.991904983535759e-05,
+                "raises_native_optimal_probability": 6,
+                "suppresses_beneficial_gaps": 29
+              },
+              "adam:decay": {
+                "lowers_native_optimal_probability": 19,
+                "mean_native_optimal_probability_derivative": -4.669303914656721e-09,
+                "raises_native_optimal_probability": 14,
+                "suppresses_beneficial_gaps": 9
+              },
+              "adam:self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "adam:total": {
+                "lowers_native_optimal_probability": 30,
+                "mean_native_optimal_probability_derivative": -4.992371913927226e-05,
+                "raises_native_optimal_probability": 6,
+                "suppresses_beneficial_gaps": 29
+              },
+              "entropy:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:cross": {
+                "lowers_native_optimal_probability": 7,
+                "mean_native_optimal_probability_derivative": 0.00013901359016344804,
+                "raises_native_optimal_probability": 29,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:local_logit": {
+                "lowers_native_optimal_probability": 15,
+                "mean_native_optimal_probability_derivative": -1.8580080470761346e-06,
+                "raises_native_optimal_probability": 18,
+                "suppresses_beneficial_gaps": 8
+              },
+              "entropy:self_alone": {
+                "lowers_native_optimal_probability": 14,
+                "mean_native_optimal_probability_derivative": -0.0005182606627442074,
+                "raises_native_optimal_probability": 22,
+                "suppresses_beneficial_gaps": 7
+              },
+              "entropy:total": {
+                "lowers_native_optimal_probability": 7,
+                "mean_native_optimal_probability_derivative": 0.00013901359016344804,
+                "raises_native_optimal_probability": 29,
+                "suppresses_beneficial_gaps": 0
+              },
+              "total:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "total:cross": {
+                "lowers_native_optimal_probability": 29,
+                "mean_native_optimal_probability_derivative": -0.004422988728831889,
+                "raises_native_optimal_probability": 7,
+                "suppresses_beneficial_gaps": 29
+              },
+              "total:local_logit": {
+                "lowers_native_optimal_probability": 18,
+                "mean_native_optimal_probability_derivative": -0.0018473309460336031,
+                "raises_native_optimal_probability": 16,
+                "suppresses_beneficial_gaps": 21
+              },
+              "total:self_alone": {
+                "lowers_native_optimal_probability": 25,
+                "mean_native_optimal_probability_derivative": -0.0022314571281759504,
+                "raises_native_optimal_probability": 11,
+                "suppresses_beneficial_gaps": 21
+              },
+              "total:total": {
+                "lowers_native_optimal_probability": 29,
+                "mean_native_optimal_probability_derivative": -0.004422988728831889,
+                "raises_native_optimal_probability": 7,
+                "suppresses_beneficial_gaps": 29
+              },
+              "value:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "value:cross": {
+                "lowers_native_optimal_probability": 29,
+                "mean_native_optimal_probability_derivative": -0.004562002318995335,
+                "raises_native_optimal_probability": 7,
+                "suppresses_beneficial_gaps": 29
+              },
+              "value:local_logit": {
+                "lowers_native_optimal_probability": 18,
+                "mean_native_optimal_probability_derivative": -0.0018454729379865278,
+                "raises_native_optimal_probability": 16,
+                "suppresses_beneficial_gaps": 21
+              },
+              "value:self_alone": {
+                "lowers_native_optimal_probability": 24,
+                "mean_native_optimal_probability_derivative": -0.0017131964654317415,
+                "raises_native_optimal_probability": 12,
+                "suppresses_beneficial_gaps": 21
+              },
+              "value:total": {
+                "lowers_native_optimal_probability": 29,
+                "mean_native_optimal_probability_derivative": -0.004562002318995335,
+                "raises_native_optimal_probability": 7,
+                "suppresses_beneficial_gaps": 29
+              }
+            },
+            "monitor:flat_allowed": {
+              "adam:adaptive": {
+                "lowers_native_optimal_probability": 26,
+                "mean_native_optimal_probability_derivative": -7.37777678244876e-05,
+                "raises_native_optimal_probability": 2,
+                "suppresses_beneficial_gaps": 25
+              },
+              "adam:cross": {
+                "lowers_native_optimal_probability": 26,
+                "mean_native_optimal_probability_derivative": -7.37777678244876e-05,
+                "raises_native_optimal_probability": 2,
+                "suppresses_beneficial_gaps": 25
+              },
+              "adam:decay": {
+                "lowers_native_optimal_probability": 14,
+                "mean_native_optimal_probability_derivative": -2.9245073362753583e-09,
+                "raises_native_optimal_probability": 11,
+                "suppresses_beneficial_gaps": 9
+              },
+              "adam:self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "adam:total": {
+                "lowers_native_optimal_probability": 26,
+                "mean_native_optimal_probability_derivative": -7.378069233182387e-05,
+                "raises_native_optimal_probability": 2,
+                "suppresses_beneficial_gaps": 25
+              },
+              "entropy:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:cross": {
+                "lowers_native_optimal_probability": 3,
+                "mean_native_optimal_probability_derivative": 0.00020715016457880446,
+                "raises_native_optimal_probability": 25,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:local_logit": {
+                "lowers_native_optimal_probability": 11,
+                "mean_native_optimal_probability_derivative": 8.26548983760576e-06,
+                "raises_native_optimal_probability": 14,
+                "suppresses_beneficial_gaps": 8
+              },
+              "entropy:self_alone": {
+                "lowers_native_optimal_probability": 10,
+                "mean_native_optimal_probability_derivative": 0.00029076783468683917,
+                "raises_native_optimal_probability": 18,
+                "suppresses_beneficial_gaps": 7
+              },
+              "entropy:total": {
+                "lowers_native_optimal_probability": 3,
+                "mean_native_optimal_probability_derivative": 0.00020715016457880446,
+                "raises_native_optimal_probability": 25,
+                "suppresses_beneficial_gaps": 0
+              },
+              "total:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "total:cross": {
+                "lowers_native_optimal_probability": 25,
+                "mean_native_optimal_probability_derivative": -0.006284683511448417,
+                "raises_native_optimal_probability": 3,
+                "suppresses_beneficial_gaps": 25
+              },
+              "total:local_logit": {
+                "lowers_native_optimal_probability": 16,
+                "mean_native_optimal_probability_derivative": -0.0031479755041135507,
+                "raises_native_optimal_probability": 10,
+                "suppresses_beneficial_gaps": 19
+              },
+              "total:self_alone": {
+                "lowers_native_optimal_probability": 21,
+                "mean_native_optimal_probability_derivative": -0.056209661809971743,
+                "raises_native_optimal_probability": 7,
+                "suppresses_beneficial_gaps": 19
+              },
+              "total:total": {
+                "lowers_native_optimal_probability": 25,
+                "mean_native_optimal_probability_derivative": -0.006284683511448417,
+                "raises_native_optimal_probability": 3,
+                "suppresses_beneficial_gaps": 25
+              },
+              "value:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "value:cross": {
+                "lowers_native_optimal_probability": 25,
+                "mean_native_optimal_probability_derivative": -0.006491833676027218,
+                "raises_native_optimal_probability": 3,
+                "suppresses_beneficial_gaps": 25
+              },
+              "value:local_logit": {
+                "lowers_native_optimal_probability": 16,
+                "mean_native_optimal_probability_derivative": -0.0031562409939511573,
+                "raises_native_optimal_probability": 10,
+                "suppresses_beneficial_gaps": 19
+              },
+              "value:self_alone": {
+                "lowers_native_optimal_probability": 21,
+                "mean_native_optimal_probability_derivative": -0.05650042964465851,
+                "raises_native_optimal_probability": 7,
+                "suppresses_beneficial_gaps": 19
+              },
+              "value:total": {
+                "lowers_native_optimal_probability": 25,
+                "mean_native_optimal_probability_derivative": -0.006491833676027218,
+                "raises_native_optimal_probability": 3,
+                "suppresses_beneficial_gaps": 25
+              }
+            }
+          }
+        }
+      },
+      "critic_quality": {
+        "fit": {
+          "beneficial_gap_sign_errors": 33,
+          "beneficial_gaps": 87,
+          "mean_regret": 0.08269531625770327,
+          "native_actions": [
+            32,
+            41,
+            40
+          ],
+          "optimal_count": 77,
+          "predicted_actions": [
+            44,
+            33,
+            36
+          ],
+          "rows": 113,
+          "unique_native_optimum": 89
+        },
+        "fit:flat_allowed": {
+          "beneficial_gap_sign_errors": 29,
+          "beneficial_gaps": 79,
+          "mean_regret": 0.09692567766861207,
+          "native_actions": [
+            9,
+            35,
+            38
+          ],
+          "optimal_count": 52,
+          "predicted_actions": [
+            27,
+            25,
+            30
+          ],
+          "rows": 82,
+          "unique_native_optimum": 81
+        },
+        "monitor": {
+          "beneficial_gap_sign_errors": 17,
+          "beneficial_gaps": 29,
+          "mean_regret": 0.15536275075716427,
+          "native_actions": [
+            9,
+            11,
+            18
+          ],
+          "optimal_count": 16,
+          "predicted_actions": [
+            18,
+            6,
+            14
+          ],
+          "rows": 38,
+          "unique_native_optimum": 32
+        },
+        "monitor:flat_allowed": {
+          "beneficial_gap_sign_errors": 14,
+          "beneficial_gaps": 25,
+          "mean_regret": 0.16007904282857294,
+          "native_actions": [
+            3,
+            9,
+            16
+          ],
+          "optimal_count": 10,
+          "predicted_actions": [
+            13,
+            5,
+            10
+          ],
+          "rows": 28,
+          "unique_native_optimum": 28
+        }
+      },
+      "effective": {
+        "alpha": 0.005312912631779909,
+        "critic_sha256": "9c60cafbc8d9f548d2fc59b061386cb907b4eafe54b29bf3df7c7a101600290f",
+        "learning_rate": 2.9999999999999997e-05,
+        "weight_decay": 0.01
+      },
+      "sampled_fit_indices": [
+        97,
+        100,
+        4,
+        24,
+        37,
+        68,
+        21,
+        10,
+        109,
+        76,
+        88,
+        77,
+        107,
+        81,
+        75,
+        0,
+        3,
+        7,
+        30,
+        36,
+        35,
+        16,
+        15,
+        1,
+        89,
+        34,
+        53,
+        63,
+        95,
+        74,
+        6,
+        28,
+        67,
+        101,
+        110,
+        62,
+        92,
+        66,
+        71,
+        25,
+        73,
+        5,
+        31,
+        46,
+        47,
+        57,
+        69,
+        70,
+        26,
+        104,
+        44,
+        42,
+        78,
+        59,
+        20,
+        86,
+        52,
+        60,
+        85,
+        65,
+        40,
+        80,
+        17,
+        108,
+        105,
+        18,
+        112,
+        32,
+        19,
+        103,
+        98,
+        12,
+        93,
+        27,
+        56,
+        58,
+        23,
+        49,
+        11,
+        94,
+        13,
+        48,
+        84,
+        43,
+        41,
+        14,
+        33,
+        9,
+        29,
+        22,
+        72,
+        83,
+        50,
+        61,
+        82,
+        38,
+        87,
+        8,
+        90,
+        2,
+        39,
+        64,
+        96,
+        51,
+        55,
+        45,
+        106,
+        102,
+        111,
+        79,
+        99,
+        91,
+        54,
+        94,
+        106,
+        85,
+        47,
+        61,
+        13,
+        48,
+        70,
+        59,
+        109,
+        66,
+        87,
+        15,
+        14,
+        73
+      ],
+      "seed": 19
+    },
+    {
+      "actor_quality": {
+        "fit": {
+          "beneficial_gap_sign_errors": 67,
+          "beneficial_gaps": 87,
+          "mean_regret": 0.23180400352247102,
+          "native_actions": [
+            32,
+            41,
+            40
+          ],
+          "optimal_count": 47,
+          "predicted_actions": [
+            69,
+            19,
+            25
+          ],
+          "rows": 113,
+          "unique_native_optimum": 89
+        },
+        "fit:flat_allowed": {
+          "beneficial_gap_sign_errors": 59,
+          "beneficial_gaps": 79,
+          "mean_regret": 0.28191199989296006,
+          "native_actions": [
+            9,
+            35,
+            38
+          ],
+          "optimal_count": 25,
+          "predicted_actions": [
+            46,
+            15,
+            21
+          ],
+          "rows": 82,
+          "unique_native_optimum": 81
+        },
+        "monitor": {
+          "beneficial_gap_sign_errors": 21,
+          "beneficial_gaps": 29,
+          "mean_regret": 0.24695233531807562,
+          "native_actions": [
+            9,
+            11,
+            18
+          ],
+          "optimal_count": 15,
+          "predicted_actions": [
+            19,
+            5,
+            14
+          ],
+          "rows": 38,
+          "unique_native_optimum": 32
+        },
+        "monitor:flat_allowed": {
+          "beneficial_gap_sign_errors": 17,
+          "beneficial_gaps": 25,
+          "mean_regret": 0.2782263282491763,
+          "native_actions": [
+            3,
+            9,
+            16
+          ],
+          "optimal_count": 9,
+          "predicted_actions": [
+            11,
+            5,
+            12
+          ],
+          "rows": 28,
+          "unique_native_optimum": 28
+        }
+      },
+      "actor_updates": 0,
+      "alpha": 0.005312912631779909,
+      "arm": "calibrated_43",
+      "controls": {
+        "critic": {
+          "autograd_max_error": 5.629283747476954e-09,
+          "groups": {
+            "fit": {
+              "adam:adaptive": {
+                "lowers_native_optimal_probability": 70,
+                "mean_native_optimal_probability_derivative": -4.93622802817306e-05,
+                "raises_native_optimal_probability": 36,
+                "suppresses_beneficial_gaps": 86
+              },
+              "adam:cross": {
+                "lowers_native_optimal_probability": 73,
+                "mean_native_optimal_probability_derivative": -0.0001376742359255568,
+                "raises_native_optimal_probability": 33,
+                "suppresses_beneficial_gaps": 82
+              },
+              "adam:decay": {
+                "lowers_native_optimal_probability": 53,
+                "mean_native_optimal_probability_derivative": -5.381526628132768e-10,
+                "raises_native_optimal_probability": 51,
+                "suppresses_beneficial_gaps": 31
+              },
+              "adam:self": {
+                "lowers_native_optimal_probability": 48,
+                "mean_native_optimal_probability_derivative": 8.83119556438262e-05,
+                "raises_native_optimal_probability": 55,
+                "suppresses_beneficial_gaps": 54
+              },
+              "adam:total": {
+                "lowers_native_optimal_probability": 70,
+                "mean_native_optimal_probability_derivative": -4.9362818434393424e-05,
+                "raises_native_optimal_probability": 36,
+                "suppresses_beneficial_gaps": 86
+              },
+              "entropy:batch_self": {
+                "lowers_native_optimal_probability": 45,
+                "mean_native_optimal_probability_derivative": -1.6039405027008138e-05,
+                "raises_native_optimal_probability": 59,
+                "suppresses_beneficial_gaps": 17
+              },
+              "entropy:cross": {
+                "lowers_native_optimal_probability": 26,
+                "mean_native_optimal_probability_derivative": 0.0002294328240699293,
+                "raises_native_optimal_probability": 81,
+                "suppresses_beneficial_gaps": 1
+              },
+              "entropy:local_logit": {
+                "lowers_native_optimal_probability": 48,
+                "mean_native_optimal_probability_derivative": 8.145108522336604e-06,
+                "raises_native_optimal_probability": 56,
+                "suppresses_beneficial_gaps": 19
+              },
+              "entropy:self_alone": {
+                "lowers_native_optimal_probability": 45,
+                "mean_native_optimal_probability_derivative": -0.0019948974236714445,
+                "raises_native_optimal_probability": 60,
+                "suppresses_beneficial_gaps": 17
+              },
+              "entropy:total": {
+                "lowers_native_optimal_probability": 27,
+                "mean_native_optimal_probability_derivative": 0.00021339341904292117,
+                "raises_native_optimal_probability": 80,
+                "suppresses_beneficial_gaps": 1
+              },
+              "total:batch_self": {
+                "lowers_native_optimal_probability": 52,
+                "mean_native_optimal_probability_derivative": 0.0018353207503186478,
+                "raises_native_optimal_probability": 52,
+                "suppresses_beneficial_gaps": 53
+              },
+              "total:cross": {
+                "lowers_native_optimal_probability": 73,
+                "mean_native_optimal_probability_derivative": -0.007617136432891372,
+                "raises_native_optimal_probability": 34,
+                "suppresses_beneficial_gaps": 87
+              },
+              "total:local_logit": {
+                "lowers_native_optimal_probability": 43,
+                "mean_native_optimal_probability_derivative": 0.002347576092563354,
+                "raises_native_optimal_probability": 61,
+                "suppresses_beneficial_gaps": 53
+              },
+              "total:self_alone": {
+                "lowers_native_optimal_probability": 53,
+                "mean_native_optimal_probability_derivative": 0.23212927011636855,
+                "raises_native_optimal_probability": 52,
+                "suppresses_beneficial_gaps": 53
+              },
+              "total:total": {
+                "lowers_native_optimal_probability": 70,
+                "mean_native_optimal_probability_derivative": -0.005781815682572725,
+                "raises_native_optimal_probability": 37,
+                "suppresses_beneficial_gaps": 86
+              },
+              "value:batch_self": {
+                "lowers_native_optimal_probability": 52,
+                "mean_native_optimal_probability_derivative": 0.0018513601553456574,
+                "raises_native_optimal_probability": 52,
+                "suppresses_beneficial_gaps": 55
+              },
+              "value:cross": {
+                "lowers_native_optimal_probability": 74,
+                "mean_native_optimal_probability_derivative": -0.007846569256961302,
+                "raises_native_optimal_probability": 33,
+                "suppresses_beneficial_gaps": 87
+              },
+              "value:local_logit": {
+                "lowers_native_optimal_probability": 44,
+                "mean_native_optimal_probability_derivative": 0.0023394309840410175,
+                "raises_native_optimal_probability": 60,
+                "suppresses_beneficial_gaps": 55
+              },
+              "value:self_alone": {
+                "lowers_native_optimal_probability": 53,
+                "mean_native_optimal_probability_derivative": 0.23412416754004017,
+                "raises_native_optimal_probability": 52,
+                "suppresses_beneficial_gaps": 55
+              },
+              "value:total": {
+                "lowers_native_optimal_probability": 74,
+                "mean_native_optimal_probability_derivative": -0.005995209101615644,
+                "raises_native_optimal_probability": 33,
+                "suppresses_beneficial_gaps": 86
+              }
+            },
+            "fit:flat_allowed": {
+              "adam:adaptive": {
+                "lowers_native_optimal_probability": 60,
+                "mean_native_optimal_probability_derivative": -0.00012550323365571046,
+                "raises_native_optimal_probability": 21,
+                "suppresses_beneficial_gaps": 78
+              },
+              "adam:cross": {
+                "lowers_native_optimal_probability": 62,
+                "mean_native_optimal_probability_derivative": -0.00020319765292997383,
+                "raises_native_optimal_probability": 19,
+                "suppresses_beneficial_gaps": 75
+              },
+              "adam:decay": {
+                "lowers_native_optimal_probability": 38,
+                "mean_native_optimal_probability_derivative": 1.6968541889161887e-09,
+                "raises_native_optimal_probability": 41,
+                "suppresses_beneficial_gaps": 31
+              },
+              "adam:self": {
+                "lowers_native_optimal_probability": 37,
+                "mean_native_optimal_probability_derivative": 7.769441927426336e-05,
+                "raises_native_optimal_probability": 41,
+                "suppresses_beneficial_gaps": 49
+              },
+              "adam:total": {
+                "lowers_native_optimal_probability": 60,
+                "mean_native_optimal_probability_derivative": -0.00012550153680152156,
+                "raises_native_optimal_probability": 21,
+                "suppresses_beneficial_gaps": 78
+              },
+              "entropy:batch_self": {
+                "lowers_native_optimal_probability": 29,
+                "mean_native_optimal_probability_derivative": -1.815506301342156e-05,
+                "raises_native_optimal_probability": 50,
+                "suppresses_beneficial_gaps": 17
+              },
+              "entropy:cross": {
+                "lowers_native_optimal_probability": 10,
+                "mean_native_optimal_probability_derivative": 0.00036212346837250636,
+                "raises_native_optimal_probability": 72,
+                "suppresses_beneficial_gaps": 1
+              },
+              "entropy:local_logit": {
+                "lowers_native_optimal_probability": 32,
+                "mean_native_optimal_probability_derivative": 1.4846678157885763e-05,
+                "raises_native_optimal_probability": 47,
+                "suppresses_beneficial_gaps": 19
+              },
+              "entropy:self_alone": {
+                "lowers_native_optimal_probability": 29,
+                "mean_native_optimal_probability_derivative": -0.0023210171891154792,
+                "raises_native_optimal_probability": 51,
+                "suppresses_beneficial_gaps": 17
+              },
+              "entropy:total": {
+                "lowers_native_optimal_probability": 10,
+                "mean_native_optimal_probability_derivative": 0.0003439684053590848,
+                "raises_native_optimal_probability": 72,
+                "suppresses_beneficial_gaps": 1
+              },
+              "total:batch_self": {
+                "lowers_native_optimal_probability": 42,
+                "mean_native_optimal_probability_derivative": 0.0008762114002170324,
+                "raises_native_optimal_probability": 37,
+                "suppresses_beneficial_gaps": 48
+              },
+              "total:cross": {
+                "lowers_native_optimal_probability": 62,
+                "mean_native_optimal_probability_derivative": -0.012984779805785116,
+                "raises_native_optimal_probability": 20,
+                "suppresses_beneficial_gaps": 79
+              },
+              "total:local_logit": {
+                "lowers_native_optimal_probability": 33,
+                "mean_native_optimal_probability_derivative": 0.0023913319187634056,
+                "raises_native_optimal_probability": 46,
+                "suppresses_beneficial_gaps": 48
+              },
+              "total:self_alone": {
+                "lowers_native_optimal_probability": 43,
+                "mean_native_optimal_probability_derivative": 0.10729250361866102,
+                "raises_native_optimal_probability": 37,
+                "suppresses_beneficial_gaps": 48
+              },
+              "total:total": {
+                "lowers_native_optimal_probability": 60,
+                "mean_native_optimal_probability_derivative": -0.012108568405568084,
+                "raises_native_optimal_probability": 22,
+                "suppresses_beneficial_gaps": 78
+              },
+              "value:batch_self": {
+                "lowers_native_optimal_probability": 42,
+                "mean_native_optimal_probability_derivative": 0.0008943664632304529,
+                "raises_native_optimal_probability": 37,
+                "suppresses_beneficial_gaps": 50
+              },
+              "value:cross": {
+                "lowers_native_optimal_probability": 64,
+                "mean_native_optimal_probability_derivative": -0.013346903274157622,
+                "raises_native_optimal_probability": 18,
+                "suppresses_beneficial_gaps": 79
+              },
+              "value:local_logit": {
+                "lowers_native_optimal_probability": 34,
+                "mean_native_optimal_probability_derivative": 0.0023764852406055192,
+                "raises_native_optimal_probability": 45,
+                "suppresses_beneficial_gaps": 50
+              },
+              "value:self_alone": {
+                "lowers_native_optimal_probability": 43,
+                "mean_native_optimal_probability_derivative": 0.10961352080777644,
+                "raises_native_optimal_probability": 37,
+                "suppresses_beneficial_gaps": 50
+              },
+              "value:total": {
+                "lowers_native_optimal_probability": 64,
+                "mean_native_optimal_probability_derivative": -0.012452536810927168,
+                "raises_native_optimal_probability": 18,
+                "suppresses_beneficial_gaps": 78
+              }
+            },
+            "monitor": {
+              "adam:adaptive": {
+                "lowers_native_optimal_probability": 24,
+                "mean_native_optimal_probability_derivative": -7.090816397242131e-05,
+                "raises_native_optimal_probability": 12,
+                "suppresses_beneficial_gaps": 28
+              },
+              "adam:cross": {
+                "lowers_native_optimal_probability": 24,
+                "mean_native_optimal_probability_derivative": -7.090816397242131e-05,
+                "raises_native_optimal_probability": 12,
+                "suppresses_beneficial_gaps": 28
+              },
+              "adam:decay": {
+                "lowers_native_optimal_probability": 19,
+                "mean_native_optimal_probability_derivative": -4.669303914656721e-09,
+                "raises_native_optimal_probability": 14,
+                "suppresses_beneficial_gaps": 9
+              },
+              "adam:self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "adam:total": {
+                "lowers_native_optimal_probability": 24,
+                "mean_native_optimal_probability_derivative": -7.091283327633598e-05,
+                "raises_native_optimal_probability": 12,
+                "suppresses_beneficial_gaps": 28
+              },
+              "entropy:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:cross": {
+                "lowers_native_optimal_probability": 7,
+                "mean_native_optimal_probability_derivative": 0.00012828582310291185,
+                "raises_native_optimal_probability": 29,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:local_logit": {
+                "lowers_native_optimal_probability": 15,
+                "mean_native_optimal_probability_derivative": -1.8580080470761346e-06,
+                "raises_native_optimal_probability": 18,
+                "suppresses_beneficial_gaps": 8
+              },
+              "entropy:self_alone": {
+                "lowers_native_optimal_probability": 14,
+                "mean_native_optimal_probability_derivative": -0.0005182606627442074,
+                "raises_native_optimal_probability": 22,
+                "suppresses_beneficial_gaps": 7
+              },
+              "entropy:total": {
+                "lowers_native_optimal_probability": 7,
+                "mean_native_optimal_probability_derivative": 0.00012828582310291185,
+                "raises_native_optimal_probability": 29,
+                "suppresses_beneficial_gaps": 0
+              },
+              "total:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "total:cross": {
+                "lowers_native_optimal_probability": 23,
+                "mean_native_optimal_probability_derivative": -0.006636223225119746,
+                "raises_native_optimal_probability": 13,
+                "suppresses_beneficial_gaps": 29
+              },
+              "total:local_logit": {
+                "lowers_native_optimal_probability": 23,
+                "mean_native_optimal_probability_derivative": -0.0031673452690995224,
+                "raises_native_optimal_probability": 11,
+                "suppresses_beneficial_gaps": 22
+              },
+              "total:self_alone": {
+                "lowers_native_optimal_probability": 24,
+                "mean_native_optimal_probability_derivative": -0.08453824657441643,
+                "raises_native_optimal_probability": 12,
+                "suppresses_beneficial_gaps": 21
+              },
+              "total:total": {
+                "lowers_native_optimal_probability": 23,
+                "mean_native_optimal_probability_derivative": -0.006636223225119746,
+                "raises_native_optimal_probability": 13,
+                "suppresses_beneficial_gaps": 29
+              },
+              "value:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "value:cross": {
+                "lowers_native_optimal_probability": 23,
+                "mean_native_optimal_probability_derivative": -0.006764509048222657,
+                "raises_native_optimal_probability": 13,
+                "suppresses_beneficial_gaps": 29
+              },
+              "value:local_logit": {
+                "lowers_native_optimal_probability": 24,
+                "mean_native_optimal_probability_derivative": -0.0031654872610524464,
+                "raises_native_optimal_probability": 10,
+                "suppresses_beneficial_gaps": 23
+              },
+              "value:self_alone": {
+                "lowers_native_optimal_probability": 26,
+                "mean_native_optimal_probability_derivative": -0.08401998591167235,
+                "raises_native_optimal_probability": 10,
+                "suppresses_beneficial_gaps": 22
+              },
+              "value:total": {
+                "lowers_native_optimal_probability": 23,
+                "mean_native_optimal_probability_derivative": -0.006764509048222657,
+                "raises_native_optimal_probability": 13,
+                "suppresses_beneficial_gaps": 29
+              }
+            },
+            "monitor:flat_allowed": {
+              "adam:adaptive": {
+                "lowers_native_optimal_probability": 20,
+                "mean_native_optimal_probability_derivative": -0.00010149611475535709,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 25
+              },
+              "adam:cross": {
+                "lowers_native_optimal_probability": 20,
+                "mean_native_optimal_probability_derivative": -0.00010149611475535709,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 25
+              },
+              "adam:decay": {
+                "lowers_native_optimal_probability": 14,
+                "mean_native_optimal_probability_derivative": -2.9245073362753583e-09,
+                "raises_native_optimal_probability": 11,
+                "suppresses_beneficial_gaps": 9
+              },
+              "adam:self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "adam:total": {
+                "lowers_native_optimal_probability": 20,
+                "mean_native_optimal_probability_derivative": -0.00010149903926269337,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 25
+              },
+              "entropy:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:cross": {
+                "lowers_native_optimal_probability": 3,
+                "mean_native_optimal_probability_derivative": 0.00019217424838961777,
+                "raises_native_optimal_probability": 25,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:local_logit": {
+                "lowers_native_optimal_probability": 11,
+                "mean_native_optimal_probability_derivative": 8.26548983760576e-06,
+                "raises_native_optimal_probability": 14,
+                "suppresses_beneficial_gaps": 8
+              },
+              "entropy:self_alone": {
+                "lowers_native_optimal_probability": 10,
+                "mean_native_optimal_probability_derivative": 0.00029076783468683917,
+                "raises_native_optimal_probability": 18,
+                "suppresses_beneficial_gaps": 7
+              },
+              "entropy:total": {
+                "lowers_native_optimal_probability": 3,
+                "mean_native_optimal_probability_derivative": 0.00019217424838961777,
+                "raises_native_optimal_probability": 25,
+                "suppresses_beneficial_gaps": 0
+              },
+              "total:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "total:cross": {
+                "lowers_native_optimal_probability": 20,
+                "mean_native_optimal_probability_derivative": -0.009458793045209793,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 25
+              },
+              "total:local_logit": {
+                "lowers_native_optimal_probability": 18,
+                "mean_native_optimal_probability_derivative": -0.003875896206154934,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 20
+              },
+              "total:self_alone": {
+                "lowers_native_optimal_probability": 19,
+                "mean_native_optimal_probability_derivative": -0.11221482597807962,
+                "raises_native_optimal_probability": 9,
+                "suppresses_beneficial_gaps": 19
+              },
+              "total:total": {
+                "lowers_native_optimal_probability": 20,
+                "mean_native_optimal_probability_derivative": -0.009458793045209793,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 25
+              },
+              "value:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "value:cross": {
+                "lowers_native_optimal_probability": 20,
+                "mean_native_optimal_probability_derivative": -0.009650967293599409,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 25
+              },
+              "value:local_logit": {
+                "lowers_native_optimal_probability": 18,
+                "mean_native_optimal_probability_derivative": -0.003884161695992539,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 20
+              },
+              "value:self_alone": {
+                "lowers_native_optimal_probability": 20,
+                "mean_native_optimal_probability_derivative": -0.11250559381276659,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 19
+              },
+              "value:total": {
+                "lowers_native_optimal_probability": 20,
+                "mean_native_optimal_probability_derivative": -0.009650967293599409,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 25
+              }
+            }
+          }
+        },
+        "critic_no_entropy": {
+          "autograd_max_error": 3.5923664026132895e-09,
+          "groups": {
+            "fit": {
+              "adam:adaptive": {
+                "lowers_native_optimal_probability": 70,
+                "mean_native_optimal_probability_derivative": -4.731800112777739e-05,
+                "raises_native_optimal_probability": 36,
+                "suppresses_beneficial_gaps": 86
+              },
+              "adam:cross": {
+                "lowers_native_optimal_probability": 74,
+                "mean_native_optimal_probability_derivative": -0.0002000714812674525,
+                "raises_native_optimal_probability": 32,
+                "suppresses_beneficial_gaps": 75
+              },
+              "adam:decay": {
+                "lowers_native_optimal_probability": 53,
+                "mean_native_optimal_probability_derivative": -5.381526628132768e-10,
+                "raises_native_optimal_probability": 51,
+                "suppresses_beneficial_gaps": 31
+              },
+              "adam:self": {
+                "lowers_native_optimal_probability": 46,
+                "mean_native_optimal_probability_derivative": 0.00015275348013967503,
+                "raises_native_optimal_probability": 58,
+                "suppresses_beneficial_gaps": 57
+              },
+              "adam:total": {
+                "lowers_native_optimal_probability": 69,
+                "mean_native_optimal_probability_derivative": -4.7318539280440186e-05,
+                "raises_native_optimal_probability": 37,
+                "suppresses_beneficial_gaps": 86
+              },
+              "entropy:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:cross": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:local_logit": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:self_alone": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:total": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "total:batch_self": {
+                "lowers_native_optimal_probability": 52,
+                "mean_native_optimal_probability_derivative": 0.0018513601553456574,
+                "raises_native_optimal_probability": 52,
+                "suppresses_beneficial_gaps": 55
+              },
+              "total:cross": {
+                "lowers_native_optimal_probability": 74,
+                "mean_native_optimal_probability_derivative": -0.007846569256961302,
+                "raises_native_optimal_probability": 33,
+                "suppresses_beneficial_gaps": 87
+              },
+              "total:local_logit": {
+                "lowers_native_optimal_probability": 44,
+                "mean_native_optimal_probability_derivative": 0.0023394309840410175,
+                "raises_native_optimal_probability": 60,
+                "suppresses_beneficial_gaps": 55
+              },
+              "total:self_alone": {
+                "lowers_native_optimal_probability": 53,
+                "mean_native_optimal_probability_derivative": 0.23412416754004017,
+                "raises_native_optimal_probability": 52,
+                "suppresses_beneficial_gaps": 55
+              },
+              "total:total": {
+                "lowers_native_optimal_probability": 74,
+                "mean_native_optimal_probability_derivative": -0.005995209101615644,
+                "raises_native_optimal_probability": 33,
+                "suppresses_beneficial_gaps": 86
+              },
+              "value:batch_self": {
+                "lowers_native_optimal_probability": 52,
+                "mean_native_optimal_probability_derivative": 0.0018513601553456574,
+                "raises_native_optimal_probability": 52,
+                "suppresses_beneficial_gaps": 55
+              },
+              "value:cross": {
+                "lowers_native_optimal_probability": 74,
+                "mean_native_optimal_probability_derivative": -0.007846569256961302,
+                "raises_native_optimal_probability": 33,
+                "suppresses_beneficial_gaps": 87
+              },
+              "value:local_logit": {
+                "lowers_native_optimal_probability": 44,
+                "mean_native_optimal_probability_derivative": 0.0023394309840410175,
+                "raises_native_optimal_probability": 60,
+                "suppresses_beneficial_gaps": 55
+              },
+              "value:self_alone": {
+                "lowers_native_optimal_probability": 53,
+                "mean_native_optimal_probability_derivative": 0.23412416754004017,
+                "raises_native_optimal_probability": 52,
+                "suppresses_beneficial_gaps": 55
+              },
+              "value:total": {
+                "lowers_native_optimal_probability": 74,
+                "mean_native_optimal_probability_derivative": -0.005995209101615644,
+                "raises_native_optimal_probability": 33,
+                "suppresses_beneficial_gaps": 86
+              }
+            },
+            "fit:flat_allowed": {
+              "adam:adaptive": {
+                "lowers_native_optimal_probability": 61,
+                "mean_native_optimal_probability_derivative": -0.00012320226430039818,
+                "raises_native_optimal_probability": 20,
+                "suppresses_beneficial_gaps": 78
+              },
+              "adam:cross": {
+                "lowers_native_optimal_probability": 63,
+                "mean_native_optimal_probability_derivative": -0.00028543753197276113,
+                "raises_native_optimal_probability": 18,
+                "suppresses_beneficial_gaps": 68
+              },
+              "adam:decay": {
+                "lowers_native_optimal_probability": 38,
+                "mean_native_optimal_probability_derivative": 1.6968541889161887e-09,
+                "raises_native_optimal_probability": 41,
+                "suppresses_beneficial_gaps": 31
+              },
+              "adam:self": {
+                "lowers_native_optimal_probability": 37,
+                "mean_native_optimal_probability_derivative": 0.00016223526767236284,
+                "raises_native_optimal_probability": 42,
+                "suppresses_beneficial_gaps": 52
+              },
+              "adam:total": {
+                "lowers_native_optimal_probability": 60,
+                "mean_native_optimal_probability_derivative": -0.00012320056744620928,
+                "raises_native_optimal_probability": 21,
+                "suppresses_beneficial_gaps": 78
+              },
+              "entropy:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:cross": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:local_logit": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:self_alone": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:total": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "total:batch_self": {
+                "lowers_native_optimal_probability": 42,
+                "mean_native_optimal_probability_derivative": 0.0008943664632304529,
+                "raises_native_optimal_probability": 37,
+                "suppresses_beneficial_gaps": 50
+              },
+              "total:cross": {
+                "lowers_native_optimal_probability": 64,
+                "mean_native_optimal_probability_derivative": -0.013346903274157622,
+                "raises_native_optimal_probability": 18,
+                "suppresses_beneficial_gaps": 79
+              },
+              "total:local_logit": {
+                "lowers_native_optimal_probability": 34,
+                "mean_native_optimal_probability_derivative": 0.0023764852406055192,
+                "raises_native_optimal_probability": 45,
+                "suppresses_beneficial_gaps": 50
+              },
+              "total:self_alone": {
+                "lowers_native_optimal_probability": 43,
+                "mean_native_optimal_probability_derivative": 0.10961352080777644,
+                "raises_native_optimal_probability": 37,
+                "suppresses_beneficial_gaps": 50
+              },
+              "total:total": {
+                "lowers_native_optimal_probability": 64,
+                "mean_native_optimal_probability_derivative": -0.012452536810927168,
+                "raises_native_optimal_probability": 18,
+                "suppresses_beneficial_gaps": 78
+              },
+              "value:batch_self": {
+                "lowers_native_optimal_probability": 42,
+                "mean_native_optimal_probability_derivative": 0.0008943664632304529,
+                "raises_native_optimal_probability": 37,
+                "suppresses_beneficial_gaps": 50
+              },
+              "value:cross": {
+                "lowers_native_optimal_probability": 64,
+                "mean_native_optimal_probability_derivative": -0.013346903274157622,
+                "raises_native_optimal_probability": 18,
+                "suppresses_beneficial_gaps": 79
+              },
+              "value:local_logit": {
+                "lowers_native_optimal_probability": 34,
+                "mean_native_optimal_probability_derivative": 0.0023764852406055192,
+                "raises_native_optimal_probability": 45,
+                "suppresses_beneficial_gaps": 50
+              },
+              "value:self_alone": {
+                "lowers_native_optimal_probability": 43,
+                "mean_native_optimal_probability_derivative": 0.10961352080777644,
+                "raises_native_optimal_probability": 37,
+                "suppresses_beneficial_gaps": 50
+              },
+              "value:total": {
+                "lowers_native_optimal_probability": 64,
+                "mean_native_optimal_probability_derivative": -0.012452536810927168,
+                "raises_native_optimal_probability": 18,
+                "suppresses_beneficial_gaps": 78
+              }
+            },
+            "monitor": {
+              "adam:adaptive": {
+                "lowers_native_optimal_probability": 24,
+                "mean_native_optimal_probability_derivative": -6.961517373898254e-05,
+                "raises_native_optimal_probability": 12,
+                "suppresses_beneficial_gaps": 28
+              },
+              "adam:cross": {
+                "lowers_native_optimal_probability": 24,
+                "mean_native_optimal_probability_derivative": -6.961517373898254e-05,
+                "raises_native_optimal_probability": 12,
+                "suppresses_beneficial_gaps": 28
+              },
+              "adam:decay": {
+                "lowers_native_optimal_probability": 19,
+                "mean_native_optimal_probability_derivative": -4.669303914656721e-09,
+                "raises_native_optimal_probability": 14,
+                "suppresses_beneficial_gaps": 9
+              },
+              "adam:self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "adam:total": {
+                "lowers_native_optimal_probability": 24,
+                "mean_native_optimal_probability_derivative": -6.961984304289721e-05,
+                "raises_native_optimal_probability": 12,
+                "suppresses_beneficial_gaps": 28
+              },
+              "entropy:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:cross": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:local_logit": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:self_alone": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:total": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "total:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "total:cross": {
+                "lowers_native_optimal_probability": 23,
+                "mean_native_optimal_probability_derivative": -0.006764509048222657,
+                "raises_native_optimal_probability": 13,
+                "suppresses_beneficial_gaps": 29
+              },
+              "total:local_logit": {
+                "lowers_native_optimal_probability": 24,
+                "mean_native_optimal_probability_derivative": -0.0031654872610524464,
+                "raises_native_optimal_probability": 10,
+                "suppresses_beneficial_gaps": 23
+              },
+              "total:self_alone": {
+                "lowers_native_optimal_probability": 26,
+                "mean_native_optimal_probability_derivative": -0.08401998591167235,
+                "raises_native_optimal_probability": 10,
+                "suppresses_beneficial_gaps": 22
+              },
+              "total:total": {
+                "lowers_native_optimal_probability": 23,
+                "mean_native_optimal_probability_derivative": -0.006764509048222657,
+                "raises_native_optimal_probability": 13,
+                "suppresses_beneficial_gaps": 29
+              },
+              "value:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "value:cross": {
+                "lowers_native_optimal_probability": 23,
+                "mean_native_optimal_probability_derivative": -0.006764509048222657,
+                "raises_native_optimal_probability": 13,
+                "suppresses_beneficial_gaps": 29
+              },
+              "value:local_logit": {
+                "lowers_native_optimal_probability": 24,
+                "mean_native_optimal_probability_derivative": -0.0031654872610524464,
+                "raises_native_optimal_probability": 10,
+                "suppresses_beneficial_gaps": 23
+              },
+              "value:self_alone": {
+                "lowers_native_optimal_probability": 26,
+                "mean_native_optimal_probability_derivative": -0.08401998591167235,
+                "raises_native_optimal_probability": 10,
+                "suppresses_beneficial_gaps": 22
+              },
+              "value:total": {
+                "lowers_native_optimal_probability": 23,
+                "mean_native_optimal_probability_derivative": -0.006764509048222657,
+                "raises_native_optimal_probability": 13,
+                "suppresses_beneficial_gaps": 29
+              }
+            },
+            "monitor:flat_allowed": {
+              "adam:adaptive": {
+                "lowers_native_optimal_probability": 20,
+                "mean_native_optimal_probability_derivative": -0.00010003556290095541,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 25
+              },
+              "adam:cross": {
+                "lowers_native_optimal_probability": 20,
+                "mean_native_optimal_probability_derivative": -0.00010003556290095541,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 25
+              },
+              "adam:decay": {
+                "lowers_native_optimal_probability": 14,
+                "mean_native_optimal_probability_derivative": -2.9245073362753583e-09,
+                "raises_native_optimal_probability": 11,
+                "suppresses_beneficial_gaps": 9
+              },
+              "adam:self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "adam:total": {
+                "lowers_native_optimal_probability": 20,
+                "mean_native_optimal_probability_derivative": -0.0001000384874082917,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 25
+              },
+              "entropy:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:cross": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:local_logit": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:self_alone": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:total": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "total:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "total:cross": {
+                "lowers_native_optimal_probability": 20,
+                "mean_native_optimal_probability_derivative": -0.009650967293599409,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 25
+              },
+              "total:local_logit": {
+                "lowers_native_optimal_probability": 18,
+                "mean_native_optimal_probability_derivative": -0.003884161695992539,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 20
+              },
+              "total:self_alone": {
+                "lowers_native_optimal_probability": 20,
+                "mean_native_optimal_probability_derivative": -0.11250559381276659,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 19
+              },
+              "total:total": {
+                "lowers_native_optimal_probability": 20,
+                "mean_native_optimal_probability_derivative": -0.009650967293599409,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 25
+              },
+              "value:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "value:cross": {
+                "lowers_native_optimal_probability": 20,
+                "mean_native_optimal_probability_derivative": -0.009650967293599409,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 25
+              },
+              "value:local_logit": {
+                "lowers_native_optimal_probability": 18,
+                "mean_native_optimal_probability_derivative": -0.003884161695992539,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 20
+              },
+              "value:self_alone": {
+                "lowers_native_optimal_probability": 20,
+                "mean_native_optimal_probability_derivative": -0.11250559381276659,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 19
+              },
+              "value:total": {
+                "lowers_native_optimal_probability": 20,
+                "mean_native_optimal_probability_derivative": -0.009650967293599409,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 25
+              }
+            }
+          }
+        },
+        "native_fit": {
+          "autograd_max_error": 1.3200347948397195e-08,
+          "groups": {
+            "fit": {
+              "adam:adaptive": {
+                "lowers_native_optimal_probability": 68,
+                "mean_native_optimal_probability_derivative": 3.8209450500912256e-05,
+                "raises_native_optimal_probability": 39,
+                "suppresses_beneficial_gaps": 78
+              },
+              "adam:cross": {
+                "lowers_native_optimal_probability": 89,
+                "mean_native_optimal_probability_derivative": -0.00043872996513553546,
+                "raises_native_optimal_probability": 18,
+                "suppresses_beneficial_gaps": 79
+              },
+              "adam:decay": {
+                "lowers_native_optimal_probability": 53,
+                "mean_native_optimal_probability_derivative": -5.381526628132768e-10,
+                "raises_native_optimal_probability": 51,
+                "suppresses_beneficial_gaps": 31
+              },
+              "adam:self": {
+                "lowers_native_optimal_probability": 8,
+                "mean_native_optimal_probability_derivative": 0.0004769394156364477,
+                "raises_native_optimal_probability": 96,
+                "suppresses_beneficial_gaps": 26
+              },
+              "adam:total": {
+                "lowers_native_optimal_probability": 68,
+                "mean_native_optimal_probability_derivative": 3.820891234824943e-05,
+                "raises_native_optimal_probability": 39,
+                "suppresses_beneficial_gaps": 78
+              },
+              "entropy:batch_self": {
+                "lowers_native_optimal_probability": 45,
+                "mean_native_optimal_probability_derivative": -1.6039405027008138e-05,
+                "raises_native_optimal_probability": 59,
+                "suppresses_beneficial_gaps": 17
+              },
+              "entropy:cross": {
+                "lowers_native_optimal_probability": 26,
+                "mean_native_optimal_probability_derivative": 0.0002294328240699293,
+                "raises_native_optimal_probability": 81,
+                "suppresses_beneficial_gaps": 1
+              },
+              "entropy:local_logit": {
+                "lowers_native_optimal_probability": 48,
+                "mean_native_optimal_probability_derivative": 8.145108522336604e-06,
+                "raises_native_optimal_probability": 56,
+                "suppresses_beneficial_gaps": 19
+              },
+              "entropy:self_alone": {
+                "lowers_native_optimal_probability": 45,
+                "mean_native_optimal_probability_derivative": -0.0019948974236714445,
+                "raises_native_optimal_probability": 60,
+                "suppresses_beneficial_gaps": 17
+              },
+              "entropy:total": {
+                "lowers_native_optimal_probability": 27,
+                "mean_native_optimal_probability_derivative": 0.00021339341904292117,
+                "raises_native_optimal_probability": 80,
+                "suppresses_beneficial_gaps": 1
+              },
+              "total:batch_self": {
+                "lowers_native_optimal_probability": 10,
+                "mean_native_optimal_probability_derivative": 0.010412983013666248,
+                "raises_native_optimal_probability": 94,
+                "suppresses_beneficial_gaps": 20
+              },
+              "total:cross": {
+                "lowers_native_optimal_probability": 80,
+                "mean_native_optimal_probability_derivative": -0.006909220010082986,
+                "raises_native_optimal_probability": 27,
+                "suppresses_beneficial_gaps": 87
+              },
+              "total:local_logit": {
+                "lowers_native_optimal_probability": 4,
+                "mean_native_optimal_probability_derivative": 0.016694749217231086,
+                "raises_native_optimal_probability": 100,
+                "suppresses_beneficial_gaps": 16
+              },
+              "total:self_alone": {
+                "lowers_native_optimal_probability": 11,
+                "mean_native_optimal_probability_derivative": 1.3238788605606588,
+                "raises_native_optimal_probability": 94,
+                "suppresses_beneficial_gaps": 20
+              },
+              "total:total": {
+                "lowers_native_optimal_probability": 75,
+                "mean_native_optimal_probability_derivative": 0.0035037630035832604,
+                "raises_native_optimal_probability": 32,
+                "suppresses_beneficial_gaps": 86
+              },
+              "value:batch_self": {
+                "lowers_native_optimal_probability": 11,
+                "mean_native_optimal_probability_derivative": 0.010429022418693248,
+                "raises_native_optimal_probability": 93,
+                "suppresses_beneficial_gaps": 20
+              },
+              "value:cross": {
+                "lowers_native_optimal_probability": 80,
+                "mean_native_optimal_probability_derivative": -0.007138652834152907,
+                "raises_native_optimal_probability": 27,
+                "suppresses_beneficial_gaps": 87
+              },
+              "value:local_logit": {
+                "lowers_native_optimal_probability": 3,
+                "mean_native_optimal_probability_derivative": 0.01668660410870875,
+                "raises_native_optimal_probability": 101,
+                "suppresses_beneficial_gaps": 17
+              },
+              "value:self_alone": {
+                "lowers_native_optimal_probability": 12,
+                "mean_native_optimal_probability_derivative": 1.325873757984329,
+                "raises_native_optimal_probability": 93,
+                "suppresses_beneficial_gaps": 20
+              },
+              "value:total": {
+                "lowers_native_optimal_probability": 75,
+                "mean_native_optimal_probability_derivative": 0.003290369584540342,
+                "raises_native_optimal_probability": 32,
+                "suppresses_beneficial_gaps": 86
+              }
+            },
+            "fit:flat_allowed": {
+              "adam:adaptive": {
+                "lowers_native_optimal_probability": 59,
+                "mean_native_optimal_probability_derivative": 2.1567058126629976e-05,
+                "raises_native_optimal_probability": 23,
+                "suppresses_beneficial_gaps": 70
+              },
+              "adam:cross": {
+                "lowers_native_optimal_probability": 75,
+                "mean_native_optimal_probability_derivative": -0.00046919526477247814,
+                "raises_native_optimal_probability": 7,
+                "suppresses_beneficial_gaps": 71
+              },
+              "adam:decay": {
+                "lowers_native_optimal_probability": 38,
+                "mean_native_optimal_probability_derivative": 1.6968541889161887e-09,
+                "raises_native_optimal_probability": 41,
+                "suppresses_beneficial_gaps": 31
+              },
+              "adam:self": {
+                "lowers_native_optimal_probability": 7,
+                "mean_native_optimal_probability_derivative": 0.0004907623228991082,
+                "raises_native_optimal_probability": 72,
+                "suppresses_beneficial_gaps": 26
+              },
+              "adam:total": {
+                "lowers_native_optimal_probability": 59,
+                "mean_native_optimal_probability_derivative": 2.1568754980818894e-05,
+                "raises_native_optimal_probability": 23,
+                "suppresses_beneficial_gaps": 70
+              },
+              "entropy:batch_self": {
+                "lowers_native_optimal_probability": 29,
+                "mean_native_optimal_probability_derivative": -1.815506301342156e-05,
+                "raises_native_optimal_probability": 50,
+                "suppresses_beneficial_gaps": 17
+              },
+              "entropy:cross": {
+                "lowers_native_optimal_probability": 10,
+                "mean_native_optimal_probability_derivative": 0.00036212346837250636,
+                "raises_native_optimal_probability": 72,
+                "suppresses_beneficial_gaps": 1
+              },
+              "entropy:local_logit": {
+                "lowers_native_optimal_probability": 32,
+                "mean_native_optimal_probability_derivative": 1.4846678157885763e-05,
+                "raises_native_optimal_probability": 47,
+                "suppresses_beneficial_gaps": 19
+              },
+              "entropy:self_alone": {
+                "lowers_native_optimal_probability": 29,
+                "mean_native_optimal_probability_derivative": -0.0023210171891154792,
+                "raises_native_optimal_probability": 51,
+                "suppresses_beneficial_gaps": 17
+              },
+              "entropy:total": {
+                "lowers_native_optimal_probability": 10,
+                "mean_native_optimal_probability_derivative": 0.0003439684053590848,
+                "raises_native_optimal_probability": 72,
+                "suppresses_beneficial_gaps": 1
+              },
+              "total:batch_self": {
+                "lowers_native_optimal_probability": 9,
+                "mean_native_optimal_probability_derivative": 0.011135638927901717,
+                "raises_native_optimal_probability": 70,
+                "suppresses_beneficial_gaps": 20
+              },
+              "total:cross": {
+                "lowers_native_optimal_probability": 70,
+                "mean_native_optimal_probability_derivative": -0.007874173228959514,
+                "raises_native_optimal_probability": 12,
+                "suppresses_beneficial_gaps": 79
+              },
+              "total:local_logit": {
+                "lowers_native_optimal_probability": 3,
+                "mean_native_optimal_probability_derivative": 0.020573877062904086,
+                "raises_native_optimal_probability": 76,
+                "suppresses_beneficial_gaps": 16
+              },
+              "total:self_alone": {
+                "lowers_native_optimal_probability": 10,
+                "mean_native_optimal_probability_derivative": 1.4145450131342614,
+                "raises_native_optimal_probability": 70,
+                "suppresses_beneficial_gaps": 20
+              },
+              "total:total": {
+                "lowers_native_optimal_probability": 66,
+                "mean_native_optimal_probability_derivative": 0.0032614656989422017,
+                "raises_native_optimal_probability": 16,
+                "suppresses_beneficial_gaps": 78
+              },
+              "value:batch_self": {
+                "lowers_native_optimal_probability": 11,
+                "mean_native_optimal_probability_derivative": 0.01115379399091513,
+                "raises_native_optimal_probability": 68,
+                "suppresses_beneficial_gaps": 20
+              },
+              "value:cross": {
+                "lowers_native_optimal_probability": 70,
+                "mean_native_optimal_probability_derivative": -0.00823629669733201,
+                "raises_native_optimal_probability": 12,
+                "suppresses_beneficial_gaps": 79
+              },
+              "value:local_logit": {
+                "lowers_native_optimal_probability": 3,
+                "mean_native_optimal_probability_derivative": 0.0205590303847462,
+                "raises_native_optimal_probability": 76,
+                "suppresses_beneficial_gaps": 17
+              },
+              "value:self_alone": {
+                "lowers_native_optimal_probability": 12,
+                "mean_native_optimal_probability_derivative": 1.416866030323376,
+                "raises_native_optimal_probability": 68,
+                "suppresses_beneficial_gaps": 20
+              },
+              "value:total": {
+                "lowers_native_optimal_probability": 66,
+                "mean_native_optimal_probability_derivative": 0.0029174972935831177,
+                "raises_native_optimal_probability": 16,
+                "suppresses_beneficial_gaps": 78
+              }
+            },
+            "monitor": {
+              "adam:adaptive": {
+                "lowers_native_optimal_probability": 29,
+                "mean_native_optimal_probability_derivative": -3.9351079381523744e-05,
+                "raises_native_optimal_probability": 7,
+                "suppresses_beneficial_gaps": 29
+              },
+              "adam:cross": {
+                "lowers_native_optimal_probability": 29,
+                "mean_native_optimal_probability_derivative": -3.9351079381523744e-05,
+                "raises_native_optimal_probability": 7,
+                "suppresses_beneficial_gaps": 29
+              },
+              "adam:decay": {
+                "lowers_native_optimal_probability": 19,
+                "mean_native_optimal_probability_derivative": -4.669303914656721e-09,
+                "raises_native_optimal_probability": 14,
+                "suppresses_beneficial_gaps": 9
+              },
+              "adam:self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "adam:total": {
+                "lowers_native_optimal_probability": 28,
+                "mean_native_optimal_probability_derivative": -3.93557486854384e-05,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 29
+              },
+              "entropy:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:cross": {
+                "lowers_native_optimal_probability": 7,
+                "mean_native_optimal_probability_derivative": 0.00012828582310291185,
+                "raises_native_optimal_probability": 29,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:local_logit": {
+                "lowers_native_optimal_probability": 15,
+                "mean_native_optimal_probability_derivative": -1.8580080470761346e-06,
+                "raises_native_optimal_probability": 18,
+                "suppresses_beneficial_gaps": 8
+              },
+              "entropy:self_alone": {
+                "lowers_native_optimal_probability": 14,
+                "mean_native_optimal_probability_derivative": -0.0005182606627442074,
+                "raises_native_optimal_probability": 22,
+                "suppresses_beneficial_gaps": 7
+              },
+              "entropy:total": {
+                "lowers_native_optimal_probability": 7,
+                "mean_native_optimal_probability_derivative": 0.00012828582310291185,
+                "raises_native_optimal_probability": 29,
+                "suppresses_beneficial_gaps": 0
+              },
+              "total:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "total:cross": {
+                "lowers_native_optimal_probability": 29,
+                "mean_native_optimal_probability_derivative": -0.002975412048788182,
+                "raises_native_optimal_probability": 7,
+                "suppresses_beneficial_gaps": 29
+              },
+              "total:local_logit": {
+                "lowers_native_optimal_probability": 23,
+                "mean_native_optimal_probability_derivative": -0.0031673452690995224,
+                "raises_native_optimal_probability": 11,
+                "suppresses_beneficial_gaps": 22
+              },
+              "total:self_alone": {
+                "lowers_native_optimal_probability": 24,
+                "mean_native_optimal_probability_derivative": -0.08453824657441643,
+                "raises_native_optimal_probability": 12,
+                "suppresses_beneficial_gaps": 21
+              },
+              "total:total": {
+                "lowers_native_optimal_probability": 29,
+                "mean_native_optimal_probability_derivative": -0.002975412048788182,
+                "raises_native_optimal_probability": 7,
+                "suppresses_beneficial_gaps": 29
+              },
+              "value:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "value:cross": {
+                "lowers_native_optimal_probability": 29,
+                "mean_native_optimal_probability_derivative": -0.003103697871891094,
+                "raises_native_optimal_probability": 7,
+                "suppresses_beneficial_gaps": 29
+              },
+              "value:local_logit": {
+                "lowers_native_optimal_probability": 24,
+                "mean_native_optimal_probability_derivative": -0.0031654872610524464,
+                "raises_native_optimal_probability": 10,
+                "suppresses_beneficial_gaps": 23
+              },
+              "value:self_alone": {
+                "lowers_native_optimal_probability": 26,
+                "mean_native_optimal_probability_derivative": -0.08401998591167235,
+                "raises_native_optimal_probability": 10,
+                "suppresses_beneficial_gaps": 22
+              },
+              "value:total": {
+                "lowers_native_optimal_probability": 29,
+                "mean_native_optimal_probability_derivative": -0.003103697871891094,
+                "raises_native_optimal_probability": 7,
+                "suppresses_beneficial_gaps": 29
+              }
+            },
+            "monitor:flat_allowed": {
+              "adam:adaptive": {
+                "lowers_native_optimal_probability": 25,
+                "mean_native_optimal_probability_derivative": -5.782107795081175e-05,
+                "raises_native_optimal_probability": 3,
+                "suppresses_beneficial_gaps": 25
+              },
+              "adam:cross": {
+                "lowers_native_optimal_probability": 25,
+                "mean_native_optimal_probability_derivative": -5.782107795081175e-05,
+                "raises_native_optimal_probability": 3,
+                "suppresses_beneficial_gaps": 25
+              },
+              "adam:decay": {
+                "lowers_native_optimal_probability": 14,
+                "mean_native_optimal_probability_derivative": -2.9245073362753583e-09,
+                "raises_native_optimal_probability": 11,
+                "suppresses_beneficial_gaps": 9
+              },
+              "adam:self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "adam:total": {
+                "lowers_native_optimal_probability": 24,
+                "mean_native_optimal_probability_derivative": -5.782400245814803e-05,
+                "raises_native_optimal_probability": 4,
+                "suppresses_beneficial_gaps": 25
+              },
+              "entropy:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:cross": {
+                "lowers_native_optimal_probability": 3,
+                "mean_native_optimal_probability_derivative": 0.00019217424838961777,
+                "raises_native_optimal_probability": 25,
+                "suppresses_beneficial_gaps": 0
+              },
+              "entropy:local_logit": {
+                "lowers_native_optimal_probability": 11,
+                "mean_native_optimal_probability_derivative": 8.26548983760576e-06,
+                "raises_native_optimal_probability": 14,
+                "suppresses_beneficial_gaps": 8
+              },
+              "entropy:self_alone": {
+                "lowers_native_optimal_probability": 10,
+                "mean_native_optimal_probability_derivative": 0.00029076783468683917,
+                "raises_native_optimal_probability": 18,
+                "suppresses_beneficial_gaps": 7
+              },
+              "entropy:total": {
+                "lowers_native_optimal_probability": 3,
+                "mean_native_optimal_probability_derivative": 0.00019217424838961777,
+                "raises_native_optimal_probability": 25,
+                "suppresses_beneficial_gaps": 0
+              },
+              "total:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "total:cross": {
+                "lowers_native_optimal_probability": 25,
+                "mean_native_optimal_probability_derivative": -0.004070405082178719,
+                "raises_native_optimal_probability": 3,
+                "suppresses_beneficial_gaps": 25
+              },
+              "total:local_logit": {
+                "lowers_native_optimal_probability": 18,
+                "mean_native_optimal_probability_derivative": -0.003875896206154934,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 20
+              },
+              "total:self_alone": {
+                "lowers_native_optimal_probability": 19,
+                "mean_native_optimal_probability_derivative": -0.11221482597807962,
+                "raises_native_optimal_probability": 9,
+                "suppresses_beneficial_gaps": 19
+              },
+              "total:total": {
+                "lowers_native_optimal_probability": 25,
+                "mean_native_optimal_probability_derivative": -0.004070405082178719,
+                "raises_native_optimal_probability": 3,
+                "suppresses_beneficial_gaps": 25
+              },
+              "value:batch_self": {
+                "lowers_native_optimal_probability": 0,
+                "mean_native_optimal_probability_derivative": 0.0,
+                "raises_native_optimal_probability": 0,
+                "suppresses_beneficial_gaps": 0
+              },
+              "value:cross": {
+                "lowers_native_optimal_probability": 25,
+                "mean_native_optimal_probability_derivative": -0.0042625793305683364,
+                "raises_native_optimal_probability": 3,
+                "suppresses_beneficial_gaps": 25
+              },
+              "value:local_logit": {
+                "lowers_native_optimal_probability": 18,
+                "mean_native_optimal_probability_derivative": -0.003884161695992539,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 20
+              },
+              "value:self_alone": {
+                "lowers_native_optimal_probability": 20,
+                "mean_native_optimal_probability_derivative": -0.11250559381276659,
+                "raises_native_optimal_probability": 8,
+                "suppresses_beneficial_gaps": 19
+              },
+              "value:total": {
+                "lowers_native_optimal_probability": 25,
+                "mean_native_optimal_probability_derivative": -0.0042625793305683364,
+                "raises_native_optimal_probability": 3,
+                "suppresses_beneficial_gaps": 25
+              }
+            }
+          }
+        }
+      },
+      "critic_quality": {
+        "fit": {
+          "beneficial_gap_sign_errors": 50,
+          "beneficial_gaps": 87,
+          "mean_regret": 0.14364774230060173,
+          "native_actions": [
+            32,
+            41,
+            40
+          ],
+          "optimal_count": 59,
+          "predicted_actions": [
+            51,
+            58,
+            4
+          ],
+          "rows": 113,
+          "unique_native_optimum": 89
+        },
+        "fit:flat_allowed": {
+          "beneficial_gap_sign_errors": 48,
+          "beneficial_gaps": 79,
+          "mean_regret": 0.18653246127228026,
+          "native_actions": [
+            9,
+            35,
+            38
+          ],
+          "optimal_count": 34,
+          "predicted_actions": [
+            41,
+            39,
+            2
+          ],
+          "rows": 82,
+          "unique_native_optimum": 81
+        },
+        "monitor": {
+          "beneficial_gap_sign_errors": 24,
+          "beneficial_gaps": 29,
+          "mean_regret": 0.2670989531590386,
+          "native_actions": [
+            9,
+            11,
+            18
+          ],
+          "optimal_count": 10,
+          "predicted_actions": [
+            18,
+            19,
+            1
+          ],
+          "rows": 38,
+          "unique_native_optimum": 32
+        },
+        "monitor:flat_allowed": {
+          "beneficial_gap_sign_errors": 21,
+          "beneficial_gaps": 25,
+          "mean_regret": 0.30220656237697296,
+          "native_actions": [
+            3,
+            9,
+            16
+          ],
+          "optimal_count": 5,
+          "predicted_actions": [
+            17,
+            11,
+            0
+          ],
+          "rows": 28,
+          "unique_native_optimum": 28
+        }
+      },
+      "effective": {
+        "alpha": 0.005312912631779909,
+        "critic_sha256": "39feaf1c7084396cf4d8535420a30e20a447248e342f208798f75ecc0ca3d1a0",
+        "learning_rate": 2.9999999999999997e-05,
+        "weight_decay": 0.01
+      },
+      "sampled_fit_indices": [
+        99,
+        42,
+        35,
+        6,
+        55,
+        43,
+        23,
+        1,
+        106,
+        96,
+        24,
+        3,
+        90,
+        26,
+        109,
+        80,
+        95,
+        5,
+        70,
+        78,
+        76,
+        25,
+        62,
+        8,
+        94,
+        60,
+        61,
+        65,
+        107,
+        83,
+        57,
+        108,
+        33,
+        88,
+        37,
+        87,
+        66,
+        104,
+        53,
+        44,
+        10,
+        39,
+        7,
+        97,
+        20,
+        41,
+        82,
+        64,
+        21,
+        36,
+        13,
+        12,
+        18,
+        85,
+        38,
+        105,
+        69,
+        101,
+        14,
+        75,
+        50,
+        98,
+        17,
+        91,
+        45,
+        22,
+        112,
+        111,
+        34,
+        100,
+        2,
+        48,
+        77,
+        86,
+        28,
+        56,
+        49,
+        16,
+        102,
+        58,
+        92,
+        72,
+        51,
+        29,
+        30,
+        9,
+        110,
+        103,
+        71,
+        31,
+        93,
+        74,
+        19,
+        4,
+        40,
+        11,
+        0,
+        63,
+        27,
+        79,
+        47,
+        84,
+        73,
+        46,
+        81,
+        59,
+        68,
+        89,
+        52,
+        15,
+        54,
+        32,
+        67,
+        60,
+        82,
+        7,
+        92,
+        102,
+        78,
+        70,
+        71,
+        69,
+        22,
+        19,
+        95,
+        85,
+        46,
+        105
+      ],
+      "seed": 43
+    }
+  ],
+  "finished_at": "2026-11-12T05:53:00.444585+00:00",
+  "fit": 113,
+  "identity": "b79c3735a3559f2febd42c4b884a924c225679cd77e3c69327a301b0d83c2d38",
+  "new_candidate": false,
+  "posthoc_rows": 0,
+  "rows": 151,
+  "seconds": 2.9073912000167184,
+  "source_unchanged": true,
+  "test_read": false,
+  "validation_read": false
+}
