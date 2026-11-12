@@ -1,21 +1,28 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "CRITIC_COVERAGE_DRIFT_PREPARED_RETSU_SOURCE_QUALIFICATION_STL31_RUNNING",
+  "current_stage": "CRITIC_COVERAGE_DRIFT_RUNNING_RETSU_SOURCE_QUALIFICATION_STL31_RUNNING",
   "critic_coverage_drift_312": {
     "document": "../312_FROZEN_CRITIC_COVERAGE_AND_DRIFT.md",
-    "status": "PREPARED_TESTED",
+    "status": "RUNNING_NATIVE_CONTINUATIONS",
+    "identity": "c5ab4ee1059d9e78f65e0142bed9266d594abc2c34636260dba8e8c9312421a3",
+    "runtime_commit": "f1ed226f",
+    "service": "am-critic-coverage-20261112.service",
+    "started_at": "2026-11-12T23:39:33Z",
+    "selected_anchors": 88,
+    "missing_strata": 0,
+    "planned_suffixes": 1320,
     "new_anchors_maximum": 88,
     "continuation_policies": 5,
     "old_anchors_excluded": 151,
     "fit_anchors": 113,
-    "focused_tests_passed": 12,
+    "focused_tests_passed": 18,
     "device": "cpu",
     "historical_mixed_cot": true,
     "optimizer_steps": 0,
     "validation_inference": false,
     "test_read": false,
     "model_promoted": false,
-    "next_action": "Launch finite resumable same-state native continuation queue, authenticate each anchor and report coverage/drift by state/year. Keep actual COT/live qualification with Retsu; no new model training or floating from historical-source evidence."
+    "next_action": "Let the running finite same-state native continuation queue complete and seal its summary, then inspect coverage/drift by state/year. Keep actual COT/live qualification with Retsu; no new model training or floating from historical-source evidence."
   },
   "cot_identity_311": {
     "document": "../311_COT_IDENTITY_IMPACT.md",

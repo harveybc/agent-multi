@@ -56,3 +56,30 @@ only once. Per-anchor receipts, progress with measured remaining time and a
 final machine-readable report require no intermediate approvals. Existing
 STL GPU queues remain independent. No automatic training or phase2 selection
 from this historical-source diagnostic.
+
+## Launched
+
+Runtime `f1ed226f`,2026-11-12 at18:39 Bogota. Enabled user service
+`am-critic-coverage-20261112.service`, with linger already enabled, immutable
+runtime, one worker lock, bounded failure restarts and per-anchor receipts.
+No intermediate approval is required. A semantic validation failure stops
+explicitly rather than skipping an anchor or retrying a bad identity forever.
+
+Run: `/var/tmp/sac71-critic-coverage-20261112-r1`.
+Identity `c5ab4ee1059d9e78f65e0142bed9266d594abc2c34636260dba8e8c9312421a3`.
+All88 anchors selected, no missing year/state stratum, all151 old origins
+excluded. Both calibrated critics and all four candidate parameter sets pass
+the fixed-tensor checks. Native continuations are running; initial same-action
+cash replay and repeat witness pass. Five policies x3 actions x88 points yields
+1320 planned suffixes, plus the three repeated witness suffixes.
+
+Initial two points take about8seconds each, giving roughly10-15minutes total
+remaining at18:40; later points have shorter suffixes. PROGRESS.json carries
+the rolling measured estimate. Memory about0.9GB. No GPU consumed. A final
+RESULT.json and sealed DONE.json are produced automatically after all points.
+Source/critic tensors are never optimized; no new live or selection candidate.
+
+Expanded regression suite:18 pass, including native long/short cases verifying
+identical first effects and parent-state preservation across different future
+policies. Existing STL queues remain running independently: continuous epoch44
+and raw epoch47 at18:40, with ordinal/binary successors already scheduled.

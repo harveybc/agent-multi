@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 from app.critic_coverage_drift import choose_panel, drift_metrics, nearest_fit_rms
+from tests.unit.test_discrete_curve_native import curve_env
 
 
 def test_selection_is_deterministic_excludes_old_and_never_ranks_by_return():
@@ -35,3 +36,21 @@ def test_nearest_distance_uses_train_windows_not_outcomes():
     np.testing.assert_allclose(distance[:2], 0, atol=1e-8)
     assert distance[2] == pytest.approx(np.sqrt((7**2+16**2)/2))
     with pytest.raises(ValueError): nearest_fit_rms(x, x[:0])
+
+
+@pytest.mark.parametrize('direction', [1,-1])
+def test_native_same_first_action_and_snapshot_with_different_continuations(curve_env,direction):
+    from app.decision_attribution import continuation, state_view
+    from app.three_signal_learning import synthetic_env
+    from tests.unit.test_double_tcn_probe import probe_recipe
+    env, regime = synthetic_env(probe_recipe(),curve_env.risk_config,21,direction,.99)
+    env.reset()
+    while not env.engine.entry_gate(env.bar)[0]: env.step(0)
+    before = state_view(env)
+    hold = np.zeros(len(regime),dtype=int)
+    alternate = np.where(regime>0,1,np.where(regime<0,2,0))
+    for action in (0,1,2):
+        a,b = continuation(env,hold,action),continuation(env,alternate,action)
+        assert a['first_effect'] == b['first_effect']
+        assert a['reward_return'] == a['soft_return']
+        assert state_view(env) == before

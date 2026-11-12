@@ -3,9 +3,9 @@
 ## Execution Update: 2026-11-12
 
 [Frozen critic coverage/drift312](312_FROZEN_CRITIC_COVERAGE_AND_DRIFT.md)
-PREPARED,12 focused tests pass. Up to88 new TRAIN anchors disjoint from151
-old calibration anchors; same-state native continuations under source and
-four310 heads. Finite resumable CPU queue, no training or live promotion;
+RUNNING,18 focused tests pass. All88 new TRAIN anchors disjoint from151
+old calibration anchors;1320 same-state native continuations under source and
+four310 heads. Enabled finite resumable CPU queue, no training or live promotion;
 explicitly historical mixed-COT evidence while Retsu qualifies real sources.
 
 [COT identity impact311](311_COT_IDENTITY_IMPACT.md) COMPLETE,17.36s CPU.
