@@ -11,7 +11,7 @@ import torch
 from app.actor_learning_diagnostics import actor_terms, clear_optimizer_memory
 from app.all_state_refinement import policy_effect, validate_panel
 from app.bounded_functional_actor import BUDGET, admissible, backtrack, budget_metrics
-from app.fit_decision_preservation import protected_actions, margins, preservation, project_step
+from app.fit_decision_preservation import protected_actions, margins, preservation, project_step, interior_buffer
 from app.frozen_recipe_inputs import file_sha
 from app.frozen_signal_masks import prepared_signals
 from app.operational_opening_critic import emit_actor_reference
@@ -66,7 +66,8 @@ def run(a):
     guard=dict(indices=protected.cpu().tolist(),actions=actions.cpu().tolist(),
         rows=rows[protected.cpu().numpy()].tolist(),source_margins=source_margins.cpu().tolist(),
         native_returns=native[protected].cpu().tolist(),tolerance=1e-7)
-    targeted=a.target_fit_errors
+    targeted=a.target_fit_errors;interior=a.interior_fit_guard
+    if interior and (not targeted or a.prior_targeted is None):raise ValueError('PRESERVE_INTERIOR_REQUIRES_TARGETED')
     error_labels,error_weights=error_targets(source_z,native,records)
     prior_guard=None
     if targeted:
@@ -75,6 +76,14 @@ def run(a):
         if (prior_guard['schema']!='fit_decision_preservation.v1'
                 or prior_guard['source_identity']!=source['identity']
                 or prior_guard['guard']!=guard):raise ValueError('PRESERVE_PRIOR_GUARD')
+    if interior:
+        prior_targeted=read(a.prior_targeted/'CONFIG.json');verify_done(a.prior_targeted,prior_targeted['identity'])
+        if (prior_targeted['schema']!='targeted_fit_error_correction.v1'
+                or prior_targeted['source_identity']!=source['identity'] or prior_targeted['guard']!=guard
+                or prior_targeted['error_targets']!=error_labels.cpu().tolist()
+                or prior_targeted['error_weights']!=error_weights.cpu().tolist()):
+            raise ValueError('PRESERVE_INTERIOR_PRIOR')
+        buffer=interior_buffer(source_z,protected,actions)
     cfg=dict(schema='fit_decision_preservation.v1',source_identity=source['identity'],
         source_receipt_sha256=file_sha(a.source/'DONE.json'),source_sha256=sha,
         export_identity=exported['identity'],parent_identity=parent['identity'],
@@ -90,6 +99,13 @@ def run(a):
             prior_guard_identity=prior_guard['identity'],
             prior_guard_receipt_sha256=file_sha(a.prior_guard/'DONE.json'),
             error_targets=error_labels.cpu().tolist(),error_weights=error_weights.cpu().tolist())
+    if interior:
+        cfg.update(schema='interior_fit_error_correction.v1',modes=['interior_error_project_guard'],
+            prior_targeted_identity=prior_targeted['identity'],
+            prior_targeted_receipt_sha256=file_sha(a.prior_targeted/'DONE.json'),
+            interior_buffer=buffer.cpu().tolist(),
+            interior_formula='8 * dtype_eps * (1 + abs(preferred_source_logit) + abs(other_source_logit))',
+            minimum_linear_slack=-1e-10)
     cfg['identity']=digest(cfg)
     if (a.output/'CONFIG.json').exists() and read(a.output/'CONFIG.json')!=cfg:raise ValueError('PRESERVE_CONFIG')
     if (a.output/'DONE.json').exists():verify_done(a.output,cfg['identity']);return
@@ -160,16 +176,22 @@ def run(a):
                 with torch.no_grad():
                     for p,old in zip(params,before):p.copy_(old)
                 projection=dict(success=True,nonzero=True,mode='unprojected')
-                if mode in ('project_guard','error_project_guard'):
+                if mode in ('project_guard','error_project_guard','interior_error_project_guard'):
                     z=model.surfaces(x)
                     current=margins(z.double(),protected,actions)
                     jac=torch.stack([flat(torch.autograd.grad(value,params,retain_graph=True))
                                      for value in current.flatten()])
-                    lower=(source_margins-current.detach()).flatten()
+                    lower=(source_margins+(buffer if interior else 0)-current.detach()).flatten()
                     matrix=torch.cat([jac,-gradient[None]],dim=0)
                     bounds=torch.cat([lower,torch.zeros(1,device='cuda',dtype=torch.double)])
                     projected,projection=project_step(direction.cpu().numpy(),matrix.cpu().numpy(),bounds.cpu().numpy())
-                    direction=torch.tensor(projected,device='cuda',dtype=torch.double);del z,current
+                    direction=torch.tensor(projected,device='cuda',dtype=torch.double)
+                    if interior:
+                        slack=float((matrix@direction-bounds).min())
+                        projection['minimum_absolute_slack']=slack
+                        if slack<cfg['minimum_linear_slack']:
+                            projection.update(success=False,nonzero=False,reason='interior_linear_residual')
+                    del z,current
                 def check():
                     with torch.no_grad():after=model.surfaces(x).detach()
                     metrics=budget_metrics(source_z[fit],before_z[fit],after[fit],theta0,flat(params))
@@ -178,8 +200,12 @@ def run(a):
                     return dict(accepted=bool(moved and metrics['step_margin_rms']>=cfg['minimum_step_margin_rms']
                         and guard_check['passed'] and admissible(metrics,loss_before,loss_after)),
                         metrics=metrics,guard=guard_check,loss_before=loss_before,loss_after=loss_after)
+                trace=[]
+                def traced_check():
+                    value=check()
+                    trace.append(dict(fraction=2.**(-len(trace)),**value));return value
                 if projection['success'] and projection['nonzero']:
-                    result=backtrack(params,direction,check,BUDGET['backtracks'])
+                    result=backtrack(params,direction,traced_check if interior else check,BUDGET['backtracks'])
                 else:result=dict(accepted=False,fraction=0.,attempts=0,reason='projection_failed_or_zero')
                 if not result['accepted']:model.optimizer.load_state_dict(optim_before)
                 final_check=check()
@@ -201,7 +227,7 @@ def run(a):
                         native_loss_before=native_loss(before_z),native_loss_after=native_loss(after_z),
                         progress=error_progress(source_z,after_z,native,records))
                 steps.append(dict(updates=step,gradient_norm=float(norm),projection=projection,
-                    final_guard=final_check['guard'],corrective=corrective,**result))
+                    final_guard=final_check['guard'],corrective=corrective,backtracking_trace=trace,**result))
                 write(out/'STEPS.json',steps);progress('STEP',arm=key,updates=step,accepted=result['accepted'])
                 if step in (1,8):
                     z=logits(model);checkpoint=out/f'ACTOR_{step:04d}.pt';save_canonical(model,checkpoint,flags)
@@ -218,7 +244,7 @@ def run(a):
                         changed_actions={p:int((z[market.inputs.valid&(market.inputs.period==p)].argmax(-1)!=
                             baseline[market.inputs.valid&(market.inputs.period==p)].argmax(-1)).sum()) for p in metrics}))
                     write(out/'POINTS.json',points);del cold
-            result=dict(arm=key,seed=seed,critic='sealed290',entropy='native',points=points,steps=steps,
+            result=dict(arm=key,seed=seed,critic='sealed290',entropy='none_corrective' if targeted else 'native',points=points,steps=steps,
                 accepted_steps=sum(s['accepted'] for s in steps),frozen_exact=True,cold_exact=True,model_promoted=False)
             write(out/'RESULT.json',result);seal(out,cfg['identity']);results.append(result)
     attribution=[]
@@ -242,6 +268,7 @@ def run(a):
     if file_sha(a.bundle/'model.pt')!=sha:raise ValueError('PRESERVE_SOURCE_CHANGED')
     verify_done(a.source,source['identity']);verify_done(a.bundle.parent,exported['identity'])
     if targeted:verify_done(a.prior_guard,prior_guard['identity'])
+    if interior:verify_done(a.prior_targeted,prior_targeted['identity'])
     write(a.output/'RESULT.json',dict(identity=cfg['identity'],reference=reference,arms=results,
         prior_controls=prior['arms'],attribution=attribution,protected_rows=len(protected),
         source_unchanged=True,test_read=False,model_promoted=False,seconds=time.monotonic()-started,finished_at=now()))
@@ -254,6 +281,8 @@ if __name__=='__main__':
     parser.add_argument('--expected-device-name',required=True)
     parser.add_argument('--target-fit-errors',action='store_true')
     parser.add_argument('--prior-guard',type=Path)
+    parser.add_argument('--interior-fit-guard',action='store_true')
+    parser.add_argument('--prior-targeted',type=Path)
     args=parser.parse_args();args.output.mkdir(parents=True,exist_ok=True)
     with (args.output/'worker.lock').open('a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)

@@ -23,6 +23,21 @@ def margins(logits, rows, actions):
     return logits[rows,actions,None]-logits[rows[:,None],other]
 
 
+def interior_buffer(logits, rows, actions):
+    """Fixed FIT-logit rounding cushion for proposal constraints, not acceptance."""
+    if (logits.dtype not in (torch.float32,torch.float64) or logits.ndim!=2 or logits.shape[1]!=3
+            or rows.ndim!=1 or not len(rows) or actions.shape!=rows.shape
+            or rows.dtype!=torch.long or actions.dtype!=torch.long
+            or (rows<0).any() or (rows>=len(logits)).any()
+            or (actions<0).any() or (actions>2).any()):
+        raise ValueError('PRESERVE_INTERIOR_INPUT')
+    selected=logits[rows].detach().double()
+    if not torch.isfinite(selected).all():raise ValueError('PRESERVE_INTERIOR_NONFINITE')
+    others=torch.tensor([[b for b in range(3) if b!=int(a)] for a in actions],device=logits.device)
+    preferred=selected.gather(1,actions[:,None]).abs()
+    return 8*torch.finfo(logits.dtype).eps*(1+preferred+selected.gather(1,others).abs())
+
+
 def preservation(logits, source_margins, rows, actions, tolerance=1e-7):
     if not len(rows):raise ValueError('PRESERVE_EMPTY')
     delta=margins(logits.double(),rows,actions)-source_margins.double()

@@ -1,6 +1,21 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "TARGETED_FIT_ERROR_CORRECTION_COMPLETE",
+  "current_stage": "INTERIOR_FIT_PROJECTION_READY",
+  "interior_fit_projection_294": {
+    "document": "../294_INTERIOR_FIT_PROJECTION.md",
+    "status": "READY",
+    "features": 69,
+    "groups": 28,
+    "seeds": [19,43],
+    "actor_update_budget": 8,
+    "source_step": 293,
+    "target_fit_errors": 63,
+    "protected_fit_rows": 26,
+    "tests_passed": 41,
+    "test_read": false,
+    "model_promoted": false,
+    "next_action": "Execute interior projected fixed-error correction with unchanged nonlinear tolerance, audit traces/checkpoints and full native accounts. Preserve frozen control and reuse293 boundary evidence."
+  },
   "targeted_fit_error_correction_293": {
     "document": "../293_TARGETED_FIT_ERROR_CORRECTION.md",
     "status": "COMPLETE",
