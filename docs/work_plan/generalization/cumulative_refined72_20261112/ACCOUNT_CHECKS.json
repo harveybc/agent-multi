@@ -1,0 +1,42 @@
+{
+  "TRAIN": {
+    "before": {
+      "sharpe": 0.7653954477076645,
+      "cash_error": 1.5688783605583012e-11,
+      "trades_sha256": "22f7ae6066a5228c361a62f665fd657046bec5c8cdaf7e90a1c1f41050dac429",
+      "equity_sha256": "41ecea16de6c067be60cc8f1998a34760444d0ff2714020bd8440d12dbe547fe"
+    },
+    "after": {
+      "sharpe": 0.7819691259276358,
+      "cash_error": 3.865352482534945e-12,
+      "trades_sha256": "519f040ffaaf318140a374083f033f6c43432b9642b6943ca76123a8bcaca75d",
+      "equity_sha256": "8219ce197f0739ee8dc985d6be09a0558abe99780b0da80a32c6685416959545"
+    },
+    "changed_equity_rows": 23422,
+    "max_equity_delta_usd": 87.47145999998247,
+    "final_equity_delta_usd": 24.00342999998793
+  },
+  "VALIDATION": {
+    "before": {
+      "sharpe": 2.6922750901691317,
+      "cash_error": 1.6370904631912708e-11,
+      "trades_sha256": "384262de7f5b2e01405697876fc195c159bb0c33816369a8e018fc371ce4c16b",
+      "equity_sha256": "b14ea176e031534ac82623ce266d9d43d0ab35e27f6c0eb9c0b0124813edb89a"
+    },
+    "after": {
+      "sharpe": 2.690712133251012,
+      "cash_error": 1.6370904631912708e-11,
+      "trades_sha256": "07d9926836cc2ede819c33e3fec2076127628dd0fe8aaa40a0347e2e92d8462b",
+      "equity_sha256": "3a3275c1c8f2a0cb0cf89c6080e8108dbaad097e8bd84cd8fcdaa5d47ecc14bd"
+    },
+    "changed_equity_rows": 29,
+    "max_equity_delta_usd": 22.884149999998044,
+    "final_equity_delta_usd": 0.0,
+    "changed_trade_records": 2,
+    "net_per_trade_exact": true,
+    "entry_shift_bars": [
+      3,
+      1
+    ]
+  }
+}

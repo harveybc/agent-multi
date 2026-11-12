@@ -1,0 +1,32 @@
+{
+  "identity": "b67b6fd1d05762e279a90cb57ddc4b2f313a0bbecc29ad681e44443a04765802",
+  "qualification_identity": "92fdc60c7c003d198486aa44c9d845511c41f49719dc599acae851c328aa2175",
+  "runtime": "096fbc7c",
+  "source_receipts": {
+    "qualification": "a04137c06d9fc2bbfad72d41fac226c084287f0bdc86083acc7297ff62036565",
+    "selection": "0a7d798231a8708f57e7630462f9fed6c85f4baa84ba1d968f97b9b53ceddd1c",
+    "report": "6ffccb52f5118e9c0a9a3a57ce4fe76fa5c6cfdef36be0eefb16af416df8d73d"
+  },
+  "export_receipt_sha256": "6b784ef7c517c2ce050f99752ff7779b172db31bc61fe6d8f192eed8097e5059",
+  "verified_files": {
+    "qualification": 68,
+    "selection": 130,
+    "report": 4,
+    "export": 28
+  },
+  "files": {
+    "SUMMARY.json": "683d6ced17cd1d5a108c6550e9753166aba9fbfa9dba0207c3da05f951936d47",
+    "WEIGHT_SPACE.json": "6b3c09e7f8b7c5cc35fb5da519b24b4976e2286ad787254fbec8898d74c9508a",
+    "SELECTION_TRACE.json": "5005189ae9c2f9770644c775e93aeec03c479e48b60020c9e0004695015d698e",
+    "FEATURE_LEDGER.csv": "de0ffe78277e5d10bb25060549e5f4c96701b6de2959ad1abe566880ecef02c4",
+    "QUALIFICATION.json": "f992b6d5b74a5d3f9195a7918ee1dfa9c26d951473fa92c6b8f1f1f4ebc60a91",
+    "SENSITIVITY.json": "8d6ed9ba7e9006253feb0431cda790ae55d76e31f0bb8175e1ea1e6cda3fd9ce",
+    "EXPORT_ENTROPY_DELTA.json": "71c20abd8cd17b2fa99ddafcd6f96d900ac410fb96eee50d1c4fccc0627d4138",
+    "EXPORT.json": "4f2d65c4330b3e6827799c2f3915a6f8818794ccfd3eb2383fa27f78a69185ba",
+    "ACCOUNT_CHECKS.json": "0f93e51a1264634f82125afec240403b8eebb7fdd7d31bf90fead473d1ee3e6a"
+  },
+  "source_unchanged": true,
+  "test_read": false,
+  "model_promoted": false,
+  "legacy_current_donor_label": "current69 in raw ledger denotes the unchanged current qualified72 actor, not an old donor"
+}

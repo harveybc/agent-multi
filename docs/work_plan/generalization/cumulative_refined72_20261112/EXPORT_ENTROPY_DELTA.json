@@ -1,0 +1,10 @@
+{
+  "TRAIN": {
+    "mean_signal_entropy": -5.345720410776522e-08,
+    "mean_requested_command_entropy": -4.320512636546425e-08
+  },
+  "VALIDATION": {
+    "mean_signal_entropy": -8.655710104221725e-08,
+    "mean_requested_command_entropy": -7.116576516974504e-08
+  }
+}
