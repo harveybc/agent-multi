@@ -2,6 +2,14 @@
 
 ## Execution Update: 2026-11-11
 
+[Interior FIT projection294](294_INTERIOR_FIT_PROJECTION.md) COMPLETE:
+16/16 full steps accepted with unchanged1e-7 tolerance; all26 protected FIT
+decisions preserved. Both schedules reach TRAIN14.756076%,VAL16.342145%,
+741/207 orders. Gain84.302095USD TRAIN and0.600545USD VAL; early closes unchanged.
+41 tests;262 files/four checkpoints audited, four exact account reconciliations.
+Preserve both endpoints and control. Next qualify changed actors, then fresh
+cumulative phase2 floating; refresh own-policy targets before later refinement.
+
 [Targeted FIT error correction293](293_TARGETED_FIT_ERROR_CORRECTION.md) COMPLETE:
 63 error targets,26 protected correct decisions; both schedules accept0/8
 updates. Saved weights and accounts unchanged (TRAIN13.913055%,

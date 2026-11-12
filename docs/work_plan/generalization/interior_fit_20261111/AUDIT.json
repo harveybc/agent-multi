@@ -1,0 +1,45 @@
+{
+  "identity": "4cca31b445a8a069a1ad59fec11ee4e0b772c6998a558f7713d08dbeeb5fbfc8",
+  "verified_files": 262,
+  "protected_fit_rows": 26,
+  "target_fit_errors": 63,
+  "target_weight_sum": 22.833581003614892,
+  "interior_buffer_exact": true,
+  "guard_tolerance_unchanged": true,
+  "checkpoint_checks": [
+    {
+      "arm": "interior_error_project_guard_19",
+      "point": 1,
+      "accepted": 1,
+      "minimum_margin_change": 9.723007678985596e-07,
+      "optimizer_step_count_exact": true,
+      "frozen_components_exact": true
+    },
+    {
+      "arm": "interior_error_project_guard_19",
+      "point": 8,
+      "accepted": 8,
+      "minimum_margin_change": 1.0579824447631836e-06,
+      "optimizer_step_count_exact": true,
+      "frozen_components_exact": true
+    },
+    {
+      "arm": "interior_error_project_guard_43",
+      "point": 1,
+      "accepted": 1,
+      "minimum_margin_change": 9.648501873016357e-07,
+      "optimizer_step_count_exact": true,
+      "frozen_components_exact": true
+    },
+    {
+      "arm": "interior_error_project_guard_43",
+      "point": 8,
+      "accepted": 8,
+      "minimum_margin_change": 1.0505318641662598e-06,
+      "optimizer_step_count_exact": true,
+      "frozen_components_exact": true
+    }
+  ],
+  "new_source_weights_unchanged": true,
+  "test_read": false
+}

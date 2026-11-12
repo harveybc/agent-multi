@@ -1,0 +1,17 @@
+{
+  "identity": "4cca31b445a8a069a1ad59fec11ee4e0b772c6998a558f7713d08dbeeb5fbfc8",
+  "runtime": "3fac45e8",
+  "source_receipt_sha256": "9ae4e5521718ceb32360e2bdfb1d878eb872efcfc2179780a1da5c1907e05529",
+  "report_receipt_sha256": "68d454bf970b4df758ea48ca27413d8e9d491f5ded271273eadd48b1cc0c4784",
+  "files": {
+    "AUDIT.json": "f0b3346573cdfec2966d378102035cd493cfbec51737ebd81ad7a43df75e5b14",
+    "GUARD.json": "6c6fb477bb71a08c8e34017103b9771d646d5564afaf53e3894b6566a1ce9423",
+    "TARGETS.json": "0504a135ee1e995558fc39d9ddb15e177ff8d1b48fecf2c60b650e1d6db04de5",
+    "SUMMARY.json": "5d2eb1a7b1ec66aa30334bc5a7089d9e066a6cd9361ae05adf8fd80af947298b",
+    "STEPS.json": "790dfe3a48b743949786a6711ee9589beb6cdabf3531c4b57253b5c002c41f2b",
+    "RETURNS.png": "932fe9272b451e370b73237c640ae4b5d332019e05436ba80372c4a3cec4c18b"
+  },
+  "source_unchanged": true,
+  "test_read": false,
+  "model_promoted": false
+}
