@@ -2,6 +2,10 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "diagnose_head_spillover.py": {
+   "purpose": "TRAIN-only CPU decomposition of sealed head correction into hidden response, output weights, interaction and bias; source invariance and descriptive representation rank without fitting or promotion",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
+  },
   "run_available_stl_subset.py": {
    "purpose": "Owner-authorized TRAIN-only availability pruning with atomic feature blocks, causal endpoint checks and matched raw/seasonal training queues; preserves source model and forbids imputation or automatic promotion",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
