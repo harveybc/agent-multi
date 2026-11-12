@@ -2,6 +2,11 @@
 
 ## Execution Update: 2026-11-12
 
+[Selected71 critic calibration300](300_SELECTED71_CRITIC_CALIBRATION.md)
+AUTHORIZED: rebuild native TRAIN continuations for the new71 actor, two seeds,
+4096 critic-head updates each. Actor frozen, full-support cold parity required;
+FIT/MONITOR value and ranking diagnostics. Finite queue/report/collector.
+
 [Refined72 cumulative selection299](299_SELECTED72_CUMULATIVE_SELECTION.md)
 COMPLETE:72 ->71 ->71,28 groups. Removed elapsed hours on a validation-return
 tie; returned all48 historical absences plus that deletion, no readmissions.

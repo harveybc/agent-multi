@@ -1,6 +1,18 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "SELECTED71_CUMULATIVE_EXPORT_COMPLETE",
+  "current_stage": "SELECTED71_CRITIC_CALIBRATION_AUTHORIZED",
+  "selected71_critic_calibration_300": {
+    "document": "../300_SELECTED71_CRITIC_CALIBRATION.md",
+    "status": "READY",
+    "features": 71,
+    "groups": 28,
+    "seeds": [19,43],
+    "critic_updates_per_seed": 4096,
+    "actor_updates": 0,
+    "test_read": false,
+    "model_promoted": false,
+    "next_action": "Rebuild151 native anchor continuations for299 actor; calibrate critic heads only; verify full actor/cold parity and FIT/MONITOR metrics. Then executable boundary diagnosis, not actor reset."
+  },
   "selected72_cumulative_selection_299": {
     "document": "../299_SELECTED72_CUMULATIVE_SELECTION.md",
     "status": "COMPLETE",
