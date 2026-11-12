@@ -2,6 +2,21 @@
 
 ## Execution Update: 2026-11-12
 
+[COT identity impact311](311_COT_IDENTITY_IMPACT.md) COMPLETE,17.36s CPU.
+Only three COT channels replaced under the explicitly unverified legacy clock:
+TRAIN16.058224% ->13.859355%, VAL18.369946% ->1.541746%,207 ->122 trades.
+527 validation signals change; original accounts exact, weights/support/other
+68 channels unchanged. Not a repaired-data certification or live promotion.
+Retsu receives [concrete COT/live tasks](../handoffs/MUSASHI_TO_RETSU_COT_AND_LIVE_COMPLETION_2026_11_12.md).
+Next actual publication/source qualification and frozen-critic reliability;
+version corrected data before another phase2 selection/refit, preserve all49
+historical return candidates. Existing paired STL31 queues continue separately.
+
+[Actor head8/16 contrast310](310_ACTOR_HEAD_WIDTH_CONTRAST.md) COMPLETE:
+four fixed-endpoint arms, none beats preserved299. Head16 fits frozen Q better
+in both seeds but does not improve accounts consistently. No promotion.
+These results, like earlier preserved299 results below, use the old COT identity.
+
 [Selected71 source-value floor303](303_SELECTED71_SOURCE_VALUE_FLOOR.md)
 COMPLETE:55 focused tests,113 FIT value checks,79 constrained rows/105 margins.
 16/16 full updates accepted, no native FIT regression. Both endpoints retain

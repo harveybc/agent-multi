@@ -1,0 +1,37 @@
+{
+  "code": {
+    "app/cot_identity_probe.py": "e224546406074f2c60bc7bffa8a9d354662b8ecdf78aea1bdbb651f5130a646a",
+    "tools/diagnose_cot_identity.py": "90b5c16ed7b80dd94d3e8b985fef0495cdcf967c98bd1d8995f845a411468e12"
+  },
+  "columns": [
+    "cot.eur.net_long",
+    "cot.eur.net_share",
+    "cot.eur.net_z156"
+  ],
+  "corrected_file_sha256": "cf5d2875ba3e010f862d1620436e4c989a9f9ef23f1ba51f0f91b2d62a7a4d70",
+  "corrected_rows_sha256": "afab3c39bafe38df6977a61ebcbfc8924c3796cfe14011eadeb01c9148fee171",
+  "identity": "70af56a585c8bd3efc45929bcc4b84092f1cf20663147f5366ed49299ccd7419",
+  "legacy_clock_hours": 93,
+  "max_stale_days": 14,
+  "model_promoted": false,
+  "optimizer_steps": 0,
+  "parent_identity": "d4b260fffb17e0fcaddb0fe1c833493f30e28e942ffda4fbb36e5c3404a5f6e2",
+  "periods": {
+    "TRAIN": [
+      "2020-01-01",
+      "2024-01-01"
+    ],
+    "VALIDATION": [
+      "2024-01-01",
+      "2025-01-01"
+    ]
+  },
+  "publication_verified": false,
+  "schema": "cot_identity_sensitivity.v1",
+  "scope": "NON_GOVERNING_IDENTITY_ONLY",
+  "source_archives_independently_checked": false,
+  "source_identity": "e02f424a02b8ef149a0206a1d229036adf4c558a60d66211d512726981826830",
+  "source_sha256": "69b5254489d224d4b20ac358956e4dd3b9a67a2f214a9aff98045c5def25a536",
+  "support_sha256": "28d6088a92173592f39e221c1c2ab1efc9094e614eeccb11c9ae23cf14878c98",
+  "test_read": false
+}
