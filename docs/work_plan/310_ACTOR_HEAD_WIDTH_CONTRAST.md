@@ -52,3 +52,64 @@ Run on CPU with cached features: the head has only1699/3395 parameters and
 GPU transfer/scheduling is unnecessary. Existing GPU STL queues continue.
 The finite queue performs preparation, four arms, exports, cold verification,
 curves and summary without intermediate approval. No live deployment.
+
+## Execution
+
+Runtime `23dd44b0`, enabled restartable user service
+`am-head-capacity-20261112.service`, started2026-11-12 at15:40 Bogota.
+Owner-local run root: `/var/tmp/sac71-head-capacity-20261112-r1`.
+The queue verified source native TRAIN/VALIDATION parity before training.
+The first head8 arm completed its20000 updates, accounts and cold export;
+head16 of the same seed started automatically. No GPU job was interrupted.
+
+Focused verification:61 tests pass,5 CUDA-specific cases skipped in the
+CPU-only test process. Tests include native engine fixtures, cached versus
+native head outputs before/after an update, unchanged critic/encoder state,
+actual width/parameter differences and inference bundle reload.
+
+## Completed Results
+
+All four arms completed in143.49seconds total, approximately28seconds each
+including native accounts and cold inference. CPU caching avoided repeated
+encoder/critic evaluation during80000 total head updates. Service exit0, no
+restarts. Identity `8c5fe1c5366d8e3e958724c7fadd52b6be2c473a7f617c35f78822b348850672`.
+
+| Seed | Head | TRAIN return % | VAL return % | VAL Sharpe | VAL orders |
+| --- | --- | ---: | ---: | ---: | ---: |
+|19|8|-77.249852|-10.723399|-1.295536|362|
+|19|16|-82.682300|-13.509080|-1.469622|545|
+|43|8|-74.964723|-28.279608|-3.489107|520|
+|43|16|-72.537961|-25.750921|-3.120510|501|
+|Preserved299|8|16.058224|18.369946|2.690712|207|
+
+All four endpoints meet the >2orders/week activity rule; none meets the
+nondecreasing source-performance gate. Preserved299 is not a freshly trained
+capacity control. The paired fresh8 and16 arms are the capacity comparison.
+
+At20000 updates, matching the frozen critic's greedy action improves from
+74.30% to79.66% for seed19 and78.04% to78.35% for seed43. The minimized SAC
+actor objective also improves with16 in both pairs. Trading does not improve
+consistently: validation delta16-minus8 is-2.785681pp and+2.528688pp.
+These are two paired diagnostics, not evidence of a statistically established
+capacity advantage. Loss still improves near the endpoint; neither arm is
+declared fully converged.
+
+Cache versus native logits: maximum difference0 for all four arms. Cold full
+support logits: exact for all four. Every non-actor-head state tensor remains
+exact, including frozen critic/encoder/temperature values. Four bundles,
+optimizer states, seven-point loss curves/PNGs and complete native account
+ledgers are retained. There is no per-epoch validation curve because this was
+a fixed-endpoint diagnostic, not validation-selected joint SAC training.
+
+Disposition: retain299, do not widen the core or start another unchanged
+floating pass on the strength of this result. Better imitation of a frozen
+critic does not guarantee better account behavior. Next investigate frozen-Q
+ranking reliability/coverage and policy drift on TRAIN native continuations
+before another actor reset. The existing calibrated critics saw113 FIT anchors;
+extrapolating their values to24026 TRAIN windows is a limitation of this
+contrast. It is not evidence that the71 inputs lack trading information or
+that a16-unit head cannot work with better-calibrated/updated critics.
+
+Evidence: [RESULT.json](generalization/head_capacity_20261112/RESULT.json).
+The next cumulative return still includes all49 currently absent phase2
+features. Real-feed/COT qualification and STL continue on their separate lanes.

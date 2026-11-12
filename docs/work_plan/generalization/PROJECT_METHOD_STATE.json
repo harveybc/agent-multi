@@ -1,9 +1,21 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "SELECTED71_HEAD8_16_PREPARING_STL31_PAIRED_TRAINING",
+  "current_stage": "SELECTED71_HEAD8_16_COMPLETE_CONTROL_RETAINED_STL31_RUNNING",
   "actor_head_capacity_310": {
     "document": "../310_ACTOR_HEAD_WIDTH_CONTRAST.md",
-    "status": "PREPARING_FINITE_QUEUE",
+    "status": "COMPLETE_CONTROL_RETAINED",
+    "identity": "8c5fe1c5366d8e3e958724c7fadd52b6be2c473a7f617c35f78822b348850672",
+    "seconds": 143.4927488460089,
+    "completed_arms": 4,
+    "all_frozen_tensors_exact": true,
+    "all_cached_native_logits_exact": true,
+    "all_cold_logits_exact": true,
+    "all_arms_activity_eligible": true,
+    "source_nondecreasing_arms": 0,
+    "runtime_commit": "23dd44b0",
+    "service": "am-head-capacity-20261112.service",
+    "focused_tests_passed": 61,
+    "cuda_tests_skipped": 5,
     "owner_approved": "2026-11-12 head8 versus16",
     "widths": [8, 16],
     "seeds": [19, 43],
@@ -19,7 +31,7 @@
     "device": "cpu cached activations",
     "model_promoted": false,
     "test_read": false,
-    "next_action": "Run four paired fresh-head arms sequentially, save curves/bundles, verify frozen tensors and cached/native/cold parity, evaluate final native TRAIN/VALIDATION accounts, compare widths per seed and preserved299. No automatic promotion or repeated floating."
+    "next_action": "Preserve299. Diagnose frozen-Q ranking reliability/coverage and changed-policy drift on TRAIN native continuations before more actor resets or core widening. Head16 fits the frozen critic better but trading changes sign across seeds; neither fresh width beats preserved299. No unchanged floating; keep all49 historical phase2 return candidates."
   },
   "selected71_spillover_309": {
     "document": "../309_SELECTED71_SPILLOVER_AND_CAPACITY.md",
