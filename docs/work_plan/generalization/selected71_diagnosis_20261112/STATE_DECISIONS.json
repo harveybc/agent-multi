@@ -1,0 +1,2734 @@
+{
+  "groups": {
+    "fit:flat_allowed": {
+      "actor": {
+        "cash_optimal_reward_suboptimal": 2,
+        "cash_quality": {
+          "beneficial_gap_sign_errors": 56,
+          "beneficial_gaps": 75,
+          "mean_regret": 27.86457195122516,
+          "native_actions": [
+            12,
+            35,
+            35
+          ],
+          "optimal_count": 28,
+          "predicted_actions": [
+            46,
+            16,
+            20
+          ],
+          "rows": 82,
+          "unique_native_optimum": 76
+        },
+        "closing": {
+          "close_signals": 0,
+          "executable": 0,
+          "harmful_closes": 0,
+          "helpful_closes": 0,
+          "missed_beneficial_closes": 0,
+          "nonexecuted_close_signals": 0,
+          "positions": 0,
+          "tie_closes": 0
+        },
+        "constant_symbol_reward_regret": {
+          "BUY": 0.34429892721801747,
+          "NOP": 0.2666001201708118,
+          "SELL": 0.31267234050244724
+        },
+        "opening": {
+          "entry_when_nop_strictly_best": 2,
+          "executable": 82,
+          "missed_beneficial_entry": 40,
+          "selected_nop": 46
+        },
+        "reward_cash_optimum_set_disagreements": 7,
+        "reward_optimal_cash_suboptimal": 0,
+        "reward_quality": {
+          "beneficial_gap_sign_errors": 58,
+          "beneficial_gaps": 79,
+          "mean_regret": 0.2717878582526492,
+          "native_actions": [
+            9,
+            35,
+            38
+          ],
+          "optimal_count": 26,
+          "predicted_actions": [
+            46,
+            16,
+            20
+          ],
+          "rows": 82,
+          "unique_native_optimum": 81
+        },
+        "rows": 82,
+        "scope": "fixed first action then frozen-policy account continuation; not isolated trade payoff"
+      },
+      "critics": {
+        "19": {
+          "cash_optimal_reward_suboptimal": 4,
+          "cash_quality": {
+            "beneficial_gap_sign_errors": 26,
+            "beneficial_gaps": 75,
+            "mean_regret": 9.708326829269382,
+            "native_actions": [
+              12,
+              35,
+              35
+            ],
+            "optimal_count": 54,
+            "predicted_actions": [
+              27,
+              25,
+              30
+            ],
+            "rows": 82,
+            "unique_native_optimum": 76
+          },
+          "closing": {
+            "close_signals": 0,
+            "executable": 0,
+            "harmful_closes": 0,
+            "helpful_closes": 0,
+            "missed_beneficial_closes": 0,
+            "nonexecuted_close_signals": 0,
+            "positions": 0,
+            "tie_closes": 0
+          },
+          "constant_symbol_reward_regret": {
+            "BUY": 0.34429892721801747,
+            "NOP": 0.2666001201708118,
+            "SELL": 0.31267234050244724
+          },
+          "opening": {
+            "entry_when_nop_strictly_best": 2,
+            "executable": 82,
+            "missed_beneficial_entry": 21,
+            "selected_nop": 27
+          },
+          "reward_cash_optimum_set_disagreements": 7,
+          "reward_optimal_cash_suboptimal": 2,
+          "reward_quality": {
+            "beneficial_gap_sign_errors": 29,
+            "beneficial_gaps": 79,
+            "mean_regret": 0.09542226216236188,
+            "native_actions": [
+              9,
+              35,
+              38
+            ],
+            "optimal_count": 52,
+            "predicted_actions": [
+              27,
+              25,
+              30
+            ],
+            "rows": 82,
+            "unique_native_optimum": 81
+          },
+          "rows": 82,
+          "scope": "fixed first action then frozen-policy account continuation; not isolated trade payoff"
+        },
+        "43": {
+          "cash_optimal_reward_suboptimal": 4,
+          "cash_quality": {
+            "beneficial_gap_sign_errors": 43,
+            "beneficial_gaps": 75,
+            "mean_regret": 19.215702134148202,
+            "native_actions": [
+              12,
+              35,
+              35
+            ],
+            "optimal_count": 38,
+            "predicted_actions": [
+              41,
+              38,
+              3
+            ],
+            "rows": 82,
+            "unique_native_optimum": 76
+          },
+          "closing": {
+            "close_signals": 0,
+            "executable": 0,
+            "harmful_closes": 0,
+            "helpful_closes": 0,
+            "missed_beneficial_closes": 0,
+            "nonexecuted_close_signals": 0,
+            "positions": 0,
+            "tie_closes": 0
+          },
+          "constant_symbol_reward_regret": {
+            "BUY": 0.34429892721801747,
+            "NOP": 0.2666001201708118,
+            "SELL": 0.31267234050244724
+          },
+          "opening": {
+            "entry_when_nop_strictly_best": 3,
+            "executable": 82,
+            "missed_beneficial_entry": 35,
+            "selected_nop": 41
+          },
+          "reward_cash_optimum_set_disagreements": 7,
+          "reward_optimal_cash_suboptimal": 1,
+          "reward_quality": {
+            "beneficial_gap_sign_errors": 47,
+            "beneficial_gaps": 79,
+            "mean_regret": 0.1876168980186467,
+            "native_actions": [
+              9,
+              35,
+              38
+            ],
+            "optimal_count": 35,
+            "predicted_actions": [
+              41,
+              38,
+              3
+            ],
+            "rows": 82,
+            "unique_native_optimum": 81
+          },
+          "rows": 82,
+          "scope": "fixed first action then frozen-policy account continuation; not isolated trade payoff"
+        }
+      },
+      "derivatives": {
+        "19": {
+          "critic": {
+            "adam:total": {
+              "lowers_on_currently_correct": 12,
+              "lowers_optimal_mass": 50,
+              "mean_derivative": 6.56547222663123e-05,
+              "raises_on_current_errors": 18,
+              "raises_optimal_mass": 32
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 17,
+              "lowers_optimal_mass": 60,
+              "mean_derivative": -0.002401698305144338,
+              "raises_on_current_errors": 13,
+              "raises_optimal_mass": 22
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 10,
+              "lowers_optimal_mass": 28,
+              "mean_derivative": 0.005714980900686247,
+              "raises_on_current_errors": 35,
+              "raises_optimal_mass": 51
+            }
+          },
+          "critic_no_entropy": {
+            "adam:total": {
+              "lowers_on_currently_correct": 12,
+              "lowers_optimal_mass": 51,
+              "mean_derivative": 5.980910058916296e-05,
+              "raises_on_current_errors": 17,
+              "raises_optimal_mass": 31
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 17,
+              "lowers_optimal_mass": 64,
+              "mean_derivative": -0.002774721122767081,
+              "raises_on_current_errors": 9,
+              "raises_optimal_mass": 18
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 10,
+              "lowers_optimal_mass": 29,
+              "mean_derivative": 0.005700876018534638,
+              "raises_on_current_errors": 34,
+              "raises_optimal_mass": 50
+            }
+          },
+          "native_fit": {
+            "adam:total": {
+              "lowers_on_currently_correct": 15,
+              "lowers_optimal_mass": 63,
+              "mean_derivative": 6.468131344174709e-07,
+              "raises_on_current_errors": 8,
+              "raises_optimal_mass": 19
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 19,
+              "lowers_optimal_mass": 71,
+              "mean_derivative": -0.010763835105140361,
+              "raises_on_current_errors": 4,
+              "raises_optimal_mass": 11
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 3,
+              "mean_derivative": 0.02072117716737986,
+              "raises_on_current_errors": 50,
+              "raises_optimal_mass": 76
+            }
+          }
+        },
+        "43": {
+          "critic": {
+            "adam:total": {
+              "lowers_on_currently_correct": 19,
+              "lowers_optimal_mass": 60,
+              "mean_derivative": -0.0001298701118392084,
+              "raises_on_current_errors": 14,
+              "raises_optimal_mass": 21
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 19,
+              "lowers_optimal_mass": 64,
+              "mean_derivative": -0.013548117060561233,
+              "raises_on_current_errors": 11,
+              "raises_optimal_mass": 18
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 13,
+              "lowers_optimal_mass": 34,
+              "mean_derivative": 0.0024133285609298314,
+              "raises_on_current_errors": 32,
+              "raises_optimal_mass": 45
+            }
+          },
+          "critic_no_entropy": {
+            "adam:total": {
+              "lowers_on_currently_correct": 19,
+              "lowers_optimal_mass": 62,
+              "mean_derivative": -0.00013315266272368183,
+              "raises_on_current_errors": 12,
+              "raises_optimal_mass": 19
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 19,
+              "lowers_optimal_mass": 65,
+              "mean_derivative": -0.013901188060097852,
+              "raises_on_current_errors": 10,
+              "raises_optimal_mass": 17
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 13,
+              "lowers_optimal_mass": 35,
+              "mean_derivative": 0.0023992236787782227,
+              "raises_on_current_errors": 31,
+              "raises_optimal_mass": 44
+            }
+          },
+          "native_fit": {
+            "adam:total": {
+              "lowers_on_currently_correct": 11,
+              "lowers_optimal_mass": 57,
+              "mean_derivative": 2.4659938554621607e-05,
+              "raises_on_current_errors": 10,
+              "raises_optimal_mass": 25
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 18,
+              "lowers_optimal_mass": 69,
+              "mean_derivative": -0.007873592561403726,
+              "raises_on_current_errors": 5,
+              "raises_optimal_mass": 13
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 3,
+              "mean_derivative": 0.02072117716737986,
+              "raises_on_current_errors": 50,
+              "raises_optimal_mass": 76
+            }
+          }
+        }
+      },
+      "rows": 82
+    },
+    "fit:flat_blocked": {
+      "actor": {
+        "cash_optimal_reward_suboptimal": 0,
+        "cash_quality": {
+          "beneficial_gap_sign_errors": 0,
+          "beneficial_gaps": 0,
+          "mean_regret": 0.0,
+          "native_actions": [
+            6,
+            0,
+            0
+          ],
+          "optimal_count": 6,
+          "predicted_actions": [
+            6,
+            0,
+            0
+          ],
+          "rows": 6,
+          "unique_native_optimum": 0
+        },
+        "closing": {
+          "close_signals": 0,
+          "executable": 0,
+          "harmful_closes": 0,
+          "helpful_closes": 0,
+          "missed_beneficial_closes": 0,
+          "nonexecuted_close_signals": 0,
+          "positions": 0,
+          "tie_closes": 0
+        },
+        "constant_symbol_reward_regret": {
+          "BUY": 0.0,
+          "NOP": 0.0,
+          "SELL": 0.0
+        },
+        "opening": {
+          "entry_when_nop_strictly_best": 0,
+          "executable": 0,
+          "missed_beneficial_entry": 0,
+          "selected_nop": 0
+        },
+        "reward_cash_optimum_set_disagreements": 0,
+        "reward_optimal_cash_suboptimal": 0,
+        "reward_quality": {
+          "beneficial_gap_sign_errors": 0,
+          "beneficial_gaps": 0,
+          "mean_regret": 0.0,
+          "native_actions": [
+            6,
+            0,
+            0
+          ],
+          "optimal_count": 6,
+          "predicted_actions": [
+            6,
+            0,
+            0
+          ],
+          "rows": 6,
+          "unique_native_optimum": 0
+        },
+        "rows": 6,
+        "scope": "fixed first action then frozen-policy account continuation; not isolated trade payoff"
+      },
+      "critics": {
+        "19": {
+          "cash_optimal_reward_suboptimal": 0,
+          "cash_quality": {
+            "beneficial_gap_sign_errors": 0,
+            "beneficial_gaps": 0,
+            "mean_regret": 0.0,
+            "native_actions": [
+              6,
+              0,
+              0
+            ],
+            "optimal_count": 6,
+            "predicted_actions": [
+              3,
+              1,
+              2
+            ],
+            "rows": 6,
+            "unique_native_optimum": 0
+          },
+          "closing": {
+            "close_signals": 0,
+            "executable": 0,
+            "harmful_closes": 0,
+            "helpful_closes": 0,
+            "missed_beneficial_closes": 0,
+            "nonexecuted_close_signals": 0,
+            "positions": 0,
+            "tie_closes": 0
+          },
+          "constant_symbol_reward_regret": {
+            "BUY": 0.0,
+            "NOP": 0.0,
+            "SELL": 0.0
+          },
+          "opening": {
+            "entry_when_nop_strictly_best": 0,
+            "executable": 0,
+            "missed_beneficial_entry": 0,
+            "selected_nop": 0
+          },
+          "reward_cash_optimum_set_disagreements": 0,
+          "reward_optimal_cash_suboptimal": 0,
+          "reward_quality": {
+            "beneficial_gap_sign_errors": 0,
+            "beneficial_gaps": 0,
+            "mean_regret": 0.0,
+            "native_actions": [
+              6,
+              0,
+              0
+            ],
+            "optimal_count": 6,
+            "predicted_actions": [
+              3,
+              1,
+              2
+            ],
+            "rows": 6,
+            "unique_native_optimum": 0
+          },
+          "rows": 6,
+          "scope": "fixed first action then frozen-policy account continuation; not isolated trade payoff"
+        },
+        "43": {
+          "cash_optimal_reward_suboptimal": 0,
+          "cash_quality": {
+            "beneficial_gap_sign_errors": 0,
+            "beneficial_gaps": 0,
+            "mean_regret": 0.0,
+            "native_actions": [
+              6,
+              0,
+              0
+            ],
+            "optimal_count": 6,
+            "predicted_actions": [
+              1,
+              3,
+              2
+            ],
+            "rows": 6,
+            "unique_native_optimum": 0
+          },
+          "closing": {
+            "close_signals": 0,
+            "executable": 0,
+            "harmful_closes": 0,
+            "helpful_closes": 0,
+            "missed_beneficial_closes": 0,
+            "nonexecuted_close_signals": 0,
+            "positions": 0,
+            "tie_closes": 0
+          },
+          "constant_symbol_reward_regret": {
+            "BUY": 0.0,
+            "NOP": 0.0,
+            "SELL": 0.0
+          },
+          "opening": {
+            "entry_when_nop_strictly_best": 0,
+            "executable": 0,
+            "missed_beneficial_entry": 0,
+            "selected_nop": 0
+          },
+          "reward_cash_optimum_set_disagreements": 0,
+          "reward_optimal_cash_suboptimal": 0,
+          "reward_quality": {
+            "beneficial_gap_sign_errors": 0,
+            "beneficial_gaps": 0,
+            "mean_regret": 0.0,
+            "native_actions": [
+              6,
+              0,
+              0
+            ],
+            "optimal_count": 6,
+            "predicted_actions": [
+              1,
+              3,
+              2
+            ],
+            "rows": 6,
+            "unique_native_optimum": 0
+          },
+          "rows": 6,
+          "scope": "fixed first action then frozen-policy account continuation; not isolated trade payoff"
+        }
+      },
+      "derivatives": {
+        "19": {
+          "critic": {
+            "adam:total": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": 1.4117215787571673e-21,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": 3.7947076036992655e-19,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": 2.343457820736898e-19,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            }
+          },
+          "critic_no_entropy": {
+            "adam:total": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": -1.8352380523843173e-21,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": 6.143812310751192e-19,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": -6.21439838968905e-19,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            }
+          },
+          "native_fit": {
+            "adam:total": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": -8.470329472543003e-21,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": -3.6140072416183483e-19,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": 1.418780186650953e-20,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            }
+          }
+        },
+        "43": {
+          "critic": {
+            "adam:total": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": -1.807003620809174e-20,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": -3.6140072416183483e-19,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": 6.077461396549605e-20,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            }
+          },
+          "critic_no_entropy": {
+            "adam:total": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": 5.646886315028669e-21,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": -1.5901631863120731e-18,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": 2.2587545260114677e-19,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            }
+          },
+          "native_fit": {
+            "adam:total": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": 8.470329472543003e-22,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": 1.4456028966473392e-19,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": 1.418780186650953e-20,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            }
+          }
+        }
+      },
+      "rows": 6
+    },
+    "fit:long_open": {
+      "actor": {
+        "cash_optimal_reward_suboptimal": 0,
+        "cash_quality": {
+          "beneficial_gap_sign_errors": 2,
+          "beneficial_gaps": 2,
+          "mean_regret": 7.407956250001462,
+          "native_actions": [
+            10,
+            0,
+            2
+          ],
+          "optimal_count": 9,
+          "predicted_actions": [
+            7,
+            4,
+            1
+          ],
+          "rows": 12,
+          "unique_native_optimum": 2
+        },
+        "closing": {
+          "close_signals": 1,
+          "executable": 12,
+          "harmful_closes": 1,
+          "helpful_closes": 0,
+          "missed_beneficial_closes": 2,
+          "nonexecuted_close_signals": 0,
+          "positions": 12,
+          "tie_closes": 0
+        },
+        "constant_symbol_reward_regret": {
+          "BUY": 0.018016772010709458,
+          "NOP": 0.018016772010709458,
+          "SELL": 0.2689363903223861
+        },
+        "opening": {
+          "entry_when_nop_strictly_best": 0,
+          "executable": 0,
+          "missed_beneficial_entry": 0,
+          "selected_nop": 0
+        },
+        "reward_cash_optimum_set_disagreements": 0,
+        "reward_optimal_cash_suboptimal": 0,
+        "reward_quality": {
+          "beneficial_gap_sign_errors": 2,
+          "beneficial_gaps": 2,
+          "mean_regret": 0.06816241875191659,
+          "native_actions": [
+            10,
+            0,
+            2
+          ],
+          "optimal_count": 9,
+          "predicted_actions": [
+            7,
+            4,
+            1
+          ],
+          "rows": 12,
+          "unique_native_optimum": 2
+        },
+        "rows": 12,
+        "scope": "fixed first action then frozen-policy account continuation; not isolated trade payoff"
+      },
+      "critics": {
+        "19": {
+          "cash_optimal_reward_suboptimal": 0,
+          "cash_quality": {
+            "beneficial_gap_sign_errors": 1,
+            "beneficial_gaps": 2,
+            "mean_regret": 3.1972491666674614,
+            "native_actions": [
+              10,
+              0,
+              2
+            ],
+            "optimal_count": 9,
+            "predicted_actions": [
+              6,
+              5,
+              1
+            ],
+            "rows": 12,
+            "unique_native_optimum": 2
+          },
+          "closing": {
+            "close_signals": 1,
+            "executable": 12,
+            "harmful_closes": 1,
+            "helpful_closes": 0,
+            "missed_beneficial_closes": 2,
+            "nonexecuted_close_signals": 0,
+            "positions": 12,
+            "tie_closes": 0
+          },
+          "constant_symbol_reward_regret": {
+            "BUY": 0.018016772010709458,
+            "NOP": 0.018016772010709458,
+            "SELL": 0.2689363903223861
+          },
+          "opening": {
+            "entry_when_nop_strictly_best": 0,
+            "executable": 0,
+            "missed_beneficial_entry": 0,
+            "selected_nop": 0
+          },
+          "reward_cash_optimum_set_disagreements": 0,
+          "reward_optimal_cash_suboptimal": 0,
+          "reward_quality": {
+            "beneficial_gap_sign_errors": 1,
+            "beneficial_gaps": 2,
+            "mean_regret": 0.03041546178109933,
+            "native_actions": [
+              10,
+              0,
+              2
+            ],
+            "optimal_count": 9,
+            "predicted_actions": [
+              6,
+              5,
+              1
+            ],
+            "rows": 12,
+            "unique_native_optimum": 2
+          },
+          "rows": 12,
+          "scope": "fixed first action then frozen-policy account continuation; not isolated trade payoff"
+        },
+        "43": {
+          "cash_optimal_reward_suboptimal": 0,
+          "cash_quality": {
+            "beneficial_gap_sign_errors": 2,
+            "beneficial_gaps": 2,
+            "mean_regret": 2.1197650000009767,
+            "native_actions": [
+              10,
+              0,
+              2
+            ],
+            "optimal_count": 10,
+            "predicted_actions": [
+              5,
+              7,
+              0
+            ],
+            "rows": 12,
+            "unique_native_optimum": 2
+          },
+          "closing": {
+            "close_signals": 0,
+            "executable": 12,
+            "harmful_closes": 0,
+            "helpful_closes": 0,
+            "missed_beneficial_closes": 2,
+            "nonexecuted_close_signals": 0,
+            "positions": 12,
+            "tie_closes": 0
+          },
+          "constant_symbol_reward_regret": {
+            "BUY": 0.018016772010709458,
+            "NOP": 0.018016772010709458,
+            "SELL": 0.2689363903223861
+          },
+          "opening": {
+            "entry_when_nop_strictly_best": 0,
+            "executable": 0,
+            "missed_beneficial_entry": 0,
+            "selected_nop": 0
+          },
+          "reward_cash_optimum_set_disagreements": 0,
+          "reward_optimal_cash_suboptimal": 0,
+          "reward_quality": {
+            "beneficial_gap_sign_errors": 2,
+            "beneficial_gaps": 2,
+            "mean_regret": 0.018016772010709458,
+            "native_actions": [
+              10,
+              0,
+              2
+            ],
+            "optimal_count": 10,
+            "predicted_actions": [
+              5,
+              7,
+              0
+            ],
+            "rows": 12,
+            "unique_native_optimum": 2
+          },
+          "rows": 12,
+          "scope": "fixed first action then frozen-policy account continuation; not isolated trade payoff"
+        }
+      },
+      "derivatives": {
+        "19": {
+          "critic": {
+            "adam:total": {
+              "lowers_on_currently_correct": 1,
+              "lowers_optimal_mass": 3,
+              "mean_derivative": 0.00022854545036611964,
+              "raises_on_current_errors": 1,
+              "raises_optimal_mass": 9
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 2,
+              "lowers_optimal_mass": 4,
+              "mean_derivative": -0.006544067719589781,
+              "raises_on_current_errors": 1,
+              "raises_optimal_mass": 8
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 2,
+              "lowers_optimal_mass": 4,
+              "mean_derivative": 0.004600128063095262,
+              "raises_on_current_errors": 1,
+              "raises_optimal_mass": 8
+            }
+          },
+          "critic_no_entropy": {
+            "adam:total": {
+              "lowers_on_currently_correct": 1,
+              "lowers_optimal_mass": 3,
+              "mean_derivative": 0.00023452696123898593,
+              "raises_on_current_errors": 1,
+              "raises_optimal_mass": 9
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 2,
+              "lowers_optimal_mass": 4,
+              "mean_derivative": -0.006178333145573784,
+              "raises_on_current_errors": 1,
+              "raises_optimal_mass": 8
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 2,
+              "lowers_optimal_mass": 4,
+              "mean_derivative": 0.004637769031559831,
+              "raises_on_current_errors": 1,
+              "raises_optimal_mass": 8
+            }
+          },
+          "native_fit": {
+            "adam:total": {
+              "lowers_on_currently_correct": 1,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": 0.00022080315172607769,
+              "raises_on_current_errors": 2,
+              "raises_optimal_mass": 10
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 2,
+              "lowers_optimal_mass": 4,
+              "mean_derivative": -0.009202544717209653,
+              "raises_on_current_errors": 1,
+              "raises_optimal_mass": 8
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": 0.011987909394576876,
+              "raises_on_current_errors": 3,
+              "raises_optimal_mass": 12
+            }
+          }
+        },
+        "43": {
+          "critic": {
+            "adam:total": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": 0.00039777162433479426,
+              "raises_on_current_errors": 1,
+              "raises_optimal_mass": 10
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": 0.01859799730485706,
+              "raises_on_current_errors": 1,
+              "raises_optimal_mass": 10
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 3,
+              "lowers_optimal_mass": 5,
+              "mean_derivative": 0.0038447235049604866,
+              "raises_on_current_errors": 1,
+              "raises_optimal_mass": 7
+            }
+          },
+          "critic_no_entropy": {
+            "adam:total": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": 0.000399649235395276,
+              "raises_on_current_errors": 1,
+              "raises_optimal_mass": 10
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": 0.01890352860071561,
+              "raises_on_current_errors": 1,
+              "raises_optimal_mass": 10
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 3,
+              "lowers_optimal_mass": 5,
+              "mean_derivative": 0.003882364473425054,
+              "raises_on_current_errors": 1,
+              "raises_optimal_mass": 7
+            }
+          },
+          "native_fit": {
+            "adam:total": {
+              "lowers_on_currently_correct": 1,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": 0.00019088254954331444,
+              "raises_on_current_errors": 2,
+              "raises_optimal_mass": 10
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 2,
+              "lowers_optimal_mass": 5,
+              "mean_derivative": -0.012870896090104165,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 7
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": 0.011987909394576876,
+              "raises_on_current_errors": 3,
+              "raises_optimal_mass": 12
+            }
+          }
+        }
+      },
+      "rows": 12
+    },
+    "fit:short_open": {
+      "actor": {
+        "cash_optimal_reward_suboptimal": 0,
+        "cash_quality": {
+          "beneficial_gap_sign_errors": 6,
+          "beneficial_gaps": 6,
+          "mean_regret": 18.340900769232924,
+          "native_actions": [
+            7,
+            6,
+            0
+          ],
+          "optimal_count": 7,
+          "predicted_actions": [
+            10,
+            0,
+            3
+          ],
+          "rows": 13,
+          "unique_native_optimum": 6
+        },
+        "closing": {
+          "close_signals": 0,
+          "executable": 13,
+          "harmful_closes": 0,
+          "helpful_closes": 0,
+          "missed_beneficial_closes": 6,
+          "nonexecuted_close_signals": 0,
+          "positions": 13,
+          "tie_closes": 0
+        },
+        "constant_symbol_reward_regret": {
+          "BUY": 0.13892747584062848,
+          "NOP": 0.17579436293617354,
+          "SELL": 0.17579436293617354
+        },
+        "opening": {
+          "entry_when_nop_strictly_best": 0,
+          "executable": 0,
+          "missed_beneficial_entry": 0,
+          "selected_nop": 0
+        },
+        "reward_cash_optimum_set_disagreements": 0,
+        "reward_optimal_cash_suboptimal": 0,
+        "reward_quality": {
+          "beneficial_gap_sign_errors": 6,
+          "beneficial_gaps": 6,
+          "mean_regret": 0.17579436293617354,
+          "native_actions": [
+            7,
+            6,
+            0
+          ],
+          "optimal_count": 7,
+          "predicted_actions": [
+            10,
+            0,
+            3
+          ],
+          "rows": 13,
+          "unique_native_optimum": 6
+        },
+        "rows": 13,
+        "scope": "fixed first action then frozen-policy account continuation; not isolated trade payoff"
+      },
+      "critics": {
+        "19": {
+          "cash_optimal_reward_suboptimal": 0,
+          "cash_quality": {
+            "beneficial_gap_sign_errors": 4,
+            "beneficial_gaps": 6,
+            "mean_regret": 11.449170384615801,
+            "native_actions": [
+              7,
+              6,
+              0
+            ],
+            "optimal_count": 9,
+            "predicted_actions": [
+              8,
+              2,
+              3
+            ],
+            "rows": 13,
+            "unique_native_optimum": 6
+          },
+          "closing": {
+            "close_signals": 2,
+            "executable": 13,
+            "harmful_closes": 0,
+            "helpful_closes": 2,
+            "missed_beneficial_closes": 4,
+            "nonexecuted_close_signals": 0,
+            "positions": 13,
+            "tie_closes": 0
+          },
+          "constant_symbol_reward_regret": {
+            "BUY": 0.13892747584062848,
+            "NOP": 0.17579436293617354,
+            "SELL": 0.17579436293617354
+          },
+          "opening": {
+            "entry_when_nop_strictly_best": 0,
+            "executable": 0,
+            "missed_beneficial_entry": 0,
+            "selected_nop": 0
+          },
+          "reward_cash_optimum_set_disagreements": 0,
+          "reward_optimal_cash_suboptimal": 0,
+          "reward_quality": {
+            "beneficial_gap_sign_errors": 4,
+            "beneficial_gaps": 6,
+            "mean_regret": 0.10719487105951385,
+            "native_actions": [
+              7,
+              6,
+              0
+            ],
+            "optimal_count": 9,
+            "predicted_actions": [
+              8,
+              2,
+              3
+            ],
+            "rows": 13,
+            "unique_native_optimum": 6
+          },
+          "rows": 13,
+          "scope": "fixed first action then frozen-policy account continuation; not isolated trade payoff"
+        },
+        "43": {
+          "cash_optimal_reward_suboptimal": 0,
+          "cash_quality": {
+            "beneficial_gap_sign_errors": 0,
+            "beneficial_gaps": 6,
+            "mean_regret": 5.286143076919101,
+            "native_actions": [
+              7,
+              6,
+              0
+            ],
+            "optimal_count": 10,
+            "predicted_actions": [
+              4,
+              9,
+              0
+            ],
+            "rows": 13,
+            "unique_native_optimum": 6
+          },
+          "closing": {
+            "close_signals": 9,
+            "executable": 13,
+            "harmful_closes": 3,
+            "helpful_closes": 6,
+            "missed_beneficial_closes": 0,
+            "nonexecuted_close_signals": 0,
+            "positions": 13,
+            "tie_closes": 0
+          },
+          "constant_symbol_reward_regret": {
+            "BUY": 0.13892747584062848,
+            "NOP": 0.17579436293617354,
+            "SELL": 0.17579436293617354
+          },
+          "opening": {
+            "entry_when_nop_strictly_best": 0,
+            "executable": 0,
+            "missed_beneficial_entry": 0,
+            "selected_nop": 0
+          },
+          "reward_cash_optimum_set_disagreements": 0,
+          "reward_optimal_cash_suboptimal": 0,
+          "reward_quality": {
+            "beneficial_gap_sign_errors": 0,
+            "beneficial_gaps": 6,
+            "mean_regret": 0.044279831149950925,
+            "native_actions": [
+              7,
+              6,
+              0
+            ],
+            "optimal_count": 10,
+            "predicted_actions": [
+              4,
+              9,
+              0
+            ],
+            "rows": 13,
+            "unique_native_optimum": 6
+          },
+          "rows": 13,
+          "scope": "fixed first action then frozen-policy account continuation; not isolated trade payoff"
+        }
+      },
+      "derivatives": {
+        "19": {
+          "critic": {
+            "adam:total": {
+              "lowers_on_currently_correct": 1,
+              "lowers_optimal_mass": 7,
+              "mean_derivative": 3.844300678173292e-06,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 6
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 1,
+              "lowers_optimal_mass": 7,
+              "mean_derivative": 0.0003262138521843813,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 6
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 1,
+              "mean_derivative": 0.000857474338075647,
+              "raises_on_current_errors": 5,
+              "raises_optimal_mass": 12
+            }
+          },
+          "critic_no_entropy": {
+            "adam:total": {
+              "lowers_on_currently_correct": 1,
+              "lowers_optimal_mass": 7,
+              "mean_derivative": 4.246945317666147e-06,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 6
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 1,
+              "lowers_optimal_mass": 7,
+              "mean_derivative": 0.000329720293166026,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 6
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": 0.0008475386464180123,
+              "raises_on_current_errors": 4,
+              "raises_optimal_mass": 11
+            }
+          },
+          "native_fit": {
+            "adam:total": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 6,
+              "mean_derivative": 1.0305571467294793e-05,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 7
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 6,
+              "mean_derivative": 0.0007878467305492005,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 7
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 1,
+              "lowers_optimal_mass": 1,
+              "mean_derivative": 0.004435544646963204,
+              "raises_on_current_errors": 6,
+              "raises_optimal_mass": 12
+            }
+          }
+        },
+        "43": {
+          "critic": {
+            "adam:total": {
+              "lowers_on_currently_correct": 3,
+              "lowers_optimal_mass": 7,
+              "mean_derivative": -1.2430452381632816e-05,
+              "raises_on_current_errors": 2,
+              "raises_optimal_mass": 6
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 3,
+              "lowers_optimal_mass": 8,
+              "mean_derivative": -0.0012497793006987674,
+              "raises_on_current_errors": 1,
+              "raises_optimal_mass": 5
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 3,
+              "lowers_optimal_mass": 4,
+              "mean_derivative": 0.001800286562132235,
+              "raises_on_current_errors": 5,
+              "raises_optimal_mass": 9
+            }
+          },
+          "critic_no_entropy": {
+            "adam:total": {
+              "lowers_on_currently_correct": 3,
+              "lowers_optimal_mass": 7,
+              "mean_derivative": -1.2112014443634406e-05,
+              "raises_on_current_errors": 2,
+              "raises_optimal_mass": 6
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 3,
+              "lowers_optimal_mass": 8,
+              "mean_derivative": -0.0012441646921290106,
+              "raises_on_current_errors": 1,
+              "raises_optimal_mass": 5
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 3,
+              "lowers_optimal_mass": 5,
+              "mean_derivative": 0.0017903508704746002,
+              "raises_on_current_errors": 4,
+              "raises_optimal_mass": 8
+            }
+          },
+          "native_fit": {
+            "adam:total": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 6,
+              "mean_derivative": 1.2894544746556858e-05,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 7
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 6,
+              "mean_derivative": 0.000965397934991718,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 7
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 1,
+              "lowers_optimal_mass": 1,
+              "mean_derivative": 0.004435544646963204,
+              "raises_on_current_errors": 6,
+              "raises_optimal_mass": 12
+            }
+          }
+        }
+      },
+      "rows": 13
+    },
+    "monitor:flat_allowed": {
+      "actor": {
+        "cash_optimal_reward_suboptimal": 2,
+        "cash_quality": {
+          "beneficial_gap_sign_errors": 15,
+          "beneficial_gaps": 23,
+          "mean_regret": 32.32902482143378,
+          "native_actions": [
+            5,
+            7,
+            16
+          ],
+          "optimal_count": 10,
+          "predicted_actions": [
+            12,
+            6,
+            10
+          ],
+          "rows": 28,
+          "unique_native_optimum": 25
+        },
+        "closing": {
+          "close_signals": 0,
+          "executable": 0,
+          "harmful_closes": 0,
+          "helpful_closes": 0,
+          "missed_beneficial_closes": 0,
+          "nonexecuted_close_signals": 0,
+          "positions": 0,
+          "tie_closes": 0
+        },
+        "constant_symbol_reward_regret": {
+          "BUY": 0.42832487333336483,
+          "NOP": 0.2624398747107483,
+          "SELL": 0.22241124663887138
+        },
+        "opening": {
+          "entry_when_nop_strictly_best": 2,
+          "executable": 28,
+          "missed_beneficial_entry": 11,
+          "selected_nop": 12
+        },
+        "reward_cash_optimum_set_disagreements": 3,
+        "reward_optimal_cash_suboptimal": 0,
+        "reward_quality": {
+          "beneficial_gap_sign_errors": 17,
+          "beneficial_gaps": 25,
+          "mean_regret": 0.30290077682368705,
+          "native_actions": [
+            3,
+            9,
+            16
+          ],
+          "optimal_count": 8,
+          "predicted_actions": [
+            12,
+            6,
+            10
+          ],
+          "rows": 28,
+          "unique_native_optimum": 28
+        },
+        "rows": 28,
+        "scope": "fixed first action then frozen-policy account continuation; not isolated trade payoff"
+      },
+      "critics": {
+        "19": {
+          "cash_optimal_reward_suboptimal": 2,
+          "cash_quality": {
+            "beneficial_gap_sign_errors": 13,
+            "beneficial_gaps": 23,
+            "mean_regret": 16.37011339285677,
+            "native_actions": [
+              5,
+              7,
+              16
+            ],
+            "optimal_count": 12,
+            "predicted_actions": [
+              13,
+              5,
+              10
+            ],
+            "rows": 28,
+            "unique_native_optimum": 25
+          },
+          "closing": {
+            "close_signals": 0,
+            "executable": 0,
+            "harmful_closes": 0,
+            "helpful_closes": 0,
+            "missed_beneficial_closes": 0,
+            "nonexecuted_close_signals": 0,
+            "positions": 0,
+            "tie_closes": 0
+          },
+          "constant_symbol_reward_regret": {
+            "BUY": 0.42832487333336483,
+            "NOP": 0.2624398747107483,
+            "SELL": 0.22241124663887138
+          },
+          "opening": {
+            "entry_when_nop_strictly_best": 3,
+            "executable": 28,
+            "missed_beneficial_entry": 13,
+            "selected_nop": 13
+          },
+          "reward_cash_optimum_set_disagreements": 3,
+          "reward_optimal_cash_suboptimal": 0,
+          "reward_quality": {
+            "beneficial_gap_sign_errors": 14,
+            "beneficial_gaps": 25,
+            "mean_regret": 0.15503366865403465,
+            "native_actions": [
+              3,
+              9,
+              16
+            ],
+            "optimal_count": 10,
+            "predicted_actions": [
+              13,
+              5,
+              10
+            ],
+            "rows": 28,
+            "unique_native_optimum": 28
+          },
+          "rows": 28,
+          "scope": "fixed first action then frozen-policy account continuation; not isolated trade payoff"
+        },
+        "43": {
+          "cash_optimal_reward_suboptimal": 0,
+          "cash_quality": {
+            "beneficial_gap_sign_errors": 20,
+            "beneficial_gaps": 23,
+            "mean_regret": 31.960419107146468,
+            "native_actions": [
+              5,
+              7,
+              16
+            ],
+            "optimal_count": 6,
+            "predicted_actions": [
+              15,
+              13,
+              0
+            ],
+            "rows": 28,
+            "unique_native_optimum": 25
+          },
+          "closing": {
+            "close_signals": 0,
+            "executable": 0,
+            "harmful_closes": 0,
+            "helpful_closes": 0,
+            "missed_beneficial_closes": 0,
+            "nonexecuted_close_signals": 0,
+            "positions": 0,
+            "tie_closes": 0
+          },
+          "constant_symbol_reward_regret": {
+            "BUY": 0.42832487333336483,
+            "NOP": 0.2624398747107483,
+            "SELL": 0.22241124663887138
+          },
+          "opening": {
+            "entry_when_nop_strictly_best": 2,
+            "executable": 28,
+            "missed_beneficial_entry": 14,
+            "selected_nop": 15
+          },
+          "reward_cash_optimum_set_disagreements": 3,
+          "reward_optimal_cash_suboptimal": 0,
+          "reward_quality": {
+            "beneficial_gap_sign_errors": 20,
+            "beneficial_gaps": 25,
+            "mean_regret": 0.3035420690211695,
+            "native_actions": [
+              3,
+              9,
+              16
+            ],
+            "optimal_count": 6,
+            "predicted_actions": [
+              15,
+              13,
+              0
+            ],
+            "rows": 28,
+            "unique_native_optimum": 28
+          },
+          "rows": 28,
+          "scope": "fixed first action then frozen-policy account continuation; not isolated trade payoff"
+        }
+      },
+      "derivatives": {
+        "19": {
+          "critic": {
+            "adam:total": {
+              "lowers_on_currently_correct": 6,
+              "lowers_optimal_mass": 20,
+              "mean_derivative": -3.89732405627514e-05,
+              "raises_on_current_errors": 6,
+              "raises_optimal_mass": 8
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 6,
+              "lowers_optimal_mass": 22,
+              "mean_derivative": -0.0031118025709382627,
+              "raises_on_current_errors": 4,
+              "raises_optimal_mass": 6
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 7,
+              "lowers_optimal_mass": 17,
+              "mean_derivative": -0.0032510020412245036,
+              "raises_on_current_errors": 8,
+              "raises_optimal_mass": 9
+            }
+          },
+          "critic_no_entropy": {
+            "adam:total": {
+              "lowers_on_currently_correct": 6,
+              "lowers_optimal_mass": 20,
+              "mean_derivative": -4.246799533904248e-05,
+              "raises_on_current_errors": 6,
+              "raises_optimal_mass": 8
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 6,
+              "lowers_optimal_mass": 22,
+              "mean_derivative": -0.0033149067261575385,
+              "raises_on_current_errors": 4,
+              "raises_optimal_mass": 6
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 7,
+              "lowers_optimal_mass": 18,
+              "mean_derivative": -0.003258277023846185,
+              "raises_on_current_errors": 7,
+              "raises_optimal_mass": 8
+            }
+          },
+          "native_fit": {
+            "adam:total": {
+              "lowers_on_currently_correct": 7,
+              "lowers_optimal_mass": 25,
+              "mean_derivative": -7.211580551712065e-05,
+              "raises_on_current_errors": 2,
+              "raises_optimal_mass": 3
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 7,
+              "lowers_optimal_mass": 25,
+              "mean_derivative": -0.006286960846641454,
+              "raises_on_current_errors": 2,
+              "raises_optimal_mass": 3
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 7,
+              "lowers_optimal_mass": 17,
+              "mean_derivative": -0.0032510020412245036,
+              "raises_on_current_errors": 8,
+              "raises_optimal_mass": 9
+            }
+          }
+        },
+        "43": {
+          "critic": {
+            "adam:total": {
+              "lowers_on_currently_correct": 7,
+              "lowers_optimal_mass": 20,
+              "mean_derivative": -0.00010396067751187694,
+              "raises_on_current_errors": 7,
+              "raises_optimal_mass": 8
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 7,
+              "lowers_optimal_mass": 20,
+              "mean_derivative": -0.009714146895224837,
+              "raises_on_current_errors": 7,
+              "raises_optimal_mass": 8
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 7,
+              "lowers_optimal_mass": 17,
+              "mean_derivative": -0.00410636005704735,
+              "raises_on_current_errors": 8,
+              "raises_optimal_mass": 9
+            }
+          },
+          "critic_no_entropy": {
+            "adam:total": {
+              "lowers_on_currently_correct": 7,
+              "lowers_optimal_mass": 20,
+              "mean_derivative": -0.00010405411209545682,
+              "raises_on_current_errors": 7,
+              "raises_optimal_mass": 8
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 7,
+              "lowers_optimal_mass": 20,
+              "mean_derivative": -0.009902446827173464,
+              "raises_on_current_errors": 7,
+              "raises_optimal_mass": 8
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 7,
+              "lowers_optimal_mass": 17,
+              "mean_derivative": -0.004113635039669031,
+              "raises_on_current_errors": 8,
+              "raises_optimal_mass": 9
+            }
+          },
+          "native_fit": {
+            "adam:total": {
+              "lowers_on_currently_correct": 7,
+              "lowers_optimal_mass": 25,
+              "mean_derivative": -5.299530620718182e-05,
+              "raises_on_current_errors": 2,
+              "raises_optimal_mass": 3
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 7,
+              "lowers_optimal_mass": 25,
+              "mean_derivative": -0.004073359267499713,
+              "raises_on_current_errors": 2,
+              "raises_optimal_mass": 3
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 7,
+              "lowers_optimal_mass": 17,
+              "mean_derivative": -0.00410636005704735,
+              "raises_on_current_errors": 8,
+              "raises_optimal_mass": 9
+            }
+          }
+        }
+      },
+      "rows": 28
+    },
+    "monitor:flat_blocked": {
+      "actor": {
+        "cash_optimal_reward_suboptimal": 0,
+        "cash_quality": {
+          "beneficial_gap_sign_errors": 0,
+          "beneficial_gaps": 0,
+          "mean_regret": 0.0,
+          "native_actions": [
+            2,
+            0,
+            0
+          ],
+          "optimal_count": 2,
+          "predicted_actions": [
+            1,
+            0,
+            1
+          ],
+          "rows": 2,
+          "unique_native_optimum": 0
+        },
+        "closing": {
+          "close_signals": 0,
+          "executable": 0,
+          "harmful_closes": 0,
+          "helpful_closes": 0,
+          "missed_beneficial_closes": 0,
+          "nonexecuted_close_signals": 0,
+          "positions": 0,
+          "tie_closes": 0
+        },
+        "constant_symbol_reward_regret": {
+          "BUY": 0.0,
+          "NOP": 0.0,
+          "SELL": 0.0
+        },
+        "opening": {
+          "entry_when_nop_strictly_best": 0,
+          "executable": 0,
+          "missed_beneficial_entry": 0,
+          "selected_nop": 0
+        },
+        "reward_cash_optimum_set_disagreements": 0,
+        "reward_optimal_cash_suboptimal": 0,
+        "reward_quality": {
+          "beneficial_gap_sign_errors": 0,
+          "beneficial_gaps": 0,
+          "mean_regret": 0.0,
+          "native_actions": [
+            2,
+            0,
+            0
+          ],
+          "optimal_count": 2,
+          "predicted_actions": [
+            1,
+            0,
+            1
+          ],
+          "rows": 2,
+          "unique_native_optimum": 0
+        },
+        "rows": 2,
+        "scope": "fixed first action then frozen-policy account continuation; not isolated trade payoff"
+      },
+      "critics": {
+        "19": {
+          "cash_optimal_reward_suboptimal": 0,
+          "cash_quality": {
+            "beneficial_gap_sign_errors": 0,
+            "beneficial_gaps": 0,
+            "mean_regret": 0.0,
+            "native_actions": [
+              2,
+              0,
+              0
+            ],
+            "optimal_count": 2,
+            "predicted_actions": [
+              1,
+              1,
+              0
+            ],
+            "rows": 2,
+            "unique_native_optimum": 0
+          },
+          "closing": {
+            "close_signals": 0,
+            "executable": 0,
+            "harmful_closes": 0,
+            "helpful_closes": 0,
+            "missed_beneficial_closes": 0,
+            "nonexecuted_close_signals": 0,
+            "positions": 0,
+            "tie_closes": 0
+          },
+          "constant_symbol_reward_regret": {
+            "BUY": 0.0,
+            "NOP": 0.0,
+            "SELL": 0.0
+          },
+          "opening": {
+            "entry_when_nop_strictly_best": 0,
+            "executable": 0,
+            "missed_beneficial_entry": 0,
+            "selected_nop": 0
+          },
+          "reward_cash_optimum_set_disagreements": 0,
+          "reward_optimal_cash_suboptimal": 0,
+          "reward_quality": {
+            "beneficial_gap_sign_errors": 0,
+            "beneficial_gaps": 0,
+            "mean_regret": 0.0,
+            "native_actions": [
+              2,
+              0,
+              0
+            ],
+            "optimal_count": 2,
+            "predicted_actions": [
+              1,
+              1,
+              0
+            ],
+            "rows": 2,
+            "unique_native_optimum": 0
+          },
+          "rows": 2,
+          "scope": "fixed first action then frozen-policy account continuation; not isolated trade payoff"
+        },
+        "43": {
+          "cash_optimal_reward_suboptimal": 0,
+          "cash_quality": {
+            "beneficial_gap_sign_errors": 0,
+            "beneficial_gaps": 0,
+            "mean_regret": 0.0,
+            "native_actions": [
+              2,
+              0,
+              0
+            ],
+            "optimal_count": 2,
+            "predicted_actions": [
+              0,
+              2,
+              0
+            ],
+            "rows": 2,
+            "unique_native_optimum": 0
+          },
+          "closing": {
+            "close_signals": 0,
+            "executable": 0,
+            "harmful_closes": 0,
+            "helpful_closes": 0,
+            "missed_beneficial_closes": 0,
+            "nonexecuted_close_signals": 0,
+            "positions": 0,
+            "tie_closes": 0
+          },
+          "constant_symbol_reward_regret": {
+            "BUY": 0.0,
+            "NOP": 0.0,
+            "SELL": 0.0
+          },
+          "opening": {
+            "entry_when_nop_strictly_best": 0,
+            "executable": 0,
+            "missed_beneficial_entry": 0,
+            "selected_nop": 0
+          },
+          "reward_cash_optimum_set_disagreements": 0,
+          "reward_optimal_cash_suboptimal": 0,
+          "reward_quality": {
+            "beneficial_gap_sign_errors": 0,
+            "beneficial_gaps": 0,
+            "mean_regret": 0.0,
+            "native_actions": [
+              2,
+              0,
+              0
+            ],
+            "optimal_count": 2,
+            "predicted_actions": [
+              0,
+              2,
+              0
+            ],
+            "rows": 2,
+            "unique_native_optimum": 0
+          },
+          "rows": 2,
+          "scope": "fixed first action then frozen-policy account continuation; not isolated trade payoff"
+        }
+      },
+      "derivatives": {
+        "19": {
+          "critic": {
+            "adam:total": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": -2.371692252312041e-20,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": -5.5294310796760726e-18,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": 8.673617379884035e-19,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            }
+          },
+          "critic_no_entropy": {
+            "adam:total": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": -6.098637220230962e-20,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": -2.0599841277224584e-18,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": -4.336808689942018e-19,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            }
+          },
+          "native_fit": {
+            "adam:total": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": -5.590417451878382e-20,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": -9.75781955236954e-19,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": 8.673617379884035e-19,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            }
+          }
+        },
+        "43": {
+          "critic": {
+            "adam:total": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": -1.3552527156068805e-20,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": 1.734723475976807e-18,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": 8.673617379884035e-19,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            }
+          },
+          "critic_no_entropy": {
+            "adam:total": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": -5.421010862427522e-20,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": -1.734723475976807e-18,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": -2.6020852139652106e-18,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            }
+          },
+          "native_fit": {
+            "adam:total": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": -3.049318610115481e-20,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": -2.6020852139652106e-18,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 0,
+              "mean_derivative": 8.673617379884035e-19,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 0
+            }
+          }
+        }
+      },
+      "rows": 2
+    },
+    "monitor:long_open": {
+      "actor": {
+        "cash_optimal_reward_suboptimal": 0,
+        "cash_quality": {
+          "beneficial_gap_sign_errors": 2,
+          "beneficial_gaps": 2,
+          "mean_regret": 21.35955000000149,
+          "native_actions": [
+            2,
+            0,
+            2
+          ],
+          "optimal_count": 2,
+          "predicted_actions": [
+            4,
+            0,
+            0
+          ],
+          "rows": 4,
+          "unique_native_optimum": 2
+        },
+        "closing": {
+          "close_signals": 0,
+          "executable": 4,
+          "harmful_closes": 0,
+          "helpful_closes": 0,
+          "missed_beneficial_closes": 2,
+          "nonexecuted_close_signals": 0,
+          "positions": 4,
+          "tie_closes": 0
+        },
+        "constant_symbol_reward_regret": {
+          "BUY": 0.2073624836959248,
+          "NOP": 0.2073624836959248,
+          "SELL": 0.11947204642701101
+        },
+        "opening": {
+          "entry_when_nop_strictly_best": 0,
+          "executable": 0,
+          "missed_beneficial_entry": 0,
+          "selected_nop": 0
+        },
+        "reward_cash_optimum_set_disagreements": 0,
+        "reward_optimal_cash_suboptimal": 0,
+        "reward_quality": {
+          "beneficial_gap_sign_errors": 2,
+          "beneficial_gaps": 2,
+          "mean_regret": 0.2073624836959248,
+          "native_actions": [
+            2,
+            0,
+            2
+          ],
+          "optimal_count": 2,
+          "predicted_actions": [
+            4,
+            0,
+            0
+          ],
+          "rows": 4,
+          "unique_native_optimum": 2
+        },
+        "rows": 4,
+        "scope": "fixed first action then frozen-policy account continuation; not isolated trade payoff"
+      },
+      "critics": {
+        "19": {
+          "cash_optimal_reward_suboptimal": 0,
+          "cash_quality": {
+            "beneficial_gap_sign_errors": 1,
+            "beneficial_gaps": 2,
+            "mean_regret": 17.080781249997017,
+            "native_actions": [
+              2,
+              0,
+              2
+            ],
+            "optimal_count": 2,
+            "predicted_actions": [
+              2,
+              0,
+              2
+            ],
+            "rows": 4,
+            "unique_native_optimum": 2
+          },
+          "closing": {
+            "close_signals": 2,
+            "executable": 4,
+            "harmful_closes": 1,
+            "helpful_closes": 1,
+            "missed_beneficial_closes": 1,
+            "nonexecuted_close_signals": 0,
+            "positions": 4,
+            "tie_closes": 0
+          },
+          "constant_symbol_reward_regret": {
+            "BUY": 0.2073624836959248,
+            "NOP": 0.2073624836959248,
+            "SELL": 0.11947204642701101
+          },
+          "opening": {
+            "entry_when_nop_strictly_best": 0,
+            "executable": 0,
+            "missed_beneficial_entry": 0,
+            "selected_nop": 0
+          },
+          "reward_cash_optimum_set_disagreements": 0,
+          "reward_optimal_cash_suboptimal": 0,
+          "reward_quality": {
+            "beneficial_gap_sign_errors": 1,
+            "beneficial_gaps": 2,
+            "mean_regret": 0.16429242831149077,
+            "native_actions": [
+              2,
+              0,
+              2
+            ],
+            "optimal_count": 2,
+            "predicted_actions": [
+              2,
+              0,
+              2
+            ],
+            "rows": 4,
+            "unique_native_optimum": 2
+          },
+          "rows": 4,
+          "scope": "fixed first action then frozen-policy account continuation; not isolated trade payoff"
+        },
+        "43": {
+          "cash_optimal_reward_suboptimal": 0,
+          "cash_quality": {
+            "beneficial_gap_sign_errors": 2,
+            "beneficial_gaps": 2,
+            "mean_regret": 21.35955000000149,
+            "native_actions": [
+              2,
+              0,
+              2
+            ],
+            "optimal_count": 2,
+            "predicted_actions": [
+              1,
+              3,
+              0
+            ],
+            "rows": 4,
+            "unique_native_optimum": 2
+          },
+          "closing": {
+            "close_signals": 0,
+            "executable": 4,
+            "harmful_closes": 0,
+            "helpful_closes": 0,
+            "missed_beneficial_closes": 2,
+            "nonexecuted_close_signals": 0,
+            "positions": 4,
+            "tie_closes": 0
+          },
+          "constant_symbol_reward_regret": {
+            "BUY": 0.2073624836959248,
+            "NOP": 0.2073624836959248,
+            "SELL": 0.11947204642701101
+          },
+          "opening": {
+            "entry_when_nop_strictly_best": 0,
+            "executable": 0,
+            "missed_beneficial_entry": 0,
+            "selected_nop": 0
+          },
+          "reward_cash_optimum_set_disagreements": 0,
+          "reward_optimal_cash_suboptimal": 0,
+          "reward_quality": {
+            "beneficial_gap_sign_errors": 2,
+            "beneficial_gaps": 2,
+            "mean_regret": 0.2073624836959248,
+            "native_actions": [
+              2,
+              0,
+              2
+            ],
+            "optimal_count": 2,
+            "predicted_actions": [
+              1,
+              3,
+              0
+            ],
+            "rows": 4,
+            "unique_native_optimum": 2
+          },
+          "rows": 4,
+          "scope": "fixed first action then frozen-policy account continuation; not isolated trade payoff"
+        }
+      },
+      "derivatives": {
+        "19": {
+          "critic": {
+            "adam:total": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": 3.771080956023448e-05,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 2
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": 0.002314780135794363,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 2
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 1,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": 0.003780828004007858,
+              "raises_on_current_errors": 1,
+              "raises_optimal_mass": 2
+            }
+          },
+          "critic_no_entropy": {
+            "adam:total": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": 3.8236629036646194e-05,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 2
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": 0.002425702435111117,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 2
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 1,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": 0.003846428681768608,
+              "raises_on_current_errors": 1,
+              "raises_optimal_mass": 2
+            }
+          },
+          "native_fit": {
+            "adam:total": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": 3.665367260108267e-05,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 2
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": 0.002036059128343854,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 2
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 1,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": 0.003780828004007858,
+              "raises_on_current_errors": 1,
+              "raises_optimal_mass": 2
+            }
+          }
+        },
+        "43": {
+          "critic": {
+            "adam:total": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": 3.507125019933409e-05,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 2
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": 0.0021800795954927156,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 2
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 1,
+              "lowers_optimal_mass": 3,
+              "mean_derivative": -0.0026173915293576278,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 1
+            }
+          },
+          "critic_no_entropy": {
+            "adam:total": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": 3.646391863750903e-05,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 2
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": 0.002287601907281853,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 2
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 1,
+              "lowers_optimal_mass": 3,
+              "mean_derivative": -0.0025517908515968763,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 1
+            }
+          },
+          "native_fit": {
+            "adam:total": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": 2.8028336995040377e-05,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 2
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": 0.0003773781873518925,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 2
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 1,
+              "lowers_optimal_mass": 3,
+              "mean_derivative": -0.0026173915293576278,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 1
+            }
+          }
+        }
+      },
+      "rows": 4
+    },
+    "monitor:short_open": {
+      "actor": {
+        "cash_optimal_reward_suboptimal": 0,
+        "cash_quality": {
+          "beneficial_gap_sign_errors": 2,
+          "beneficial_gaps": 2,
+          "mean_regret": 19.558847500003594,
+          "native_actions": [
+            2,
+            2,
+            0
+          ],
+          "optimal_count": 2,
+          "predicted_actions": [
+            3,
+            0,
+            1
+          ],
+          "rows": 4,
+          "unique_native_optimum": 2
+        },
+        "closing": {
+          "close_signals": 0,
+          "executable": 4,
+          "harmful_closes": 0,
+          "helpful_closes": 0,
+          "missed_beneficial_closes": 2,
+          "nonexecuted_close_signals": 0,
+          "positions": 4,
+          "tie_closes": 0
+        },
+        "constant_symbol_reward_regret": {
+          "BUY": 0.035597765340867865,
+          "NOP": 0.18896077452372084,
+          "SELL": 0.18896077452372084
+        },
+        "opening": {
+          "entry_when_nop_strictly_best": 0,
+          "executable": 0,
+          "missed_beneficial_entry": 0,
+          "selected_nop": 0
+        },
+        "reward_cash_optimum_set_disagreements": 0,
+        "reward_optimal_cash_suboptimal": 0,
+        "reward_quality": {
+          "beneficial_gap_sign_errors": 2,
+          "beneficial_gaps": 2,
+          "mean_regret": 0.18896077452372084,
+          "native_actions": [
+            2,
+            2,
+            0
+          ],
+          "optimal_count": 2,
+          "predicted_actions": [
+            3,
+            0,
+            1
+          ],
+          "rows": 4,
+          "unique_native_optimum": 2
+        },
+        "rows": 4,
+        "scope": "fixed first action then frozen-policy account continuation; not isolated trade payoff"
+      },
+      "critics": {
+        "19": {
+          "cash_optimal_reward_suboptimal": 0,
+          "cash_quality": {
+            "beneficial_gap_sign_errors": 2,
+            "beneficial_gaps": 2,
+            "mean_regret": 19.558847500003594,
+            "native_actions": [
+              2,
+              2,
+              0
+            ],
+            "optimal_count": 2,
+            "predicted_actions": [
+              2,
+              0,
+              2
+            ],
+            "rows": 4,
+            "unique_native_optimum": 2
+          },
+          "closing": {
+            "close_signals": 0,
+            "executable": 4,
+            "harmful_closes": 0,
+            "helpful_closes": 0,
+            "missed_beneficial_closes": 2,
+            "nonexecuted_close_signals": 0,
+            "positions": 4,
+            "tie_closes": 0
+          },
+          "constant_symbol_reward_regret": {
+            "BUY": 0.035597765340867865,
+            "NOP": 0.18896077452372084,
+            "SELL": 0.18896077452372084
+          },
+          "opening": {
+            "entry_when_nop_strictly_best": 0,
+            "executable": 0,
+            "missed_beneficial_entry": 0,
+            "selected_nop": 0
+          },
+          "reward_cash_optimum_set_disagreements": 0,
+          "reward_optimal_cash_suboptimal": 0,
+          "reward_quality": {
+            "beneficial_gap_sign_errors": 2,
+            "beneficial_gaps": 2,
+            "mean_regret": 0.18896077452372084,
+            "native_actions": [
+              2,
+              2,
+              0
+            ],
+            "optimal_count": 2,
+            "predicted_actions": [
+              2,
+              0,
+              2
+            ],
+            "rows": 4,
+            "unique_native_optimum": 2
+          },
+          "rows": 4,
+          "scope": "fixed first action then frozen-policy account continuation; not isolated trade payoff"
+        },
+        "43": {
+          "cash_optimal_reward_suboptimal": 0,
+          "cash_quality": {
+            "beneficial_gap_sign_errors": 1,
+            "beneficial_gaps": 2,
+            "mean_regret": 23.24851500000159,
+            "native_actions": [
+              2,
+              2,
+              0
+            ],
+            "optimal_count": 1,
+            "predicted_actions": [
+              0,
+              3,
+              1
+            ],
+            "rows": 4,
+            "unique_native_optimum": 2
+          },
+          "closing": {
+            "close_signals": 3,
+            "executable": 4,
+            "harmful_closes": 2,
+            "helpful_closes": 1,
+            "missed_beneficial_closes": 1,
+            "nonexecuted_close_signals": 0,
+            "positions": 4,
+            "tie_closes": 0
+          },
+          "constant_symbol_reward_regret": {
+            "BUY": 0.035597765340867865,
+            "NOP": 0.18896077452372084,
+            "SELL": 0.18896077452372084
+          },
+          "opening": {
+            "entry_when_nop_strictly_best": 0,
+            "executable": 0,
+            "missed_beneficial_entry": 0,
+            "selected_nop": 0
+          },
+          "reward_cash_optimum_set_disagreements": 0,
+          "reward_optimal_cash_suboptimal": 0,
+          "reward_quality": {
+            "beneficial_gap_sign_errors": 1,
+            "beneficial_gaps": 2,
+            "mean_regret": 0.2124511222670157,
+            "native_actions": [
+              2,
+              2,
+              0
+            ],
+            "optimal_count": 1,
+            "predicted_actions": [
+              0,
+              3,
+              1
+            ],
+            "rows": 4,
+            "unique_native_optimum": 2
+          },
+          "rows": 4,
+          "scope": "fixed first action then frozen-policy account continuation; not isolated trade payoff"
+        }
+      },
+      "derivatives": {
+        "19": {
+          "critic": {
+            "adam:total": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": -3.1380048377735765e-06,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 2
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": -0.00030059335188944595,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 2
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 1,
+              "mean_derivative": 0.000496390509323423,
+              "raises_on_current_errors": 1,
+              "raises_optimal_mass": 3
+            }
+          },
+          "critic_no_entropy": {
+            "adam:total": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": -3.1609222598206767e-06,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 2
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": -0.00028409911412386813,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 2
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 1,
+              "mean_derivative": 0.0005070602427430957,
+              "raises_on_current_errors": 1,
+              "raises_optimal_mass": 3
+            }
+          },
+          "native_fit": {
+            "adam:total": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": 1.79104861993276e-07,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 2
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": -3.267411449757733e-05,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 2
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 1,
+              "mean_derivative": 0.000496390509323423,
+              "raises_on_current_errors": 1,
+              "raises_optimal_mass": 3
+            }
+          }
+        },
+        "43": {
+          "critic": {
+            "adam:total": {
+              "lowers_on_currently_correct": 1,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": 3.208909888097397e-06,
+              "raises_on_current_errors": 1,
+              "raises_optimal_mass": 2
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 1,
+              "mean_derivative": 0.0009187898839841518,
+              "raises_on_current_errors": 1,
+              "raises_optimal_mass": 3
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 2,
+              "lowers_optimal_mass": 3,
+              "mean_derivative": -0.0004038245971896733,
+              "raises_on_current_errors": 1,
+              "raises_optimal_mass": 1
+            }
+          },
+          "critic_no_entropy": {
+            "adam:total": {
+              "lowers_on_currently_correct": 1,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": 4.655583094981628e-06,
+              "raises_on_current_errors": 1,
+              "raises_optimal_mass": 2
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 1,
+              "mean_derivative": 0.0009361251966088548,
+              "raises_on_current_errors": 1,
+              "raises_optimal_mass": 3
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 2,
+              "lowers_optimal_mass": 3,
+              "mean_derivative": -0.0003931548637700011,
+              "raises_on_current_errors": 1,
+              "raises_optimal_mass": 1
+            }
+          },
+          "native_fit": {
+            "adam:total": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": -1.3420648391798101e-06,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 2
+            },
+            "total:cross": {
+              "lowers_on_currently_correct": 0,
+              "lowers_optimal_mass": 2,
+              "mean_derivative": -9.493298528364085e-05,
+              "raises_on_current_errors": 0,
+              "raises_optimal_mass": 2
+            },
+            "total:local_logit": {
+              "lowers_on_currently_correct": 2,
+              "lowers_optimal_mass": 3,
+              "mean_derivative": -0.0004038245971896733,
+              "raises_on_current_errors": 1,
+              "raises_optimal_mass": 1
+            }
+          }
+        }
+      },
+      "rows": 4
+    }
+  },
+  "identity": "bd6cbb3a07edfab4aef3dec59eca96d5b378c077012b7a82e1aff82d5dd1224f",
+  "scope": "native full-policy continuation; not isolated early-close trade profit; local derivatives only"
+}

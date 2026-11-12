@@ -1,0 +1,16 @@
+{
+  "actor_updates": 0,
+  "calibration_files": 20,
+  "diagnostic_files": 3,
+  "identity": "bd6cbb3a07edfab4aef3dec59eca96d5b378c077012b7a82e1aff82d5dd1224f",
+  "independent_projection_checks": 1440,
+  "independent_ranking_checks": 32,
+  "new_candidate": false,
+  "receipt_sha256": "1af22ca1188d47e59aef382687f1b738e2ac1eb22968f50d5c0fa84af8120504",
+  "report_code_sha256": "e979e7ca2a281092b1925362a86f134257567f0699f2759410368e202d08dddf",
+  "runtime": "57497834",
+  "source_identity": "33052ae3718b91244982191afe5826ca088811b312291ce3f09bca8db05c9394",
+  "source_receipt_sha256": "981fb7d115dd7ef5e30838488ed8d0c516f55586817fe4e689f92258bf9af366",
+  "strata_code_sha256": "cd61a11ea7bcbb973e478de814818a6848d8107c936a8cbd8d20d892ef321646",
+  "validation_read": false
+}

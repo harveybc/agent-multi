@@ -2,6 +2,15 @@
 
 ## Execution Update: 2026-11-12
 
+[Selected71 decision diagnosis301](301_SELECTED71_DECISION_DIAGNOSIS.md)
+COMPLETE:2.98s CPU,26 tests;32 independent ranking checks and1440 derivative
+checks. On82 executable FIT openings actor optimal26,critics52/35; shared
+directions still interfere. New coverage finding:16 correct HOLD decisions
+are outside the unique-optimum guard;2 of65 FIT errors, including one harmful
+close, receive no target because better actions tie. Counterexample reproduced.
+Next optimal-action-set guard/targets and tests before any actor refinement.
+No actor update, validation targeting or live change.
+
 [Selected71 critic calibration300](300_SELECTED71_CRITIC_CALIBRATION.md)
 COMPLETE:151 rebuilt native TRAIN anchors; two seeds,4096 critic-head updates
 each,196.14s. MONITOR pair accuracy58->62% and40->49%, regret lower but value

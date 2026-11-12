@@ -1,0 +1,93 @@
+{
+  "identity": "bd6cbb3a07edfab4aef3dec59eca96d5b378c077012b7a82e1aff82d5dd1224f",
+  "source_guard_sha256": "d005e0662e157b5c54b0ba94b0de13e24df94a55adac03b8f7b40d6d44f999ca",
+  "source_target_sha256": "4d071d64d5aaaf3b448d2ee582a93fd7c3c5a2235690837cbefd5f743511e986",
+  "strict_guard_rows": [
+    0,
+    2,
+    9,
+    10,
+    11,
+    12,
+    16,
+    17,
+    18,
+    21,
+    23,
+    25,
+    31,
+    47,
+    58,
+    62,
+    66,
+    70,
+    71,
+    72,
+    77,
+    81,
+    88,
+    93,
+    95,
+    98
+  ],
+  "fit_strata": {
+    "fit:flat_allowed": {
+      "rows": 82,
+      "correct": 26,
+      "protected": 26,
+      "correct_unprotected": 0
+    },
+    "fit:flat_blocked": {
+      "rows": 6,
+      "correct": 6,
+      "protected": 0,
+      "correct_unprotected": 6
+    },
+    "fit:long_open": {
+      "rows": 12,
+      "correct": 9,
+      "protected": 0,
+      "correct_unprotected": 9
+    },
+    "fit:short_open": {
+      "rows": 13,
+      "correct": 7,
+      "protected": 0,
+      "correct_unprotected": 7
+    }
+  },
+  "fit_error_targets": {
+    "fit:flat_allowed": {
+      "errors": 56,
+      "targeted": 55,
+      "omitted_rows": [
+        42
+      ]
+    },
+    "fit:flat_blocked": {
+      "errors": 0,
+      "targeted": 0,
+      "omitted_rows": []
+    },
+    "fit:long_open": {
+      "errors": 3,
+      "targeted": 2,
+      "omitted_rows": [
+        49
+      ]
+    },
+    "fit:short_open": {
+      "errors": 6,
+      "targeted": 6,
+      "omitted_rows": []
+    }
+  },
+  "synthetic_witness": {
+    "legacy_guard_passed": true,
+    "unprotected_hold_changed_to_bad_close": true,
+    "bad_close_omitted_by_error_target": true,
+    "real_actor_changed": false
+  },
+  "remedy": "Before refinement protect correct optimal action sets and target joint optimal probability mass for errors, including HOLD ties; no need to freeze all-equivalent actions",
+  "scope": "coverage omission and reproducible counterexample, not attribution of historical losses"
+}
