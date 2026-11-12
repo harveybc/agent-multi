@@ -2,6 +2,12 @@
 
 ## Execution Update: 2026-11-12
 
+[Frozen critic coverage/drift312](312_FROZEN_CRITIC_COVERAGE_AND_DRIFT.md)
+PREPARED,12 focused tests pass. Up to88 new TRAIN anchors disjoint from151
+old calibration anchors; same-state native continuations under source and
+four310 heads. Finite resumable CPU queue, no training or live promotion;
+explicitly historical mixed-COT evidence while Retsu qualifies real sources.
+
 [COT identity impact311](311_COT_IDENTITY_IMPACT.md) COMPLETE,17.36s CPU.
 Only three COT channels replaced under the explicitly unverified legacy clock:
 TRAIN16.058224% ->13.859355%, VAL18.369946% ->1.541746%,207 ->122 trades.

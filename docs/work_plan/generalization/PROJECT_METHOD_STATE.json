@@ -1,6 +1,22 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "COT_IDENTITY_IMPACT_COMPLETE_SOURCE_PUBLICATION_QUALIFICATION_NEXT_STL31_RUNNING",
+  "current_stage": "CRITIC_COVERAGE_DRIFT_PREPARED_RETSU_SOURCE_QUALIFICATION_STL31_RUNNING",
+  "critic_coverage_drift_312": {
+    "document": "../312_FROZEN_CRITIC_COVERAGE_AND_DRIFT.md",
+    "status": "PREPARED_TESTED",
+    "new_anchors_maximum": 88,
+    "continuation_policies": 5,
+    "old_anchors_excluded": 151,
+    "fit_anchors": 113,
+    "focused_tests_passed": 12,
+    "device": "cpu",
+    "historical_mixed_cot": true,
+    "optimizer_steps": 0,
+    "validation_inference": false,
+    "test_read": false,
+    "model_promoted": false,
+    "next_action": "Launch finite resumable same-state native continuation queue, authenticate each anchor and report coverage/drift by state/year. Keep actual COT/live qualification with Retsu; no new model training or floating from historical-source evidence."
+  },
   "cot_identity_311": {
     "document": "../311_COT_IDENTITY_IMPACT.md",
     "handoff": "../../handoffs/MUSASHI_TO_RETSU_COT_AND_LIVE_COMPLETION_2026_11_12.md",
@@ -2389,6 +2405,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
+    "312: run the tested finite CPU coverage/drift diagnostic; new anchors exclude151 prior timestamps and all comparisons preserve source state/first action; no actor optimization",
     "311 completed the frozen-weight COT identity diagnostic; no source/live certification from the legacy93h clock. Retsu owns verified publications/vintages and live readers under the new concrete handoff",
     "310 completed paired head8/16; no arm promoted. Diagnose frozen-Q extrapolation/policy drift, then qualify repaired data before new model training or phase2 scores; preserve all49 cumulative return candidates",
     "308 resolves the immediate STL training stall through the owner-authorized31-input availability subset. Both GPU queues are running; compare continuous/ordinal/binary with raw31 after completion, not with the different71-input actor",
