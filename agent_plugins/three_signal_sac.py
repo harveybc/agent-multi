@@ -72,8 +72,15 @@ class ThreeSignalSAC(CurveSAC):
             self.effective['regularization_scope'] = 'online_critics_only; actor unchanged'
             self.effective['mode_contract'] = 'online_q_train_target_and_actor_q_eval_v1'
             self.effective['target_bn_statistics'] = 'hard_copy_each_update'
-        self.actor_net = ThreeLogits(recipe, architecture).to(device)
-        self.q_net = ThreeLogits(recipe, architecture, critic_regularization).to(device)
+        shared_architecture = dict(architecture or {})
+        actor_head_width = shared_architecture.pop('actor_head_width', None)
+        actor_architecture = dict(shared_architecture)
+        if actor_head_width is not None:
+            if type(actor_head_width) is not int or actor_head_width < 1:
+                raise ValueError('THREE_SIGNAL_ACTOR_HEAD_WIDTH')
+            actor_architecture['head_width'] = actor_head_width
+        self.actor_net = ThreeLogits(recipe, actor_architecture).to(device)
+        self.q_net = ThreeLogits(recipe, shared_architecture, critic_regularization).to(device)
         actor = TensorDictModule(self.actor_net, in_keys=['features'], out_keys=['logits'])
         self.actor = ProbabilisticActor(actor, in_keys={'logits':'logits','mask':'mask'}, out_keys=['action'],
             distribution_class=MaskedCategorical, distribution_kwargs={'neg_inf':-1e9})

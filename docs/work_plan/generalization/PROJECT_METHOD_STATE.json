@@ -1,6 +1,26 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "SELECTED71_SPILLOVER_COMPLETE_STL31_PAIRED_TRAINING",
+  "current_stage": "SELECTED71_HEAD8_16_PREPARING_STL31_PAIRED_TRAINING",
+  "actor_head_capacity_310": {
+    "document": "../310_ACTOR_HEAD_WIDTH_CONTRAST.md",
+    "status": "PREPARING_FINITE_QUEUE",
+    "owner_approved": "2026-11-12 head8 versus16",
+    "widths": [8, 16],
+    "seeds": [19, 43],
+    "updates_per_arm": 20000,
+    "batch": 128,
+    "features": 71,
+    "train_rows": 24026,
+    "validation_rows": 6208,
+    "critic_width": 8,
+    "encoder_and_critics_frozen": true,
+    "objective": "discrete SAC actor with fixed calibrated min-twin Q and alpha",
+    "early_stopping": false,
+    "device": "cpu cached activations",
+    "model_promoted": false,
+    "test_read": false,
+    "next_action": "Run four paired fresh-head arms sequentially, save curves/bundles, verify frozen tensors and cached/native/cold parity, evaluate final native TRAIN/VALIDATION accounts, compare widths per seed and preserved299. No automatic promotion or repeated floating."
+  },
   "selected71_spillover_309": {
     "document": "../309_SELECTED71_SPILLOVER_AND_CAPACITY.md",
     "status": "COMPLETE_SOURCE_RETAINED",
