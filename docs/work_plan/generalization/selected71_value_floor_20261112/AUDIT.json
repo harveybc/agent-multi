@@ -1,0 +1,201 @@
+{
+  "accounts": [
+    {
+      "arm": "interior_error_project_guard_19",
+      "delta_usd": 0.0,
+      "effective_event_count": 0,
+      "effective_events_outside_panel": 0,
+      "entry_cutoff_signal_changes": [
+        {
+          "new": 0,
+          "old": 2,
+          "timestamp": 1643403600000000000
+        },
+        {
+          "new": 1,
+          "old": 0,
+          "timestamp": 1679673600000000000
+        },
+        {
+          "new": 2,
+          "old": 0,
+          "timestamp": 1694181600000000000
+        }
+      ],
+      "equity_exact": true,
+      "period": "TRAIN",
+      "reconciliation_error_usd": 0.0,
+      "trades_exact": true
+    },
+    {
+      "arm": "interior_error_project_guard_19",
+      "delta_usd": 0.0,
+      "effective_event_count": 0,
+      "effective_events_outside_panel": 0,
+      "entry_cutoff_signal_changes": [
+        {
+          "new": 2,
+          "old": 1,
+          "timestamp": 1726246800000000000
+        }
+      ],
+      "equity_exact": true,
+      "period": "VALIDATION",
+      "reconciliation_error_usd": 0.0,
+      "trades_exact": true
+    },
+    {
+      "arm": "interior_error_project_guard_43",
+      "delta_usd": 0.0,
+      "effective_event_count": 0,
+      "effective_events_outside_panel": 0,
+      "entry_cutoff_signal_changes": [
+        {
+          "new": 0,
+          "old": 2,
+          "timestamp": 1643403600000000000
+        },
+        {
+          "new": 1,
+          "old": 0,
+          "timestamp": 1679673600000000000
+        },
+        {
+          "new": 2,
+          "old": 0,
+          "timestamp": 1694181600000000000
+        }
+      ],
+      "equity_exact": true,
+      "period": "TRAIN",
+      "reconciliation_error_usd": 0.0,
+      "trades_exact": true
+    },
+    {
+      "arm": "interior_error_project_guard_43",
+      "delta_usd": 0.0,
+      "effective_event_count": 0,
+      "effective_events_outside_panel": 0,
+      "entry_cutoff_signal_changes": [
+        {
+          "new": 2,
+          "old": 1,
+          "timestamp": 1726246800000000000
+        }
+      ],
+      "equity_exact": true,
+      "period": "VALIDATION",
+      "reconciliation_error_usd": 0.0,
+      "trades_exact": true
+    }
+  ],
+  "checkpoints": [
+    {
+      "accepted": 1,
+      "arm": "interior_error_project_guard_19",
+      "changed_head_tensors": [
+        "actor_network_params.module.0.module.head.0.weight",
+        "actor_network_params.module.0.module.head.0.bias",
+        "actor_network_params.module.0.module.head.2.weight",
+        "actor_network_params.module.0.module.head.2.bias"
+      ],
+      "corrected_fit_errors": 0,
+      "frozen_tensors_exact": 1023,
+      "full_fit_error_loss_after": 2.6555736565924817,
+      "full_fit_error_loss_before": 2.655644603752046,
+      "minimum_margin_change": 8.493661880493164e-07,
+      "optimizer_steps_exact": true,
+      "point": 1,
+      "source_correct_preserved": true,
+      "source_value_regressions": 0
+    },
+    {
+      "accepted": 8,
+      "arm": "interior_error_project_guard_19",
+      "changed_head_tensors": [
+        "actor_network_params.module.0.module.head.0.weight",
+        "actor_network_params.module.0.module.head.0.bias",
+        "actor_network_params.module.0.module.head.2.weight",
+        "actor_network_params.module.0.module.head.2.bias"
+      ],
+      "corrected_fit_errors": 0,
+      "frozen_tensors_exact": 1023,
+      "full_fit_error_loss_after": 2.655112219586806,
+      "full_fit_error_loss_before": 2.655644603752046,
+      "minimum_margin_change": 9.126961231231689e-07,
+      "optimizer_steps_exact": true,
+      "point": 8,
+      "source_correct_preserved": true,
+      "source_value_regressions": 0
+    },
+    {
+      "accepted": 1,
+      "arm": "interior_error_project_guard_43",
+      "changed_head_tensors": [
+        "actor_network_params.module.0.module.head.0.weight",
+        "actor_network_params.module.0.module.head.0.bias",
+        "actor_network_params.module.0.module.head.2.weight",
+        "actor_network_params.module.0.module.head.2.bias"
+      ],
+      "corrected_fit_errors": 0,
+      "frozen_tensors_exact": 1023,
+      "full_fit_error_loss_after": 2.6555798185472086,
+      "full_fit_error_loss_before": 2.655644603752046,
+      "minimum_margin_change": 9.5367431640625e-07,
+      "optimizer_steps_exact": true,
+      "point": 1,
+      "source_correct_preserved": true,
+      "source_value_regressions": 0
+    },
+    {
+      "accepted": 8,
+      "arm": "interior_error_project_guard_43",
+      "changed_head_tensors": [
+        "actor_network_params.module.0.module.head.0.weight",
+        "actor_network_params.module.0.module.head.0.bias",
+        "actor_network_params.module.0.module.head.2.weight",
+        "actor_network_params.module.0.module.head.2.bias"
+      ],
+      "corrected_fit_errors": 0,
+      "frozen_tensors_exact": 1023,
+      "full_fit_error_loss_after": 2.6551127214523347,
+      "full_fit_error_loss_before": 2.655644603752046,
+      "minimum_margin_change": 1.0021030902862549e-06,
+      "optimizer_steps_exact": true,
+      "point": 8,
+      "source_correct_preserved": true,
+      "source_value_regressions": 0
+    }
+  ],
+  "constraint_count": 105,
+  "corrective_fit_rows": 65,
+  "differing_actor_head_tensors_between_seeds": 4,
+  "differing_endpoint_tensors_between_seeds": 12,
+  "full_fit_error_losses": [
+    [
+      2.655644603752046,
+      2.655112219586806
+    ],
+    [
+      2.655644603752046,
+      2.6551127214523347
+    ]
+  ],
+  "identity": "986505fd8e50800e77eb4bef2eced2aaff7a485ece456b0386f4874f8f0d7975",
+  "model_promoted": false,
+  "native_checked_fit_rows": 113,
+  "new_hold_guards": 16,
+  "panel_action_switches": [],
+  "protected_fit_rows": 79,
+  "reference_account_exact": true,
+  "reference_cross_runtime_entropy_deltas": {
+    "TRAIN:mean_requested_command_entropy": 4.3113735803679276e-08,
+    "TRAIN:mean_signal_entropy": 5.346821430052273e-08,
+    "VALIDATION:mean_requested_command_entropy": 7.139765800801001e-08,
+    "VALIDATION:mean_signal_entropy": 8.631387982127592e-08
+  },
+  "source_unchanged": true,
+  "test_read": false,
+  "tied_error_targets": 2,
+  "verified_files": 182
+}
