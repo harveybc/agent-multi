@@ -386,3 +386,27 @@ validation predictions. It changes21809 TRAIN rows and therefore needs a new
 source identity, parameter tuning and a matched raw control before any STL
 comparison. Never splice it silently into the preserved model or live provider.
 This bounded test is not a blanket causal certification of upstream sources.
+
+## F-ACCOUNT-COUNTEREXAMPLES-REPAIR-TRAIN-NOT-VALIDATION
+
+Results307,2026-11-12: a finite full-TRAIN account counterexample constraint
+removes the harmful December2023 opening while keeping the useful July2021
+change. TRAIN return16.058224% ->16.571680%, drawdown9.358326% ->8.958845%,
+745 ->746 trades. The native chronological attribution closes exactly at
++51.345685USD with no harmful changed TRAIN contribution. Both predetermined
+margin modes finish in two proposals and give identical accounts.
+
+Validation remains18.172324% versus source18.369946%, so neither candidate
+qualifies for the next selection pass. No validation row supplied a constraint,
+gradient or step size. Cold logits and accounts reproduce exactly. The source
+remains299; candidate weights are retained for diagnosis, not promoted.
+
+The corrective scope deliberately expanded to the declared2020-2023 TRAIN
+period.2023 is therefore not an independent monitor for307; do not carry over
+that label from earlier sparse-FIT experiments. Correcting a historical TRAIN
+counterexample is not proof that shared-head spillover generalizes safely.
+
+STL71 independently completed all columns and recovered479 windows through
+the qualified FX repair. Two empty months and the not-yet-integrated activity
+scope repair still prevent matched training. The queue must distinguish
+completed preprocessing from an admitted dataset and from a running GPU job.

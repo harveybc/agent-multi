@@ -2,6 +2,14 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "run_counterexample_selection_queue.py": {
+   "purpose": "Sequential bounded account-guard contrasts with fixed fallback priority, followed only on qualification by cumulative deletion/readmission, audit report and physical export",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
+  },
+  "run_account_counterexamples.py": {
+   "purpose": "Finite GPU head correction with native whole-TRAIN counterexamples, fixed budgets, source restoration and frozen validation/cold admission; no broker or automatic live promotion",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
+  },
   "rebuild_stl_activity_scope.py": {
    "purpose": "Build an isolated purged activity-producer candidate for the bounded downstream STL context; verify original replay, target-row exclusion and unchanged validation predictions without model promotion",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"

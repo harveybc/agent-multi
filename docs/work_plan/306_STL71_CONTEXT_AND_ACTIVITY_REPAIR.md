@@ -38,7 +38,7 @@ columns sequentially with their existing resumable checkpoints, then assembles
 raw, continuous seasonal, ordinal seasonal and binary seasonal variants on
 identical support. It does not start GPU training or replace any live model.
 
-At publication,68 reused columns and the new OPEN@diff column are complete.
+At initial publication,68 reused columns and the new OPEN@diff column were complete.
 OPEN@diff selected period120, seasonal span13, nonrobust, history480; its full
 31116-row endpoint calculation took732.5 seconds. The other two new columns
 are in the sequential preparation queue, not reported as trained results.
@@ -108,9 +108,30 @@ fold scope, not the full-TRAIN classifier applied indiscriminately. Retune
 affected STL columns, test prefix/online parity and the complete fitted lineage,
 then require nonempty support in every month before matched training.
 
-The main-lane full-account result is305 and retains the original selected71
-checkpoint. Its next step is a TRAIN-only changed-decision guard; STL does not
-authorize another actor reset or an unchanged feature-selection repeat.
+## Completion Update
+
+All71 columns and the four matched variants finished. The service exited
+successfully; it is not a training process. Actual common support has21865
+TRAIN and5460 validation windows before the qualified FX repair. Its fitted
+activity-context audit confirms898 TRAIN direct-membership overlaps and zero
+validation overlaps. The separately repaired activity estimator has not yet
+been inserted into that store.
+
+The qualified November FX repair was propagated to the current71-column
+seasonal representation using four CPU workers. It recovers479 windows:
+222 in December2023 and257 in January2024. Unaffected inputs and endpoints
+outside the changed support are unchanged. All three prefix witnesses per
+affected column pass. Paired support becomes22087 TRAIN and5717 validation
+windows. January2020 and June2022 still have no common seasonal windows.
+
+This propagation freezes the already selected STL parameters. It is a source
+repair diagnostic, not a newly tuned or released training store. No missing
+quote, activity value or calendar value was imputed. Evidence:
+[COMPLETION.json](generalization/stl71_20261112/COMPLETION.json).
+
+Main-lane307 completed its TRAIN account correction and rejected promotion on
+validation, preserving299. STL does not authorize another actor reset or an
+unchanged feature-selection repeat.
 
 ## Verification
 

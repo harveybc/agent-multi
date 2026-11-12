@@ -1,0 +1,460 @@
+{
+  "schema": "stl71_completion.summary.v1",
+  "columns_complete": 71,
+  "training_released": false,
+  "activity_repair_installed": false,
+  "scope_audit": {
+    "identity": "17485c030c8a9cc7cec2057b4fb9029d7be5e214b19d6ad04b41a2a144107164",
+    "lane_identity": "e492dab913c28a4d140218fcb10724b3b61ec788df7d9c4788777295311b7c6c",
+    "reports": {
+      "raw": {
+        "examples": [],
+        "maximum_lag": 24,
+        "paired_evaluation_rows_with_overlap": 0,
+        "source_rows_with_overlap": 0,
+        "validation_rows_with_overlap": 0
+      },
+      "seasonal": {
+        "examples": [
+          {
+            "context_estimator": 1,
+            "lag": 217,
+            "row": 4577,
+            "target_time_ns": 1600966800000000000
+          },
+          {
+            "context_estimator": 1,
+            "lag": 218,
+            "row": 4578,
+            "target_time_ns": 1600970400000000000
+          },
+          {
+            "context_estimator": 1,
+            "lag": 219,
+            "row": 4579,
+            "target_time_ns": 1600974000000000000
+          },
+          {
+            "context_estimator": 1,
+            "lag": 220,
+            "row": 4580,
+            "target_time_ns": 1600977600000000000
+          },
+          {
+            "context_estimator": 1,
+            "lag": 221,
+            "row": 4581,
+            "target_time_ns": 1600981200000000000
+          },
+          {
+            "context_estimator": 1,
+            "lag": 222,
+            "row": 4582,
+            "target_time_ns": 1600984800000000000
+          },
+          {
+            "context_estimator": 1,
+            "lag": 223,
+            "row": 4583,
+            "target_time_ns": 1600988400000000000
+          },
+          {
+            "context_estimator": 1,
+            "lag": 224,
+            "row": 4584,
+            "target_time_ns": 1600992000000000000
+          },
+          {
+            "context_estimator": 1,
+            "lag": 225,
+            "row": 4585,
+            "target_time_ns": 1600995600000000000
+          },
+          {
+            "context_estimator": 1,
+            "lag": 226,
+            "row": 4586,
+            "target_time_ns": 1600999200000000000
+          },
+          {
+            "context_estimator": 1,
+            "lag": 227,
+            "row": 4587,
+            "target_time_ns": 1601002800000000000
+          },
+          {
+            "context_estimator": 1,
+            "lag": 228,
+            "row": 4588,
+            "target_time_ns": 1601006400000000000
+          }
+        ],
+        "maximum_lag": 503,
+        "paired_evaluation_rows_with_overlap": 898,
+        "source_rows_with_overlap": 898,
+        "validation_rows_with_overlap": 0
+      }
+    },
+    "passed": false,
+    "limitation": "Direct target-row membership witness, not a complete causal certification of every upstream dependency"
+  },
+  "source_propagation": {
+    "identity": "77e891a1e9d24ca3e148f787689a4f27516920c9d00ed1e1df5238752ffa1f44",
+    "no_imputation": true,
+    "recovered_original_windows": 479,
+    "remaining_empty_months": [
+      "2020-01",
+      "2022-06"
+    ],
+    "columns": {
+      "fac.fx_f1.ret_4": {
+        "changed_input_rows": 258,
+        "recomputed_rows": 739,
+        "recovered_endpoints": 484,
+        "prefix_checks": [
+          24392,
+          24761,
+          25130
+        ],
+        "unchanged_outside_support": true
+      },
+      "fac.fx_f1.ret_24": {
+        "changed_input_rows": 255,
+        "recomputed_rows": 739,
+        "recovered_endpoints": 504,
+        "prefix_checks": [
+          24392,
+          24761,
+          25130
+        ],
+        "unchanged_outside_support": true
+      },
+      "wv.usd.A4": {
+        "changed_input_rows": 258,
+        "recomputed_rows": 737,
+        "recovered_endpoints": 736,
+        "prefix_checks": [
+          24392,
+          24760,
+          25128
+        ],
+        "unchanged_outside_support": true
+      },
+      "hb.eur.inst_freq": {
+        "changed_input_rows": 130,
+        "recomputed_rows": 609,
+        "recovered_endpoints": 608,
+        "prefix_checks": [
+          24392,
+          24696,
+          25000
+        ],
+        "unchanged_outside_support": true
+      }
+    },
+    "monthly_coverage": {
+      "2020-01": {
+        "raw": 245,
+        "before": 0,
+        "after": 0
+      },
+      "2020-02": {
+        "raw": 480,
+        "before": 247,
+        "after": 247
+      },
+      "2020-03": {
+        "raw": 530,
+        "before": 530,
+        "after": 530
+      },
+      "2020-04": {
+        "raw": 528,
+        "before": 528,
+        "after": 528
+      },
+      "2020-05": {
+        "raw": 504,
+        "before": 504,
+        "after": 504
+      },
+      "2020-06": {
+        "raw": 528,
+        "before": 528,
+        "after": 528
+      },
+      "2020-07": {
+        "raw": 550,
+        "before": 550,
+        "after": 550
+      },
+      "2020-08": {
+        "raw": 506,
+        "before": 506,
+        "after": 506
+      },
+      "2020-09": {
+        "raw": 528,
+        "before": 528,
+        "after": 528
+      },
+      "2020-10": {
+        "raw": 526,
+        "before": 526,
+        "after": 526
+      },
+      "2020-11": {
+        "raw": 492,
+        "before": 25,
+        "after": 25
+      },
+      "2020-12": {
+        "raw": 521,
+        "before": 497,
+        "after": 497
+      },
+      "2021-01": {
+        "raw": 481,
+        "before": 481,
+        "after": 481
+      },
+      "2021-02": {
+        "raw": 480,
+        "before": 480,
+        "after": 480
+      },
+      "2021-03": {
+        "raw": 553,
+        "before": 553,
+        "after": 553
+      },
+      "2021-04": {
+        "raw": 526,
+        "before": 526,
+        "after": 526
+      },
+      "2021-05": {
+        "raw": 506,
+        "before": 506,
+        "after": 506
+      },
+      "2021-06": {
+        "raw": 528,
+        "before": 528,
+        "after": 528
+      },
+      "2021-07": {
+        "raw": 526,
+        "before": 526,
+        "after": 526
+      },
+      "2021-08": {
+        "raw": 517,
+        "before": 431,
+        "after": 431
+      },
+      "2021-09": {
+        "raw": 528,
+        "before": 123,
+        "after": 123
+      },
+      "2021-10": {
+        "raw": 504,
+        "before": 504,
+        "after": 504
+      },
+      "2021-11": {
+        "raw": 527,
+        "before": 527,
+        "after": 527
+      },
+      "2021-12": {
+        "raw": 546,
+        "before": 546,
+        "after": 546
+      },
+      "2022-01": {
+        "raw": 505,
+        "before": 505,
+        "after": 505
+      },
+      "2022-02": {
+        "raw": 480,
+        "before": 480,
+        "after": 480
+      },
+      "2022-03": {
+        "raw": 553,
+        "before": 553,
+        "after": 553
+      },
+      "2022-04": {
+        "raw": 502,
+        "before": 502,
+        "after": 502
+      },
+      "2022-05": {
+        "raw": 336,
+        "before": 336,
+        "after": 336
+      },
+      "2022-06": {
+        "raw": 441,
+        "before": 0,
+        "after": 0
+      },
+      "2022-07": {
+        "raw": 504,
+        "before": 466,
+        "after": 466
+      },
+      "2022-08": {
+        "raw": 552,
+        "before": 552,
+        "after": 552
+      },
+      "2022-09": {
+        "raw": 526,
+        "before": 526,
+        "after": 526
+      },
+      "2022-10": {
+        "raw": 506,
+        "before": 506,
+        "after": 506
+      },
+      "2022-11": {
+        "raw": 527,
+        "before": 527,
+        "after": 527
+      },
+      "2022-12": {
+        "raw": 518,
+        "before": 518,
+        "after": 518
+      },
+      "2023-01": {
+        "raw": 520,
+        "before": 520,
+        "after": 520
+      },
+      "2023-02": {
+        "raw": 480,
+        "before": 480,
+        "after": 480
+      },
+      "2023-03": {
+        "raw": 551,
+        "before": 551,
+        "after": 551
+      },
+      "2023-04": {
+        "raw": 482,
+        "before": 482,
+        "after": 482
+      },
+      "2023-05": {
+        "raw": 552,
+        "before": 552,
+        "after": 552
+      },
+      "2023-06": {
+        "raw": 526,
+        "before": 526,
+        "after": 526
+      },
+      "2023-07": {
+        "raw": 506,
+        "before": 506,
+        "after": 506
+      },
+      "2023-08": {
+        "raw": 552,
+        "before": 552,
+        "after": 552
+      },
+      "2023-09": {
+        "raw": 502,
+        "before": 502,
+        "after": 502
+      },
+      "2023-10": {
+        "raw": 530,
+        "before": 530,
+        "after": 530
+      },
+      "2023-11": {
+        "raw": 493,
+        "before": 493,
+        "after": 493
+      },
+      "2023-12": {
+        "raw": 222,
+        "before": 0,
+        "after": 222
+      },
+      "2024-01": {
+        "raw": 521,
+        "before": 264,
+        "after": 521
+      },
+      "2024-02": {
+        "raw": 504,
+        "before": 504,
+        "after": 504
+      },
+      "2024-03": {
+        "raw": 505,
+        "before": 505,
+        "after": 505
+      },
+      "2024-04": {
+        "raw": 528,
+        "before": 528,
+        "after": 528
+      },
+      "2024-05": {
+        "raw": 550,
+        "before": 550,
+        "after": 550
+      },
+      "2024-06": {
+        "raw": 482,
+        "before": 482,
+        "after": 482
+      },
+      "2024-07": {
+        "raw": 552,
+        "before": 552,
+        "after": 552
+      },
+      "2024-08": {
+        "raw": 513,
+        "before": 115,
+        "after": 115
+      },
+      "2024-09": {
+        "raw": 506,
+        "before": 413,
+        "after": 413
+      },
+      "2024-10": {
+        "raw": 552,
+        "before": 552,
+        "after": 552
+      },
+      "2024-11": {
+        "raw": 502,
+        "before": 502,
+        "after": 502
+      },
+      "2024-12": {
+        "raw": 493,
+        "before": 493,
+        "after": 493
+      }
+    },
+    "parameters_retuned": false,
+    "diagnostic_only": true
+  }
+}
