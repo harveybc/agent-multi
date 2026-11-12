@@ -43,6 +43,8 @@ def run(a):
     source=read(a.source/'CONFIG.json');verify_done(a.source,source['identity'])
     fresh=getattr(a,'fresh_calibrated',False)
     sets=getattr(a,'optimal_action_sets',False)
+    value_floor=getattr(a,'source_value_floor',False)
+    if value_floor and not sets:raise ValueError('SOURCE_VALUE_REQUIRES_OPTIMAL_SETS')
     if sets and not fresh:raise ValueError('OPTIMAL_SET_REQUIRES_FRESH')
     target_builder=optimal_action_sets.error_targets if sets else error_targets
     corrective_loss=optimal_action_sets.correction_loss if sets else correction_loss
@@ -75,7 +77,8 @@ def run(a):
     # Match trainability/kernel dispatch before fixing a sub-micro logit floor.
     set_arm(model,'actor_only')
     with torch.no_grad():source_z=model.surfaces(x).detach()
-    set_guard=optimal_action_sets.SetGuard(source_z,native,records) if sets else None
+    guard_class=optimal_action_sets.SourceValueGuard if value_floor else optimal_action_sets.SetGuard
+    set_guard=guard_class(source_z,native,records) if sets else None
     protected,actions=(set_guard.rows,set_guard.actions) if sets else protected_actions(source_z,native,records)
     def guard_margins(z):return set_guard.margins(z) if sets else margins(z,protected,actions)
     if not len(protected):raise ValueError('PRESERVE_NO_STRICT_FIT_OPTIMUM')
@@ -89,6 +92,9 @@ def run(a):
     if sets:guard.update(optimal_actions=set_guard.optimal[protected].cpu().tolist(),
         constraint_indices=set_guard.constraint_rows.cpu().tolist(),
         constraint_preferred=set_guard.preferred.cpu().tolist(),constraint_suboptimal=set_guard.bad.cpu().tolist())
+    if value_floor:guard.update(admissible_actions=set_guard.allowed[protected].cpu().tolist(),
+        fit_indices=fit.tolist(),fit_source_values=set_guard.source_values[fit].cpu().tolist(),
+        native_tolerance=1e-8)
     error_labels,error_weights=target_builder(source_z,native,records)
     prior_guard=None
     if targeted and not fresh:
@@ -140,6 +146,9 @@ def run(a):
         objective='advantage_weighted_fixed_fit_error_negative_log_optimal_mass',
         optimal_action_tolerance=1e-8,guard_semantics='source_optimal_vs_suboptimal_only_and_greedy_set_membership',
         corrective_margin_semantics='logsumexp_optimal_minus_logsumexp_suboptimal')
+    if value_floor:cfg.update(schema='source_value_floor_interior_correction.v1',
+        guard_semantics='source_chosen_vs_native_worse_only_and_all_fit_greedy_value_floor',
+        native_reference='frozen source chosen action; tolerance 1e-8; FIT only')
     cfg['identity']=digest(cfg)
     if (a.output/'CONFIG.json').exists() and read(a.output/'CONFIG.json')!=cfg:raise ValueError('PRESERVE_CONFIG')
     if (a.output/'DONE.json').exists():verify_done(a.output,cfg['identity']);return
@@ -329,6 +338,7 @@ if __name__=='__main__':
     parser.add_argument('--prior-targeted',type=Path)
     parser.add_argument('--fresh-calibrated',action='store_true')
     parser.add_argument('--optimal-action-sets',action='store_true')
+    parser.add_argument('--source-value-floor',action='store_true')
     parser.add_argument('--diagnosis',type=Path)
     args=parser.parse_args();args.output.mkdir(parents=True,exist_ok=True)
     with (args.output/'worker.lock').open('a') as lock:

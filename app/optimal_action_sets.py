@@ -41,6 +41,43 @@ class SetGuard:
             suboptimal_actions=incorrect,violations=int((delta< -tolerance).sum()),protected_rows=len(self.rows))
 
 
+class SourceValueGuard(SetGuard):
+    """Freeze a native FIT value floor even for initially incorrect decisions."""
+    def __init__(self, logits, native, records):
+        self.optimal=optimal_sets(logits,native,records)
+        source=logits.argmax(-1)
+        self.fit=torch.tensor([r['role']=='fit' for r in records],device=logits.device)
+        self.native=native.detach().double().clone()
+        self.source_values=self.native.gather(1,source[:,None]).squeeze(1).clone()
+        self.allowed=self.native>=self.source_values[:,None]-1e-8
+        self.rows=torch.nonzero(self.fit & ~self.allowed.all(-1)).flatten()
+        if not len(self.rows):raise ValueError('SOURCE_VALUE_EMPTY_GUARD')
+        self.actions=source[self.rows]
+        local,bad=torch.nonzero(~self.allowed[self.rows],as_tuple=True)
+        self.constraint_rows=self.rows[local]
+        self.preferred=self.actions[local]
+        self.bad=bad
+        self.floor=self.margins(logits.double()).detach()
+        z=logits.detach().double()
+        self.buffer=8*torch.finfo(logits.dtype).eps*(1+
+            z[self.constraint_rows,self.preferred].abs()+z[self.constraint_rows,self.bad].abs())
+
+    def check(self, logits, tolerance=1e-7):
+        delta=self.margins(logits.double())-self.floor
+        chosen=logits.argmax(-1)
+        reward_delta=self.native.gather(1,chosen[:,None]).squeeze(1)-self.source_values
+        regressions=int((self.fit & (reward_delta< -1e-8)).sum())
+        suboptimal=int((self.fit & ~self.optimal.gather(1,chosen[:,None]).squeeze(1)).sum())
+        finite=bool(torch.isfinite(logits[self.fit]).all())
+        return dict(passed=finite and regressions==0 and bool((delta>=-tolerance).all()),
+            minimum_margin_change=float(delta.min()),
+            action_changes=int((chosen[self.rows]!=self.actions).sum()),
+            suboptimal_actions=suboptimal,source_value_regressions=regressions,
+            minimum_native_value_change=float(reward_delta[self.fit].min()),
+            violations=int((delta< -tolerance).sum()),protected_rows=len(self.rows),
+            native_checked_fit_rows=int(self.fit.sum()))
+
+
 def error_targets(logits, native, records):
     mask=optimal_sets(logits,native,records)
     chosen=logits.argmax(-1)

@@ -2,6 +2,11 @@
 
 ## Execution Update: 2026-11-12
 
+[Selected71 source-value floor303](303_SELECTED71_SOURCE_VALUE_FLOOR.md)
+IMPLEMENTED:55 focused tests pass. Extend FIT protection to initially wrong
+choices, without constraining equivalent or better actions. Same fixed
+two-seed/eight-update budget and original control; finite execution follows.
+
 [Selected71 optimal-action-set correction302](302_SELECTED71_OPTIMAL_SET_REFINEMENT.md)
 COMPLETE:48 focused tests;42 protected FIT decisions,65 error targets,16/16
 accepted updates. Both endpoints lose87.326775USD TRAIN and24.091780USD VAL;

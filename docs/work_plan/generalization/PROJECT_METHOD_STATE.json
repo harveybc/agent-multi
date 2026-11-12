@@ -1,6 +1,13 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "SELECTED71_OPTIMAL_SET_REFINEMENT_COMPLETE_CONTROL_RETAINED",
+  "current_stage": "SELECTED71_SOURCE_VALUE_FLOOR_IMPLEMENTATION",
+  "selected71_source_value_floor_303": {
+    "document": "../303_SELECTED71_SOURCE_VALUE_FLOOR.md",
+    "status": "IMPLEMENTATION",
+    "next_action": "Pass wrong-to-worse witness and nonzero feasibility tests; seal code, run two fixed eight-update seeds, account attribution and checkpoint verification. Preserve selected71 control.",
+    "model_promoted": false,
+    "test_read": false
+  },
   "selected71_optimal_set_refinement_302": {
     "document": "../302_SELECTED71_OPTIMAL_SET_REFINEMENT.md",
     "status": "COMPLETE_CONTROL_RETAINED",
