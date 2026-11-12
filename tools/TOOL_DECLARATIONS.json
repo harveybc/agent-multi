@@ -2,6 +2,22 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "rebuild_stl_activity_scope.py": {
+   "purpose": "Build an isolated purged activity-producer candidate for the bounded downstream STL context; verify original replay, target-row exclusion and unchanged validation predictions without model promotion",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
+  },
+  "audit_stl_activity_scope.py": {
+   "purpose": "Measure cross-fit target reuse through raw versus extended STL learned-feature context, authenticate actual paired support, and refuse a causal certification from endpoint timing alone",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
+  },
+  "reuse_stl_columns.py": {
+   "purpose": "Transfer sealed seasonal columns across selected recipes only with exact raw and clock equality, identical tuning scope and endpoint replay; no imputation or training admission",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
+  },
+  "replay_boundary_account.py": {
+   "purpose": "Full TRAIN and VALIDATION account replay and cold reload of prequalified FIT-only boundary witnesses with exact changed-action attribution; no fitting or promotion",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
+  },
   "verify_boundary_witness.py": {
    "purpose": "Nonlinear CPU replay of all budget-eligible local FIT boundary witnesses with exact in-memory restoration and no model export or account claim",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"

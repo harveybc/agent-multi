@@ -7,6 +7,37 @@ from app.causal_stl_inputs import CausalSTLColumn, endpoint_series, encode_seaso
 def config():return dict(period=6,seasonal=7,robust=False,history=64)
 
 
+def test_selected_source_uses_support_recipe(monkeypatch, tmp_path):
+    from types import SimpleNamespace
+    from tools import run_causal_stl_lane as lane
+    rec={'identity':'selected-with-restored-column'}
+    spec={'files':{}}
+    monkeypatch.setattr(lane,'read',lambda p: rec if p.name=='RECIPE.json' else spec)
+    monkeypatch.setattr(lane,'verify_files',lambda *a: None)
+    calls=[]
+    sentinel=object()
+    def build(parent, contract, selected):
+        calls.append((parent,contract,selected))
+        return sentinel
+    monkeypatch.setattr(lane,'market_for',build)
+    args=SimpleNamespace(parent=tmp_path/'parent',bundle=tmp_path/'bundle')
+    assert lane.source(args)==(spec,rec,sentinel)
+    assert calls==[(args.parent,spec,rec)]
+
+
+def test_coverage_gate_requires_every_calendar_month_not_just_present_rows():
+    import pandas as pd
+    from tools.run_causal_stl_lane import monthly_coverage, require_coverage
+    times=pd.to_datetime(['2020-01-02','2020-03-02'],utc=True).as_unit('ns').asi8
+    periods={'TRAIN':['2020-01-01','2020-04-01']}
+    report=monthly_coverage(times,np.array([True,True]),periods)
+    assert report['TRAIN']=={'2020-01':1,'2020-02':0,'2020-03':1}
+    with pytest.raises(ValueError,match='STL_EMPTY_MONTH:TRAIN/2020-02'):
+        require_coverage(report)
+    report['TRAIN']['2020-02']=1
+    require_coverage(report)
+
+
 def test_prefix_future_poison_and_stream_parity():
     t=np.arange(140);x=.01*t+np.sin(2*np.pi*t/6)
     a=endpoint_series(x,config());b=endpoint_series(x[:100],config())

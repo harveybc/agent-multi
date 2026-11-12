@@ -12,12 +12,13 @@ import torch
 
 from app.causal_stl_inputs import choose_parameters,CausalSTLColumn,encode_seasonal,OnlineSTLInputs
 from app.frozen_recipe_inputs import FrozenRecipeInputs,file_sha
-from app.rl_subset import digest,project_inputs,seal_recipe,support_hash
+from app.rl_subset import digest,seal_recipe,support_hash
+from app.selected_input_market import market_for
 from app.structural_refit import build_model,verify_files,load_bundle,export_bundle
 from app.three_signal_learning import environment
 from tools.run_bayesian_head_contrast import seal,verify_done
 from tools.run_discrete_curve_probe import configure,read,write,now
-from tools.run_structural_sac_refit import market_for,fit_epochs,assess_full
+from tools.run_structural_sac_refit import fit_epochs,assess_full
 
 ROOT=Path(__file__).resolve().parents[1]
 VARIANTS=('raw','continuous','ordinal','binary')
@@ -26,9 +27,27 @@ VARIANTS=('raw','continuous','ordinal','binary')
 def source(args):
     spec=read(args.parent/'SPEC.json');verify_files(args.parent,spec['files'])
     manifest=read(args.bundle/'MANIFEST.json');verify_files(args.bundle,manifest['files'])
-    rec=read(args.bundle/'RECIPE.json');market=market_for(args.parent,spec)
-    market.inputs=project_inputs(market.inputs,rec);market.recipe=rec
+    rec=read(args.bundle/'RECIPE.json');market=market_for(args.parent,spec,rec)
     return spec,rec,market
+
+
+def monthly_coverage(times, valid, periods):
+    times=pd.to_datetime(times,utc=True);valid=np.asarray(valid,dtype=bool)
+    if valid.shape!=(len(times),):raise ValueError('STL_COVERAGE_SHAPE')
+    report={}
+    for name,(start,end) in periods.items():
+        start=pd.Timestamp(start,tz='UTC');end=pd.Timestamp(end,tz='UTC')
+        months=pd.date_range(start.normalize().replace(day=1),end,freq='MS',inclusive='left')
+        report[name]={m.strftime('%Y-%m'):int((valid & (times>=max(start,m)) &
+            (times<min(end,m+pd.offsets.MonthBegin(1)))).sum()) for m in months}
+    return report
+
+
+def require_coverage(report):
+    missing=[f'{p}/{m}' for p,months in report.items() for m,n in months.items() if not n]
+    if not report or any(not months for months in report.values()):
+        raise ValueError('STL_EMPTY_COVERAGE')
+    if missing:raise ValueError('STL_EMPTY_MONTH:'+','.join(missing))
 
 
 def prepare(args):
@@ -53,7 +72,7 @@ def prepare(args):
         grid=dict(period=[6,12,24,48,120],seasonal=[7,13],robust=[False,True],context='max(64,4*period)'),
         origins=16,forecast_horizon=24,variants=list(VARIANTS),seed=7,
         sources={n:file_sha(ROOT/n) for n in ('app/causal_stl_inputs.py','tools/run_causal_stl_lane.py',
-            'app/frozen_recipe_inputs.py','app/structural_refit.py','tools/run_structural_sac_refit.py')})
+            'app/frozen_recipe_inputs.py','app/selected_input_market.py','app/structural_refit.py','tools/run_structural_sac_refit.py')})
     cfg['identity']=digest(cfg)
     if (args.root/'PREPARED.json').exists():
         prior=read(args.root/'CONFIG.json')
@@ -169,9 +188,11 @@ def assemble(args):
                 common=int((inputs.valid & (inputs.period==p)).sum()),
                 unavailable=int((market.inputs.valid & ~inputs.valid & (inputs.period==p)).sum())) for p in ('TRAIN','VALIDATION')})
     if len({r['support'] for r in report.values()})!=1:raise ValueError('STL_SUPPORT_UNPAIRED')
+    coverage=monthly_coverage(market.inputs.row_ts_ns,common,rec['split']['periods'])
     np.savez_compressed(out/'VALUES.npz',**variants,common=common,parent_indices=indices)
     write(out/'RESULT.json',dict(identity=cfg['identity'],variants=report,columns=results,
-        live_parity_rows=live_checks,all_features_replaced=True,no_imputation=True,
+        live_parity_rows=live_checks,all_features_replaced=True,no_imputation=True,monthly_coverage=coverage,
+        training_eligible=all(n>0 for months in coverage.values() for n in months.values()),
         diagnostic='seasonal-only may discard predictive trend/remainder; no automatic admission'))
     seal(out,cfg['identity']);print(report,flush=True)
 
@@ -183,6 +204,7 @@ def train(args):
     with np.load(args.root/'prepared/VALUES.npz') as f:
         market.inputs=pack_inputs(market.inputs,recipe,f[k],f['common'],f['parent_indices'])
     market.recipe=recipe
+    require_coverage(monthly_coverage(market.inputs.row_ts_ns,market.inputs.valid,recipe['split']['periods']))
     if support_hash(market.inputs)!=read(args.root/'prepared/RESULT.json')['variants'][k]['support']:raise ValueError('STL_TRAIN_SUPPORT')
     design=copy.deepcopy(spec['design']);design.update(head_only=False,initialize_epoch_zero=False,warmup_policy=False,
         max_epochs=2000,patience=20,min_delta=1e-8,monitor_mode='validation',monitor_start_epoch=20,

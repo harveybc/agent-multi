@@ -1,0 +1,17 @@
+{
+  "changed_rows": 21809,
+  "context_rows": 504,
+  "embargo_after": 503,
+  "embargo_before": 96,
+  "identity": "f0cb40cc89316f5a2e8fe83656456a478357216946a01385d7851b5ad645399d",
+  "limitation": "Repairs direct target-row overlap for this bounded context, not missing source data or all upstream lineage",
+  "live_model_replaced": false,
+  "overlap_after": 0,
+  "overlap_before": 898,
+  "reload_exact": true,
+  "source_unchanged": true,
+  "spec_sha256": "85e720a4ff647a553a08d520f651a55b9d0b98b655148a5daec3891fddaf5da5",
+  "training_released": false,
+  "validation_exact": true,
+  "weights_sha256": "28fe4a578a7e077df41812786f0a08a5bb2886c0610adb6cacdb0a9e136bf39a"
+}

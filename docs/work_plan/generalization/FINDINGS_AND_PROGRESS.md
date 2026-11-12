@@ -360,3 +360,29 @@ November observations. It recovered5/25/257/129 missing values in factor4,
 factor24,wavelet,Hilbert respectively, preserving frozen parameters and all
 unaffected inputs. Missing USDCHF and pre-TRAIN coverage still prevent STL
 release; they are not grounds for halting the separate actor investigation.
+
+## F-SAMPLED-GUARD-DOES-NOT-PROTECT-FULL-ACCOUNT
+
+Results305,2026-11-12: the304 fixed FIT witness crosses one desired boundary
+without panel regressions, but changes7 TRAIN and2 validation signals outside
+that local guarantee. Full-account deltas are-6.311600USD and-19.762225USD;
+cold replay is exact and chronological attribution discrepancy is0USD.
+One helpful TRAIN entry is outweighed by a harmful TRAIN entry elsewhere.
+Keep299. The next corrective guard must inspect changed TRAIN decisions across
+the account, not assume the sampled panel covers shared-head effects.
+
+## F-CAUSAL-FILTER-CAN-BREAK-CROSS-FIT-ISOLATION
+
+2026-11-12: the activity producer's original13-observation,stride2 context has
+zero direct target-row membership overlaps. Extending its context with480-row
+STL reaches504 raw observations and exposes898 rows whose historical feature
+producer was fitted using that target row. This is a TRAIN cross-fit lineage
+defect introduced by the extra context, not evidence of validation fitting or
+future observations entering the endpoint STL formula.
+
+A separate producer candidate increases embargo96 ->503 and reduces this
+direct-overlap diagnostic898 ->0, with exact cold replay and unchanged
+validation predictions. It changes21809 TRAIN rows and therefore needs a new
+source identity, parameter tuning and a matched raw control before any STL
+comparison. Never splice it silently into the preserved model or live provider.
+This bounded test is not a blanket causal certification of upstream sources.

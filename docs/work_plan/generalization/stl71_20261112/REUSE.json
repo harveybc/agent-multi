@@ -1,0 +1,21 @@
+{
+  "code_sha256": "480152ec4f240b9300179b84a6829dad60cefab5532197c9dc23115b0d20459b",
+  "compute": [
+    {
+      "column": 0,
+      "name": "OPEN@diff"
+    },
+    {
+      "column": 1,
+      "name": "RAW_BAR_LOG_RETURN"
+    },
+    {
+      "column": 3,
+      "name": "RAW_CLOSE_LOG_RETURN"
+    }
+  ],
+  "identity": "e492dab913c28a4d140218fcb10724b3b61ec788df7d9c4788777295311b7c6c",
+  "reused": 68,
+  "source_identity": "04fb822af81df2708dae1fbf7bc1105e152760244d757e5d76a734b3ac6996b8",
+  "training_released": false
+}
