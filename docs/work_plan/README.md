@@ -2,6 +2,15 @@
 
 ## Execution Update: 2026-11-12
 
+[Selected72 interior refinement298](298_SELECTED72_INTERIOR_REFINEMENT.md)
+COMPLETE: fresh25-row correct-decision guard and64 error targets;16/16 full
+steps accepted. Both seeds TRAIN15.612726 ->15.818189%,VAL18.369946% unchanged,
+747/207 trades. One additional effective SELL explains20.546375USD TRAIN gain;
+no early-close improvement.28 tests;179 worker/source/export/report files,
+four checkpoints and four exact account attributions verified. Next qualify
+both fixed endpoints and fresh-context cumulative floating (48 absent features),
+preserving all controls and source/live restrictions.
+
 [Selected72 TRAIN boundary diagnosis297](297_SELECTED72_BOUNDARY_DIAGNOSIS.md)
 COMPLETE:151 TRAIN anchors,82 executable FIT openings. Critic optimal actions
 52/82 and34/82 versus actor25/82. Native targets alone leave shared-head

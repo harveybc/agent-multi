@@ -1,0 +1,45 @@
+{
+  "checkpoint_checks": [
+    {
+      "accepted": 1,
+      "arm": "interior_error_project_guard_19",
+      "frozen_components_exact": true,
+      "minimum_margin_change": 1.1473894119262695e-06,
+      "optimizer_step_count_exact": true,
+      "point": 1
+    },
+    {
+      "accepted": 8,
+      "arm": "interior_error_project_guard_19",
+      "frozen_components_exact": true,
+      "minimum_margin_change": 1.087784767150879e-06,
+      "optimizer_step_count_exact": true,
+      "point": 8
+    },
+    {
+      "accepted": 1,
+      "arm": "interior_error_project_guard_43",
+      "frozen_components_exact": true,
+      "minimum_margin_change": 1.1585652828216553e-06,
+      "optimizer_step_count_exact": true,
+      "point": 1
+    },
+    {
+      "accepted": 8,
+      "arm": "interior_error_project_guard_43",
+      "frozen_components_exact": true,
+      "minimum_margin_change": 1.1138617992401123e-06,
+      "optimizer_step_count_exact": true,
+      "point": 8
+    }
+  ],
+  "guard_tolerance_unchanged": true,
+  "identity": "01b7b09848026446685ad813d6f2947b11a387b55775f1406a6235f8c2608da3",
+  "interior_buffer_exact": true,
+  "new_source_weights_unchanged": true,
+  "protected_fit_rows": 25,
+  "target_fit_errors": 64,
+  "target_weight_sum": 25.525292382329482,
+  "test_read": false,
+  "verified_files": 164
+}
