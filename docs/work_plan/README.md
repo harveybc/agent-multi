@@ -2,6 +2,15 @@
 
 ## Execution Update: 2026-11-11
 
+[Interior actor cumulative selection295](295_INTERIOR_ACTOR_CUMULATIVE_SELECTION.md)
+COMPLETE: qualified both294 endpoints; primary19 pass69 ->69 ->72,28 groups,
+112 evaluations, all51 historical removals tested. Added OPEN@diff,
+RAW_CLOSE_LOG_RETURN and RAW_ELAPSED_HOURS. TRAIN15.612726%,VAL18.369946%,
+746/207 orders.313 weights preserved; physical72-input export and cold/native
+accounts qualified.230 collected files verified;44 tests pass. No global feature
+limit established. Next refresh current-policy targets/calibrate72-input critics
+before bounded refinement; preserve69 and72 actors, no live promotion.
+
 [Interior FIT projection294](294_INTERIOR_FIT_PROJECTION.md) COMPLETE:
 16/16 full steps accepted with unchanged1e-7 tolerance; all26 protected FIT
 decisions preserved. Both schedules reach TRAIN14.756076%,VAL16.342145%,

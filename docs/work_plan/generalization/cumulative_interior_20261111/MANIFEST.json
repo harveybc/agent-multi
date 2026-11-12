@@ -1,0 +1,30 @@
+{
+  "identity": "4d69ec90fb9da62e42437c2f1f6b628280a6b19b4b0139c0f7cb56997e1a65f3",
+  "qualification_identity": "50539829f50f3de475b2d3f7b58e01f67e219e5ea8fc5fe8cda63b712bec5253",
+  "runtime": "2cd155be",
+  "source_receipts": {
+    "qualification": "b5e311d56f6a49c7ebcf4d7c4a25424b8c022945b949b1cb7e7ba21d1d1ec0a5",
+    "selection": "5b9cbe22ee1b895d9585baeb8aa2b1c9b5af7a3be3aa335f2618c49171c2d0ee",
+    "report": "27f866612913b0a62a271b65658bd09061de62e39567cb5dba11938e24abded5"
+  },
+  "export_receipt_sha256": "9f96e9e764fe3edf305975c754171ffe48cab703cdee207c666ae4b998905047",
+  "verified_files": {
+    "qualification": 68,
+    "selection": 130,
+    "report": 4,
+    "export": 28
+  },
+  "files": {
+    "SUMMARY.json": "d90ba1c20a7f91ffcda2b13a875c7a6fc0330a1d9f2ac174752070f21d3942e6",
+    "WEIGHT_SPACE.json": "f6a6b36044862946690b6c0196e2077239a2ce4461bb52a778b4d59cea561401",
+    "SELECTION_TRACE.json": "f367c3c1c271f06a33420326d2fec7e5a41c105ba343eae3bf0d702b7c1722ab",
+    "FEATURE_LEDGER.csv": "9f36f1e476e80b0c021e1a1cf76bfa7c6ae974ca21aff4ebb5ca2beaa798b1c1",
+    "QUALIFICATION.json": "ea2e2979e9de90b00e13ffbc2224434ee7fa993c8af456363554bdacde9ac610",
+    "SENSITIVITY.json": "bcfc27830f8467a2285cd5218c5b5e4adac34fcc44c9e53f2fbe11e4c9ad3749",
+    "EXPORT_ENTROPY_DELTA.json": "60f80f0888939053fd60dced250ba1c37048c27930101ad4db2cae16160130e0",
+    "EXPORT.json": "d2e767ba41264cc941dfae78e16d14bd2eef2238c48952b90548bb22d4c4e811"
+  },
+  "source_unchanged": true,
+  "test_read": false,
+  "model_promoted": false
+}
