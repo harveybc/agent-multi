@@ -1,0 +1,69 @@
+{
+  "account_evaluated": false,
+  "candidate_rule": "all guarded linear witnesses within drift and RMS budgets",
+  "candidates": 1,
+  "code": {
+    "app/decision_boundary_reachability.py": "5e1e2b7014933665dc515c471c97fd3859014fb50e4a26c8e8fa49143729fcaa",
+    "tools/verify_boundary_witness.py": "3a10d7b771d25c8acc047342cfd00f700a2fee3fa29ee7f8abbf2c9b3beb40f2"
+  },
+  "identity": "365110bd3123bf56c1ea45062ab95e6eb42e26ff3699e9cd3ddd62407d1ad5d1",
+  "model_exported": false,
+  "optimizer_steps": 0,
+  "qualified_candidates": 1,
+  "results": [
+    {
+      "actual_action": 2,
+      "after_loss": 2.655644423889337,
+      "before_loss": 2.6556444907802805,
+      "crossed": true,
+      "guard": {
+        "action_changes": 1,
+        "minimum_margin_change": 1.087784767150879e-06,
+        "minimum_native_value_change": 0.0,
+        "native_checked_fit_rows": 113,
+        "passed": true,
+        "protected_rows": 79,
+        "source_value_regressions": 0,
+        "suboptimal_actions": 64,
+        "violations": 0
+      },
+      "metrics": {
+        "max_kl": 3.846573443051131e-06,
+        "mean_kl": 1.5640845986345044e-07,
+        "relative_parameter_drift": 0.0008649031807102535,
+        "step_margin_rms": 0.0015245735844993844
+      },
+      "panel_index": 63,
+      "progress": {
+        "fit": {
+          "corrected": 1,
+          "decreased_preferred_probability": 40,
+          "improved_target_vs_source_margin": 25,
+          "increased_preferred_probability": 23,
+          "mean_preferred_probability_change": -4.348488512582151e-06,
+          "mean_target_vs_source_margin_change": -0.00012084293730687704,
+          "rows": 65
+        },
+        "monitor": {
+          "corrected": 0,
+          "decreased_preferred_probability": 11,
+          "improved_target_vs_source_margin": 13,
+          "increased_preferred_probability": 13,
+          "mean_preferred_probability_change": -2.878334786320921e-06,
+          "mean_target_vs_source_margin_change": 0.00016671275048887416,
+          "rows": 24
+        }
+      },
+      "qualified": true,
+      "source_action": 0,
+      "target": 2
+    }
+  ],
+  "schema": "boundary_nonlinear_cpu_probe.v1",
+  "source": "11d2060235f1d845d7d417328b9003166dd2f755fc76f18971c325958fbae02f",
+  "source_restored_exactly": true,
+  "source_sha256": "69b5254489d224d4b20ac358956e4dd3b9a67a2f214a9aff98045c5def25a536",
+  "state_tensors_verified": 1027,
+  "test_read": false,
+  "validation_inference": false
+}

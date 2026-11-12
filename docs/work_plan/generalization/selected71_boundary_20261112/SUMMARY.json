@@ -1,0 +1,39 @@
+{
+  "account_evaluated": false,
+  "actor_updates": 0,
+  "error_rows_with_one_step_rms_bound_above_budget": 62,
+  "finished_at": "2026-11-12T15:20:32.917998+00:00",
+  "fit_error_rows": 65,
+  "fit_rows": 113,
+  "gap_quantiles": [
+    0.00557255744934082,
+    0.37510960549116135,
+    0.802830308675766,
+    2.3751792311668396,
+    17.37285041809082
+  ],
+  "head_l2": 4.6087674046591145,
+  "head_parameters": 1699,
+  "identity": "11d2060235f1d845d7d417328b9003166dd2f755fc76f18971c325958fbae02f",
+  "model_promoted": false,
+  "native_updates_tested": 0,
+  "nonlinear_verified": false,
+  "proposals": {
+    "guarded": {
+      "error_rows_with_such_witness": 1,
+      "linear_witnesses": 67,
+      "unresolved": 0,
+      "witnesses_within_linear_rms_and_head_budgets": 1
+    },
+    "unguarded": {
+      "error_rows_with_such_witness": 0,
+      "linear_witnesses": 67,
+      "unresolved": 0,
+      "witnesses_within_linear_rms_and_head_budgets": 0
+    }
+  },
+  "seconds": 2.0800104409863707,
+  "target_cases": 67,
+  "test_read": false,
+  "validation_read": false
+}

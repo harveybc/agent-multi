@@ -1,6 +1,24 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "SELECTED71_SOURCE_VALUE_FLOOR_COMPLETE_ACCOUNT_TIE",
+  "current_stage": "SELECTED71_USEFUL_BOUNDARY_WITNESS_VERIFIED_CPU",
+  "selected71_boundary_reachability_304": {
+    "document": "../304_SELECTED71_BOUNDARY_REACHABILITY.md",
+    "status": "COMPLETE_ONE_NONLINEAR_FIT_CORRECTION_NO_ACCOUNT_PROMOTION",
+    "identity": "11d2060235f1d845d7d417328b9003166dd2f755fc76f18971c325958fbae02f",
+    "nonlinear_identity": "365110bd3123bf56c1ea45062ab95e6eb42e26ff3699e9cd3ddd62407d1ad5d1",
+    "focused_tests_passed": 33,
+    "fit_errors": 65,
+    "target_cases": 67,
+    "errors_above_single_step_rms_bound": 62,
+    "nonlinear_qualified_witnesses": 1,
+    "corrected_fit_errors": 1,
+    "fit_source_value_regressions": 0,
+    "state_tensors_restored_exactly": 1027,
+    "account_evaluated": false,
+    "model_exported": false,
+    "model_promoted": false,
+    "next_action": "Fixed-witness native chronological TRAIN/VAL account replay, cold reload and changed-order attribution against299; no validation fitting or promotion from sampled-panel success. Then decide on qualified refinement before the next cumulative phase2 pass. Retsu owns current source qualification under the selected71 handoff."
+  },
   "selected71_source_value_floor_303": {
     "document": "../303_SELECTED71_SOURCE_VALUE_FLOOR.md",
     "status": "COMPLETE_ACCOUNT_TIE_CONTROL_RETAINED",
