@@ -2,7 +2,8 @@ import numpy as np
 import pytest
 import torch
 
-from app.fit_decision_preservation import interior_buffer, margins, preservation, project_step
+from app.fit_decision_preservation import interior_buffer, margins, preservation, project_step, validate_fresh_calibration, protected_actions
+from app.targeted_fit_errors import error_targets
 
 
 @pytest.mark.parametrize('dtype',[torch.float32,torch.float64])
@@ -45,3 +46,26 @@ def test_interior_halfspace_and_nonlinear_guard():
 def test_infeasible_interior_does_not_fall_back_to_boundary():
     result,info=project_step(np.ones(1),np.array([[1.],[-1.]]),np.ones(2)*1e-5)
     assert not info['success'] and np.array_equal(result,np.zeros(1))
+
+
+def test_fresh_source_rejects_old_or_mismatched_diagnosis():
+    source=dict(schema='selected_input_critic_calibration.v1',actor_updates=0,modes=[],
+                identity='current',source_sha256='actor72',support_sha256='support')
+    diagnosis=dict(schema='selected_calibrated_boundary_diagnosis.v1',source='current',
+                   source_sha256='actor72',support='support',actor_updates=0,posthoc_timestamps=[])
+    validate_fresh_calibration(source,diagnosis)
+    for key,value in [('source','previous'),('source_sha256','actor69'),('support','other'),
+                      ('actor_updates',1),('posthoc_timestamps',[123])]:
+        with pytest.raises(ValueError):validate_fresh_calibration(source,dict(diagnosis,**{key:value}))
+    with pytest.raises(ValueError):validate_fresh_calibration(dict(source,modes=['calibrated_adamw']),diagnosis)
+
+
+def test_new_actor_rebuilds_error_and_guard_sets_not_old_indices():
+    native=torch.tensor([[0.,2.,1.],[0.,1.,3.],[0.,2.,1.]])
+    records=[{'role':'fit'},{'role':'fit'},{'role':'monitor'}]
+    old=torch.tensor([[3.,0.,0.],[0.,0.,3.],[0.,3.,0.]])
+    new=torch.tensor([[0.,3.,0.],[3.,0.,0.],[0.,3.,0.]])
+    assert protected_actions(old,native,records)[0].tolist()==[1]
+    assert protected_actions(new,native,records)[0].tolist()==[0]
+    assert error_targets(old,native,records)[0].tolist()==[1,-1,-1]
+    assert error_targets(new,native,records)[0].tolist()==[-1,2,-1]

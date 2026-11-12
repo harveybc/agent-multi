@@ -4,6 +4,17 @@ from scipy.optimize import minimize
 import torch
 
 
+def validate_fresh_calibration(source, diagnosis):
+    if (source.get('schema')!='selected_input_critic_calibration.v1'
+            or source.get('actor_updates')!=0 or source.get('modes')!=[]
+            or diagnosis.get('schema')!='selected_calibrated_boundary_diagnosis.v1'
+            or diagnosis.get('source')!=source.get('identity')
+            or diagnosis.get('source_sha256')!=source.get('source_sha256')
+            or diagnosis.get('support')!=source.get('support_sha256')
+            or diagnosis.get('actor_updates')!=0 or diagnosis.get('posthoc_timestamps')!=[]):
+        raise ValueError('PRESERVE_FRESH_CALIBRATION_LINEAGE')
+
+
 def protected_actions(logits, native, records):
     if logits.shape!=native.shape or logits.shape!=(len(records),3):
         raise ValueError('PRESERVE_SHAPE')

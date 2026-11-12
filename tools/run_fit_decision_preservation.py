@@ -11,7 +11,7 @@ import torch
 from app.actor_learning_diagnostics import actor_terms, clear_optimizer_memory
 from app.all_state_refinement import policy_effect, validate_panel
 from app.bounded_functional_actor import BUDGET, admissible, backtrack, budget_metrics
-from app.fit_decision_preservation import protected_actions, margins, preservation, project_step, interior_buffer
+from app.fit_decision_preservation import protected_actions, margins, preservation, project_step, interior_buffer, validate_fresh_calibration
 from app.frozen_recipe_inputs import file_sha
 from app.frozen_signal_masks import prepared_signals
 from app.operational_opening_critic import emit_actor_reference
@@ -40,7 +40,15 @@ def run(a):
     if not torch.cuda.is_available() or torch.cuda.get_device_name()!=a.expected_device_name:
         raise ValueError('PRESERVE_DEVICE')
     source=read(a.source/'CONFIG.json');verify_done(a.source,source['identity'])
-    if source['schema']!='selected_input_bounded_refinement.v1':raise ValueError('PRESERVE_SOURCE')
+    fresh=getattr(a,'fresh_calibrated',False)
+    diagnosis=None
+    if fresh:
+        if (not a.target_fit_errors or not a.interior_fit_guard or a.diagnosis is None
+                or a.prior_guard is not None or a.prior_targeted is not None):
+            raise ValueError('PRESERVE_FRESH_FLAGS')
+        diagnosis=read(a.diagnosis/'CONFIG.json');verify_done(a.diagnosis,diagnosis['identity'])
+        validate_fresh_calibration(source,diagnosis)
+    elif source['schema']!='selected_input_bounded_refinement.v1':raise ValueError('PRESERVE_SOURCE')
     parent=read(a.parent/'SPEC.json');verify_files(a.parent,parent['files'])
     exported=read(a.bundle.parent/'RESULT.json');verify_done(a.bundle.parent,exported['identity'])
     model,_=load_bundle(a.bundle,'cuda');flags={n:p.requires_grad for n,p in model.loss.named_parameters()}
@@ -67,23 +75,23 @@ def run(a):
         rows=rows[protected.cpu().numpy()].tolist(),source_margins=source_margins.cpu().tolist(),
         native_returns=native[protected].cpu().tolist(),tolerance=1e-7)
     targeted=a.target_fit_errors;interior=a.interior_fit_guard
-    if interior and (not targeted or a.prior_targeted is None):raise ValueError('PRESERVE_INTERIOR_REQUIRES_TARGETED')
+    if interior and (not targeted or (a.prior_targeted is None and not fresh)):raise ValueError('PRESERVE_INTERIOR_REQUIRES_TARGETED')
     error_labels,error_weights=error_targets(source_z,native,records)
     prior_guard=None
-    if targeted:
+    if targeted and not fresh:
         if a.prior_guard is None:raise ValueError('PRESERVE_PRIOR_REQUIRED')
         prior_guard=read(a.prior_guard/'CONFIG.json');verify_done(a.prior_guard,prior_guard['identity'])
         if (prior_guard['schema']!='fit_decision_preservation.v1'
                 or prior_guard['source_identity']!=source['identity']
                 or prior_guard['guard']!=guard):raise ValueError('PRESERVE_PRIOR_GUARD')
-    if interior:
+    if interior and not fresh:
         prior_targeted=read(a.prior_targeted/'CONFIG.json');verify_done(a.prior_targeted,prior_targeted['identity'])
         if (prior_targeted['schema']!='targeted_fit_error_correction.v1'
                 or prior_targeted['source_identity']!=source['identity'] or prior_targeted['guard']!=guard
                 or prior_targeted['error_targets']!=error_labels.cpu().tolist()
                 or prior_targeted['error_weights']!=error_weights.cpu().tolist()):
             raise ValueError('PRESERVE_INTERIOR_PRIOR')
-        buffer=interior_buffer(source_z,protected,actions)
+    if interior:buffer=interior_buffer(source_z,protected,actions)
     cfg=dict(schema='fit_decision_preservation.v1',source_identity=source['identity'],
         source_receipt_sha256=file_sha(a.source/'DONE.json'),source_sha256=sha,
         export_identity=exported['identity'],parent_identity=parent['identity'],
@@ -93,16 +101,25 @@ def run(a):
         optimizer_rejection_restores_moments=True,critic_updates=0,model_promoted=False,test_read=False,
         sources={str(p.relative_to(ROOT)):file_sha(p) for folder in ('app','tools','agent_plugins','env_plugins')
                  for p in (ROOT/folder).rglob('*.py')})
-    if targeted:
+    if targeted and not fresh:
         cfg.update(schema='targeted_fit_error_correction.v1',modes=['error_project_guard'],
             objective='advantage_weighted_fixed_fit_error_cross_entropy',
             prior_guard_identity=prior_guard['identity'],
             prior_guard_receipt_sha256=file_sha(a.prior_guard/'DONE.json'),
             error_targets=error_labels.cpu().tolist(),error_weights=error_weights.cpu().tolist())
-    if interior:
+    if interior and not fresh:
         cfg.update(schema='interior_fit_error_correction.v1',modes=['interior_error_project_guard'],
             prior_targeted_identity=prior_targeted['identity'],
             prior_targeted_receipt_sha256=file_sha(a.prior_targeted/'DONE.json'),
+            interior_buffer=buffer.cpu().tolist(),
+            interior_formula='8 * dtype_eps * (1 + abs(preferred_source_logit) + abs(other_source_logit))',
+            minimum_linear_slack=-1e-10)
+    if fresh:
+        cfg.update(schema='fresh_calibrated_interior_correction.v1',modes=['interior_error_project_guard'],
+            objective='advantage_weighted_fixed_fit_error_cross_entropy',
+            error_targets=error_labels.cpu().tolist(),error_weights=error_weights.cpu().tolist(),
+            diagnosis_identity=diagnosis['identity'],diagnosis_receipt_sha256=file_sha(a.diagnosis/'DONE.json'),
+            guard_origin='recomputed from current actor and current-policy native FIT targets',
             interior_buffer=buffer.cpu().tolist(),
             interior_formula='8 * dtype_eps * (1 + abs(preferred_source_logit) + abs(other_source_logit))',
             minimum_linear_slack=-1e-10)
@@ -127,12 +144,19 @@ def run(a):
     prior=read(a.source/'RESULT.json');results=[]
     for seed in cfg['seeds']:
         original=f'calibrated_adamw_{seed}'
-        effective=read(a.source/original/'EFFECTIVE.json')
         critic=a.source/f'critic_{seed}/MODEL.pt'
+        if fresh:
+            from tools.audit_fixed_actor_critics import covering_schedule
+            schedule=fit[covering_schedule(len(fit),8,128,seed)]
+            effective=dict(critic_sha256=file_sha(critic),sampled_rows=rows[schedule].tolist(),
+                schedule_sha256=digest(schedule.tolist()))
+            targets=None
+        else:
+            effective=read(a.source/original/'EFFECTIVE.json')
+            targets=read(a.source/original/'TARGETS.json')
+            lookup={int(r):i for i,r in enumerate(rows)}
+            schedule=np.array([[lookup[r] for r in batch] for batch in effective['sampled_rows']])
         if file_sha(critic)!=effective['critic_sha256']:raise ValueError('PRESERVE_CRITIC_IDENTITY')
-        targets=read(a.source/original/'TARGETS.json')
-        lookup={int(r):i for i,r in enumerate(rows)}
-        schedule=np.array([[lookup[r] for r in batch] for batch in effective['sampled_rows']])
         if schedule.shape!=(8,128) or any(records[i]['role']!='fit' for i in schedule.flatten()):
             raise ValueError('PRESERVE_FIT_SCHEDULE')
         for mode in cfg['modes']:
@@ -152,12 +176,13 @@ def run(a):
             params=[p for _,p in named];theta0=flat(params);fixed=frozen_state(model)
             buffers={n:v.detach().clone() for n,v in model.loss.named_buffers()}
             with torch.no_grad():q=model.q_surfaces(x).min(0).values.detach()
-            if not np.array_equal(q.cpu().numpy(),np.array(targets['effective'],dtype=np.float32)):
+            if not fresh and not np.array_equal(q.cpu().numpy(),np.array(targets['effective'],dtype=np.float32)):
                 raise ValueError('PRESERVE_Q_PARITY')
             alpha=model.loss.log_alpha.detach().exp();steps=[];points=[dict(updates=0,metrics=reference)]
             write(out/'EFFECTIVE.json',dict(critic_sha256=file_sha(critic),sampled_rows=effective['sampled_rows'],
                 source_schedule_sha256=effective['schedule_sha256'],alpha=float(alpha),
                 trainable=[n for n,_ in named],guard_sha256=file_sha(a.output/'GUARD.json')))
+            if fresh:write(out/'CRITIC_DIAGNOSTIC.json',dict(q=q.cpu().tolist(),actor_objective_uses_q=False))
             for step, batch in enumerate(schedule,1):
                 ix=torch.tensor(batch,device='cuda');theta=flat(params)
                 before=[p.detach().clone() for p in params];optim_before=copy.deepcopy(model.optimizer.state_dict())
@@ -244,7 +269,7 @@ def run(a):
                         changed_actions={p:int((z[market.inputs.valid&(market.inputs.period==p)].argmax(-1)!=
                             baseline[market.inputs.valid&(market.inputs.period==p)].argmax(-1)).sum()) for p in metrics}))
                     write(out/'POINTS.json',points);del cold
-            result=dict(arm=key,seed=seed,critic='sealed290',entropy='none_corrective' if targeted else 'native',points=points,steps=steps,
+            result=dict(arm=key,seed=seed,critic='sealed296' if fresh else 'sealed290',entropy='none_corrective' if targeted else 'native',points=points,steps=steps,
                 accepted_steps=sum(s['accepted'] for s in steps),frozen_exact=True,cold_exact=True,model_promoted=False)
             write(out/'RESULT.json',result);seal(out,cfg['identity']);results.append(result)
     attribution=[]
@@ -267,10 +292,11 @@ def run(a):
     axes[1].legend(fontsize=7);fig.tight_layout();fig.savefig(a.output/'RETURNS.png');plt.close(fig)
     if file_sha(a.bundle/'model.pt')!=sha:raise ValueError('PRESERVE_SOURCE_CHANGED')
     verify_done(a.source,source['identity']);verify_done(a.bundle.parent,exported['identity'])
-    if targeted:verify_done(a.prior_guard,prior_guard['identity'])
-    if interior:verify_done(a.prior_targeted,prior_targeted['identity'])
+    if targeted and not fresh:verify_done(a.prior_guard,prior_guard['identity'])
+    if interior and not fresh:verify_done(a.prior_targeted,prior_targeted['identity'])
+    if fresh:verify_done(a.diagnosis,diagnosis['identity'])
     write(a.output/'RESULT.json',dict(identity=cfg['identity'],reference=reference,arms=results,
-        prior_controls=prior['arms'],attribution=attribution,protected_rows=len(protected),
+        prior_controls=prior.get('arms',[]),attribution=attribution,protected_rows=len(protected),
         source_unchanged=True,test_read=False,model_promoted=False,seconds=time.monotonic()-started,finished_at=now()))
     seal(a.output,cfg['identity']);progress('COMPLETE')
 
@@ -283,6 +309,8 @@ if __name__=='__main__':
     parser.add_argument('--prior-guard',type=Path)
     parser.add_argument('--interior-fit-guard',action='store_true')
     parser.add_argument('--prior-targeted',type=Path)
+    parser.add_argument('--fresh-calibrated',action='store_true')
+    parser.add_argument('--diagnosis',type=Path)
     args=parser.parse_args();args.output.mkdir(parents=True,exist_ok=True)
     with (args.output/'worker.lock').open('a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
