@@ -13,7 +13,7 @@ from app.all_state_refinement import validate_panel
 from app.frozen_recipe_inputs import file_sha
 from app.rl_subset import digest, support_hash
 from app.selected_input_market import market_for
-from app.selected_refinement_diagnosis import adaptive_parts, action_quality
+from app.selected_refinement_diagnosis import adaptive_parts, action_quality, optimal_mass_derivative, validate_diagnostic_source
 from app.structural_refit import load_bundle, verify_files
 from tools.diagnose_warmstart_drift import set_arm
 from tools.run_bayesian_head_contrast import seal, verify_done
@@ -36,8 +36,8 @@ def run(a):
     started = time.monotonic()
     configure(291)
     source = read(a.source/'CONFIG.json')
-    if source['schema'] != 'selected_input_bounded_refinement.v1':
-        raise ValueError('SELECTED_DIAG_SOURCE')
+    calibration_only = getattr(a, 'calibration_only', False)
+    validate_diagnostic_source(source['schema'], calibration_only)
     verify_done(a.source, source['identity'])
     export = read(a.bundle.parent/'RESULT.json')
     verify_done(a.bundle.parent, export['identity'])
@@ -57,15 +57,18 @@ def run(a):
             or not (market.inputs.period[rows] == 'TRAIN').all()
             or market.inputs.row_ts_ns[rows].tolist() != [r['timestamp'] for r in records]):
         raise ValueError('SELECTED_DIAG_PANEL')
-    report_cfg = read(a.report/'CONFIG.json')
-    report_identity = digest(report_cfg)
-    verify_done(a.report, report_identity)
-    if (report_cfg['source'] != source['identity']
-            or report_cfg['receipt_sha256'] != file_sha(a.source/'DONE.json')):
-        raise ValueError('SELECTED_DIAG_REPORT_LINEAGE')
-    report = read(a.report/'SUMMARY.json')
-    events = sorted({e['timestamp'] for account in report['accounts'] if account['period']=='VALIDATION'
-                     for e in account['effective_events']})
+    events = []; report_identity = None
+    if not calibration_only:
+        if a.report is None:raise ValueError('SELECTED_DIAG_REPORT_REQUIRED')
+        report_cfg = read(a.report/'CONFIG.json')
+        report_identity = digest(report_cfg)
+        verify_done(a.report, report_identity)
+        if (report_cfg['source'] != source['identity']
+                or report_cfg['receipt_sha256'] != file_sha(a.source/'DONE.json')):
+            raise ValueError('SELECTED_DIAG_REPORT_LINEAGE')
+        report = read(a.report/'SUMMARY.json')
+        events = sorted({e['timestamp'] for account in report['accounts'] if account['period']=='VALIDATION'
+                         for e in account['effective_events']})
     event_rows = []
     for stamp in events:
         ix = np.flatnonzero(market.inputs.row_ts_ns == stamp)
@@ -88,6 +91,10 @@ def run(a):
                code={str(p.relative_to(Path(__file__).resolve().parents[1])):file_sha(p)
                      for folder in ('app','tools','agent_plugins')
                      for p in (Path(__file__).resolve().parents[1]/folder).rglob('*.py')})
+    if calibration_only:
+        cfg.update(schema='selected_calibrated_boundary_diagnosis.v1', actor_updates=0,
+                   validation_read=False, batch=128, schedule='first of fixed8 covering schedule per seed',
+                   optimal_probability='total probability mass of all native optima within1e-8')
     cfg['identity'] = digest(cfg)
     if (a.output/'CONFIG.json').exists() and read(a.output/'CONFIG.json') != cfg:
         raise ValueError('SELECTED_DIAG_CONFIG')
@@ -111,15 +118,23 @@ def run(a):
     for seed in source['seeds']:
         key = f'calibrated_adamw_{seed}'
         print(dict(stage='DIAGNOSE', seed=seed, seconds=time.monotonic()-started), flush=True)
-        effective = read(a.source/key/'EFFECTIVE.json')
-        targets = read(a.source/key/'TARGETS.json')
+        effective = read(a.source/key/'EFFECTIVE.json') if not calibration_only else None
+        targets = read(a.source/key/'TARGETS.json') if not calibration_only else None
         model.load(a.source/f'critic_{seed}/MODEL.pt'); params = [p for _,p in head(model)]
         if not torch.equal(flat(params), theta): raise ValueError('SELECTED_DIAG_ACTOR')
         with torch.no_grad(): measured_q = model.q_surfaces(x).min(0).values.double()
-        q = torch.tensor(targets['effective'], dtype=torch.double)
+        q = measured_q[:n].clone() if calibration_only else torch.tensor(targets['effective'], dtype=torch.double)
         torch.testing.assert_close(measured_q[:n], q, atol=1e-5, rtol=1e-5)
         lookup = {r:i for i,r in enumerate(rows)}
-        indices = torch.tensor([lookup[r] for r in effective['sampled_rows'][0]])
+        if calibration_only:
+            from tools.audit_fixed_actor_critics import covering_schedule
+            indices = fit[torch.tensor(covering_schedule(len(fit),8,128,seed)[0])]
+            effective = dict(learning_rate=model.optimizer.param_groups[0]['lr'],
+                weight_decay=model.optimizer.param_groups[0]['weight_decay'],
+                alpha=float(model.loss.log_alpha.detach().exp()),
+                critic_sha256=file_sha(a.source/f'critic_{seed}/MODEL.pt'))
+        else:
+            indices = torch.tensor([lookup[r] for r in effective['sampled_rows'][0]])
         if any(records[i]['role'] != 'fit' for i in indices.tolist()):
             raise ValueError('SELECTED_DIAG_FIT_ONLY')
         if file_sha(a.source/f'critic_{seed}/MODEL.pt') != effective['critic_sha256']:
@@ -148,7 +163,8 @@ def run(a):
                 group_result = {}
                 for stage, margin in stages.items():
                     dp = probability_derivative(z0.softmax(-1),margin)[:n]
-                    selected = dp.gather(1,best[:,None]).squeeze(1)
+                    selected = (optimal_mass_derivative(native,dp) if calibration_only
+                                else dp.gather(1,best[:,None]).squeeze(1))
                     gaps = native[:,1:]-native[:,:1]
                     positive = (gaps > 1e-8) & mask[:,None]
                     group_result[stage] = dict(
@@ -160,6 +176,15 @@ def run(a):
                 detail[group] = group_result
             controls[name] = dict(autograd_max_error=error,groups=detail)
             projections[name] = stages
+        if calibration_only:
+            if not torch.equal(flat(params),theta):raise ValueError('DIAG_CHANGED_ACTOR')
+            summary['arms'].append(dict(arm=f'calibrated_{seed}',seed=seed,
+                critic_quality={g:action_quality(native[m],q[m]) for g,m in masks.items()},
+                actor_quality={g:action_quality(native[m],z0[:n][m]) for g,m in masks.items()},
+                controls=controls,alpha=alpha,effective=effective,
+                sampled_fit_indices=indices.tolist(),actor_updates=0))
+            write(a.output/'SUMMARY.json',summary)
+            continue
         # Replay only the already-saved first update on disposable in-memory weights.
         clear_optimizer_memory(model.optimizer)
         before = [p.detach().clone() for p in params]
@@ -214,7 +239,8 @@ def run(a):
     np.savez_compressed(a.output/'PROJECTIONS.npz',**arrays)
     if file_sha(a.bundle/'model.pt')!=sha:raise ValueError('SELECTED_DIAG_SOURCE_CHANGED')
     verify_done(a.source,source['identity']);verify_done(a.bundle.parent,export['identity'])
-    verify_done(a.report,report_identity)
+    if not calibration_only:verify_done(a.report,report_identity)
+    if calibration_only:summary.update(actor_updates=0,validation_read=False)
     summary.update(seconds=time.monotonic()-started,source_unchanged=True,finished_at=now())
     write(a.output/'SUMMARY.json',summary);seal(a.output,cfg['identity'])
     print(dict(stage='COMPLETE',seconds=summary['seconds'],identity=cfg['identity']),flush=True)
@@ -222,8 +248,10 @@ def run(a):
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
-    for key in ('source','bundle','parent','report','output'):
+    for key in ('source','bundle','parent','output'):
         parser.add_argument('--'+key,type=Path,required=True)
+    parser.add_argument('--report',type=Path)
+    parser.add_argument('--calibration-only',action='store_true')
     args=parser.parse_args();args.output.mkdir(parents=True,exist_ok=True)
     with (args.output/'worker.lock').open('a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)

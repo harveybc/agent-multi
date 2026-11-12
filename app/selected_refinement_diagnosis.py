@@ -2,6 +2,22 @@
 import torch
 
 
+def validate_diagnostic_source(schema, calibration_only):
+    expected = ('selected_input_critic_calibration.v1' if calibration_only
+                else 'selected_input_bounded_refinement.v1')
+    if schema != expected:
+        raise ValueError('SELECTED_DIAG_SOURCE')
+
+
+def optimal_mass_derivative(native, derivative, tolerance=1e-8):
+    """All tied native optima count, not just the first argmax class."""
+    if (native.shape != derivative.shape or native.ndim != 2 or native.shape[1] != 3
+            or not torch.isfinite(native).all() or not torch.isfinite(derivative).all()):
+        raise ValueError('OPTIMAL_MASS_SHAPE_OR_FINITE')
+    optimal = native >= native.max(-1, keepdim=True).values - tolerance
+    return (derivative * optimal).sum(-1)
+
+
 def adaptive_parts(part, weights, margin_jacobian, theta, lr, decay, eps):
     g = part['batch_gradient']
     scale = lr / (g.abs() + eps)

@@ -1,7 +1,8 @@
 import torch
+import pytest
 
 from app.actor_gradient_coupling import decompose, first_adamw_delta
-from app.selected_refinement_diagnosis import adaptive_parts, action_quality
+from app.selected_refinement_diagnosis import adaptive_parts, action_quality, optimal_mass_derivative, validate_diagnostic_source
 
 
 def test_adaptive_self_cross_decay_reconstruct_step():
@@ -36,3 +37,18 @@ def test_optimal_action_not_just_positive_gap_and_ties():
     assert got['mean_regret'] == .5
     assert got['beneficial_gap_sign_errors'] == 0
     assert got['unique_native_optimum'] == 1
+
+
+def test_native_ties_use_joint_optimal_mass_not_first_argmax():
+    native = torch.tensor([[1.,1.,0.],[0.,0.,0.],[0.,2.,1.]],dtype=torch.double)
+    change = torch.tensor([[-.1,.2,-.1],[-.1,.2,-.1],[.1,-.2,.1]],dtype=torch.double)
+    torch.testing.assert_close(optimal_mass_derivative(native,change),
+                               torch.tensor([.1,0.,-.2],dtype=torch.double))
+    with pytest.raises(ValueError):optimal_mass_derivative(native,change*float('nan'))
+
+
+def test_calibration_and_refinement_sources_cannot_be_interchanged():
+    validate_diagnostic_source('selected_input_critic_calibration.v1',True)
+    validate_diagnostic_source('selected_input_bounded_refinement.v1',False)
+    with pytest.raises(ValueError):validate_diagnostic_source('selected_input_critic_calibration.v1',False)
+    with pytest.raises(ValueError):validate_diagnostic_source('selected_input_bounded_refinement.v1',True)
