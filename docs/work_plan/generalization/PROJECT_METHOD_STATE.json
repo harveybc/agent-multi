@@ -1,6 +1,24 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "INTERIOR_FIT_PROJECTION_COMPLETE",
+  "current_stage": "INTERIOR_ACTOR_CUMULATIVE_SELECTION_READY",
+  "interior_actor_selection_295": {
+    "document": "../295_INTERIOR_ACTOR_CUMULATIVE_SELECTION.md",
+    "status": "READY",
+    "source_step": 294,
+    "primary_seed": 19,
+    "seeds": [19,43],
+    "fixed_endpoint": 8,
+    "initial_features": 69,
+    "groups": 28,
+    "universe": 120,
+    "historical_absent": 51,
+    "new_optimizer_steps": 0,
+    "fresh_cache": true,
+    "tests_passed": 44,
+    "test_read": false,
+    "model_promoted": false,
+    "next_action": "Qualify both interior endpoint8 actors; fresh primary19 ordered deletion and cumulative phase2 return; independent cache/weights/cold/account audit. Preserve source and avoid identical repeat or automatic refit."
+  },
   "interior_fit_projection_294": {
     "document": "../294_INTERIOR_FIT_PROJECTION.md",
     "status": "COMPLETE",

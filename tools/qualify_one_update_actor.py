@@ -14,6 +14,7 @@ from app.actor_checkpoint_qualification import (
 from app.frozen_recipe_inputs import file_sha
 from app.frozen_signal_masks import prepared_signals
 from app.rl_subset import digest, project_inputs, support_hash
+from app.selected_input_market import market_for as selected_market_for
 from app.structural_refit import export_bundle, load_bundle, verify_files
 from app.three_signal_learning import emit, environment, evaluate
 from tools.run_bayesian_head_contrast import seal, verify_done
@@ -36,8 +37,11 @@ def run(a):
     if (parent['identity'] != source['parent_identity'] or
             file_sha(a.bundle/'model.pt') != source['source_sha256']):
         raise ValueError('QUALIFY_LINEAGE')
-    market = market_for(a.parent, parent)
-    market.inputs = project_inputs(market.inputs, model.recipe); market.recipe = model.recipe
+    if a.profile == 'interior_error8':
+        market = selected_market_for(a.parent, parent, model.recipe)
+    else:
+        market = market_for(a.parent, parent)
+        market.inputs = project_inputs(market.inputs, model.recipe); market.recipe = model.recipe
     if (support_hash(market.inputs) != source['support_sha256'] or
             set(model.recipe['split']['periods']) != {'TRAIN', 'VALIDATION'} or
             len(model.recipe['list']['columns']) != 69):
@@ -90,7 +94,7 @@ def run(a):
 
     progress('REFERENCE_REPLAY')
     baseline, _ = emit(model, market.inputs)
-    expected_reference = (read(a.source/'RESULT.json')['reference'] if a.profile in ('bounded_critic8', 'coverage_narrow8')
+    expected_reference = (read(a.source/'RESULT.json')['reference'] if a.profile in ('bounded_critic8', 'coverage_narrow8', 'interior_error8')
                           else read(a.source/'REFERENCE.json'))
     reference = accounts(baseline, a.output/'reference', expected_reference, a.source/'reference')
     ref_state = {n: v.detach().clone() for n, v in model.loss.state_dict().items()}
@@ -164,7 +168,7 @@ if __name__ == '__main__':
     for key in ('parent', 'source', 'bundle', 'output'):
         parser.add_argument('--'+key, type=Path, required=True)
     parser.add_argument('--threads', type=int, choices=range(1, 9), default=2)
-    parser.add_argument('--profile', choices=['one_update', 'boundary_absolute8', 'bounded_critic8', 'coverage_narrow8'], default='one_update')
+    parser.add_argument('--profile', choices=['one_update', 'boundary_absolute8', 'bounded_critic8', 'coverage_narrow8', 'interior_error8'], default='one_update')
     args = parser.parse_args()
     for source_path in (args.parent, args.source, args.bundle, ROOT):
         if args.output.resolve().is_relative_to(source_path.resolve()):

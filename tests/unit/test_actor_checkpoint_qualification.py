@@ -87,6 +87,17 @@ def test_coverage_profile_pins_narrow_and_fixed_endpoint():
             qualification_profile(dict(source,**{key:value}),'coverage_narrow8')
 
 
+def test_interior_profile_pins_corrected_run_and_fixed_endpoint():
+    source=dict(schema='interior_fit_error_correction.v1',primary_endpoint=8,
+                points=[0,1,8],seeds=[19,43],test_read=False,
+                modes=['interior_error_project_guard'])
+    assert qualification_profile(source,'interior_error8')==('interior_error_project_guard',8)
+    for key,value in [('schema','targeted_fit_error_correction.v1'),('primary_endpoint',1),
+                      ('points',[0,8]),('seeds',[43]),('test_read',True),('modes',['error_project_guard'])]:
+        with pytest.raises(ValueError,match='QUALIFY_PROFILE'):
+            qualification_profile(dict(source,**{key:value}),'interior_error8')
+
+
 def test_trace_and_tensor_tampering():
     exact_trace([{'signal': 1}], [{'signal': 1}])
     with pytest.raises(ValueError, match='TRACE_PARITY'):
