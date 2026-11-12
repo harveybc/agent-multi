@@ -33,6 +33,16 @@ from app.selected_input_market import market_for
 ROOT=Path(__file__).resolve().parents[1]
 
 
+def calibration_only_config(cfg, refine, requested):
+    if not requested:
+        return cfg
+    if not refine:
+        raise ValueError('CALIBRATION_ONLY_REQUIRES_REFINE_EXPORT')
+    return dict(cfg, schema='selected_input_critic_calibration.v1', modes=[],
+                points=[0], primary_endpoint=0, actor_updates=0,
+                targets='refreshed native FIT returns; actor unchanged; MONITOR diagnostic only')
+
+
 def run(a):
     refine=a.refine_export
     coverage=a.coverage_contrast
@@ -100,6 +110,7 @@ def run(a):
         cfg.update(schema='selected_input_bounded_refinement.v1',modes=['calibrated_adamw'],
             critic='fresh heads on actor-initialized changed-input encoders; own-policy FIT calibration',
             critic_updates=4096,targets='critic values after FIT-only calibration; MONITOR diagnostics only')
+    cfg=calibration_only_config(cfg,refine,getattr(a,'calibration_only',False))
     cfg['identity']=digest(cfg)
     if (a.output/'CONFIG.json').exists() and read(a.output/'CONFIG.json')!=cfg:raise ValueError('FUNCTIONAL_CONFIG')
     write(a.output/'CONFIG.json',cfg)
@@ -166,6 +177,11 @@ def run(a):
                     raise ValueError('REFINE_CRITIC_CHANGED_ACTOR')
                 save_canonical(calibration_model,fitted/'MODEL.pt',flags)
                 write(fitted/'RESULT.json',receipt);seal(fitted,cfg['identity']);del calibration_model
+            if getattr(a,'calibration_only',False):
+                cold,_=load_bundle(a.bundle,'cuda');cold.load(fitted/'MODEL.pt')
+                if not np.array_equal(logits(cold)[market.inputs.valid],baseline[market.inputs.valid]):
+                    raise ValueError('CALIBRATION_COLD_ACTOR_CHANGED')
+                del cold
         for mode in cfg['modes']:
             train_fit=(np.array([i for i,r in enumerate(records) if r['role']=='fit' and
                                 r['timestamp'] in narrow_times]) if mode=='critic_narrow' else fit)
@@ -272,6 +288,14 @@ def run(a):
                 points=points,steps=steps,accepted_steps=sum(s['accepted'] for s in steps),
                 frozen_exact=True,cold_exact=True,model_promoted=False)
             write(out/'RESULT.json',result);seal(out,cfg['identity']);results.append(result);del model
+    if getattr(a,'calibration_only',False):
+        if file_sha(a.bundle/'model.pt')!=source_sha:raise ValueError('FUNCTIONAL_SOURCE_CHANGED')
+        verify_done(qroot,qid);verify_done(a.source,source['identity'])
+        write(a.output/'RESULT.json',dict(identity=cfg['identity'],reference=reference,
+            critics={str(seed):read(a.output/f'critic_{seed}/RESULT.json') for seed in cfg['seeds']},
+            actor_updates=0,actor_cold_exact=True,model_promoted=False,test_read=False,
+            source_unchanged=True,seconds=time.monotonic()-started,finished_at=now()))
+        seal(a.output,cfg['identity']);progress('COMPLETE');return
     attribution=[]
     for r in results:
         if r['seed']!=19:continue
@@ -308,6 +332,7 @@ if __name__=='__main__':
     mode.add_argument('--target-contrast',action='store_true')
     mode.add_argument('--coverage-contrast',action='store_true')
     mode.add_argument('--refine-export',action='store_true')
+    p.add_argument('--calibration-only',action='store_true')
     a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
     with (a.output/'worker.lock').open('a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
