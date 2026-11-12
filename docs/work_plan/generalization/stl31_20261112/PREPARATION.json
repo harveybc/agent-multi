@@ -1,0 +1,331 @@
+{
+  "activity_excluded": true,
+  "all_features_replaced": true,
+  "features": 31,
+  "groups": 11,
+  "identity": "23a1826fbd6cbc1300cf22f5faf128901b6670350537d48b6042abbaea7c1af0",
+  "input_features": 71,
+  "live_parity_rows": [
+    214,
+    7939,
+    15664,
+    23389,
+    31115
+  ],
+  "model_promoted": false,
+  "monthly_coverage": {
+    "TRAIN": {
+      "2020-01": 245,
+      "2020-02": 480,
+      "2020-03": 530,
+      "2020-04": 528,
+      "2020-05": 504,
+      "2020-06": 528,
+      "2020-07": 550,
+      "2020-08": 506,
+      "2020-09": 528,
+      "2020-10": 526,
+      "2020-11": 492,
+      "2020-12": 521,
+      "2021-01": 481,
+      "2021-02": 480,
+      "2021-03": 553,
+      "2021-04": 526,
+      "2021-05": 506,
+      "2021-06": 528,
+      "2021-07": 526,
+      "2021-08": 517,
+      "2021-09": 528,
+      "2021-10": 504,
+      "2021-11": 527,
+      "2021-12": 546,
+      "2022-01": 505,
+      "2022-02": 480,
+      "2022-03": 553,
+      "2022-04": 502,
+      "2022-05": 336,
+      "2022-06": 441,
+      "2022-07": 504,
+      "2022-08": 552,
+      "2022-09": 526,
+      "2022-10": 506,
+      "2022-11": 527,
+      "2022-12": 518,
+      "2023-01": 520,
+      "2023-02": 480,
+      "2023-03": 551,
+      "2023-04": 482,
+      "2023-05": 552,
+      "2023-06": 526,
+      "2023-07": 506,
+      "2023-08": 552,
+      "2023-09": 502,
+      "2023-10": 530,
+      "2023-11": 493,
+      "2023-12": 222
+    },
+    "VALIDATION": {
+      "2024-01": 521,
+      "2024-02": 504,
+      "2024-03": 505,
+      "2024-04": 528,
+      "2024-05": 550,
+      "2024-06": 482,
+      "2024-07": 552,
+      "2024-08": 513,
+      "2024-09": 506,
+      "2024-10": 552,
+      "2024-11": 502,
+      "2024-12": 493
+    }
+  },
+  "no_imputation": true,
+  "original_support_preserved": true,
+  "removed": {
+    "BB_position": [
+      "lost_reference_TRAIN_windows:241"
+    ],
+    "CCI": [
+      "lost_reference_TRAIN_windows:241"
+    ],
+    "OPEN@diff": [
+      "lost_reference_TRAIN_windows:223"
+    ],
+    "RAW_BAR_LOG_RETURN": [
+      "lost_reference_TRAIN_windows:222"
+    ],
+    "Stochastic_D": [
+      "lost_reference_TRAIN_windows:239"
+    ],
+    "act.p_hit": [
+      "lost_reference_TRAIN_windows:222",
+      "unresolved_fitted_context_scope"
+    ],
+    "cdl.body_pips": [
+      "lost_reference_TRAIN_windows:222"
+    ],
+    "cdl.close_minus_low_pips@asinh": [
+      "lost_reference_TRAIN_windows:222"
+    ],
+    "fac.fx_f1.ret_24": [
+      "empty_TRAIN_month:2020-01",
+      "empty_TRAIN_month:2023-12",
+      "lost_reference_TRAIN_windows:715"
+    ],
+    "fac.fx_f1.ret_4": [
+      "empty_TRAIN_month:2023-12",
+      "lost_reference_TRAIN_windows:675"
+    ],
+    "hb.eur.inst_freq": [
+      "empty_TRAIN_month:2020-01",
+      "empty_TRAIN_month:2023-12",
+      "lost_reference_TRAIN_windows:572"
+    ],
+    "hb.lc_detr.inst_freq": [
+      "empty_TRAIN_month:2020-01",
+      "lost_reference_TRAIN_windows:349"
+    ],
+    "hb.r1.phase_cos": [
+      "lost_reference_TRAIN_windows:62"
+    ],
+    "hb.r1.phase_sin": [
+      "lost_reference_TRAIN_windows:62"
+    ],
+    "px.close_loc_1": [
+      "lost_reference_TRAIN_windows:222"
+    ],
+    "px.close_loc_12": [
+      "lost_reference_TRAIN_windows:233"
+    ],
+    "px.close_loc_24": [
+      "empty_TRAIN_month:2020-01",
+      "lost_reference_TRAIN_windows:245"
+    ],
+    "px.close_loc_4": [
+      "lost_reference_TRAIN_windows:225"
+    ],
+    "px.er_12": [
+      "lost_reference_TRAIN_windows:234"
+    ],
+    "px.er_2": [
+      "lost_reference_TRAIN_windows:1206"
+    ],
+    "px.er_48": [
+      "empty_TRAIN_month:2020-01",
+      "lost_reference_TRAIN_windows:270"
+    ],
+    "px.er_6": [
+      "lost_reference_TRAIN_windows:228"
+    ],
+    "px.hours_since_session_open": [
+      "lost_reference_TRAIN_windows:222"
+    ],
+    "rg.gmm.entropy": [
+      "empty_TRAIN_month:2020-01",
+      "lost_reference_TRAIN_windows:246"
+    ],
+    "rg.gmm.p0": [
+      "atomic_block:rg.gmm.p0,rg.gmm.p1,rg.gmm.p2"
+    ],
+    "rg.gmm.p1": [
+      "empty_TRAIN_month:2020-01",
+      "lost_reference_TRAIN_windows:246"
+    ],
+    "rg.gmm.p2": [
+      "atomic_block:rg.gmm.p0,rg.gmm.p1,rg.gmm.p2"
+    ],
+    "ssa.c2_pips": [
+      "empty_TRAIN_month:2020-01",
+      "lost_reference_TRAIN_windows:341"
+    ],
+    "ssa.c3_pips": [
+      "empty_TRAIN_month:2020-01",
+      "lost_reference_TRAIN_windows:341"
+    ],
+    "wv.lc.A4@diff": [
+      "empty_TRAIN_month:2020-01",
+      "lost_reference_TRAIN_windows:478"
+    ],
+    "wv.lc.D2": [
+      "lost_reference_TRAIN_windows:93"
+    ],
+    "wv.lc.D3": [
+      "empty_TRAIN_month:2020-01",
+      "lost_reference_TRAIN_windows:477"
+    ],
+    "wv.lc.D4": [
+      "empty_TRAIN_month:2020-01",
+      "lost_reference_TRAIN_windows:477"
+    ],
+    "wv.lc.energy_D1@diff": [
+      "lost_reference_TRAIN_windows:94"
+    ],
+    "wv.lc.energy_D2@log": [
+      "lost_reference_TRAIN_windows:93"
+    ],
+    "wv.r1.D3": [
+      "empty_TRAIN_month:2020-01",
+      "lost_reference_TRAIN_windows:478"
+    ],
+    "wv.r1.energy_D1@diff": [
+      "lost_reference_TRAIN_windows:95"
+    ],
+    "wv.r1.energy_D2@log": [
+      "lost_reference_TRAIN_windows:94"
+    ],
+    "wv.r1.energy_D3@log": [
+      "lost_reference_TRAIN_windows:94"
+    ],
+    "wv.usd.A4": [
+      "empty_TRAIN_month:2020-01",
+      "empty_TRAIN_month:2022-06",
+      "empty_TRAIN_month:2023-12",
+      "lost_reference_TRAIN_windows:1179"
+    ]
+  },
+  "selected": [
+    "RAW_LOG_RANGE@log",
+    "RAW_CLOSE_LOG_RETURN",
+    "ATR",
+    "BB_Width",
+    "ATR_ratio",
+    "rolling_std_24",
+    "cal.utc_session_europe",
+    "cal.london_hod_sin",
+    "cal.london_hod_cos",
+    "px.logret_1",
+    "px.logret_4",
+    "px.logret_24",
+    "px.range_1@log",
+    "px.range_2@log",
+    "px.range_4@log",
+    "px.range_6@log",
+    "px.range_48",
+    "px.close_loc_48",
+    "cdl.lower_wick_pips@asinh",
+    "cdl.range_pips@asinh",
+    "cdl.high_minus_close_pips@asinh",
+    "dly.us10y.chg_1d",
+    "dly.us10y.chg_5d",
+    "cot.eur.net_long",
+    "cot.eur.net_share",
+    "cot.eur.net_z156",
+    "ev.tokyo_fix.hours_since",
+    "ev.tokyo_fix.hours_to",
+    "ev.london_fix.hours_to",
+    "ev.ny_cut.hours_to",
+    "kf.lc.level_minus_close"
+  ],
+  "source_identity": "e492dab913c28a4d140218fcb10724b3b61ec788df7d9c4788777295311b7c6c",
+  "source_model_unchanged": true,
+  "source_repair_spliced": false,
+  "test_read": false,
+  "training_eligible": true,
+  "variants": {
+    "binary": {
+      "periods": {
+        "TRAIN": {
+          "common": 24026
+        },
+        "VALIDATION": {
+          "common": 6208
+        }
+      },
+      "shape": [
+        30859,
+        13,
+        31
+      ],
+      "support": "28d6088a92173592f39e221c1c2ab1efc9094e614eeccb11c9ae23cf14878c98"
+    },
+    "continuous": {
+      "periods": {
+        "TRAIN": {
+          "common": 24026
+        },
+        "VALIDATION": {
+          "common": 6208
+        }
+      },
+      "shape": [
+        30859,
+        13,
+        31
+      ],
+      "support": "28d6088a92173592f39e221c1c2ab1efc9094e614eeccb11c9ae23cf14878c98"
+    },
+    "ordinal": {
+      "periods": {
+        "TRAIN": {
+          "common": 24026
+        },
+        "VALIDATION": {
+          "common": 6208
+        }
+      },
+      "shape": [
+        30859,
+        13,
+        31
+      ],
+      "support": "28d6088a92173592f39e221c1c2ab1efc9094e614eeccb11c9ae23cf14878c98"
+    },
+    "raw": {
+      "periods": {
+        "TRAIN": {
+          "common": 24026
+        },
+        "VALIDATION": {
+          "common": 6208
+        }
+      },
+      "shape": [
+        30859,
+        13,
+        31
+      ],
+      "support": "28d6088a92173592f39e221c1c2ab1efc9094e614eeccb11c9ae23cf14878c98"
+    }
+  },
+  "receipt_sha256": "eaa620a09183fde91c8dd5c1643cd5bf0850e09d42fc347668ff8a20ffef0c4e"
+}

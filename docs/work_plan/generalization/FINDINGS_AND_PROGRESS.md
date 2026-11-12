@@ -410,3 +410,19 @@ STL71 independently completed all columns and recovered479 windows through
 the qualified FX repair. Two empty months and the not-yet-integrated activity
 scope repair still prevent matched training. The queue must distinguish
 completed preprocessing from an admitted dataset and from a running GPU job.
+
+## F-NONEMPTY-MONTH-IS-NOT-SUPPORT-PRESERVATION
+
+2026-11-12,308: after the owner authorized removal of blocking STL features,
+a53-column candidate passed the old nonempty-month gate but retained only4
+January2020 windows. It was superseded before training. The final availability
+criterion rejects every column losing any original TRAIN window and preserves
+coherent blocks; validation does not choose the subset.31 of71 inputs remain,
+and the frozen confirmation verifies exact original support in both periods:
+24026 TRAIN and6208 validation windows. No synthetic filling or window reduction.
+
+This is a separate raw31/seasonal31 experiment, not a predictive feature-selection
+claim or a change to the live selected71 model. Forty removals have explicit
+availability/scope/coherence reasons. Both actual GPU workers entered training;
+continuous->ordinal and raw->binary are sequential, resumable queues. The
+original wider seasonal candidates and partial source repairs remain recorded.
