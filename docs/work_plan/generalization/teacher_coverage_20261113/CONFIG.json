@@ -1,0 +1,31 @@
+{
+  "base_updates": 8192,
+  "batch": 128,
+  "code": {
+    "app/critic_target_contract.py": "cbfbd00f5c0806cde9cde67bf95b693ddbdfa150a5953afbe36795ebe6848b69",
+    "app/teacher_coverage.py": "70a5f1f62f82f0b8891e5abb5d4d2bc59ca90d235a673545d87ce8ad9857f6d5",
+    "app/training_forensics.py": "f8007e7819a73ab7bcbbafcd162431d40a83b6d93d49bc79e176d342779fd571",
+    "tools/run_role_routed_critic.py": "762e67aa5c452eaaaea4c4446e500c7b89ba1ba8bb95cf0dc925abc93cbef4ba",
+    "tools/run_teacher_coverage.py": "7cb06f6e826d988fb84fb1b0b5b45ec21d1feeeea55d92a029888b612968e407"
+  },
+  "factors": [
+    4,
+    16
+  ],
+  "forensics": "e1d5e7197a8969aa3a65ffa5b2a0af278f74df70d538cce14acba691ddab9c6e",
+  "identity": "a0b5051bc365d3b57dd5132ae7d95d7288aa59ed0af08bdbf8a8e59fbe55b949",
+  "labels": "6ce08d4d9150ef3879df9be6330a69ec13b1e3decaeb85dcb9a1a3538f6932e5",
+  "lr": 2.9999999999999997e-05,
+  "previous": "bcb56fc708a5765de97e0cde14cead8a388a077bb1ebc7530fd0768c8f279c3c",
+  "primary": "fixed8192",
+  "sampling_seed": 323,
+  "schema": "known_teacher_coverage.v1",
+  "secondary": "same_nominal_presentations_per_example",
+  "seeds": [
+    19,
+    43
+  ],
+  "source_sha256": "69b5254489d224d4b20ac358956e4dd3b9a67a2f214a9aff98045c5def25a536",
+  "support": "28d6088a92173592f39e221c1c2ab1efc9094e614eeccb11c9ae23cf14878c98",
+  "weight_decay": 0.01
+}

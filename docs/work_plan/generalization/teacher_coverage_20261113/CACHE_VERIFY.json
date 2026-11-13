@@ -1,0 +1,66 @@
+{
+  "actor_exact": true,
+  "new_cache_errors": [
+    6.258487701416016e-07,
+    7.301568984985352e-07
+  ],
+  "new_windows": 1470,
+  "old_cache_errors": [
+    3.8743019104003906e-07,
+    5.662441253662109e-07
+  ],
+  "original_embeddings_exact": true,
+  "replays": [
+    {
+      "endpoint": "initial",
+      "exact": true,
+      "fold": "A",
+      "seed": 19
+    },
+    {
+      "endpoint": "final",
+      "exact": true,
+      "fold": "A",
+      "seed": 19
+    },
+    {
+      "endpoint": "initial",
+      "exact": true,
+      "fold": "A",
+      "seed": 43
+    },
+    {
+      "endpoint": "final",
+      "exact": true,
+      "fold": "A",
+      "seed": 43
+    },
+    {
+      "endpoint": "initial",
+      "exact": true,
+      "fold": "B",
+      "seed": 19
+    },
+    {
+      "endpoint": "final",
+      "exact": true,
+      "fold": "B",
+      "seed": 19
+    },
+    {
+      "endpoint": "initial",
+      "exact": true,
+      "fold": "B",
+      "seed": 43
+    },
+    {
+      "endpoint": "final",
+      "exact": true,
+      "fold": "B",
+      "seed": 43
+    }
+  ],
+  "source_exact": true,
+  "source_sha256": "69b5254489d224d4b20ac358956e4dd3b9a67a2f214a9aff98045c5def25a536",
+  "support_sha256": "28d6088a92173592f39e221c1c2ab1efc9094e614eeccb11c9ae23cf14878c98"
+}

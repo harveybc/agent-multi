@@ -441,3 +441,23 @@ claim or a change to the live selected71 model. Forty removals have explicit
 availability/scope/coherence reasons. Both actual GPU workers entered training;
 continuous->ordinal and raw->binary are sequential, resumable queues. The
 original wider seasonal candidates and partial source repairs remain recorded.
+
+## F-KNOWN-FUNCTION-LEARNING-IMPROVES-WITH-FIT-COVERAGE
+
+2026-11-13,323: frozen source299 representations, unchanged native twin heads,
+same initial weights and known representable teacher. Expanding49/98 FIT rows
+to196/392 at the same8192 updates reduces mean audit value RMSE1.522872 to
+1.084347 and action regret0.406730 to0.152615. All four fold/seed pairs improve.
+The16x expansion also beats the original control, but is worse than4x at equal
+updates. Equal presentations/example improves both expanded arms further;
+16x has lower RMSE but essentially tied mean regret versus4x. Thus coverage
+and optimization exposure both matter; more rows alone is not a monotone cure.
+
+Eight fits,16 verified endpoints,10 authenticated seals,17 focused tests,
+632.93 seconds. Original239 embeddings, four control replays, fixed teacher
+thresholds and source actor remain exact. New inputs are1470 real TRAIN windows,
+not synthetic replacements; targets are artificial only for this diagnostic.
+This supports a4x native counterfactual-label contrast next, not promotion,
+new trading-profit claims, or a declaration that weight analysis is exhausted.
+See323 and its full evidence table. Preserve71 inputs,49 return candidates and
+paused STL; native-label queue has not yet been launched.

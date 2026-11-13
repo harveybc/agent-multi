@@ -1,0 +1,10 @@
+{
+  "identity": "a0b5051bc365d3b57dd5132ae7d95d7288aa59ed0af08bdbf8a8e59fbe55b949",
+  "seals_verified": 10,
+  "endpoints_verified": 16,
+  "old_embeddings_exact": true,
+  "nested_support_verified": true,
+  "initialization_verified": true,
+  "frozen_teachers_verified": true,
+  "optimizer_steps_lr_and_decay_verified": true
+}
