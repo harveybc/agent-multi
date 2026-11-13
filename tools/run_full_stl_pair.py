@@ -50,7 +50,7 @@ def prepare(a):
         frame=pd.read_parquet(a.fx/'STORE_CANDIDATE.parquet',columns=['timestamp']+old['columns'],
             filters=[('timestamp','<',pd.Timestamp('2025-01-01',tz='UTC'))])
         if not np.array_equal(pd.DatetimeIndex(frame.timestamp).as_unit('ns').asi8+3600*10**9,times):raise ValueError('FULL71_FX_CLOCK')
-        raw=frame[old['columns']].to_numpy(float)
+        raw=frame[old['columns']].to_numpy(dtype=float,copy=True)
         for j,c in enumerate(rec['tensor']['columns']):
             if c['consumer_ops']==['DIFF']:raw[:,j]=np.r_[np.nan,np.diff(raw[:,j])]
             elif c['consumer_ops']:raise ValueError('FULL71_CONSUMER_OP')
