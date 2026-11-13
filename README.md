@@ -17,8 +17,11 @@ The selected71 actor and all49 cumulative return candidates are preserved.
 The frozen-actor [critic coverage contrast314](docs/work_plan/314_CRITIC_COVERAGE_CONTRAST.md)
 completed all four arms with exact actor preservation. Its successor,
 [representation diagnostic315](docs/work_plan/315_AUTOMATED_CRITIC_REPRESENTATION.md),
-runs six sequential critic-only fits with shuffled-target controls, reuses two
-completed controls and automatically writes paired tables/curves/recommendation.
+completed six critic-only fits and two reused controls without promotion.
+[Native diagnostic316](docs/work_plan/316_CRITIC_IDENTIFIABILITY.md) then found
+three same-market state conflicts in16 origins. No actor or input change;
+next clarify marginal versus position-specific critic target semantics before
+another refinement. Results do not establish absence of useful market signal.
 Older status entries below describe historical experiments, not running queues.
 
 **Threshold calibration (2026-11-10):** [results261](docs/work_plan/261_CLOSE_THRESHOLD_RESULTS_AND_PHASE2_ROADMAP.md)

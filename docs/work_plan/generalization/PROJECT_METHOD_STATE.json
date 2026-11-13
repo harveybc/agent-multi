@@ -1,14 +1,24 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "STL_PAUSED_NATIVE_CRITIC_IDENTIFIABILITY_DIAGNOSTIC",
+  "current_stage": "CRITIC_IDENTIFIABILITY_COMPLETE_DEFINE_TARGET_CONTRACT",
   "critic_identifiability_316": {
     "document": "../316_CRITIC_IDENTIFIABILITY.md",
-    "status": "TESTED_READY_FOR_CPU_EXECUTION",
+    "status": "COMPLETE_NATIVE_COUNTEREXAMPLES_VERIFIED",
+    "runtime_commit": "7b96e61e",
+    "identity": "84f89d0d79431852dd9cc71422d519c310f6a88f337b3eb014d0012189e2872d",
+    "seconds": 19.115833736024797,
+    "completed_origins": 16,
+    "conflicting_optimal_sets": 3,
+    "actual_flat_long_short_origins": 14,
+    "native_suffixes": 144,
+    "repeat_witness_suffixes": 9,
+    "source_actor_held_regret": 0.20062851667926807,
+    "constant_nop_held_regret": 0.2075316253798514,
     "focused_tests_passed": 14,
     "planned_origins": 16,
     "maximum_native_suffixes": 144,
     "optimizer_steps": 0,
-    "next_action": "Run FIT-only mean/nearest-window baselines and native same-market reachable-position forks on fixed source; characterize ambiguity without adding state to network, changing actor, reactivating STL or promoting a model."
+    "next_action": "Define and contrast policy-visitation marginal critic targets versus position-specific output routing before actor updates. Same-input state conflicts do not invalidate marginal SAC or prove absent predictive signal. No feedback inputs introduced; preserve299,71 inputs and49 absent candidates; STL paused."
   },
   "critic_representation_315": {
     "document": "../315_AUTOMATED_CRITIC_REPRESENTATION.md",
@@ -2477,7 +2487,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
-    "316: CPU FIT-only baselines and same-market native forks, source continuation fixed, no learned feedback inputs or actor training; report conditional Q ambiguity and coverage separately",
+    "316 complete: define critic target estimand and compare state-marginal versus externally routed value contracts before any actor update; do not silently introduce agent-state features or change action interface",
     "315: unattended six-arm critic representation/negative-control queue after authenticated314; reuse two completed controls, full TRAIN actor parity and cold reload, automatic report; no actor promotion",
     "314 complete: coverage expansion lowers regret/gap error in both seeds but accuracy/level error remain mixed; use315 to isolate critic representation versus memorization, do not promote actor",
     "311 completed the frozen-weight COT identity diagnostic; no source/live certification from the legacy93h clock. Retsu owns verified publications/vintages and live readers under the new concrete handoff",
