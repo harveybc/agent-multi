@@ -37,3 +37,73 @@ update, phase2 pass, live deployment or representation/feature change.
 | Reuse authentic controls |318 seals, reconstructed endpoints and schedule identities |
 | No temporal selection leak |318 blocked folds and tested RegretStopper unchanged |
 | Autonomous execution | Four sequential resumable arms, lock, progress, failed/completed receipts |
+
+## Completed Result
+
+Runtime `bddfb7db`, identity
+`00d2f39584defa061924fb26869e3dbd3eb47b6c1ff9533e4aec291b14cfd67c`.
+Four new fits completed in19.94 seconds, with four318 controls reused, not
+retrained. Cached frozen embeddings explain the short duration: these are
+head fits, not full-network RL training.15 focused tests passed; CLI smoke
+and independent reconstruction of all four stopping decisions passed.
+
+Lower native action regret is better. These are held-block diagnostic scores,
+not account profit percentages. Both chronological folds are within TRAIN;
+the encoders were previously trained on all TRAIN, so these are not fully
+independent end-to-end holdouts.
+
+| Fold | Seed | Native stopped | Ensemble stopped | Native fixed4096 | Ensemble fixed4096 | Actor |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| A |19|0.255390|0.297626|0.284994|0.311319|0.168404|
+| A |43|0.216413|0.238383|0.277776|0.273249|0.168404|
+| B |19|0.213729|0.277413|0.231560|0.252317|0.249439|
+| B |43|0.225548|0.267339|0.235676|0.259326|0.249439|
+
+The prespecified stopped comparison passes4/4, including the executable-opening
+guard. Equal-weight mean regret falls0.270190 ->0.227770, a15.70% relative
+reduction. This is a descriptive paired result, not a significance claim.
+Fixed-budget native endpoints improve3/4: A/43 worsens slightly. Native stopped
+endpoints beat their own fixed endpoints4/4. Against the retained actor,
+native heads win both B cases but lose both A cases.
+
+Selected updates are960,1408,64,1024; patience expires at2240,2688,1344,2304.
+The rest of each4096-update trace is only the prespecified fixed-budget
+comparison. In particular, B/19 selecting64 is an early optimum, not evidence
+that additional fitting helped it. FIT regret falls strongly while the stopping
+block does not follow; reducing diagnostic capacity has not eliminated that gap.
+
+## Verification And Limits
+
+- All eight reused control endpoints reproduced their complete metric dictionaries
+  exactly from stored checkpoints on the same frozen cache.
+- Shared initialization and minibatch schedule digests match318. The native
+  initial function differs from the ensemble mean by0.873155/0.918571 max per
+  seed; only common weights, not initial functions, are matched.
+- Four native selected/fixed checkpoint pairs cold-reload exactly. Output seals
+  were verified again after collection; all four stopping decisions were
+  reconstructed from curves without using the stopper implementation.
+- Source state tensors and all24026 TRAIN actor logits remain exact.71 inputs,
+ 28 groups and49 cumulative return candidates are unchanged. No2024 inference,
+  TEST read, actor update, encoder update, new floating pass or STL inclusion.
+- The source retains the historical mixed-COT limitation recorded in311; this
+  diagnostic does not qualify it for live use or authorize data substitution.
+- The optional repository ruff executable was absent; no lint-clean claim.
+
+## Disposition
+
+Use native one-head-per-twin for subsequent critic diagnostics. Do not promote
+these calibrated heads into the actor's training loop yet: improvement over an
+oversized diagnostic ensemble does not establish reliable improvement over the
+actor on both folds. Next, attribute remaining native errors by action/state
+and target common-level versus action-gap error using these sealed endpoints;
+this finite CPU review precedes choosing one new loss or coverage contrast.
+Keep the original actor299 and paused STL. No additional unchanged floating
+pass is justified before the refinement issue is resolved.
+
+Evidence: [paired table](generalization/critic_native_capacity_20261113/COMPARISON.md),
+[full endpoints](generalization/critic_native_capacity_20261113/RESULT.json),
+[configuration](generalization/critic_native_capacity_20261113/CONFIG.json),
+[curves](generalization/critic_native_capacity_20261113/CURVES.csv),
+[training plot](generalization/critic_native_capacity_20261113/STOPPING_CURVES.png).
+The inherited plot contains two unused panels; its populated panels are A/B,
+and the numeric CSV is complete.

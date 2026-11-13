@@ -1,0 +1,30 @@
+{
+  "batch": 128,
+  "check_every": 64,
+  "code": {
+    "app/critic_blocked_stopping.py": "05c99e06f302a09d7f2c64e29cb6b176f63b1c5802f5392dd8c80c7f0b3f3724",
+    "app/critic_native_capacity.py": "887501f7086df88775e83b705bf3537b74f6e8546697f8e4df8cab0aded36410",
+    "app/critic_target_contract.py": "cbfbd00f5c0806cde9cde67bf95b693ddbdfa150a5953afbe36795ebe6848b69",
+    "app/role_routed_critic.py": "d6db79275f78d684f58011c6ae978c77ca087d54442b49898676581f4e1fb732",
+    "tools/run_native_critic_capacity.py": "5b3fe73f54221f357e2a7ccc0a924ffe57ed9f8de95308ee51200fae0d7d1cde",
+    "tools/run_role_routed_critic.py": "762e67aa5c452eaaaea4c4446e500c7b89ba1ba8bb95cf0dc925abc93cbef4ba"
+  },
+  "coverage": "ef457ec1cf1c43ee25e191800129402c6c563659c939763b6e94327e4eceff09",
+  "identity": "00d2f39584defa061924fb26869e3dbd3eb47b6c1ff9533e4aec291b14cfd67c",
+  "initialization": "ensemble_head0_each_twin",
+  "lr": 2.9999999999999997e-05,
+  "min_delta": 1e-08,
+  "patience": 20,
+  "previous": "6ce08d4d9150ef3879df9be6330a69ec13b1e3decaeb85dcb9a1a3538f6932e5",
+  "schema": "critic_native_capacity.v1",
+  "seeds": [
+    19,
+    43
+  ],
+  "source_sha256": "69b5254489d224d4b20ac358956e4dd3b9a67a2f214a9aff98045c5def25a536",
+  "support": "28d6088a92173592f39e221c1c2ab1efc9094e614eeccb11c9ae23cf14878c98",
+  "updates": 4096,
+  "weight_decays": [
+    0.01
+  ]
+}
