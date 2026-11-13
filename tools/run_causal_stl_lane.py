@@ -204,7 +204,11 @@ def train(args):
     with np.load(args.root/'prepared/VALUES.npz') as f:
         market.inputs=pack_inputs(market.inputs,recipe,f[k],f['common'],f['parent_indices'])
     market.recipe=recipe
-    require_coverage(monthly_coverage(market.inputs.row_ts_ns,market.inputs.valid,recipe['split']['periods']))
+    if cfg.get('coverage_policy')=='full71_matched_available_v1':
+        from tools.run_full_stl_pair import validate_pair
+        validate_pair(args,market)
+    else:
+        require_coverage(monthly_coverage(market.inputs.row_ts_ns,market.inputs.valid,recipe['split']['periods']))
     if support_hash(market.inputs)!=read(args.root/'prepared/RESULT.json')['variants'][k]['support']:raise ValueError('STL_TRAIN_SUPPORT')
     design=copy.deepcopy(spec['design']);design.update(head_only=False,initialize_epoch_zero=False,warmup_policy=False,
         max_epochs=2000,patience=20,min_delta=1e-8,monitor_mode='validation',monitor_start_epoch=20,
@@ -216,12 +220,24 @@ def train(args):
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         if (run/'DONE.json').exists():verify_done(run,identity);return
         model=build_model(recipe,effective,7,'cuda');risk=read(args.parent/'RISK.json')
+        transfer=None
+        if cfg.get('initialization')=='selected299_exact_weights':
+            from app.stl_full_pair import copy_loss_weights
+            if file_sha(args.bundle/'model.pt')!=cfg['source_sha256']:raise ValueError('FULL71_DONOR_CHANGED')
+            with torch.random.fork_rng():
+                donor,_=load_bundle(args.bundle,'cpu')
+                transfer=copy_loss_weights(model,donor)
+                del donor
         probe=market.inputs.windows[np.flatnonzero(market.inputs.valid)[np.linspace(0,market.inputs.valid.sum()-1,32,dtype=int)]]
         write(run/'EFFECTIVE.json',dict(identity=identity,design=design,effective=effective,variant=k,
-            recipe_identity=recipe['identity'],common_support=support_hash(market.inputs),fresh_weights=True,
+            recipe_identity=recipe['identity'],common_support=support_hash(market.inputs),fresh_weights=transfer is None,
+            exact_donor_tensors=transfer,optimizer_reset=True,
             features=recipe['list']['n'],gpu=torch.cuda.get_device_name()))
         # Self-contained transformed-input bundle must cold-reload before long training.
         if not (run/'initial_bundle').exists():export_bundle(run/'initial_bundle',model,probe,dict(epoch=0,diagnostic=True,identity=identity))
+        if transfer is not None and not (run/'INITIAL_ACCOUNT.json').exists():
+            write(run/'INITIAL_ACCOUNT.json',dict(identity=identity,metrics=assess_full(model,market,risk,design),
+                purpose='paired-support epoch-zero diagnostic; not an automatic best checkpoint'))
         state=fit_epochs(model,lambda:environment(market,risk,design['horizon'],
             recipe['split']['periods']['TRAIN'],effective['gamma']),lambda m:assess_full(m,market,risk,design),
             design,7,run,identity,probe)

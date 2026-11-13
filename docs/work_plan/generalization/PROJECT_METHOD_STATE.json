@@ -1,6 +1,18 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "CRITIC_COVERAGE_DRIFT_COMPLETE_RETSU_SOURCE_QUALIFICATION_STL31_RECOVERED",
+  "current_stage": "FULL71_MATCHED_STL_IMPLEMENTATION",
+  "full71_stl_313": {
+    "document": "../313_FULL71_MATCHED_STL.md",
+    "status": "IMPLEMENTATION_AND_TESTS",
+    "features": 71,
+    "groups": 28,
+    "initialization": "same_selected299_weights_both_arms",
+    "owner_authorized_temporal_support_reduction": true,
+    "feature_pruning": false,
+    "historical_mixed_cot": true,
+    "live_qualified": false,
+    "next_action": "Tests then durable preparation with repaired activity and qualified FX propagation, followed automatically by paired warm-start training. Preserve main299 and all49 return candidates; Retsu continues source qualification independently."
+  },
   "critic_coverage_drift_312": {
     "document": "../312_FROZEN_CRITIC_COVERAGE_AND_DRIFT.md",
     "status": "COMPLETE",
