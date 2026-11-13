@@ -14,8 +14,11 @@ and execution-policy plugins loaded from entry points.
 **Main phase2 lane (2026-11-13):** all STL work is paused by the owner;
 its services are disabled and no seasonal features enter the selection pool.
 The selected71 actor and all49 cumulative return candidates are preserved.
-Next is the frozen-actor [critic coverage contrast314](docs/work_plan/314_CRITIC_COVERAGE_CONTRAST.md),
-comparing113 versus146 calibration origins on the same55 held-out anchors.
+The frozen-actor [critic coverage contrast314](docs/work_plan/314_CRITIC_COVERAGE_CONTRAST.md)
+completed all four arms with exact actor preservation. Its successor,
+[representation diagnostic315](docs/work_plan/315_AUTOMATED_CRITIC_REPRESENTATION.md),
+runs six sequential critic-only fits with shuffled-target controls, reuses two
+completed controls and automatically writes paired tables/curves/recommendation.
 Older status entries below describe historical experiments, not running queues.
 
 **Threshold calibration (2026-11-10):** [results261](docs/work_plan/261_CLOSE_THRESHOLD_RESULTS_AND_PHASE2_ROADMAP.md)

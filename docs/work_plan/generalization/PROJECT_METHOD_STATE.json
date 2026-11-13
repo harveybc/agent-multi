@@ -3,7 +3,10 @@
   "current_stage": "STL_PAUSED_AUTOMATED_CRITIC_REPRESENTATION_DIAGNOSTIC",
   "critic_representation_315": {
     "document": "../315_AUTOMATED_CRITIC_REPRESENTATION.md",
-    "status": "TESTING_AUTOMATED_SUCCESSOR",
+    "status": "RUNNING_AUTOMATED_SUCCESSOR",
+    "runtime_commit": "9e3aa2d5",
+    "started_at": "2026-11-13T13:24:24Z",
+    "focused_tests_passed": 45,
     "owner_authorized": "2026-11-13 automatic continuation without intermediate approvals",
     "new_arms": 6,
     "reused_controls": 2,
@@ -2464,7 +2467,7 @@
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
     "315: unattended six-arm critic representation/negative-control queue after authenticated314; reuse two completed controls, full TRAIN actor parity and cold reload, automatic report; no actor promotion",
-    "314: compare113 vs146 own-policy critic FIT origins on shared55 held-out diagnostic anchors; keep actor exact, no promotion, no STL inputs",
+    "314 complete: coverage expansion lowers regret/gap error in both seeds but accuracy/level error remain mixed; use315 to isolate critic representation versus memorization, do not promote actor",
     "311 completed the frozen-weight COT identity diagnostic; no source/live certification from the legacy93h clock. Retsu owns verified publications/vintages and live readers under the new concrete handoff",
     "310 completed paired head8/16; no arm promoted. Diagnose frozen-Q extrapolation/policy drift, then qualify repaired data before new model training or phase2 scores; preserve all49 cumulative return candidates",
     "STL paused by owner2026-11-13: all paired and legacy queues disabled, preserve artifacts and recovery epochs, no automatic resume or seasonal admission to phase2",

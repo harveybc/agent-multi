@@ -52,3 +52,20 @@ more native own-policy FIT coverage. This predeclared recommendation is not a
 significance test, a release gate, or an automatic actor update. No fitting or
 inference on2024/2025. No live deployment. Stop after the finite chain and
 report the measured result; never run meaningless repeats to keep a GPU busy.
+
+## Running
+
+Runtime `9e3aa2d5`;45 focused tests pass, including real-model gradient-scope
+checks and unchanged default head calibration. Predecessor314 receipt identity
+`ef457ec1cf1c43ee25e191800129402c6c563659c939763b6e94327e4eceff09`
+verified after collection. Sequential service started2026-11-13T13:24:24Z
+on the primary GPU. It requires authenticated314, resumes completed arms,
+uses an exclusive lock and retains diagnostic failures without skipping them.
+No intermediate approval required. Initial first-arm256 updates passed.
+
+Output root: `/var/tmp/sac71-critic315-20261113-r1` on the assigned worker.
+`PROGRESS.json`, per-arm `CURVE.json`, `MODEL.pt`, `CALIBRATION.json`,
+`SHUFFLE.json` for negative controls, authenticated `RESULT.json`/`DONE.json`.
+Final `RESULTS.md` and `CRITIC_CURVES.png` are emitted by the same sequential
+process. The final recommendation is descriptive and does not override
+source qualification, actor checks or authorization for any live promotion.
