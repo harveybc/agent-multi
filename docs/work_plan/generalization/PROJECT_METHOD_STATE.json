@@ -1,6 +1,19 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "CRITIC_IDENTIFIABILITY_COMPLETE_DEFINE_TARGET_CONTRACT",
+  "current_stage": "CRITIC_TARGET_CONTRACT_CONTRAST",
+  "critic_target_contract_317": {
+    "document": "../317_CRITIC_TARGET_CONTRACT.md",
+    "status": "TESTED_READY_FOR_SEQUENTIAL_GPU_EXECUTION",
+    "focused_tests_passed": 19,
+    "arms": 16,
+    "updates_per_arm": 4096,
+    "fit_anchors": 146,
+    "held_anchors": 55,
+    "actor_updates": 0,
+    "encoder_updates": 0,
+    "stl_features_admitted": 0,
+    "next_action": "Replay native TRAIN visitation, then execute paired shared/routed head contrasts with uniform/visitation sampling and Huber/MSE. Preserve actor/source; no silent feedback or strategy change. Historical255 shows direction routing is not sufficient by itself."
+  },
   "critic_identifiability_316": {
     "document": "../316_CRITIC_IDENTIFIABILITY.md",
     "status": "COMPLETE_NATIVE_COUNTEREXAMPLES_VERIFIED",
@@ -2487,6 +2500,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
+    "317: finite16-arm frozen-encoder critic target contract comparison; same initialization/capacity/schedules within paired cells, native TRAIN population weights and explicit loss factors; automatic artifacts, no model promotion",
     "316 complete: define critic target estimand and compare state-marginal versus externally routed value contracts before any actor update; do not silently introduce agent-state features or change action interface",
     "315: unattended six-arm critic representation/negative-control queue after authenticated314; reuse two completed controls, full TRAIN actor parity and cold reload, automatic report; no actor promotion",
     "314 complete: coverage expansion lowers regret/gap error in both seeds but accuracy/level error remain mixed; use315 to isolate critic representation versus memorization, do not promote actor",
