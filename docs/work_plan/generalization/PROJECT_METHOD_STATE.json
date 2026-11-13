@@ -1,6 +1,16 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "CRITIC_NATIVE_CAPACITY_COMPLETE_ERROR_REVIEW_NEXT",
+  "current_stage": "TRAINING_REPRODUCIBILITY_AND_TRANSIENT_DIAGNOSIS_DESIGN",
+  "training_transients_321": {
+    "document": "../321_TRAINING_REPRODUCIBILITY_AND_TRANSIENTS.md",
+    "status": "EXISTING_EVIDENCE_REVIEWED_DIAGNOSTIC_DESIGNED",
+    "new_runs_launched": 0,
+    "initial_B19_stop_regret": 0.20245274772110436,
+    "selected_B19_stop_regret": 0.21564444069242783,
+    "initial_B19_checkpoint_eligible": false,
+    "later_recovery_within_4096_updates": 0,
+    "next_action": "First establish same-seed independent and restart training reproducibility with dense checkpoint instrumentation; then controlled learning-rate/extended-budget and known-teacher tests. Do not confuse frozen-head49/98-anchor diagnosis with full SAC training. Preserve299,71 inputs and paused STL."
+  },
   "critic_native_capacity_320": {
     "document": "../320_NATIVE_CRITIC_HEAD_CAPACITY.md",
     "status": "COMPLETE_NATIVE_DIAGNOSTIC_PREFERRED_ACTOR_UNCHANGED",
