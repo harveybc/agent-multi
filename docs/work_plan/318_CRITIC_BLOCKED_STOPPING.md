@@ -72,3 +72,51 @@ per year is re-executed in all three directions as an exact witness.2020/2021
 targets are recomputed. Each row is checkpointed for autonomous resumption.
 The historical mixed-COT store is unchanged and is not live-qualified by this
 diagnostic; the independent live-data work is outside this run.
+
+## Completed Execution
+
+Completed2026-11-13T18:29:17Z in61.89seconds, runtime`162c6447`.
+Identity`6ce08d4d9150ef3879df9be6330a69ec13b1e3decaeb85dcb9a1a3538f6932e5`.
+239/239 source states authenticated, no excluded anchors. Four yearly witnesses
+reproduce all three native action continuations exactly. The eight stopping
+decisions were independently reconstructed from their logged STOP curves and
+match exactly. All eight cold reloads pass; actor logits, source tensors and
+checkpoint remain unchanged. Parent and per-arm file seals verified locally.
+
+| Fold | FIT | STOP | Audit | Executable-opening audit |
+| --- | ---: | ---: | ---: | ---: |
+| A | 49 | 49 | 59 | 38 |
+| B | 98 | 48 | 60 | 40 |
+
+| Fold | Seed | WD | Selected update | Stopped audit regret | Fixed4096 regret | Actor regret |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| A | 19 | 0.01 | 832 | 0.297626 | 0.311319 | 0.168404 |
+| A | 19 | 0.1 | 832 | 0.297626 | 0.295749 | 0.168404 |
+| A | 43 | 0.01 | 384 | 0.238383 | 0.273249 | 0.168404 |
+| A | 43 | 0.1 | 384 | 0.238383 | 0.273249 | 0.168404 |
+| B | 19 | 0.01 | 1856 | 0.277413 | 0.252317 | 0.249439 |
+| B | 19 | 0.1 | 1856 | 0.262798 | 0.252317 | 0.249439 |
+| B | 43 | 0.01 | 64 | 0.267339 | 0.259326 | 0.249439 |
+| B | 43 | 0.1 | 64 | 0.267339 | 0.257336 | 0.249439 |
+
+Lower regret is better; these are action-choice diagnostics, not trading
+returns. Stopping helps3/4 cases in A and0/4 in B. Neither WD passes the
+predeclared both-fold/both-seed opening guard. No endpoint beats the preserved
+actor on its matched audit panel. The strong WD does not consistently help.
+
+Thus317's small-panel overfitting is real, but this particular chronological
+stopping rule does not consistently repair generalization. Do not substitute
+a retrospective best audit checkpoint or conclude that the market inputs
+cannot support trading. Only49/98 anchors fit10194 head parameters here,
+with temporal dependence and pretrained encoders; these diagnostics do not
+establish sample sufficiency or isolate the representation's contribution.
+
+Next review FIT coverage and effective representation rank before defining
+one controlled sample-coverage/representation contrast. Preserve299 and the
+71 inputs; no actor refinement, new floating pass or live promotion was
+launched by318. STL stays paused.
+
+Evidence: [all endpoints](generalization/critic_blocked_stopping_20261113/RESULTS.md),
+[FIT/STOP curves](generalization/critic_blocked_stopping_20261113/CURVES.csv),
+[plot](generalization/critic_blocked_stopping_20261113/STOPPING_CURVES.png),
+[effective contract](generalization/critic_blocked_stopping_20261113/CONFIG.json).

@@ -1,0 +1,52 @@
+{
+  "batch": 128,
+  "check_every": 64,
+  "code": {
+    "app/critic_blocked_stopping.py": "05c99e06f302a09d7f2c64e29cb6b176f63b1c5802f5392dd8c80c7f0b3f3724",
+    "app/critic_target_contract.py": "cbfbd00f5c0806cde9cde67bf95b693ddbdfa150a5953afbe36795ebe6848b69",
+    "app/decision_attribution.py": "75b72b2ef400bde500753f7f2754746e58cf8f7d3f9234c3a10ca8633d77f013",
+    "app/role_routed_critic.py": "d6db79275f78d684f58011c6ae978c77ca087d54442b49898676581f4e1fb732",
+    "tools/run_critic_blocked_stopping.py": "cd7b93f4e260796b22185c7d0859db3170ebd23ac08765a9f62cf3a0d5253933",
+    "tools/run_role_routed_critic.py": "762e67aa5c452eaaaea4c4446e500c7b89ba1ba8bb95cf0dc925abc93cbef4ba"
+  },
+  "coverage": "ef457ec1cf1c43ee25e191800129402c6c563659c939763b6e94327e4eceff09",
+  "diagnostic": "c5ab4ee1059d9e78f65e0142bed9266d594abc2c34636260dba8e8c9312421a3",
+  "folds": [
+    [
+      "A",
+      [
+        2020
+      ],
+      2021,
+      2022
+    ],
+    [
+      "B",
+      [
+        2020,
+        2021
+      ],
+      2022,
+      2023
+    ]
+  ],
+  "gamma": 0.99,
+  "identity": "6ce08d4d9150ef3879df9be6330a69ec13b1e3decaeb85dcb9a1a3538f6932e5",
+  "loss": "mse",
+  "lr": 2.9999999999999997e-05,
+  "min_delta": 1e-08,
+  "mode": "shared_mean3",
+  "patience": 20,
+  "previous": "4d8bebcec1af1f1fbc211ddfe0f55a5701388c1bd9d435d9f9ed3027078d46b1",
+  "schema": "critic_blocked_stopping.v1",
+  "seeds": [
+    19,
+    43
+  ],
+  "source_sha256": "69b5254489d224d4b20ac358956e4dd3b9a67a2f214a9aff98045c5def25a536",
+  "updates": 4096,
+  "weight_decays": [
+    0.01,
+    0.1
+  ]
+}

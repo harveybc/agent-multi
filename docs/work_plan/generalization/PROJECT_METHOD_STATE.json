@@ -1,9 +1,22 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "CRITIC_BLOCKED_STOPPING_EXECUTION",
+  "current_stage": "CRITIC_COVERAGE_REPRESENTATION_REVIEW",
   "critic_blocked_stopping_318": {
     "document": "../318_CRITIC_BLOCKED_STOPPING.md",
-    "status": "TESTED_READY_FOR_EXECUTION",
+    "status": "COMPLETE_NO_CRITIC_PROMOTED",
+    "identity": "6ce08d4d9150ef3879df9be6330a69ec13b1e3decaeb85dcb9a1a3538f6932e5",
+    "runtime_commit": "162c6447",
+    "seconds": 61.89185734197963,
+    "verified_arms": 8,
+    "native_anchors_verified": 239,
+    "excluded_anchors": 0,
+    "stopping_decisions_reproduced": 8,
+    "stopped_better_than_fixed": 3,
+    "fold_A_improved": 3,
+    "fold_B_improved": 0,
+    "source_actor_exact": true,
+    "source_tensors_exact": true,
+    "model_promoted": false,
     "focused_tests_passed": 25,
     "arms": 8,
     "max_updates": 4096,
@@ -14,7 +27,7 @@
     "actor_updates": 0,
     "encoder_updates": 0,
     "stl_included": false,
-    "next_action": "Native same-state annual label reconstruction and temporal support checks, then eight sequential frozen-encoder fits; select using original FIT-only stopping years and evaluate subsequent TRAIN year afterward. Preserve all checkpoints; no actor or live promotion."
+    "next_action": "Review coverage and effective representation rank of49/98 FIT anchors before one controlled coverage/representation contrast. Chronological stopping did not consistently help; no retrospective audit checkpoint selection. Preserve actor299,71 inputs,49 cumulative return candidates and paused STL."
   },
   "critic_target_contract_317": {
     "document": "../317_CRITIC_TARGET_CONTRACT.md",
@@ -2526,7 +2539,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
-    "318: execute authenticated annual target reconstruction and eight blocked stopping/regularization fits; original FIT-only selection, subsequent-year audit and constants, actor frozen, no further floating or promotion based on an individual cell",
+    "318 complete: stopping helps3/4 cases in A and0/4 in B; no actor promotion. Review sparse FIT coverage and representation before designing the next controlled contrast; preserve source and cumulative selection state",
     "316 complete: define critic target estimand and compare state-marginal versus externally routed value contracts before any actor update; do not silently introduce agent-state features or change action interface",
     "315: unattended six-arm critic representation/negative-control queue after authenticated314; reuse two completed controls, full TRAIN actor parity and cold reload, automatic report; no actor promotion",
     "314 complete: coverage expansion lowers regret/gap error in both seeds but accuracy/level error remain mixed; use315 to isolate critic representation versus memorization, do not promote actor",
