@@ -88,6 +88,9 @@ def test_cached_native_encoder_head_parity(attention):
     z,template,errors=cache_embeddings(model,x)
     assert z.shape[:2]==(2,7) and max(errors)<=1e-6
     assert template(z[0]).shape==(7,3)
+    assert not template._forward_pre_hooks
+    heads=RoleHeads(template,3,19)
+    assert all(not h._forward_pre_hooks for twin in heads.twins for h in twin)
     assert all(torch.equal(v,before[k]) for k,v in model.loss.state_dict().items())
     assert modes==[m.training for m in model.loss.modules()]
     assert backend==(torch.backends.mha.get_fastpath_enabled(),torch.backends.cudnn.allow_tf32)

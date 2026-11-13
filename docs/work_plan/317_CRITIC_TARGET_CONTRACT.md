@@ -84,3 +84,11 @@ Regression covers attention plus core dropout, source tensors, module modes
 and backend restoration. The failed run is retained; restart uses a new
 runtime and output identity. No tolerance was relaxed and no failed-arm
 result is reused.
+
+A second runtime inspection found the temporary capture hook was deep-copied
+into the template, retaining detached embeddings on every subsequent head
+call. The run was stopped before completion. Copying only AFTER removing the
+hook fixes this unbounded memory retention; regression now checks that neither
+the template nor any of the six trained heads inherits it. The complete
+factorial is repeated in a third, separate output root. Partial results are
+retained as diagnostic history, not mixed into the corrected comparison.

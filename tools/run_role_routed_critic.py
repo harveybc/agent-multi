@@ -87,8 +87,8 @@ def _cache_embeddings(model,features):
                     for i in range(0,len(features),128):
                         x=features[i:i+128]
                         values.append(net(TensorDict(dict(features=x),[len(x)]))['action_value'].clone())
-                    template=deepcopy(head)
                 finally:hook.remove()
+                template=deepcopy(head)
                 z=torch.cat(captured);q=torch.cat(values)
                 error=max(float((q-native[twin]).abs().max()),float((template(z)-q).abs().max()))
                 if error>1e-6 or not torch.isfinite(z).all():raise ValueError('ROLE_CACHED_EMBEDDING_PARITY')
