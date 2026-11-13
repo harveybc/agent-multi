@@ -52,3 +52,29 @@ Hidden representations from two independently adapted models are not assumed
 aligned. Keep original and STL identities distinct and preserve all49 absent
 phase2 candidates for the cumulative return pass. This is future work, not
 part of the two-arm launch or an already completed transplantation.
+
+## Preparation Execution
+
+Runtime722d9d4e,47 focused tests passed. A real selected299 cold-load and
+transfer check copies1027 state tensors exactly with71 columns and28 groups.
+The source model remains unchanged. Preparation service is enabled and chains
+GPU deployment only after qualification. Activity tuning again selects
+period120, history480, seasonal7, robust=true. Eight CPU workers compute
+independent256-row chunks; unit tests prove exact equality to sequential
+endpoints, including warmup, missing observations and chunk boundaries.
+
+Two deployment defects were corrected before training: the first runtime
+archive omitted env_plugins; the second tried to mutate a read-only pandas
+view. The complete runtime includes its plugin imports and the preparation
+now copies that array before repairing the activity column. Neither attempt
+trained a model. The short serial activity attempt was stopped explicitly
+and preserved when the chunk-parallel implementation replaced it under a new
+run identity. No old31 worker, main checkpoint or live service was stopped.
+
+Qualification reports the actual common support and missing intervals before
+GPU launch. Full31-support preservation and nonempty-every-month are not
+requirements of this owner-authorized full71 comparison; it is forbidden to
+describe reduced support as four uninterrupted complete years. The simulator
+still traverses its original calendar and unavailable observations do not
+become learned NOP examples. The80% per-period floor is a protective admission
+check, not a feature selection threshold or a tuning variable.

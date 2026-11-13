@@ -1,6 +1,25 @@
 # Adaptive Multi-Asset Trading Work Plan
 
-## Execution Update: 2026-11-12
+## Execution Update: 2026-11-13
+
+[Full71 paired STL313](313_FULL71_MATCHED_STL.md): owner permits reduced
+common temporal support but no feature removal. Preparation is running with
+the repaired activity producer and qualified FX propagation. Same71 inputs,
+28 groups and selected299 starting weights in BOTH arms;1027 tensors copied
+exactly in the real-model CPU check.47 focused tests pass. Eight CPU processes
+compute independent trailing endpoints with tested sequential equality, then
+the finite service dispatches raw and continuous to separate GPUs automatically.
+No GPU-training start or new result is claimed by this preparation update.
+Historical mixed-COT limitations remain explicit; Retsu's source/live lane
+continues independently. The main71 checkpoint is not replaced.
+
+The STL31 contrast has completed: raw TRAIN-22.151071%/VAL-1.348280%;
+continuous+8.913959%/+0.762694%; ordinal-15.703260%/+0.842436%;
+binary-15.544419%/-7.789381%. Those were fresh31-input networks, not replay
+of the main phase2 checkpoint. Continuous leads Sharpe/DD within that paired
+contrast only; no main-model or live promotion follows from these numbers.
+
+## Previous Execution Update: 2026-11-12
 
 [Frozen critic coverage/drift312](312_FROZEN_CRITIC_COVERAGE_AND_DRIFT.md)
 COMPLETE in325.33seconds,18 focused tests pass. All88 new TRAIN anchors disjoint

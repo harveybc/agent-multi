@@ -1,9 +1,13 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "FULL71_MATCHED_STL_IMPLEMENTATION",
+  "current_stage": "FULL71_MATCHED_STL_PREPARING_AUTODISPATCH",
   "full71_stl_313": {
     "document": "../313_FULL71_MATCHED_STL.md",
-    "status": "IMPLEMENTATION_AND_TESTS",
+    "status": "CPU_PREPARATION_RUNNING_GPU_AUTODISPATCH_CONFIGURED",
+    "runtime_commit": "722d9d4e",
+    "focused_tests_passed": 47,
+    "real_model_copied_tensors": 1027,
+    "endpoint_workers": 8,
     "features": 71,
     "groups": 28,
     "initialization": "same_selected299_weights_both_arms",
