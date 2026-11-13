@@ -70,3 +70,17 @@ omits entry price, barrier distances and age, as demonstrated in255.
 | Protected model | All source tensors and full TRAIN actor logits exact before/after; checkpoint hash unchanged |
 | Correct evaluation | Native held/counterfactual identities, fixed endpoints, explicit no-promotion |
 | Automation | Immutable runtime, sequential resumable16-arm service, tables/JSON/PNG emitted automatically |
+
+## Cache Preflight Correction
+
+The first launch stopped before any head update: cached versus functional
+critic Q differed by1.37e-6, exceeding the unchanged1e-6 gate. A read-only
+reproduction separated two numerical effects: TF32 convolutions produced
+about2.44e-4 discrepancy, and fused attention dispatch retained1.37e-6 even
+with TF32 off. Disabling fused attention for BOTH cache paths with TF32 off
+reduced twin discrepancies to3.87e-7 and4.17e-7, without changing source tensors.
+The cache now scopes and restores these backend settings, including on errors.
+Regression covers attention plus core dropout, source tensors, module modes
+and backend restoration. The failed run is retained; restart uses a new
+runtime and output identity. No tolerance was relaxed and no failed-arm
+result is reused.

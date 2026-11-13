@@ -73,16 +73,42 @@ def test_positive_control_routing_can_fit_identical_market_opposed_actions():
         assert torch.equal(shared,shared[:,:1].expand_as(shared))
 
 
-def test_cached_native_encoder_head_parity():
+@pytest.mark.parametrize('attention',[False,True])
+def test_cached_native_encoder_head_parity(attention):
     from agent_plugins.three_signal_sac import ThreeSignalSAC
     from tools.run_role_routed_critic import cache_embeddings
-    model=ThreeSignalSAC(probe_recipe(),device='cpu')
+    architecture=dict(temporal_attention=dict(kind='causal_patch',patch_len=3,
+        embedding=8,heads=2,feedforward=16,gate_init=.1)) if attention else None
+    model=ThreeSignalSAC(probe_recipe(),device='cpu',architecture=architecture,
+        critic_regularization=dict(kind='core_dropout',p=.1))
     x=torch.randn(7,probe_recipe()['tensor']['window']['observations'],probe_recipe()['list']['n'])
     before={k:v.clone() for k,v in model.loss.state_dict().items()}
+    modes=[m.training for m in model.loss.modules()]
+    backend=(torch.backends.mha.get_fastpath_enabled(),torch.backends.cudnn.allow_tf32)
     z,template,errors=cache_embeddings(model,x)
     assert z.shape[:2]==(2,7) and max(errors)<=1e-6
     assert template(z[0]).shape==(7,3)
     assert all(torch.equal(v,before[k]) for k,v in model.loss.state_dict().items())
+    assert modes==[m.training for m in model.loss.modules()]
+    assert backend==(torch.backends.mha.get_fastpath_enabled(),torch.backends.cudnn.allow_tf32)
+
+
+def test_cache_dispatch_is_scoped_even_on_error(monkeypatch):
+    from tools import run_role_routed_critic as runner
+    previous=(torch.backends.mha.get_fastpath_enabled(),torch.backends.cudnn.allow_tf32)
+    def fail(*args):
+        assert not torch.backends.mha.get_fastpath_enabled()
+        assert not torch.backends.cudnn.allow_tf32
+        raise ValueError('injected')
+    monkeypatch.setattr(runner,'_cache_embeddings',fail)
+    try:
+        torch.backends.mha.set_fastpath_enabled(True)
+        torch.backends.cudnn.allow_tf32=True
+        with pytest.raises(ValueError,match='injected'):runner.cache_embeddings(None,None)
+        assert torch.backends.mha.get_fastpath_enabled() and torch.backends.cudnn.allow_tf32
+    finally:
+        torch.backends.mha.set_fastpath_enabled(previous[0])
+        torch.backends.cudnn.allow_tf32=previous[1]
 
 
 def test_delayed_histories_native_only(curve_env):

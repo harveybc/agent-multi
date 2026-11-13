@@ -61,6 +61,20 @@ def panel(root,market):
 
 
 def cache_embeddings(model,features):
+    # Match the functional twin forward to the materialized encoder. Fused
+    # inference attention and TF32 convolutions otherwise change this cache.
+    fastpath=torch.backends.mha.get_fastpath_enabled()
+    tf32=torch.backends.cudnn.allow_tf32
+    try:
+        torch.backends.mha.set_fastpath_enabled(False)
+        torch.backends.cudnn.allow_tf32=False
+        return _cache_embeddings(model,features)
+    finally:
+        torch.backends.mha.set_fastpath_enabled(fastpath)
+        torch.backends.cudnn.allow_tf32=tf32
+
+
+def _cache_embeddings(model,features):
     net=model.loss.qvalue_network
     embeddings=[];templates=[];errors=[]
     with torch.no_grad(),module_mode(net,False):
