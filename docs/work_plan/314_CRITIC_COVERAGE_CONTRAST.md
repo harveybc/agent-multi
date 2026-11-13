@@ -59,3 +59,23 @@ an interrupted arm restarts from the same pinned source and seed.
 Progress and per-arm curves/results are written automatically; the final
 receipt is emitted only after actor parity and cold-load checks pass.
 No actor training, floating selection or promotion is chained to this run.
+
+## Complete And Continuation
+
+Finished2026-11-13T13:20:02Z in327.83seconds. Four arms complete; full TRAIN
+actor logits and cold-reload actor/Q equality pass in every arm. No model
+promotion. Same55 held-out origins, minimum-twin metrics:
+
+| Seed | FIT count | Pair accuracy | Mean regret | Gap RMSE | Q RMSE |
+| --- | ---: | ---: | ---: | ---: | ---: |
+|19|113|0.453846|0.299919|0.524470|0.583582|
+|19|146|0.500000|0.287495|0.506694|0.604940|
+|43|113|0.530769|0.249407|0.537096|0.597902|
+|43|146|0.523077|0.240417|0.521500|0.593522|
+
+Coverage expansion reduces mean regret and gap error in both seeds, but
+pair accuracy and level error are not uniformly better. This is not enough
+to declare the critic fixed or change the actor. The owner subsequently
+authorized unattended continuation: [315](315_AUTOMATED_CRITIC_REPRESENTATION.md)
+compares critic representation training and shuffled-target controls. This
+supersedes the previous no-successor launch scope, not the no-promotion rule.

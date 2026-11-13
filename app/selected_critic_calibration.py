@@ -10,13 +10,14 @@ from tools.audit_fixed_actor_critics import covering_schedule
 from tools.diagnose_warmstart_drift import frozen_state,verify_frozen_state
 
 
-def calibrate(model,x,records,seed,progress,updates=4096):
+def calibrate(model,x,records,seed,progress,updates=4096,scope='heads'):
+    if scope not in ('heads','critic_representation'):raise ValueError('CALIBRATION_SCOPE')
     fit=np.array([i for i,r in enumerate(records) if r['role']=='fit'])
     monitor=np.array([i for i,r in enumerate(records) if r['role']=='monitor'])
     if not len(fit) or not len(monitor):raise ValueError('CALIBRATION_ROLES')
     y=torch.tensor([[o['reward_return'] for o in r['outcomes']] for r in records],device=x.device,dtype=torch.float32)
     if not torch.isfinite(y).all():raise ValueError('CALIBRATION_TARGET')
-    init=begin_stage(model,'selected_input_refinement',seed=seed);set_scope(model,'heads')
+    init=begin_stage(model,'selected_input_refinement',seed=seed);set_scope(model,scope)
     frozen=frozen_state(model);buffers={n:v.detach().clone() for n,v in model.loss.named_buffers()}
     reset_learning_rng(seed);schedule=covering_schedule(len(fit),updates,128,seed);curve=[]
     for step in range(updates+1):

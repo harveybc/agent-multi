@@ -1,9 +1,21 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "STL_PAUSED_MAIN_CRITIC_COVERAGE_CONTRAST",
+  "current_stage": "STL_PAUSED_AUTOMATED_CRITIC_REPRESENTATION_DIAGNOSTIC",
+  "critic_representation_315": {
+    "document": "../315_AUTOMATED_CRITIC_REPRESENTATION.md",
+    "status": "TESTING_AUTOMATED_SUCCESSOR",
+    "owner_authorized": "2026-11-13 automatic continuation without intermediate approvals",
+    "new_arms": 6,
+    "reused_controls": 2,
+    "updates_per_arm": 4096,
+    "actor_updates": 0,
+    "stl_features_admitted": 0,
+    "next_action": "Authenticate314 then run sequential critic representation and stratified shuffled-FIT controls; emit paired results, plot and recommendation automatically. No actor/model promotion, no STL. Preserve selected71 and49 cumulative return candidates."
+  },
   "critic_coverage_contrast_314": {
     "document": "../314_CRITIC_COVERAGE_CONTRAST.md",
-    "status": "RUNNING_FROZEN_ACTOR_GPU_DIAGNOSTIC",
+    "status": "COMPLETE_ACTOR_EXACT_ALL_FOUR_ARMS",
+    "seconds": 327.82674948801287,
     "runtime_commit": "ef05e70f",
     "started_at": "2026-11-13T13:14:29Z",
     "focused_tests_passed": 42,
@@ -16,7 +28,7 @@
     "stl_features_admitted": 0,
     "preserved_features": 71,
     "cumulative_absent_phase2_features": 49,
-    "next_action": "Run finite critic-only coverage diagnostic on unchanged299 source, no actor updates or promotion. Preserve same55 held-out anchors for113 vs146 FIT contrast. Retsu continues COT/source qualification; no automatic STL resume."
+    "next_action": "Continue315 automatically under new owner authorization; reuse expanded146 true-label head controls, same55 held-out. Retsu continues COT/source qualification; no automatic STL resume."
   },
   "full71_stl_313": {
     "document": "../313_FULL71_MATCHED_STL.md",
@@ -2451,6 +2463,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
+    "315: unattended six-arm critic representation/negative-control queue after authenticated314; reuse two completed controls, full TRAIN actor parity and cold reload, automatic report; no actor promotion",
     "314: compare113 vs146 own-policy critic FIT origins on shared55 held-out diagnostic anchors; keep actor exact, no promotion, no STL inputs",
     "311 completed the frozen-weight COT identity diagnostic; no source/live certification from the legacy93h clock. Retsu owns verified publications/vintages and live readers under the new concrete handoff",
     "310 completed paired head8/16; no arm promoted. Diagnose frozen-Q extrapolation/policy drift, then qualify repaired data before new model training or phase2 scores; preserve all49 cumulative return candidates",
