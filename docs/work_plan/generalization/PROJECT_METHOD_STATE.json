@@ -1,9 +1,20 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "STL_PAUSED_AUTOMATED_CRITIC_REPRESENTATION_DIAGNOSTIC",
+  "current_stage": "STL_PAUSED_NATIVE_CRITIC_IDENTIFIABILITY_DIAGNOSTIC",
+  "critic_identifiability_316": {
+    "document": "../316_CRITIC_IDENTIFIABILITY.md",
+    "status": "TESTED_READY_FOR_CPU_EXECUTION",
+    "focused_tests_passed": 14,
+    "planned_origins": 16,
+    "maximum_native_suffixes": 144,
+    "optimizer_steps": 0,
+    "next_action": "Run FIT-only mean/nearest-window baselines and native same-market reachable-position forks on fixed source; characterize ambiguity without adding state to network, changing actor, reactivating STL or promoting a model."
+  },
   "critic_representation_315": {
     "document": "../315_AUTOMATED_CRITIC_REPRESENTATION.md",
-    "status": "RUNNING_AUTOMATED_SUCCESSOR",
+    "status": "COMPLETE_NO_REPRESENTATION_PROMOTED",
+    "seconds": 767.0667188559892,
+    "identity": "abdb2b6f2549db83edb6cdd650fbc49426057b4b72f159a4c98dfa92a7101148",
     "runtime_commit": "9e3aa2d5",
     "started_at": "2026-11-13T13:24:24Z",
     "focused_tests_passed": 45,
@@ -13,7 +24,7 @@
     "updates_per_arm": 4096,
     "actor_updates": 0,
     "stl_features_admitted": 0,
-    "next_action": "Authenticate314 then run sequential critic representation and stratified shuffled-FIT controls; emit paired results, plot and recommendation automatically. No actor/model promotion, no STL. Preserve selected71 and49 cumulative return candidates."
+    "next_action": "316 diagnoses partial observation and native coverage; representation fitting worsened regret and RMSE in both seeds, and shuffled controls attained lower regret. Preserve selected71 and49 cumulative return candidates."
   },
   "critic_coverage_contrast_314": {
     "document": "../314_CRITIC_COVERAGE_CONTRAST.md",
@@ -2466,6 +2477,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
+    "316: CPU FIT-only baselines and same-market native forks, source continuation fixed, no learned feedback inputs or actor training; report conditional Q ambiguity and coverage separately",
     "315: unattended six-arm critic representation/negative-control queue after authenticated314; reuse two completed controls, full TRAIN actor parity and cold reload, automatic report; no actor promotion",
     "314 complete: coverage expansion lowers regret/gap error in both seeds but accuracy/level error remain mixed; use315 to isolate critic representation versus memorization, do not promote actor",
     "311 completed the frozen-weight COT identity diagnostic; no source/live certification from the legacy93h clock. Retsu owns verified publications/vintages and live readers under the new concrete handoff",

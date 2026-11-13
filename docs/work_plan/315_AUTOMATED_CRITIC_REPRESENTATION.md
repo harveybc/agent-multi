@@ -69,3 +69,26 @@ Output root: `/var/tmp/sac71-critic315-20261113-r1` on the assigned worker.
 Final `RESULTS.md` and `CRITIC_CURVES.png` are emitted by the same sequential
 process. The final recommendation is descriptive and does not override
 source qualification, actor checks or authorization for any live promotion.
+
+## Complete
+
+Finished2026-11-13T13:37:16Z in767.07seconds, six new arms plus two reused
+controls, no errors/restarts. Receipt
+`abdb2b6f2549db83edb6cdd650fbc49426057b4b72f159a4c98dfa92a7101148`
+verified on collection. Actor preservation and cold reload passed all arms.
+
+| Seed | Scope | Labels | Pair accuracy | Mean regret | RMSE |
+| --- | --- | --- | ---: | ---: | ---: |
+|19|heads|true|0.500000|0.287495|0.604940|
+|19|heads|shuffled|0.469231|0.255107|0.680258|
+|19|representation|true|0.453846|0.303783|0.707111|
+|19|representation|shuffled|0.492308|0.263488|0.977592|
+|43|heads|true|0.523077|0.240417|0.593522|
+|43|heads|shuffled|0.515385|0.248134|0.652045|
+|43|representation|true|0.530769|0.246313|0.741314|
+|43|representation|shuffled|0.592308|0.207010|0.806480|
+
+Representation fitting worsens regret and RMSE for both true-label seeds.
+Shuffled-label representation has lower regret despite worse value RMSE.
+No actor promotion; automatic recommendation is to diagnose partial
+observation and native coverage. Owner authorized [316](316_CRITIC_IDENTIFIABILITY.md).
