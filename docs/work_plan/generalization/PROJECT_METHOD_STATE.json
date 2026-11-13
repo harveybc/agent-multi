@@ -1,6 +1,14 @@
 {
   "schema": "generalization_method.v1",
   "current_stage": "KNOWN_TEACHER_COVERAGE_COMPLETE_NATIVE_LABEL_CONTRAST_NEXT",
+  "post_phase2_gene_weight_analysis": {
+    "document": "POST_PHASE2_GENE_WEIGHT_ANALYSIS.md",
+    "status": "DEFERRED_UNTIL_PHASE2_COMPLETE",
+    "owner_direction_date": "2026-11-13",
+    "scope": "Joint DEAP genome, effective phenotype and per-component functional weight diagnostics; verify adapters and confirm associations through paired contrasts",
+    "launch_authorized_now": false,
+    "current_lane_unchanged": true
+  },
   "known_teacher_coverage_323": {
     "document": "../323_KNOWN_TEACHER_COVERAGE.md",
     "status": "COMPLETE_ALL_PAIRED_RULES_PASS_SOURCE_UNCHANGED",
