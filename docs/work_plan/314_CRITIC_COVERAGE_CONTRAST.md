@@ -47,3 +47,15 @@ If expanded coverage helps on held-out states, design the next bounded actor
 step with own-policy targets and native account checks; if it does not, inspect
 representation/partial-observation errors before widening or resetting again.
 Do not run an unchanged floating pass merely because GPUs are free.
+
+## Execution
+
+Runtime `ef05e70f`;42 focused tests pass and the real partition has
+113 old FIT,38 old monitor,33 new FIT and55 shared held-out origins.
+The sequential four-arm service started2026-11-13T13:14:29Z on the primary
+GPU and reached the first1024 updates with source identities verified.
+Each completed arm has authenticated artifacts and is skipped on restart;
+an interrupted arm restarts from the same pinned source and seed.
+Progress and per-arm curves/results are written automatically; the final
+receipt is emitted only after actor parity and cold-load checks pass.
+No actor training, floating selection or promotion is chained to this run.

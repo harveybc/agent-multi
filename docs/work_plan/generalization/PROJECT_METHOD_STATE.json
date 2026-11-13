@@ -3,7 +3,15 @@
   "current_stage": "STL_PAUSED_MAIN_CRITIC_COVERAGE_CONTRAST",
   "critic_coverage_contrast_314": {
     "document": "../314_CRITIC_COVERAGE_CONTRAST.md",
-    "status": "IMPLEMENTATION_AND_TESTS",
+    "status": "RUNNING_FROZEN_ACTOR_GPU_DIAGNOSTIC",
+    "runtime_commit": "ef05e70f",
+    "started_at": "2026-11-13T13:14:29Z",
+    "focused_tests_passed": 42,
+    "arms": 4,
+    "updates_per_arm": 4096,
+    "old_fit": 113,
+    "expanded_fit": 146,
+    "shared_held_out": 55,
     "stl_paused_by_owner": true,
     "stl_features_admitted": 0,
     "preserved_features": 71,
@@ -25,7 +33,7 @@
     "feature_pruning": false,
     "historical_mixed_cot": true,
     "live_qualified": false,
-    "next_action": "Tests then durable preparation with repaired activity and qualified FX propagation, followed automatically by paired warm-start training. Preserve main299 and all49 return candidates; Retsu continues source qualification independently."
+    "next_action": "Remain paused until a new explicit owner request. No automatic STL restart, feature admission or donor transfer. Preserve recovery artifacts; main lane continues under314."
   },
   "critic_coverage_drift_312": {
     "document": "../312_FROZEN_CRITIC_COVERAGE_AND_DRIFT.md",
