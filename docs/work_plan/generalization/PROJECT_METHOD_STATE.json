@@ -1,6 +1,19 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "TRAINING_FORENSICS_COMPLETE_COVERAGE_DIAGNOSIS_NEXT",
+  "current_stage": "KNOWN_TEACHER_COVERAGE_READY",
+  "known_teacher_coverage_323": {
+    "document": "../323_KNOWN_TEACHER_COVERAGE.md",
+    "status": "READY_TESTED",
+    "tests_passed": 17,
+    "new_fits": 8,
+    "reused_controls": 4,
+    "factors": [4, 16],
+    "primary_updates": 8192,
+    "secondary_updates": [32768, 131072],
+    "actor_updates": 0,
+    "encoder_updates": 0,
+    "next_action": "Execute nested known-teacher FIT coverage on existing TRAIN inputs, frozen teacher thresholds and exact original control replay. Compare same-update and same-per-example-exposure endpoints separately; no promotion or floating pass."
+  },
   "training_forensics_322": {
     "document": "../322_TRAINING_FORENSICS_EXECUTION.md",
     "status": "COMPLETE_SOURCE_UNCHANGED",
