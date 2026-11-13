@@ -1,6 +1,16 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "TRAINING_REPRODUCIBILITY_AND_TRANSIENT_DIAGNOSIS_DESIGN",
+  "current_stage": "TRAINING_FORENSICS_READY",
+  "training_forensics_322": {
+    "document": "../322_TRAINING_FORENSICS_EXECUTION.md",
+    "status": "READY_TESTED",
+    "tests_passed": 19,
+    "independent_restart_runs": 3,
+    "real_target_lr_runs": 8,
+    "known_teacher_runs": 5,
+    "new_actor_updates": 0,
+    "next_action": "Execute sequential GPU queue with exact independent/restart reproduction as a mandatory gate; then paired8192/81920-update learning-rate contrasts and known-teacher controls. Preserve source299 and71 inputs; STL paused."
+  },
   "training_transients_321": {
     "document": "../321_TRAINING_REPRODUCIBILITY_AND_TRANSIENTS.md",
     "status": "EXISTING_EVIDENCE_REVIEWED_DIAGNOSTIC_DESIGNED",
