@@ -4,15 +4,18 @@ import copy
 import fcntl
 from pathlib import Path
 import shutil
+import time
+from concurrent.futures import ProcessPoolExecutor
+from multiprocessing import get_context
 
 import joblib
 import numpy as np
 import pandas as pd
 
-from app.causal_stl_inputs import CausalSTLColumn
+from app.causal_stl_inputs import CausalSTLColumn,choose_parameters
 from app.frozen_recipe_inputs import file_sha
 from app.rl_subset import digest,support_hash
-from app.stl_full_pair import paired_coverage,assert_declared_changes
+from app.stl_full_pair import paired_coverage,assert_declared_changes,endpoint_chunk
 from app.structural_refit import verify_files
 from app.transformed_feature_scope import context_fit_overlap
 from tools import run_causal_stl_lane as lane
@@ -24,6 +27,41 @@ FX_COLUMNS={'fac.fx_f1.ret_4','fac.fx_f1.ret_24','wv.usd.A4','hb.eur.inst_freq'}
 
 def receipt(root):
     done=read(root/'DONE.json');verify_files(root,done['files']);return done
+
+
+def activity_column(a,cfg,j):
+    out=a.root/'columns'/f'{j:03d}';out.mkdir(parents=True,exist_ok=True)
+    if (out/'DONE.json').exists():verify_done(out,cfg['identity']);return
+    with np.load(a.root/'RAW.npz') as f:x=f['values'][:,j].copy()
+    started=time.monotonic()
+    if (out/'PARAMETERS.json').exists():tuning=read(out/'PARAMETERS.json')
+    else:
+        tuning=choose_parameters(x,cfg['train_end']);write(out/'PARAMETERS.json',tuning)
+    params=tuning['selected']['parameters'];values=np.full(len(x),np.nan)
+    chunks=out/'chunks';chunks.mkdir(exist_ok=True);tasks=[]
+    for start in range(0,len(x),256):
+        end=min(start+256,len(x));path=chunks/f'{start:06d}.npz'
+        if path.exists():
+            with np.load(path) as f:
+                if str(f['identity'])!=cfg['identity'] or int(f['end'])!=end:raise ValueError('FULL71_CHUNK_IDENTITY')
+                values[start:end]=f['values']
+        else:tasks.append((x,params,start,end))
+    # CPU-only fork shares read-only imports; each endpoint owns its full history.
+    with ProcessPoolExecutor(max_workers=8,mp_context=get_context('fork')) as pool:
+        for start,part in pool.map(endpoint_chunk,tasks,chunksize=1):
+            end=start+len(part);values[start:end]=part
+            path=chunks/f'{start:06d}.npz';temp=path.with_suffix('.building')
+            with temp.open('wb') as f:np.savez_compressed(f,identity=cfg['identity'],end=end,values=part)
+            temp.replace(path)
+            write(out/'PROGRESS.json',dict(stage='PARALLEL_ENDPOINTS',workers=8,completed_chunks=len(list(chunks.glob('*.npz'))),
+                total_chunks=(len(x)+255)//256,seconds=time.monotonic()-started,parameters=params,at=now()))
+    finite=np.flatnonzero(np.isfinite(values));probes=finite[np.linspace(0,len(finite)-1,9,dtype=int)]
+    for t in probes:
+        if CausalSTLColumn(params,x[t-params['history']+1:t]).update(x[t])!=values[t]:raise ValueError('FULL71_PARALLEL_PARITY')
+    np.savez_compressed(out/'SEASONAL.npz',values=values)
+    write(out/'RESULT.json',dict(identity=cfg['identity'],name=cfg['columns'][j],parameters=params,
+        tuning=tuning['selected'],finite_rows=len(finite),prefix_rows=probes.tolist(),workers=8,seconds=time.monotonic()-started))
+    seal(out,cfg['identity'])
 
 
 def prepare(a):
@@ -95,7 +133,7 @@ def prepare(a):
                 fx_parameters_frozen=name in FX_COLUMNS)
             np.savez_compressed(out/'SEASONAL.npz',values=seasonal[:,j]);write(out/'RESULT.json',result);seal(out,cfg['identity'])
         write(a.root/'PREPARATION_PROGRESS.json',dict(stage='ACTIVITY_STL_RETUNE',at=now(),reused_columns=70))
-        a.column=jact;lane.column(a)
+        activity_column(a,cfg,jact)
         lane.assemble(a)
         # Audit the repaired fitted producer over the ACTUAL resulting context.
         bundle=joblib.load(a.activity/'CONSUMER_ACTIVITY.joblib')

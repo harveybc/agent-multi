@@ -3,7 +3,8 @@ import numpy as np
 import pandas as pd
 import pytest
 import torch
-from app.stl_full_pair import paired_coverage,assert_declared_changes,copy_loss_weights
+from app.stl_full_pair import paired_coverage,assert_declared_changes,copy_loss_weights,endpoint_chunk
+from app.causal_stl_inputs import endpoint_series
 
 
 def test_same_columns_allow_missing_interior_month():
@@ -36,3 +37,12 @@ def test_copies_all_weights_and_buffers_exactly():
     assert all(torch.equal(v,model.loss.state_dict()[k]) for k,v in donor.loss.state_dict().items())
     bad=SimpleNamespace(loss=torch.nn.Linear(3,5))
     with pytest.raises(ValueError,match='SHAPE'):copy_loss_weights(bad,donor)
+
+
+@pytest.mark.parametrize('robust',[False,True])
+def test_independent_chunks_equal_sequential_endpoints(robust):
+    x=np.sin(np.arange(110)/3)+np.arange(110)*.01;x[65]=np.nan
+    p=dict(period=6,seasonal=7,history=24,robust=robust)
+    expected=endpoint_series(x,p)
+    actual=np.concatenate([endpoint_chunk((x,p,i,min(i+17,len(x))))[1] for i in range(0,len(x),17)])
+    assert np.array_equal(actual,expected,equal_nan=True)

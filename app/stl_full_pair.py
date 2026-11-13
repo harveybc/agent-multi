@@ -2,6 +2,13 @@
 import numpy as np
 import pandas as pd
 import torch
+from app.causal_stl_inputs import CausalSTLColumn
+
+
+def endpoint_chunk(task):
+    values,parameters,start,end=task
+    stream=CausalSTLColumn(parameters,values[max(0,start-parameters['history']+1):start])
+    return start,np.array([stream.update(v) for v in values[start:end]])
 
 
 def paired_coverage(times, reference, common, periods, minimum_fraction=0.8):
