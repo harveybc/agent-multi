@@ -1,0 +1,61 @@
+{
+  "actor_exact": true,
+  "cache_errors": [
+    3.8743019104003906e-07,
+    5.662441253662109e-07
+  ],
+  "checkpoint_replays": [
+    {
+      "endpoint": "stopped",
+      "exact": true,
+      "fold": "A",
+      "seed": 19
+    },
+    {
+      "endpoint": "fixed",
+      "exact": true,
+      "fold": "A",
+      "seed": 19
+    },
+    {
+      "endpoint": "stopped",
+      "exact": true,
+      "fold": "B",
+      "seed": 19
+    },
+    {
+      "endpoint": "fixed",
+      "exact": true,
+      "fold": "B",
+      "seed": 19
+    },
+    {
+      "endpoint": "stopped",
+      "exact": true,
+      "fold": "A",
+      "seed": 43
+    },
+    {
+      "endpoint": "fixed",
+      "exact": true,
+      "fold": "A",
+      "seed": 43
+    },
+    {
+      "endpoint": "stopped",
+      "exact": true,
+      "fold": "B",
+      "seed": 43
+    },
+    {
+      "endpoint": "fixed",
+      "exact": true,
+      "fold": "B",
+      "seed": 43
+    }
+  ],
+  "records_sha256": "75b0e0ff28a3d00f696d8b23aa7ab59aaa03409f45f998c2dcb42b30beb62208",
+  "source_exact": true,
+  "source_sha256": "69b5254489d224d4b20ac358956e4dd3b9a67a2f214a9aff98045c5def25a536",
+  "train_rows": 24026
+}

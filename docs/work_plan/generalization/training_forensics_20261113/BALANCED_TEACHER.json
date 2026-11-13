@@ -1,0 +1,920 @@
+{
+  "identity": "bcb56fc708a5765de97e0cde14cead8a388a077bb1ebc7530fd0768c8f279c3c",
+  "model_promoted": false,
+  "original_322_retained": true,
+  "source_changed": false,
+  "test_read": false,
+  "units": [
+    {
+      "audit_constant_rmse": 1.5300020374216639,
+      "checkpoints": 135,
+      "clipped_updates": 0,
+      "cold_exact": true,
+      "final": {
+        "audit": {
+          "gap_rmse": 2.6357217135536364,
+          "level_rmse": 0.2321766514305049,
+          "maximum_regret": 8.112214088439941,
+          "mean_regret": 0.5256232078802787,
+          "n": 59,
+          "pairwise_accuracy": 0.768361581920904,
+          "pairwise_comparisons": 177,
+          "per_action_rmse": [
+            1.9540374970851166,
+            0.23808400237272365,
+            1.7982770675026916
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            32,
+            20,
+            7
+          ],
+          "rmse": 1.5393447679349987,
+          "target_ties": 0
+        },
+        "fit": {
+          "gap_rmse": 0.10591332117496105,
+          "level_rmse": 0.026196992031539235,
+          "maximum_regret": 0.0,
+          "mean_regret": 0.0,
+          "n": 49,
+          "pairwise_accuracy": 0.993103448275862,
+          "pairwise_comparisons": 145,
+          "per_action_rmse": [
+            0.060009246009875124,
+            0.024463248171112412,
+            0.09527286423246073
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            16,
+            17,
+            16
+          ],
+          "rmse": 0.06652437843079795,
+          "target_ties": 2
+        },
+        "stop": {
+          "gap_rmse": 1.523771936593118,
+          "level_rmse": 0.0619549752799576,
+          "maximum_regret": 6.01301383972168,
+          "mean_regret": 0.421227046421596,
+          "n": 49,
+          "pairwise_accuracy": 0.6938775510204082,
+          "pairwise_comparisons": 147,
+          "per_action_rmse": [
+            1.081890377894573,
+            0.07493364395690096,
+            1.0757761527646161
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            4,
+            24,
+            21
+          ],
+          "rmse": 0.8819289789309493,
+          "target_ties": 0
+        }
+      },
+      "identity": "471ec4615e0eeaaebceb5516c10bf1ad4d6cc036e88282d8ca02fa578173db63",
+      "initial": {
+        "audit": {
+          "gap_rmse": 2.8334090152114193,
+          "level_rmse": 0.14859563468729678,
+          "maximum_regret": 3.68280029296875,
+          "mean_regret": 0.6094558299598047,
+          "n": 59,
+          "pairwise_accuracy": 0.751412429378531,
+          "pairwise_comparisons": 177,
+          "per_action_rmse": [
+            1.9031515599453264,
+            0.22367257709192287,
+            2.102958238662964
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            34,
+            24,
+            1
+          ],
+          "rmse": 1.6426045005240617,
+          "target_ties": 0
+        },
+        "fit": {
+          "gap_rmse": 2.637405934998922,
+          "level_rmse": 0.16570443256887085,
+          "maximum_regret": 6.971174716949463,
+          "mean_regret": 1.3079650633189144,
+          "n": 49,
+          "pairwise_accuracy": 0.496551724137931,
+          "pairwise_comparisons": 145,
+          "per_action_rmse": [
+            1.9178175495604852,
+            0.29284533951670755,
+            1.809558342968695
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            37,
+            10,
+            2
+          ],
+          "rmse": 1.5316966565311871,
+          "target_ties": 2
+        },
+        "stop": {
+          "gap_rmse": 1.8187622174036788,
+          "level_rmse": 0.16009359861632985,
+          "maximum_regret": 6.269837379455566,
+          "mean_regret": 1.1977973598606733,
+          "n": 49,
+          "pairwise_accuracy": 0.4421768707482993,
+          "pairwise_comparisons": 147,
+          "per_action_rmse": [
+            1.355401790830367,
+            0.1282891987253084,
+            1.2374222203084844
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            43,
+            6,
+            0
+          ],
+          "rmse": 1.0621967621253805,
+          "target_ties": 0
+        }
+      },
+      "schedule_sha256": "9170321823dda8c922bae8f2d796391af3c6482588458f9570742f76b7b5fdd2",
+      "selected_step": 1536,
+      "stopped_at": 2816,
+      "task": {
+        "fold": "A",
+        "lr": 2.9999999999999997e-05,
+        "name": "A_19_balanced",
+        "seed": 19,
+        "target": "balanced_teacher",
+        "updates": 8192
+      },
+      "teacher_balance": {
+        "fit_counts": [
+          17,
+          16,
+          16
+        ],
+        "high": 0.03044590726494789,
+        "low": -0.03543761745095253,
+        "scale": 15.178301811218262
+      },
+      "teacher_counts": {
+        "audit": [
+          39,
+          16,
+          4
+        ],
+        "fit": [
+          17,
+          16,
+          16
+        ],
+        "stop": [
+          13,
+          19,
+          17
+        ]
+      },
+      "teacher_residual": 0.0
+    },
+    {
+      "audit_constant_rmse": 1.5300020374216639,
+      "checkpoints": 135,
+      "clipped_updates": 0,
+      "cold_exact": true,
+      "final": {
+        "audit": {
+          "gap_rmse": 2.810404940726674,
+          "level_rmse": 0.2253669982419249,
+          "maximum_regret": 8.112214088439941,
+          "mean_regret": 0.5714045086149442,
+          "n": 59,
+          "pairwise_accuracy": 0.751412429378531,
+          "pairwise_comparisons": 177,
+          "per_action_rmse": [
+            2.0020104966953736,
+            0.3311863481303543,
+            1.9831833895240876
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            30,
+            21,
+            8
+          ],
+          "rmse": 1.6381642960491505,
+          "target_ties": 0
+        },
+        "fit": {
+          "gap_rmse": 0.11863025441866504,
+          "level_rmse": 0.027633179151018972,
+          "maximum_regret": 0.0,
+          "mean_regret": 0.0,
+          "n": 49,
+          "pairwise_accuracy": 0.9862068965517241,
+          "pairwise_comparisons": 145,
+          "per_action_rmse": [
+            0.08624816651930452,
+            0.02497686182921897,
+            0.09111160836378945
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            16,
+            17,
+            16
+          ],
+          "rmse": 0.0738555234526936,
+          "target_ties": 2
+        },
+        "stop": {
+          "gap_rmse": 1.5734428093446633,
+          "level_rmse": 0.0882629738919746,
+          "maximum_regret": 6.01301383972168,
+          "mean_regret": 0.4797542849365546,
+          "n": 49,
+          "pairwise_accuracy": 0.6666666666666666,
+          "pairwise_comparisons": 147,
+          "per_action_rmse": [
+            1.0364734018510238,
+            0.121376249308638,
+            1.1874695892183196
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            4,
+            21,
+            24
+          ],
+          "rmse": 0.9127053799847267,
+          "target_ties": 0
+        }
+      },
+      "identity": "6d0372cd3b27b8b285280f2815c9ea4f0a1ca73bcd999cdcccc558775ee7fcb3",
+      "initial": {
+        "audit": {
+          "gap_rmse": 3.050848193649656,
+          "level_rmse": 0.3346124187062907,
+          "maximum_regret": 8.369104385375977,
+          "mean_regret": 2.519297420473422,
+          "n": 59,
+          "pairwise_accuracy": 0.3785310734463277,
+          "pairwise_comparisons": 177,
+          "per_action_rmse": [
+            1.8359030793901556,
+            0.11952945832879376,
+            2.5017481297345183
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            8,
+            4,
+            47
+          ],
+          "rmse": 1.79290928502186,
+          "target_ties": 0
+        },
+        "fit": {
+          "gap_rmse": 2.7839961632697743,
+          "level_rmse": 0.32570948948448036,
+          "maximum_regret": 8.297330856323242,
+          "mean_regret": 1.1908191424243304,
+          "n": 49,
+          "pairwise_accuracy": 0.4482758620689655,
+          "pairwise_comparisons": 145,
+          "per_action_rmse": [
+            1.9179370001749887,
+            0.2236560152942884,
+            2.083360338948591
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            8,
+            3,
+            38
+          ],
+          "rmse": 1.6400096190491835,
+          "target_ties": 2
+        },
+        "stop": {
+          "gap_rmse": 1.8164379110123101,
+          "level_rmse": 0.3326239296569975,
+          "maximum_regret": 8.250008583068848,
+          "mean_regret": 0.863745816508118,
+          "n": 49,
+          "pairwise_accuracy": 0.4217687074829932,
+          "pairwise_comparisons": 147,
+          "per_action_rmse": [
+            1.3547137649069565,
+            0.058039875526823145,
+            1.3389341687792593
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            2,
+            1,
+            46
+          ],
+          "rmse": 1.100206453399263,
+          "target_ties": 0
+        }
+      },
+      "schedule_sha256": "23121ac1ebc339b93a9af8dd5fc5ed0fb3482a1d8fbc20c78e2bee41d8d38352",
+      "selected_step": 5824,
+      "stopped_at": 7104,
+      "task": {
+        "fold": "A",
+        "lr": 2.9999999999999997e-05,
+        "name": "A_43_balanced",
+        "seed": 43,
+        "target": "balanced_teacher",
+        "updates": 8192
+      },
+      "teacher_balance": {
+        "fit_counts": [
+          17,
+          16,
+          16
+        ],
+        "high": 0.03044590726494789,
+        "low": -0.03543761745095253,
+        "scale": 15.178301811218262
+      },
+      "teacher_counts": {
+        "audit": [
+          39,
+          16,
+          4
+        ],
+        "fit": [
+          17,
+          16,
+          16
+        ],
+        "stop": [
+          13,
+          19,
+          17
+        ]
+      },
+      "teacher_residual": 0.0
+    },
+    {
+      "audit_constant_rmse": 2.3371708091784877,
+      "checkpoints": 135,
+      "clipped_updates": 0,
+      "cold_exact": true,
+      "final": {
+        "audit": {
+          "gap_rmse": 2.5214120630205388,
+          "level_rmse": 0.18850426361775202,
+          "maximum_regret": 3.212743043899536,
+          "mean_regret": 0.2795817082126935,
+          "n": 60,
+          "pairwise_accuracy": 0.7944444444444444,
+          "pairwise_comparisons": 180,
+          "per_action_rmse": [
+            1.8694573293637549,
+            0.10666952508319168,
+            1.7198462925094105
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            19,
+            27,
+            14
+          ],
+          "rmse": 1.467891953761323,
+          "target_ties": 0
+        },
+        "fit": {
+          "gap_rmse": 0.3222980052175552,
+          "level_rmse": 0.05260909700900107,
+          "maximum_regret": 0.5783233046531677,
+          "mean_regret": 0.03272153619600802,
+          "n": 98,
+          "pairwise_accuracy": 0.9285714285714286,
+          "pairwise_comparisons": 294,
+          "per_action_rmse": [
+            0.21809005979918,
+            0.03411040290608028,
+            0.2518975221432272
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            27,
+            37,
+            34
+          ],
+          "rmse": 0.19337283110744272,
+          "target_ties": 0
+        },
+        "stop": {
+          "gap_rmse": 2.052218738581037,
+          "level_rmse": 0.24266996257201673,
+          "maximum_regret": 2.1595898270606995,
+          "mean_regret": 0.3099295571446419,
+          "n": 48,
+          "pairwise_accuracy": 0.7847222222222222,
+          "pairwise_comparisons": 144,
+          "per_action_rmse": [
+            1.4522372809111106,
+            0.19327742704720122,
+            1.4973037765641186
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            30,
+            16,
+            2
+          ],
+          "rmse": 1.2094444844896428,
+          "target_ties": 0
+        }
+      },
+      "identity": "cb5782cb29671ebd8b85b7df1fe3debe53e79624f62fbf83104ca60ee6d9dab6",
+      "initial": {
+        "audit": {
+          "gap_rmse": 4.103684134986047,
+          "level_rmse": 0.15238235065090588,
+          "maximum_regret": 25.583145141601562,
+          "mean_regret": 2.0857330203056335,
+          "n": 60,
+          "pairwise_accuracy": 0.55,
+          "pairwise_comparisons": 180,
+          "per_action_rmse": [
+            2.9253233933574787,
+            0.14808637721409026,
+            2.8862498317479313
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            48,
+            12,
+            0
+          ],
+          "rmse": 2.3741584208659336,
+          "target_ties": 0
+        },
+        "fit": {
+          "gap_rmse": 2.5241706678505644,
+          "level_rmse": 0.16292315762068876,
+          "maximum_regret": 7.8918139934539795,
+          "mean_regret": 1.3397968712509896,
+          "n": 98,
+          "pairwise_accuracy": 0.4897959183673469,
+          "pairwise_comparisons": 294,
+          "per_action_rmse": [
+            1.8324581404599978,
+            0.22607135088975486,
+            1.744149745312374
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            80,
+            16,
+            2
+          ],
+          "rmse": 1.4664093819376693,
+          "target_ties": 0
+        },
+        "stop": {
+          "gap_rmse": 3.2440854826708927,
+          "level_rmse": 0.14440047391606606,
+          "maximum_regret": 4.223610877990723,
+          "mean_regret": 0.7563606854528189,
+          "n": 48,
+          "pairwise_accuracy": 0.7361111111111112,
+          "pairwise_comparisons": 144,
+          "per_action_rmse": [
+            2.178207464328794,
+            0.21715969528088722,
+            2.407259649179006
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            29,
+            18,
+            1
+          ],
+          "rmse": 1.8785317945563758,
+          "target_ties": 0
+        }
+      },
+      "schedule_sha256": "9cd1836ac78de2ad3bc08ae1ba82fe13fcb4c2e7eb9dc989af170acb77fd3b6a",
+      "selected_step": 960,
+      "stopped_at": 2240,
+      "task": {
+        "fold": "B",
+        "lr": 2.9999999999999997e-05,
+        "name": "B_19_balanced",
+        "seed": 19,
+        "target": "balanced_teacher",
+        "updates": 8192
+      },
+      "teacher_balance": {
+        "fit_counts": [
+          33,
+          32,
+          33
+        ],
+        "high": 0.030457377433776855,
+        "low": -0.028607290238142014,
+        "scale": 16.93059539794922
+      },
+      "teacher_counts": {
+        "audit": [
+          29,
+          13,
+          18
+        ],
+        "fit": [
+          33,
+          32,
+          33
+        ],
+        "stop": [
+          32,
+          12,
+          4
+        ]
+      },
+      "teacher_residual": 0.0
+    },
+    {
+      "audit_constant_rmse": 2.3371708091784877,
+      "checkpoints": 135,
+      "clipped_updates": 0,
+      "cold_exact": true,
+      "final": {
+        "audit": {
+          "gap_rmse": 2.488536190839293,
+          "level_rmse": 0.16401071937205,
+          "maximum_regret": 3.212743043899536,
+          "mean_regret": 0.25031216194232303,
+          "n": 60,
+          "pairwise_accuracy": 0.8111111111111111,
+          "pairwise_comparisons": 180,
+          "per_action_rmse": [
+            1.8173160199077667,
+            0.11087579937369912,
+            1.7200523138043171
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            18,
+            29,
+            13
+          ],
+          "rmse": 1.4460879320110227,
+          "target_ties": 0
+        },
+        "fit": {
+          "gap_rmse": 0.3558979696834548,
+          "level_rmse": 0.04393443175293199,
+          "maximum_regret": 0.55079585313797,
+          "mean_regret": 0.03244064383360804,
+          "n": 98,
+          "pairwise_accuracy": 0.9251700680272109,
+          "pairwise_comparisons": 294,
+          "per_action_rmse": [
+            0.25945542796312615,
+            0.03870889410475828,
+            0.25226686291073197
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            28,
+            37,
+            33
+          ],
+          "rmse": 0.21012224037859834,
+          "target_ties": 0
+        },
+        "stop": {
+          "gap_rmse": 2.0645114805343163,
+          "level_rmse": 0.22587524631738234,
+          "maximum_regret": 2.1595898270606995,
+          "mean_regret": 0.2580676047752301,
+          "n": 48,
+          "pairwise_accuracy": 0.8055555555555556,
+          "pairwise_comparisons": 144,
+          "per_action_rmse": [
+            1.4285501060141144,
+            0.24809621873937365,
+            1.5208416731563794
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            30,
+            16,
+            2
+          ],
+          "rmse": 1.2131593099499627,
+          "target_ties": 0
+        }
+      },
+      "identity": "1cc87f4a6fd77a09d3e3dff4e776785b3d84a970423bb13a1cbf40fd659dde2d",
+      "initial": {
+        "audit": {
+          "gap_rmse": 4.030355711774612,
+          "level_rmse": 0.3380493636832582,
+          "maximum_regret": 8.632415771484375,
+          "mean_regret": 2.0656313449144363,
+          "n": 60,
+          "pairwise_accuracy": 0.4222222222222222,
+          "pairwise_comparisons": 180,
+          "per_action_rmse": [
+            2.8696277510179162,
+            0.0922835144461933,
+            2.8884805008591496
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            5,
+            7,
+            48
+          ],
+          "rmse": 2.3513541687216613,
+          "target_ties": 0
+        },
+        "fit": {
+          "gap_rmse": 2.618098287790609,
+          "level_rmse": 0.32918485486180216,
+          "maximum_regret": 9.371070861816406,
+          "mean_regret": 1.1709169423093602,
+          "n": 98,
+          "pairwise_accuracy": 0.43197278911564624,
+          "pairwise_comparisons": 294,
+          "per_action_rmse": [
+            1.8298359170804566,
+            0.16338702569128324,
+            1.9505209168171862
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            10,
+            4,
+            84
+          ],
+          "rmse": 1.5469891887731768,
+          "target_ties": 0
+        },
+        "stop": {
+          "gap_rmse": 3.4597496548450044,
+          "level_rmse": 0.33192030847651915,
+          "maximum_regret": 9.451129913330078,
+          "mean_regret": 2.737369677051902,
+          "n": 48,
+          "pairwise_accuracy": 0.3958333333333333,
+          "pairwise_comparisons": 144,
+          "per_action_rmse": [
+            2.127176006848049,
+            0.12708214029621215,
+            2.7855615795105466
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            8,
+            4,
+            36
+          ],
+          "rmse": 2.024877029001808,
+          "target_ties": 0
+        }
+      },
+      "schedule_sha256": "d6faeb233198ee21e0cf6ba7e8adacbd3ecb87a7787ba2bc565532cc33aa5cc5",
+      "selected_step": 1920,
+      "stopped_at": 3200,
+      "task": {
+        "fold": "B",
+        "lr": 2.9999999999999997e-05,
+        "name": "B_43_balanced",
+        "seed": 43,
+        "target": "balanced_teacher",
+        "updates": 8192
+      },
+      "teacher_balance": {
+        "fit_counts": [
+          33,
+          32,
+          33
+        ],
+        "high": 0.030457377433776855,
+        "low": -0.028607290238142014,
+        "scale": 16.93059539794922
+      },
+      "teacher_counts": {
+        "audit": [
+          29,
+          13,
+          18
+        ],
+        "fit": [
+          33,
+          32,
+          33
+        ],
+        "stop": [
+          32,
+          12,
+          4
+        ]
+      },
+      "teacher_residual": 0.0
+    },
+    {
+      "audit_constant_rmse": 0.5918569718345263,
+      "checkpoints": 135,
+      "clipped_updates": 0,
+      "cold_exact": true,
+      "final": {
+        "audit": {
+          "gap_rmse": 0.03296603212679116,
+          "level_rmse": 0.015312680251000221,
+          "maximum_regret": 0.03864803910255432,
+          "mean_regret": 0.00036035369460781413,
+          "n": 192,
+          "pairwise_accuracy": 0.9895833333333334,
+          "pairwise_comparisons": 576,
+          "per_action_rmse": [
+            0.028553609351672487,
+            0.023102209471304397,
+            0.021004121360552044
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            66,
+            66,
+            60
+          ],
+          "rmse": 0.024428083589677022,
+          "target_ties": 0
+        },
+        "fit": {
+          "gap_rmse": 0.033061428396580356,
+          "level_rmse": 0.015081202234211857,
+          "maximum_regret": 0.02970820665359497,
+          "mean_regret": 0.00035790532516936463,
+          "n": 384,
+          "pairwise_accuracy": 0.9930555555555556,
+          "pairwise_comparisons": 1152,
+          "per_action_rmse": [
+            0.028702617878397414,
+            0.022810556555943568,
+            0.020765940061663452
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            128,
+            132,
+            124
+          ],
+          "rmse": 0.024326844089810198,
+          "target_ties": 0
+        },
+        "stop": {
+          "gap_rmse": 0.03351037149906886,
+          "level_rmse": 0.015102036525404415,
+          "maximum_regret": 0.03746035695075989,
+          "mean_regret": 0.0005199387669563293,
+          "n": 192,
+          "pairwise_accuracy": 0.9913194444444444,
+          "pairwise_comparisons": 576,
+          "per_action_rmse": [
+            0.02871276466419654,
+            0.022724498745610066,
+            0.021594763757651677
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            66,
+            64,
+            62
+          ],
+          "rmse": 0.02454356344441147,
+          "target_ties": 0
+        }
+      },
+      "identity": "66de517c500df6fdc1846d373b22535240bf5bb5b87d706479c0170bfbb3756f",
+      "initial": {
+        "audit": {
+          "gap_rmse": 1.2042845478931663,
+          "level_rmse": 0.1430857015389067,
+          "maximum_regret": 3.321610450744629,
+          "mean_regret": 0.8246367080137134,
+          "n": 192,
+          "pairwise_accuracy": 0.4809027777777778,
+          "pairwise_comparisons": 576,
+          "per_action_rmse": [
+            0.9412259127183321,
+            0.23172925291701818,
+            0.7563842679610373
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            134,
+            58,
+            0
+          ],
+          "rmse": 0.7098642654876333,
+          "target_ties": 0
+        },
+        "fit": {
+          "gap_rmse": 1.214469318489739,
+          "level_rmse": 0.14653588436941922,
+          "maximum_regret": 3.2431554794311523,
+          "mean_regret": 0.8423160460855191,
+          "n": 384,
+          "pairwise_accuracy": 0.4730902777777778,
+          "pairwise_comparisons": 1152,
+          "per_action_rmse": [
+            0.9539719275361266,
+            0.22878213464584837,
+            0.7595724574499858
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            261,
+            123,
+            0
+          ],
+          "rmse": 0.7163225581111521,
+          "target_ties": 0
+        },
+        "stop": {
+          "gap_rmse": 1.2301261544321562,
+          "level_rmse": 0.14663502906347134,
+          "maximum_regret": 3.3174614906311035,
+          "mean_regret": 0.8508667752612382,
+          "n": 192,
+          "pairwise_accuracy": 0.4670138888888889,
+          "pairwise_comparisons": 576,
+          "per_action_rmse": [
+            0.9625681722511125,
+            0.23278618301398207,
+            0.7726506052740229
+          ],
+          "predicted_pair_ties": 0,
+          "q_greedy_counts": [
+            130,
+            62,
+            0
+          ],
+          "rmse": 0.7251932733332498,
+          "target_ties": 0
+        }
+      },
+      "schedule_sha256": "829728626b2b1b12a3b61975db4a6f20e9b0b1b948d795b7257376ba94af8c33",
+      "selected_step": 4416,
+      "stopped_at": 5696,
+      "task": {
+        "fold": "A",
+        "lr": 2.9999999999999997e-05,
+        "name": "balanced_sinusoid",
+        "seed": 19,
+        "target": "balanced_sinusoid",
+        "updates": 8192
+      },
+      "teacher_balance": {
+        "fit_counts": [
+          128,
+          128,
+          128
+        ],
+        "high": 0.33279216289520264,
+        "low": -0.16596253216266632,
+        "scale": 2.0049936771392822
+      },
+      "teacher_counts": {
+        "audit": [
+          67,
+          64,
+          61
+        ],
+        "fit": [
+          128,
+          128,
+          128
+        ],
+        "stop": [
+          66,
+          61,
+          65
+        ]
+      },
+      "teacher_residual": 0.0
+    }
+  ],
+  "validation_read": false
+}

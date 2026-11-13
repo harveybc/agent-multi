@@ -1,0 +1,12 @@
+{
+  "cache_sha256": "a7e5b6832781e816838ac4180c9215278f95b07ae6f5556dd8f0d6268fc2851e",
+  "code": {
+    "app/training_forensics.py": "f8007e7819a73ab7bcbbafcd162431d40a83b6d93d49bc79e176d342779fd571",
+    "tools/run_balanced_teacher_forensics.py": "4c12766b61d92eea9cae7ab293e50f365bdc240589734070f43de23af0b250e8",
+    "tools/run_training_forensics.py": "3ee52855b96bd82b239c131346fb74af87296305a04cb9dcde0c522e1d4e78aa"
+  },
+  "identity": "bcb56fc708a5765de97e0cde14cead8a388a077bb1ebc7530fd0768c8f279c3c",
+  "lr": 2.9999999999999997e-05,
+  "previous": "e1d5e7197a8969aa3a65ffa5b2a0af278f74df70d538cce14acba691ddab9c6e",
+  "schema": "balanced_teacher_forensics.v1"
+}

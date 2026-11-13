@@ -1,0 +1,23 @@
+{
+  "budgets": [
+    4096,
+    8192,
+    81920
+  ],
+  "code": {
+    "app/critic_blocked_stopping.py": "05c99e06f302a09d7f2c64e29cb6b176f63b1c5802f5392dd8c80c7f0b3f3724",
+    "app/critic_native_capacity.py": "887501f7086df88775e83b705bf3537b74f6e8546697f8e4df8cab0aded36410",
+    "app/critic_target_contract.py": "cbfbd00f5c0806cde9cde67bf95b693ddbdfa150a5953afbe36795ebe6848b69",
+    "app/training_forensics.py": "e0e6a50afdede559b6e371fbbcb7816706c7dbacb001a8c9546c200b21b530fe",
+    "tools/run_training_forensics.py": "bec6c6f812065f541de80eca1095cc41438f317b04e4b5f9825cc3d4883f92d4"
+  },
+  "identity": "e1d5e7197a8969aa3a65ffa5b2a0af278f74df70d538cce14acba691ddab9c6e",
+  "labels": "6ce08d4d9150ef3879df9be6330a69ec13b1e3decaeb85dcb9a1a3538f6932e5",
+  "lrs": [
+    3e-05,
+    3e-06
+  ],
+  "previous": "00d2f39584defa061924fb26869e3dbd3eb47b6c1ff9533e4aec291b14cfd67c",
+  "schema": "training_forensics.v1",
+  "source_sha256": "69b5254489d224d4b20ac358956e4dd3b9a67a2f214a9aff98045c5def25a536"
+}
