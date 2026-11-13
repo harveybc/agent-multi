@@ -1,6 +1,17 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "CRITIC_NATIVE_CAPACITY_CONTRAST_DESIGN",
+  "current_stage": "CRITIC_NATIVE_CAPACITY_CONTRAST_READY",
+  "critic_native_capacity_320": {
+    "document": "../320_NATIVE_CRITIC_HEAD_CAPACITY.md",
+    "status": "READY_TESTED",
+    "focused_tests_passed": 15,
+    "new_fits": 4,
+    "reused_controls": 4,
+    "source_features": 71,
+    "actor_updates": 0,
+    "encoder_updates": 0,
+    "next_action": "Execute four native-head fits with authenticated318 controls; report paired stopped/fixed audit regret and executable-opening guard. Preserve299, no automatic promotion, STL paused."
+  },
   "critic_coverage_geometry_319": {
     "document": "../319_CRITIC_COVERAGE_REPRESENTATION_REVIEW.md",
     "status": "COMPLETE_SOURCE_UNCHANGED",
