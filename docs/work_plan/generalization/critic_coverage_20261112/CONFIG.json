@@ -1,0 +1,44 @@
+{
+  "calibration": "33052ae3718b91244982191afe5826ca088811b312291ce3f09bca8db05c9394",
+  "capacity": "8c5fe1c5366d8e3e958724c7fadd52b6be2c473a7f617c35f78822b348850672",
+  "code": {
+    "app/critic_coverage_drift.py": "284144785574c1941c3dc807db929837827b8b9861d1cba5faa9a285fc085d9e",
+    "app/critic_fit_probe.py": "b6e1a723b2dcda572ee3cee8c690a75bf5007431535c2865369757e7e1a8f1d5",
+    "app/decision_attribution.py": "75b72b2ef400bde500753f7f2754746e58cf8f7d3f9234c3a10ca8633d77f013",
+    "tools/diagnose_critic_coverage_drift.py": "1224107ce13a691a0ea09015d24d0f2a17ee9a61cb3a6bb7cd5151b84271ea7e",
+    "tools/run_stratified_critic.py": "e0c7263ccb845ad60419bd58a3263dc9e46e27a60dfdf3de66b70231aafebe4f"
+  },
+  "identity": "c5ab4ee1059d9e78f65e0142bed9266d594abc2c34636260dba8e8c9312421a3",
+  "intervals": [
+    [
+      "calibration_fit",
+      [
+        "2020-01-01",
+        "2023-01-01"
+      ]
+    ],
+    [
+      "later_train",
+      [
+        "2023-01-01",
+        "2024-01-01"
+      ]
+    ]
+  ],
+  "model_promoted": false,
+  "optimizer_steps": 0,
+  "quotas": {
+    "flat_both_allowed": 12,
+    "flat_restricted": 2,
+    "open_long": 4,
+    "open_short": 4
+  },
+  "schema": "frozen_critic_coverage_drift.v1",
+  "seed": 312,
+  "source_data": "historical_mixed_COT_not_live_qualified",
+  "source_sha256": "69b5254489d224d4b20ac358956e4dd3b9a67a2f214a9aff98045c5def25a536",
+  "support_sha256": "28d6088a92173592f39e221c1c2ab1efc9094e614eeccb11c9ae23cf14878c98",
+  "target": "plain_discounted_native_reward_same_state_first_action_full_interval",
+  "test_read": false,
+  "validation_inference": false
+}

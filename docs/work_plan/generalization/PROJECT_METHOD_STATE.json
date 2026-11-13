@@ -1,9 +1,14 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "CRITIC_COVERAGE_DRIFT_RUNNING_RETSU_SOURCE_QUALIFICATION_STL31_RUNNING",
+  "current_stage": "CRITIC_COVERAGE_DRIFT_COMPLETE_RETSU_SOURCE_QUALIFICATION_STL31_RECOVERED",
   "critic_coverage_drift_312": {
     "document": "../312_FROZEN_CRITIC_COVERAGE_AND_DRIFT.md",
-    "status": "RUNNING_NATIVE_CONTINUATIONS",
+    "status": "COMPLETE",
+    "seconds": 325.33458380796947,
+    "completed_anchors": 88,
+    "completed_suffixes": 1320,
+    "new_flat_pair_accuracy": {"19": 0.4791666666666667, "43": 0.4722222222222222},
+    "stl_transition_repair": "Separate-process successor queue; raw COMPLETE, binary restarted, ordinal waits for continuous completion;3 regression tests",
     "identity": "c5ab4ee1059d9e78f65e0142bed9266d594abc2c34636260dba8e8c9312421a3",
     "runtime_commit": "f1ed226f",
     "service": "am-critic-coverage-20261112.service",
@@ -22,7 +27,7 @@
     "validation_inference": false,
     "test_read": false,
     "model_promoted": false,
-    "next_action": "Let the running finite same-state native continuation queue complete and seal its summary, then inspect coverage/drift by state/year. Keep actual COT/live qualification with Retsu; no new model training or floating from historical-source evidence."
+    "next_action": "Design coverage-expanded own-policy critic refresh with explicit out-of-fit diagnostic strata. Actual refit/phase2 requires source-qualified corrected data; Retsu owns that qualification. Preserve299 and all49 phase2 return candidates."
   },
   "cot_identity_311": {
     "document": "../311_COT_IDENTITY_IMPACT.md",

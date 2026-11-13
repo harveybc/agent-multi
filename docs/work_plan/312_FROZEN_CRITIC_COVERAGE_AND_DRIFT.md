@@ -83,3 +83,50 @@ Expanded regression suite:18 pass, including native long/short cases verifying
 identical first effects and parent-state preservation across different future
 policies. Existing STL queues remain running independently: continuous epoch44
 and raw epoch47 at18:40, with ordinal/binary successors already scheduled.
+
+## Complete
+
+Finished18:45 Bogota in325.33seconds:88/88 anchors,1320 continuations plus
+repeat witness. Exit0, no restarts. Parent states and first effects match in
+all comparisons. No gradient updates,2024 inference or TEST reads.
+
+On the48 new executable flat states, min-twin critic action-pair accuracy is
+47.92% (seed19) and47.22% (seed43); mean native reward regret0.3924/0.4348.
+These are sampled, correlated action comparisons, not a statistical assertion
+of equivalence to chance or a market-wide accuracy estimate. Old FIT overall
+accuracy75.25%/69.15% is recorded separately because its state mix differs.
+
+| Continuation policy | Changed optimal sets /48 | Same-state target RMSE | Actor optimal /48 |
+| --- | ---: | ---: | ---: |
+| seed19 head8 |14|1.2228|9|
+| seed19 head16 |17|1.2948|7|
+| seed43 head8 |23|1.3140|11|
+| seed43 head16 |22|1.2714|10|
+
+Units are discounted native reward, not USD. Keeping a critic fitted to the
+old policy while changing its actor changes the quantity being approximated.
+New-point misranking already exists under the old policy, before this drift.
+This supports diagnosing both coverage and stale targets, not increasing the
+actor width alone. It does not attribute every account loss to these two terms
+or replace a future on-policy evaluation on qualified corrected data.
+
+Evidence: [RESULT.json](generalization/critic_coverage_20261112/RESULT.json).
+Next design a coverage-expanded own-policy critic refresh with explicit
+out-of-fit diagnostic strata before any bounded actor update. Actual refitting
+and phase2 selection must use the source-qualified repaired data version; Retsu
+continues the COT/live work. Original299 remains unchanged.
+
+## STL queue transition repair
+
+During status verification at19:12 Bogota, raw31 had completed47 epochs and
+sealed its best epoch27: TRAIN-22.151071%, VAL-1.348280%,329 VAL trades. The
+old in-process queue then failed when configuring PyTorch interop threads a
+second time before binary training. No binary epoch had run.
+
+`tools/run_stl_isolated_queue.py` now verifies completed receipts and launches
+each remaining variant in a fresh interpreter, using the unchanged pinned
+training runtime. Three regression tests cover process isolation, corrupt
+receipts and stop-on-error. Binary restarted on its assigned GPU at19:15;
+ordinal recovery waits for the active continuous worker to finish. Neither
+completed raw training nor active continuous training was restarted. Recovery
+services are enabled, with predecessor completion/hash checks and worker locks.
