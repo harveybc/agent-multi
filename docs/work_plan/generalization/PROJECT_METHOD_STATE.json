@@ -1,6 +1,21 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "CRITIC_FIT_ONLY_STOPPING_DESIGN",
+  "current_stage": "CRITIC_BLOCKED_STOPPING_EXECUTION",
+  "critic_blocked_stopping_318": {
+    "document": "../318_CRITIC_BLOCKED_STOPPING.md",
+    "status": "TESTED_READY_FOR_EXECUTION",
+    "focused_tests_passed": 25,
+    "arms": 8,
+    "max_updates": 4096,
+    "check_every_updates": 64,
+    "patience_checks": 20,
+    "minimum_improvement": 1e-8,
+    "source_features": 71,
+    "actor_updates": 0,
+    "encoder_updates": 0,
+    "stl_included": false,
+    "next_action": "Native same-state annual label reconstruction and temporal support checks, then eight sequential frozen-encoder fits; select using original FIT-only stopping years and evaluate subsequent TRAIN year afterward. Preserve all checkpoints; no actor or live promotion."
+  },
   "critic_target_contract_317": {
     "document": "../317_CRITIC_TARGET_CONTRACT.md",
     "status": "COMPLETE_NO_CRITIC_PROMOTED",
@@ -2511,7 +2526,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
-    "317 complete: no routed cell passes both seeds; all16 heads overfit this small panel from1024 to4096. Next design FIT-only blocked stopping/regularization with explicit purge and actor/constant controls, before further actor learning or another floating pass",
+    "318: execute authenticated annual target reconstruction and eight blocked stopping/regularization fits; original FIT-only selection, subsequent-year audit and constants, actor frozen, no further floating or promotion based on an individual cell",
     "316 complete: define critic target estimand and compare state-marginal versus externally routed value contracts before any actor update; do not silently introduce agent-state features or change action interface",
     "315: unattended six-arm critic representation/negative-control queue after authenticated314; reuse two completed controls, full TRAIN actor parity and cold reload, automatic report; no actor promotion",
     "314 complete: coverage expansion lowers regret/gap error in both seeds but accuracy/level error remain mixed; use315 to isolate critic representation versus memorization, do not promote actor",
