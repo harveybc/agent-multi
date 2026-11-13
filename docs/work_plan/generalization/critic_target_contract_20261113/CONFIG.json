@@ -1,0 +1,37 @@
+{
+  "actor_updates": 0,
+  "batch": 128,
+  "code": {
+    "app/action_ranking_contrast.py": "bdb58593bf399a4a6c0757a566173cd8c030228d02bd2ac0a2f8e3947838201f",
+    "app/critic_target_contract.py": "cbfbd00f5c0806cde9cde67bf95b693ddbdfa150a5953afbe36795ebe6848b69",
+    "app/role_routed_critic.py": "d6db79275f78d684f58011c6ae978c77ca087d54442b49898676581f4e1fb732",
+    "tools/run_critic_target_contract.py": "31d87a6067239c8c9684c3eca5f9329aa8b18ea5373236feedc54f6fb37e3f0e",
+    "tools/run_role_routed_critic.py": "762e67aa5c452eaaaea4c4446e500c7b89ba1ba8bb95cf0dc925abc93cbef4ba"
+  },
+  "coverage": "ef457ec1cf1c43ee25e191800129402c6c563659c939763b6e94327e4eceff09",
+  "diagnostic": "c5ab4ee1059d9e78f65e0142bed9266d594abc2c34636260dba8e8c9312421a3",
+  "encoder_updates": 0,
+  "identifiability": "84f89d0d79431852dd9cc71422d519c310f6a88f337b3eb014d0012189e2872d",
+  "identity": "4d8bebcec1af1f1fbc211ddfe0f55a5701388c1bd9d435d9f9ed3027078d46b1",
+  "learning_rate": 2.9999999999999997e-05,
+  "losses": [
+    "smooth_l1",
+    "mse"
+  ],
+  "modes": [
+    "shared_mean3",
+    "routed"
+  ],
+  "sampling": [
+    "uniform",
+    "visitation"
+  ],
+  "schema": "critic_target_contract.v1",
+  "seeds": [
+    19,
+    43
+  ],
+  "source_sha256": "69b5254489d224d4b20ac358956e4dd3b9a67a2f214a9aff98045c5def25a536",
+  "updates": 4096,
+  "weight_decay": 0.01
+}

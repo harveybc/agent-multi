@@ -92,3 +92,55 @@ hook fixes this unbounded memory retention; regression now checks that neither
 the template nor any of the six trained heads inherits it. The complete
 factorial is repeated in a third, separate output root. Partial results are
 retained as diagnostic history, not mixed into the corrected comparison.
+
+## Completed Results
+
+Completed2026-11-13T16:53:16Z in115.56seconds on the assigned GPU.
+Runtime`ef855cb1`; identity
+`4d8bebcec1af1f1fbc211ddfe0f55a5701388c1bd9d435d9f9ed3027078d46b1`.
+All16 arms sealed and independently checked on worker and coordinator;
+21 focused tests pass. All cold head reloads exact, source tensors unchanged,
+full TRAIN actor logits exact. The nine completed curves from the interrupted
+hook-retaining run are numerically identical after the memory fix. Observed
+device memory stayed778MiB at arm0 and arm11, rather than accumulating caches.
+
+Mean of seeds19/43, minimum twin, same55 held TRAIN anchors. Regret is the
+foregone native discounted return relative to the best enumerated first action
+with the fixed continuation; it is NOT portfolio loss, Sharpe or percent return.
+
+| FIT sampling | Loss | Shared regret | Routed regret | Shared Q RMSE | Routed Q RMSE |
+| --- | --- | ---: | ---: | ---: | ---: |
+| Uniform | Huber | 0.257164 | 0.276450 | 0.609344 | 0.721043 |
+| Uniform | MSE | 0.263029 | 0.265471 | 0.591161 | 0.704030 |
+| Visitation | Huber | 0.282669 | 0.271266 | 0.555846 | 0.651563 |
+| Visitation | MSE | 0.264131 | 0.269093 | 0.552396 | 0.648238 |
+
+None of the four paired cells passes the predeclared both-seed regret and
+opening guard. All16 endpoints have worse held regret than the preserved
+actor's0.200629 on this diagnostic panel. Visitation/MSE lowers Q RMSE without
+establishing better action ranking; smaller value error is not sufficient.
+Visitation weights have effective sample size101.29 out of146; they restore
+stratum proportions, not the entire joint distribution of observations.
+
+### Important Learning-Curve Finding
+
+From1024 to4096 updates, all16 arms simultaneously reduce FIT regret and
+increase held regret. Mean deltas: FIT`-0.095774`, held`+0.053392`. This is
+direct evidence of overfitting during THIS small-panel head-fitting experiment,
+not proof about the original full SAC training or the market's predictability.
+It does not authorize retrospective selection of whichever1024 checkpoint
+looks best on these already inspected anchors.
+
+Next: define a time-blocked, FIT-only stopping/regularization comparison for
+the critic, with folds, purge and budget fixed before running. Compare against
+the preserved actor and constant controls, and require stable action ranking
+before any actor update. Keep the existing55 anchors descriptive rather than
+using them to choose the stopping point. No change to the71-input champion,
+49 cumulative return candidates, strategy or paused STL. No new floating pass
+or live promotion was launched by this diagnostic.
+
+Evidence: [all16 endpoints](generalization/critic_target_contract_20261113/RESULTS.md),
+[all curves and populations](generalization/critic_target_contract_20261113/METRICS.csv),
+[curve plot](generalization/critic_target_contract_20261113/TARGET_CURVES.png),
+[effective contract](generalization/critic_target_contract_20261113/CONFIG.json),
+[TRAIN sampling](generalization/critic_target_contract_20261113/FIT_WEIGHTS.json).

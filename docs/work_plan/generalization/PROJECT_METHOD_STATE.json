@@ -1,10 +1,21 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "CRITIC_TARGET_CONTRACT_CONTRAST",
+  "current_stage": "CRITIC_FIT_ONLY_STOPPING_DESIGN",
   "critic_target_contract_317": {
     "document": "../317_CRITIC_TARGET_CONTRACT.md",
-    "status": "TESTED_READY_FOR_SEQUENTIAL_GPU_EXECUTION",
-    "focused_tests_passed": 19,
+    "status": "COMPLETE_NO_CRITIC_PROMOTED",
+    "focused_tests_passed": 21,
+    "runtime_commit": "ef855cb1",
+    "identity": "4d8bebcec1af1f1fbc211ddfe0f55a5701388c1bd9d435d9f9ed3027078d46b1",
+    "seconds": 115.56380240095314,
+    "verified_arms": 16,
+    "paired_cells_passing_both_seeds": 0,
+    "arms_fit_improves_held_worsens_1024_to_4096": 16,
+    "mean_fit_regret_delta_1024_to_4096": -0.09577365539377011,
+    "mean_held_regret_delta_1024_to_4096": 0.05339191419314757,
+    "source_actor_exact": true,
+    "source_tensors_exact": true,
+    "model_promoted": false,
     "arms": 16,
     "updates_per_arm": 4096,
     "fit_anchors": 146,
@@ -12,7 +23,7 @@
     "actor_updates": 0,
     "encoder_updates": 0,
     "stl_features_admitted": 0,
-    "next_action": "Replay native TRAIN visitation, then execute paired shared/routed head contrasts with uniform/visitation sampling and Huber/MSE. Preserve actor/source; no silent feedback or strategy change. Historical255 shows direction routing is not sufficient by itself."
+    "next_action": "Define time-blocked FIT-only stopping/regularization contrast for the critic, with folds, purge and budget fixed before fitting. Preserve actor299 and71 inputs; compare against source actor/constant controls; keep inspected55 anchors descriptive. Do not retrospectively select1024 using held results or introduce state features. STL remains paused."
   },
   "critic_identifiability_316": {
     "document": "../316_CRITIC_IDENTIFIABILITY.md",
@@ -2500,7 +2511,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
-    "317: finite16-arm frozen-encoder critic target contract comparison; same initialization/capacity/schedules within paired cells, native TRAIN population weights and explicit loss factors; automatic artifacts, no model promotion",
+    "317 complete: no routed cell passes both seeds; all16 heads overfit this small panel from1024 to4096. Next design FIT-only blocked stopping/regularization with explicit purge and actor/constant controls, before further actor learning or another floating pass",
     "316 complete: define critic target estimand and compare state-marginal versus externally routed value contracts before any actor update; do not silently introduce agent-state features or change action interface",
     "315: unattended six-arm critic representation/negative-control queue after authenticated314; reuse two completed controls, full TRAIN actor parity and cold reload, automatic report; no actor promotion",
     "314 complete: coverage expansion lowers regret/gap error in both seeds but accuracy/level error remain mixed; use315 to isolate critic representation versus memorization, do not promote actor",
