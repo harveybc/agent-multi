@@ -2,6 +2,14 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "run_balanced_teacher_forensics.py": {
+   "purpose": "Five supplementary three-action FIT-balanced representable-teacher controls after322; exact same historical embeddings or explicit causal sinusoids, no trading or source mutation",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
+  },
+  "analyze_training_forensics.py": {
+   "purpose": "Read sealed322 runs, independently replay stopping and original320 prefixes, summarize paired learning-rate and functional-layer diagnostics without changing evidence",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
+  },
   "run_training_forensics.py": {
    "purpose": "Sequential frozen-head independent/restart reproducibility gate, dense functional weight diagnostics, learning-rate horizons and known-teacher controls; no actor update or trading promotion",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"

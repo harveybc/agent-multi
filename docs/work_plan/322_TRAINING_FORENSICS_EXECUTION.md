@@ -55,3 +55,17 @@ Report reproducibility separately from generalization. Interpret weight changes
 through functional outputs, not a claim of knowing causes from tensor values.
 The small49/98-anchor diagnostic does not certify full SAC replay/target-network
 or entropy-training reproducibility; those are separate later tests if needed.
+
+## Preserved Control Limitation And Supplement
+
+While322 runs, A/19 known-teacher FIT is observed to choose only action1.
+Its value-regression results remain valid but cannot establish learning all
+three decision regions. Keep every original result. Add five separate controls
+after the original queue: A/B x19/43 on the same real embeddings, plus the
+multiscale sinusoid control. The representable teacher uses one hidden SiLU
+activation s and outputs `(l-s,0,s-u)/(u-l)`, with l/u its FIT-only1/3 and2/3
+quantiles. No stop/audit labels enter calibration. Require each FIT action to
+cover at least20%; reject degenerate activation ranges. Both twins share this
+exact function. This changes the teacher, not real labels or the candidate
+model. Unit tests check balanced coverage and invariance to held-input changes.
+Publish this supplement separately; do not retrofit or erase the original run.

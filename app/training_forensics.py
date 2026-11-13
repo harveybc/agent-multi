@@ -55,3 +55,21 @@ def sinusoid_lags(n,dimension=208):
     if n<1 or dimension<1:raise ValueError('FORENSIC_SIGNAL_SHAPE')
     t=np.arange(n)[:,None]-np.arange(dimension)[None,:]
     return (np.sin(2*np.pi*t/13)+.5*np.sin(2*np.pi*t/37+.7)+.2*np.cos(2*np.pi*t/71)).astype(np.float32)
+
+
+def balance_teacher(teacher,z,fit):
+    """Three exact linear envelopes of one hidden activation, thresholds FIT-only."""
+    with torch.no_grad():
+        head=teacher.twins[0][0]
+        s=head[1](head[0](z[0,fit]))[:,0]
+        low,high=torch.quantile(s,torch.tensor([1/3,2/3],device=s.device))
+        if not torch.isfinite(s).all() or high-low<=1e-6:raise ValueError('FORENSIC_TEACHER_DEGENERATE')
+        scale=1/(high-low)
+        for twin in teacher.twins:
+            twin[0].load_state_dict(head.state_dict())
+            last=twin[0][2];last.weight.zero_();last.bias.zero_()
+            last.weight[0,0]=-scale;last.weight[2,0]=scale
+            last.bias[0]=low*scale;last.bias[2]=-high*scale
+        counts=teacher(z[:,fit]).mean(2)[0].argmax(-1).bincount(minlength=3)
+        if (counts<float(len(fit))*.2).any():raise ValueError('FORENSIC_TEACHER_ACTION_COVERAGE')
+    return dict(low=float(low),high=float(high),scale=float(scale),fit_counts=counts.cpu().tolist())

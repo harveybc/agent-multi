@@ -22,7 +22,7 @@ from app.rl_subset import digest,support_hash
 from app.role_routed_critic import RoleHeads
 from app.selected_input_market import market_for
 from app.structural_refit import load_bundle,verify_files
-from app.training_forensics import tree_digest,rng_state,restore_rng,gradient_geometry,sinusoid_lags
+from app.training_forensics import tree_digest,rng_state,restore_rng,gradient_geometry,sinusoid_lags,balance_teacher
 from tools.audit_fixed_actor_critics import covering_schedule
 from tools.run_bayesian_head_contrast import seal,verify_done
 from tools.run_discrete_curve_probe import configure,read,write,now
@@ -93,16 +93,18 @@ def worker(a):
     z=data['z'].to('cuda');targets=data['targets'].numpy()
     masks={k:np.array(v) for k,v in read(a.output/f"cache/FOLD_{task['fold']}.json").items() if k in ('fit','stop','audit')}
     model=RoleHeads(template('cuda'),1,task['seed']);model.load_state_dict(data['initial'][task['seed']])
-    teacher_residual=None
+    teacher_residual=None;teacher_balance=None;teacher_counts=None
     if task['target']!='real':
-        if task['target']=='sinusoid':
+        if task['target'].endswith('sinusoid'):
             signal=torch.from_numpy(sinusoid_lags(768)).to('cuda');z=torch.stack([signal,signal])
             masks=dict(fit=np.arange(384),stop=np.arange(384,576),audit=np.arange(576,768))
         teacher=RoleHeads(template('cuda'),1,271)
         teacher.twins[1][0].load_state_dict(teacher.twins[0][0].state_dict())
+        if task['target'].startswith('balanced'):teacher_balance=balance_teacher(teacher,z,masks['fit'])
         with torch.no_grad():
             tq=teacher(z).mean(2);targets=tq[0].cpu().numpy().astype(float)
             teacher_residual=float((tq-tq[0]).abs().max())
+            teacher_counts={k:tq[0,ix].argmax(-1).bincount(minlength=3).cpu().tolist() for k,ix in masks.items()}
         if teacher_residual>1e-5:raise ValueError('FORENSIC_TEACHER_NOT_REALIZABLE')
         del teacher
     y=torch.tensor(targets,dtype=torch.float32,device='cuda');initial=deepcopy(model.state_dict())
@@ -191,7 +193,7 @@ def worker(a):
         checkpoints=len(list((out/'checkpoints').glob('*.pt'))),teacher_residual=teacher_residual,
         audit_constant_rmse=float(np.sqrt(np.mean((constant-targets[masks['audit']])**2))),
         schedule_sha256=tree_digest(schedule),cold_exact=True,clipped_updates=clipped,
-        initial=curve[0]['metrics'],final=curve[-1]['metrics'])
+        initial=curve[0]['metrics'],final=curve[-1]['metrics'],teacher_balance=teacher_balance,teacher_counts=teacher_counts)
     write(out/'TRACE.json',trace);write(out/'RESULT.json',result);seal(out,identity)
 
 

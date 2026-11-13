@@ -1,9 +1,14 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "TRAINING_FORENSICS_READY",
+  "current_stage": "TRAINING_FORENSICS_RUNNING_REPRODUCIBILITY_PASSED",
   "training_forensics_322": {
     "document": "../322_TRAINING_FORENSICS_EXECUTION.md",
-    "status": "READY_TESTED",
+    "status": "RUNNING_REPRODUCIBILITY_PASSED",
+    "runtime_commit": "b4747654",
+    "identity": "e1d5e7197a8969aa3a65ffa5b2a0af278f74df70d538cce14acba691ddab9c6e",
+    "independent_repeats_exact": true,
+    "interrupted_resume_exact": true,
+    "B19_matches320_fixed": true,
     "tests_passed": 19,
     "independent_restart_runs": 3,
     "real_target_lr_runs": 8,

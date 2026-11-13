@@ -4,7 +4,8 @@ import numpy as np
 import torch
 from torch import nn
 
-from app.training_forensics import tree_digest,rng_state,restore_rng,mse_components,sinusoid_lags
+from app.training_forensics import tree_digest,rng_state,restore_rng,mse_components,sinusoid_lags,balance_teacher
+from app.role_routed_critic import RoleHeads
 
 
 def test_mse_components_and_gradients_add():
@@ -46,3 +47,14 @@ def test_multiscale_lags_are_prefix_invariant_and_teacher_representable():
     teacher=nn.Sequential(nn.Linear(208,8),nn.SiLU(),nn.Linear(8,3))
     student=deepcopy(teacher);x=torch.from_numpy(a)
     assert torch.equal(student(x),teacher(x))
+
+
+def test_balanced_teacher_uses_only_fit_thresholds_and_all_actions():
+    torch.manual_seed(321)
+    x=torch.randn(150,208);z=torch.stack([x,x]);fit=np.arange(99)
+    teacher=RoleHeads(nn.Sequential(nn.Linear(208,8),nn.SiLU(),nn.Linear(8,3)),1,271)
+    other=deepcopy(teacher);changed=z.clone();changed[:,99:]+=1000
+    a=balance_teacher(teacher,z,fit);b=balance_teacher(other,changed,fit)
+    assert a==b and min(a['fit_counts'])>=32
+    assert tree_digest(teacher.state_dict())==tree_digest(other.state_dict())
+    assert torch.equal(teacher(z)[0],teacher(z)[1])
