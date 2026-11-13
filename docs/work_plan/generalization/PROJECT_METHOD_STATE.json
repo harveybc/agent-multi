@@ -1,6 +1,22 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "CRITIC_COVERAGE_REPRESENTATION_REVIEW",
+  "current_stage": "CRITIC_NATIVE_CAPACITY_CONTRAST_DESIGN",
+  "critic_coverage_geometry_319": {
+    "document": "../319_CRITIC_COVERAGE_REPRESENTATION_REVIEW.md",
+    "status": "COMPLETE_SOURCE_UNCHANGED",
+    "identity": "1aa7518cf5542a9cf423eced9d7a9c30a3c7badb83d9298dca4236ac5d54ef1a",
+    "seconds": 6.94168017397169,
+    "focused_tests_passed": 18,
+    "geometry_rows": 2266,
+    "valid_train_rows": 24026,
+    "actor_encoder_identical_tensors_per_critic": 337,
+    "encoder_storage_aliases": 0,
+    "native_twin_head_parameters": 3398,
+    "diagnostic_six_head_parameters": 10194,
+    "optimizer_steps": 0,
+    "model_promoted": false,
+    "next_action": "Native one-head-per-twin versus318 shared_mean3 at same annual targets/folds/MSE/baseWD0.01/stopping; four new fits, reuse four sealed controls, common head0 initialization per twin. Keep71 inputs and actor unchanged; no redundant actor-encoder transplant or simultaneous loss/coverage change."
+  },
   "critic_blocked_stopping_318": {
     "document": "../318_CRITIC_BLOCKED_STOPPING.md",
     "status": "COMPLETE_NO_CRITIC_PROMOTED",
@@ -2539,7 +2555,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
-    "318 complete: stopping helps3/4 cases in A and0/4 in B; no actor promotion. Review sparse FIT coverage and representation before designing the next controlled contrast; preserve source and cumulative selection state",
+    "319 complete: actor/critic encoders exactly identical; sparse49/98 FIT rows, diagnostic six heads versus native two. Next isolate native head capacity against authenticated318 baseWD controls; no promotion or unchanged floating repetition",
     "316 complete: define critic target estimand and compare state-marginal versus externally routed value contracts before any actor update; do not silently introduce agent-state features or change action interface",
     "315: unattended six-arm critic representation/negative-control queue after authenticated314; reuse two completed controls, full TRAIN actor parity and cold reload, automatic report; no actor promotion",
     "314 complete: coverage expansion lowers regret/gap error in both seeds but accuracy/level error remain mixed; use315 to isolate critic representation versus memorization, do not promote actor",

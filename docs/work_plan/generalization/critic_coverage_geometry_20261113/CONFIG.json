@@ -1,0 +1,27 @@
+{
+  "actor_cache": "fdbc292b8f1cf42db778bd0df148dda95d85d54ecad3adaaa2f98499538c4116",
+  "code": {
+    "app/critic_coverage_geometry.py": "b6ad6b80b0c851f6ef4700d18a79649e96225905f10957d9025b4f8e00bcc007",
+    "app/head_spillover.py": "472c48cb1bcf7d953f99f58f67b9c7b3ebbf4791726b0b679584f5f733c14543",
+    "tools/diagnose_critic_coverage_geometry.py": "26270de8f18a4b78f7742cb883a0625b74ab13a4f729d0669fb21acc57127f73",
+    "tools/run_role_routed_critic.py": "762e67aa5c452eaaaea4c4446e500c7b89ba1ba8bb95cf0dc925abc93cbef4ba"
+  },
+  "device": "cpu",
+  "geometry": [
+    "native",
+    "fit_standardized"
+  ],
+  "identity": "1aa7518cf5542a9cf423eced9d7a9c30a3c7badb83d9298dca4236ac5d54ef1a",
+  "neighbors": [
+    1,
+    5
+  ],
+  "optimizer_steps": 0,
+  "per_year": 512,
+  "permutations": 99,
+  "previous": "6ce08d4d9150ef3879df9be6330a69ec13b1e3decaeb85dcb9a1a3538f6932e5",
+  "schema": "critic_coverage_geometry.v1",
+  "seed": 319,
+  "source_sha256": "69b5254489d224d4b20ac358956e4dd3b9a67a2f214a9aff98045c5def25a536",
+  "support": "28d6088a92173592f39e221c1c2ab1efc9094e614eeccb11c9ae23cf14878c98"
+}
