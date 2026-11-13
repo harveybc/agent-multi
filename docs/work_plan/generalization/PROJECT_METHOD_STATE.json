@@ -1,9 +1,19 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "FULL71_MATCHED_STL_PREPARING_AUTODISPATCH",
+  "current_stage": "STL_PAUSED_MAIN_CRITIC_COVERAGE_CONTRAST",
+  "critic_coverage_contrast_314": {
+    "document": "../314_CRITIC_COVERAGE_CONTRAST.md",
+    "status": "IMPLEMENTATION_AND_TESTS",
+    "stl_paused_by_owner": true,
+    "stl_features_admitted": 0,
+    "preserved_features": 71,
+    "cumulative_absent_phase2_features": 49,
+    "next_action": "Run finite critic-only coverage diagnostic on unchanged299 source, no actor updates or promotion. Preserve same55 held-out anchors for113 vs146 FIT contrast. Retsu continues COT/source qualification; no automatic STL resume."
+  },
   "full71_stl_313": {
     "document": "../313_FULL71_MATCHED_STL.md",
-    "status": "CPU_PREPARATION_RUNNING_GPU_AUTODISPATCH_CONFIGURED",
+    "status": "PAUSED_BY_OWNER_DO_NOT_RESUME_OR_ADMIT_TO_PHASE2",
+    "pause_recovery_epochs": {"continuous":16,"raw":19},
     "runtime_commit": "722d9d4e",
     "focused_tests_passed": 47,
     "real_model_copied_tensors": 1027,
@@ -2433,10 +2443,10 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
-    "312: run the tested finite CPU coverage/drift diagnostic; new anchors exclude151 prior timestamps and all comparisons preserve source state/first action; no actor optimization",
+    "314: compare113 vs146 own-policy critic FIT origins on shared55 held-out diagnostic anchors; keep actor exact, no promotion, no STL inputs",
     "311 completed the frozen-weight COT identity diagnostic; no source/live certification from the legacy93h clock. Retsu owns verified publications/vintages and live readers under the new concrete handoff",
     "310 completed paired head8/16; no arm promoted. Diagnose frozen-Q extrapolation/policy drift, then qualify repaired data before new model training or phase2 scores; preserve all49 cumulative return candidates",
-    "308 resolves the immediate STL training stall through the owner-authorized31-input availability subset. Both GPU queues are running; compare continuous/ordinal/binary with raw31 after completion, not with the different71-input actor",
+    "STL paused by owner2026-11-13: all paired and legacy queues disabled, preserve artifacts and recovery epochs, no automatic resume or seasonal admission to phase2",
     "Preserve completed299 selected71 export, both298 endpoints and frozen72 control; all49 currently absent phase2 features remain return candidates in a later changed context",
     "307 repaired the harmful TRAIN account change, but both fixed candidates fail the validation gate. Retain selected71 control; queue completed without repeating unchanged floating",
     "309 completed TRAIN functional spillover diagnosis.307 explicitly uses2020-2023 for counterexamples, so2023 is not its independent monitor; earlier experiments retain their historical scope. Never fit VALIDATION counterexamples",

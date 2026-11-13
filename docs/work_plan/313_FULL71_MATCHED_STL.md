@@ -1,5 +1,12 @@
 # Full71 Matched Seasonal Contrast
 
+**PAUSED BY OWNER, 2026-11-13.** All paired and legacy STL services are
+stopped and disabled. Preserve recovery epochs16 (continuous) and19 (raw).
+No automatic restart, donor transfer or seasonal admission to phase2.
+The execution and future-pool sections below are historical, not active
+instructions. Resume only on a new owner request. Main work continues in
+[314](314_CRITIC_COVERAGE_CONTRAST.md).
+
 2026-11-13. Owner authorizes a smaller common temporal support instead of
 removing features. This supersedes the full-support admission rule for this
 experiment only. The completed31-feature runs remain lateral evidence.
