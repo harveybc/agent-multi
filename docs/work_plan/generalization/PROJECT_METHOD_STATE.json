@@ -1,6 +1,17 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "FIRST_HARMFUL_CROSSING_REPLAY_COMPLETE_VERIFIED",
+  "current_stage": "EXPANDED_OPTIMAL_PROTECTION_READY",
+  "expanded_optimal_protection_341": {
+    "document": "../341_EXPANDED_FIT_OPTIMAL_PROTECTION.md",
+    "status": "IMPLEMENTED_TESTED_BEFORE_EXECUTION",
+    "fixed_proposals": 10,
+    "tests_passed": 56,
+    "actor_updates": 0,
+    "new_optimizer_steps": 0,
+    "model_promoted": false,
+    "intermediate_user_approval_required": false,
+    "next_action": "Execute ten paired immutable crossing proposals with original guards plus expanded-FIT optimal sets; require positive motion, lower full-FIT cost and nonincreasing regret in five geometries; verify and publish before any continuation."
+  },
   "first_crossing_replay_340": {
     "document": "../340_FIRST_HARMFUL_CROSSING_REPLAY.md",
     "status": "COMPLETE_VERIFIED_PROTECTION_COVERAGE_AND_ADAM_HISTORY_LOCALIZED",
