@@ -1,7 +1,9 @@
 # Actual AdamW Decision Preservation
 
-Owner authorized the contrast on2026-11-14 after328. TESTS_PASS_PREPARED.
+Owner authorized the contrast on2026-11-14 after328. RUNNING.
 18 focused tests pass, including transactional rollback and resume parity.
+Runtime commit `db1a2dd6`, identity
+`995c5a1f3b21bf729134b08ab429030e5844447fc7f6570db0efc41dd41e92e4`.
 
 ## Frozen Protocol
 
@@ -63,3 +65,18 @@ remain unchanged; STL stays paused. No2024/TEST inference or live promotion.
 This tests a bounded mechanism, not a guaranteed cure. If it stalls or only
 preserves the old decisions without learning, document that result; do not
 relax the gate after observing outcomes or promote a zero-update model.
+
+## Interim Portability Witness
+
+Recorded before all four fits finished, without changing the running rule:
+the A19 final checkpoint's GPU retained-FIT regret is0.000418584 against an
+initial control0.000886435. Independent NumPy float64 inference changes one
+original-FIT action and yields0.002114517, violating that same guard. Native
+CPU PyTorch float32 also changes two original-FIT actions relative to the GPU
+ledger; the decisive Q values are separated at floating-point precision.
+These are copies of the diagnostic critic, not modifications to source299.
+
+Keep this failure visible in independent verification. GPU self-replay and
+cross-implementation robustness are separate checks; do not change tolerance
+or report CPU action parity as passed merely because GPU reloading succeeds.
+The remaining fits retain the prespecified protection and budgets.
