@@ -72,11 +72,18 @@ def verify(a):
                 actual=[-j@full,-j@batch,-j@own*np.sum(ix==i)/len(ix)]
                 err=float(np.max(abs(np.array(actual)-expected)));errors.append(err)
                 if err>1e-9:raise ValueError('CROSS_VERIFY_DERIVATIVE')
-                margins=[];actions=[]
+                margins=[];actions=[];views32=[]
                 for state in (w['before'],w['proposed'],w['accepted']):
                     head.load_state_dict(state)
                     with torch.no_grad():m=head(ctx.zcpu[:,i:i+1].double()).mean(2).min(0).values[0]
                     margins.append(float(m[b]-m[c]));actions.append(int(m.argmax()))
+                    choices=[];position=int(np.flatnonzero(ctx.fit==i)[0])
+                    with torch.no_grad():
+                        for model,inputs in ((ctx.head,ctx.z),(ctx.cpu,ctx.zcpu)):
+                            model.load_state_dict(state)
+                            choices.append(int(model(inputs[:,ctx.fit]).mean(2).min(0).values[position].argmax()))
+                            choices.append(int(model(inputs[:,i:i+1]).mean(2).min(0).values[0].argmax()))
+                    views32.append(choices)
                 if actions!=[event['before_action'],event['proposed_action'],event['after_action']]:raise ValueError('CROSS_VERIFY_ACTION')
                 if not np.allclose(margins,[event[k] for k in ('margin_before','margin_proposed','margin_after')],atol=1e-11,rtol=1e-11):raise ValueError('CROSS_VERIFY_MARGIN')
                 # Restore before weights before using the retained graph for another event.
@@ -90,7 +97,8 @@ def verify(a):
                     finite_adam=event['finite_adam'],finite_repair=event['finite_repair'],
                     first_order_adam=event['first_order_adam'],first_order_repair=event['first_order_repair'],
                     history=event['adam_contributions']['history'],current=event['adam_contributions']['current'],
-                    decay=event['adam_contributions']['decay'],rounding=event['adam_contributions']['rounding']))
+                    decay=event['adam_contributions']['decay'],rounding=event['adam_contributions']['rounding'],
+                    cpu_gpu32_single_batch_actions_agree=all(all(v==want for v in view) for want,view in zip(actions,views32))))
             checked+=1
     report=dict(identity=cfg['identity'],cold_witnesses_exact=checked,events=len(rows),derivative_max_error=max(errors,default=0.),
         replayed_transactions=result['replayed_transactions'],original_endpoints_exact=sum(c['endpoints_exact'] for c in result['cases']),
@@ -98,6 +106,7 @@ def verify(a):
         projection_introduces_crossing=sum(r['margin_proposed']>=0 for r in rows),
         batch_gradient_opposes=sum(r['actual_batch_descent']<0 for r in rows),full_gradient_opposes=sum(r['full_fit_descent']<0 for r in rows),
         own_row_absent_from_batch=sum(r['batch_multiplicity']==0 for r in rows),
+        events_with_all_finite_geometry_actions_matching=sum(r['cpu_gpu32_single_batch_actions_agree'] for r in rows),
         seconds=time.monotonic()-begin,actor_updates=0,model_promoted=False)
     a.output.mkdir(parents=True,exist_ok=True);write(a.output/'VERIFICATION.json',report)
     write(a.output/'RESULT.json',result);write(a.output/'CONFIG.json',cfg)
