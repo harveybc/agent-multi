@@ -1,6 +1,17 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "TARGETED_RESCUE_LOCAL_LEARNING_VERIFIED_RETENTION_NEXT",
+  "current_stage": "TARGETED_RESCUE_RETENTION_READY",
+  "targeted_rescue_retention_346": {
+    "document": "../346_TARGETED_RESCUE_RETENTION.md",
+    "status": "TESTED_READY",
+    "resume_offset": 16,
+    "end_offset": 64,
+    "cases": 4,
+    "new_targeted_searches": 0,
+    "tests_passed": 81,
+    "actor_updates": 0,
+    "next_action": "Execute authenticated345 full-state continuation17..64; independently verify retention against saved342 controls. Stop at64."
+  },
   "targeted_rescue_continuation_345": {
     "document": "../345_BOUNDED_TARGETED_RESCUE_CONTINUATION.md",
     "status": "COMPLETE_INDEPENDENTLY_VERIFIED_THREE_WINS_ONE_TIE",

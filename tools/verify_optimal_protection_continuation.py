@@ -6,6 +6,7 @@ import numpy as np
 import torch
 from app.frozen_recipe_inputs import file_sha
 from app.native_fit_coverage import validate_record
+from app.retention_contract import validate_resume,validate_retention_suffix
 from app.training_forensics import tree_digest
 from app.weight_decision_forensics import native_forward
 from tools.replay_first_harmful_crossings import require_equal
@@ -47,7 +48,10 @@ def run(a):
         c=read(getattr(a,k)/'CONFIG.json');verify_done(getattr(a,k),c['identity'])
         if c['identity']!=cfg['parents'][k]:raise ValueError('CONT_VERIFY_PARENT')
     support=read(a.coverage/'prepared/SUPPORT.json');z=torch.load(a.coverage/'prepared/DATA.pt',weights_only=True)['z'].double().numpy()
-    y=np.stack([validate_record(r) for r in read(a.coverage/'PANEL.json')['records']]);rows=[];traces=0;endpoints=0;max_error=0.
+    y=np.stack([validate_record(r) for r in read(a.coverage/'PANEL.json')['records']]);rows=[];traces=0;endpoints=0;max_error=0.;retention=[]
+    if 'resume_offset' in cfg:
+        resume_cfg=read(a.resume/'CONFIG.json');verify_done(a.resume,resume_cfg['identity'])
+        if resume_cfg['identity']!=cfg['parents']['resume']:raise ValueError('RETENTION_VERIFY_PARENT')
     for u in result['units']:
         fold,seed=u['fold'],u['seed'];name=f'{fold}_{seed}';out=a.run/'units'/name;verify_done(out,cfg['identity'])
         src=a.source/'units'/f'{name}_cost'/'LATEST.pt';source=torch.load(src,weights_only=False,map_location='cpu')
@@ -78,12 +82,26 @@ def run(a):
                     if abs(actual[metric]-expected[metric])>1e-12:raise ValueError('CONT_VERIFY_METRICS')
             return q
         q0=check(source['state'],u['curve'][0]['metrics']);qc=check(control['state'],u['control'])
+        if 'resume_offset' in cfg:
+            resume_path=a.resume/'units'/name/'ENDPOINT_16.pt';resumed=torch.load(resume_path,weights_only=False,map_location='cpu')
+            validate_resume(resumed,resume_cfg['identity'],file_sha(src),source['accepted'])
+            if file_sha(resume_path)!=u['resume_sha256']:raise ValueError('RETENTION_VERIFY_HASH')
+            q16=check(resumed['state'],resumed['curve'][-1]['metrics'])
         for checkpoint_index,offset in enumerate(cfg.get('checkpoints',[16,32,48,64]),1):
             cp=torch.load(out/f'ENDPOINT_{offset}.pt',weights_only=False,map_location='cpu')
             if cp['source_sha256']!=file_sha(src) or cp['identity']!=cfg['identity'] or cp['offset']!=offset:raise ValueError('CONT_VERIFY_CHECKPOINT')
             require_equal(cp['curve'],u['curve'][:checkpoint_index+1],'CONT_VERIFY_CURVE')
             accepted,last=verify_trace(cp['trace'],u['curve'][0]['metrics']['fit'])
             if accepted!=cp['accepted']:raise ValueError('CONT_VERIFY_ACCEPTED')
+            if 'resume_offset' in cfg:
+                if cp['resume_sha256']!=file_sha(resume_path):raise ValueError('RETENTION_VERIFY_CHECKPOINT_SOURCE')
+                if offset<=16:
+                    inherited=torch.load(resume_path.parent/f'ENDPOINT_{offset}.pt',weights_only=False,map_location='cpu')
+                    for k in ('state','optimizer','rng','trace','curve','accepted','searches_used'):require_equal(cp[k],inherited[k],'RETENTION_INHERITED')
+                else:
+                    require_equal(cp['trace'][:16],resumed['trace'],'RETENTION_PREFIX_TRACE')
+                    require_equal(cp['curve'][:3],resumed['curve'],'RETENTION_PREFIX_CURVE')
+                    validate_retention_suffix(cp['trace'][16:],16,offset)
             if 'searches_per_case' in cfg:
                 counts=[t['searches_used'] for t in cp['trace']]
                 if counts!=sorted(counts) or counts[-1]>cfg['searches_per_case'] or counts[-1]!=cp['searches_used']:raise ValueError('CONT_VERIFY_SEARCH_BUDGET')
@@ -94,6 +112,12 @@ def run(a):
                 for m in ('cost','regret'):
                     if v[m]!=metrics['fit'][k][m]:raise ValueError('CONT_VERIFY_TRACE_ENDPOINT')
         traces+=len(cp['trace'])
+        if 'resume_offset' in cfg:
+            target=y[fit];ix=np.arange(len(fit));a0=q0[:,fit].min(0).argmax(1);a16=q16[:,fit].min(0).argmax(1);a64=q[:,fit].min(0).argmax(1)
+            earlier=target[ix,a16]>target[ix,a0];lost=earlier&(target[ix,a64]<target[ix,a16])
+            retention.append(dict(case=name,improved_at16=int(earlier.sum()),gains_retained=int(np.sum(earlier&~lost)),gains_lost=int(lost.sum()),
+                new_steps=len(cp['trace'])-16,new_accepted=cp['accepted']-resumed['accepted'],new_searches=0,
+                regret_at16=score(q16[:,fit],target,temperature)['regret'],regret_at64=score(q[:,fit],target,temperature)['regret']))
         for label,qq,metrics in [('source',q0,u['curve'][0]['metrics']),(f'control{control_budget}',qc,u['control']),(f"protected{cfg['budget']}",q,metrics)]:
             actions=qq[:,fit].min(0).argmax(1);initial=q0[:,fit].min(0).argmax(1);target=y[fit]
             delta=target[np.arange(len(fit)),actions]-target[np.arange(len(fit)),initial]
@@ -105,6 +129,7 @@ def run(a):
     report=dict(identity=cfg['identity'],checkpoints=endpoints,trace_steps=traces,forward_max_error=max_error,
         cold_exact_reported=sum(u['cold_exact'] for u in result['units']),resumed_exact_reported=sum(u['resumed_exact'] for u in result['units']),
         rows=rows,actor_updates=0,model_promoted=False)
+    if retention:report['retention']=retention
     write(a.output/'VERIFICATION.json',report);write(a.output/'CONFIG.json',cfg)
     with (a.output/'SUMMARY.csv').open('w',newline='') as f:
         writer=csv.DictWriter(f,fieldnames=list(rows[0]));writer.writeheader();writer.writerows(rows)
@@ -123,4 +148,5 @@ def run(a):
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for k in ('run','source','control','coverage','output'):p.add_argument('--'+k,type=Path,required=True)
+    p.add_argument('--resume',type=Path)
     run(p.parse_args())
