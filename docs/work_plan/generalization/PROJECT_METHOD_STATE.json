@@ -1,9 +1,10 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "MATCHED_DIVERGENCE_REPLAY_READY",
+  "current_stage": "MATCHED_DIVERGENCE_REPLAY_RUNNING",
   "matched_divergence_replay_347": {
     "document": "../347_MATCHED_DIVERGENCE_REPLAY.md",
-    "status": "TESTED_READY",
+    "status": "RUNNING_PINNED_SUPERVISED",
+    "runtime_commit": "a139afee",
     "cases": ["B19 FIT", "A43 internal stop"],
     "tests_passed": 52,
     "actor_updates": 0,

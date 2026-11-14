@@ -38,3 +38,11 @@ exchange is a conditional intervention, not a universal optimizer-reset result.
 
 Implementation uses existing341 protection,345 historical rescue, actual AdamW
 transaction and334 support. A separate evidence root owns all new outputs.
+
+Supplemental saved-weight analysis: enumerate all16 combinations of the four
+critic blocks at each fixed pre-step witness. Use exact Shapley attribution of
+the control-preferred action margin, with independent Torch64 forward checks
+and sum-to-total identity. This explains the local margin difference, not the
+cause of the entire trajectory. Hybrids are not admissible replacement models;
+no original/optimal guards are bypassed in training. A separately sealed CPU
+report consumes the completed347 verification; no running artifact is edited.
