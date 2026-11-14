@@ -1,10 +1,12 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "TWIN_PROTECTION_REPLICATION_GUARD_CORRECTED",
+  "current_stage": "TWIN_PROTECTION_REPLICATION_RUNNING",
   "twin_protection_replication_338": {
     "document": "../338_TWIN_PROTECTION_PAIRED_REPLICATION.md",
-    "status": "REVISED_AFTER_TRANSACTION_GUARD_WITNESS",
-    "tests_passed": 54,
+    "status": "RUNNING_REVISED_PAIRED_CONTRAST",
+    "runtime_commit": "19f70c6d",
+    "identity": "43b9e5c253c63d58a68e378b099364c04ae3bedf96b18038f1e620acc62fe9da",
+    "tests_passed": 55,
     "first_run_failed_before_first_checkpoint": true,
     "first_bad_step": 10,
     "first_gpu_single_margin_deficit": 4.602432250976644e-8,
@@ -14,7 +16,7 @@
     "attempts_per_arm": 256,
     "intermediate_user_approval_required": false,
     "model_promoted": false,
-    "next_action": "Run eight sequential matched-primal continuations, verify cold/resumed states and independently score endpoints. Compare fixed256 results across all four cases without actor/feature changes."
+    "next_action": "Eight sequential matched-primal continuations are running; separate bounded CPU verifier waits for seal then emits independent four-case table automatically. Compare fixed256 results across all four cases without actor/feature changes."
   },
   "twin_complete_protection_337": {
     "document": "../337_TWIN_COMPLETE_PROTECTION.md",
@@ -2968,7 +2970,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
-    "338 implemented/tested: eight paired256 continuations, same primal solver, all four334 cost-only endpoints. Sequential automation and independent verification, no user decision required",
+    "338 revised running: eight paired256 continuations, same primal solver and per-step batch/single guards; bounded CPU verifier follows automatically. No user decision required",
     "337 complete:16/16 proposals and256/256 updates accepted; stable-added FIT regret improves3.6239% but internal TRAIN stop/audit worsen. Local nonsmooth protection defect fixed, no actor/trading promotion. Preserve299/71 inputs and49 return candidates",
     "336 complete:48 feasible linear systems,0 accepted finite steps; independent384 trials isolate chosen-twin switches at protected row8.335 calibration complete; neither result is actor/trading promotion",
     "334 complete: cost-only plus fresh AdamW improves matched FIT decisions in4/4; automatic1024 extension complete. Transfer mixed.335 calibrates saved values without changing decisions, not full SAC or live certification",

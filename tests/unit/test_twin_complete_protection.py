@@ -109,3 +109,13 @@ def test_finite_evaluator_can_reject_step_before_checkpoint(monkeypatch):
     assert not record['accepted'] and len(seen)==24
     assert tree_digest(head.state_dict())==tree_digest(initial)
     assert tree_digest(opt.state_dict())==tree_digest(initial_opt)
+
+
+def test_automatic_verifier_wait_is_bounded_and_refuses_failure(tmp_path):
+    from tools.verify_twin_replication import wait_complete
+    with pytest.raises(ValueError,match='NOT_COMPLETE'):wait_complete(tmp_path,0)
+    (tmp_path/'PROGRESS.json').write_text('{"stage":"FAILED"}')
+    with pytest.raises(ValueError,match='PRODUCER_FAILED'):wait_complete(tmp_path,100)
+    (tmp_path/'DONE.json').write_text('{}')
+    wait_complete(tmp_path,0)
+    with pytest.raises(ValueError,match='WAIT_BUDGET'):wait_complete(tmp_path,-1)

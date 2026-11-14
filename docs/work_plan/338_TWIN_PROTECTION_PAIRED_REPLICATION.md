@@ -1,6 +1,6 @@
 # 338: Paired Twin-Protection Replication
 
-Status: REVISED_AFTER_TRANSACTION_GUARD_WITNESS.
+Status: RUNNING_REVISED_PAIRED_CONTRAST.
 
 337 fixes a measured B43 nonsmooth protection defect:256/256 updates accepted
 versus0/256 legacy, stable-added regret0.304704942 ->0.293662736. Internal TRAIN
@@ -67,3 +67,11 @@ of both states.54 focused tests pass in3.82s; scoped Ruff passes. Preserve the
 failed first root; start a new identity from the original334 sources rather
 than continuing an unsafe intermediate state. This is a common safety repair,
 not a treatment-specific advantage or a change to data/learning objective.
+
+Revised runtime `19f70c6d`, identity
+`43b9e5c253c63d58a68e378b099364c04ae3bedf96b18038f1e620acc62fe9da`.
+The first revised arm completed; its paired arm is running. Separate CPU
+verification waits for the root seal (bounded30min), refuses a failed producer,
+then checks every saved endpoint, source/support/schedule identity, optimizer
+counter and exact NumPy metrics, and emits the four-case table automatically.
+55 focused tests now pass in3.86s, including bounded-wait failure handling.
