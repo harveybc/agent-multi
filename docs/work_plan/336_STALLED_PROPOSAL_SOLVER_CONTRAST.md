@@ -1,6 +1,6 @@
 # 336: Stalled Proposal Solver Contrast
 
-Status: IMPLEMENTED_VERIFIED_BEFORE_EXECUTION.
+Status: COMPLETE_VERIFIED_TWIN_SWITCH_FAILURE_IDENTIFIED.
 
 334 B43 cost-only has no accepted update after457; its saved1024 weights and
 AdamW state therefore reconstruct later rejected attempts. Authenticate that
@@ -59,3 +59,35 @@ Prelaunch:45 focused CPU tests pass in3.74s; scoped Ruff checks pass. The
 default projector remains unchanged, with an explicit parity test. Completed
 probe units are sealed and reused on restart; conditional fitting checkpoints
 both weights and optimizer/RNG, without overwriting sealed units.
+
+## Results And Independent Witness Reconstruction
+
+Runtime `9d7749c0`, identity
+`230a2a56c6642fa7724865127558113eee8c6e8b565378047b18cb2cf527ec12`.
+32 probe runs completed in16.875s. All16 legacy controls reproduce334 exactly;
+32 cold endpoints reproduce. New solver:48/48 feasible linear systems but
+0/16 accepted finite-network steps. Continuation gate false, no long fitting.
+Stable-added regret remains0.304704942; these are decision diagnostics, not
+new account trading results.
+
+Independent CPU reconstruction verified33 seals,16 identical paired proposed
+weights AND optimizer states,32 exact rollback states,48 Jacobians/required
+vectors and384 finite NumPy trials. Maximum normalized projection residual
+2.469e-16. Every linear predicted margin was positive (minimum2.965e-6).
+Every finite rejection has exactly one offending protected row, row8, with a
+chosen-minimum twin switch. No parameter flattening/order mismatch was found.
+
+Example attempt458, first repair: predicted safety, actual margin surplus
+-0.001557674. Chosen twin changes1->0. At the next repair it changes0->1,
+then1->0 again. Even scale1/128 fails. Across all384 trials, keeping center
+branch identities reduces smooth approximation error to at most1.247e-6.
+The failure is a nonsmooth branch constraint missed by the active-minimum
+Jacobian, not just a less accurate quadratic solver or GPU roundoff.
+
+Artifacts: [results](generalization/solver_contrast_20261114/RESULTS.md),
+[full receipts](generalization/solver_contrast_20261114/RESULT.json),
+[CPU witness reconstruction](generalization/solver_contrast_20261114/INDEPENDENT_VERIFY.json).
+
+Next: [337 twin-complete protection](337_TWIN_COMPLETE_PROTECTION.md), with a
+regression counterexample and both chosen-twin margins. No source actor,
+encoder,71 inputs,original safety tolerance or held labels are changed.

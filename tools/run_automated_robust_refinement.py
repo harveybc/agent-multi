@@ -46,17 +46,20 @@ class Context:
         return dict(passed=bool(all(g['passed'] for g in guards.values())),guards=guards,
             fit=dict(gpu=fit_quality(fit,self.targets[self.fit]),numpy=fit_quality(npfit,self.targets[self.fit])))
 
-    def repair(self,before,proposed,kind,projector=None):
+    def repair(self,before,proposed,kind,projector=None,twin_complete=False):
+        if type(twin_complete) is not bool:raise ValueError('TWIN_COMPLETE_MODE')
+        if twin_complete:
+            from app.twin_complete_protection import twin_complete_jacobian
         before={k:v.detach().cpu().clone() for k,v in before.items()}
         d=vector(proposed)-vector(before)
         def linearize(center):
             state=moved(before,center,1.);self.double.load_state_dict(state)
-            gaps,jac=gap_jacobian(self.double,self.zcpu.double(),self.old,self.actions)
+            gaps,jac=(twin_complete_jacobian if twin_complete else gap_jacobian)(self.double,self.zcpu.double(),self.old,self.actions)
             return gaps,jac,vector(state)-vector(before)
         def evaluate(delta):
             state=moved(before,delta,1.)
             return dict(self.observe(state),motion=float(np.linalg.norm(vector(state)-vector(before))))
-        result=repair_direction(d,linearize,evaluate,np.repeat(self.margin,2),
+        result=repair_direction(d,linearize,evaluate,np.repeat(self.margin,4 if twin_complete else 2),
             factor=1. if kind=='tangent' else 2.,max_repairs=1 if kind=='tangent' else 3,projector=projector)
         delta=result.pop('delta');state=moved(before,delta,1.) if result['accepted'] else None
         return state,dict(result,proposal_norm=float(np.linalg.norm(d)))

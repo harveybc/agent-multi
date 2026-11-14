@@ -13,6 +13,7 @@ from app.interior_adamw_repair import transactional_step
 from app.native_fit_coverage import validate_record
 from app.native_head_warm_start import configure_scope
 from app.primal_direction_projection import project_primal,select_stalled_probes,qualify_continuation
+from app.twin_complete_protection import qualify_twin_continuation
 from app.rl_subset import digest
 from app.robust_adamw_direction import project_displacement
 from app.training_forensics import tree_digest,rng_state,restore_rng
@@ -44,6 +45,15 @@ def run(a):
         code={k:file_sha(ROOT/k) for k in ('tools/run_stalled_solver_contrast.py','app/primal_direction_projection.py',
             'app/interior_adamw_repair.py','app/robust_adamw_direction.py','tools/run_automated_robust_refinement.py',
             'tools/run_decision_cost_contrast.py','tools/run_affine_critic_calibration.py','app/decision_cost_objective.py')})
+    complete=getattr(a,'twin_complete',False)
+    if complete:
+        if a.previous_solver is None:raise ValueError('SOLVER_PREVIOUS_REQUIRED')
+        pc=read(a.previous_solver/'CONFIG.json');verify_done(a.previous_solver,pc['identity'])
+        if pc['selected_attempts']!=selected or pc['source_file_sha256']!=cfg['source_file_sha256']:
+            raise ValueError('SOLVER_UNPAIRED_PREVIOUS')
+        cfg.update(schema='twin_complete_protection.v1',previous_solver=pc['identity'],twin_complete=True,
+            continuation_gate='twelve_safe_nonworsening_cost_improved_probes',
+            twin_complete_code=file_sha(ROOT/'app/twin_complete_protection.py'))
     cfg['identity']=digest(cfg)
     if file_sha(a.bundle/'model.pt')!=cfg['source_actor_sha256']:raise ValueError('SOLVER_ACTOR_IDENTITY')
     if (a.output/'CONFIG.json').exists() and read(a.output/'CONFIG.json')!=cfg:raise ValueError('SOLVER_RESUME_IDENTITY')
@@ -82,7 +92,7 @@ def run(a):
             if capture is not None:
                 capture['proposal']={k:v.detach().cpu().clone() for k,v in proposed.items()}
                 capture['proposed_optimizer']=deepcopy(opt.state_dict())
-            return ctx.repair(before,proposed,'interior',projector=project)
+            return ctx.repair(before,proposed,'interior',projector=project,twin_complete=complete and method=='primal')
         ix=schedule[8192+attempt-1]
         return transactional_step(ctx.head,opt,ctx.z[:,ix],ctx.y[ix],repair,loss_fn=loss)
     results=[];replayed=0
@@ -103,6 +113,13 @@ def run(a):
                 if dict(step=attempt,**record)!=saved['trace'][attempt-1]:raise ValueError('SOLVER_LEGACY_REPLAY')
                 if tree_digest(ctx.head.state_dict())!=tree_digest(frozen) or tree_digest(opt.state_dict())!=tree_digest(saved['optimizer']):raise ValueError('SOLVER_REJECTION_CHANGED_STATE')
                 replayed+=1
+            if not record['accepted'] and (tree_digest(ctx.head.state_dict())!=tree_digest(frozen)
+                    or tree_digest(opt.state_dict())!=tree_digest(saved['optimizer'])):raise ValueError('SOLVER_REJECTION_CHANGED_STATE')
+            if complete:
+                prior=torch.load(a.previous_solver/'probes'/f'{attempt}_{method}'/'ENDPOINT.pt',weights_only=False,map_location='cpu')
+                if (tree_digest(capture['proposal'])!=tree_digest(prior['proposal'])
+                        or tree_digest(capture['proposed_optimizer'])!=tree_digest(prior['proposed_optimizer'])):
+                    raise ValueError('SOLVER_UNPAIRED_ACTUAL_PROPOSAL')
             state={k:v.detach().cpu().clone() for k,v in ctx.head.state_dict().items()};assessment=inspect(state)
             checkpoint(out/'ENDPOINT.pt',dict(identity=cfg['identity'],state=state,optimizer=deepcopy(opt.state_dict()),
                 record=record,assessment=assessment,batch_indices=schedule[8192+attempt-1],**capture))
@@ -114,7 +131,12 @@ def run(a):
     gate_rows=[dict(attempt=r['attempt'],accepted=r['record']['accepted'],robust=r['assessment']['robust'],
         geometry_agrees=r['assessment']['geometry_agrees'],before=baseline['stable_added']['gpu']['regret'],
         after=r['assessment']['stable_added']['gpu']['regret']) for r in results if r['method']=='primal']
-    qualifies=qualify_continuation(gate_rows);write(a.output/'GATE.json',dict(passed=qualifies,rows=gate_rows))
+    if complete:
+        for row,r in zip(gate_rows,[r for r in results if r['method']=='primal']):
+            row.update(cost_before=baseline['observation']['fit']['gpu']['cost'],
+                cost_after=r['assessment']['observation']['fit']['gpu']['cost'])
+    qualifies=(qualify_twin_continuation if complete else qualify_continuation)(gate_rows)
+    write(a.output/'GATE.json',dict(passed=qualifies,rows=gate_rows))
     continuation=[];resumed=0
     if qualifies:
         for method in ('legacy','primal'):
@@ -168,6 +190,7 @@ def run(a):
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for name in ('source','probe','coverage','bundle','output'):p.add_argument('--'+name,type=Path,required=True)
+    p.add_argument('--twin-complete',action='store_true');p.add_argument('--previous-solver',type=Path)
     p.add_argument('--expected-device-name',required=True);a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
     with (a.output/'worker.lock').open('a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)

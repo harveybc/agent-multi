@@ -1,0 +1,44 @@
+{
+  "batch": 128,
+  "code": {
+    "app/decision_cost_objective.py": "51749bf4072f2f49f3103f668012322485f7e210857635b2617d8c73cdc3ed9f",
+    "app/interior_adamw_repair.py": "6eaea67821aa337fca3037ecca0ad8bddb5a174d471ce401dadfde242636c12d",
+    "app/primal_direction_projection.py": "d4833e27bbba81d2e2931a19b5d25ce9feae115c54cc4ec56a72d7384b276765",
+    "app/robust_adamw_direction.py": "3d96e4641e82e25fa4fa7f79f668d91549daeb03baefb6fad1eaa893afbfc1b3",
+    "tools/run_affine_critic_calibration.py": "4ef9f540a2dd6c1905692195b65ef05c1aa7ae5473dc2228585466c6d8079fa6",
+    "tools/run_automated_robust_refinement.py": "b40a493c575eaf8eef6e17d229a999850e8a4db84710c3ee3338e54ab4d1e378",
+    "tools/run_decision_cost_contrast.py": "76d033640377b37c26d8f21db34336612d7a552e3dd014af50bbd59793d758c6",
+    "tools/run_stalled_solver_contrast.py": "041d16c2d81c3efcce2c1aa07eebd87a953721c4aad18f1136a534a0038eb3a5"
+  },
+  "continuation_budget": 256,
+  "identity": "230a2a56c6642fa7724865127558113eee8c6e8b565378047b18cb2cf527ec12",
+  "last_accepted": 457,
+  "lr": 2.9999999999999997e-05,
+  "parents": {
+    "coverage": "1a6a64dfd71e2ada45f3c3e069521580108ce7db5a804692733d3be39885ebb8",
+    "probe": "32a49fbb371a3637e669df9095026be9fab5e711b5942916f2ae330f53058621",
+    "source": "7603f573875f72abf0cad6e4166b6a3328c21915819f903245fa65b6b486b41e"
+  },
+  "schema": "stalled_solver_contrast.v1",
+  "selected_attempts": [
+    458,
+    460,
+    528,
+    546,
+    601,
+    625,
+    666,
+    716,
+    763,
+    785,
+    841,
+    875,
+    927,
+    955,
+    1022,
+    1024
+  ],
+  "source_actor_sha256": "69b5254489d224d4b20ac358956e4dd3b9a67a2f214a9aff98045c5def25a536",
+  "source_file_sha256": "3dc1d7a2ac92bb195957d95444f36d9a37d23d4e8928341f3234d8aeefae0aa9",
+  "weight_decay": 0.01
+}

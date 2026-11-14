@@ -1,14 +1,34 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "STALLED_PROPOSAL_SOLVER_CONTRAST_IMPLEMENTED",
-  "stalled_solver_contrast_336": {
-    "document": "../336_STALLED_PROPOSAL_SOLVER_CONTRAST.md",
-    "status": "IMPLEMENTED_BEFORE_RUN",
+  "current_stage": "TWIN_COMPLETE_PROTECTION_IMPLEMENTED",
+  "twin_complete_protection_337": {
+    "document": "../337_TWIN_COMPLETE_PROTECTION.md",
+    "status": "IMPLEMENTED_TESTED_BEFORE_EXECUTION",
+    "tests_passed": 52,
     "paired_proposals": 16,
     "conditional_continuation_attempts_per_arm": 256,
     "intermediate_user_approval_required": false,
     "model_promoted": false,
-    "next_action": "Verify, execute paired solver contrast, exact legacy replay and conditional continuation. Independently verify projection witnesses and native decisions before any actor change."
+    "next_action": "Execute337 same16 proposals with both chosen twins protected; automatic paired256 continuation only after frozen feasibility/cost gate. Preserve source299 and all data/margins. Verify and publish regardless of outcome."
+  },
+  "stalled_solver_contrast_336": {
+    "document": "../336_STALLED_PROPOSAL_SOLVER_CONTRAST.md",
+    "status": "COMPLETE_VERIFIED_TWIN_SWITCH_FAILURE_IDENTIFIED",
+    "identity": "230a2a56c6642fa7724865127558113eee8c6e8b565378047b18cb2cf527ec12",
+    "runtime_commit": "9d7749c0",
+    "seconds": 16.875179458991624,
+    "linear_systems_feasible": 48,
+    "new_steps_accepted": 0,
+    "legacy_exact_replays": 16,
+    "cold_replays": 32,
+    "independent_finite_witnesses": 384,
+    "all_failure_rows": [8],
+    "continuation_executed": false,
+    "paired_proposals": 16,
+    "conditional_continuation_attempts_per_arm": 256,
+    "intermediate_user_approval_required": false,
+    "model_promoted": false,
+    "next_action": "337: protect both chosen twins;336 linear feasibility alone fails due to nonsmooth minimum switches. No unchanged rerun or source actor change."
   },
   "rank_preserving_calibration_335": {
     "document": "../335_RANK_PRESERVING_VALUE_CALIBRATION.md",
@@ -2920,7 +2940,8 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
-    "335 complete: shared offset8/8 and affine5/8 calibrations pass fixed margins; all16 preserve all FIT/held actions,96 independent metric scopes verified. Next bounded higher-accuracy direction replay for334 B43 stalls; unchanged guards, no user decision required, not launched yet",
+    "337 implemented/tested: same16 proposal replay with twin-complete protection; bounded automatic paired256 continuation on predeclared gate. No user decision required. Preserve299/71 inputs and49 return candidates",
+    "336 complete:48 feasible linear systems,0 accepted finite steps; independent384 trials isolate chosen-twin switches at protected row8.335 calibration complete; neither result is actor/trading promotion",
     "334 complete: cost-only plus fresh AdamW improves matched FIT decisions in4/4; automatic1024 extension complete. Transfer mixed.335 calibrates saved values without changing decisions, not full SAC or live certification",
     "333 complete: cost/hybrid improve some stable-added decisions, but neither passes the frozen consistency gate. All24 checkpoints robust across five geometries; all4 MSE controls reproduce331. Do not promote a loss-only improvement",
     "326-332 complete: component recombination, warm starts, gradient conflict, actual-AdamW protection, interior repair and decision attribution. Preserve original decisions AND measure new learning; separate numerical near-tie repair from improved action choice",
