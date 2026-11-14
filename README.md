@@ -25,8 +25,16 @@ completed384 layer interventions and cross-host verification: shared gradients
 can oppose correct decisions, and3 harmful FIT changes lower their own surrogate
 loss. [340 exact crossing replay](docs/work_plan/340_FIRST_HARMFUL_CROSSING_REPLAY.md)
 reproduced1024 transactions:6 harmful crossings originate in raw AdamW and4
-are introduced by protection limited to the original anchors. Next is a
-bounded expanded-FIT correct-decision protection test, not an unchanged floating pass.
+are introduced by protection limited to the original anchors.
+[341](docs/work_plan/341_EXPANDED_FIT_OPTIMAL_PROTECTION.md) repaired all10
+fixed witnesses. [342](docs/work_plan/342_OPTIMAL_PROTECTION_SHORT_CONTINUATION.md)
+completed four matched64-step continuations:243/256 updates accepted,zero
+harmful endpoint switches versus4 in controls, but one paired FIT win,one loss
+and two ties. Mean regret is0.114% worse than control, so this is not a promoted
+training recipe. [343](docs/work_plan/343_PROTECTION_COMPONENT_TRADEOFF.md)
+completed64 saved-block exchanges twice exactly; none recovers extra gains
+while preserving the guards. Next is a bounded decision-aware update-direction
+contrast, not layer transplantation or an unchanged floating pass.
 No source actor, inputs or live model have changed. Canonical
 resume state: [method state](docs/work_plan/generalization/PROJECT_METHOD_STATE.json).
 Historical COT/source-clock qualification is separate; these diagnostics do not

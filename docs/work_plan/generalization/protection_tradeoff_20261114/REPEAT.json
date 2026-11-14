@@ -1,0 +1,11 @@
+{
+  "identity": "3efba74f2d83248cd889f8886cd4e66380fa463b800a2e1424c03c20fc325a25",
+  "runtime_commit": "b959e90d",
+  "independent_process_repetitions": 2,
+  "interventions_per_repetition": 64,
+  "result_byte_exact": true,
+  "result_sha256": "9b25bf2d4e68ddafa4a41a868a9d2367897722a00d3d805617a78d35f1d648e8",
+  "comparison": "cmp of the two separately generated RESULT.json files exited 0",
+  "actor_updates": 0,
+  "model_promoted": false
+}

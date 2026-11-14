@@ -1,0 +1,40 @@
+{
+  "batch": 128,
+  "budget": 64,
+  "cases": [
+    [
+      "A",
+      19
+    ],
+    [
+      "A",
+      43
+    ],
+    [
+      "B",
+      19
+    ],
+    [
+      "B",
+      43
+    ]
+  ],
+  "code": {
+    "app/optimal_fit_protection.py": "5317e44ee2c05abccaf03b7a9d3dd2e79658fafb50c4cc0e8c04d50742ba237d",
+    "tools/probe_optimal_fit_protection.py": "42c410830a89aa941a87bceca287ba4fa4cb2f3d67f5c8b0d452568d16b56f88",
+    "tools/run_optimal_protection_continuation.py": "8ba269dbd941da4c24d46dd0c392ee0a595f27173cb379008992580f745b2ea6"
+  },
+  "identity": "a4b51f938a66baa7d6868504a36c1d4163e3881fce73b12ee83bc0e2d67c1382",
+  "lr": 2.9999999999999997e-05,
+  "parents": {
+    "control": "43b9e5c253c63d58a68e378b099364c04ae3bedf96b18038f1e620acc62fe9da",
+    "coverage": "1a6a64dfd71e2ada45f3c3e069521580108ce7db5a804692733d3be39885ebb8",
+    "probe": "32a49fbb371a3637e669df9095026be9fab5e711b5942916f2ae330f53058621",
+    "protection": "e61891e71590f0823a830b53bc708410d7906f561c365eeab0311552959de200",
+    "source": "7603f573875f72abf0cad6e4166b6a3328c21915819f903245fa65b6b486b41e",
+    "verified": "e61891e71590f0823a830b53bc708410d7906f561c365eeab0311552959de200"
+  },
+  "schema": "optimal_protection_continuation.v1",
+  "source_actor_sha256": "69b5254489d224d4b20ac358956e4dd3b9a67a2f214a9aff98045c5def25a536",
+  "weight_decay": 0.01
+}

@@ -1,0 +1,2477 @@
+{
+  "actor_updates": 0,
+  "cases": [
+    {
+      "case": "A_19",
+      "control_sha256": "0f289c9f64b93bf9227cdbac59acac7836e25ad8052f04d98eaf7376a4659484",
+      "interventions": [
+        {
+          "mask": 0,
+          "metrics": {
+            "cpu": {
+              "cost": 0.09991109943095922,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.15358317798667795
+            },
+            "cpu_single": {
+              "cost": 0.09991110063382082,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.15358317798667795
+            },
+            "gpu": {
+              "cost": 0.09991109927615152,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.15358317798667795
+            },
+            "gpu_single": {
+              "cost": 0.09991109908854766,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.15358317798667795
+            },
+            "numpy": {
+              "cost": 0.0999110987017625,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.15358317798667795
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 1,
+          "metrics": {
+            "cpu": {
+              "cost": 0.09960652088833603,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.15587282211579545
+            },
+            "cpu_single": {
+              "cost": 0.09960652146420183,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.15587282211579545
+            },
+            "gpu": {
+              "cost": 0.0996065228865154,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.15587282211579545
+            },
+            "gpu_single": {
+              "cost": 0.09960652031490778,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.15587282211579545
+            },
+            "numpy": {
+              "cost": 0.09960652114560055,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.15587282211579545
+            }
+          },
+          "original_passed": false,
+          "recovery": false
+        },
+        {
+          "mask": 2,
+          "metrics": {
+            "cpu": {
+              "cost": 0.10011967150338263,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.15647979961870015
+            },
+            "cpu_single": {
+              "cost": 0.10011967135059952,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.15647979961870015
+            },
+            "gpu": {
+              "cost": 0.10011967156149429,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.15647979961870015
+            },
+            "gpu_single": {
+              "cost": 0.10011967107265118,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.15647979961870015
+            },
+            "numpy": {
+              "cost": 0.1001196697290873,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.15647979961870015
+            }
+          },
+          "original_passed": false,
+          "recovery": false
+        },
+        {
+          "mask": 3,
+          "metrics": {
+            "cpu": {
+              "cost": 0.09973776052259933,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.15791021316990816
+            },
+            "cpu_single": {
+              "cost": 0.09973776064892242,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.15791021316990816
+            },
+            "gpu": {
+              "cost": 0.09973775965703151,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.15791021316990816
+            },
+            "gpu_single": {
+              "cost": 0.09973776032194268,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.15791021316990816
+            },
+            "numpy": {
+              "cost": 0.09973775967447265,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.15791021316990816
+            }
+          },
+          "original_passed": false,
+          "recovery": false
+        },
+        {
+          "mask": 4,
+          "metrics": {
+            "cpu": {
+              "cost": 0.09955162366137993,
+              "lost_optimal": 5,
+              "recovery": false,
+              "regret": 0.15556926086988446
+            },
+            "cpu_single": {
+              "cost": 0.09955162397426218,
+              "lost_optimal": 5,
+              "recovery": false,
+              "regret": 0.15556926086988446
+            },
+            "gpu": {
+              "cost": 0.09955162322295907,
+              "lost_optimal": 5,
+              "recovery": false,
+              "regret": 0.15556926086988446
+            },
+            "gpu_single": {
+              "cost": 0.09955162510049885,
+              "lost_optimal": 5,
+              "recovery": false,
+              "regret": 0.15556926086988446
+            },
+            "numpy": {
+              "cost": 0.09955162423660086,
+              "lost_optimal": 5,
+              "recovery": false,
+              "regret": 0.15556926086988446
+            }
+          },
+          "original_passed": false,
+          "recovery": false
+        },
+        {
+          "mask": 5,
+          "metrics": {
+            "cpu": {
+              "cost": 0.09925848087046829,
+              "lost_optimal": 5,
+              "recovery": false,
+              "regret": 0.15078423271467375
+            },
+            "cpu_single": {
+              "cost": 0.099258480477497,
+              "lost_optimal": 5,
+              "recovery": false,
+              "regret": 0.15078423271467375
+            },
+            "gpu": {
+              "cost": 0.09925848382226854,
+              "lost_optimal": 5,
+              "recovery": false,
+              "regret": 0.15078423271467375
+            },
+            "gpu_single": {
+              "cost": 0.09925848330603883,
+              "lost_optimal": 5,
+              "recovery": false,
+              "regret": 0.15078423271467375
+            },
+            "numpy": {
+              "cost": 0.09925848333944354,
+              "lost_optimal": 5,
+              "recovery": false,
+              "regret": 0.15078423271467375
+            }
+          },
+          "original_passed": false,
+          "recovery": false
+        },
+        {
+          "mask": 6,
+          "metrics": {
+            "cpu": {
+              "cost": 0.0995879879390212,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.14996151699154958
+            },
+            "cpu_single": {
+              "cost": 0.09958798721418596,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.14996151699154958
+            },
+            "gpu": {
+              "cost": 0.09958798917206264,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.14996151699154958
+            },
+            "gpu_single": {
+              "cost": 0.09958798913910456,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.14996151699154958
+            },
+            "numpy": {
+              "cost": 0.09958798892713107,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.14996151699154958
+            }
+          },
+          "original_passed": false,
+          "recovery": false
+        },
+        {
+          "mask": 7,
+          "metrics": {
+            "cpu": {
+              "cost": 0.0992085457298764,
+              "lost_optimal": 4,
+              "recovery": false,
+              "regret": 0.15225114067919446
+            },
+            "cpu_single": {
+              "cost": 0.09920854471400573,
+              "lost_optimal": 4,
+              "recovery": false,
+              "regret": 0.15225114067919446
+            },
+            "gpu": {
+              "cost": 0.09920854640363176,
+              "lost_optimal": 4,
+              "recovery": false,
+              "regret": 0.15225114067919446
+            },
+            "gpu_single": {
+              "cost": 0.09920854781352252,
+              "lost_optimal": 4,
+              "recovery": false,
+              "regret": 0.15225114067919446
+            },
+            "numpy": {
+              "cost": 0.09920854697081598,
+              "lost_optimal": 4,
+              "recovery": false,
+              "regret": 0.15225114067919446
+            }
+          },
+          "original_passed": false,
+          "recovery": false
+        },
+        {
+          "mask": 8,
+          "metrics": {
+            "cpu": {
+              "cost": 0.09989769593462097,
+              "lost_optimal": 1,
+              "recovery": false,
+              "regret": 0.1557531037815748
+            },
+            "cpu_single": {
+              "cost": 0.09989769759910612,
+              "lost_optimal": 1,
+              "recovery": false,
+              "regret": 0.1557531037815748
+            },
+            "gpu": {
+              "cost": 0.09989769571544307,
+              "lost_optimal": 1,
+              "recovery": false,
+              "regret": 0.1557531037815748
+            },
+            "gpu_single": {
+              "cost": 0.0998976957558527,
+              "lost_optimal": 1,
+              "recovery": false,
+              "regret": 0.1557531037815748
+            },
+            "numpy": {
+              "cost": 0.09989769493954419,
+              "lost_optimal": 1,
+              "recovery": false,
+              "regret": 0.1557531037815748
+            }
+          },
+          "original_passed": false,
+          "recovery": false
+        },
+        {
+          "mask": 9,
+          "metrics": {
+            "cpu": {
+              "cost": 0.09957034791323106,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.15587282211579545
+            },
+            "cpu_single": {
+              "cost": 0.09957034889512113,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.15587282211579545
+            },
+            "gpu": {
+              "cost": 0.09957034966848034,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.15587282211579545
+            },
+            "gpu_single": {
+              "cost": 0.09957034742522575,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.15587282211579545
+            },
+            "numpy": {
+              "cost": 0.09957034806192525,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.15587282211579545
+            }
+          },
+          "original_passed": false,
+          "recovery": false
+        },
+        {
+          "mask": 10,
+          "metrics": {
+            "cpu": {
+              "cost": 0.1001058413590768,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.15647979961870015
+            },
+            "cpu_single": {
+              "cost": 0.10010584169101804,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.15647979961870015
+            },
+            "gpu": {
+              "cost": 0.10010584132530499,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.15647979961870015
+            },
+            "gpu_single": {
+              "cost": 0.10010584097499767,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.15647979961870015
+            },
+            "numpy": {
+              "cost": 0.1001058396124207,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.15647979961870015
+            }
+          },
+          "original_passed": false,
+          "recovery": false
+        },
+        {
+          "mask": 11,
+          "metrics": {
+            "cpu": {
+              "cost": 0.09972116832334321,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.15791021316990816
+            },
+            "cpu_single": {
+              "cost": 0.09972116869882779,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.15791021316990816
+            },
+            "gpu": {
+              "cost": 0.09972116737518252,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.15791021316990816
+            },
+            "gpu_single": {
+              "cost": 0.09972116790034723,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.15791021316990816
+            },
+            "numpy": {
+              "cost": 0.0997211673198341,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.15791021316990816
+            }
+          },
+          "original_passed": false,
+          "recovery": false
+        },
+        {
+          "mask": 12,
+          "metrics": {
+            "cpu": {
+              "cost": 0.09950336791816923,
+              "lost_optimal": 5,
+              "recovery": false,
+              "regret": 0.1573775974025837
+            },
+            "cpu_single": {
+              "cost": 0.0995033689269147,
+              "lost_optimal": 5,
+              "recovery": false,
+              "regret": 0.1573775974025837
+            },
+            "gpu": {
+              "cost": 0.09950336709281894,
+              "lost_optimal": 5,
+              "recovery": false,
+              "regret": 0.1573775974025837
+            },
+            "gpu_single": {
+              "cost": 0.09950336929783996,
+              "lost_optimal": 5,
+              "recovery": false,
+              "regret": 0.1573775974025837
+            },
+            "numpy": {
+              "cost": 0.09950336857406172,
+              "lost_optimal": 5,
+              "recovery": false,
+              "regret": 0.1573775974025837
+            }
+          },
+          "original_passed": false,
+          "recovery": false
+        },
+        {
+          "mask": 13,
+          "metrics": {
+            "cpu": {
+              "cost": 0.09920309345535042,
+              "lost_optimal": 4,
+              "recovery": false,
+              "regret": 0.15077612637213703
+            },
+            "cpu_single": {
+              "cost": 0.0992030939978008,
+              "lost_optimal": 4,
+              "recovery": false,
+              "regret": 0.15077612637213703
+            },
+            "gpu": {
+              "cost": 0.0992030960615334,
+              "lost_optimal": 4,
+              "recovery": false,
+              "regret": 0.15077612637213703
+            },
+            "gpu_single": {
+              "cost": 0.09920309607610024,
+              "lost_optimal": 4,
+              "recovery": false,
+              "regret": 0.15077612637213703
+            },
+            "numpy": {
+              "cost": 0.09920309597104722,
+              "lost_optimal": 4,
+              "recovery": false,
+              "regret": 0.15077612637213703
+            }
+          },
+          "original_passed": false,
+          "recovery": false
+        },
+        {
+          "mask": 14,
+          "metrics": {
+            "cpu": {
+              "cost": 0.09956367634649825,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.14995341064901285
+            },
+            "cpu_single": {
+              "cost": 0.09956367621179472,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.14995341064901285
+            },
+            "gpu": {
+              "cost": 0.09956367728730267,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.14995341064901285
+            },
+            "gpu_single": {
+              "cost": 0.09956367771874729,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.14995341064901285
+            },
+            "numpy": {
+              "cost": 0.09956367700046337,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.14995341064901285
+            }
+          },
+          "original_passed": false,
+          "recovery": false
+        },
+        {
+          "mask": 15,
+          "metrics": {
+            "cpu": {
+              "cost": 0.09916393577521607,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.15138382420022087
+            },
+            "cpu_single": {
+              "cost": 0.09916393533052568,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.15138382420022087
+            },
+            "gpu": {
+              "cost": 0.09916393668347323,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.15138382420022087
+            },
+            "gpu_single": {
+              "cost": 0.0991639373493517,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.15138382420022087
+            },
+            "numpy": {
+              "cost": 0.0991639363739896,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.15138382420022087
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        }
+      ],
+      "protected_sha256": "fd39d0c28b9742b90fe912eae54a16630d9a934f4786d3176b923b9221c930cc",
+      "shapley": {
+        "twin0_hidden": {
+          "cost": -0.00034831160243452167,
+          "regret": 0.0004203202483000605
+        },
+        "twin0_output": {
+          "cost": 8.709779156360874e-05,
+          "regret": 0.00031245113819032317
+        },
+        "twin1_hidden": {
+          "cost": -0.0004552323844255156,
+          "regret": -0.0034071211558970977
+        },
+        "twin1_output": {
+          "cost": -3.071613247647315e-05,
+          "regret": 0.0004749959829496326
+        }
+      }
+    },
+    {
+      "case": "A_43",
+      "control_sha256": "2ba8ef909ecf9c7e2dca8c6860f19418129ac9fa112dc26a2175835b38e89aad",
+      "interventions": [
+        {
+          "mask": 0,
+          "metrics": {
+            "cpu": {
+              "cost": 0.0941099396012253,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "cpu_single": {
+              "cost": 0.09410994085247999,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu": {
+              "cost": 0.09410993769058897,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu_single": {
+              "cost": 0.09410994043683912,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "numpy": {
+              "cost": 0.09410993825001819,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 1,
+          "metrics": {
+            "cpu": {
+              "cost": 0.0941099396012253,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "cpu_single": {
+              "cost": 0.09410994085247999,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu": {
+              "cost": 0.09410993769058897,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu_single": {
+              "cost": 0.09410994043683912,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "numpy": {
+              "cost": 0.09410993825001819,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 2,
+          "metrics": {
+            "cpu": {
+              "cost": 0.0941099396012253,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "cpu_single": {
+              "cost": 0.09410994085247999,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu": {
+              "cost": 0.09410993769058897,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu_single": {
+              "cost": 0.09410994043683912,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "numpy": {
+              "cost": 0.09410993825001819,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 3,
+          "metrics": {
+            "cpu": {
+              "cost": 0.0941099396012253,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "cpu_single": {
+              "cost": 0.09410994085247999,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu": {
+              "cost": 0.09410993769058897,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu_single": {
+              "cost": 0.09410994043683912,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "numpy": {
+              "cost": 0.09410993825001819,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 4,
+          "metrics": {
+            "cpu": {
+              "cost": 0.0941099396012253,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "cpu_single": {
+              "cost": 0.09410994085247999,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu": {
+              "cost": 0.09410993769058897,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu_single": {
+              "cost": 0.09410994043683912,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "numpy": {
+              "cost": 0.09410993825001819,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 5,
+          "metrics": {
+            "cpu": {
+              "cost": 0.0941099396012253,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "cpu_single": {
+              "cost": 0.09410994085247999,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu": {
+              "cost": 0.09410993769058897,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu_single": {
+              "cost": 0.09410994043683912,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "numpy": {
+              "cost": 0.09410993825001819,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 6,
+          "metrics": {
+            "cpu": {
+              "cost": 0.0941099396012253,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "cpu_single": {
+              "cost": 0.09410994085247999,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu": {
+              "cost": 0.09410993769058897,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu_single": {
+              "cost": 0.09410994043683912,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "numpy": {
+              "cost": 0.09410993825001819,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 7,
+          "metrics": {
+            "cpu": {
+              "cost": 0.0941099396012253,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "cpu_single": {
+              "cost": 0.09410994085247999,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu": {
+              "cost": 0.09410993769058897,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu_single": {
+              "cost": 0.09410994043683912,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "numpy": {
+              "cost": 0.09410993825001819,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 8,
+          "metrics": {
+            "cpu": {
+              "cost": 0.0941099396012253,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "cpu_single": {
+              "cost": 0.09410994085247999,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu": {
+              "cost": 0.09410993769058897,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu_single": {
+              "cost": 0.09410994043683912,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "numpy": {
+              "cost": 0.09410993825001819,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 9,
+          "metrics": {
+            "cpu": {
+              "cost": 0.0941099396012253,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "cpu_single": {
+              "cost": 0.09410994085247999,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu": {
+              "cost": 0.09410993769058897,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu_single": {
+              "cost": 0.09410994043683912,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "numpy": {
+              "cost": 0.09410993825001819,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 10,
+          "metrics": {
+            "cpu": {
+              "cost": 0.0941099396012253,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "cpu_single": {
+              "cost": 0.09410994085247999,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu": {
+              "cost": 0.09410993769058897,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu_single": {
+              "cost": 0.09410994043683912,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "numpy": {
+              "cost": 0.09410993825001819,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 11,
+          "metrics": {
+            "cpu": {
+              "cost": 0.0941099396012253,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "cpu_single": {
+              "cost": 0.09410994085247999,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu": {
+              "cost": 0.09410993769058897,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu_single": {
+              "cost": 0.09410994043683912,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "numpy": {
+              "cost": 0.09410993825001819,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 12,
+          "metrics": {
+            "cpu": {
+              "cost": 0.0941099396012253,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "cpu_single": {
+              "cost": 0.09410994085247999,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu": {
+              "cost": 0.09410993769058897,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu_single": {
+              "cost": 0.09410994043683912,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "numpy": {
+              "cost": 0.09410993825001819,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 13,
+          "metrics": {
+            "cpu": {
+              "cost": 0.0941099396012253,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "cpu_single": {
+              "cost": 0.09410994085247999,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu": {
+              "cost": 0.09410993769058897,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu_single": {
+              "cost": 0.09410994043683912,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "numpy": {
+              "cost": 0.09410993825001819,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 14,
+          "metrics": {
+            "cpu": {
+              "cost": 0.0941099396012253,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "cpu_single": {
+              "cost": 0.09410994085247999,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu": {
+              "cost": 0.09410993769058897,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu_single": {
+              "cost": 0.09410994043683912,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "numpy": {
+              "cost": 0.09410993825001819,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 15,
+          "metrics": {
+            "cpu": {
+              "cost": 0.0941099396012253,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "cpu_single": {
+              "cost": 0.09410994085247999,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu": {
+              "cost": 0.09410993769058897,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "gpu_single": {
+              "cost": 0.09410994043683912,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            },
+            "numpy": {
+              "cost": 0.09410993825001819,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.14151138777073327
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        }
+      ],
+      "protected_sha256": "bbaacc5ea57cc9085cb1ed434e56078ef9fa6370a1217f3baa01bea9b074df7f",
+      "shapley": {
+        "twin0_hidden": {
+          "cost": 0.0,
+          "regret": 0.0
+        },
+        "twin0_output": {
+          "cost": 0.0,
+          "regret": 0.0
+        },
+        "twin1_hidden": {
+          "cost": 0.0,
+          "regret": 0.0
+        },
+        "twin1_output": {
+          "cost": 0.0,
+          "regret": 0.0
+        }
+      }
+    },
+    {
+      "case": "B_19",
+      "control_sha256": "e9a8736fdfa3b152b595ac16584dd73f6fe13f86f80be702467cfe82bc138667",
+      "interventions": [
+        {
+          "mask": 0,
+          "metrics": {
+            "cpu": {
+              "cost": 0.11139847591444375,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.1924335350072576
+            },
+            "cpu_single": {
+              "cost": 0.11139847476138627,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.1924335350072576
+            },
+            "gpu": {
+              "cost": 0.11139847489456425,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.1924335350072576
+            },
+            "gpu_single": {
+              "cost": 0.11139847580861226,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.1924335350072576
+            },
+            "numpy": {
+              "cost": 0.1113984755116297,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.1924335350072576
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 1,
+          "metrics": {
+            "cpu": {
+              "cost": 0.11124606861424907,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.19520283779083214
+            },
+            "cpu_single": {
+              "cost": 0.11124606800833146,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.19520283779083214
+            },
+            "gpu": {
+              "cost": 0.11124606755271849,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.19520283779083214
+            },
+            "gpu_single": {
+              "cost": 0.11124606758841601,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.19520283779083214
+            },
+            "numpy": {
+              "cost": 0.11124606738926679,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.19520283779083214
+            }
+          },
+          "original_passed": false,
+          "recovery": false
+        },
+        {
+          "mask": 2,
+          "metrics": {
+            "cpu": {
+              "cost": 0.11139266879270326,
+              "lost_optimal": 1,
+              "recovery": false,
+              "regret": 0.1938755022171133
+            },
+            "cpu_single": {
+              "cost": 0.1113926684435464,
+              "lost_optimal": 1,
+              "recovery": false,
+              "regret": 0.1938755022171133
+            },
+            "gpu": {
+              "cost": 0.11139266692146846,
+              "lost_optimal": 1,
+              "recovery": false,
+              "regret": 0.1938755022171133
+            },
+            "gpu_single": {
+              "cost": 0.11139266832696809,
+              "lost_optimal": 1,
+              "recovery": false,
+              "regret": 0.1938755022171133
+            },
+            "numpy": {
+              "cost": 0.11139266820913586,
+              "lost_optimal": 1,
+              "recovery": false,
+              "regret": 0.1938755022171133
+            }
+          },
+          "original_passed": false,
+          "recovery": false
+        },
+        {
+          "mask": 3,
+          "metrics": {
+            "cpu": {
+              "cost": 0.11123755208128776,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.19478281152735966
+            },
+            "cpu_single": {
+              "cost": 0.11123755111928246,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.19478281152735966
+            },
+            "gpu": {
+              "cost": 0.11123755013951567,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.19478281152735966
+            },
+            "gpu_single": {
+              "cost": 0.11123755081131399,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.19478281152735966
+            },
+            "numpy": {
+              "cost": 0.11123755098163879,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.19478281152735966
+            }
+          },
+          "original_passed": false,
+          "recovery": false
+        },
+        {
+          "mask": 4,
+          "metrics": {
+            "cpu": {
+              "cost": 0.11123870109192797,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.1945382433997111
+            },
+            "cpu_single": {
+              "cost": 0.11123870049745617,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.1945382433997111
+            },
+            "gpu": {
+              "cost": 0.11123870013860411,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.1945382433997111
+            },
+            "gpu_single": {
+              "cost": 0.11123870031965344,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.1945382433997111
+            },
+            "numpy": {
+              "cost": 0.11123870055053592,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.1945382433997111
+            }
+          },
+          "original_passed": false,
+          "recovery": false
+        },
+        {
+          "mask": 5,
+          "metrics": {
+            "cpu": {
+              "cost": 0.1110659290370526,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.19251696854370962
+            },
+            "cpu_single": {
+              "cost": 0.11106592900184575,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.19251696854370962
+            },
+            "gpu": {
+              "cost": 0.1110659280221317,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.19251696854370962
+            },
+            "gpu_single": {
+              "cost": 0.11106592793995022,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.19251696854370962
+            },
+            "numpy": {
+              "cost": 0.11106592808406043,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.19251696854370962
+            }
+          },
+          "original_passed": false,
+          "recovery": false
+        },
+        {
+          "mask": 6,
+          "metrics": {
+            "cpu": {
+              "cost": 0.1112227690479226,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.1945382433997111
+            },
+            "cpu_single": {
+              "cost": 0.11122276939590557,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.1945382433997111
+            },
+            "gpu": {
+              "cost": 0.11122276772956613,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.1945382433997111
+            },
+            "gpu_single": {
+              "cost": 0.11122276822922056,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.1945382433997111
+            },
+            "numpy": {
+              "cost": 0.1112227685710689,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.1945382433997111
+            }
+          },
+          "original_passed": false,
+          "recovery": false
+        },
+        {
+          "mask": 7,
+          "metrics": {
+            "cpu": {
+              "cost": 0.11104924785951482,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.19232917052843257
+            },
+            "cpu_single": {
+              "cost": 0.11104924732191321,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.19232917052843257
+            },
+            "gpu": {
+              "cost": 0.11104924631953132,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.19232917052843257
+            },
+            "gpu_single": {
+              "cost": 0.11104924636241577,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.19232917052843257
+            },
+            "numpy": {
+              "cost": 0.11104924673243034,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.19232917052843257
+            }
+          },
+          "original_passed": false,
+          "recovery": false
+        },
+        {
+          "mask": 8,
+          "metrics": {
+            "cpu": {
+              "cost": 0.11138758505512851,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.19521241659557803
+            },
+            "cpu_single": {
+              "cost": 0.11138758487508973,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.19521241659557803
+            },
+            "gpu": {
+              "cost": 0.11138758459672299,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.19521241659557803
+            },
+            "gpu_single": {
+              "cost": 0.11138758541298237,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.19521241659557803
+            },
+            "numpy": {
+              "cost": 0.11138758587265264,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.19521241659557803
+            }
+          },
+          "original_passed": false,
+          "recovery": false
+        },
+        {
+          "mask": 9,
+          "metrics": {
+            "cpu": {
+              "cost": 0.1112324355236346,
+              "lost_optimal": 4,
+              "recovery": false,
+              "regret": 0.19540021461085513
+            },
+            "cpu_single": {
+              "cost": 0.11123243571687821,
+              "lost_optimal": 4,
+              "recovery": false,
+              "regret": 0.19540021461085513
+            },
+            "gpu": {
+              "cost": 0.11123243518519867,
+              "lost_optimal": 4,
+              "recovery": false,
+              "regret": 0.19540021461085513
+            },
+            "gpu_single": {
+              "cost": 0.11123243512275129,
+              "lost_optimal": 4,
+              "recovery": false,
+              "regret": 0.19540021461085513
+            },
+            "numpy": {
+              "cost": 0.1112324356749402,
+              "lost_optimal": 4,
+              "recovery": false,
+              "regret": 0.19540021461085513
+            }
+          },
+          "original_passed": false,
+          "recovery": false
+        },
+        {
+          "mask": 10,
+          "metrics": {
+            "cpu": {
+              "cost": 0.11138041702861277,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.1940728790371363
+            },
+            "cpu_single": {
+              "cost": 0.11138041759759885,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.1940728790371363
+            },
+            "gpu": {
+              "cost": 0.11138041568302763,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.1940728790371363
+            },
+            "gpu_single": {
+              "cost": 0.111380416839666,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.1940728790371363
+            },
+            "numpy": {
+              "cost": 0.11138041757050048,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.1940728790371363
+            }
+          },
+          "original_passed": false,
+          "recovery": false
+        },
+        {
+          "mask": 11,
+          "metrics": {
+            "cpu": {
+              "cost": 0.1112238337520779,
+              "lost_optimal": 4,
+              "recovery": false,
+              "regret": 0.19610341744616877
+            },
+            "cpu_single": {
+              "cost": 0.11122383360018825,
+              "lost_optimal": 4,
+              "recovery": false,
+              "regret": 0.19610341744616877
+            },
+            "gpu": {
+              "cost": 0.11122383240854972,
+              "lost_optimal": 4,
+              "recovery": false,
+              "regret": 0.19610341744616877
+            },
+            "gpu_single": {
+              "cost": 0.11122383286179442,
+              "lost_optimal": 4,
+              "recovery": false,
+              "regret": 0.19610341744616877
+            },
+            "numpy": {
+              "cost": 0.11122383373458238,
+              "lost_optimal": 4,
+              "recovery": false,
+              "regret": 0.19610341744616877
+            }
+          },
+          "original_passed": false,
+          "recovery": false
+        },
+        {
+          "mask": 12,
+          "metrics": {
+            "cpu": {
+              "cost": 0.11122745558922185,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.1945538099070644
+            },
+            "cpu_single": {
+              "cost": 0.11122745466649568,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.1945538099070644
+            },
+            "gpu": {
+              "cost": 0.11122745468392943,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.1945538099070644
+            },
+            "gpu_single": {
+              "cost": 0.11122745470272588,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.1945538099070644
+            },
+            "numpy": {
+              "cost": 0.11122745513316659,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.1945538099070644
+            }
+          },
+          "original_passed": false,
+          "recovery": false
+        },
+        {
+          "mask": 13,
+          "metrics": {
+            "cpu": {
+              "cost": 0.1110527157076247,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.1935413692196143
+            },
+            "cpu_single": {
+              "cost": 0.11105271521055873,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.1935413692196143
+            },
+            "gpu": {
+              "cost": 0.11105271483153298,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.1935413692196143
+            },
+            "gpu_single": {
+              "cost": 0.11105271468134947,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.1935413692196143
+            },
+            "numpy": {
+              "cost": 0.11105271491730245,
+              "lost_optimal": 3,
+              "recovery": false,
+              "regret": 0.1935413692196143
+            }
+          },
+          "original_passed": false,
+          "recovery": false
+        },
+        {
+          "mask": 14,
+          "metrics": {
+            "cpu": {
+              "cost": 0.1112103151862612,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.1945538099070644
+            },
+            "cpu_single": {
+              "cost": 0.11121031490382349,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.1945538099070644
+            },
+            "gpu": {
+              "cost": 0.11121031394426188,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.1945538099070644
+            },
+            "gpu_single": {
+              "cost": 0.1112103143199639,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.1945538099070644
+            },
+            "numpy": {
+              "cost": 0.11121031467722696,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.1945538099070644
+            }
+          },
+          "original_passed": false,
+          "recovery": false
+        },
+        {
+          "mask": 15,
+          "metrics": {
+            "cpu": {
+              "cost": 0.11103458635551888,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.19381480107282795
+            },
+            "cpu_single": {
+              "cost": 0.1110345854329696,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.19381480107282795
+            },
+            "gpu": {
+              "cost": 0.11103458512921681,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.19381480107282795
+            },
+            "gpu_single": {
+              "cost": 0.11103458498305797,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.19381480107282795
+            },
+            "numpy": {
+              "cost": 0.11103458541136597,
+              "lost_optimal": 2,
+              "recovery": false,
+              "regret": 0.19381480107282795
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        }
+      ],
+      "protected_sha256": "9b2db455ca60d284d53cd70de601d56b6dc32a1c7c360c4623cb7192977472da",
+      "shapley": {
+        "twin0_hidden": {
+          "cost": -0.00016435816223145497,
+          "regret": 0.00033114493065334216
+        },
+        "twin0_output": {
+          "cost": -1.2154238538805937e-05,
+          "regret": 0.0003418365156108716
+        },
+        "twin1_hidden": {
+          "cost": -0.00017461395298413426,
+          "regret": -0.0005887511846616825
+        },
+        "twin1_output": {
+          "cost": -1.276374650932439e-05,
+          "regret": 0.0012970358039678157
+        }
+      }
+    },
+    {
+      "case": "B_43",
+      "control_sha256": "f8729e2ce1acab88e32a76abf667c88d6a062c73c773b25b31fad5b23b59e237",
+      "interventions": [
+        {
+          "mask": 0,
+          "metrics": {
+            "cpu": {
+              "cost": 0.11517378037044838,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "cpu_single": {
+              "cost": 0.1151737791269527,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu": {
+              "cost": 0.115173779732566,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu_single": {
+              "cost": 0.1151737802701981,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "numpy": {
+              "cost": 0.11517378007809563,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 1,
+          "metrics": {
+            "cpu": {
+              "cost": 0.11517378037044838,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "cpu_single": {
+              "cost": 0.1151737791269527,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu": {
+              "cost": 0.115173779732566,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu_single": {
+              "cost": 0.1151737802701981,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "numpy": {
+              "cost": 0.11517378007809563,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 2,
+          "metrics": {
+            "cpu": {
+              "cost": 0.11517378037044838,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "cpu_single": {
+              "cost": 0.1151737791269527,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu": {
+              "cost": 0.115173779732566,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu_single": {
+              "cost": 0.1151737802701981,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "numpy": {
+              "cost": 0.11517378007809563,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 3,
+          "metrics": {
+            "cpu": {
+              "cost": 0.11517378037044838,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "cpu_single": {
+              "cost": 0.1151737791269527,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu": {
+              "cost": 0.115173779732566,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu_single": {
+              "cost": 0.1151737802701981,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "numpy": {
+              "cost": 0.11517378007809563,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 4,
+          "metrics": {
+            "cpu": {
+              "cost": 0.11517378037044838,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "cpu_single": {
+              "cost": 0.1151737791269527,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu": {
+              "cost": 0.115173779732566,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu_single": {
+              "cost": 0.1151737802701981,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "numpy": {
+              "cost": 0.11517378007809563,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 5,
+          "metrics": {
+            "cpu": {
+              "cost": 0.11517378037044838,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "cpu_single": {
+              "cost": 0.1151737791269527,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu": {
+              "cost": 0.115173779732566,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu_single": {
+              "cost": 0.1151737802701981,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "numpy": {
+              "cost": 0.11517378007809563,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 6,
+          "metrics": {
+            "cpu": {
+              "cost": 0.11517378037044838,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "cpu_single": {
+              "cost": 0.1151737791269527,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu": {
+              "cost": 0.115173779732566,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu_single": {
+              "cost": 0.1151737802701981,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "numpy": {
+              "cost": 0.11517378007809563,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 7,
+          "metrics": {
+            "cpu": {
+              "cost": 0.11517378037044838,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "cpu_single": {
+              "cost": 0.1151737791269527,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu": {
+              "cost": 0.115173779732566,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu_single": {
+              "cost": 0.1151737802701981,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "numpy": {
+              "cost": 0.11517378007809563,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 8,
+          "metrics": {
+            "cpu": {
+              "cost": 0.11517378037044838,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "cpu_single": {
+              "cost": 0.1151737791269527,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu": {
+              "cost": 0.115173779732566,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu_single": {
+              "cost": 0.1151737802701981,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "numpy": {
+              "cost": 0.11517378007809563,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 9,
+          "metrics": {
+            "cpu": {
+              "cost": 0.11517378037044838,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "cpu_single": {
+              "cost": 0.1151737791269527,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu": {
+              "cost": 0.115173779732566,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu_single": {
+              "cost": 0.1151737802701981,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "numpy": {
+              "cost": 0.11517378007809563,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 10,
+          "metrics": {
+            "cpu": {
+              "cost": 0.11517378037044838,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "cpu_single": {
+              "cost": 0.1151737791269527,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu": {
+              "cost": 0.115173779732566,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu_single": {
+              "cost": 0.1151737802701981,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "numpy": {
+              "cost": 0.11517378007809563,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 11,
+          "metrics": {
+            "cpu": {
+              "cost": 0.11517378037044838,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "cpu_single": {
+              "cost": 0.1151737791269527,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu": {
+              "cost": 0.115173779732566,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu_single": {
+              "cost": 0.1151737802701981,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "numpy": {
+              "cost": 0.11517378007809563,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 12,
+          "metrics": {
+            "cpu": {
+              "cost": 0.11517378037044838,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "cpu_single": {
+              "cost": 0.1151737791269527,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu": {
+              "cost": 0.115173779732566,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu_single": {
+              "cost": 0.1151737802701981,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "numpy": {
+              "cost": 0.11517378007809563,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 13,
+          "metrics": {
+            "cpu": {
+              "cost": 0.11517378037044838,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "cpu_single": {
+              "cost": 0.1151737791269527,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu": {
+              "cost": 0.115173779732566,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu_single": {
+              "cost": 0.1151737802701981,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "numpy": {
+              "cost": 0.11517378007809563,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 14,
+          "metrics": {
+            "cpu": {
+              "cost": 0.11517378037044838,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "cpu_single": {
+              "cost": 0.1151737791269527,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu": {
+              "cost": 0.115173779732566,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu_single": {
+              "cost": 0.1151737802701981,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "numpy": {
+              "cost": 0.11517378007809563,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        },
+        {
+          "mask": 15,
+          "metrics": {
+            "cpu": {
+              "cost": 0.11517378037044838,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "cpu_single": {
+              "cost": 0.1151737791269527,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu": {
+              "cost": 0.115173779732566,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "gpu_single": {
+              "cost": 0.1151737802701981,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            },
+            "numpy": {
+              "cost": 0.11517378007809563,
+              "lost_optimal": 0,
+              "recovery": false,
+              "regret": 0.22973859490761003
+            }
+          },
+          "original_passed": true,
+          "recovery": false
+        }
+      ],
+      "protected_sha256": "383d8c8547441d7df985066664e55b002f369f21313ba38f2830e1cad5fecd12",
+      "shapley": {
+        "twin0_hidden": {
+          "cost": 0.0,
+          "regret": 0.0
+        },
+        "twin0_output": {
+          "cost": 0.0,
+          "regret": 0.0
+        },
+        "twin1_hidden": {
+          "cost": 0.0,
+          "regret": 0.0
+        },
+        "twin1_output": {
+          "cost": 0.0,
+          "regret": 0.0
+        }
+      }
+    }
+  ],
+  "identity": "3efba74f2d83248cd889f8886cd4e66380fa463b800a2e1424c03c20fc325a25",
+  "interventions": 64,
+  "model_promoted": false,
+  "recoveries": 0
+}

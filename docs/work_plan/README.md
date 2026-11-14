@@ -16,9 +16,15 @@ interventions and cross-host verification:3 of9 harmful FIT changes lower their
 own surrogate loss;4 have opposing other-example gradients at the source.
 [340](340_FIRST_HARMFUL_CROSSING_REPLAY.md) reproduced1024 transactions,8
 endpoints and10 cold witnesses exactly:6 harmful actions arise in raw AdamW,
-4 only after original-anchor protection. Next is a bounded fixed-proposal
-test adding protection for target-optimal expanded FIT decisions, without
-freezing wrong predictions. No new floating pass on the unchanged actor.
+4 only after original-anchor protection. [341](341_EXPANDED_FIT_OPTIMAL_PROTECTION.md)
+repaired all10 fixed witnesses, independently checked. [342](342_OPTIMAL_PROTECTION_SHORT_CONTINUATION.md)
+completed four matched64 continuations:243/256 updates admitted,zero harmful
+endpoint switches versus4 in controls; one paired FIT win,one loss,two ties.
+Mean regret remains0.114% worse than control; no training-recipe promotion.
+[343](343_PROTECTION_COMPONENT_TRADEOFF.md) completed64 saved-block exchanges
+twice exactly: none restores missed gains while preserving protections.
+Next bounded task is decision-aware direction construction on fixed FIT states;
+no additional user decision is required. No unchanged floating pass or long fit.
 Per-step single-observation guards now accompany batched guards; checkpoint-only
 detection was insufficient. See [method state](generalization/PROJECT_METHOD_STATE.json)
 and [findings](generalization/FINDINGS_AND_PROGRESS.md) for the exact resume point.

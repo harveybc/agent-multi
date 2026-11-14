@@ -1,0 +1,23 @@
+{
+  "acceptance": "original_guards_and_optimal_sets_and_lower_cost_and_nonincreasing_regret_all_views",
+  "code": {
+    "app/optimal_fit_protection.py": "5317e44ee2c05abccaf03b7a9d3dd2e79658fafb50c4cc0e8c04d50742ba237d",
+    "app/primal_direction_projection.py": "d4833e27bbba81d2e2931a19b5d25ce9feae115c54cc4ec56a72d7384b276765",
+    "tools/probe_optimal_fit_protection.py": "42c410830a89aa941a87bceca287ba4fa4cb2f3d67f5c8b0d452568d16b56f88"
+  },
+  "eligible": "all_five_geometries_target_optimal_not_all_tied",
+  "gate": "at_least8of10_useful_and_each_case_represented",
+  "identity": "e61891e71590f0823a830b53bc708410d7906f561c365eeab0311552959de200",
+  "new_threshold": 0,
+  "norm_cap": 4,
+  "original_margin_factor": 2,
+  "parents": {
+    "coverage": "1a6a64dfd71e2ada45f3c3e069521580108ce7db5a804692733d3be39885ebb8",
+    "crossings": "880655269f69277c4dc3d69e47520a00917abcab142d8c25152bc8259bdadae1",
+    "probe": "32a49fbb371a3637e669df9095026be9fab5e711b5942916f2ae330f53058621"
+  },
+  "repairs": 3,
+  "scales": 8,
+  "schema": "optimal_fit_protection.v1",
+  "source_actor_sha256": "69b5254489d224d4b20ac358956e4dd3b9a67a2f214a9aff98045c5def25a536"
+}

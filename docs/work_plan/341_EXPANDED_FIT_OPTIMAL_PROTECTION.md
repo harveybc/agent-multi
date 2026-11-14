@@ -2,6 +2,10 @@
 
 Status: COMPLETE_INDEPENDENTLY_VERIFIED.56 focused tests and scoped Ruff pass.
 
+Published evidence: [verification](generalization/optimal_protection_20261114/VERIFICATION.json),
+[ten-case table](generalization/optimal_protection_20261114/SUMMARY.csv).
+The permitted matched continuation is complete in [342](342_OPTIMAL_PROTECTION_SHORT_CONTINUATION.md).
+
 ## Measured Result
 
 Runtime `a68c0ac4`, verifier `3258d1c5`;

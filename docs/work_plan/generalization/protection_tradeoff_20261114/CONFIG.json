@@ -1,0 +1,38 @@
+{
+  "actor_updates": 0,
+  "blocks": [
+    "twin0_hidden",
+    "twin0_output",
+    "twin1_hidden",
+    "twin1_output"
+  ],
+  "code_sha256": "0d84ce17e205be5880054b2d83b5932d0514ae79da18720cf385656a442e316d",
+  "identity": "3efba74f2d83248cd889f8886cd4e66380fa463b800a2e1424c03c20fc325a25",
+  "masks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "optimizer_steps": 0,
+  "parents": {
+    "control": "43b9e5c253c63d58a68e378b099364c04ae3bedf96b18038f1e620acc62fe9da",
+    "coverage": "1a6a64dfd71e2ada45f3c3e069521580108ce7db5a804692733d3be39885ebb8",
+    "probe": "32a49fbb371a3637e669df9095026be9fab5e711b5942916f2ae330f53058621",
+    "run": "a4b51f938a66baa7d6868504a36c1d4163e3881fce73b12ee83bc0e2d67c1382",
+    "verified": "a4b51f938a66baa7d6868504a36c1d4163e3881fce73b12ee83bc0e2d67c1382"
+  },
+  "schema": "protection_component_tradeoff.v1"
+}

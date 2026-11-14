@@ -1,15 +1,45 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "OPTIMAL_PROTECTION_SHORT_CONTINUATION_READY",
+  "current_stage": "OPTIMAL_PROTECTION_TRADEOFF_VERIFIED_DIRECTION_CONTRAST_NEXT",
+  "protection_component_tradeoff_343": {
+    "document": "../343_PROTECTION_COMPONENT_TRADEOFF.md",
+    "status": "COMPLETE_REPEATED_BYTE_EXACT",
+    "identity": "3efba74f2d83248cd889f8886cd4e66380fa463b800a2e1424c03c20fc325a25",
+    "runtime_commit": "b959e90d",
+    "interventions": 64,
+    "feasible_recoveries": 0,
+    "actor_updates": 0,
+    "model_promoted": false,
+    "jobs_running": 0,
+    "next_action": "Bounded FIT-only decision-aware direction contrast at saved states, preserving all original/optimal-set finite guards. Independent derivatives and actual action/cost evidence before any long fit. No held-label selection, layer transplant, actor changes or unchanged floating repeat; no user decision required."
+  },
   "optimal_protection_continuation_342": {
     "document": "../342_OPTIMAL_PROTECTION_SHORT_CONTINUATION.md",
-    "status": "IMPLEMENTED_TESTED_BEFORE_EXECUTION",
+    "status": "COMPLETE_INDEPENDENTLY_VERIFIED_SAFETY_LEARNING_TRADEOFF",
+    "identity": "a4b51f938a66baa7d6868504a36c1d4163e3881fce73b12ee83bc0e2d67c1382",
+    "runtime_commit": "d0b7fcdd",
+    "verifier_commit": "4218dff5",
+    "seconds": 208.44319425802678,
+    "accepted": 243,
+    "attempted": 256,
+    "cold_exact": 16,
+    "resumed_exact": 8,
+    "forward_max_error": 7.993605777301127e-15,
+    "harmful_endpoint_changes_protected": 0,
+    "harmful_endpoint_changes_control": 4,
+    "paired_fit_wins": 1,
+    "paired_fit_losses": 1,
+    "paired_fit_ties": 2,
+    "mean_fit_regret_protected": 0.1793166739180697,
+    "mean_fit_regret_control": 0.17911215198784802,
+    "tests_passed": 66,
+    "jobs_running": 0,
     "cases": 4,
     "attempts_per_case": 64,
     "control": "Authenticated338 complete-arm64 checkpoints, no control retraining",
     "actor_updates": 0,
     "model_promoted": false,
-    "next_action": "Run gated matched short continuations, cold/restart verification and report full-FIT plus descriptive internal TRAIN transfer. No long fit or automatic actor promotion."
+    "next_action": "Completed;343 also completed64 block exchanges, none recovers gains safely. Next direction contrast documented in343; no automatic promotion."
   },
   "expanded_optimal_protection_341": {
     "document": "../341_EXPANDED_FIT_OPTIMAL_PROTECTION.md",
@@ -29,7 +59,7 @@
     "new_optimizer_steps": 0,
     "model_promoted": false,
     "intermediate_user_approval_required": false,
-    "next_action": "Execute ten paired immutable crossing proposals with original guards plus expanded-FIT optimal sets; require positive motion, lower full-FIT cost and nonincreasing regret in five geometries; verify and publish before any continuation."
+    "next_action": "Completed;342 matched continuation and343 saved-component diagnostic also complete. See current_stage."
   },
   "first_crossing_replay_340": {
     "document": "../340_FIRST_HARMFUL_CROSSING_REPLAY.md",
@@ -3062,6 +3092,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
+    "341-343 COMPLETE: ten repaired fixed proposals independently verified; four64-step continuations243/256 accepted, zero harmful endpoint switches but paired FIT tradeoff.64 component exchanges repeat exactly and yield no feasible recovery. Next bounded decision-aware direction at saved FIT states with original/optimal-set protections, finite actual-action gates and independent derivatives; no actor changes, held-label fitting, long fit or unchanged floating pass. No user decision required",
     "340 COMPLETE:1024 transactions and8 endpoints exact;10 cold witnesses exact. Six harmful actions arise in raw AdamW, four only after original-anchor protection. Next bounded expanded-FIT target-optimal protection on those fixed proposals before new refinement; no user decision required",
     "339 COMPLETE: 384 finite layer interventions; common cross-host discrete evidence exact. 3/9 harmful FIT changes improve own loss, 4/9 show other-example gradient interference at source, 7/9 have opposing saved AdamW directions. Next first-crossing exact replay to separate actual batch, optimizer, projection and finite nonlinear effects; preserve actor299 and all inputs",
     "338 complete and independently verified: complete protection1024/1024 accepted versus474/1024, matched FIT wins3/4 and ties1/4; mean regret improves2.9072%, internal transfer mixed. Adopt complete constraints and per-transaction single/batch guards. Next saved-weight FIT loss/decision-crossing attribution; no user decision required",
