@@ -1,13 +1,26 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "NATIVE_DECISION_ERROR_PREPARED",
+  "current_stage": "NATIVE_DECISION_ERROR_COMPLETE_COMPONENT_CONTRAST_NEXT",
   "native_decision_error_325": {
     "document": "../325_NATIVE_DECISION_ERROR_ATTRIBUTION.md",
-    "status": "PREPARED_TESTS_PASS",
+    "status": "COMPLETE_SOURCE_UNCHANGED",
+    "runtime_commit": "1cfde346",
+    "identity": "c9f949404158210905ed28c925d2571871b61786878ee0670c4b7af9cc1ebaee",
+    "seconds": 2.300015156972222,
+    "exact_endpoint_replays": 12,
+    "verified_row_decisions": 3804,
+    "verified_scope_summaries": 32,
+    "primary_helpful_switches": 54,
+    "primary_harmful_switches": 61,
+    "primary_neutral_switches": 16,
+    "primary_harmful_eligible_flat": 47,
+    "primary_harmful_near_numeric_ties": 0,
+    "regret_reconciliation_max_error": 6.938893903907228e-17,
+    "layer_identity_max_error": 8.738099526173215e-07,
     "focused_tests_passed": 17,
     "optimizer_steps": 0,
     "model_promoted": false,
-    "next_action": "Replay four real controls and eight endpoints, reconcile switches by state and FIT-defined gaps, inspect twin aggregation and layer decomposition. No fitting or audit-derived policy changes."
+    "next_action": "Paired saved-component recombination: control hidden/new output and new hidden/control output versus existing full heads. Diagnose original and expanded FIT preservation before matched warm-start output-only/full-head training. Stop/audit descriptive, no promotion; neither successor launched. Preserve299,71 inputs and paused STL."
   },
   "native_fit_coverage_324": {
     "document": "../324_NATIVE_FIT_COVERAGE.md",
@@ -2688,7 +2701,8 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
-    "324 complete: real4x coverage reduces value RMSE but worsens mean action regret; only1/4 primary joint passes. Next frozen-checkpoint decision-error attribution before another loss/refinement contrast. No model promoted",
+    "325 complete:54 helpful/61 harmful primary switches;47 harmful eligible-flat, none numeric near-ties. Next bounded saved-component recombination on FIT before training. Hidden drift means critic-head hidden layer, not frozen TCNs; no model promoted",
+    "324 complete: coverage improves value RMSE but not decision regret consistently;325 attribution complete, do not repeat unchanged analysis or fitting",
     "323 complete: known-teacher coverage gains retained as diagnostic evidence, not evidence of trading gains;324 already tested native labels, do not relaunch unchanged",
     "322 complete: independent/restart head training exact; late recovery not consistently better on audit. Maintain full-state resume and measure actual optimizer exposure. Full SAC pipeline not certified by this bounded diagnostic",
     "320 complete: use native twin heads for next calibration; preserve source actor and encoder, no new state-feedback inputs or action-interface changes",

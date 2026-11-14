@@ -482,3 +482,26 @@ stratified by state and action legality. Further model/loss design uses FIT,
 not the inspected audit rows. This does not invalidate the known-function
 coverage finding or prove absence of predictive information. Preserve299,
 71 inputs,49 return candidates and paused STL. Full tables and curves in324.
+
+## F-CRITIC-VALUE-FIT-AND-DECISION-PRESERVATION-DIVERGE
+
+2026-11-13,325:12 exact checkpoint metric replays and3804 independently
+reconciled row decisions. Equal-update coverage changes131 audit winners:
+54 helpful,61 harmful,16 equivalent; counts repeat anchors across seeds and
+are not independent trades.47 harmful changes affect eligible-flat entries,
+not early closing. No harmful change has a predicted margin below1e-6.
+24 harmful changes nevertheless reduce row-level value MSE.
+
+Expanded-FIT regret improves0.232719->0.123486 while original-FIT regret
+worsens0.008043->0.099032; original-FIT degradation occurs in all four pairs.
+Longer fitting partially recovers original-FIT decisions, not audit quality.
+83.53% of the audit MSE reduction is common-value correction; even improved
+gap MSE does not ensure correct action ordering. Twin-mean aggregation does
+not universally repair it. None of this proves insufficient market signal.
+
+The declared algebraic output decomposition is dominated by changes in the
+8-unit hidden layer INSIDE each critic head; the temporal encoders are frozen.
+This is path-dependent accounting, not proof that the layer should be frozen.
+Next use saved component recombinations to test that explanation on FIT before
+any matched warm-start output-only/full-head contrast. No promotion, no new
+training in325, source299 and71 inputs intact.17 tests pass; full report325.

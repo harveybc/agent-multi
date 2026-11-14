@@ -1,0 +1,10 @@
+{
+  "identity": "c9f949404158210905ed28c925d2571871b61786878ee0670c4b7af9cc1ebaee",
+  "files_verified": 5,
+  "row_decisions_verified": 3804,
+  "scope_summaries_verified": 32,
+  "native_endpoint_replays": 12,
+  "max_reconciliation_error": 6.938893903907228e-17,
+  "fit_only_bins_verified": true,
+  "output_arrays_verified": true
+}

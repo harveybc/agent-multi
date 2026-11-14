@@ -1,0 +1,13 @@
+{
+  "code": {
+    "app/native_decision_error.py": "0ef584c21b6b01a16d3ff67eeee4347901d48ae605ccf9e339e1e4ead34c078b",
+    "tools/analyze_native_decision_error.py": "43502ad35721fff0df460af3b42bd020f63ac8a0353b8e063455098953e12fe0"
+  },
+  "coverage": "1a6a64dfd71e2ada45f3c3e069521580108ce7db5a804692733d3be39885ebb8",
+  "identity": "c9f949404158210905ed28c925d2571871b61786878ee0670c4b7af9cc1ebaee",
+  "optimizer_steps": 0,
+  "previous": "e1d5e7197a8969aa3a65ffa5b2a0af278f74df70d538cce14acba691ddab9c6e",
+  "schema": "native_decision_error.v1",
+  "source_sha256": "69b5254489d224d4b20ac358956e4dd3b9a67a2f214a9aff98045c5def25a536",
+  "threshold_source": "original_FIT_only"
+}
