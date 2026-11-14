@@ -1,6 +1,25 @@
 # 341: Expanded FIT Optimal-Decision Protection
 
-Status: IMPLEMENTED_TESTED_BEFORE_EXECUTION.56 focused tests and scoped Ruff pass.
+Status: COMPLETE_INDEPENDENTLY_VERIFIED.56 focused tests and scoped Ruff pass.
+
+## Measured Result
+
+Runtime `a68c0ac4`, verifier `3258d1c5`;
+identity `e61891e71590f0823a830b53bc708410d7906f561c365eeab0311552959de200`.
+Ten paired proposals completed in11.93s. All ten original controls reproduce
+their saved states/receipts exactly and violate at least one newly protected
+decision. All ten new candidates have positive motion, lower cost and unchanged
+FIT actions/regret in all five geometries. Nine use scale0.5, one scale1.0.
+111-175 target-optimal rows are protected per witness, versus49/98 original
+anchors. No thresholds were relaxed after seeing results.
+
+Independent verification checked5616 added Jacobian constraints against
+Torch autograd, maximum difference1.78e-14; all ten endpoints, optimal sets,
+original guards and proposed optimizer/RNG lineage pass. First repair repeats
+exactly and all ten endpoints cold-reload exactly. Gate passes10/10 with all
+four cases represented. This proves safe nonzero local movement, NOT improved
+greedy decisions or account trading. [342](342_OPTIMAL_PROTECTION_SHORT_CONTINUATION.md)
+tests whether accumulated updates improve decisions under the same contract.
 
 Owner authorizes continuation after340. Use all ten sealed first-crossing
 proposals, without changing their source weights, batches, AdamW proposal or
