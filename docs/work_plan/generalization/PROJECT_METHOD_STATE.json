@@ -1,6 +1,16 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "HYBRID349_VERIFIED_CRITIC_DIAGNOSTICS_CLOSED_ONE_ACTOR_UTILITY_TRIAL_NEXT",
+  "current_stage": "BOUNDED_ACTOR_UTILITY350_IMPLEMENTATION_AND_LAUNCH",
+  "bounded_actor_utility_350": {
+    "document": "../350_BOUNDED_ACTOR_UTILITY.md",
+    "status": "PROTOCOL_FIXED_IMPLEMENTED_BEFORE_TRAINING",
+    "seeds": [19,43],
+    "fold_rule": "largest expanded FIT coverage, no score selection",
+    "accepted_endpoint": 8,
+    "max_attempts_per_seed": 64,
+    "no_automatic_extension": true,
+    "next_action": "Run tests, authenticate native critic/actor/support parity, execute two sequential seeds and native full-account cold checks. Terminal qualified inference export or KEEP299_CLOSE_REFINEMENT, never another critic search. No user decision required."
+  },
   "finite_exit_plan_349": {
     "document": "../349_BOUNDED_HYBRID_AND_EXIT_PLAN.md",
     "status": "COMPLETE_INDEPENDENTLY_VERIFIED_CRITIC_LINE_CLOSED",
@@ -3249,6 +3259,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
+    "CURRENT350: finite actor-head utility trial, eight accepted updates or64 attempts per seed19/43. Use largest TRAIN FIT fold and fixed349 procedure. Complete native accounts and cold verification, then export qualified changed actor or retain299 and close refinement; no automatic critic extension.",
     "CURRENT ORDER supersedes historical next-step text below: complete349 once, apply its fixed choice rule, then ONE bounded actor-utility trial and close critic diagnostics. Export and one phase2 round only if actual trading qualifies; otherwise preserve299 and do not repeat unchanged floating. See finite_exit_plan_349.",
     "344-345 COMPLETE: decision-targeted corrections verified; bounded stateful continuation has3 FIT wins and1 tie,5 improved decisions and0 worsened, mean regret1.57737% lower. Held decisions unchanged. Next matched64 retention from saved16 states with TOTAL four searches already exhausted; no new search, thresholds, actor updates or held-label fitting. Separate pinned continuation required; no user decision needed",
     "341-343 COMPLETE: ten repaired fixed proposals independently verified; four64-step continuations243/256 accepted, zero harmful endpoint switches but paired FIT tradeoff.64 component exchanges repeat exactly and yield no feasible recovery. Next bounded decision-aware direction at saved FIT states with original/optimal-set protections, finite actual-action gates and independent derivatives; no actor changes, held-label fitting, long fit or unchanged floating pass. No user decision required",
