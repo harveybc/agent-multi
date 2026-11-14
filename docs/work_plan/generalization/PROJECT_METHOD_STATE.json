@@ -1,6 +1,14 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "NATIVE_FIT_COVERAGE_COMPLETE_ORDERING_DIAGNOSIS_NEXT",
+  "current_stage": "NATIVE_DECISION_ERROR_PREPARED",
+  "native_decision_error_325": {
+    "document": "../325_NATIVE_DECISION_ERROR_ATTRIBUTION.md",
+    "status": "PREPARED_TESTS_PASS",
+    "focused_tests_passed": 17,
+    "optimizer_steps": 0,
+    "model_promoted": false,
+    "next_action": "Replay four real controls and eight endpoints, reconcile switches by state and FIT-defined gaps, inspect twin aggregation and layer decomposition. No fitting or audit-derived policy changes."
+  },
   "native_fit_coverage_324": {
     "document": "../324_NATIVE_FIT_COVERAGE.md",
     "status": "COMPLETE_NO_CRITIC_OR_ACTOR_PROMOTED",
