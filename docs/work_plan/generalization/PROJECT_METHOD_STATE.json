@@ -1,6 +1,15 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "NATIVE_DECISION_ERROR_COMPLETE_COMPONENT_CONTRAST_NEXT",
+  "current_stage": "NATIVE_HEAD_RECOMBINATION_PREPARED",
+  "native_head_recombination_326": {
+    "document": "../326_NATIVE_HEAD_COMPONENT_RECOMBINATION.md",
+    "status": "PREPARED_TESTS_PASS",
+    "focused_tests_passed": 17,
+    "planned_hybrids": 16,
+    "optimizer_steps": 0,
+    "model_promoted": false,
+    "next_action": "Execute same-seed paired hidden/output recombination, authenticate donor tensors and self-replays, evaluate the frozen original/expanded FIT preservation rule. Stop/audit descriptive; preserve299 and71 inputs."
+  },
   "native_decision_error_325": {
     "document": "../325_NATIVE_DECISION_ERROR_ATTRIBUTION.md",
     "status": "COMPLETE_SOURCE_UNCHANGED",
