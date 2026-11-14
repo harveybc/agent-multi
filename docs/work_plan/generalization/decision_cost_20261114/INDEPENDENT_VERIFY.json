@@ -1,0 +1,12 @@
+{
+  "identity": "926ec6e1223981000f734ae407d67a55338de3b10c2fb562d0ac7feffb646301",
+  "verified_seals": 13,
+  "serialized_endpoints": 24,
+  "paired_supports_and_initial_metrics_exact": true,
+  "temperature_recomputed": true,
+  "optimizer_attempts": 3072,
+  "accepted_updates": 3030,
+  "independent_numpy_metric_max_error": 1.6653345369377348e-16,
+  "local_geometry_guard_failures": [],
+  "automatic_extension_gates_reproduced": true
+}

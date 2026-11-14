@@ -648,3 +648,19 @@ to corrupted input data, dropout or an actor update. Source299 unchanged.
 
 Evidence: [331](../331_AUTOMATED_ROBUST_REFINEMENT.md),
 [332](../332_REFINEMENT_DECISION_ATTRIBUTION.md).
+
+## F-DECISION-COST-HELPS-SOME-CASES-NOT-A-CONSISTENT-REPAIR
+
+2026-11-14,333:12 paired256-update fits,187.48s,3030/3072 updates accepted.
+MSE controls reproduce331 exactly in4/4. Cost-only beats MSE in2/4;
+hybrid beats MSE in3/4, but B43 worsens under both and hybrid B19 also
+worsens against its start. Both automatic extension gates fail. No actor
+promotion or new trading result; source299 and71 inputs unchanged.
+
+All24 saved endpoints pass independent protected-action guards and have0
+stable-added action disagreements across five CPU/GPU/NumPy geometries.
+24 cold replays and36 resumed transitions are exact. The measured difference
+is not the old row66 numerical stabilization counted as learning. All12 fits
+inherit identical MSE AdamW state;334 tests fresh versus inherited moments
+without changing weights, inputs or batches. This is a hypothesis to test,
+not evidence that AdamW alone caused the remaining decision regression.

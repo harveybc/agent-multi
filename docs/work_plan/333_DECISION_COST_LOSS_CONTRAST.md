@@ -1,6 +1,6 @@
 # 333: Decision-Cost Loss Contrast
 
-Status: IMPLEMENTED_VERIFIED_BEFORE_RUN.
+Status: COMPLETE_VERIFIED_NO_OBJECTIVE_PASSES_EXTENSION.
 
 ## Scope And Frozen Design
 
@@ -77,3 +77,47 @@ solve discrete decision quality until the measured contrast says so.
 Prelaunch:50 focused CPU tests pass in3.75s, including exact MSE AdamW parity,
 new loss finite differences, stable scoring and resume/rollback. Scoped
 repository correctness-rule Ruff checks and CLI help pass.
+
+## Completed Evidence
+
+Runtime05bd4a0c, identity
+`926ec6e1223981000f734ae407d67a55338de3b10c2fb562d0ac7feffb646301`.
+All12 fits finished256 attempts in187.48s including automatic replay/plots.
+3030/3072 updates accepted; supervisor exit0 and0 restarts. Both extension
+gates false, so no1024 fit ran. This is the declared terminal result, not
+a worker waiting for approval. Source299 actor and71 inputs are unchanged.
+
+Stable-added FIT regret (lower is better; NOT trading return):
+
+| Fold/seed | Start | MSE | Cost | Hybrid |
+| --- | ---: | ---: | ---: | ---: |
+| A19 | .300857 | .298633 | .285340 | .292043 |
+| A43 | .297515 | .287687 | .293475 | .280563 |
+| B19 | .299639 | .302827 | .298168 | .299833 |
+| B43 | .326445 | .327998 | .328914 | .330727 |
+
+Cost improves over its start in3/4, but beats MSE in2/4 and worsens B43.
+Hybrid beats MSE in3/4, but improves over its start in2/4 and worsens both B
+cases. Hence neither meets the frozen consistency rule. No retrospective
+choice of a better intermediate checkpoint or relaxation of the gate.
+
+Independent verification authenticates13 seals and24 serialized checkpoints,
+paired supports/start metrics, TRAIN-only temperatures and optimizer counts.
+NumPy metric discrepancy<=1.666e-16,0 local guard failures. Native cold replay
+is exact at24 checkpoints and36 resumed transitions; all4 MSE controls
+reproduce331 metrics exactly. An additional five-geometry audit verifies all12
+starting scoring masks and finds0 stable-added action disagreements across24
+endpoints (GPU/CPU expanded and single-row calls, NumPy). Numerical repairs
+are therefore separated from the new decision changes in this table.
+
+Artifacts: [table](generalization/decision_cost_20261114/RESULTS.md),
+[results](generalization/decision_cost_20261114/RESULT.json),
+[replay](generalization/decision_cost_20261114/REPLAY.json),
+[independent verification](generalization/decision_cost_20261114/INDEPENDENT_VERIFY.json),
+[geometry audit](generalization/decision_cost_20261114/GEOMETRY_AUDIT.json),
+[curves](generalization/decision_cost_20261114/CURVES.png).
+
+Next334 isolates inherited MSE optimizer moments from the loss change: keep
+the exact weights, inputs, schedule and guards, reset only AdamW, and compare
+against each authenticated333 objective. This is an unproven hypothesis;
+do not diagnose optimizer memory as the cause from333 alone.

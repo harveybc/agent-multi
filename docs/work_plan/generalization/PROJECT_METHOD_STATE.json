@@ -1,16 +1,25 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "DECISION_COST_CONTRAST_IMPLEMENTED",
+  "current_stage": "DECISION_COST_COMPLETE_OPTIMIZER_RESET_NEXT",
   "decision_cost_contrast_333": {
     "document": "../333_DECISION_COST_LOSS_CONTRAST.md",
-    "status": "IMPLEMENTED_VERIFIED_BEFORE_RUN",
+    "status": "COMPLETE_VERIFIED_NO_OBJECTIVE_PASSES_EXTENSION",
+    "runtime_commit": "05bd4a0c",
+    "identity": "926ec6e1223981000f734ae407d67a55338de3b10c2fb562d0ac7feffb646301",
+    "seconds": 187.48,
+    "accepted_updates": 3030,
+    "attempted_updates": 3072,
+    "extended": [],
+    "cold_endpoints_exact": 24,
+    "resumed_transitions_exact": 36,
+    "stable_added_geometry_disagreements": 0,
     "tests_passed": 50,
     "short_fits": 12,
     "objectives": ["mse", "cost", "hybrid"],
     "budgets": [256, 1024],
     "intermediate_user_approval_required": false,
     "model_promoted": false,
-    "next_action": "Execute paired loss contrast with geometry-aware original protection, stable-added scoring, automatic qualified extension, plots and replay. No source299 actor or71-input changes."
+    "next_action": "334: isolate inherited MSE optimizer moments with fresh AdamW from identical weights and matched333 controls, keeping all data/schedules/guards. No user decision required; no source299 actor or71-input changes."
   },
   "refinement_decision_attribution_332": {
     "document": "../332_REFINEMENT_DECISION_ATTRIBUTION.md",
