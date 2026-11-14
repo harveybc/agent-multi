@@ -155,3 +155,11 @@ whether the improvement persists. No successor or long training is running.
 Full per-row action vectors, optimizer states and proposal/endpoint weights
 remain in the sealed run store; the public summary records the full-result
 SHA256 and explicitly identifies the omitted vectors.
+
+## Later Attribution (332)
+
+The two B43 regret improvements were replayed row by row in332: each changes
+only original row66, whose starting action differs across batch geometries due
+to a near tie. They are numerical stabilization, not learned decisions on added
+rows. The reported metric deltas remain exact; the narrower interpretation is
+documented in [332](332_REFINEMENT_DECISION_ATTRIBUTION.md).

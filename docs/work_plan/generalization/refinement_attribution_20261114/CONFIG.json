@@ -1,0 +1,16 @@
+{
+  "code": {
+    "app/fit_gradient_conflict.py": "e50694e5d8739eebd6fdd76cb5a177bb9a0bd4af06a4f06016f7b7e3947effd4",
+    "tools/analyze_robust_refinement_decisions.py": "bf703989ec01efb17222822485d3aa68040e60ba82f57995f5e6fd1bd3006d6e"
+  },
+  "identity": "122f32e0a1fdaeb30e384ddc43ec37db34e80140e5c00b6112bbc141471ae39b",
+  "optimizer_steps": 0,
+  "parents": [
+    "c29171b88ffb4c63b5809ecb54e02cd574b2af821c39d01c21489051565c242b",
+    "32a49fbb371a3637e669df9095026be9fab5e711b5942916f2ae330f53058621",
+    "1a6a64dfd71e2ada45f3c3e069521580108ce7db5a804692733d3be39885ebb8"
+  ],
+  "schema": "robust_refinement_attribution.v1",
+  "scope": "expanded_FIT_only",
+  "source_sha256": "69b5254489d224d4b20ac358956e4dd3b9a67a2f214a9aff98045c5def25a536"
+}

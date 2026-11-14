@@ -1,0 +1,11 @@
+{
+  "identity": "122f32e0a1fdaeb30e384ddc43ec37db34e80140e5c00b6112bbc141471ae39b",
+  "sealed_result_verified": true,
+  "arms": 8,
+  "independent_numpy_gradient_vectors": 72,
+  "gradient_max_absolute_error": 5.516420653606247e-16,
+  "finite_difference_witnesses": 192,
+  "row_and_role_regret_reconciliation": true,
+  "loss_decomposition_verified": true,
+  "optimizer_updates": 0
+}

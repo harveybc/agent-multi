@@ -619,3 +619,32 @@ target and bounded relinearization before a sequential training contrast.
 Evidence: [330](../330_ROBUST_DIRECTION_FEASIBILITY.md).25 tests pass;65 seals,
 64 actual proposals/optimizers and73 endpoints replayed. Independent local CPU
 and NumPy guard failures:0. Probe runtime3.355s, not a training convergence time.
+
+## F-INTERIOR-PROJECTION-REMOVES-STALL-NOT-DECISION-REGRESSION
+
+2026-11-14,331-332. Automated repair accepts64/64 independent proposals and
+starts eight paired fits without another user approval. Interior steps accept
+1021/1024 versus tangent647/1024, with robust original decisions. Only2/4
+interior endpoints improve expanded-FIT regret despite lower total AND gap MSE
+in all four. The predeclared gate refuses a longer run; attribution continues
+without asking the user. No hidden tolerance relaxation or actor promotion.
+
+85.20%-91.28% of interior MSE reduction is common-level, but gap error also
+improves. All nonzero changes are on flat states; no closing improvement is
+established. Treat discrete decision quality as a separate acceptance outcome,
+not something implied by mean regression accuracy.72 gradients independently
+verified,192 finite-difference witnesses and all native metric replays pass.
+
+## F-BATCH-GEOMETRY-NEAR-TIE-IS-NOT-NEW-DECISION-LEARNING
+
+332: exact same B43 row66 embeddings produce actions2/1/1 in guard239,
+expanded392 and single-row native GPU calls because the top scores differ by
+about6e-8. The two330 regret improvements are exclusively stabilization of this
+original row, not new added-FIT decisions. The metrics remain reproducible;
+the interpretation is explicitly narrowed. All four interior331 endpoints
+have zero original-FIT action disagreements in these three batch geometries.
+Carry numerical robustness checks into future contrasts; do not attribute this
+to corrupted input data, dropout or an actor update. Source299 unchanged.
+
+Evidence: [331](../331_AUTOMATED_ROBUST_REFINEMENT.md),
+[332](../332_REFINEMENT_DECISION_ATTRIBUTION.md).

@@ -1,0 +1,128 @@
+{
+  "probe_identity": "32a49fbb371a3637e669df9095026be9fab5e711b5942916f2ae330f53058621",
+  "chain_identity": "c29171b88ffb4c63b5809ecb54e02cd574b2af821c39d01c21489051565c242b",
+  "comparisons": [
+    {
+      "fold": "A",
+      "seed": 19,
+      "label": "start",
+      "state_sha256": "2d929c636dbc61b4acac3d16f159931c80d6e2bab0f62fa828a415b3feb9cf53",
+      "inputs_exactly_equal": true,
+      "max_score_difference": 5.960464477539062e-07,
+      "changed": []
+    },
+    {
+      "fold": "A",
+      "seed": 19,
+      "label": "interior256",
+      "state_sha256": "b4ba9c7adbfe86008e3233f7a2c2156bcd3a1c06e60d6961aac4081b8b7c113e",
+      "inputs_exactly_equal": true,
+      "max_score_difference": 5.960464477539062e-07,
+      "changed": []
+    },
+    {
+      "fold": "A",
+      "seed": 43,
+      "label": "start",
+      "state_sha256": "f396d8f6c219b4da642a1cf9d551186f8ef225007aa4bf8e3164a102531d392d",
+      "inputs_exactly_equal": true,
+      "max_score_difference": 5.364418029785156e-07,
+      "changed": []
+    },
+    {
+      "fold": "A",
+      "seed": 43,
+      "label": "interior256",
+      "state_sha256": "7fd490b86ab9bc5f1d7929c15f0e21f8422299074f77b4bbca77292aac080c2d",
+      "inputs_exactly_equal": true,
+      "max_score_difference": 5.364418029785156e-07,
+      "changed": []
+    },
+    {
+      "fold": "B",
+      "seed": 19,
+      "label": "start",
+      "state_sha256": "d5040dff9e6b525113b9a5bb9c0dbce40147055dda3f413aacdf1cb89f4ce9bd",
+      "inputs_exactly_equal": true,
+      "max_score_difference": 9.5367431640625e-07,
+      "changed": []
+    },
+    {
+      "fold": "B",
+      "seed": 19,
+      "label": "interior256",
+      "state_sha256": "a1c18084d2ded165f7040117c31dab336a6337af43f2d68e79b3358a8babb6db",
+      "inputs_exactly_equal": true,
+      "max_score_difference": 7.152557373046875e-07,
+      "changed": []
+    },
+    {
+      "fold": "B",
+      "seed": 43,
+      "label": "start",
+      "state_sha256": "dc3b0253016bb7e44c6e6525f8ec810b48049613ffe784a30ce1502ba1bdf455",
+      "inputs_exactly_equal": true,
+      "max_score_difference": 9.5367431640625e-07,
+      "changed": [
+        {
+          "row": 66,
+          "guard_q": [
+            -0.2284068465232849,
+            -0.16370084881782532,
+            -0.16370078921318054
+          ],
+          "expanded_q": [
+            -0.22840678691864014,
+            -0.16370075941085815,
+            -0.16370081901550293
+          ],
+          "single_q": [
+            -0.2284068465232849,
+            -0.16370080411434174,
+            -0.16370084881782532
+          ],
+          "actions": [
+            2,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "fold": "B",
+      "seed": 43,
+      "label": "interior256",
+      "state_sha256": "62ec5e2f756a6066cfe5503c3c8fe8333e3c56e91bf212ea3b374c4112c5bf50",
+      "inputs_exactly_equal": true,
+      "max_score_difference": 1.3113021850585938e-06,
+      "changed": []
+    }
+  ],
+  "attribution_of_two_330_regret_improvements": [
+    {
+      "offset": 2,
+      "changed": [
+        {
+          "row": 66,
+          "original_fit": true,
+          "before": 1,
+          "after": 2,
+          "regret_change": -0.18291295733220397
+        }
+      ]
+    },
+    {
+      "offset": 4,
+      "changed": [
+        {
+          "row": 66,
+          "original_fit": true,
+          "before": 1,
+          "after": 2,
+          "regret_change": -0.18291295733220397
+        }
+      ]
+    }
+  ]
+}

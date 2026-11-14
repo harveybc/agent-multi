@@ -1,11 +1,21 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "REFINEMENT_DECISION_ATTRIBUTION_IMPLEMENTED",
+  "current_stage": "AUTOMATED_REFINEMENT_AND_ATTRIBUTION_COMPLETE_NO_PROMOTION",
   "refinement_decision_attribution_332": {
     "document": "../332_REFINEMENT_DECISION_ATTRIBUTION.md",
-    "status": "IMPLEMENTED_BEFORE_EXECUTION",
+    "status": "COMPLETE_MEASURED_ATTRIBUTION_NO_PROMOTION",
+    "runtime_commit": "ce67baf0",
+    "identity": "122f32e0a1fdaeb30e384ddc43ec37db34e80140e5c00b6112bbc141471ae39b",
+    "seconds": 0.7629687370499596,
+    "endpoints": 8,
+    "independent_gradient_vectors": 72,
+    "gradient_max_error": 5.516420653606247e-16,
+    "finite_difference_witnesses": 192,
+    "completed_interior_batch_geometry_action_mismatches": 0,
+    "previous_330_regret_gains_attributed_to_numerical_stabilization": 2,
     "optimizer_steps": 0,
-    "next_action": "Execute FIT-only native replay and saved-weight attribution on all eight331 endpoints; reconcile loss decomposition, role-level harmful actions and numerical gradients. No intermediate approval required."
+    "intermediate_user_approval_required": false,
+    "next_action": "Decision-cost-aware loss contrast versus authenticated331 MSE control, with guard/expanded/single batch-geometry checks and numerical stabilization reported separately. Pure gap-MSE is not a proven fix: gap error improves even in regressing arms. No new user decision needed; current block completed and no job running. Preserve299 actor and71 features."
   },
   "automated_robust_refinement_331": {
     "document": "../331_AUTOMATED_ROBUST_REFINEMENT.md",
