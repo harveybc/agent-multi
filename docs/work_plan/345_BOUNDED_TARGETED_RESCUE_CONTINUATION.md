@@ -89,9 +89,11 @@ Next: test retention through a matched64-attempt endpoint, resuming these saved
 16-step states and their optimizer/RNG/search counters. Keep the TOTAL budget
 at four targeted searches per case (already spent), so no new target search or
 threshold tuning is allowed. Compare against saved342 ENDPOINT_64 controls;
-report FIT and descriptive internal transfer separately. This extension has
-not been launched. It requires a separately pinned, tested continuation, not
-an implicit increase of this completed16-step run. No new user choice is needed.
+report FIT and descriptive internal transfer separately. This extension is
+now completed as [346](346_TARGETED_RESCUE_RETENTION.md), with a separately
+pinned, tested continuation rather than a mutation of this completed16-step
+run. All5 gains survive; matched64 results are2 wins,1 loss,1 tie, and A43
+misses a control improvement on internal stop. See346 for the current next step.
 
 |Requirement|Evidence|
 |---|---|

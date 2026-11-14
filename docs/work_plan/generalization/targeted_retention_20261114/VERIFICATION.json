@@ -1,0 +1,202 @@
+{
+  "actor_updates": 0,
+  "checkpoints": 20,
+  "cold_exact_reported": 20,
+  "forward_max_error": 7.993605777301127e-15,
+  "identity": "5b28e01442fa513619f1a1ae18429e84ecb736334d846b45a21bdd034ab86fbe",
+  "model_promoted": false,
+  "resumed_exact_reported": 16,
+  "retention": [
+    {
+      "case": "A_19",
+      "gains_lost": 0,
+      "gains_retained": 3,
+      "improved_at16": 3,
+      "new_accepted": 41,
+      "new_searches": 0,
+      "new_steps": 48,
+      "regret_at16": 0.14817921405571388,
+      "regret_at64": 0.14532710732681461
+    },
+    {
+      "case": "A_43",
+      "gains_lost": 0,
+      "gains_retained": 1,
+      "improved_at16": 1,
+      "new_accepted": 43,
+      "new_searches": 0,
+      "new_steps": 48,
+      "regret_at16": 0.1396235377591725,
+      "regret_at64": 0.1396235377591725
+    },
+    {
+      "case": "B_19",
+      "gains_lost": 0,
+      "gains_retained": 1,
+      "improved_at16": 1,
+      "new_accepted": 35,
+      "new_searches": 0,
+      "new_steps": 48,
+      "regret_at16": 0.19257395357570636,
+      "regret_at64": 0.19257395357570636
+    },
+    {
+      "case": "B_43",
+      "gains_lost": 0,
+      "gains_retained": 0,
+      "improved_at16": 0,
+      "new_accepted": 48,
+      "new_searches": 0,
+      "new_steps": 48,
+      "regret_at16": 0.23114466099290776,
+      "regret_at64": 0.22973859490761003
+    }
+  ],
+  "rows": [
+    {
+      "accepted": null,
+      "arm": "source",
+      "audit_regret": 0.23591614054132656,
+      "case": "A_19",
+      "changed": 0,
+      "fit_cost": 0.10049973179579778,
+      "fit_regret": 0.15643528471557724,
+      "improved": 0,
+      "stop_regret": 0.337020206929439,
+      "worsened": 0
+    },
+    {
+      "accepted": null,
+      "arm": "control64",
+      "audit_regret": 0.23591614054132656,
+      "case": "A_19",
+      "changed": 2,
+      "fit_cost": 0.0999110987017625,
+      "fit_regret": 0.15358317798667795,
+      "improved": 1,
+      "stop_regret": 0.337020206929439,
+      "worsened": 0
+    },
+    {
+      "accepted": 54,
+      "arm": "protected64",
+      "audit_regret": 0.23591614054132656,
+      "case": "A_19",
+      "changed": 4,
+      "fit_cost": 0.09998923082367253,
+      "fit_regret": 0.14532710732681461,
+      "improved": 4,
+      "stop_regret": 0.337020206929439,
+      "worsened": 0
+    },
+    {
+      "accepted": null,
+      "arm": "source",
+      "audit_regret": 0.22729161453088942,
+      "case": "A_43",
+      "changed": 0,
+      "fit_cost": 0.0953054571355601,
+      "fit_regret": 0.14151138777073327,
+      "improved": 0,
+      "stop_regret": 0.28599479690728696,
+      "worsened": 0
+    },
+    {
+      "accepted": null,
+      "arm": "control64",
+      "audit_regret": 0.22729161453088942,
+      "case": "A_43",
+      "changed": 0,
+      "fit_cost": 0.09410993825001819,
+      "fit_regret": 0.14151138777073327,
+      "improved": 0,
+      "stop_regret": 0.2788375427302596,
+      "worsened": 0
+    },
+    {
+      "accepted": 59,
+      "arm": "protected64",
+      "audit_regret": 0.22729161453088942,
+      "case": "A_43",
+      "changed": 1,
+      "fit_cost": 0.09474287101390455,
+      "fit_regret": 0.1396235377591725,
+      "improved": 1,
+      "stop_regret": 0.28599479690728696,
+      "worsened": 0
+    },
+    {
+      "accepted": null,
+      "arm": "source",
+      "audit_regret": 0.2331297337344238,
+      "case": "B_19",
+      "changed": 0,
+      "fit_cost": 0.11164339542614934,
+      "fit_regret": 0.1938332369822766,
+      "improved": 0,
+      "stop_regret": 0.25971941824534617,
+      "worsened": 0
+    },
+    {
+      "accepted": null,
+      "arm": "control64",
+      "audit_regret": 0.2331297337344238,
+      "case": "B_19",
+      "changed": 1,
+      "fit_cost": 0.1113984755116297,
+      "fit_regret": 0.1924335350072576,
+      "improved": 1,
+      "stop_regret": 0.25971941824534617,
+      "worsened": 0
+    },
+    {
+      "accepted": 50,
+      "arm": "protected64",
+      "audit_regret": 0.2331297337344238,
+      "case": "B_19",
+      "changed": 1,
+      "fit_cost": 0.1115406342108182,
+      "fit_regret": 0.19257395357570636,
+      "improved": 1,
+      "stop_regret": 0.25971941824534617,
+      "worsened": 0
+    },
+    {
+      "accepted": null,
+      "arm": "source",
+      "audit_regret": 0.21720960628956465,
+      "case": "B_43",
+      "changed": 0,
+      "fit_cost": 0.1159128399305417,
+      "fit_regret": 0.23114466099290776,
+      "improved": 0,
+      "stop_regret": 0.19467653902025614,
+      "worsened": 0
+    },
+    {
+      "accepted": null,
+      "arm": "control64",
+      "audit_regret": 0.21720960628956465,
+      "case": "B_43",
+      "changed": 2,
+      "fit_cost": 0.11517378007809563,
+      "fit_regret": 0.22973859490761003,
+      "improved": 1,
+      "stop_regret": 0.20575816619381046,
+      "worsened": 0
+    },
+    {
+      "accepted": 64,
+      "arm": "protected64",
+      "audit_regret": 0.21720960628956465,
+      "case": "B_43",
+      "changed": 2,
+      "fit_cost": 0.11517378007809563,
+      "fit_regret": 0.22973859490761003,
+      "improved": 1,
+      "stop_regret": 0.20575816619381046,
+      "worsened": 0
+    }
+  ],
+  "trace_steps": 256
+}

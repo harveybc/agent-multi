@@ -28,8 +28,12 @@ twice exactly: none restores missed gains while preserving protections.
 completes the bounded16-step continuation and automatic verifier:3 FIT wins,
 1 tie,mean regret1.577% lower,5 improved decisions,0 worsened;8 cold checkpoints
 and16 replayed transitions exact. Internal held decisions remain unchanged.
-Next is matched64 retention from saved16 states with no additional targeted
-search budget. No new user choice, unchanged floating pass or actor promotion.
+[346](346_TARGETED_RESCUE_RETENTION.md) completes matched64 retention with
+no additional search:5/5 earlier gains retained,mean FIT regret1.395% lower,
+2 wins/1 loss/1 tie.20 cold checkpoints and16 new transitions replay exactly.
+B43 state/optimizer/RNG matches its control exactly. A43 misses the control's
+internal-stop improvement. Next: saved-state B19/A43 divergence replay before
+actor refinement, not another unchanged floating pass. No user decision needed.
 Per-step single-observation guards now accompany batched guards; checkpoint-only
 detection was insufficient. See [method state](generalization/PROJECT_METHOD_STATE.json)
 and [findings](generalization/FINDINGS_AND_PROGRESS.md) for the exact resume point.

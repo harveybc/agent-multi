@@ -1,16 +1,37 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "TARGETED_RESCUE_RETENTION_READY",
+  "current_stage": "TARGETED_RESCUE_RETENTION_VERIFIED_DIVERGENCE_REPLAY_NEXT",
   "targeted_rescue_retention_346": {
     "document": "../346_TARGETED_RESCUE_RETENTION.md",
-    "status": "TESTED_READY",
+    "status": "COMPLETE_INDEPENDENTLY_VERIFIED",
+    "identity": "5b28e01442fa513619f1a1ae18429e84ecb736334d846b45a21bdd034ab86fbe",
+    "runtime_commit": "81dba6df",
+    "seconds": 201.25717050593812,
     "resume_offset": 16,
     "end_offset": 64,
     "cases": 4,
     "new_targeted_searches": 0,
     "tests_passed": 81,
+    "new_attempts": 192,
+    "new_accepted": 167,
+    "cumulative_accepted": 227,
+    "gains_retained": 5,
+    "gains_lost": 0,
+    "paired_fit_wins": 2,
+    "paired_fit_losses": 1,
+    "paired_fit_ties": 1,
+    "mean_control_fit_regret": 0.1793166739180697,
+    "mean_treatment_fit_regret": 0.1768157983923259,
+    "relative_fit_regret_reduction_pct": 1.3946698157509212,
+    "cold_exact": 20,
+    "resumed_exact": 16,
+    "negative_control_exact": "B43 weights/optimizer/RNG at64",
+    "internal_stop_losses_vs_control": 1,
+    "internal_audit_actions_changed_vs_control": false,
+    "jobs_running": 0,
     "actor_updates": 0,
-    "next_action": "Execute authenticated345 full-state continuation17..64; independently verify retention against saved342 controls. Stop at64."
+    "model_promoted": false,
+    "next_action": "Replay saved B19 FIT and A43 internal-stop divergences versus342, identify first different decisions and separate changed directions, AdamW history and protection before actor refinement. No new target searches, guard relaxation, held-label update selection or unchanged floating pass. No user decision needed."
   },
   "targeted_rescue_continuation_345": {
     "document": "../345_BOUNDED_TARGETED_RESCUE_CONTINUATION.md",
@@ -38,7 +59,7 @@
     "tests_passed": 73,
     "actor_updates": 0,
     "model_promoted": false,
-    "next_action": "Bounded matched64 retention contrast from these16-step checkpoints, retaining optimizer/RNG and the already-spent total budget of four targeted searches per case. No new target search, radius tuning, held-label choices, actor change or unchanged floating pass. Pin and test a separate continuation before launch; no user decision needed."
+    "next_action": "Complete; matched64 retention346 also completed and independently verified. See current_stage and targeted_rescue_retention_346."
   },
   "decision_targeted_direction_344": {
     "document": "../344_DECISION_TARGETED_DIRECTION.md",

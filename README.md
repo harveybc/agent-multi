@@ -38,8 +38,12 @@ find10 verified corrections in5/10 fixed witnesses. [345 bounded continuation](d
 then achieves3 paired FIT wins and1 tie: mean decision regret1.577% lower,
 5 improved decisions and0 worsened, with8 exact cold endpoints and16 exact
 replayed transitions. Internal held decisions remain unchanged versus controls.
-Next is a separately pinned matched64 retention check using saved optimizer
-states and no additional targeted-search budget, not a fresh floating pass.
+[346 retention](docs/work_plan/346_TARGETED_RESCUE_RETENTION.md) is complete:
+all5 gains survive, matched64 mean regret1.395% lower,2 wins/1 loss/1 tie.
+20 cold endpoints and16 repeated transitions are exact; B43 exactly reproduces
+its control including optimizer/RNG. A43 misses an internal-stop improvement
+found by control. Next is saved-state divergence replay, not a fresh floating
+pass or an unqualified actor update.
 No source actor, inputs or live model have changed. Canonical
 resume state: [method state](docs/work_plan/generalization/PROJECT_METHOD_STATE.json).
 Historical COT/source-clock qualification is separate; these diagnostics do not
