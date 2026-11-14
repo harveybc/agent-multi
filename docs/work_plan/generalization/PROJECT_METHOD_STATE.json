@@ -1,16 +1,28 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "FIRST_HARMFUL_CROSSING_REPLAY_READY",
+  "current_stage": "FIRST_HARMFUL_CROSSING_REPLAY_COMPLETE_VERIFIED",
   "first_crossing_replay_340": {
     "document": "../340_FIRST_HARMFUL_CROSSING_REPLAY.md",
-    "status": "IMPLEMENTED_TESTED_BEFORE_EXECUTION",
+    "status": "COMPLETE_VERIFIED_PROTECTION_COVERAGE_AND_ADAM_HISTORY_LOCALIZED",
+    "identity": "880655269f69277c4dc3d69e47520a00917abcab142d8c25152bc8259bdadae1",
+    "runtime_commit": "e9c93759",
+    "verifier_commit": "6f5268ed",
+    "seconds": 228.02892333408818,
+    "transactions_exact": 1024,
+    "original_endpoints_exact": 8,
+    "cold_witnesses_exact": 10,
+    "first_harmful_crossings": 10,
+    "raw_proposal_harmful": 6,
+    "protection_introduced_harmful_change": 4,
+    "finite_geometry_actions_agree": 10,
+    "jobs_running": 0,
     "cases": 4,
     "replay_steps_per_case": 256,
     "tests_passed": 52,
     "actor_updates": 0,
     "model_promoted": false,
     "intermediate_user_approval_required": false,
-    "next_action": "Execute exact338 complete-arm replay and first-harmful-row witnesses; independently verify per-step stages, publish results. No changes to actor, inputs or fit algorithm."
+    "next_action": "Bounded fixed-witness correction contrast: retain original guards, protect current target-optimal expanded FIT decisions without freezing wrong or equally optimal actions; finite checks and nonzero-motion/feasibility gate before any matched continuation. No held-label choices, actor changes or unchanged floating repeat; no user decision required."
   },
   "saved_weight_decision_forensics_339": {
     "document": "../339_SAVED_WEIGHT_DECISION_FORENSICS.md",
@@ -3020,6 +3032,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
+    "340 COMPLETE:1024 transactions and8 endpoints exact;10 cold witnesses exact. Six harmful actions arise in raw AdamW, four only after original-anchor protection. Next bounded expanded-FIT target-optimal protection on those fixed proposals before new refinement; no user decision required",
     "339 COMPLETE: 384 finite layer interventions; common cross-host discrete evidence exact. 3/9 harmful FIT changes improve own loss, 4/9 show other-example gradient interference at source, 7/9 have opposing saved AdamW directions. Next first-crossing exact replay to separate actual batch, optimizer, projection and finite nonlinear effects; preserve actor299 and all inputs",
     "338 complete and independently verified: complete protection1024/1024 accepted versus474/1024, matched FIT wins3/4 and ties1/4; mean regret improves2.9072%, internal transfer mixed. Adopt complete constraints and per-transaction single/batch guards. Next saved-weight FIT loss/decision-crossing attribution; no user decision required",
     "337 complete:16/16 proposals and256/256 updates accepted; stable-added FIT regret improves3.6239% but internal TRAIN stop/audit worsen. Local nonsmooth protection defect fixed, no actor/trading promotion. Preserve299/71 inputs and49 return candidates",

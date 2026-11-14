@@ -1,0 +1,37 @@
+{
+  "budget": 256,
+  "capture": "first_harmful_transition_per_expanded_FIT_row",
+  "cases": [
+    [
+      "A",
+      19
+    ],
+    [
+      "A",
+      43
+    ],
+    [
+      "B",
+      19
+    ],
+    [
+      "B",
+      43
+    ]
+  ],
+  "code": {
+    "app/crossing_step_forensics.py": "51a4940b1aeddad0d05aaeb8d0fa4e8e042425d3a991c712793e212bb00ad3e8",
+    "app/weight_decision_forensics.py": "299e5459f4bcd3e5bbb2c957e9e1d51a3c7b9c8db10b903be4d9381404577261",
+    "tools/replay_first_harmful_crossings.py": "9262835a60ce8a7f5c7e7e9a9e75f7e5cb32a2864b312576c3a1307375dce755"
+  },
+  "identity": "880655269f69277c4dc3d69e47520a00917abcab142d8c25152bc8259bdadae1",
+  "mode": "complete",
+  "parents": {
+    "coverage": "1a6a64dfd71e2ada45f3c3e069521580108ce7db5a804692733d3be39885ebb8",
+    "previous": "43b9e5c253c63d58a68e378b099364c04ae3bedf96b18038f1e620acc62fe9da",
+    "probe": "32a49fbb371a3637e669df9095026be9fab5e711b5942916f2ae330f53058621",
+    "source": "7603f573875f72abf0cad6e4166b6a3328c21915819f903245fa65b6b486b41e"
+  },
+  "schema": "first_crossing_replay.v1",
+  "source_actor_sha256": "69b5254489d224d4b20ac358956e4dd3b9a67a2f214a9aff98045c5def25a536"
+}

@@ -1,0 +1,629 @@
+{
+  "actor_updates": 0,
+  "cases": [
+    {
+      "all_harmful_transition_occurrences": 3,
+      "endpoints_exact": 2,
+      "first_harmful_rows": 3,
+      "fold": "A",
+      "seed": 19,
+      "transactions_exact": 256,
+      "witnesses": [
+        {
+          "adam_moment_max_error": 1.7204686424639507e-12,
+          "adam_reconstruction_max_error": 4.12567078043287e-08,
+          "batch_gradient_max_error": 2.7162483984266572e-08,
+          "events": [
+            {
+              "actual_cuda_batch_descent": 0.18837561426045638,
+              "adam_contributions": {
+                "current": 0.00014385644186799818,
+                "decay": -5.1181297183749086e-08,
+                "history": -0.00019905141851263067,
+                "rounding": -3.928605753263924e-09
+              },
+              "after_action": 0,
+              "analytic_batch_descent": 0.1883755987983929,
+              "batch_multiplicity": 0,
+              "before_action": 1,
+              "finite_adam": -5.5249418216885005e-05,
+              "finite_repair": 1.230322081513524e-05,
+              "first_order_adam": -5.5250086547569554e-05,
+              "first_order_repair": 1.2296715431682269e-05,
+              "full_fit_descent": 0.03386616006300151,
+              "kind": "flat_both_allowed",
+              "margin_after": -4.856761999072479e-06,
+              "margin_before": 3.8089435402677285e-05,
+              "margin_proposed": -1.715998281420772e-05,
+              "min_twins": [
+                [
+                  0,
+                  1,
+                  0
+                ],
+                [
+                  0,
+                  1,
+                  0
+                ],
+                [
+                  0,
+                  1,
+                  0
+                ]
+              ],
+              "others_batch_descent": 0.1883755987983929,
+              "own_batch_descent": 0.0,
+              "proposed_action": 0,
+              "regret_delta": 0.43471340168233075,
+              "row": 316,
+              "row_costs": [
+                0.17504529894634896,
+                0.17507093745637353,
+                0.1750419971351804
+              ]
+            }
+          ],
+          "file_sha256": "0ac832d800499486e871fdf2a7bcd2b483391f157445b6346f4c36c9af6b4a59",
+          "offset": 10
+        },
+        {
+          "adam_moment_max_error": 1.7410520860303494e-12,
+          "adam_reconstruction_max_error": 3.140404930901776e-08,
+          "batch_gradient_max_error": 8.460703368809441e-09,
+          "events": [
+            {
+              "actual_cuda_batch_descent": -0.5599482492673409,
+              "adam_contributions": {
+                "current": -0.0005310292837416557,
+                "decay": -2.3491645688705826e-08,
+                "history": 0.0008327923993117487,
+                "rounding": 3.568006615500756e-08
+              },
+              "after_action": 1,
+              "analytic_batch_descent": -0.5599482022340122,
+              "batch_multiplicity": 0,
+              "before_action": 2,
+              "finite_adam": 0.0003017412613798842,
+              "finite_repair": -0.0004176379163424726,
+              "first_order_adam": 0.0003017753039905591,
+              "first_order_repair": -0.0004176241674073147,
+              "full_fit_descent": 0.17705780789821907,
+              "kind": "flat_both_allowed",
+              "margin_after": -8.791574629377075e-05,
+              "margin_before": 2.798090866881764e-05,
+              "margin_proposed": 0.00032972217004870186,
+              "min_twins": [
+                [
+                  1,
+                  1,
+                  0
+                ],
+                [
+                  1,
+                  1,
+                  0
+                ],
+                [
+                  1,
+                  1,
+                  0
+                ]
+              ],
+              "others_batch_descent": -0.5599482022340122,
+              "own_batch_descent": 0.0,
+              "proposed_action": 2,
+              "regret_delta": 0.9504766139542495,
+              "row": 317,
+              "row_costs": [
+                0.20732484288835817,
+                0.20727580516254634,
+                0.20734657092525782
+              ]
+            }
+          ],
+          "file_sha256": "78006c1ccf07024201065ad99e64a6ff1345bef393e9820ee4d8ee982c24b68a",
+          "offset": 32
+        },
+        {
+          "adam_moment_max_error": 1.7529089565640346e-12,
+          "adam_reconstruction_max_error": 4.738232549810737e-08,
+          "batch_gradient_max_error": 7.49420515228083e-09,
+          "events": [
+            {
+              "actual_cuda_batch_descent": 0.22085554596638532,
+              "adam_contributions": {
+                "current": 2.350938867189581e-05,
+                "decay": 5.980997673429314e-08,
+                "history": 0.00010295427017994934,
+                "rounding": 1.8399812411449896e-08
+              },
+              "after_action": 0,
+              "analytic_batch_descent": 0.2208555285288933,
+              "batch_multiplicity": 1,
+              "before_action": 1,
+              "finite_adam": 0.00012652649451083686,
+              "finite_repair": -0.0004156196082455432,
+              "first_order_adam": 0.00012654186864099085,
+              "first_order_repair": -0.0004155904668394568,
+              "full_fit_descent": 0.1621405967273901,
+              "kind": "flat_both_allowed",
+              "margin_after": -0.00018223893374791356,
+              "margin_before": 0.00010685417998679281,
+              "margin_proposed": 0.00023338067449762967,
+              "min_twins": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ]
+              ],
+              "others_batch_descent": 0.20600463128126964,
+              "own_batch_descent": 0.014850897247623673,
+              "proposed_action": 1,
+              "regret_delta": 0.44876624277839516,
+              "row": 245,
+              "row_costs": [
+                0.16586533846150547,
+                0.16587064020888037,
+                0.16591013528891668
+              ]
+            }
+          ],
+          "file_sha256": "0945c5f15ed19722b2f2bc0c251f9359c4796ee7c3bb797f466eeb0aa195b779",
+          "offset": 51
+        }
+      ]
+    },
+    {
+      "all_harmful_transition_occurrences": 1,
+      "endpoints_exact": 2,
+      "first_harmful_rows": 1,
+      "fold": "A",
+      "seed": 43,
+      "transactions_exact": 256,
+      "witnesses": [
+        {
+          "adam_moment_max_error": 1.5592443103919207e-12,
+          "adam_reconstruction_max_error": 3.254611607475585e-08,
+          "batch_gradient_max_error": 1.2269736613876314e-08,
+          "events": [
+            {
+              "actual_cuda_batch_descent": -0.41010871116186215,
+              "adam_contributions": {
+                "current": -0.0005797308006461251,
+                "decay": 1.7688430017348343e-07,
+                "history": -0.0004479426818185547,
+                "rounding": -1.1585207586538968e-07
+              },
+              "after_action": 2,
+              "analytic_batch_descent": -0.4101088426509549,
+              "batch_multiplicity": 1,
+              "before_action": 1,
+              "finite_adam": -0.0010276580792416556,
+              "finite_repair": 8.973951087543064e-05,
+              "first_order_adam": -0.0010276124502403721,
+              "first_order_repair": 8.973668230819876e-05,
+              "full_fit_descent": -0.2872147150505443,
+              "kind": "flat_both_allowed",
+              "margin_after": -6.534182390494081e-05,
+              "margin_before": 0.0008725767444612842,
+              "margin_proposed": -0.00015508133478037145,
+              "min_twins": [
+                [
+                  1,
+                  0,
+                  1
+                ],
+                [
+                  1,
+                  0,
+                  1
+                ],
+                [
+                  1,
+                  0,
+                  1
+                ]
+              ],
+              "others_batch_descent": -0.5984359050830006,
+              "own_batch_descent": 0.18832706243204578,
+              "proposed_action": 2,
+              "regret_delta": 1.062454304085143,
+              "row": 257,
+              "row_costs": [
+                0.2402324649047415,
+                0.2404138302596156,
+                0.24039724177749378
+              ]
+            }
+          ],
+          "file_sha256": "4cb7cd1276c910fba331e2efd1dfa3c00931781269fa8873090c638838d46832",
+          "offset": 238
+        }
+      ]
+    },
+    {
+      "all_harmful_transition_occurrences": 2,
+      "endpoints_exact": 2,
+      "first_harmful_rows": 2,
+      "fold": "B",
+      "seed": 19,
+      "transactions_exact": 256,
+      "witnesses": [
+        {
+          "adam_moment_max_error": 1.592451692870357e-12,
+          "adam_reconstruction_max_error": 4.428986121836158e-08,
+          "batch_gradient_max_error": 6.520158267464549e-09,
+          "events": [
+            {
+              "actual_cuda_batch_descent": 0.07356096472355322,
+              "adam_contributions": {
+                "current": 5.944520166761716e-07,
+                "decay": 9.584088600341827e-08,
+                "history": -8.820873856763643e-05,
+                "rounding": -1.7535910328921975e-08
+              },
+              "after_action": 0,
+              "analytic_batch_descent": 0.07356097782016671,
+              "batch_multiplicity": 0,
+              "before_action": 1,
+              "finite_adam": -8.753242156744889e-05,
+              "finite_repair": -0.00028322342534092826,
+              "first_order_adam": -8.75359815752857e-05,
+              "first_order_repair": -0.0002832041199346858,
+              "full_fit_descent": -0.0027427837319656014,
+              "kind": "flat_both_allowed",
+              "margin_after": -7.285806950596552e-05,
+              "margin_before": 0.00029789777740241163,
+              "margin_proposed": 0.00021036535583496274,
+              "min_twins": [
+                [
+                  1,
+                  0,
+                  1
+                ],
+                [
+                  1,
+                  0,
+                  1
+                ],
+                [
+                  1,
+                  0,
+                  1
+                ]
+              ],
+              "others_batch_descent": 0.07356097782016671,
+              "own_batch_descent": 0.0,
+              "proposed_action": 1,
+              "regret_delta": 0.5652511462634313,
+              "row": 257,
+              "row_costs": [
+                0.22200136309065524,
+                0.22205210471445516,
+                0.22208084798973907
+              ]
+            }
+          ],
+          "file_sha256": "d4e33173ba741c8e7475d34b72d234667fdda62f1397473d1daaf36a7c87018d",
+          "offset": 5
+        },
+        {
+          "adam_moment_max_error": 1.4927048964900468e-12,
+          "adam_reconstruction_max_error": 3.846351954928392e-08,
+          "batch_gradient_max_error": 1.1166284016921263e-08,
+          "events": [
+            {
+              "actual_cuda_batch_descent": -0.0222098241322533,
+              "adam_contributions": {
+                "current": -3.6345970927820748e-06,
+                "decay": 7.3379957396359336e-09,
+                "history": -4.020327825002608e-05,
+                "rounding": -8.347291858825603e-09
+              },
+              "after_action": 0,
+              "analytic_batch_descent": -0.022209828212014535,
+              "batch_multiplicity": 1,
+              "before_action": 1,
+              "finite_adam": -0.0001610750360059865,
+              "finite_repair": 3.496362771948647e-05,
+              "first_order_adam": -4.3838884638927375e-05,
+              "first_order_repair": -5.459297827541979e-06,
+              "full_fit_descent": 0.012469360575581184,
+              "kind": "flat_both_allowed",
+              "margin_after": -4.610835139462477e-05,
+              "margin_before": 8.000305689187526e-05,
+              "margin_proposed": -8.107197911411124e-05,
+              "min_twins": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  1,
+                  0
+                ],
+                [
+                  0,
+                  1,
+                  0
+                ]
+              ],
+              "others_batch_descent": -0.028277402187947977,
+              "own_batch_descent": 0.00606757397593344,
+              "proposed_action": 0,
+              "regret_delta": 0.44669872290917934,
+              "row": 505,
+              "row_costs": [
+                0.2039328684112284,
+                0.20396246372817084,
+                0.2039583715538726
+              ]
+            }
+          ],
+          "file_sha256": "ba832d70fe5e7a9b7f320b68e3a72ea625df14d0ac187d6f6885aa15f2d323b8",
+          "offset": 33
+        }
+      ]
+    },
+    {
+      "all_harmful_transition_occurrences": 4,
+      "endpoints_exact": 2,
+      "first_harmful_rows": 4,
+      "fold": "B",
+      "seed": 43,
+      "transactions_exact": 256,
+      "witnesses": [
+        {
+          "adam_moment_max_error": 1.5044105530079223e-12,
+          "adam_reconstruction_max_error": 5.1810974812941405e-08,
+          "batch_gradient_max_error": 5.738604198606001e-09,
+          "events": [
+            {
+              "actual_cuda_batch_descent": 0.010181869105129675,
+              "adam_contributions": {
+                "current": 1.45035672836359e-05,
+                "decay": -3.303043854221804e-08,
+                "history": -0.00019529575421111525,
+                "rounding": 1.2780862975930852e-08
+              },
+              "after_action": 0,
+              "analytic_batch_descent": 0.010181868916380787,
+              "batch_multiplicity": 0,
+              "before_action": 2,
+              "finite_adam": -0.0001808164119634914,
+              "finite_repair": 0.00013124047794085825,
+              "first_order_adam": -0.00018081243650304565,
+              "first_order_repair": 0.00013123766894446084,
+              "full_fit_descent": -0.00866399970052853,
+              "kind": "flat_both_allowed",
+              "margin_after": -2.8173504257156257e-05,
+              "margin_before": 2.1402429765476905e-05,
+              "margin_proposed": -0.0001594139821980145,
+              "min_twins": [
+                [
+                  1,
+                  1,
+                  1
+                ],
+                [
+                  1,
+                  1,
+                  1
+                ],
+                [
+                  1,
+                  1,
+                  1
+                ]
+              ],
+              "others_batch_descent": 0.010181868916380787,
+              "own_batch_descent": 0.0,
+              "proposed_action": 0,
+              "regret_delta": 0.46599369776120486,
+              "row": 457,
+              "row_costs": [
+                0.19330273239890716,
+                0.19332131646359088,
+                0.1932988251646316
+              ]
+            }
+          ],
+          "file_sha256": "91779c7802262709da58419961f456284484634b69af3ef7404dcfe970fece90",
+          "offset": 67
+        },
+        {
+          "adam_moment_max_error": 1.401135710665818e-12,
+          "adam_reconstruction_max_error": 5.2637757527233795e-08,
+          "batch_gradient_max_error": 0.0004487278196346118,
+          "events": [
+            {
+              "actual_cuda_batch_descent": -0.02831641658550667,
+              "adam_contributions": {
+                "current": -6.897260355060299e-05,
+                "decay": -7.27293138147536e-08,
+                "history": -8.655570339342041e-05,
+                "rounding": 4.950550760664044e-08
+              },
+              "after_action": 1,
+              "analytic_batch_descent": -0.028126345350142107,
+              "batch_multiplicity": 1,
+              "before_action": 2,
+              "finite_adam": -0.000155556329328288,
+              "finite_repair": -2.1433921179592197e-06,
+              "first_order_adam": -0.00015555153075023145,
+              "first_order_repair": -2.1521321368285878e-06,
+              "full_fit_descent": 0.023727521585496056,
+              "kind": "flat_both_allowed",
+              "margin_after": -4.683990306636465e-05,
+              "margin_before": 0.00011085981837988257,
+              "margin_proposed": -4.469651094840543e-05,
+              "min_twins": [
+                [
+                  0,
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  0,
+                  1
+                ]
+              ],
+              "others_batch_descent": -0.03622863898402256,
+              "own_batch_descent": 0.008102293633880452,
+              "proposed_action": 1,
+              "regret_delta": 0.13563380725753693,
+              "row": 434,
+              "row_costs": [
+                0.023073360321086676,
+                0.02307809712306939,
+                0.02307772873965069
+              ]
+            }
+          ],
+          "file_sha256": "4ff3a52e81b357db5aef46481a7119d545218ffc0ea511579179cd22cfada18a",
+          "offset": 88
+        },
+        {
+          "adam_moment_max_error": 1.5475072878204919e-12,
+          "adam_reconstruction_max_error": 4.730442843974462e-08,
+          "batch_gradient_max_error": 1.4961407956287642e-08,
+          "events": [
+            {
+              "actual_cuda_batch_descent": -0.02181336345775383,
+              "adam_contributions": {
+                "current": -5.033738422402305e-05,
+                "decay": -2.925430189014495e-09,
+                "history": -4.4032727638084234e-05,
+                "rounding": -7.794881744105699e-09
+              },
+              "after_action": 0,
+              "analytic_batch_descent": -0.021813360715484086,
+              "batch_multiplicity": 1,
+              "before_action": 2,
+              "finite_adam": -9.438387501986556e-05,
+              "finite_repair": -3.4057226211609004e-05,
+              "first_order_adam": -9.438083217404044e-05,
+              "first_order_repair": -3.40559801781651e-05,
+              "full_fit_descent": -0.006614617649220072,
+              "kind": "flat_both_allowed",
+              "margin_after": -8.804144488000487e-05,
+              "margin_before": 4.039965635146969e-05,
+              "margin_proposed": -5.398421866839587e-05,
+              "min_twins": [
+                [
+                  1,
+                  1,
+                  0
+                ],
+                [
+                  1,
+                  1,
+                  0
+                ],
+                [
+                  1,
+                  1,
+                  0
+                ]
+              ],
+              "others_batch_descent": -0.02494770264304799,
+              "own_batch_descent": 0.003134341927563902,
+              "proposed_action": 0,
+              "regret_delta": 0.02596965484180136,
+              "row": 497,
+              "row_costs": [
+                0.11465918700210491,
+                0.11467016113025587,
+                0.1146590766693432
+              ]
+            }
+          ],
+          "file_sha256": "bc73ea0a81fa1a5a086d762d68433914ea2b08f62f5ca5b6df1c6b971d21bcac",
+          "offset": 144
+        },
+        {
+          "adam_moment_max_error": 1.5333079231072194e-12,
+          "adam_reconstruction_max_error": 2.5810569524907353e-08,
+          "batch_gradient_max_error": 1.2691269685779355e-08,
+          "events": [
+            {
+              "actual_cuda_batch_descent": 0.014893756225471656,
+              "adam_contributions": {
+                "current": -5.041828246796201e-06,
+                "decay": -3.116237189250388e-08,
+                "history": 0.00013497636945339618,
+                "rounding": -3.29728506486358e-08
+              },
+              "after_action": 0,
+              "analytic_batch_descent": 0.014893732769146687,
+              "batch_multiplicity": 0,
+              "before_action": 1,
+              "finite_adam": 0.00012987470254650912,
+              "finite_repair": -0.0002709581940179284,
+              "first_order_adam": 0.00012987040598405885,
+              "first_order_repair": -0.00027094913445425576,
+              "full_fit_descent": 0.02181726385256771,
+              "kind": "open_short",
+              "margin_after": -8.204788022853071e-05,
+              "margin_before": 5.9035611242888586e-05,
+              "margin_proposed": 0.0001889103137893977,
+              "min_twins": [
+                [
+                  0,
+                  1,
+                  0
+                ],
+                [
+                  0,
+                  1,
+                  0
+                ],
+                [
+                  0,
+                  1,
+                  0
+                ]
+              ],
+              "others_batch_descent": 0.014893732769146687,
+              "own_batch_descent": 0.0,
+              "proposed_action": 1,
+              "regret_delta": 0.06535158180663991,
+              "row": 530,
+              "row_costs": [
+                0.019044767504283,
+                0.019043458780231733,
+                0.019046512514537015
+              ]
+            }
+          ],
+          "file_sha256": "91a98d309819e3ec727ce2bc2c26026ffbdd2b7606aab5f26cf70c5fa03039da",
+          "offset": 152
+        }
+      ]
+    }
+  ],
+  "identity": "880655269f69277c4dc3d69e47520a00917abcab142d8c25152bc8259bdadae1",
+  "model_promoted": false,
+  "replayed_transactions": 1024,
+  "seconds": 228.02892333408818
+}

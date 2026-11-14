@@ -23,7 +23,10 @@ safety checks:1024/1024 updates accepted,matched FIT regret2.91% lower,internal
 transfer mixed. [339 saved-weight forensics](docs/work_plan/339_SAVED_WEIGHT_DECISION_FORENSICS.md)
 completed384 layer interventions and cross-host verification: shared gradients
 can oppose correct decisions, and3 harmful FIT changes lower their own surrogate
-loss. Next is exact first-crossing attribution, not an unchanged floating pass.
+loss. [340 exact crossing replay](docs/work_plan/340_FIRST_HARMFUL_CROSSING_REPLAY.md)
+reproduced1024 transactions:6 harmful crossings originate in raw AdamW and4
+are introduced by protection limited to the original anchors. Next is a
+bounded expanded-FIT correct-decision protection test, not an unchanged floating pass.
 No source actor, inputs or live model have changed. Canonical
 resume state: [method state](docs/work_plan/generalization/PROJECT_METHOD_STATE.json).
 Historical COT/source-clock qualification is separate; these diagnostics do not
