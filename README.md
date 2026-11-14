@@ -20,7 +20,11 @@ and reduced local FIT decision regret3.62%, but internal TRAIN transfer worsened
 [338 paired replication](docs/work_plan/338_TWIN_PROTECTION_PAIRED_REPLICATION.md)
 completed all four cases with the same solver and per-transaction batch/single
 safety checks:1024/1024 updates accepted,matched FIT regret2.91% lower,internal
-transfer mixed. No source actor, inputs or live model have changed. Canonical
+transfer mixed. [339 saved-weight forensics](docs/work_plan/339_SAVED_WEIGHT_DECISION_FORENSICS.md)
+completed384 layer interventions and cross-host verification: shared gradients
+can oppose correct decisions, and3 harmful FIT changes lower their own surrogate
+loss. Next is exact first-crossing attribution, not an unchanged floating pass.
+No source actor, inputs or live model have changed. Canonical
 resume state: [method state](docs/work_plan/generalization/PROJECT_METHOD_STATE.json).
 Historical COT/source-clock qualification is separate; these diagnostics do not
 certify live inputs. Older status entries below are historical, not running queues.

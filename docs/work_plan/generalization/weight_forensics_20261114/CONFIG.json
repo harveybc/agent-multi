@@ -1,0 +1,36 @@
+{
+  "code": {
+    "app/decision_cost_objective.py": "51749bf4072f2f49f3103f668012322485f7e210857635b2617d8c73cdc3ed9f",
+    "app/weight_decision_forensics.py": "299e5459f4bcd3e5bbb2c957e9e1d51a3c7b9c8db10b903be4d9381404577261",
+    "tools/analyze_saved_weight_decisions.py": "38e6a6603a388c2d4e879b44862d21ac5ade4c6fddaf6215e67b9ad7b7d4f6f7"
+  },
+  "components": [
+    "twin0_hidden",
+    "twin0_output",
+    "twin1_hidden",
+    "twin1_output"
+  ],
+  "device": "cuda",
+  "identity": "2994608b1953d5b3a4e8fbabba6fdfc62320948fefac6bebec5db2b4d8ce4270",
+  "parents": {
+    "coverage": "1a6a64dfd71e2ada45f3c3e069521580108ce7db5a804692733d3be39885ebb8",
+    "previous": "43b9e5c253c63d58a68e378b099364c04ae3bedf96b18038f1e620acc62fe9da",
+    "source": "7603f573875f72abf0cad6e4166b6a3328c21915819f903245fa65b6b486b41e"
+  },
+  "schema": "saved_weight_forensics.v1",
+  "source_actor_sha256": "69b5254489d224d4b20ac358956e4dd3b9a67a2f214a9aff98045c5def25a536",
+  "transitions": [
+    [
+      0,
+      64
+    ],
+    [
+      64,
+      256
+    ],
+    [
+      0,
+      256
+    ]
+  ]
+}

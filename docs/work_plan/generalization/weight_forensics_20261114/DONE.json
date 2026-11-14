@@ -1,0 +1,15 @@
+{
+  "at": "2026-11-14T17:28:50.183695+00:00",
+  "files": {
+    "COMPONENTS.csv": "b17a89a35228829e73dc2c70a96017ce71d69c0bdd4decd5694b1ca13823c9a7",
+    "COMPONENTS.png": "5a8b42222708a67df8e2a79eac0501df5e34093bcd4e0cdd302014c2bfec8503",
+    "CONFIG.json": "9bf4ab52b5b922aae5a9b9a617b48549836ac5e3315e312ed2b2bd420a6001d4",
+    "EVENTS.csv": "eac6c46f9faeb04e1f42881408d7211d4e1a9cbf2bd57c60f73d68c5ef74d638",
+    "POINTS.csv": "335184a26bb43ca69adb6c589ba2a93573cbbe3bbd1a132a6287958000a0fb32",
+    "RESULT.json": "3a414cee67a9c8309438fdc8f476ed7fff81302f516833f49f14fdde01040a2e",
+    "RESULTS.md": "a7b0c5a4629004a4b25b82554fdcda9c2c2fdcc5ddc2ed9eeb64089deb1bb4ca",
+    "SUMMARY.csv": "b4c6c0133093dbb3a104e5dc6d822448f78a03d5d639c2490aaa276a6195eb30",
+    "VERIFICATION.json": "20841e14dd24089706d7bc0742addb792ace3168cb2f34ba888689108a95e1e8"
+  },
+  "identity": "2994608b1953d5b3a4e8fbabba6fdfc62320948fefac6bebec5db2b4d8ce4270"
+}

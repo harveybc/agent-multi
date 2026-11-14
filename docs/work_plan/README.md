@@ -11,8 +11,11 @@ fixed it locally (256/256 accepted,3.62% lower FIT regret), without improved
 held internal TRAIN scores or actor promotion. [338](338_TWIN_PROTECTION_PAIRED_REPLICATION.md)
 completed the four-case paired replication and automatic independent verifier:
 1024/1024 accepted updates,matched FIT regret2.91% lower,internal transfer mixed.
-Next is saved-weight FIT loss/decision-crossing attribution, not a new floating
-pass on the unchanged actor.
+[339](339_SAVED_WEIGHT_DECISION_FORENSICS.md) completed384 saved-weight block
+interventions and cross-host verification:3 of9 harmful FIT changes lower their
+own surrogate loss;4 have opposing other-example gradients at the source.
+Next is exact replay to the first harmful crossings, separating sampled-batch,
+AdamW, protection and nonlinear effects. No new floating pass on the unchanged actor.
 Per-step single-observation guards now accompany batched guards; checkpoint-only
 detection was insufficient. See [method state](generalization/PROJECT_METHOD_STATE.json)
 and [findings](generalization/FINDINGS_AND_PROGRESS.md) for the exact resume point.
@@ -1163,7 +1166,7 @@ The detailed gates and deliverables are in [08 Implementation Roadmap](08_IMPLEM
 Current phase2 resume point (2026-11-14):
 [299 Selected71](299_SELECTED72_CUMULATIVE_SELECTION.md), with49 absent phase2
 features retained as return candidates. Protected critic-refinement diagnostics
-336-338 are linked above and in the machine-readable method state. Preserve
+336-339 are linked above and in the machine-readable method state. Preserve
 the actor until a changed policy qualifies; no repeated unchanged mask pass
 or automatic long refit. The older263/69-input round is historical.
 [Retsu handoff](../handoffs/MUSASHI_TO_RETSU_SELECTED69_REAL_INPUTS_2026_11_10.md)
