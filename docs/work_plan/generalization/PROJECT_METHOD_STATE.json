@@ -1,6 +1,15 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "MATCHED_DIVERGENCES_VERIFIED_FUNCTION_LOCALITY_NEXT",
+  "current_stage": "FUNCTION_LOCALITY_CONTRAST_READY",
+  "function_locality_348": {
+    "document": "../348_FUNCTION_LOCAL_TARGETED_CORRECTION.md",
+    "status": "TESTED_READY",
+    "fixed_candidates": 10,
+    "lambda": 1,
+    "tests_passed": 50,
+    "actor_updates": 0,
+    "next_action": "Execute frozen344-target locality contrast with exact identity-metric controls, unchanged five-view finite gates and automatic CPU verification. No held-label update selection, larger radius or actor promotion."
+  },
   "matched_divergence_replay_347": {
     "document": "../347_MATCHED_DIVERGENCE_REPLAY.md",
     "status": "COMPLETE_INDEPENDENTLY_VERIFIED",

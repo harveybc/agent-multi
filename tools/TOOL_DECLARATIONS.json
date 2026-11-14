@@ -2,6 +2,10 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "probe_function_local_correction.py": {
+   "purpose": "Pair ten accepted344 targets with fixed FIT-gap-local metric corrections, unchanged finite guards, exact identity controls and automatic CPU verification; no actor promotion",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
+  },
   "report_matched_divergence_blocks.py": {
    "purpose": "After verified347, enumerate saved critic block coalitions and exact margin Shapley contributions with independent Torch64 parity; no model selection",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
