@@ -2,6 +2,14 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "run_twin_protection_replication.py": {
+   "purpose": "Eight sequential paired fixed-budget continuations from authenticated endpoints, isolating complete versus active twin protection with one primal solver and exact resume checks",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
+  },
+  "verify_twin_complete_run.py": {
+   "purpose": "Independent manual NumPy derivatives, finite decision guards, exact transaction/pair verification and descriptive internal TRAIN transfer for twin-complete protection",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
+  },
   "audit_stalled_projection_witnesses.py": {
    "purpose": "CPU reconstruction of sealed paired AdamW, linear projection and finite twin-routing witnesses; writes independent evidence without changing source runs",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"

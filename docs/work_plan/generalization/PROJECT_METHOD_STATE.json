@@ -1,15 +1,39 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "TWIN_COMPLETE_PROTECTION_IMPLEMENTED",
+  "current_stage": "TWIN_PROTECTION_REPLICATION_IMPLEMENTED",
+  "twin_protection_replication_338": {
+    "document": "../338_TWIN_PROTECTION_PAIRED_REPLICATION.md",
+    "status": "IMPLEMENTED_TESTED_BEFORE_EXECUTION",
+    "tests_passed": 53,
+    "paired_cases": 4,
+    "arms": 8,
+    "attempts_per_arm": 256,
+    "intermediate_user_approval_required": false,
+    "model_promoted": false,
+    "next_action": "Run eight sequential matched-primal continuations, verify cold/resumed states and independently score endpoints. Compare fixed256 results across all four cases without actor/feature changes."
+  },
   "twin_complete_protection_337": {
     "document": "../337_TWIN_COMPLETE_PROTECTION.md",
-    "status": "IMPLEMENTED_TESTED_BEFORE_EXECUTION",
-    "tests_passed": 52,
+    "status": "COMPLETE_VERIFIED_LOCAL_STALL_FIXED_TRANSFER_MIXED",
+    "identity": "09492d5af5fec12cbde98cd641fb84046cfbc865821b4840f3d9434717340a7a",
+    "runtime_commit": "5600bee7",
+    "seconds": 151.77949167299084,
+    "tests_passed": 53,
+    "accepted_probes": 16,
+    "new_continuation_accepted": 256,
+    "legacy_continuation_accepted": 0,
+    "stable_added_regret_before": 0.3047049422941579,
+    "stable_added_regret_after": 0.2936627362584858,
+    "relative_regret_reduction_pct": 3.6239011919314668,
+    "held_internal_train_transfer_worse": true,
+    "independently_verified_states": 36,
+    "manual_derivative_systems": 16,
+    "resumed_transitions_exact": 6,
     "paired_proposals": 16,
     "conditional_continuation_attempts_per_arm": 256,
     "intermediate_user_approval_required": false,
     "model_promoted": false,
-    "next_action": "Execute337 same16 proposals with both chosen twins protected; automatic paired256 continuation only after frozen feasibility/cost gate. Preserve source299 and all data/margins. Verify and publish regardless of outcome."
+    "next_action": "338 paired four-case replication with identical primal solver in both arms; no actor promotion from one local FIT improvement."
   },
   "stalled_solver_contrast_336": {
     "document": "../336_STALLED_PROPOSAL_SOLVER_CONTRAST.md",
@@ -2940,7 +2964,8 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
-    "337 implemented/tested: same16 proposal replay with twin-complete protection; bounded automatic paired256 continuation on predeclared gate. No user decision required. Preserve299/71 inputs and49 return candidates",
+    "338 implemented/tested: eight paired256 continuations, same primal solver, all four334 cost-only endpoints. Sequential automation and independent verification, no user decision required",
+    "337 complete:16/16 proposals and256/256 updates accepted; stable-added FIT regret improves3.6239% but internal TRAIN stop/audit worsen. Local nonsmooth protection defect fixed, no actor/trading promotion. Preserve299/71 inputs and49 return candidates",
     "336 complete:48 feasible linear systems,0 accepted finite steps; independent384 trials isolate chosen-twin switches at protected row8.335 calibration complete; neither result is actor/trading promotion",
     "334 complete: cost-only plus fresh AdamW improves matched FIT decisions in4/4; automatic1024 extension complete. Transfer mixed.335 calibrates saved values without changing decisions, not full SAC or live certification",
     "333 complete: cost/hybrid improve some stable-added decisions, but neither passes the frozen consistency gate. All24 checkpoints robust across five geometries; all4 MSE controls reproduce331. Do not promote a loss-only improvement",

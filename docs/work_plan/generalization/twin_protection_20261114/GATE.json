@@ -1,0 +1,165 @@
+{
+  "passed": true,
+  "rows": [
+    {
+      "accepted": true,
+      "after": 0.3047049422941579,
+      "attempt": 458,
+      "before": 0.3047049422941579,
+      "cost_after": 0.11590021191751144,
+      "cost_before": 0.11591283906487913,
+      "geometry_agrees": true,
+      "robust": true
+    },
+    {
+      "accepted": true,
+      "after": 0.3047049422941579,
+      "attempt": 460,
+      "before": 0.3047049422941579,
+      "cost_after": 0.11590102977412765,
+      "cost_before": 0.11591283906487913,
+      "geometry_agrees": true,
+      "robust": true
+    },
+    {
+      "accepted": true,
+      "after": 0.3047049422941579,
+      "attempt": 528,
+      "before": 0.3047049422941579,
+      "cost_after": 0.11590063191983556,
+      "cost_before": 0.11591283906487913,
+      "geometry_agrees": true,
+      "robust": true
+    },
+    {
+      "accepted": true,
+      "after": 0.3047049422941579,
+      "attempt": 546,
+      "before": 0.3047049422941579,
+      "cost_after": 0.115900581612326,
+      "cost_before": 0.11591283906487913,
+      "geometry_agrees": true,
+      "robust": true
+    },
+    {
+      "accepted": true,
+      "after": 0.3047049422941579,
+      "attempt": 601,
+      "before": 0.3047049422941579,
+      "cost_after": 0.11590093102091006,
+      "cost_before": 0.11591283906487913,
+      "geometry_agrees": true,
+      "robust": true
+    },
+    {
+      "accepted": true,
+      "after": 0.3047049422941579,
+      "attempt": 625,
+      "before": 0.3047049422941579,
+      "cost_after": 0.1159012807925869,
+      "cost_before": 0.11591283906487913,
+      "geometry_agrees": true,
+      "robust": true
+    },
+    {
+      "accepted": true,
+      "after": 0.3047049422941579,
+      "attempt": 666,
+      "before": 0.3047049422941579,
+      "cost_after": 0.11590121408767112,
+      "cost_before": 0.11591283906487913,
+      "geometry_agrees": true,
+      "robust": true
+    },
+    {
+      "accepted": true,
+      "after": 0.3047049422941579,
+      "attempt": 716,
+      "before": 0.3047049422941579,
+      "cost_after": 0.11590045845944932,
+      "cost_before": 0.11591283906487913,
+      "geometry_agrees": true,
+      "robust": true
+    },
+    {
+      "accepted": true,
+      "after": 0.3047049422941579,
+      "attempt": 763,
+      "before": 0.3047049422941579,
+      "cost_after": 0.11590024896408423,
+      "cost_before": 0.11591283906487913,
+      "geometry_agrees": true,
+      "robust": true
+    },
+    {
+      "accepted": true,
+      "after": 0.3047049422941579,
+      "attempt": 785,
+      "before": 0.3047049422941579,
+      "cost_after": 0.11590091407526651,
+      "cost_before": 0.11591283906487913,
+      "geometry_agrees": true,
+      "robust": true
+    },
+    {
+      "accepted": true,
+      "after": 0.3047049422941579,
+      "attempt": 841,
+      "before": 0.3047049422941579,
+      "cost_after": 0.11590100126716049,
+      "cost_before": 0.11591283906487913,
+      "geometry_agrees": true,
+      "robust": true
+    },
+    {
+      "accepted": true,
+      "after": 0.3047049422941579,
+      "attempt": 875,
+      "before": 0.3047049422941579,
+      "cost_after": 0.1159005152842817,
+      "cost_before": 0.11591283906487913,
+      "geometry_agrees": true,
+      "robust": true
+    },
+    {
+      "accepted": true,
+      "after": 0.3047049422941579,
+      "attempt": 927,
+      "before": 0.3047049422941579,
+      "cost_after": 0.11590039996553228,
+      "cost_before": 0.11591283906487913,
+      "geometry_agrees": true,
+      "robust": true
+    },
+    {
+      "accepted": true,
+      "after": 0.3047049422941579,
+      "attempt": 955,
+      "before": 0.3047049422941579,
+      "cost_after": 0.11590078871097335,
+      "cost_before": 0.11591283906487913,
+      "geometry_agrees": true,
+      "robust": true
+    },
+    {
+      "accepted": true,
+      "after": 0.3047049422941579,
+      "attempt": 1022,
+      "before": 0.3047049422941579,
+      "cost_after": 0.1159007506073224,
+      "cost_before": 0.11591283906487913,
+      "geometry_agrees": true,
+      "robust": true
+    },
+    {
+      "accepted": true,
+      "after": 0.3047049422941579,
+      "attempt": 1024,
+      "before": 0.3047049422941579,
+      "cost_after": 0.11590093721013775,
+      "cost_before": 0.11591283906487913,
+      "geometry_agrees": true,
+      "robust": true
+    }
+  ]
+}

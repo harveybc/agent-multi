@@ -74,3 +74,15 @@ def test_frozen_continuation_gate_requires_safety_and_cost_progress():
     assert not qualify_twin_continuation(rows)
     for r in rows:r['cost_after']=.19;r['after']=.31
     assert not qualify_twin_continuation(rows)
+
+
+def test_independent_manual_native_derivative():
+    from app.role_routed_critic import RoleHeads
+    from tools.verify_twin_complete_run import manual_complete_system
+    head=RoleHeads(nn.Sequential(nn.Linear(4,3),nn.SiLU(),nn.Linear(3,3)).double(),1,71)
+    z=torch.tensor(np.random.default_rng(11).normal(size=(2,5,4)))
+    old=np.array([0,2,4]);actions=np.array([0,1,2])
+    gaps,j=twin_complete_jacobian(head,z,old,actions)
+    gm,jm=manual_complete_system(head.state_dict(),z.numpy()[:,old],actions)
+    np.testing.assert_allclose(gaps,gm,atol=1e-13)
+    np.testing.assert_allclose(j,jm,atol=1e-13)
