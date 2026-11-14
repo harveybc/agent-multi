@@ -1,6 +1,25 @@
 # Adaptive Multi-Asset Trading Work Plan
 
-## Execution Update: 2026-11-13
+## Execution Update: 2026-11-14
+
+Phase2 retains [selected71 actor299](299_SELECTED72_CUMULATIVE_SELECTION.md),
+28groups and49 cumulative return candidates. STL is paused; no seasonal
+features enter the pool. This supersedes older statements about running STL.
+[336](336_STALLED_PROPOSAL_SOLVER_CONTRAST.md) isolated a protected-update
+failure from switching the minimum twin; [337](337_TWIN_COMPLETE_PROTECTION.md)
+fixed it locally (256/256 accepted,3.62% lower FIT regret), without improved
+held internal TRAIN scores or actor promotion. [338](338_TWIN_PROTECTION_PAIRED_REPLICATION.md)
+completed the four-case paired replication and automatic independent verifier:
+1024/1024 accepted updates,matched FIT regret2.91% lower,internal transfer mixed.
+Next is saved-weight FIT loss/decision-crossing attribution, not a new floating
+pass on the unchanged actor.
+Per-step single-observation guards now accompany batched guards; checkpoint-only
+detection was insufficient. See [method state](generalization/PROJECT_METHOD_STATE.json)
+and [findings](generalization/FINDINGS_AND_PROGRESS.md) for the exact resume point.
+Do not restart an unchanged floating pass or mix this diagnostic with live/COT
+source qualification. Retsu's integration lane remains independent.
+
+## Historical Execution Update: 2026-11-13
 
 [Full71 paired STL313](313_FULL71_MATCHED_STL.md): owner permits reduced
 common temporal support but no feature removal. Preparation is running with
@@ -1141,11 +1160,12 @@ The detailed gates and deliverables are in [08 Implementation Roadmap](08_IMPLEM
 
 ## Updating This Plan
 
-Current phase2 resume point (2026-11-10):
-[263 Cumulative Phase2 Results](263_CUMULATIVE_PHASE2_RESULTS.md), completed
-69 ->69 ->69. All51 historical phase2 removals were tested;112 evaluations.
-Preserve the current actor and qualify bounded refinement as the next model
-experiment; no repeated unchanged mask pass or automatic long refit.
+Current phase2 resume point (2026-11-14):
+[299 Selected71](299_SELECTED72_CUMULATIVE_SELECTION.md), with49 absent phase2
+features retained as return candidates. Protected critic-refinement diagnostics
+336-338 are linked above and in the machine-readable method state. Preserve
+the actor until a changed policy qualifies; no repeated unchanged mask pass
+or automatic long refit. The older263/69-input round is historical.
 [Retsu handoff](../handoffs/MUSASHI_TO_RETSU_SELECTED69_REAL_INPUTS_2026_11_10.md)
 owns the independent real-time producer/paper integration work.
 

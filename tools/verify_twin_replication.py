@@ -26,6 +26,41 @@ def wait_complete(root,seconds):
         time.sleep(min(10.,remaining))
 
 
+def render_curves(result,destination):
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    fig,axes=plt.subplots(3,4,figsize=(15,9),sharex='col')
+    for col,(fold,seed) in enumerate([(f,s) for f in ('A','B') for s in (19,43)]):
+        for method,color in (('active','#b45b35'),('complete','#16856a')):
+            unit=next(u for u in result['units'] if (u['fold'],u['seed'],u['method'])==(fold,seed,method))
+            curve=unit['curve'];xs=[p['offset'] for p in curve]
+            ys=([p['assessment']['stable_added']['gpu']['regret'] for p in curve],
+                [p['assessment']['observation']['fit']['gpu']['cost'] for p in curve],
+                [p['accepted'] for p in curve])
+            for row,y in enumerate(ys):axes[row,col].plot(xs,y,label=method,color=color)
+        axes[0,col].set_title(f'{fold} / {seed}')
+        for row in range(3):axes[row,col].set_xlim(0,256);axes[row,col].grid(alpha=.2)
+        axes[2,col].set_xlabel('Additional attempted updates')
+    for row,label in enumerate(('Stable-added FIT regret','Full FIT cost','Accepted updates')):axes[row,0].set_ylabel(label)
+    axes[0,0].legend();fig.suptitle('Same primal solver, different twin constraints; source actor unchanged')
+    destination.parent.mkdir(parents=True,exist_ok=True)
+    fig.tight_layout();fig.savefig(destination,dpi=150);plt.close(fig)
+
+
+def decision_changes(before,after,targets,indices,kinds):
+    old=before.min(0).argmax(1);new=after.min(0).argmax(1);rows=[]
+    for i in indices:
+        if old[i]==new[i]:continue
+        delta=float(targets[i,old[i]]-targets[i,new[i]])
+        rows.append(dict(row=int(i),kind=kinds[i],before=int(old[i]),after=int(new[i]),
+            regret_delta=delta,beneficial=delta<0,harmful=delta>0))
+    delta=float(np.mean(targets[indices,old[indices]]-targets[indices,new[indices]]))
+    if abs(sum(r['regret_delta'] for r in rows)/len(indices)-delta)>1e-12:raise ValueError('VERIFY_CHANGE_ACCOUNTING')
+    return dict(changed=len(rows),beneficial=sum(r['beneficial'] for r in rows),harmful=sum(r['harmful'] for r in rows),
+        regret_delta=delta,rows=rows)
+
+
 def run(a):
     wait_complete(a.run,a.wait_seconds);cfg=read(a.run/'CONFIG.json');verify_done(a.run,cfg['identity'])
     if cfg['schema']!='twin_protection_replication.v2' or cfg['transaction_guard']!='original_batched_plus_cpu_gpu_single':
@@ -42,7 +77,8 @@ def run(a):
     if keys!=expected or len(units)!=8:raise ValueError('VERIFY_UNITS')
     support=read(a.coverage/'prepared/SUPPORT.json')
     z=torch.load(a.coverage/'prepared/DATA.pt',weights_only=True,map_location='cpu')['z'].double().numpy()
-    y=np.stack([validate_record(r) for r in read(a.coverage/'PANEL.json')['records']])
+    records=read(a.coverage/'PANEL.json')['records']
+    y=np.stack([validate_record(r) for r in records]);kinds=[r['kind'] for r in records]
     checked=[];table=[];transfer=[]
     for fold in ('A','B'):
         for seed in (19,43):
@@ -84,7 +120,8 @@ def run(a):
                         if any(abs(actual[k]-score[k])>1e-12 for k in actual):raise ValueError('VERIFY_METRICS')
                     checked.append(dict(fold=fold,seed=seed,method=method,offset=offset,min_margin_surplus=surplus))
                     transfer.append(dict(fold=fold,seed=seed,method=method,offset=offset,
-                        scopes={k:quality(q[:,ix],y[ix]) for k,ix in scopes.items()}))
+                        scopes={k:quality(q[:,ix],y[ix]) for k,ix in scopes.items()},
+                        changes={k:decision_changes(sourceq,q,y,ix,kinds) for k,ix in scopes.items()}))
                     if offset==256:row[method]=dict(accepted=cp['accepted'],stable_added=quality(q[:,stable],y[stable]),
                         geometry_agrees=assessment['geometry_agrees'],scopes=transfer[-1]['scopes'])
             table.append(row)
@@ -100,7 +137,8 @@ def run(a):
         '| --- | ---: | ---: | ---: | ---: | ---: |']
     for r in table:
         lines.append(f"| {r['fold']}{r['seed']} | {r['active']['accepted']} | {r['complete']['accepted']} | {r['source_regret']:.9f} | {r['active']['stable_added']['regret']:.9f} | {r['complete']['stable_added']['regret']:.9f} |")
-    (a.output/'RESULTS.md').write_text('\n'.join(lines)+'\n');seal(a.output,cfg['identity']);print('\n'.join(lines))
+    (a.output/'RESULTS.md').write_text('\n'.join(lines)+'\n');render_curves(result,a.output/'CURVES.png')
+    seal(a.output,cfg['identity']);print('\n'.join(lines))
 
 
 if __name__=='__main__':

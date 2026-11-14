@@ -1,0 +1,47 @@
+{
+  "batch": 128,
+  "budget": 256,
+  "cells": [
+    [
+      "A",
+      19
+    ],
+    [
+      "A",
+      43
+    ],
+    [
+      "B",
+      19
+    ],
+    [
+      "B",
+      43
+    ]
+  ],
+  "code": {
+    "app/decision_cost_objective.py": "51749bf4072f2f49f3103f668012322485f7e210857635b2617d8c73cdc3ed9f",
+    "app/interior_adamw_repair.py": "6eaea67821aa337fca3037ecca0ad8bddb5a174d471ce401dadfde242636c12d",
+    "app/primal_direction_projection.py": "d4833e27bbba81d2e2931a19b5d25ce9feae115c54cc4ec56a72d7384b276765",
+    "app/twin_complete_protection.py": "7780b1314ced945b89959c176aee54045ee2cbfb8da40ba407f6e66912093231",
+    "tools/run_automated_robust_refinement.py": "0a7fda85b19cc204aa04cf9a32a3b7baf461a09fe147a60ac5d32a969b413914",
+    "tools/run_decision_cost_contrast.py": "76d033640377b37c26d8f21db34336612d7a552e3dd014af50bbd59793d758c6",
+    "tools/run_twin_protection_replication.py": "05915427d7c00be53c824f6e80353ab2dd849e5541c791b1b11f72b827f66ba2"
+  },
+  "identity": "43b9e5c253c63d58a68e378b099364c04ae3bedf96b18038f1e620acc62fe9da",
+  "lr": 2.9999999999999997e-05,
+  "methods": [
+    "active",
+    "complete"
+  ],
+  "parents": {
+    "coverage": "1a6a64dfd71e2ada45f3c3e069521580108ce7db5a804692733d3be39885ebb8",
+    "previous": "09492d5af5fec12cbde98cd641fb84046cfbc865821b4840f3d9434717340a7a",
+    "probe": "32a49fbb371a3637e669df9095026be9fab5e711b5942916f2ae330f53058621",
+    "source": "7603f573875f72abf0cad6e4166b6a3328c21915819f903245fa65b6b486b41e"
+  },
+  "schema": "twin_protection_replication.v2",
+  "source_actor_sha256": "69b5254489d224d4b20ac358956e4dd3b9a67a2f214a9aff98045c5def25a536",
+  "transaction_guard": "original_batched_plus_cpu_gpu_single",
+  "weight_decay": 0.01
+}

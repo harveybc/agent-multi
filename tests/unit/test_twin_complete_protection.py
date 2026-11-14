@@ -119,3 +119,21 @@ def test_automatic_verifier_wait_is_bounded_and_refuses_failure(tmp_path):
     (tmp_path/'DONE.json').write_text('{}')
     wait_complete(tmp_path,0)
     with pytest.raises(ValueError,match='WAIT_BUDGET'):wait_complete(tmp_path,-1)
+
+
+def test_diagnostic_plot_contains_all_paired_cases(tmp_path):
+    from tools.verify_twin_replication import render_curves
+    curve=[dict(offset=i,accepted=i,assessment=dict(stable_added=dict(gpu=dict(regret=.3-i/10000)),
+        observation=dict(fit=dict(gpu=dict(cost=.2-i/10000))))) for i in (0,64,256)]
+    result=dict(units=[dict(fold=f,seed=s,method=m,curve=curve) for f in ('A','B') for s in (19,43) for m in ('active','complete')])
+    target=tmp_path/'curves.png';render_curves(result,target)
+    assert target.read_bytes().startswith(b'\x89PNG\r\n\x1a\n') and target.stat().st_size>10000
+
+
+def test_decision_change_attribution_reconciles_regret():
+    from tools.verify_twin_replication import decision_changes
+    before=np.zeros((2,3,3));before[:,:,0]=1;after=before.copy()
+    after[:,0,1]=2;after[:,1,2]=2
+    target=np.array([[0,3,1],[2,0,-1],[1,0,0.]])
+    r=decision_changes(before,after,target,np.arange(3),['flat','long','short'])
+    assert r['changed']==2 and r['beneficial']==1 and r['harmful']==1 and r['regret_delta']==0

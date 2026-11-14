@@ -11,18 +11,19 @@ and execution-policy plugins loaded from entry points.
 
 ## Status
 
-**Main phase2 lane (2026-11-13):** all STL work is paused by the owner;
-its services are disabled and no seasonal features enter the selection pool.
-The selected71 actor and all49 cumulative return candidates are preserved.
-The frozen-actor [critic coverage contrast314](docs/work_plan/314_CRITIC_COVERAGE_CONTRAST.md)
-completed all four arms with exact actor preservation. Its successor,
-[representation diagnostic315](docs/work_plan/315_AUTOMATED_CRITIC_REPRESENTATION.md),
-completed six critic-only fits and two reused controls without promotion.
-[Native diagnostic316](docs/work_plan/316_CRITIC_IDENTIFIABILITY.md) then found
-three same-market state conflicts in16 origins. No actor or input change;
-next clarify marginal versus position-specific critic target semantics before
-another refinement. Results do not establish absence of useful market signal.
-Older status entries below describe historical experiments, not running queues.
+**Main phase2 lane (2026-11-14):** selected71 actor299,28 groups and all49
+cumulative return candidates are preserved; STL remains paused. The
+[336 witness audit](docs/work_plan/336_STALLED_PROPOSAL_SOLVER_CONTRAST.md)
+isolated a min-of-twin derivative defect in protected critic refinement.
+[337](docs/work_plan/337_TWIN_COMPLETE_PROTECTION.md) recovered256/256 updates
+and reduced local FIT decision regret3.62%, but internal TRAIN transfer worsened.
+[338 paired replication](docs/work_plan/338_TWIN_PROTECTION_PAIRED_REPLICATION.md)
+completed all four cases with the same solver and per-transaction batch/single
+safety checks:1024/1024 updates accepted,matched FIT regret2.91% lower,internal
+transfer mixed. No source actor, inputs or live model have changed. Canonical
+resume state: [method state](docs/work_plan/generalization/PROJECT_METHOD_STATE.json).
+Historical COT/source-clock qualification is separate; these diagnostics do not
+certify live inputs. Older status entries below are historical, not running queues.
 
 **Threshold calibration (2026-11-10):** [results261](docs/work_plan/261_CLOSE_THRESHOLD_RESULTS_AND_PHASE2_ROADMAP.md)
 complete48 fit-only calibrations on24 frozen heads. The primary monitor result
