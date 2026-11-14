@@ -1,5 +1,16 @@
 {
   "schema": "generalization_method.v1",
+  "research_scope_reconciliation_353": {
+    "document": "../353_SELECTION_RESEARCH_RECONCILIATION.md",
+    "status": "INVENTORY_REVIEWED_NO_NEW_EXPERIMENT_LAUNCH",
+    "local_frozen_selection_complete": true,
+    "all_selection_generalization_experiments_complete": false,
+    "synthetic_G3_training_complete": false,
+    "joint_longer_history_comparison_complete": false,
+    "mmd_contrast_evidence_found": false,
+    "stl_owner_paused": true,
+    "recommendation": "Account for open data experiments before expensive DEAP: current71 producer/joint-history compatibility, then qualified matched G3 augmentation. Architecture implementation preparation can continue. Do not infer complete research from local351 closure or restart owner-paused STL."
+  },
   "current_stage": "PHASE2_CLOSED_ARCHITECTURE_GENE_PREFLIGHT_COMPLETE_BUILDERS_AND_TRAINING_GATES_NEXT",
   "architecture_gene_preflight_352": {
     "document": "../352_ARCHITECTURE_GENE_PREFLIGHT.md",

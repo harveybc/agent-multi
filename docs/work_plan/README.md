@@ -2,6 +2,12 @@
 
 ## Execution Update: 2026-11-14
 
+Scope clarification after owner review: [353](353_SELECTION_RESEARCH_RECONCILIATION.md)
+reconciles the broader research backlog.351 closes ONLY local frozen selection;
+synthetic augmentation G3 was not trained, extended joint-history comparisons
+are not established complete, MMD remains untested, and STL remains owner-paused.
+Do not report the entire selection/generalization program as finished.
+
 Owner correction: [351](351_PHASE2_EXIT_AND_ARCHITECTURE_SEARCH.md) is the
 current execution order.350 retained299 and closed critic/actor micro-refinement.
 Musashi now owns a bounded phase2 final-neighborhood closure, then component-wise
