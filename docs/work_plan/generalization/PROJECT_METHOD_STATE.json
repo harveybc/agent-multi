@@ -1,6 +1,14 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "ADAMW_DECISION_PRESERVATION_COMPLETE_NO_PROMOTION",
+  "current_stage": "ROBUST_DIRECTION_FEASIBILITY_IMPLEMENTED",
+  "robust_direction_feasibility_330": {
+    "document": "../330_ROBUST_DIRECTION_FEASIBILITY.md",
+    "status": "IMPLEMENTED_BEFORE_RUN",
+    "planned_starts": 8,
+    "independent_proposals": 64,
+    "model_promoted": false,
+    "next_action": "Run focused tests and GPU readiness; execute bounded paired projection probe on authentic initial and protected8192 states; independently verify margins and learning witnesses before any long fit. Preserve299 actor and71 inputs."
+  },
   "adamw_decision_preservation_329": {
     "document": "../329_ADAMW_DECISION_PRESERVATION.md",
     "status": "COMPLETE_STALLING_AND_CPU_PORTABILITY_FAILURE",
