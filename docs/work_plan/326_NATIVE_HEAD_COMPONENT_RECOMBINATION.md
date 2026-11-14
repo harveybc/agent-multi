@@ -1,5 +1,9 @@
 # Native Critic Head Component Recombination
 
+Status: COMPLETE, no hybrid accepted or model promoted. Runtime commit
+`4dd29868`; execution identity
+`954530afa82c383de8006736468767135858dcb3626e5427c845e8b2caa33012`.
+
 Owner authorizes the next bounded diagnostic after325. No training, actor
 update, new observations, source mutation or promotion. Source299,71 inputs,
 49 cumulative phase2 return candidates and paused STL remain unchanged.
@@ -62,3 +66,46 @@ That later contrast is not part of this no-training diagnostic.
 Save each hybrid state separately, all metrics and FIT decisions, raw outputs,
 interaction residuals and a comparison table. Preserve all failures. No new
 2024 or TEST inference and no full-account return claim.
+
+## Completed Results
+
+All16 hybrids ran in1.41 seconds on the primary GPU using cached embeddings.
+This is inference over small saved heads, NOT another full training run.
+17 focused tests passed. Independent verification checked17 seals,128 donor
+tensors including biases and128 metric scopes. A separate float64 NumPy CPU
+forward reproduced every greedy decision, with maximum value difference
+2.188132e-6 from GPU float32.12 original endpoint replays were GPU-exact.
+The bilinear interaction identity had maximum residual1.353670e-6.
+
+Mean regrets across four paired fold/seed contexts (lower is better):
+
+| Components | Donor updates | Original FIT | Expanded FIT | Audit, descriptive | FIT passes |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Original control | 8192 | 0.008043 | 0.232719 | 0.236451 | reference |
+| Complete expanded head | 8192 | 0.099032 | 0.123486 | 0.249055 | reference |
+| Control hidden / expanded output | 8192 | 0.013302 | 0.238665 | 0.229387 | 0/4 |
+| Expanded hidden / control output | 8192 | 0.107318 | 0.144359 | 0.246023 | 0/4 |
+| Control hidden / expanded output | 32768 | 0.026084 | 0.242835 | 0.239268 | 0/4 |
+| Expanded hidden / control output | 32768 | 0.118331 | 0.126234 | 0.242797 | 0/4 |
+
+Preserving the original hidden component recovers much of original-FIT
+behavior relative to the complete expanded head, but the unadapted mixed
+head does not jointly preserve original decisions and improve expanded FIT.
+None of16 hybrids passes. The lower audit regret of one aggregate is not a
+promotion criterion and does not override the predeclared FIT gate.
+
+This rejects simple checkpoint component substitution as the tested repair.
+It does not reject fitting a new output map against a frozen hidden layer:
+the donated output map was fitted against a different hidden representation.
+The next bounded contrast is warm-start output-only (54 parameters) versus
+full native heads (3398 parameters), starting from the SAME authenticated
+control, same expanded-FIT targets and paired sampling, with original-FIT
+preservation measured throughout. Keep control and fixed8192/32768 endpoints;
+no new feature removal or actor update before interpreting that contrast.
+That training is not launched by326.
+
+Source299 and71 inputs are byte-preserved. No new trading return, live
+qualification or validation2024 result is claimed. Evidence:
+[full paired table](generalization/head_recombination_20261113/RESULTS.md),
+[complete metrics](generalization/head_recombination_20261113/RESULT.json),
+[independent verification](generalization/head_recombination_20261113/INDEPENDENT_VERIFY.json).

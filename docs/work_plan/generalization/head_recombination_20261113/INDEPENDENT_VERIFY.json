@@ -1,0 +1,12 @@
+{
+  "identity": "954530afa82c383de8006736468767135858dcb3626e5427c845e8b2caa33012",
+  "seals_verified": 17,
+  "hybrids_verified": 16,
+  "donor_tensors_verified": 128,
+  "metric_scopes_verified": 128,
+  "fit_gate_passes": 0,
+  "source_unchanged": true,
+  "numpy_cpu_forward_max_error": 2.1881317060490346e-06,
+  "numpy_cpu_greedy_disagreements": 0,
+  "exact_gpu_endpoint_replays": 12
+}

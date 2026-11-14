@@ -1,14 +1,23 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "NATIVE_HEAD_RECOMBINATION_PREPARED",
+  "current_stage": "NATIVE_HEAD_RECOMBINATION_COMPLETE_NO_PROMOTION",
   "native_head_recombination_326": {
     "document": "../326_NATIVE_HEAD_COMPONENT_RECOMBINATION.md",
-    "status": "PREPARED_TESTS_PASS",
+    "status": "COMPLETE_NO_HYBRID_PASSES_FIT_GATE",
+    "runtime_commit": "4dd29868",
+    "identity": "954530afa82c383de8006736468767135858dcb3626e5427c845e8b2caa33012",
+    "seconds": 1.4084604569943622,
+    "verified_seals": 17,
+    "verified_donor_tensors": 128,
+    "verified_metric_scopes": 128,
+    "numpy_cpu_forward_max_error": 2.1881317060490346e-06,
+    "numpy_cpu_greedy_disagreements": 0,
+    "fit_gate_passes": 0,
     "focused_tests_passed": 17,
-    "planned_hybrids": 16,
+    "completed_hybrids": 16,
     "optimizer_steps": 0,
     "model_promoted": false,
-    "next_action": "Execute same-seed paired hidden/output recombination, authenticate donor tensors and self-replays, evaluate the frozen original/expanded FIT preservation rule. Stop/audit descriptive; preserve299 and71 inputs."
+    "next_action": "Matched warm-start output-only versus full-head fit from the SAME authenticated control, same expanded FIT and fixed budgets8192/32768; preserve original-FIT decision quality. Recombination alone failed16/16. Training successor not launched. Source299 and71 inputs unchanged; no actor promotion or unchanged floating; STL paused."
   },
   "native_decision_error_325": {
     "document": "../325_NATIVE_DECISION_ERROR_ATTRIBUTION.md",

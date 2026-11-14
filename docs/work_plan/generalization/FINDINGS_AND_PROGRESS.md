@@ -505,3 +505,24 @@ This is path-dependent accounting, not proof that the layer should be frozen.
 Next use saved component recombinations to test that explanation on FIT before
 any matched warm-start output-only/full-head contrast. No promotion, no new
 training in325, source299 and71 inputs intact.17 tests pass; full report325.
+
+## F-HEAD-COMPONENT-SUBSTITUTION-DOES-NOT-PRESERVE-BOTH-FIT-SUPPORTS
+
+2026-11-13,326:16 exact donor hybrids,12 GPU-exact endpoint replays,
+17 seals,128 tensor-provenance checks and128 independently checked metric
+scopes. A separate NumPy forward agrees on every decision (maximum value
+difference2.188132e-6). No optimizer updates;17 focused tests pass.
+
+At8192 donor updates, control-hidden/new-output recovers original-FIT regret
+to0.013302 versus0.099032 for the complete expanded head, but expanded-FIT
+regret0.238665 does not improve the original control0.232719. Across both
+directions and endpoints,0/16 hybrids satisfy the frozen joint FIT rule.
+An aggregate audit improvement cannot substitute for that rule.
+
+This isolates a component compatibility problem to test, not a proven sole
+cause: hidden and output maps were fitted together and naive substitution
+does not adapt the map to its new representation. Next compare output-only
+warm-start fitting (54 trainable parameters) with full-head warm-start fitting
+(3398), from the same control, on the same expanded FIT and fixed budgets.
+This successor is not launched yet. Source299,71 inputs,49 cumulative return
+candidates and paused STL remain intact. No new trading performance claimed.

@@ -1,0 +1,19 @@
+{
+  "code": {
+    "app/head_component_recombination.py": "32084d2f251a4fa3c7eaab32e27efdfc77c0772cb481eda645fa93f9b5e305ca",
+    "tools/analyze_native_decision_error.py": "43502ad35721fff0df460af3b42bd020f63ac8a0353b8e063455098953e12fe0",
+    "tools/run_head_component_recombination.py": "816afd2701e481955c1a988d067633785fb9263a065b9ce4d3933c9254c1cc0a"
+  },
+  "coverage": "1a6a64dfd71e2ada45f3c3e069521580108ce7db5a804692733d3be39885ebb8",
+  "diagnosis": "c9f949404158210905ed28c925d2571871b61786878ee0670c4b7af9cc1ebaee",
+  "identity": "954530afa82c383de8006736468767135858dcb3626e5427c845e8b2caa33012",
+  "optimizer_steps": 0,
+  "previous": "e1d5e7197a8969aa3a65ffa5b2a0af278f74df70d538cce14acba691ddab9c6e",
+  "schema": "native_head_recombination.v1",
+  "source_sha256": "69b5254489d224d4b20ac358956e4dd3b9a67a2f214a9aff98045c5def25a536",
+  "tolerance": 1e-08,
+  "variants": [
+    "control_hidden_expanded_output",
+    "expanded_hidden_control_output"
+  ]
+}
