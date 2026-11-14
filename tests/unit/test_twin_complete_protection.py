@@ -86,3 +86,26 @@ def test_independent_manual_native_derivative():
     gm,jm=manual_complete_system(head.state_dict(),z.numpy()[:,old],actions)
     np.testing.assert_allclose(gaps,gm,atol=1e-13)
     np.testing.assert_allclose(j,jm,atol=1e-13)
+
+
+def test_finite_evaluator_can_reject_step_before_checkpoint(monkeypatch):
+    from tools.run_automated_robust_refinement import Context
+    from app.interior_adamw_repair import transactional_step
+    from app.training_forensics import tree_digest
+    from copy import deepcopy
+    ctx=object.__new__(Context);ctx.double=nn.Linear(1,1).double();ctx.zcpu=torch.zeros((2,1,1))
+    ctx.old=np.array([0]);ctx.actions=np.array([0]);ctx.margin=np.array([1e-5])
+    ctx.observe=lambda state:dict(passed=True)
+    monkeypatch.setattr('tools.run_automated_robust_refinement.gap_jacobian',
+        lambda *args:(np.ones(2),np.zeros((2,2))))
+    head=nn.Linear(1,1);opt=torch.optim.AdamW(head.parameters(),lr=.01)
+    def fake_fit(head,optimizer,z,y,loss_fn=None):
+        optimizer.zero_grad();head(torch.ones((1,1))).sum().backward();optimizer.step();return False
+    monkeypatch.setattr('app.interior_adamw_repair.fit_step',fake_fit)
+    initial=deepcopy(head.state_dict());initial_opt=deepcopy(opt.state_dict());seen=[]
+    def single(state):seen.append(1);return dict(passed=False)
+    record=transactional_step(head,opt,None,None,
+        lambda before,proposed:ctx.repair(before,proposed,'interior',finite_evaluate=single))
+    assert not record['accepted'] and len(seen)==24
+    assert tree_digest(head.state_dict())==tree_digest(initial)
+    assert tree_digest(opt.state_dict())==tree_digest(initial_opt)

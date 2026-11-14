@@ -1,10 +1,14 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "TWIN_PROTECTION_REPLICATION_IMPLEMENTED",
+  "current_stage": "TWIN_PROTECTION_REPLICATION_GUARD_CORRECTED",
   "twin_protection_replication_338": {
     "document": "../338_TWIN_PROTECTION_PAIRED_REPLICATION.md",
-    "status": "IMPLEMENTED_TESTED_BEFORE_EXECUTION",
-    "tests_passed": 53,
+    "status": "REVISED_AFTER_TRANSACTION_GUARD_WITNESS",
+    "tests_passed": 54,
+    "first_run_failed_before_first_checkpoint": true,
+    "first_bad_step": 10,
+    "first_gpu_single_margin_deficit": 4.602432250976644e-8,
+    "transaction_single_guard_now_required": true,
     "paired_cases": 4,
     "arms": 8,
     "attempts_per_arm": 256,

@@ -34,8 +34,9 @@ def run(a):
     sc=parents['source']
     if (sc['coverage']!=parents['coverage']['identity'] or sc['probe']!=parents['probe']['identity']
             or parents['previous']['parents']['source']!=sc['identity']):raise ValueError('REPLICATION_LINEAGE')
-    cfg=dict(schema='twin_protection_replication.v1',parents={k:c['identity'] for k,c in parents.items()},
+    cfg=dict(schema='twin_protection_replication.v2',parents={k:c['identity'] for k,c in parents.items()},
         budget=256,methods=['active','complete'],cells=[['A',19],['A',43],['B',19],['B',43]],
+        transaction_guard='original_batched_plus_cpu_gpu_single',
         lr=sc['lr'],weight_decay=sc['weight_decay'],batch=sc['batch'],source_actor_sha256=sc['source_sha256'],
         code={k:file_sha(ROOT/k) for k in ('tools/run_twin_protection_replication.py','app/twin_complete_protection.py',
             'app/primal_direction_projection.py','app/interior_adamw_repair.py',
@@ -76,7 +77,8 @@ def run(a):
             def step(offset):
                 ix=schedule[1024+8192+offset-1]
                 return transactional_step(ctx.head,opt,ctx.z[:,ix],ctx.y[ix],
-                    lambda before,proposed:ctx.repair(before,proposed,'interior',projector=project_primal,twin_complete=method=='complete'),
+                    lambda before,proposed:ctx.repair(before,proposed,'interior',projector=project_primal,
+                        twin_complete=method=='complete',finite_evaluate=lambda state:ctx.observe(state,single=True)),
                     loss_fn=lambda q,t:cost_objective(q,t,'cost',ctx.temperature))
             if (out/'LATEST.pt').exists():
                 cp=torch.load(out/'LATEST.pt',weights_only=False,map_location='cpu')
