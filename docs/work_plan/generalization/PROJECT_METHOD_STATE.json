@@ -1,6 +1,15 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "RANK_PRESERVING_CALIBRATION_COMPLETE_STALL_ATTRIBUTED",
+  "current_stage": "STALLED_PROPOSAL_SOLVER_CONTRAST_IMPLEMENTED",
+  "stalled_solver_contrast_336": {
+    "document": "../336_STALLED_PROPOSAL_SOLVER_CONTRAST.md",
+    "status": "IMPLEMENTED_BEFORE_RUN",
+    "paired_proposals": 16,
+    "conditional_continuation_attempts_per_arm": 256,
+    "intermediate_user_approval_required": false,
+    "model_promoted": false,
+    "next_action": "Verify, execute paired solver contrast, exact legacy replay and conditional continuation. Independently verify projection witnesses and native decisions before any actor change."
+  },
   "rank_preserving_calibration_335": {
     "document": "../335_RANK_PRESERVING_VALUE_CALIBRATION.md",
     "status": "COMPLETE_VERIFIED_13_OF_16_DIAGNOSTIC_CALIBRATIONS_PASS",

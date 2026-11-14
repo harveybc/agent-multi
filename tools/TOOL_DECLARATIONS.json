@@ -2,6 +2,10 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "run_stalled_solver_contrast.py": {
+   "purpose": "Paired exact replay of stalled AdamW proposals with independent primal projection, fixed numerical guards and automatic decision-gated short continuation",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
+  },
   "run_affine_critic_calibration.py": {
    "purpose": "Closed-form TRAIN-only shared twin-head calibration with exact source replay, finite decision and margin guards, held descriptive readouts and no actor updates",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"

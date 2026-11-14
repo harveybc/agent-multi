@@ -46,7 +46,7 @@ class Context:
         return dict(passed=bool(all(g['passed'] for g in guards.values())),guards=guards,
             fit=dict(gpu=fit_quality(fit,self.targets[self.fit]),numpy=fit_quality(npfit,self.targets[self.fit])))
 
-    def repair(self,before,proposed,kind):
+    def repair(self,before,proposed,kind,projector=None):
         before={k:v.detach().cpu().clone() for k,v in before.items()}
         d=vector(proposed)-vector(before)
         def linearize(center):
@@ -57,7 +57,7 @@ class Context:
             state=moved(before,delta,1.)
             return dict(self.observe(state),motion=float(np.linalg.norm(vector(state)-vector(before))))
         result=repair_direction(d,linearize,evaluate,np.repeat(self.margin,2),
-            factor=1. if kind=='tangent' else 2.,max_repairs=1 if kind=='tangent' else 3)
+            factor=1. if kind=='tangent' else 2.,max_repairs=1 if kind=='tangent' else 3,projector=projector)
         delta=result.pop('delta');state=moved(before,delta,1.) if result['accepted'] else None
         return state,dict(result,proposal_norm=float(np.linalg.norm(d)))
 

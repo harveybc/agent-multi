@@ -7,7 +7,7 @@ from app.native_head_warm_start import fit_step
 from app.robust_adamw_direction import project_displacement
 
 
-def repair_direction(delta,linearize,evaluate,margin,factor=2.,max_repairs=3):
+def repair_direction(delta,linearize,evaluate,margin,factor=2.,max_repairs=3,projector=None):
     d=np.asarray(delta,dtype=float);margin=np.asarray(margin,dtype=float)
     norm=float(np.linalg.norm(d))
     if (d.ndim!=1 or not np.isfinite(d).all() or norm<=0 or margin.ndim!=1 or not len(margin)
@@ -18,7 +18,7 @@ def repair_direction(delta,linearize,evaluate,margin,factor=2.,max_repairs=3):
     for iteration in range(max_repairs):
         gaps,jac,actual_center=linearize(center)
         required=factor*margin-gaps+jac@actual_center
-        candidate,solver=project_displacement(d,jac,required)
+        candidate,solver=(project_displacement if projector is None else projector)(d,jac,required)
         ratio=float(np.linalg.norm(candidate)/norm)
         entry=dict(iteration=iteration,solver=solver,norm_ratio=ratio,trials=[]);repairs.append(entry)
         if not solver['feasible'] or not np.isfinite(ratio) or ratio>4.:
