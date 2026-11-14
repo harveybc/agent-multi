@@ -1,0 +1,42 @@
+{
+  "schema": "architecture_gene_contract.v1",
+  "status": "CONSTRUCTION_PREFLIGHT_NOT_SEARCH_LAUNCH",
+  "fixed": {
+    "features": 71,
+    "groups": 28,
+    "window_observations": 13,
+    "stride_rows": 2,
+    "outputs": "NOP_BUY_SELL_CLOSE_OPPOSITE_V1",
+    "normalization": "fixed_train",
+    "agent_state": "none",
+    "attention": "causal_patch_with_positional_encoding"
+  },
+  "genes": [
+    {"path":"architecture.branch_width","kind":"choice","values":[4,8,16,32]},
+    {"path":"architecture.branch_blocks","kind":"choice","values":[1,2,3]},
+    {"path":"architecture.core_width","kind":"choice","values":[8,16,32,64]},
+    {"path":"architecture.core_blocks","kind":"choice","values":[1,2,3,4]},
+    {"path":"architecture.head_width","kind":"choice","values":[4,8,16,32]},
+    {"path":"architecture.actor_head_width","kind":"choice","values":[4,8,16,32]},
+    {"path":"architecture.temporal_attention.patch_len","kind":"choice","values":[1,3,5,7]},
+    {"path":"architecture.temporal_attention.embedding","kind":"choice","values":[4,8,16,32]},
+    {"path":"architecture.temporal_attention.heads","kind":"choice","values":[1,2,4]},
+    {"path":"architecture.temporal_attention.feedforward","kind":"choice","values":[8,16,32,64]},
+    {"path":"architecture.temporal_attention.gate_init","kind":"linear","bounds":[0.0,0.5]},
+    {"path":"learning_rate","kind":"log10","bounds":[0.000001,0.001]},
+    {"path":"gamma","kind":"linear","bounds":[0.95,0.9995]},
+    {"path":"tau","kind":"log10","bounds":[0.0001,0.02]},
+    {"path":"weight_decay","kind":"choice","values":[0.0,0.000001,0.00001,0.0001,0.001,0.01]},
+    {"path":"entropy_fraction","kind":"linear","bounds":[0.3,0.9]},
+    {"path":"alpha","kind":"log10","bounds":[0.001,1.0]},
+    {"path":"critic_regularization.p","kind":"linear","bounds":[0.0,0.3]}
+  ],
+  "not_yet_enabled": {
+    "per_group_overrides": "Different widths/layer counts/types per group require a validated variable-width fusion adapter, not the shared branch settings above.",
+    "layer_types_kernels_dilations_activations": "Current TCN consumer hardcodes several of these. Add configurable builders and causality/shape tests before assigning genes.",
+    "independent_actor_critic_encoders_and_head_depths": "Current consumer shares the architecture definition; head widths can differ, depths cannot yet.",
+    "normalization_and_dropout_locations": "Only existing online-critic core dropout amplitude is exposed in this first construction audit; alternatives require paired mode/causality gates.",
+    "training_loop": "Batch sizes 32,64,128,256; replay, update frequency, optimizer families, stopping and component learning rates require actual training-path consumption tests, not merely config inspection.",
+    "strategy_coefficients": "Separate search block; business invariants and current risk profiles remain frozen."
+  }
+}

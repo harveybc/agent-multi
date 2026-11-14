@@ -2,7 +2,10 @@
 import argparse
 import copy
 import fcntl
+import os
 from pathlib import Path
+import subprocess
+import sys
 import time
 from types import SimpleNamespace
 
@@ -250,4 +253,10 @@ if __name__ == '__main__':
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         if not a.verify_only:
             run(a)
-        verify_and_export(a)
+        else:
+            verify_and_export(a)
+    # A fresh CPU process avoids reinitializing Torch interop threads and also
+    # keeps verification independent of the producer's in-memory modules.
+    if not a.verify_only:
+        subprocess.run([sys.executable, str(Path(__file__).resolve()), *sys.argv[1:], '--verify-only'],
+                       check=True, env=dict(os.environ, CUDA_VISIBLE_DEVICES=''))

@@ -160,3 +160,41 @@ Initial coverage census:111 final-context coherent-block neighbors,107 present
 in the299 cache and4 missing. This census is not the completed exit certificate.
 18 focused CPU tests pass, scoped Ruff passes. No fresh training is required
 for this frozen-neighborhood check.
+
+## Completed Exit
+
+Status: **LOCAL_FROZEN_NEIGHBORHOOD_STABLE**, identity
+`18ee3fd442c0f6ffe7a50b54a9e6cbcca74db61b9123b343e7bf27df404957cc`.
+The111 neighbors comprise67 retained coherent-block deletions and44 cumulative
+returns covering all49 absent phase2 features.107 neighbors were reused from
+authenticated299 evidence;4 were newly evaluated, plus the reused baseline.
+No move qualifies under the existing rule; no corrective cycle or new physical
+export is needed. The retained model is exactly299,71 inputs and28 groups.
+
+| Metric | TRAIN | Validation |
+|---|---:|---:|
+| Return |16.058224%|18.369946%|
+| Sharpe |0.781969|2.690712|
+| Orders |745|207|
+| Orders/week |3.564593|3.833333|
+
+Producer evaluation took10.98s (service including imports/preflight17.86s).
+The first automatic verifier invocation encountered a Torch interop-thread
+reinitialization error AFTER the producer sealed its results. Fresh-process CPU
+verification completed in7.03s service time, reproducing both accounts and
+independently enumerating every final neighbor. No selection evaluations were
+repeated. The orchestrator now invokes verification in a fresh CPU process.
+
+29 focused tests pass, including altered cache source/device/column-order/result
+rejection and the bounded-selector/decoder/ledger tests. Scoped Ruff passes.
+The original runtime remains pinned; only the orchestrator's future process
+handoff was repaired. This closes phase2 for the current frozen-weight method,
+not all possible joint feature/architecture combinations. A later materially
+different architecture may justify a separately identified selection study,
+but does not automatically reopen this one.
+
+Evidence: [result](generalization/phase2_closure_20261114/RESULT.json),
+[CPU verification](generalization/phase2_closure_20261114/VERIFIED.json).
+Next: [352 construction/lineage gates](352_ARCHITECTURE_GENE_PREFLIGHT.md),
+then configurable component builders and training-path consumption before DEAP.
+No live, STL, periodic-refit or critic microvariant was launched.

@@ -7,7 +7,12 @@ current execution order.350 retained299 and closed critic/actor micro-refinement
 Musashi now owns a bounded phase2 final-neighborhood closure, then component-wise
 architecture/training optimization with complete candidate gene/metric lineage.
 Satoshi owns live trading. Recent-data/retraining is not the next task here.
-The closure certificate and DEAP campaign have not yet run. Older diagnostic
+351 is now COMPLETE:111 final neighbors checked (107 cached,4 fresh),no eligible
+move,71 inputs/28groups retained, both CPU accounts reproduced. Phase2 closes as
+LOCAL_FROZEN_NEIGHBORHOOD_STABLE. [352](352_ARCHITECTURE_GENE_PREFLIGHT.md)
+starts architecture search preparation:18 genes,54 constructed/reloaded
+phenotypes,176 lineage events. DEAP training has not yet launched; configurable
+builders and actual training-path gene gates are next. Older diagnostic
 next-step wording below is historical, not a new queue.
 
 Phase2 retains [selected71 actor299](299_SELECTED72_CUMULATIVE_SELECTION.md),

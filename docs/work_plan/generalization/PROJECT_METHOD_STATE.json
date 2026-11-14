@@ -1,16 +1,38 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "PHASE2_FINAL_NEIGHBORHOOD_CLOSURE_BEFORE_ARCHITECTURE_DEAP",
+  "current_stage": "PHASE2_CLOSED_ARCHITECTURE_GENE_PREFLIGHT_COMPLETE_BUILDERS_AND_TRAINING_GATES_NEXT",
+  "architecture_gene_preflight_352": {
+    "document": "../352_ARCHITECTURE_GENE_PREFLIGHT.md",
+    "status": "CONSTRUCTION_VERIFIED_NOT_TRAINING_OR_DEAP",
+    "identity": "d4905aeb17cf56fefa83c95c45632db8c378c0f5423509816ef6ec8b686b11b4",
+    "genes": 18,
+    "requests": 88,
+    "distinct_phenotypes": 54,
+    "cached_aliases": 34,
+    "ledger_events": 176,
+    "cold_reload_exact": 54,
+    "tests_passed": 29,
+    "optimizer_steps": 0,
+    "deap_launched": false,
+    "next_action": "352 exact continuation: configurable per-group/component builders with baseline/causality/mode parity, training-path gene consumption including batch32, complete versioned candidate ledger/metrics, then staged DEAP. No owner decision needed. Never silently use old simple_sac_search without current attention/critic settings."
+  },
   "phase2_exit_and_search_351": {
     "document": "../351_PHASE2_EXIT_AND_ARCHITECTURE_SEARCH.md",
-    "status": "PROTOCOL_DOCUMENTED_NOT_YET_EXECUTED",
+    "status": "COMPLETE_LOCAL_FROZEN_NEIGHBORHOOD_STABLE",
+    "identity": "18ee3fd442c0f6ffe7a50b54a9e6cbcca74db61b9123b343e7bf27df404957cc",
+    "neighbors": 111,
+    "reused_neighbors": 107,
+    "fresh_neighbors": 4,
+    "qualifying_moves": 0,
+    "corrective_cycles": 0,
+    "cpu_accounts_exact": 2,
     "reference": "selected299",
     "features": 71,
     "groups": 28,
     "cumulative_absent_phase2_features": 49,
     "max_corrective_cycles": 2,
     "exit_states": ["LOCAL_FROZEN_NEIGHBORHOOD_STABLE", "BUDGET_CLOSED_NOT_LOCAL_OPTIMUM"],
-    "next_action": "Authenticate final-context neighbor coverage; reuse identical evidence and evaluate only missing neighbors. Bounded phase2 closure then architecture/training DEAP with full genotype, effective phenotype, metrics and component weight lineage. Live trading belongs to Satoshi, no periodic-retraining diversion."
+    "next_action": "Phase2 CLOSED for the current frozen method. Preserve selected299 and full cumulative feature ledger. Continue352 architecture/training optimization preparation; live trading belongs to Satoshi. No unchanged floating or critic microvariant."
   },
   "bounded_actor_utility_350": {
     "document": "../350_BOUNDED_ACTOR_UTILITY.md",
@@ -3288,7 +3310,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
-    "CURRENT351 SUPERSEDES all historical next-step entries below: bounded phase2 final-neighborhood closure on selected299, then architecture/training DEAP with complete candidate genotype/effective phenotype/metrics/weight lineage. No live trading or recent-data diversion; Satoshi owns that lane.350 terminal KEEP299 remains valid; critic micro-refinement closed.",
+    "CURRENT352 SUPERSEDES all historical next-step entries below:351 closes phase2 with111 verified final neighbors, no qualifying move.352 verifies18 construction genes/54 phenotypes, ledger176 events. Next implement per-component builders and actual training consumption/ledger gates then staged DEAP. No old simple architecture substitution, live trading, STL, periodic-refit or repeated floating. No owner decision required.",
     "CURRENT350: finite actor-head utility trial, eight accepted updates or64 attempts per seed19/43. Use largest TRAIN FIT fold and fixed349 procedure. Complete native accounts and cold verification, then export qualified changed actor or retain299 and close refinement; no automatic critic extension.",
     "CURRENT ORDER supersedes historical next-step text below: complete349 once, apply its fixed choice rule, then ONE bounded actor-utility trial and close critic diagnostics. Export and one phase2 round only if actual trading qualifies; otherwise preserve299 and do not repeat unchanged floating. See finite_exit_plan_349.",
     "344-345 COMPLETE: decision-targeted corrections verified; bounded stateful continuation has3 FIT wins and1 tie,5 improved decisions and0 worsened, mean regret1.57737% lower. Held decisions unchanged. Next matched64 retention from saved16 states with TOTAL four searches already exhausted; no new search, thresholds, actor updates or held-label fitting. Separate pinned continuation required; no user decision needed",
