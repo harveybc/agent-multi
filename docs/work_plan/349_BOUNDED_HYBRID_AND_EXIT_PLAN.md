@@ -73,4 +73,49 @@ of the model; failure to improve is a terminal outcome, not an infinite queue.
 
 ## Execution
 
-Implementation and verification are recorded below after the frozen run.
+COMPLETE_INDEPENDENTLY_VERIFIED. Runtime `d9f48dfc`, identity
+`f13fa164e21d5125b4f4a22d82ddcb51ce8a691940f34a11b21315684f7811cf`.
+Four cases completed in264.90seconds, supervisor exit0, zero restarts.
+54 focused regression tests and scoped Ruff checks pass.
+
+|Case|Accepted /16|FIT regret original / hybrid|Local substitutes|
+|---|---:|---:|---:|
+|A19|16|0.148179214 /0.148179214|1|
+|A43|13|0.139623538 /0.139623538|1|
+|B19|15|0.192573954 /0.192573954|0|
+|B43|16|0.231144661 /0.231144661|0|
+
+All16 allowed target searches were used; five selected targets received a
+locality attempt, two qualified and three fell back to the original correction.
+The two qualified corrections reduce other-row gap MSE by99.4037% and97.6628%
+(NumPy view) AT THOSE UPDATES. This is not a measurement of endpoint-wide drift,
+profit or generalization. All four endpoints have exactly the same complete FIT
+action vectors as345 in all five geometries. Internal TRAIN stop/audit decisions
+and regrets also match their controls. A19 soft cost improves slightly; A43
+soft cost is slightly worse than345, but still lower than its source. The
+frozen choice rule uses decision regret and actual local drift, not soft cost.
+
+The rule chooses HYBRID349, with zero strict endpoint-regret wins and zero
+losses. This means a qualifying locality adjustment, NOT improved trading.
+Both B19 and B43 final weights, optimizer states and RNG states are exactly
+identical to345; A weights/optimizer differ, RNGs match. The observed B19/A43
+missed gains at later offsets33/64 from347 are NOT claimed resolved by this
+16-attempt contrast. No64-step follow-up is launched: the finite exit applies.
+
+Verification:8 cold checkpoints,16 exact replayed transaction receipts;
+independent CPU verifies64 trace steps and native NumPy/Torch64 scores with
+maximum forward discrepancy7.99e-15. Separate local CPU verification and
+choice files match the automatic verifier byte-for-byte. Source299 unchanged,
+zero actor updates, no2024/TEST read, no promotion. All workers have exited.
+
+**Current next action:** the ONE bounded actor-utility contrast in the finite
+plan above. It is specified, not yet launched by349. Its integration must reuse
+the existing actor/refinement machinery, authenticate critic-to-native-head
+mapping and account baseline, and fix the finite attempt budget before any
+actor training. No new critic search, unchanged floating pass or user approval
+is required. After that test, qualify/export or preserve299 and close.
+
+[Configuration](generalization/hybrid_locality_20261114/CONFIG.json),
+[paired table](generalization/hybrid_locality_20261114/SUMMARY.csv),
+[verification](generalization/hybrid_locality_20261114/VERIFICATION.json),
+[terminal decision](generalization/hybrid_locality_20261114/DECISION.json).

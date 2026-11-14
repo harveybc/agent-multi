@@ -1,0 +1,95 @@
+{
+  "actor_updated": false,
+  "critic_diagnostics_closed": true,
+  "identity": "f13fa164e21d5125b4f4a22d82ddcb51ce8a691940f34a11b21315684f7811cf",
+  "locality_attempts": 5,
+  "next_action": "one_bounded_actor_utility_trial_then_close_or_export",
+  "paired_strict_wins": 0,
+  "reason": "no_paired_regret_loss_with_locality_gain",
+  "rows": [
+    {
+      "case": "A_19",
+      "control_drift": {
+        "cpu": 1.4788911115768925e-06,
+        "cpu_single": 1.4789171026469288e-06,
+        "gpu": 1.4788637766953417e-06,
+        "gpu_single": 1.47884324090375e-06,
+        "numpy": 1.4789028785663288e-06
+      },
+      "drift": {
+        "cpu": 8.819793416979747e-09,
+        "cpu_single": 8.820799835677237e-09,
+        "gpu": 8.817234500842832e-09,
+        "gpu_single": 8.822043091180236e-09,
+        "numpy": 8.819248163005225e-09
+      },
+      "offset": 1,
+      "qualified": true,
+      "target": 317
+    },
+    {
+      "case": "A_19",
+      "control_drift": {
+        "cpu": 1.9276884110551126e-05,
+        "cpu_single": 1.9276776920136047e-05,
+        "gpu": 1.9276868189268154e-05,
+        "gpu_single": 1.9276972668510144e-05,
+        "numpy": 1.9276987594590884e-05
+      },
+      "drift": null,
+      "offset": 2,
+      "qualified": false,
+      "target": 332
+    },
+    {
+      "case": "A_19",
+      "control_drift": {
+        "cpu": 7.715453396480128e-05,
+        "cpu_single": 7.715377569158221e-05,
+        "gpu": 7.715392584225936e-05,
+        "gpu_single": 7.715412018477821e-05,
+        "numpy": 7.715342755292916e-05
+      },
+      "drift": null,
+      "offset": 3,
+      "qualified": false,
+      "target": 285
+    },
+    {
+      "case": "A_43",
+      "control_drift": {
+        "cpu": 3.7822426616883354e-06,
+        "cpu_single": 3.7821753826869245e-06,
+        "gpu": 3.782363426273989e-06,
+        "gpu_single": 3.7823425158516873e-06,
+        "numpy": 3.782296961880809e-06
+      },
+      "drift": {
+        "cpu": 8.840486047813467e-08,
+        "cpu_single": 8.839399187883301e-08,
+        "gpu": 8.841023468176901e-08,
+        "gpu_single": 8.840071436380673e-08,
+        "numpy": 8.839833613052501e-08
+      },
+      "offset": 1,
+      "qualified": true,
+      "target": 246
+    },
+    {
+      "case": "B_19",
+      "control_drift": {
+        "cpu": 1.281250482286517e-06,
+        "cpu_single": 1.2812442995355516e-06,
+        "gpu": 1.2812677576252394e-06,
+        "gpu_single": 1.281233700910374e-06,
+        "numpy": 1.2812501661507733e-06
+      },
+      "drift": null,
+      "offset": 1,
+      "qualified": false,
+      "target": 507
+    }
+  ],
+  "selected": "hybrid349",
+  "substitutions": 2
+}
