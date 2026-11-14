@@ -26,6 +26,17 @@ from tools.run_training_forensics import checkpoint
 ROOT=Path(__file__).resolve().parents[1]
 
 
+def initialize_optimizer(head,snapshot,lr,weight_decay,mode):
+    if mode not in ('inherited','fresh'):raise ValueError('COST_OPT_MODE')
+    before=tree_digest(head.state_dict())
+    opt,_=configure_scope(head,'full_head',lr,weight_decay)
+    if mode=='inherited':opt.load_state_dict(deepcopy(snapshot))
+    steps={int(v['step']) for v in opt.state.values()}
+    if len(steps)>1 or (mode=='inherited' and not steps):raise ValueError('COST_OPT_START')
+    if tree_digest(head.state_dict())!=before:raise ValueError('COST_OPT_CHANGED_WEIGHTS')
+    return opt,next(iter(steps)) if steps else 0
+
+
 class CostContext(Context):
     def __init__(self,data,targets,support,proposal,fold,seed,limit):
         fit=list(support['folds'][fold]['expanded']);old=support['folds'][fold]['masks']['fit']
@@ -86,12 +97,27 @@ def run(a):
     pc,cc,rc=[read(p/'CONFIG.json') for p in (a.probe,a.coverage,a.control)]
     for path,c in ((a.probe,pc),(a.coverage,cc),(a.control,rc)):verify_done(path,c['identity'])
     if pc['parents'][1]!=cc['identity'] or rc['probe']!=pc['identity']:raise ValueError('COST_LINEAGE')
+    loss_control=None
+    if a.optimizer_state=='fresh':
+        if a.loss_control is None:raise ValueError('COST_RESET_NEEDS_INHERITED_CONTROL')
+        lc=read(a.loss_control/'CONFIG.json');verify_done(a.loss_control,lc['identity'])
+        for key,expected in (('probe',pc['identity']),('coverage',cc['identity']),('control',rc['identity']),
+                ('source_sha256',pc['source_sha256']),('short_budget',256),('objectives',['mse','cost','hybrid']),
+                ('temperature','median_positive_expanded_FIT_cost'),('lr',pc['lr']),
+                ('weight_decay',pc['weight_decay']),('batch',pc['batch'])):
+            if lc.get(key)!=expected:raise ValueError('COST_RESET_CONTROL_CONTRACT:'+key)
+        if lc.get('optimizer_state','inherited')!='inherited':raise ValueError('COST_RESET_CONTROL_MODE')
+        loss_control=read(a.loss_control/'RESULT.json')
+        if loss_control['identity']!=lc['identity']:raise ValueError('COST_RESET_CONTROL_IDENTITY')
+    elif a.loss_control is not None:raise ValueError('COST_UNEXPECTED_LOSS_CONTROL')
     cfg=dict(schema='decision_cost_contrast.v1',probe=pc['identity'],coverage=cc['identity'],control=rc['identity'],
         source_sha256=pc['source_sha256'],objectives=['mse','cost','hybrid'],short_budget=256,extended_budget=1024,
         lr=pc['lr'],weight_decay=pc['weight_decay'],batch=pc['batch'],temperature='median_positive_expanded_FIT_cost',
         code={k:file_sha(ROOT/k) for k in ('tools/run_decision_cost_contrast.py','app/decision_cost_objective.py',
             'app/native_head_warm_start.py','app/interior_adamw_repair.py','app/robust_adamw_direction.py',
             'tools/run_automated_robust_refinement.py','tools/probe_robust_adamw_direction.py')})
+    cfg['optimizer_state']=a.optimizer_state
+    cfg['inherited_loss_control']=loss_control['identity'] if loss_control is not None else None
     cfg['identity']=digest(cfg)
     if file_sha(a.bundle/'model.pt')!=cfg['source_sha256']:raise ValueError('COST_SOURCE')
     if (a.output/'CONFIG.json').exists() and read(a.output/'CONFIG.json')!=cfg:raise ValueError('COST_RESUME_IDENTITY')
@@ -112,10 +138,11 @@ def run(a):
     def unit(fold,seed,objective,budget):
         out=a.output/'units'/f'{fold}_{seed}_{objective}';ctx,snap=context(fold,seed)
         key=f'{fold}_{seed}';baseline[key]=ctx.baseline;receipts[key]=ctx.support_receipt
-        opt,_=configure_scope(ctx.head,'full_head',cfg['lr'],cfg['weight_decay']);opt.load_state_dict(snap['optimizer_before'])
-        original_steps={int(v['step']) for v in opt.state.values()}
-        if len(original_steps)!=1:raise ValueError('COST_OPT_START')
-        original_step=next(iter(original_steps))
+        if loss_control is not None:
+            prior=torch.load(a.loss_control/'units'/out.name/'LATEST.pt',weights_only=False,map_location='cpu')
+            if (prior['initial_sha256']!=tree_digest(snap['initial']) or prior['support']!=ctx.support_receipt
+                    or loss_control['baselines'][key]!=ctx.baseline):raise ValueError('COST_RESET_PAIRING')
+        opt,original_step=initialize_optimizer(ctx.head,snap['optimizer_before'],cfg['lr'],cfg['weight_decay'],a.optimizer_state)
         schedule=ctx.fit[covering_schedule(len(ctx.fit),32768,cfg['batch'],seed)]
         loss=lambda q,y:cost_objective(q,y,objective,ctx.temperature)
         curve=[];trace=[];start=0;accepted=0;latest=out/'LATEST.pt'
@@ -149,13 +176,15 @@ def run(a):
         for objective in cfg['objectives']:
             result=unit(fold,seed,objective,256);results.append(dict(fold=fold,seed=seed,objective=objective,**result))
     gates={};qualified=[]
-    for objective in ('cost','hybrid'):
+    for objective in (cfg['objectives'] if loss_control is not None else ('cost','hybrid')):
         backend_gates={}
         for backend in ('gpu','cpu','numpy'):
             rows=[]
             for fold,seed in cells:
                 candidate=next(r for r in results if (r['fold'],r['seed'],r['objective'],r['step'])==(fold,seed,objective,256))
-                control=next(r for r in results if (r['fold'],r['seed'],r['objective'],r['step'])==(fold,seed,'mse',256))
+                control_rows=loss_control['results'] if loss_control is not None else results
+                control_objective=objective if loss_control is not None else 'mse'
+                control=next(r for r in control_rows if (r['fold'],r['seed'],r['objective'],r['step'])==(fold,seed,control_objective,256))
                 x=candidate['assessment'];b=baseline[f'{fold}_{seed}']['fit'][backend]
                 rows.append(dict(fold=fold,seed=seed,robust=x['robust'],accepted=x['accepted'],
                     before=b['stable_added_regret'],after=x['observation']['fit'][backend]['stable_added_regret'],
@@ -166,7 +195,7 @@ def run(a):
     write(a.output/'EXTENSION_GATE.json',gates)
     if qualified:
         for fold,seed in cells:
-            for objective in ['mse',*qualified]:
+            for objective in (qualified if loss_control is not None else ['mse',*qualified]):
                 result=unit(fold,seed,objective,1024);results.append(dict(fold=fold,seed=seed,objective=objective,**result))
     replayed=resumed=0;comparisons=[]
     for fold,seed in cells:
@@ -196,6 +225,7 @@ def run(a):
             seal(out,cfg['identity'])
     if file_sha(a.bundle/'model.pt')!=cfg['source_sha256']:raise ValueError('COST_SOURCE_CHANGED')
     for p,c in ((a.probe,pc),(a.coverage,cc),(a.control,rc)):verify_done(p,c['identity'])
+    if loss_control is not None:verify_done(a.loss_control,loss_control['identity'])
     write(a.output/'REPLAY.json',dict(cold_endpoints_exact=replayed,resumed_transitions_exact=resumed,mse_control_comparisons=comparisons))
     result=dict(identity=cfg['identity'],seconds=time.monotonic()-started,results=results,baselines=baseline,
         supports=receipts,gates=gates,extended=qualified,source_preserved=True,model_promoted=False,
@@ -225,13 +255,16 @@ def plot_curves(output):
                 axes[row,col].grid(alpha=.2);axes[row,col].set_xlim(left=0)
         axes[0,col].set_title(f'{fold} / {seed}');axes[1,col].set_xlabel('Attempted updates')
     axes[0,0].set_ylabel('Full FIT MSE');axes[1,0].set_ylabel('Stable-added FIT regret')
-    axes[0,0].legend();fig.suptitle('333: Decision loss contrast; source actor unchanged')
+    mode=read(output/'CONFIG.json').get('optimizer_state','inherited')
+    axes[0,0].legend();fig.suptitle(f'Decision loss contrast ({mode} AdamW); source actor unchanged')
     fig.tight_layout();fig.savefig(output/'CURVES.png',dpi=150);plt.close(fig)
 
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for name in ('probe','coverage','control','bundle','output'):p.add_argument('--'+name,type=Path,required=True)
+    p.add_argument('--optimizer-state',choices=('inherited','fresh'),default='inherited')
+    p.add_argument('--loss-control',type=Path)
     p.add_argument('--expected-device-name',required=True);a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
     with (a.output/'worker.lock').open('a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)

@@ -1,6 +1,16 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "DECISION_COST_COMPLETE_OPTIMIZER_RESET_NEXT",
+  "current_stage": "OPTIMIZER_MEMORY_CONTRAST_IMPLEMENTED",
+  "optimizer_memory_contrast_334": {
+    "document": "../334_OPTIMIZER_MEMORY_CONTRAST.md",
+    "status": "IMPLEMENTED_BEFORE_RUN",
+    "fresh_fits": 12,
+    "inherited_controls_reused": 12,
+    "budgets": [256, 1024],
+    "intermediate_user_approval_required": false,
+    "model_promoted": false,
+    "next_action": "Run paired fresh-AdamW contrast versus sealed333; automatically extend qualifying objectives and verify replay. Preserve exact initial weights,71 inputs and all FIT rows."
+  },
   "decision_cost_contrast_333": {
     "document": "../333_DECISION_COST_LOSS_CONTRAST.md",
     "status": "COMPLETE_VERIFIED_NO_OBJECTIVE_PASSES_EXTENSION",

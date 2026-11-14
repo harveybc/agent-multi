@@ -8,6 +8,7 @@ from app.native_head_warm_start import fit_step
 from app.interior_adamw_repair import transactional_step
 from app.training_forensics import tree_digest
 from tests.unit.test_adamw_decision_preservation import setup
+from tools.run_decision_cost_contrast import initialize_optimizer
 
 
 def test_temperature_and_degenerate_contract():
@@ -72,3 +73,17 @@ def test_gate_requires_cost_of_decisions_not_loss_or_numerical_repair():
     assert qualifies_extension(rows)
     rows[1]['after']=.15
     assert not qualifies_extension(rows)
+
+
+def test_optimizer_reset_changes_only_optimizer_and_preserves_inherited_mode():
+    head,opt,z,y=setup();fit_step(head,opt,z,y)
+    weights=tree_digest(head.state_dict());state=deepcopy(opt.state_dict())
+    inherited,step=initialize_optimizer(head,state,3e-5,.01,'inherited')
+    assert step==1 and tree_digest(inherited.state_dict())==tree_digest(state)
+    fresh,step=initialize_optimizer(head,state,3e-5,.01,'fresh')
+    assert step==0 and not fresh.state
+    assert fresh.param_groups[0]['lr']==3e-5 and fresh.param_groups[0]['weight_decay']==.01
+    assert tree_digest(head.state_dict())==weights and tree_digest(opt.state_dict())==tree_digest(state)
+    with pytest.raises(ValueError):initialize_optimizer(head,state,3e-5,.01,'unknown')
+    fit_step(head,fresh,z,y)
+    assert {int(v['step']) for v in fresh.state.values()}=={1}
