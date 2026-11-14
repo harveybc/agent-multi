@@ -1,6 +1,16 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "FUNCTION_LOCALITY_VERIFIED_BOUNDED_HYBRID_CONTINUATION_NEXT",
+  "current_stage": "BOUNDED_HYBRID349_THEN_ONE_ACTOR_TRIAL_NO_MORE_CRITIC_LOOPS",
+  "finite_exit_plan_349": {
+    "document": "../349_BOUNDED_HYBRID_AND_EXIT_PLAN.md",
+    "status": "PROTOCOL_FIXED_IMPLEMENTED_BEFORE_EXECUTION",
+    "attempts_per_case": 16,
+    "cases": 4,
+    "target_searches_per_case": 4,
+    "automatic_extension": false,
+    "next_action": "Finish349 then ONE bounded actor-utility trial, close critic diagnostics regardless of outcome. Qualify/export improved actual trading or retain299; never repeat unchanged floating or chain more critic microvariants.",
+    "intermediate_user_approval_required": false
+  },
   "function_locality_348": {
     "document": "../348_FUNCTION_LOCAL_TARGETED_CORRECTION.md",
     "status": "COMPLETE_INDEPENDENTLY_VERIFIED",
@@ -3220,6 +3230,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
+    "CURRENT ORDER supersedes historical next-step text below: complete349 once, apply its fixed choice rule, then ONE bounded actor-utility trial and close critic diagnostics. Export and one phase2 round only if actual trading qualifies; otherwise preserve299 and do not repeat unchanged floating. See finite_exit_plan_349.",
     "344-345 COMPLETE: decision-targeted corrections verified; bounded stateful continuation has3 FIT wins and1 tie,5 improved decisions and0 worsened, mean regret1.57737% lower. Held decisions unchanged. Next matched64 retention from saved16 states with TOTAL four searches already exhausted; no new search, thresholds, actor updates or held-label fitting. Separate pinned continuation required; no user decision needed",
     "341-343 COMPLETE: ten repaired fixed proposals independently verified; four64-step continuations243/256 accepted, zero harmful endpoint switches but paired FIT tradeoff.64 component exchanges repeat exactly and yield no feasible recovery. Next bounded decision-aware direction at saved FIT states with original/optimal-set protections, finite actual-action gates and independent derivatives; no actor changes, held-label fitting, long fit or unchanged floating pass. No user decision required",
     "340 COMPLETE:1024 transactions and8 endpoints exact;10 cold witnesses exact. Six harmful actions arise in raw AdamW, four only after original-anchor protection. Next bounded expanded-FIT target-optimal protection on those fixed proposals before new refinement; no user decision required",

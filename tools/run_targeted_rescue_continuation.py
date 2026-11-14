@@ -62,7 +62,7 @@ def rescue(ctx,before,proposed,budget):
         arm='targeted',target=best['row'],target_search=search,searches_used=budget[0],ordinary_record=rec)
 
 
-def run(a):
+def run(a,repair_fn=rescue,config_extra=None):
     start=time.monotonic();configure(318);torch.backends.cudnn.allow_tf32=False
     if torch.cuda.get_device_name()!=a.expected_device_name:raise ValueError('OPTIMAL_CONT_DEVICE')
     parents={k:read(getattr(a,k)/'CONFIG.json') for k in ('source','control','probe','coverage','protection','verified')}
@@ -82,6 +82,7 @@ def run(a):
         optimizer_policy='projected_AdamW_keep_proposed_moments_on_accept_full_rollback_on_reject',
         cases=parents['control']['cases'],source_actor_sha256=sc['source_sha256'],lr=sc['lr'],weight_decay=sc['weight_decay'],batch=sc['batch'],
         code={k:file_sha(ROOT/k) for k in ('tools/run_targeted_rescue_continuation.py','app/targeted_rescue_selection.py','app/decision_targeted_direction.py','tools/probe_optimal_fit_protection.py','app/optimal_fit_protection.py')})
+    if config_extra:cfg.update(config_extra)
     cfg['identity']=digest(cfg)
     if file_sha(a.bundle/'model.pt')!=cfg['source_actor_sha256']:raise ValueError('OPTIMAL_CONT_ACTOR')
     if (a.output/'CONFIG.json').exists() and read(a.output/'CONFIG.json')!=cfg:raise ValueError('OPTIMAL_CONT_RESUME')
@@ -117,7 +118,7 @@ def run(a):
         def step(offset):
             ix=schedule[1024+8192+offset-1]
             def repair(before,proposed):
-                return rescue(ctx,cpu_state(before),cpu_state(proposed),budget)
+                return repair_fn(ctx,cpu_state(before),cpu_state(proposed),budget)
             return transactional_step(ctx.head,opt,ctx.z[:,ix],ctx.y[ix],repair,
                 loss_fn=lambda q,t:cost_objective(q,t,'cost',ctx.temperature))
         for offset in range(1,17):
