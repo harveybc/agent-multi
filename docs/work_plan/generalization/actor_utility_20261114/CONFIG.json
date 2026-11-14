@@ -1,0 +1,96 @@
+{
+  "accepted_endpoint": 8,
+  "actor_only": true,
+  "alpha": 0.005312912631779909,
+  "batch": 128,
+  "budget": {
+    "backtracks": 24,
+    "damping_ratio": 0.001,
+    "max_kl": 0.001,
+    "mean_kl": 0.0001,
+    "relative_parameter_drift": 0.01,
+    "step_margin_rms": 0.002
+  },
+  "code": {
+    "app/bounded_actor_utility.py": "316fa8803502d695cd9090571cf2d2220baa4e29ae1f1d3862e8c4fc33216982",
+    "app/bounded_functional_actor.py": "c797b9a62e0c8bb348b4e1b00c71c2371d89ff259bce25ed1cc5aa9e5b4217bc",
+    "app/critic_fit_probe.py": "b6e1a723b2dcda572ee3cee8c690a75bf5007431535c2865369757e7e1a8f1d5",
+    "app/operational_actor_transfer.py": "44d74d6452e13e67b51c8a1fa6fcfdb960a1b0a8fc16296f42ee83e00751e8b0",
+    "app/selected_input_market.py": "f757c0e44e9f0b5dfbf905d213ebc99f487e71643bdc1e00bd8cbafa30875771",
+    "app/three_signal_learning.py": "0c0f53addffd1260a8572592b1c83a86514bd08f0c81a49bb8c21827ed549fe6",
+    "tools/run_bounded_actor_utility.py": "9cff717716752cbcd15cee32beb888820a9ad999c6ed1b1db53fa4721c88c7ba",
+    "tools/run_role_routed_critic.py": "762e67aa5c452eaaaea4c4446e500c7b89ba1ba8bb95cf0dc925abc93cbef4ba"
+  },
+  "critic_updates": 0,
+  "effective": {
+    "alpha": 1,
+    "architecture": {
+      "branch_blocks": 2,
+      "branch_width": 8,
+      "core_blocks": 2,
+      "core_width": 16,
+      "head_width": 8,
+      "temporal_attention": {
+        "embedding": 8,
+        "feedforward": 16,
+        "gate_init": 0.1,
+        "heads": 2,
+        "kind": "causal_patch",
+        "patch_len": 3
+      }
+    },
+    "batch_norm": false,
+    "critic_regularization": {
+      "kind": "core_dropout",
+      "p": 0.1
+    },
+    "dropout": 0.1,
+    "entropy_fraction": 0.6,
+    "gamma": 0.99,
+    "learning_rate": 0.000029999999999999997,
+    "mode_contract": "online_q_train_target_and_actor_q_eval_v1",
+    "regularization_scope": "online_critics_only; actor unchanged",
+    "target_bn_statistics": "hard_copy_each_update",
+    "tau": 0.005,
+    "weight_decay": 0.01
+  },
+  "features": 71,
+  "fit_rows": 392,
+  "fold": "B",
+  "fold_rule": "largest_expanded_FIT_then_lexical",
+  "full_periods": {
+    "TRAIN": [
+      "2020-01-01",
+      "2024-01-01"
+    ],
+    "VALIDATION": [
+      "2024-01-01",
+      "2025-01-01"
+    ]
+  },
+  "identity": "84ff192219fe96965b8dd1834fd6333b732acbdbf9afd63d1c92bf4365627e14",
+  "max_attempts": 64,
+  "objective": "categorical_SAC_native_alpha_frozen_min_Q",
+  "parent_identity": "d4b260fffb17e0fcaddb0fe1c833493f30e28e942ffda4fbb36e5c3404a5f6e2",
+  "parents": {
+    "coverage": "1a6a64dfd71e2ada45f3c3e069521580108ce7db5a804692733d3be39885ebb8",
+    "critics": "f13fa164e21d5125b4f4a22d82ddcb51ce8a691940f34a11b21315684f7811cf",
+    "decision": "f13fa164e21d5125b4f4a22d82ddcb51ce8a691940f34a11b21315684f7811cf",
+    "verified": "f13fa164e21d5125b4f4a22d82ddcb51ce8a691940f34a11b21315684f7811cf"
+  },
+  "points": [
+    0,
+    1,
+    8
+  ],
+  "recipe": "recipe_b5fb7bcdfa1dbec8",
+  "schema": "bounded_actor_utility.v1",
+  "seeds": [
+    19,
+    43
+  ],
+  "source_actor_sha256": "69b5254489d224d4b20ac358956e4dd3b9a67a2f214a9aff98045c5def25a536",
+  "source_metrics_sha256": "cb30cfe77960dd8142200e43cf623c2e7e3740e6b2649a65390850507f55ba89",
+  "source_receipt": "6b784ef7c517c2ce050f99752ff7779b172db31bc61fe6d8f192eed8097e5059",
+  "support_sha256": "28d6088a92173592f39e221c1c2ab1efc9094e614eeccb11c9ae23cf14878c98"
+}

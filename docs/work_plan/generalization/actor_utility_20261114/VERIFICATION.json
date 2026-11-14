@@ -1,0 +1,58 @@
+{
+  "checkpoints": [
+    {
+      "accepted": 1,
+      "account_exact": true,
+      "frozen_exact": true,
+      "model_sha256": "3c654b13ae88fa4d44389e272cbf867a799d478cccdebf9f3870d7a873537d07",
+      "seed": 19
+    },
+    {
+      "accepted": 8,
+      "account_exact": true,
+      "frozen_exact": true,
+      "model_sha256": "ddcf3822f3bc50281a9e7d6bd0ba9db874d6fdd8ead4ac129769d3a27cbeafac",
+      "seed": 19
+    },
+    {
+      "accepted": 1,
+      "account_exact": true,
+      "frozen_exact": true,
+      "model_sha256": "865281e296e94108caabed0b401343f5df82305c8dbce44bd3ce917b52ca038e",
+      "seed": 43
+    },
+    {
+      "accepted": 8,
+      "account_exact": true,
+      "frozen_exact": true,
+      "model_sha256": "70385e6b64877672c73f2d5d7a75f2cf50e05bcf7089f0cb2b94065f46294aa6",
+      "seed": 43
+    }
+  ],
+  "cpu_full_accounts": 10,
+  "decisions": [
+    {
+      "qualified": false,
+      "reasons": [
+        "NO_STRICT_IMPROVEMENT"
+      ],
+      "seed": 19
+    },
+    {
+      "qualified": false,
+      "reasons": [
+        "TRAIN_REGRESSION",
+        "VALIDATION_REGRESSION",
+        "NO_STRICT_IMPROVEMENT"
+      ],
+      "seed": 43
+    }
+  ],
+  "identity": "84ff192219fe96965b8dd1834fd6333b732acbdbf9afd63d1c92bf4365627e14",
+  "seconds": 35.14467624697136,
+  "selected_seed": null,
+  "source_unchanged": true,
+  "terminal": "KEEP299_CLOSE_REFINEMENT",
+  "test_read": false,
+  "verifier_sha256": "36fb7fb981493037af629ad74f77486e7ab674e116ba961ec21689dd42898cb8"
+}

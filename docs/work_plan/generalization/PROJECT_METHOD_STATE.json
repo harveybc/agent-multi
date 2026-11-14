@@ -1,15 +1,33 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "BOUNDED_ACTOR_UTILITY350_IMPLEMENTATION_AND_LAUNCH",
+  "current_stage": "ACTOR350_VERIFIED_KEEP299_CRITIC_ACTOR_MICROREFINEMENT_CLOSED",
   "bounded_actor_utility_350": {
     "document": "../350_BOUNDED_ACTOR_UTILITY.md",
-    "status": "PROTOCOL_FIXED_IMPLEMENTED_BEFORE_TRAINING",
+    "status": "COMPLETE_INDEPENDENTLY_VERIFIED_KEEP299_CLOSE_REFINEMENT",
+    "identity": "84ff192219fe96965b8dd1834fd6333b732acbdbf9afd63d1c92bf4365627e14",
+    "runtime_commit": "054862d5",
+    "producer_seconds": 23.45443190203514,
+    "independent_cpu_seconds": 35.14467624697136,
+    "tests_passed": 32,
+    "accepted_updates_per_seed": [8,8],
+    "attempts_per_seed": [8,8],
+    "reference_returns_pct": {"TRAIN": 16.05822355000215,"VALIDATION": 18.369945750000117},
+    "seed19_returns_pct": {"TRAIN": 16.05822355000215,"VALIDATION": 18.369945750000117},
+    "seed43_returns_pct": {"TRAIN": 15.186874000002152,"VALIDATION": 18.172323500000257},
+    "first_transactions_cold_exact": 2,
+    "checkpoints_cold_exact": 4,
+    "independent_cpu_full_accounts_exact": 10,
+    "first_launch_stopped_before_actor_update": true,
+    "dispatch_adapter_repaired_without_tolerance_change": true,
+    "jobs_running": 0,
+    "model_promoted": false,
+    "live_promoted": false,
     "seeds": [19,43],
     "fold_rule": "largest expanded FIT coverage, no score selection",
     "accepted_endpoint": 8,
     "max_attempts_per_seed": 64,
     "no_automatic_extension": true,
-    "next_action": "Run tests, authenticate native critic/actor/support parity, execute two sequential seeds and native full-account cold checks. Terminal qualified inference export or KEEP299_CLOSE_REFINEMENT, never another critic search. No user decision required."
+    "next_action": "CLOSED with KEEP299. Preserve71 columns/28groups/49 cumulative phase2 return candidates. No further critic variants, unchanged floating passes or default refit. Next distinct planning item is recent-data/periodic-retraining comparison with frozen baseline and a separately fixed protocol; not launched by350. STL paused, DEAP deferred."
   },
   "finite_exit_plan_349": {
     "document": "../349_BOUNDED_HYBRID_AND_EXIT_PLAN.md",
@@ -37,7 +55,7 @@
     "cases": 4,
     "target_searches_per_case": 4,
     "automatic_extension": false,
-    "next_action": "349 complete; critic diagnostics CLOSED. Implement/test ONE bounded actor-utility trial using existing native adapter/account pipeline and fixed finite budget. It is specified, not launched. Qualify/export improved actual trading or retain299; never repeat unchanged floating or chain more critic microvariants. No user decision required.",
+    "next_action": "349 and350 complete. Critic diagnostics and bounded actor refinement CLOSED;350 retained299. See bounded_actor_utility_350. No more microvariants or unchanged floating pass.",
     "intermediate_user_approval_required": false
   },
   "function_locality_348": {
@@ -3259,6 +3277,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
+    "CURRENT350 TERMINAL: independent CPU verification confirms KEEP299. Critic/actor micro-refinement CLOSED; historical next-step entries below are completed history. Preserve selected71 and49 cumulative return candidates. Plan recent-data/periodic-retraining as a distinct hypothesis; no unchanged floating, further critic sweep, STL resume or live replacement.",
     "CURRENT350: finite actor-head utility trial, eight accepted updates or64 attempts per seed19/43. Use largest TRAIN FIT fold and fixed349 procedure. Complete native accounts and cold verification, then export qualified changed actor or retain299 and close refinement; no automatic critic extension.",
     "CURRENT ORDER supersedes historical next-step text below: complete349 once, apply its fixed choice rule, then ONE bounded actor-utility trial and close critic diagnostics. Export and one phase2 round only if actual trading qualifies; otherwise preserve299 and do not repeat unchanged floating. See finite_exit_plan_349.",
     "344-345 COMPLETE: decision-targeted corrections verified; bounded stateful continuation has3 FIT wins and1 tie,5 improved decisions and0 worsened, mean regret1.57737% lower. Held decisions unchanged. Next matched64 retention from saved16 states with TOTAL four searches already exhausted; no new search, thresholds, actor updates or held-label fitting. Separate pinned continuation required; no user decision needed",
