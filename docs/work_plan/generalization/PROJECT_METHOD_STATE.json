@@ -1,6 +1,18 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "TWIN_PROTECTION_REPLICATION_COMPLETE",
+  "current_stage": "SAVED_WEIGHT_DECISION_FORENSICS_IMPLEMENTED",
+  "saved_weight_decision_forensics_339": {
+    "document": "../339_SAVED_WEIGHT_DECISION_FORENSICS.md",
+    "status": "IMPLEMENTED_TESTED_BEFORE_EXECUTION",
+    "cases": 4,
+    "arms": 8,
+    "transitions": 24,
+    "finite_component_hybrids": 384,
+    "optimizer_steps": 0,
+    "tests_passed": 64,
+    "intermediate_user_approval_required": false,
+    "next_action": "Execute sealed saved-weight analysis: exact four-block interventions, analytic/autograd and CUDA witnesses, FIT-only own/other/role gradient attribution. Preserve all source weights and actor."
+  },
   "twin_protection_replication_338": {
     "document": "../338_TWIN_PROTECTION_PAIRED_REPLICATION.md",
     "status": "COMPLETE_VERIFIED_REPAIR_REPLICATED_TRANSFER_MIXED",
@@ -2984,6 +2996,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
+    "339 implemented/tested: no-training saved-weight and component/gradient forensics on all338 cases; owner explicitly requested deep analysis. No actor changes or held-label fitting",
     "338 complete and independently verified: complete protection1024/1024 accepted versus474/1024, matched FIT wins3/4 and ties1/4; mean regret improves2.9072%, internal transfer mixed. Adopt complete constraints and per-transaction single/batch guards. Next saved-weight FIT loss/decision-crossing attribution; no user decision required",
     "337 complete:16/16 proposals and256/256 updates accepted; stable-added FIT regret improves3.6239% but internal TRAIN stop/audit worsen. Local nonsmooth protection defect fixed, no actor/trading promotion. Preserve299/71 inputs and49 return candidates",
     "336 complete:48 feasible linear systems,0 accepted finite steps; independent384 trials isolate chosen-twin switches at protected row8.335 calibration complete; neither result is actor/trading promotion",
