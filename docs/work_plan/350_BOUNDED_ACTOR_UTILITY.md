@@ -136,10 +136,11 @@ other training method can work. They establish no qualifying gain for THIS
 fixed eight-update transfer under its existing constraints.
 
 No more critic variants, automatic budget extensions or unchanged floating
-passes are queued. The next distinct planning item is the previously discussed
-recent-data/periodic-retraining comparison, with a frozen baseline and a new
-explicit protocol; it has NOT been launched by350. STL remains paused and DEAP
-deferred. Source checkpoint and live providers remain unchanged.
+passes are queued. The owner subsequently corrected the next-task assignment:
+[351](351_PHASE2_EXIT_AND_ARCHITECTURE_SEARCH.md) defines phase2 closure followed
+by architecture/training optimization, not recent-data/live work. Satoshi owns
+live trading. STL remains paused; DEAP follows the explicit phase2 exit gate.
+Source checkpoint and live providers remain unchanged.
 
 [Configuration](generalization/actor_utility_20261114/CONFIG.json),
 [complete results](generalization/actor_utility_20261114/RESULT.json),

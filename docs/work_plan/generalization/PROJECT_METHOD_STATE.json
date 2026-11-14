@@ -1,6 +1,17 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "ACTOR350_VERIFIED_KEEP299_CRITIC_ACTOR_MICROREFINEMENT_CLOSED",
+  "current_stage": "PHASE2_FINAL_NEIGHBORHOOD_CLOSURE_BEFORE_ARCHITECTURE_DEAP",
+  "phase2_exit_and_search_351": {
+    "document": "../351_PHASE2_EXIT_AND_ARCHITECTURE_SEARCH.md",
+    "status": "PROTOCOL_DOCUMENTED_NOT_YET_EXECUTED",
+    "reference": "selected299",
+    "features": 71,
+    "groups": 28,
+    "cumulative_absent_phase2_features": 49,
+    "max_corrective_cycles": 2,
+    "exit_states": ["LOCAL_FROZEN_NEIGHBORHOOD_STABLE", "BUDGET_CLOSED_NOT_LOCAL_OPTIMUM"],
+    "next_action": "Authenticate final-context neighbor coverage; reuse identical evidence and evaluate only missing neighbors. Bounded phase2 closure then architecture/training DEAP with full genotype, effective phenotype, metrics and component weight lineage. Live trading belongs to Satoshi, no periodic-retraining diversion."
+  },
   "bounded_actor_utility_350": {
     "document": "../350_BOUNDED_ACTOR_UTILITY.md",
     "status": "COMPLETE_INDEPENDENTLY_VERIFIED_KEEP299_CLOSE_REFINEMENT",
@@ -27,7 +38,7 @@
     "accepted_endpoint": 8,
     "max_attempts_per_seed": 64,
     "no_automatic_extension": true,
-    "next_action": "CLOSED with KEEP299. Preserve71 columns/28groups/49 cumulative phase2 return candidates. No further critic variants, unchanged floating passes or default refit. Next distinct planning item is recent-data/periodic-retraining comparison with frozen baseline and a separately fixed protocol; not launched by350. STL paused, DEAP deferred."
+    "next_action": "CLOSED with KEEP299. Owner correction351: phase2 final-neighborhood closure then architecture/training DEAP. Preserve71 columns/28groups/49 cumulative phase2 return candidates. No further critic variants, default refit or periodic-retraining diversion. STL paused; live trading belongs to Satoshi."
   },
   "finite_exit_plan_349": {
     "document": "../349_BOUNDED_HYBRID_AND_EXIT_PLAN.md",
@@ -3277,7 +3288,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
-    "CURRENT350 TERMINAL: independent CPU verification confirms KEEP299. Critic/actor micro-refinement CLOSED; historical next-step entries below are completed history. Preserve selected71 and49 cumulative return candidates. Plan recent-data/periodic-retraining as a distinct hypothesis; no unchanged floating, further critic sweep, STL resume or live replacement.",
+    "CURRENT351 SUPERSEDES all historical next-step entries below: bounded phase2 final-neighborhood closure on selected299, then architecture/training DEAP with complete candidate genotype/effective phenotype/metrics/weight lineage. No live trading or recent-data diversion; Satoshi owns that lane.350 terminal KEEP299 remains valid; critic micro-refinement closed.",
     "CURRENT350: finite actor-head utility trial, eight accepted updates or64 attempts per seed19/43. Use largest TRAIN FIT fold and fixed349 procedure. Complete native accounts and cold verification, then export qualified changed actor or retain299 and close refinement; no automatic critic extension.",
     "CURRENT ORDER supersedes historical next-step text below: complete349 once, apply its fixed choice rule, then ONE bounded actor-utility trial and close critic diagnostics. Export and one phase2 round only if actual trading qualifies; otherwise preserve299 and do not repeat unchanged floating. See finite_exit_plan_349.",
     "344-345 COMPLETE: decision-targeted corrections verified; bounded stateful continuation has3 FIT wins and1 tie,5 improved decisions and0 worsened, mean regret1.57737% lower. Held decisions unchanged. Next matched64 retention from saved16 states with TOTAL four searches already exhausted; no new search, thresholds, actor updates or held-label fitting. Separate pinned continuation required; no user decision needed",

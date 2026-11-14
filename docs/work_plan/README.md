@@ -2,6 +2,14 @@
 
 ## Execution Update: 2026-11-14
 
+Owner correction: [351](351_PHASE2_EXIT_AND_ARCHITECTURE_SEARCH.md) is the
+current execution order.350 retained299 and closed critic/actor micro-refinement.
+Musashi now owns a bounded phase2 final-neighborhood closure, then component-wise
+architecture/training optimization with complete candidate gene/metric lineage.
+Satoshi owns live trading. Recent-data/retraining is not the next task here.
+The closure certificate and DEAP campaign have not yet run. Older diagnostic
+next-step wording below is historical, not a new queue.
+
 Phase2 retains [selected71 actor299](299_SELECTED72_CUMULATIVE_SELECTION.md),
 28groups and49 cumulative return candidates. STL is paused; no seasonal
 features enter the pool. This supersedes older statements about running STL.
