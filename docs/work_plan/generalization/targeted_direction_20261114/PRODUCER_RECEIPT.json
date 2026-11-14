@@ -1,0 +1,13 @@
+{
+  "accepted": 10,
+  "actor_updates": 0,
+  "candidates": 43,
+  "eligible_wrong_occurrences": 1033,
+  "identity": "1273e12e6e3c44ec6a6238a497a32cd25bd205f5ae455d231903c49b7397af23",
+  "maximum_derivative_error": 7.105427357601002e-15,
+  "model_promoted": false,
+  "result_sha256": "3829aad5aac6dba1ce4ec3a9f344aa172ac0d6d24cce8fbe382c686cb8b78ada",
+  "screened_too_far": 990,
+  "seconds": 118.92044454603456,
+  "witnesses": 10
+}

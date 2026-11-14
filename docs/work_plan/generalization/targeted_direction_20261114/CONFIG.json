@@ -1,0 +1,24 @@
+{
+  "acceptance": "original_and_optimal_sets_and_target_correct_and_strictly_lower_FIT_cost_and_regret_all5",
+  "code": {
+    "app/decision_targeted_direction.py": "2d3d06ae01ba909d4e5332e5da4ca78cb155388339e48e18ebdb55c438f5071e",
+    "app/optimal_fit_protection.py": "5317e44ee2c05abccaf03b7a9d3dd2e79658fafb50c4cc0e8c04d50742ba237d",
+    "app/primal_direction_projection.py": "d4833e27bbba81d2e2931a19b5d25ce9feae115c54cc4ec56a72d7384b276765",
+    "tools/probe_decision_targeted_direction.py": "5c1d44ecca8c4bba34549a0005dd9f09c1ffcc669ec564ae110401da1bfda69c"
+  },
+  "identity": "1273e12e6e3c44ec6a6238a497a32cd25bd205f5ae455d231903c49b7397af23",
+  "max_candidates": 8,
+  "norm_cap": 4,
+  "parents": {
+    "control": "e61891e71590f0823a830b53bc708410d7906f561c365eeab0311552959de200",
+    "coverage": "1a6a64dfd71e2ada45f3c3e069521580108ce7db5a804692733d3be39885ebb8",
+    "crossings": "880655269f69277c4dc3d69e47520a00917abcab142d8c25152bc8259bdadae1",
+    "probe": "32a49fbb371a3637e669df9095026be9fab5e711b5942916f2ae330f53058621",
+    "verified": "e61891e71590f0823a830b53bc708410d7906f561c365eeab0311552959de200"
+  },
+  "repairs": 3,
+  "scales": 8,
+  "schema": "decision_targeted_direction.v1",
+  "source_actor_sha256": "69b5254489d224d4b20ac358956e4dd3b9a67a2f214a9aff98045c5def25a536",
+  "target_margin": "64*float32_epsilon*max(1,max_abs_Q_in_five_views)"
+}
