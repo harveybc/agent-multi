@@ -1,6 +1,18 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "OPTIMAL_PROTECTION_TRADEOFF_VERIFIED_DIRECTION_CONTRAST_NEXT",
+  "current_stage": "DECISION_TARGETED_DIRECTION_READY",
+  "decision_targeted_direction_344": {
+    "document": "../344_DECISION_TARGETED_DIRECTION.md",
+    "status": "IMPLEMENTED_TESTED_BEFORE_EXECUTION",
+    "fixed_witnesses": 10,
+    "maximum_targets_per_witness": 8,
+    "norm_cap": 4,
+    "tests_passed": 69,
+    "actor_updates": 0,
+    "optimizer_steps": 0,
+    "model_promoted": false,
+    "next_action": "Run bounded targeted projections with exact341 controls; independently verify target gradients, cold candidates, full repeat and all-five finite guards. Publish decision improvements, not loss-only improvements. No held-label selection or automatic full training."
+  },
   "protection_component_tradeoff_343": {
     "document": "../343_PROTECTION_COMPONENT_TRADEOFF.md",
     "status": "COMPLETE_REPEATED_BYTE_EXACT",
