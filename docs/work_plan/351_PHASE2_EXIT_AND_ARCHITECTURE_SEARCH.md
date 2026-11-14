@@ -135,3 +135,28 @@ Authenticate final-neighbor coverage -> evaluate only missing cases -> bounded
 correction if needed -> phase2 exit receipt -> executable parameter inventory,
 decoder/ledger tests -> launch staged DEAP. No live-trading work, endless critic
 microvariants, unchanged full floating loop, or STL resumption in this sequence.
+
+## Closure Implementation
+
+`app/phase2_closure.py` checks all one-block neighbors of a FIXED final subset,
+then conditionally invokes the existing ordered deletion/cumulative-return
+procedure, for at most two corrections. `tools/run_phase2_closure.py` authenticates
+the original expanded actor and donor tensors rather than rebuilding a new
+restoration context from a different source. It reuses sealed299 caches only
+under the original evaluation identity. Its runtime retains the299 inference
+implementation; a later actor implementation is not silently substituted.
+
+| Requirement | Behavioral check |
+|---|---|
+| Final-context completeness | Counterexample where an earlier harmful removal becomes neutral after another removal |
+| Cumulative return | Historical absence can return; coherent paired channels remain atomic |
+| Exact existing decision rule | Deletion ties qualify; insertion ties do not; inactive/NaN candidates never qualify |
+| Bounded termination | Budget exhaustion is explicitly different from local stability |
+| Replay | Cached restart repeats all decisions without new inference |
+| Source identity | Source/donor/runtime/support hashes and exact expanded tensors before cache use |
+| Deployment-independent evidence | Physical export only if changed; full CPU TRAIN/validation replay; no live action |
+
+Initial coverage census:111 final-context coherent-block neighbors,107 present
+in the299 cache and4 missing. This census is not the completed exit certificate.
+18 focused CPU tests pass, scoped Ruff passes. No fresh training is required
+for this frozen-neighborhood check.
