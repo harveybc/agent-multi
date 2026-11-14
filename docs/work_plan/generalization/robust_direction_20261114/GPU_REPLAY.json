@@ -1,0 +1,6 @@
+{
+  "identity": "32a49fbb371a3637e669df9095026be9fab5e711b5942916f2ae330f53058621",
+  "actual_adamw_proposals_and_optimizer_exact": 64,
+  "endpoint_gpu_metrics_and_actions_exact": 73,
+  "max_normalized_linear_violation": 8.848549769481486e-10
+}

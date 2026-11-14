@@ -601,3 +601,21 @@ Next test whether direction-adjusted actual proposals with numerical margin
 robustness admit nonzero FIT learning, before another long run. Do not merely
 shrink the same direction indefinitely. No successor launched;71 inputs,
 49 cumulative return candidates and paused STL unchanged. See report329.
+
+## F-DIRECTION-PROJECTION-RECOVERS-PARTIAL-ROBUST-LEARNING
+
+2026-11-14, diagnostic330, source299 unchanged. In64 paired independent actual
+AdamW proposals, robust direction projection accepts41 versus32 raw. All healthy
+starts accept32/32 under both; the meaningful recovery is9/32 versus0/32 from
+saved stalled states (A19:0, A43:5, B19:2, B43:2). All accepted projected steps
+reduce expanded-FIT MSE; only two correlated B43 proposals improve action regret
+(0.2479163481 ->0.2474497334). Not a new actor or trading result.
+
+All23 projected failures preserve actions at full scale but miss the fixed
+numerical buffer by1.62e-8 to9.67e-7; linearized feasibility is not finite-network
+feasibility. Do not loosen the guard or promote the method. Next test an interior
+target and bounded relinearization before a sequential training contrast.
+
+Evidence: [330](../330_ROBUST_DIRECTION_FEASIBILITY.md).25 tests pass;65 seals,
+64 actual proposals/optimizers and73 endpoints replayed. Independent local CPU
+and NumPy guard failures:0. Probe runtime3.355s, not a training convergence time.

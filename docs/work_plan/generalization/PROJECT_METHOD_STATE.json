@@ -1,13 +1,27 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "ROBUST_DIRECTION_FEASIBILITY_IMPLEMENTED",
+  "current_stage": "ROBUST_DIRECTION_FEASIBILITY_COMPLETE_PARTIAL_NO_PROMOTION",
   "robust_direction_feasibility_330": {
     "document": "../330_ROBUST_DIRECTION_FEASIBILITY.md",
-    "status": "IMPLEMENTED_BEFORE_RUN",
+    "status": "COMPLETE_PARTIAL_FEASIBILITY_NO_PROMOTION",
+    "runtime_commit": "e3206fd1",
+    "identity": "32a49fbb371a3637e669df9095026be9fab5e711b5942916f2ae330f53058621",
+    "focused_tests_passed": 25,
+    "runtime_seconds": 3.355392346973531,
+    "completed_starts": 8,
+    "raw_accepted": 32,
+    "projected_accepted": 41,
+    "stalled_raw_accepted": 0,
+    "stalled_projected_accepted": 9,
+    "projected_regret_improved": 2,
+    "verified_seals": 65,
+    "replayed_actual_adamw_proposals_exact": 64,
+    "replayed_accepted_endpoints_exact": 73,
+    "local_cpu_numpy_guard_failures": 0,
     "planned_starts": 8,
     "independent_proposals": 64,
     "model_promoted": false,
-    "next_action": "Run focused tests and GPU readiness; execute bounded paired projection probe on authentic initial and protected8192 states; independently verify margins and learning witnesses before any long fit. Preserve299 actor and71 inputs."
+    "next_action": "Bounded interior-margin/relinearized finite-step repair with unchanged1e-5 acceptance margin and4x norm cap, protocol frozen before execution; only then short sequential learning contrast.330 recovers9/32 stalled proposals but23 fail numerical buffer and onlyB43 improves regret. No successor running. Preserve299 actor and71 inputs; STL paused."
   },
   "adamw_decision_preservation_329": {
     "document": "../329_ADAMW_DECISION_PRESERVATION.md",

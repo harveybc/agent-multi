@@ -1,0 +1,38 @@
+{
+  "batch": 128,
+  "batches_per_start": 8,
+  "code": {
+    "app/native_head_warm_start.py": "e4468b47c12921709cd1030207ab71c67d6433d19bcf193af32bcb198bf1f452",
+    "app/robust_adamw_direction.py": "3d96e4641e82e25fa4fa7f79f668d91549daeb03baefb6fad1eaa893afbfc1b3",
+    "app/role_routed_critic.py": "d6db79275f78d684f58011c6ae978c77ca087d54442b49898676581f4e1fb732",
+    "tools/probe_robust_adamw_direction.py": "90830f3752142219d86d83bd190d3567cd3b289e4d0fd374f7752d9039d321fa"
+  },
+  "correction_norm_cap": 4.0,
+  "identity": "32a49fbb371a3637e669df9095026be9fab5e711b5942916f2ae330f53058621",
+  "lr": 2.9999999999999997e-05,
+  "margin_relative": 1e-05,
+  "mse_learning_tolerance": 1e-10,
+  "parents": [
+    "e1d5e7197a8969aa3a65ffa5b2a0af278f74df70d538cce14acba691ddab9c6e",
+    "1a6a64dfd71e2ada45f3c3e069521580108ce7db5a804692733d3be39885ebb8",
+    "995c5a1f3b21bf729134b08ab429030e5844447fc7f6570db0efc41dd41e92e4"
+  ],
+  "regret_tolerance": 1e-08,
+  "scales": [
+    1.0,
+    0.5,
+    0.25,
+    0.125,
+    0.0625,
+    0.03125,
+    0.015625,
+    0.0078125
+  ],
+  "schema": "robust_direction_feasibility.v1",
+  "source_sha256": "69b5254489d224d4b20ac358956e4dd3b9a67a2f214a9aff98045c5def25a536",
+  "starts": [
+    0,
+    8192
+  ],
+  "weight_decay": 0.01
+}

@@ -1,0 +1,10 @@
+{
+  "identity": "32a49fbb371a3637e669df9095026be9fab5e711b5942916f2ae330f53058621",
+  "verified_seals": 65,
+  "paired_proposals": 64,
+  "finite_trials": 530,
+  "accepted_endpoints": 73,
+  "numpy_metric_max_error": 2.220446049250313e-16,
+  "local_cpu_or_numpy_guard_failures": [],
+  "all_local_guards_passed": true
+}
