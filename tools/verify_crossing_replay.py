@@ -36,7 +36,7 @@ def verify(a):
         if cfg['parents'][k]!=c['identity']:raise ValueError('CROSS_VERIFY_LINEAGE')
     data=torch.load(a.coverage/'prepared/DATA.pt',weights_only=True,map_location='cpu');support=read(a.coverage/'prepared/SUPPORT.json')
     records=read(a.coverage/'PANEL.json')['records'];y=np.stack([validate_record(r) for r in records])
-    rows=[];checked=0;errors=[]
+    rows=[];checked=0;errors=[];route_witnesses=[]
     for case in result['cases']:
         fold,seed=case['fold'],case['seed'];out=a.run/'cases'/f'{fold}_{seed}';verify_done(out,cfg['identity'])
         snap=torch.load(a.probe/'units'/f'{fold}_{seed}_8192_0'/'PROPOSAL.pt',weights_only=False,map_location='cpu')
@@ -49,6 +49,15 @@ def verify(a):
             if w['identity']!=cfg['identity'] or not set(ix)<=set(ctx.fit):raise ValueError('CROSS_VERIFY_WITNESS')
             ctx.head.load_state_dict(w['before']);opt,_=configure_scope(ctx.head,'full_head',pc['lr'],pc['weight_decay'])
             opt.load_state_dict(deepcopy(w['optimizer_before']));restore_rng(w['rng_before']);captured={}
+            ctx.double.load_state_dict(w['before'])
+            with torch.no_grad():
+                q32=ctx.head(ctx.z[:,ix]).mean(2).cpu().double().numpy()
+                q64=ctx.double(ctx.zcpu[:,ix].double()).mean(2).numpy()
+            differences=np.argwhere(q32.argmin(0)!=q64.argmin(0))
+            route_witnesses.append(dict(case=f'{fold}_{seed}',offset=w['offset'],
+                forward_max_error=float(np.max(abs(q32-q64))),
+                differences=[dict(batch_position=int(j),row=int(ix[j]),action=int(k),
+                    twin_values32=q32[:,j,k].tolist(),twin_values64=q64[:,j,k].tolist()) for j,k in differences]))
             def repair(before,proposed):
                 captured['proposed']=cpu_state(proposed);captured['optimizer']=deepcopy(opt.state_dict())
                 captured['gradient']=vector_grad([p.grad for p in ctx.head.parameters()])
@@ -107,6 +116,7 @@ def verify(a):
         batch_gradient_opposes=sum(r['actual_batch_descent']<0 for r in rows),full_gradient_opposes=sum(r['full_fit_descent']<0 for r in rows),
         own_row_absent_from_batch=sum(r['batch_multiplicity']==0 for r in rows),
         events_with_all_finite_geometry_actions_matching=sum(r['cpu_gpu32_single_batch_actions_agree'] for r in rows),
+        batch_route_witnesses=route_witnesses,
         seconds=time.monotonic()-begin,actor_updates=0,model_promoted=False)
     a.output.mkdir(parents=True,exist_ok=True);write(a.output/'VERIFICATION.json',report)
     write(a.output/'RESULT.json',result);write(a.output/'CONFIG.json',cfg)
