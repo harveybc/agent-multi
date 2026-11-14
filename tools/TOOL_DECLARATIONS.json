@@ -2,6 +2,10 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "run_adamw_decision_preservation.py": {
+   "purpose": "Four resumable protected actual-AdamW displacement fits versus authenticated327 controls, transactional rollback and full original-FIT action ledger; no actor or live promotion",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
+  },
   "analyze_native_fit_gradients.py": {
    "purpose": "CPU FIT-only original/added loss and gradient decomposition with finite-difference witnesses on authenticated327 checkpoints; no optimizer updates or model promotion",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "feature selection"
