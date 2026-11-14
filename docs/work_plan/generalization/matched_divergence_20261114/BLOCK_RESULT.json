@@ -1,0 +1,203 @@
+{
+  "actor_updates": 0,
+  "coalitions": 32,
+  "forward_max_error": 1.942890293094024e-16,
+  "identity": "db823532e7c48d910904c85ba9a2059005b517697a47dc10d2b0df66cd7f1273",
+  "model_promoted": false,
+  "rows": [
+    {
+      "case": "B_19",
+      "coalitions": [
+        {
+          "action": 2,
+          "margin": -1.3366664197045353e-05,
+          "mask": 0
+        },
+        {
+          "action": 2,
+          "margin": -1.3366664197045353e-05,
+          "mask": 1
+        },
+        {
+          "action": 2,
+          "margin": -1.3366664197045353e-05,
+          "mask": 2
+        },
+        {
+          "action": 2,
+          "margin": -1.3366664197045353e-05,
+          "mask": 3
+        },
+        {
+          "action": 2,
+          "margin": -4.810581422071136e-05,
+          "mask": 4
+        },
+        {
+          "action": 2,
+          "margin": -4.810581422071136e-05,
+          "mask": 5
+        },
+        {
+          "action": 2,
+          "margin": -4.810581422071136e-05,
+          "mask": 6
+        },
+        {
+          "action": 2,
+          "margin": -4.810581422071136e-05,
+          "mask": 7
+        },
+        {
+          "action": 2,
+          "margin": -0.00011778939447737446,
+          "mask": 8
+        },
+        {
+          "action": 2,
+          "margin": -0.00011778939447737446,
+          "mask": 9
+        },
+        {
+          "action": 2,
+          "margin": -0.00011778939447737446,
+          "mask": 10
+        },
+        {
+          "action": 2,
+          "margin": -0.00011778939447737446,
+          "mask": 11
+        },
+        {
+          "action": 2,
+          "margin": -0.00015258413149626948,
+          "mask": 12
+        },
+        {
+          "action": 2,
+          "margin": -0.00015258413149626948,
+          "mask": 13
+        },
+        {
+          "action": 2,
+          "margin": -0.00015258413149626948,
+          "mask": 14
+        },
+        {
+          "action": 2,
+          "margin": -0.00015258413149626948,
+          "mask": 15
+        }
+      ],
+      "contributions": {
+        "twin0_hidden": 0.0,
+        "twin0_output": 0.0,
+        "twin1_hidden": -3.476694352128051e-05,
+        "twin1_output": -0.0001044505237779436
+      },
+      "delta": -0.00013921746729922413,
+      "kind": "flat_both_allowed",
+      "margin_control": -1.3366664197045353e-05,
+      "margin_treatment": -0.00015258413149626948,
+      "offset": 33,
+      "row": 449
+    },
+    {
+      "case": "A_43",
+      "coalitions": [
+        {
+          "action": 0,
+          "margin": -4.17792168096176e-05,
+          "mask": 0
+        },
+        {
+          "action": 0,
+          "margin": -0.0018279627552489353,
+          "mask": 1
+        },
+        {
+          "action": 0,
+          "margin": -0.001528446616785084,
+          "mask": 2
+        },
+        {
+          "action": 0,
+          "margin": -0.0033138734197777353,
+          "mask": 3
+        },
+        {
+          "action": 0,
+          "margin": -0.0017492689527536104,
+          "mask": 4
+        },
+        {
+          "action": 0,
+          "margin": -0.003535452491192928,
+          "mask": 5
+        },
+        {
+          "action": 0,
+          "margin": -0.003235936352729077,
+          "mask": 6
+        },
+        {
+          "action": 0,
+          "margin": -0.005021363155721728,
+          "mask": 7
+        },
+        {
+          "action": 0,
+          "margin": -0.0013168766173461965,
+          "mask": 8
+        },
+        {
+          "action": 0,
+          "margin": -0.003103060155785514,
+          "mask": 9
+        },
+        {
+          "action": 0,
+          "margin": -0.002803544017321663,
+          "mask": 10
+        },
+        {
+          "action": 0,
+          "margin": -0.004588970820314314,
+          "mask": 11
+        },
+        {
+          "action": 0,
+          "margin": -0.003018027490675354,
+          "mask": 12
+        },
+        {
+          "action": 0,
+          "margin": -0.004804211029114672,
+          "mask": 13
+        },
+        {
+          "action": 0,
+          "margin": -0.0045046948906508205,
+          "mask": 14
+        },
+        {
+          "action": 0,
+          "margin": -0.006290121693643472,
+          "mask": 15
+        }
+      ],
+      "contributions": {
+        "twin0_hidden": -0.0017858051707159844,
+        "twin0_output": -0.0014862890322521333,
+        "twin1_hidden": -0.0017043203046365751,
+        "twin1_output": -0.0012719279692291613
+      },
+      "delta": -0.006248342476833854,
+      "kind": "open_short",
+      "margin_control": -4.17792168096176e-05,
+      "margin_treatment": -0.006290121693643472,
+      "offset": 64,
+      "row": 55
+    }
+  ]
+}

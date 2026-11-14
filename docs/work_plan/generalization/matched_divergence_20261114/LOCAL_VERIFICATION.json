@@ -1,0 +1,15 @@
+{
+  "actor_updates": 0,
+  "cross_cpu_metric_max_error": 1.3877787807814457e-16,
+  "diagnostic_float_atol": 1e-12,
+  "discrete_checks": "exact",
+  "factorial_cells": 8,
+  "helper_sha256": "9dab703a1e667e1638b44aeef3ef6957f3bc3b71cb08a456cbc036659c839b6c",
+  "identity": "1577e5d8897e3dcdfce5c1ffb5aab97afa0dbeadff432c2875c91f31cc14cd9a",
+  "max_forward_error": 1.942890293094024e-16,
+  "max_jacobian_error": 4.440892098500626e-16,
+  "model_promoted": false,
+  "repeated_exact": 8,
+  "transactions_exact": 256,
+  "verifier_code_sha256": "ac41db7d5863c3f6008091465aa86040a83ab29f7ae7e2ac220672994962bd3d"
+}

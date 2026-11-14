@@ -10,7 +10,7 @@ from app.crossing_step_forensics import adam_parts,flat
 from app.decision_cost_objective import cost_objective
 from app.frozen_recipe_inputs import file_sha
 from app.interior_adamw_repair import transactional_step
-from app.matched_divergence import locate_events,factorial_effects
+from app.matched_divergence import locate_events,factorial_effects,verify_numeric_report
 from app.native_fit_coverage import validate_record
 from app.native_head_warm_start import configure_scope
 from app.rl_subset import digest
@@ -73,7 +73,7 @@ def verify(a):
     result=read(a.output/'RESULT.json');data=torch.load(a.coverage/'prepared/DATA.pt',weights_only=True,map_location='cpu')
     support=read(a.coverage/'prepared/SUPPORT.json')
     z=data['z'].double().numpy();y=np.stack([validate_record(r) for r in read(a.coverage/'PANEL.json')['records']])
-    checked=0;max_jac=0.;max_forward=0.
+    checked=0;max_jac=0.;max_forward=0.;max_metric=0.
     for case in result['cases']:
         out=a.output/'cases'/case['case'];verify_done(out,cfg['identity'])
         traj=read(out/'TRAJECTORY.json');c=np.array(traj['C']);t=np.array(traj['T'])
@@ -93,7 +93,7 @@ def verify(a):
             for key,w in witness['cells'].items():
                 require_equal(w['before'],witness['origins'][key[0]]['before'],'DIVERGENCE_WEIGHT_INTERVENTION')
                 require_equal(w['optimizer_before'],witness['origins'][key[1]]['optimizer_before'],'DIVERGENCE_OPT_INTERVENTION')
-                require_equal(measure(w,z,row,p,other),entry['cells'][key],'DIVERGENCE_MEASURE')
+                max_metric=max(max_metric,verify_numeric_report(measure(w,z,row,p,other),entry['cells'][key]))
                 state={k:v.double().requires_grad_() for k,v in w['before'].items()};q=[]
                 for twin in range(2):
                     prefix=f'twins.{twin}.0.'
@@ -113,7 +113,9 @@ def verify(a):
                 effects=factorial_effects({k:v['margins'][index] for k,v in entry['cells'].items()})
                 require_equal(effects,entry['effects'][kind],'DIVERGENCE_EFFECTS')
     report=dict(identity=cfg['identity'],transactions_exact=result['transactions_exact'],factorial_cells=checked,
-        repeated_exact=result['repeated_exact'],max_jacobian_error=max_jac,max_forward_error=max_forward,actor_updates=0,model_promoted=False)
+        repeated_exact=result['repeated_exact'],max_jacobian_error=max_jac,max_forward_error=max_forward,
+        cross_cpu_metric_max_error=max_metric,diagnostic_float_atol=1e-12,discrete_checks='exact',
+        verifier_code_sha256=file_sha(Path(__file__)),helper_sha256=file_sha(ROOT/'app/matched_divergence.py'),actor_updates=0,model_promoted=False)
     write(a.verification_output/'CONFIG.json',cfg);write(a.verification_output/'VERIFICATION.json',report);seal(a.verification_output,cfg['identity'])
 
 

@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from app.matched_divergence import locate_events, factorial_effects
+from app.matched_divergence import locate_events, factorial_effects,verify_numeric_report
 
 
 def test_first_disagreement_and_control_acquisition():
@@ -34,3 +34,14 @@ def test_factorial_known_effects():
 @pytest.mark.parametrize('cells',[{'CC':0.},{'CC':0.,'CT':1.,'TC':2.,'TT':np.nan}])
 def test_factorial_invalid(cells):
     with pytest.raises(ValueError):factorial_effects(cells)
+
+
+def test_cross_cpu_report_keeps_discrete_exact():
+    assert verify_numeric_report({'actions':[1],'margin':1e-4},{'actions':[1],'margin':1e-4+1e-16})<1e-12
+    with pytest.raises(ValueError):verify_numeric_report({'actions':[1]},{'actions':[2]})
+    with pytest.raises(ValueError):verify_numeric_report(True,1)
+
+
+@pytest.mark.parametrize('actual,expected',[(1e-4,1.01e-4),(float('nan'),0.),({'a':1},{'b':1}),([1],[1,2])])
+def test_cross_cpu_report_rejects_real_discrepancy(actual,expected):
+    with pytest.raises(ValueError):verify_numeric_report(actual,expected)

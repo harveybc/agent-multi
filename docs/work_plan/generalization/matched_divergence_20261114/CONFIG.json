@@ -1,0 +1,33 @@
+{
+  "batch": 128,
+  "cases": [
+    [
+      "B",
+      19,
+      "fit"
+    ],
+    [
+      "A",
+      43,
+      "stop"
+    ]
+  ],
+  "code": {
+    "app/matched_divergence.py": "9edd8dfe9384ca845704790f09186b7eefc6aa602662e0d27829f23ed0e6e2fc",
+    "tools/probe_optimal_fit_protection.py": "42c410830a89aa941a87bceca287ba4fa4cb2f3d67f5c8b0d452568d16b56f88",
+    "tools/replay_matched_divergence.py": "5d46743e56af9a273d627002f7bbae18879f718028ffa22541d3d5f29ddae5bc",
+    "tools/run_targeted_rescue_continuation.py": "39c555b9688e9697e00b0abe314b5cb0830d86908c75bbdc2ec61161954223db"
+  },
+  "identity": "1577e5d8897e3dcdfce5c1ffb5aab97afa0dbeadff432c2875c91f31cc14cd9a",
+  "lr": 2.9999999999999997e-05,
+  "parents": {
+    "control": "a4b51f938a66baa7d6868504a36c1d4163e3881fce73b12ee83bc0e2d67c1382",
+    "coverage": "1a6a64dfd71e2ada45f3c3e069521580108ce7db5a804692733d3be39885ebb8",
+    "probe": "32a49fbb371a3637e669df9095026be9fab5e711b5942916f2ae330f53058621",
+    "source": "7603f573875f72abf0cad6e4166b6a3328c21915819f903245fa65b6b486b41e",
+    "treatment": "5b28e01442fa513619f1a1ae18429e84ecb736334d846b45a21bdd034ab86fbe"
+  },
+  "schema": "matched_divergence_replay.v1",
+  "source_actor_sha256": "69b5254489d224d4b20ac358956e4dd3b9a67a2f214a9aff98045c5def25a536",
+  "weight_decay": 0.01
+}

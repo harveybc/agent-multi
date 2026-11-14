@@ -1,0 +1,10 @@
+{
+  "actor_updates": 0,
+  "factorial_cells": 8,
+  "identity": "1577e5d8897e3dcdfce5c1ffb5aab97afa0dbeadff432c2875c91f31cc14cd9a",
+  "max_forward_error": 1.3877787807814457e-16,
+  "max_jacobian_error": 4.440892098500626e-16,
+  "model_promoted": false,
+  "repeated_exact": 8,
+  "transactions_exact": 256
+}

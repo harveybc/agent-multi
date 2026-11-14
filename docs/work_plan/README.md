@@ -32,8 +32,13 @@ and16 replayed transitions exact. Internal held decisions remain unchanged.
 no additional search:5/5 earlier gains retained,mean FIT regret1.395% lower,
 2 wins/1 loss/1 tie.20 cold checkpoints and16 new transitions replay exactly.
 B43 state/optimizer/RNG matches its control exactly. A43 misses the control's
-internal-stop improvement. Next: saved-state B19/A43 divergence replay before
-actor refinement, not another unchanged floating pass. No user decision needed.
+internal-stop improvement. [347](347_MATCHED_DIVERGENCE_REPLAY.md) reproduces
+256 transactions/18 checkpoints exactly and verifies8 repeated factorial cells.
+Both missed actions follow pre-step weights despite optimizer exchange;
+B19's discrepancy starts at33, A43's missed early close at64.32 block coalitions
+show B19 concentrated in twin1 output but A43 distributed across all blocks.
+Next: FIT-only function-locality contrast before actor refinement, not another
+unchanged floating pass. No user decision needed.
 Per-step single-observation guards now accompany batched guards; checkpoint-only
 detection was insufficient. See [method state](generalization/PROJECT_METHOD_STATE.json)
 and [findings](generalization/FINDINGS_AND_PROGRESS.md) for the exact resume point.

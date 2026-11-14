@@ -24,3 +24,22 @@ def factorial_effects(cells):
     cc,ct,tc,tt=(float(cells[k]) for k in ('CC','CT','TC','TT'))
     return dict(optimizer_at_control_weights=ct-cc,optimizer_at_treatment_weights=tt-tc,
         weights_at_control_optimizer=tc-cc,weights_at_treatment_optimizer=tt-ct,interaction=tt-tc-ct+cc)
+
+
+def verify_numeric_report(actual,expected):
+    """Cross-CPU diagnostic algebra: exact structure/discrete values, 1e-12 floats.
+
+    This does not change any training gate or same-device replay comparison.
+    """
+    if isinstance(actual,dict):
+        if not isinstance(expected,dict) or set(actual)!=set(expected):raise ValueError('DIVERGENCE_REPORT_KEYS')
+        return max((verify_numeric_report(v,expected[k]) for k,v in actual.items()),default=0.)
+    if isinstance(actual,list):
+        if not isinstance(expected,list) or len(actual)!=len(expected):raise ValueError('DIVERGENCE_REPORT_LENGTH')
+        return max((verify_numeric_report(v,w) for v,w in zip(actual,expected)),default=0.)
+    if isinstance(actual,float) and isinstance(expected,float):
+        error=abs(actual-expected)
+        if not np.isfinite(actual) or not np.isfinite(expected) or error>1e-12:raise ValueError('DIVERGENCE_REPORT_NUMERIC')
+        return error
+    if type(actual)!=type(expected) or actual!=expected:raise ValueError('DIVERGENCE_REPORT_DISCRETE')
+    return 0.

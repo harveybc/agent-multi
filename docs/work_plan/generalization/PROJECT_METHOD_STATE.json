@@ -1,14 +1,28 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "MATCHED_DIVERGENCE_REPLAY_RUNNING",
+  "current_stage": "MATCHED_DIVERGENCES_VERIFIED_FUNCTION_LOCALITY_NEXT",
   "matched_divergence_replay_347": {
     "document": "../347_MATCHED_DIVERGENCE_REPLAY.md",
-    "status": "RUNNING_PINNED_SUPERVISED",
+    "status": "COMPLETE_INDEPENDENTLY_VERIFIED",
     "runtime_commit": "a139afee",
+    "identity": "1577e5d8897e3dcdfce5c1ffb5aab97afa0dbeadff432c2875c91f31cc14cd9a",
+    "seconds": 344.5769342109561,
     "cases": ["B19 FIT", "A43 internal stop"],
-    "tests_passed": 52,
+    "tests_passed": 57,
+    "transactions_exact": 256,
+    "checkpoints_exact": 18,
+    "factorial_cells": 8,
+    "repeated_exact": 8,
+    "block_coalitions": 32,
+    "jacobian_max_error": 4.440892098500626e-16,
+    "cross_cpu_metric_max_error": 1.3877787807814457e-16,
+    "first_divergences": {"B19_FIT": 33, "A43_stop": 64},
+    "optimizer_swap_recovers_missed_action": false,
+    "interpretation": "Conditional pre-step weights determine both missed improvements; B19 margin deficit concentrated in twin1 output, A43 distributed over all four blocks. Not proof of a universal reset/transplant remedy.",
+    "jobs_running": 0,
     "actor_updates": 0,
-    "next_action": "Replay342/346 trajectories exactly, locate first discrepancies and control gains, execute fixed-step weights/AdamW factorial with exact diagonal and repeated controls, independently verify. No new search or actor promotion."
+    "model_promoted": false,
+    "next_action": "Design/test bounded function-locality contrast on saved FIT targeted-correction witnesses: reduce collateral FIT action-gap drift while retaining all existing finite guards and actual target improvement. Compare against saved corrections; no held labels in repair construction/selection, no guard relaxation, no actor change or unchanged floating pass. No user choice needed."
   },
   "targeted_rescue_retention_346": {
     "document": "../346_TARGETED_RESCUE_RETENTION.md",
@@ -40,7 +54,7 @@
     "jobs_running": 0,
     "actor_updates": 0,
     "model_promoted": false,
-    "next_action": "Replay saved B19 FIT and A43 internal-stop divergences versus342, identify first different decisions and separate changed directions, AdamW history and protection before actor refinement. No new target searches, guard relaxation, held-label update selection or unchanged floating pass. No user decision needed."
+    "next_action": "Complete; exact paired divergence replay347 is independently complete. See matched_divergence_replay_347 and current_stage."
   },
   "targeted_rescue_continuation_345": {
     "document": "../345_BOUNDED_TARGETED_RESCUE_CONTINUATION.md",

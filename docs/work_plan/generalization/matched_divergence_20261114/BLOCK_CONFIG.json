@@ -1,0 +1,13 @@
+{
+  "blocks": [
+    "twin0_hidden",
+    "twin0_output",
+    "twin1_hidden",
+    "twin1_output"
+  ],
+  "code_sha256": "93b7fb49937f8700b74abe1eb5b46ea570c2a9773fb5f439d5c25567f18ee7d8",
+  "helper_sha256": "299e5459f4bcd3e5bbb2c957e9e1d51a3c7b9c8db10b903be4d9381404577261",
+  "identity": "db823532e7c48d910904c85ba9a2059005b517697a47dc10d2b0df66cd7f1273",
+  "parent": "1577e5d8897e3dcdfce5c1ffb5aab97afa0dbeadff432c2875c91f31cc14cd9a",
+  "schema": "matched_divergence_blocks.v1"
+}
