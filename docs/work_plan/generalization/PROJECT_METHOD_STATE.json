@@ -1,6 +1,14 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "ROBUST_DIRECTION_FEASIBILITY_COMPLETE_PARTIAL_NO_PROMOTION",
+  "current_stage": "AUTOMATED_ROBUST_REFINEMENT_IMPLEMENTED",
+  "automated_robust_refinement_331": {
+    "document": "../331_AUTOMATED_ROBUST_REFINEMENT.md",
+    "status": "IMPLEMENTED_BEFORE_RUN",
+    "automatic_stages": ["interior_feasibility", "paired_256", "gated_1024", "cold_and_resume_verification"],
+    "intermediate_user_approval_required": false,
+    "model_promoted": false,
+    "next_action": "Verify focused tests then execute the complete gated chain under a resumable supervisor; emit diagnostic outcome automatically. Preserve source299 actor,71 inputs and paused STL."
+  },
   "robust_direction_feasibility_330": {
     "document": "../330_ROBUST_DIRECTION_FEASIBILITY.md",
     "status": "COMPLETE_PARTIAL_FEASIBILITY_NO_PROMOTION",
