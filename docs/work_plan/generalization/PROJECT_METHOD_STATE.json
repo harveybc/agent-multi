@@ -1,6 +1,16 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "OPTIMIZER_RESET_FIT_IMPROVEMENT_TRANSFER_MIXED",
+  "current_stage": "RANK_PRESERVING_CALIBRATION_IMPLEMENTED",
+  "rank_preserving_calibration_335": {
+    "document": "../335_RANK_PRESERVING_VALUE_CALIBRATION.md",
+    "status": "IMPLEMENTED_BEFORE_RUN",
+    "source_endpoints": 8,
+    "candidates": 16,
+    "optimizer_updates": 0,
+    "model_promoted": false,
+    "intermediate_user_approval_required": false,
+    "next_action": "Verify tests, execute16 closed-form calibrations on saved334 heads, independently verify coefficients/actions and publish results. Preserve299 actor and71 inputs."
+  },
   "optimizer_memory_contrast_334": {
     "document": "../334_OPTIMIZER_MEMORY_CONTRAST.md",
     "status": "COMPLETE_VERIFIED_FIT_IMPROVEMENT_TRANSFER_MIXED",
