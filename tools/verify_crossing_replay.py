@@ -54,8 +54,16 @@ def verify(a):
                 q32=ctx.head(ctx.z[:,ix]).mean(2).cpu().double().numpy()
                 q64=ctx.double(ctx.zcpu[:,ix].double()).mean(2).numpy()
             differences=np.argwhere(q32.argmin(0)!=q64.argmin(0))
+            branch_q=ctx.double(ctx.zcpu[:,ix].double()).mean(2)
+            routed=branch_q.gather(0,torch.tensor(q32.argmin(0))[None]).squeeze(0)
+            batch_targets=torch.tensor(y[ix]);costs=batch_targets.max(1,keepdim=True).values-batch_targets
+            routed_loss=ctx.temperature*(torch.softmax(routed/ctx.temperature,dim=1)*costs).sum(1).mean()
+            routed_grad=vector_grad(torch.autograd.grad(routed_loss,list(ctx.double.parameters())))
+            routed_error=float(np.max(abs(routed_grad-w['actual_gradient'])))
+            if routed_error>1e-6:raise ValueError('CROSS_VERIFY_ROUTED_GRADIENT')
             route_witnesses.append(dict(case=f'{fold}_{seed}',offset=w['offset'],
                 forward_max_error=float(np.max(abs(q32-q64))),
+                cuda_branch_torch64_gradient_max_error=routed_error,
                 differences=[dict(batch_position=int(j),row=int(ix[j]),action=int(k),
                     twin_values32=q32[:,j,k].tolist(),twin_values64=q64[:,j,k].tolist()) for j,k in differences]))
             def repair(before,proposed):
