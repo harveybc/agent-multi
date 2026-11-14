@@ -1,15 +1,27 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "RANK_PRESERVING_CALIBRATION_IMPLEMENTED",
+  "current_stage": "RANK_PRESERVING_CALIBRATION_COMPLETE_STALL_ATTRIBUTED",
   "rank_preserving_calibration_335": {
     "document": "../335_RANK_PRESERVING_VALUE_CALIBRATION.md",
-    "status": "IMPLEMENTED_BEFORE_RUN",
+    "status": "COMPLETE_VERIFIED_13_OF_16_DIAGNOSTIC_CALIBRATIONS_PASS",
+    "runtime_commit": "f9ba2352",
+    "identity": "7baa1a87b259b0c40623c86da6d8eafe2ff79aa12667908fceed975aa4ea8492",
+    "seconds": 3.1430492060026154,
+    "eligible": 13,
+    "source_controls_exact": 8,
+    "cold_replays_exact": 16,
+    "independent_metric_scopes": 96,
+    "hidden_tensors_unchanged": 64,
+    "fit_and_held_action_changes": 0,
+    "tests_passed": 38,
+    "jobs_running": 0,
+    "b43_trailing_rejects": {"finite_guard": 329, "solver_feasibility": 238, "norm_cap": 0},
     "source_endpoints": 8,
     "candidates": 16,
     "optimizer_updates": 0,
     "model_promoted": false,
     "intermediate_user_approval_required": false,
-    "next_action": "Verify tests, execute16 closed-form calibrations on saved334 heads, independently verify coefficients/actions and publish results. Preserve299 actor and71 inputs."
+    "next_action": "Bounded paired replay of334 stalled B43 actual AdamW proposals with independent higher-accuracy direction solve, unchanged margins/cap, finite-network acceptance and decision-cost scoring. Not launched by335. Preserve299 actor,71 inputs and49 cumulative return candidates. Do not equate calibration with full SAC correctness."
   },
   "optimizer_memory_contrast_334": {
     "document": "../334_OPTIMIZER_MEMORY_CONTRAST.md",
@@ -2899,7 +2911,8 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
-    "334 complete: cost-only plus fresh AdamW improves matched FIT decisions in4/4; automatic1024 extension complete. Transfer mixed, Q calibration not certified. Next bounded positive-affine calibration on FIT with finite action/margin checks; not launched yet and no user decision needed",
+    "335 complete: shared offset8/8 and affine5/8 calibrations pass fixed margins; all16 preserve all FIT/held actions,96 independent metric scopes verified. Next bounded higher-accuracy direction replay for334 B43 stalls; unchanged guards, no user decision required, not launched yet",
+    "334 complete: cost-only plus fresh AdamW improves matched FIT decisions in4/4; automatic1024 extension complete. Transfer mixed.335 calibrates saved values without changing decisions, not full SAC or live certification",
     "333 complete: cost/hybrid improve some stable-added decisions, but neither passes the frozen consistency gate. All24 checkpoints robust across five geometries; all4 MSE controls reproduce331. Do not promote a loss-only improvement",
     "326-332 complete: component recombination, warm starts, gradient conflict, actual-AdamW protection, interior repair and decision attribution. Preserve original decisions AND measure new learning; separate numerical near-tie repair from improved action choice",
     "324-325 complete: coverage improves value RMSE but not decision regret consistently; harmful switches concentrated in eligible-flat states. Do not repeat unchanged analysis or fitting",

@@ -1,0 +1,27 @@
+{
+  "source_checkpoint_sha256": "3dc1d7a2ac92bb195957d95444f36d9a37d23d4e8928341f3234d8aeefae0aa9",
+  "case": "B43 cost fresh AdamW",
+  "last_accepted_attempt": 457,
+  "accepted": 395,
+  "total_attempts": 1024,
+  "trailing_rejected": 567,
+  "terminal_causes": {
+    "finite_guard": 329,
+    "solver_feasibility": 238
+  },
+  "repair_iterations": {
+    "3": 370,
+    "1": 97,
+    "2": 100
+  },
+  "solver_terminal_normalized_violation_range": [
+    1.0034865399867029e-07,
+    2.539622433246109e-07
+  ],
+  "solver_terminal_norm_ratio_range": [
+    0.939135287462796,
+    0.9650545410435881
+  ],
+  "optimizer_updates": 0,
+  "scope": "Read-only classification of334 logged rejections, not a new feasibility or learning test"
+}

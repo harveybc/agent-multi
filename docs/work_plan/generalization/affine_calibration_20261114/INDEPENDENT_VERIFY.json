@@ -1,0 +1,14 @@
+{
+  "identity": "7baa1a87b259b0c40623c86da6d8eafe2ff79aa12667908fceed975aa4ea8492",
+  "verified_seals": 17,
+  "candidates": 16,
+  "eligible": 13,
+  "hidden_tensors_unchanged": 64,
+  "metric_scopes": 96,
+  "max_metric_error": 4.440892098500626e-16,
+  "independent_least_squares_max_coefficient_error": 4.440892098500626e-16,
+  "fit_held_overlap": 0,
+  "guard_differences": [],
+  "local_cpu_metric_max_error": 5.140952108462216e-10,
+  "local_guard_surplus_max_error": 4.440892098500626e-16
+}

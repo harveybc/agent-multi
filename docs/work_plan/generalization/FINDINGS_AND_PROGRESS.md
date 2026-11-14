@@ -688,3 +688,24 @@ any actor update. Report334 includes the corrected full1024 plot: its original
 axis clipped the continuation at256; saved numerical results were correct and
 the sealed original was not rewritten.52 focused tests pass, including the
 new plot regression. No successor training is running after this completed chain.
+
+## F-SHARED-CALIBRATION-PRESERVES-RANKS-BUT-NOT-ALL-FINITE-MARGINS
+
+2026-11-14,335:16 closed-form TRAIN-FIT calibrations on eight334 cost-only
+endpoints,3.143s, no optimizer steps. All lower FIT value MSE and preserve all
+evaluated FIT/stop/audit actions. Shift-only passes8/8; positive affine5/8.
+Three affine candidates touch the analytic slope bound and violate finite
+margins by8.69e-9..7.58e-8. They are rejected despite unchanged actions.
+Do not weaken guards to promote better MSE or equate value calibration with
+better trading/generalization. Source299 actor and71 inputs remain intact.
+
+17 seals,16 cold reloads,64 hidden tensors unchanged,96 independent metric
+scopes. Coefficient/manual NumPy discrepancies<=4.441e-16. CPU MSE differs
+by<=5.141e-10 across hosts without action or guard-decision differences.
+38 focused tests pass. Report335 and its evidence are the reference.
+
+The next blocker is localized in334's existing B43 ledger:567 trailing rejects
+after attempt457,329 finite guard and238 solver feasibility, none due to the
+norm cap. Next compare a higher-accuracy direction solve on the exact rejected
+proposals without changing tolerances, before another long fit. No successor
+worker is running after335's completed collection/verification.
