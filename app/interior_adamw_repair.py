@@ -33,10 +33,10 @@ def repair_direction(delta,linearize,evaluate,margin,factor=2.,max_repairs=3):
     return dict(accepted=False,reason='finite_guard',repairs=repairs,delta=None)
 
 
-def transactional_step(head,optimizer,z,y,repair):
+def transactional_step(head,optimizer,z,y,repair,loss_fn=None):
     before=deepcopy(head.state_dict());old_opt=deepcopy(optimizer.state_dict())
     try:
-        clipped=fit_step(head,optimizer,z,y)
+        clipped=fit_step(head,optimizer,z,y,loss_fn=loss_fn)
         proposed=deepcopy(head.state_dict());state,record=repair(before,proposed)
         if bool(record['accepted'])!=(state is not None):raise ValueError('INTERIOR_STATE_CONTRACT')
         if state is None:

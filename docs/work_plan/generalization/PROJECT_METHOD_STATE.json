@@ -1,6 +1,17 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "AUTOMATED_REFINEMENT_AND_ATTRIBUTION_COMPLETE_NO_PROMOTION",
+  "current_stage": "DECISION_COST_CONTRAST_IMPLEMENTED",
+  "decision_cost_contrast_333": {
+    "document": "../333_DECISION_COST_LOSS_CONTRAST.md",
+    "status": "IMPLEMENTED_VERIFIED_BEFORE_RUN",
+    "tests_passed": 50,
+    "short_fits": 12,
+    "objectives": ["mse", "cost", "hybrid"],
+    "budgets": [256, 1024],
+    "intermediate_user_approval_required": false,
+    "model_promoted": false,
+    "next_action": "Execute paired loss contrast with geometry-aware original protection, stable-added scoring, automatic qualified extension, plots and replay. No source299 actor or71-input changes."
+  },
   "refinement_decision_attribution_332": {
     "document": "../332_REFINEMENT_DECISION_ATTRIBUTION.md",
     "status": "COMPLETE_MEASURED_ATTRIBUTION_NO_PROMOTION",

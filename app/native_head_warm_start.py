@@ -32,12 +32,13 @@ def check_frozen(head,initial,trainable):
             raise ValueError('WARM_FROZEN_CHANGED')
 
 
-def fit_step(head,optimizer,z,y):
+def fit_step(head,optimizer,z,y,loss_fn=None):
     parameters=[p for p in head.parameters() if p.requires_grad]
     if {id(p) for g in optimizer.param_groups for p in g['params']}!={id(p) for p in parameters}:
         raise ValueError('WARM_OPTIMIZER_SCOPE')
     optimizer.zero_grad(set_to_none=True)
-    loss=contract_loss(head(z).mean(2),y,'mse')
+    q=head(z).mean(2)
+    loss=contract_loss(q,y,'mse') if loss_fn is None else loss_fn(q,y)
     if not torch.isfinite(loss):raise ValueError('WARM_LOSS_NONFINITE')
     loss.backward()
     norm=torch.nn.utils.clip_grad_norm_(parameters,10.,error_if_nonfinite=True)
