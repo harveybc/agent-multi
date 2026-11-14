@@ -7,6 +7,7 @@ import time
 import numpy as np
 import torch
 from app.bounded_actor_utility import install_native_heads,choose_fold,qualify,winner
+from app.critic_fit_probe import probe_q
 from app.bounded_functional_actor import BUDGET,budget_metrics,admissible,backtrack
 from app.actor_learning_diagnostics import clear_optimizer_memory
 from app.operational_actor_transfer import actor_loss
@@ -125,7 +126,8 @@ def run(a):
         effective=model.effective,alpha=float(model.loss.log_alpha.detach().exp()),objective='categorical_SAC_native_alpha_frozen_min_Q',
         actor_only=True,critic_updates=0,features=71,full_periods=model.recipe['split']['periods'],
         code={k:file_sha(ROOT/k) for k in ('tools/run_bounded_actor_utility.py','app/bounded_actor_utility.py',
-            'app/bounded_functional_actor.py','app/operational_actor_transfer.py','app/three_signal_learning.py','app/selected_input_market.py')})
+            'app/bounded_functional_actor.py','app/operational_actor_transfer.py','app/three_signal_learning.py','app/selected_input_market.py',
+            'app/critic_fit_probe.py','tools/run_role_routed_critic.py')})
     cfg['identity']=digest(cfg)
     if (a.output/'CONFIG.json').exists() and read(a.output/'CONFIG.json')!=cfg:raise ValueError('UTILITY_CONFIG')
     if (a.output/'DONE.json').exists():verify_done(a.output,cfg['identity']);return
@@ -160,7 +162,7 @@ def run(a):
         install_native_heads(model,donor['state']);changed=[k for k,v in model.loss.state_dict().items() if not torch.equal(v.cpu(),old[k])]
         if not changed or any(not k.startswith('qvalue_network_params.') or '.head.' not in k for k in changed):raise ValueError('UTILITY_IMPORT_SCOPE')
         if not np.array_equal(logits(model)[market.inputs.valid],baseline[market.inputs.valid]):raise ValueError('UTILITY_IMPORT_ACTOR')
-        with torch.no_grad():qfull=torch.cat([model.q_surfaces(features[i:i+128]).cpu() for i in range(0,len(features),128)],dim=1).numpy()
+        with torch.no_grad():qfull=torch.cat([probe_q(model,features[i:i+128]).cpu() for i in range(0,len(features),128)],dim=1).numpy()
         qref=native_forward(donor['state'],data['z'].double().numpy())[0]
         qerror=float(np.max(abs(qfull-qref)))
         if qerror>1e-5 or not np.array_equal(qfull[:,fit].min(0).argmax(1),qref[:,fit].min(0).argmax(1)):raise ValueError('UTILITY_Q_PARITY:'+str(qerror))

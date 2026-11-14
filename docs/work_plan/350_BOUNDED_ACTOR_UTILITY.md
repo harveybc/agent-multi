@@ -72,3 +72,11 @@ Prelaunch:25 focused tests pass in3.33seconds; scoped Ruff checks pass.
 Tests include exact native twin transplant, atomic rejection, only-actor
 updates, full-state first-transaction replay and rollback with nonempty AdamW
 memory. Live processes and source299 remain untouched. Runtime evidence follows.
+
+The first launch stopped BEFORE any actor update: direct q_surfaces used a
+different attention execution path from the cached critic producer, with
+max Q discrepancy1.572e-5. The baseline account had already matched299.
+The adapter now uses the existing probe_q path used by that producer, restoring
+attention dispatch after each call. The original1e-5 Q gate and exact FIT
+action comparison remain unchanged; no tolerance relaxation or weight fitting.
+Failed r1 is retained, and the corrected launch receives a new identity/root.
