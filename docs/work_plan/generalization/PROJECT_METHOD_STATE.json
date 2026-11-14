@@ -1,6 +1,14 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "TARGETED_RESCUE_RETENTION_VERIFIED_DIVERGENCE_REPLAY_NEXT",
+  "current_stage": "MATCHED_DIVERGENCE_REPLAY_READY",
+  "matched_divergence_replay_347": {
+    "document": "../347_MATCHED_DIVERGENCE_REPLAY.md",
+    "status": "TESTED_READY",
+    "cases": ["B19 FIT", "A43 internal stop"],
+    "tests_passed": 52,
+    "actor_updates": 0,
+    "next_action": "Replay342/346 trajectories exactly, locate first discrepancies and control gains, execute fixed-step weights/AdamW factorial with exact diagonal and repeated controls, independently verify. No new search or actor promotion."
+  },
   "targeted_rescue_retention_346": {
     "document": "../346_TARGETED_RESCUE_RETENTION.md",
     "status": "COMPLETE_INDEPENDENTLY_VERIFIED",
