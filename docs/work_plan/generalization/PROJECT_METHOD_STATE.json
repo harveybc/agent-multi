@@ -1,9 +1,28 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "DECISION_TARGETED_DIRECTION_READY",
+  "current_stage": "BOUNDED_TARGETED_RESCUE_CONTINUATION_READY",
+  "targeted_rescue_continuation_345": {
+    "document": "../345_BOUNDED_TARGETED_RESCUE_CONTINUATION.md",
+    "status": "IMPLEMENTED_TESTED_BEFORE_EXECUTION",
+    "cases": 4,
+    "attempts_per_case": 16,
+    "targeted_searches_per_case": 4,
+    "tests_passed": 73,
+    "actor_updates": 0,
+    "model_promoted": false,
+    "next_action": "Execute bounded16-step continuation with projected-AdamW semantics and exact saved342 controls; automatically run independent CPU verifier. No long-fit extension or actor promotion."
+  },
   "decision_targeted_direction_344": {
     "document": "../344_DECISION_TARGETED_DIRECTION.md",
-    "status": "IMPLEMENTED_TESTED_BEFORE_EXECUTION",
+    "status": "COMPLETE_INDEPENDENTLY_VERIFIED",
+    "identity": "1273e12e6e3c44ec6a6238a497a32cd25bd205f5ae455d231903c49b7397af23",
+    "runtime_commit": "e1a41836",
+    "verifier_commit": "03b854ea",
+    "seconds": 118.92044454603456,
+    "candidates_examined": 43,
+    "accepted_candidates": 10,
+    "successful_witnesses": 5,
+    "derivative_max_error": 7.105427357601002e-15,
     "fixed_witnesses": 10,
     "maximum_targets_per_witness": 8,
     "norm_cap": 4,
@@ -11,7 +30,7 @@
     "actor_updates": 0,
     "optimizer_steps": 0,
     "model_promoted": false,
-    "next_action": "Run bounded targeted projections with exact341 controls; independently verify target gradients, cold candidates, full repeat and all-five finite guards. Publish decision improvements, not loss-only improvements. No held-label selection or automatic full training."
+    "next_action": "Complete.345 defines a bounded16-step continuation to measure accumulation under explicit projected-AdamW optimizer semantics, followed by automatic independent verification."
   },
   "protection_component_tradeoff_343": {
     "document": "../343_PROTECTION_COMPONENT_TRADEOFF.md",

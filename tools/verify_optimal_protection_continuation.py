@@ -51,7 +51,8 @@ def run(a):
     for u in result['units']:
         fold,seed=u['fold'],u['seed'];name=f'{fold}_{seed}';out=a.run/'units'/name;verify_done(out,cfg['identity'])
         src=a.source/'units'/f'{name}_cost'/'LATEST.pt';source=torch.load(src,weights_only=False,map_location='cpu')
-        control_path=a.control/'units'/f'{name}_complete'/'ENDPOINT_64.pt'
+        control_budget=cfg.get('control_budget',64)
+        control_path=a.control/'units'/f"{name}{cfg.get('control_suffix','_complete')}"/f'ENDPOINT_{control_budget}.pt'
         if file_sha(control_path)!=u['control_sha256']:raise ValueError('CONT_VERIFY_CONTROL')
         control=torch.load(control_path,weights_only=False,map_location='cpu')
         if control['source_sha256']!=file_sha(src):raise ValueError('CONT_VERIFY_SOURCE')
@@ -77,12 +78,15 @@ def run(a):
                     if abs(actual[metric]-expected[metric])>1e-12:raise ValueError('CONT_VERIFY_METRICS')
             return q
         q0=check(source['state'],u['curve'][0]['metrics']);qc=check(control['state'],u['control'])
-        for offset in (16,32,48,64):
+        for checkpoint_index,offset in enumerate(cfg.get('checkpoints',[16,32,48,64]),1):
             cp=torch.load(out/f'ENDPOINT_{offset}.pt',weights_only=False,map_location='cpu')
             if cp['source_sha256']!=file_sha(src) or cp['identity']!=cfg['identity'] or cp['offset']!=offset:raise ValueError('CONT_VERIFY_CHECKPOINT')
-            require_equal(cp['curve'],u['curve'][:offset//16+1],'CONT_VERIFY_CURVE')
+            require_equal(cp['curve'],u['curve'][:checkpoint_index+1],'CONT_VERIFY_CURVE')
             accepted,last=verify_trace(cp['trace'],u['curve'][0]['metrics']['fit'])
             if accepted!=cp['accepted']:raise ValueError('CONT_VERIFY_ACCEPTED')
+            if 'searches_per_case' in cfg:
+                counts=[t['searches_used'] for t in cp['trace']]
+                if counts!=sorted(counts) or counts[-1]>cfg['searches_per_case'] or counts[-1]!=cp['searches_used']:raise ValueError('CONT_VERIFY_SEARCH_BUDGET')
             for v in cp['optimizer']['state'].values():
                 if int(v['step'])!=source['accepted']+accepted:raise ValueError('CONT_VERIFY_OPTIMIZER')
             metrics=cp['curve'][-1]['metrics'];q=check(cp['state'],metrics);endpoints+=1
@@ -90,10 +94,10 @@ def run(a):
                 for m in ('cost','regret'):
                     if v[m]!=metrics['fit'][k][m]:raise ValueError('CONT_VERIFY_TRACE_ENDPOINT')
         traces+=len(cp['trace'])
-        for label,qq,metrics in [('source',q0,u['curve'][0]['metrics']),('control64',qc,u['control']),('protected64',q,metrics)]:
+        for label,qq,metrics in [('source',q0,u['curve'][0]['metrics']),(f'control{control_budget}',qc,u['control']),(f"protected{cfg['budget']}",q,metrics)]:
             actions=qq[:,fit].min(0).argmax(1);initial=q0[:,fit].min(0).argmax(1);target=y[fit]
             delta=target[np.arange(len(fit)),actions]-target[np.arange(len(fit)),initial]
-            rows.append(dict(case=name,arm=label,accepted=u['accepted'] if label=='protected64' else None,
+            rows.append(dict(case=name,arm=label,accepted=u['accepted'] if label.startswith('protected') else None,
                 fit_cost=metrics['fit']['numpy']['cost'],fit_regret=metrics['fit']['numpy']['regret'],
                 stop_regret=metrics['held_internal_train']['stop']['regret'],audit_regret=metrics['held_internal_train']['audit']['regret'],
                 changed=int(np.sum(actions!=initial)),improved=int(np.sum(delta>0)),worsened=int(np.sum(delta<0))))
@@ -110,7 +114,7 @@ def run(a):
     fig,axes=plt.subplots(2,2,figsize=(11,7))
     for ax,u in zip(axes.flat,result['units']):
         ax.plot([c['offset'] for c in u['curve']],[c['metrics']['fit']['numpy']['regret'] for c in u['curve']],marker='o',label='Protected FIT')
-        ax.axhline(u['control']['fit']['numpy']['regret'],color='red',linestyle='--',label='Saved control at64')
+        ax.axhline(u['control']['fit']['numpy']['regret'],color='red',linestyle='--',label=f'Saved control at{cfg.get("control_budget",64)}')
         ax.set(title=f"{u['fold']} / seed {u['seed']}",xlabel='Attempt',ylabel='FIT decision regret');ax.legend()
     fig.tight_layout();fig.savefig(a.output/'FIT_REGRET.png',dpi=140);plt.close(fig)
     verify_done(a.run,cfg['identity']);seal(a.output,cfg['identity'])
