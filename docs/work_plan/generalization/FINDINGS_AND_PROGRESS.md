@@ -526,3 +526,27 @@ warm-start fitting (54 trainable parameters) with full-head warm-start fitting
 (3398), from the same control, on the same expanded FIT and fixed budgets.
 This successor is not launched yet. Source299,71 inputs,49 cumulative return
 candidates and paused STL remain intact. No new trading performance claimed.
+
+## F-WARM-START-FULL-HEAD-PRESERVATION-IS-FOLD-DEPENDENT
+
+2026-11-14,327: eight matched warm-start fits from the exact322 trained
+control weights, fresh AdamW in both arms, same expanded324 FIT/schedules.
+Output-only54 versus full-head3398 trainable parameters,8192/32768 additional
+updates.239.65 seconds, no restarts/clipped updates,15 tests. Independent
+checks authenticate9 seals,16 endpoints,128 metric scopes and32 frozen
+tensors; NumPy CPU action regrets reproduce exactly. Source actor unchanged.
+
+Output-only passes0/4 at either endpoint. Full-head passes0/4 at8192 and2/4
+at32768 (both foldA seeds). In foldA, the full-head late original/expanded
+FIT regrets are all below0.001; foldB still fails. Mean full-head expanded
+FIT regret improves0.232719->0.037762, but original FIT0.008043->0.027790
+and descriptive audit0.236451->0.261350 worsen. No consistent promotion.
+
+Freezing the hidden layer does not itself preserve decisions: output-only
+late original-FIT regret reaches0.078385 while audit RMSE improves. Some
+intermediate FIT gates pass and later fail; some full-head foldA fits recover
+late. All curves retained, no retrospective stopping selection. This is a
+measured fitting tradeoff, not proof of signal absence or a single culprit.
+Next inspect FIT-only old/new gradient conflict and level/gap contributions
+before changing objectives or replay weights. No new job launched after327;
+preserve299,71 inputs,49 return candidates and paused STL. Full report327.

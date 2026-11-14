@@ -1,0 +1,18 @@
+{
+  "identity": "435f400b6dd83a85120a6252eb6b8a0a4fb6a86477d2a9bf7f163371168a1bdd",
+  "seals_verified": 9,
+  "endpoints_verified": 16,
+  "numpy_cpu_metric_scopes": 128,
+  "numpy_cpu_regret_max_error": 0.0,
+  "numpy_cpu_rmse_max_error": 4.1636740877315503e-07,
+  "frozen_endpoint_tensors_verified": 32,
+  "paired_initialization_schedule_support": true,
+  "optimizer_steps_verified": true,
+  "source_unchanged": true,
+  "fit_gate_passes": {
+    "output_only:8192": 0,
+    "output_only:32768": 0,
+    "full_head:8192": 0,
+    "full_head:32768": 2
+  }
+}

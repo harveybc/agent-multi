@@ -1,0 +1,34 @@
+{
+  "batch": 128,
+  "code": {
+    "app/critic_target_contract.py": "cbfbd00f5c0806cde9cde67bf95b693ddbdfa150a5953afbe36795ebe6848b69",
+    "app/head_component_recombination.py": "32084d2f251a4fa3c7eaab32e27efdfc77c0772cb481eda645fa93f9b5e305ca",
+    "app/native_head_warm_start.py": "e4468b47c12921709cd1030207ab71c67d6433d19bcf193af32bcb198bf1f452",
+    "tools/run_native_head_warm_start.py": "22d39c583bc2408d7958fc5fd991fc14b4136a173bf90da0cd0c739efd3b63e9",
+    "tools/run_teacher_coverage.py": "7cb06f6e826d988fb84fb1b0b5b45ec21d1feeeea55d92a029888b612968e407"
+  },
+  "coverage": "1a6a64dfd71e2ada45f3c3e069521580108ce7db5a804692733d3be39885ebb8",
+  "gradient_clip": 10.0,
+  "identity": "435f400b6dd83a85120a6252eb6b8a0a4fb6a86477d2a9bf7f163371168a1bdd",
+  "lr": 2.9999999999999997e-05,
+  "optimizer_state": "fresh_both_arms",
+  "previous": "e1d5e7197a8969aa3a65ffa5b2a0af278f74df70d538cce14acba691ddab9c6e",
+  "primary": "8192_additional_updates",
+  "recombination": "954530afa82c383de8006736468767135858dcb3626e5427c845e8b2caa33012",
+  "schema": "native_head_warm_start.v1",
+  "scopes": [
+    "output_only",
+    "full_head"
+  ],
+  "seeds": [
+    19,
+    43
+  ],
+  "source_sha256": "69b5254489d224d4b20ac358956e4dd3b9a67a2f214a9aff98045c5def25a536",
+  "tolerance": 1e-08,
+  "updates": [
+    8192,
+    32768
+  ],
+  "weight_decay": 0.01
+}

@@ -1,15 +1,26 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "NATIVE_HEAD_WARM_START_PREPARED",
+  "current_stage": "NATIVE_HEAD_WARM_START_COMPLETE_NO_PROMOTION",
   "native_head_warm_start_327": {
     "document": "../327_NATIVE_HEAD_WARM_START.md",
-    "status": "TESTS_PASS_PREPARED",
+    "status": "COMPLETE_PARTIAL_FIT_PRESERVATION_NO_PROMOTION",
+    "runtime_commit": "9585e596",
+    "identity": "435f400b6dd83a85120a6252eb6b8a0a4fb6a86477d2a9bf7f163371168a1bdd",
     "focused_tests_passed": 15,
-    "planned_fits": 8,
+    "completed_fits": 8,
+    "seconds": 239.6466077429941,
+    "supervisor_exit_code": 0,
+    "supervisor_restarts": 0,
+    "verified_seals": 9,
+    "verified_endpoints": 16,
+    "numpy_cpu_metric_scopes": 128,
+    "numpy_cpu_regret_max_error": 0.0,
+    "numpy_cpu_rmse_max_error": 4.1636740877315503e-7,
+    "fit_gate_passes": {"output_only_8192": 0, "output_only_32768": 0, "full_head_8192": 0, "full_head_32768": 2},
     "updates": [8192, 32768],
     "trainable_parameters": {"output_only": 54, "full_head": 3398},
     "model_promoted": false,
-    "next_action": "Test scope freezing/restart, authenticate source and GPU, launch eight sequential matched warm starts from322 control weights on324 expanded FIT, then collect and independently verify. No actor update or floating pass; preserve299 and71 inputs, STL paused."
+    "next_action": "FIT-only old-versus-added gradient alignment and level-versus-gap attribution at saved initial/early/late checkpoints, especially foldB, before choosing preservation/ranking-loss or replay-weight contrast. Not launched; no running jobs in this bounded sequence. No actor update or unchanged floating pass; preserve299 and71 inputs, STL paused."
   },
   "native_head_recombination_326": {
     "document": "../326_NATIVE_HEAD_COMPONENT_RECOMBINATION.md",
