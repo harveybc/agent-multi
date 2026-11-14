@@ -1,6 +1,17 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "SAVED_WEIGHT_DECISION_FORENSICS_COMPLETE_VERIFIED",
+  "current_stage": "FIRST_HARMFUL_CROSSING_REPLAY_READY",
+  "first_crossing_replay_340": {
+    "document": "../340_FIRST_HARMFUL_CROSSING_REPLAY.md",
+    "status": "IMPLEMENTED_TESTED_BEFORE_EXECUTION",
+    "cases": 4,
+    "replay_steps_per_case": 256,
+    "tests_passed": 52,
+    "actor_updates": 0,
+    "model_promoted": false,
+    "intermediate_user_approval_required": false,
+    "next_action": "Execute exact338 complete-arm replay and first-harmful-row witnesses; independently verify per-step stages, publish results. No changes to actor, inputs or fit algorithm."
+  },
   "saved_weight_decision_forensics_339": {
     "document": "../339_SAVED_WEIGHT_DECISION_FORENSICS.md",
     "status": "COMPLETE_VERIFIED_SHARED_GRADIENT_AND_EXECUTION_MISMATCH",
