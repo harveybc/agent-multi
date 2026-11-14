@@ -1,13 +1,31 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "AUTOMATED_ROBUST_REFINEMENT_IMPLEMENTED",
+  "current_stage": "REFINEMENT_DECISION_ATTRIBUTION_IMPLEMENTED",
+  "refinement_decision_attribution_332": {
+    "document": "../332_REFINEMENT_DECISION_ATTRIBUTION.md",
+    "status": "IMPLEMENTED_BEFORE_EXECUTION",
+    "optimizer_steps": 0,
+    "next_action": "Execute FIT-only native replay and saved-weight attribution on all eight331 endpoints; reconcile loss decomposition, role-level harmful actions and numerical gradients. No intermediate approval required."
+  },
   "automated_robust_refinement_331": {
     "document": "../331_AUTOMATED_ROBUST_REFINEMENT.md",
-    "status": "IMPLEMENTED_BEFORE_RUN",
+    "status": "COMPLETE_AUTO_EXTENSION_REFUSED_DIAGNOSIS_CONTINUED",
+    "runtime_commit": "9483e0bb",
+    "identity": "c29171b88ffb4c63b5809ecb54e02cd574b2af821c39d01c21489051565c242b",
+    "seconds": 130.47104287391994,
+    "feasibility_accepted": 64,
+    "sequential_arms": 8,
+    "sequential_attempts": 2048,
+    "interior_accepted": 1021,
+    "tangent_accepted": 647,
+    "interior_regret_improved": 2,
+    "extension_triggered": false,
+    "independent_guard_failures": 0,
+    "serialized_endpoints_verified": 80,
     "automatic_stages": ["interior_feasibility", "paired_256", "gated_1024", "cold_and_resume_verification"],
     "intermediate_user_approval_required": false,
     "model_promoted": false,
-    "next_action": "Verify focused tests then execute the complete gated chain under a resumable supervisor; emit diagnostic outcome automatically. Preserve source299 actor,71 inputs and paused STL."
+    "next_action": "Automatic gated chain completed; proceed with332 attribution rather than request another approval or extend loss-only improvement. Preserve source299 actor,71 inputs and paused STL."
   },
   "robust_direction_feasibility_330": {
     "document": "../330_ROBUST_DIRECTION_FEASIBILITY.md",

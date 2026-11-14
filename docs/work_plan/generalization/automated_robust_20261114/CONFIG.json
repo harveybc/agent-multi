@@ -1,0 +1,25 @@
+{
+  "acceptance": "fixed_actions_and_margin_three_implementations",
+  "batch": 128,
+  "code": {
+    "app/interior_adamw_repair.py": "ff9b46b58859fa8881f7a33f975e93bbb269ca76f5e2f200ec4f62da8c06b4a8",
+    "app/native_head_warm_start.py": "e4468b47c12921709cd1030207ab71c67d6433d19bcf193af32bcb198bf1f452",
+    "app/robust_adamw_direction.py": "3d96e4641e82e25fa4fa7f79f668d91549daeb03baefb6fad1eaa893afbfc1b3",
+    "tools/probe_robust_adamw_direction.py": "90830f3752142219d86d83bd190d3567cd3b289e4d0fd374f7752d9039d321fa",
+    "tools/run_automated_robust_refinement.py": "f5d6accbbfaeb2ade8c277b41d79ef9103a83370527ebd441d9a529ca4918f60"
+  },
+  "coverage": "1a6a64dfd71e2ada45f3c3e069521580108ce7db5a804692733d3be39885ebb8",
+  "extended_budget": 1024,
+  "extension": "four_robust_MSE_improved_32_accepted_and_three_regret_improved",
+  "identity": "c29171b88ffb4c63b5809ecb54e02cd574b2af821c39d01c21489051565c242b",
+  "interior_factor": 2.0,
+  "lr": 2.9999999999999997e-05,
+  "margin_relative": 1e-05,
+  "max_repairs": 3,
+  "norm_cap": 4.0,
+  "probe": "32a49fbb371a3637e669df9095026be9fab5e711b5942916f2ae330f53058621",
+  "schema": "automated_robust_refinement.v1",
+  "short_budget": 256,
+  "source_sha256": "69b5254489d224d4b20ac358956e4dd3b9a67a2f214a9aff98045c5def25a536",
+  "weight_decay": 0.01
+}

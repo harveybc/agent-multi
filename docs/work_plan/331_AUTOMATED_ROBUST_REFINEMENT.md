@@ -1,6 +1,6 @@
 # 331: Automated Robust Refinement
 
-Status: IMPLEMENTED_AND_UNIT_VERIFIED_BEFORE_RUN.
+Status: COMPLETE_AUTO_EXTENSION_REFUSED_DIAGNOSIS_CONTINUED.
 
 ## Execution Authority And Scope
 
@@ -65,3 +65,52 @@ launch; results and exact terminal state will be appended after completion.
 Prelaunch:33 focused CPU tests pass in3.52s; CLI help passes. Fixed-action
 preservation also enforces the starting action regret itself, a bound no weaker
 than322. This does not alter the acceptance action set or numerical margin.
+
+## Completed Chain
+
+Runtime9483e0bb, identity
+`c29171b88ffb4c63b5809ecb54e02cd574b2af821c39d01c21489051565c242b`.
+Completed in130.47s, supervisor exit0, zero restarts. The repair accepted64/64
+independent proposals and automatically started all eight sequential arms.
+All accepted repairs used the first linearization; no claim of measured benefit
+from repeated relinearization is supported by this run.
+
+| Case | Tangent accepted /256 | Interior accepted /256 | Initial expanded regret | Tangent regret | Interior regret |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| A19 | 0 | 253 | 0.225747 | 0.225747 | 0.224079 |
+| A43 | 233 | 256 | 0.223158 | 0.220613 | 0.215787 |
+| B19 | 237 | 256 | 0.229041 | 0.229215 | 0.231432 |
+| B43 | 177 | 256 | 0.247916 | 0.248623 | 0.248615 |
+
+Interior accepts1021/1024 steps (99.707%), tangent647/1024 (63.184%). The
+original-FIT actions and fixed margin remain robust at every accepted state.
+A19 tangent retains its legacy starting state, fails the margin and is not
+counted as an accepted robust endpoint. All four interior endpoints pass.
+
+Full expanded-FIT MSE falls in every interior arm, but decision regret improves
+only in A19/A43 and worsens in B19/B43. Consequently the predeclared3/4 decision
+criterion fails: no1024-step extension was launched. This is not a runtime
+block or a request for user approval. The chain completed the cold/resume
+checks, emitted the gate and proceeded to diagnostic332 without another prompt.
+
+## Verification
+
+Independent verification authenticated73 seals, all64 feasibility endpoints
+and16 sequential checkpoints:80 serialized endpoints, zero local CPU/NumPy
+guard failures for accepted states. NumPy metric max difference2.22e-16.
+2048 sequential attempts and1668 accepted optimizer increments reconcile.
+Internal cold replay:16 exact endpoints; serialized resume:24 exact transitions.
+Source actor, encoder,71 inputs and validation/TEST untouched.
+
+## Evidence
+
+-[Results table](generalization/automated_robust_20261114/RESULTS.md)
+-[Configuration](generalization/automated_robust_20261114/CONFIG.json)
+-[All outcomes and curves](generalization/automated_robust_20261114/SUMMARY.json)
+-[Independent verification](generalization/automated_robust_20261114/INDEPENDENT_VERIFY.json)
+-[Cold/resume verification](generalization/automated_robust_20261114/REPLAY.json)
+-[Learning curves](generalization/automated_robust_20261114/CURVES.png)
+
+The numerical stall has a measured repair in these cases. That does not repair
+the mismatch between numerical regression loss and discrete decision quality.
+Diagnostic332 separates those effects using the already saved weights.

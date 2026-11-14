@@ -1,0 +1,12 @@
+{
+  "identity": "c29171b88ffb4c63b5809ecb54e02cd574b2af821c39d01c21489051565c242b",
+  "seals": 73,
+  "feasibility_accepted": 64,
+  "serialized_endpoints": 80,
+  "sequential_attempts": 2048,
+  "sequential_accepted": 1668,
+  "max_linearizations_observed": 1,
+  "independent_numpy_metric_max_error": 2.220446049250313e-16,
+  "local_cpu_numpy_guard_failures": [],
+  "automatic_gate_reproduced": true
+}
