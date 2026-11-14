@@ -1,0 +1,122 @@
+{
+  "accepted": 6,
+  "actor_updates": 0,
+  "cold_exact": 6,
+  "controls": 10,
+  "identity": "ba756e655725f93626cd811365247f399670103ccb9bc8db7f867b144eb467aa",
+  "model_promoted": false,
+  "qualified": 5,
+  "repeated_exact": 6,
+  "rows": [
+    {
+      "accepted": true,
+      "control_drift": 9.883277137886848e-07,
+      "control_regret": 0.149094200512576,
+      "local_drift": 1.5197773417770763e-08,
+      "local_regret": 0.149094200512576,
+      "qualified": true,
+      "reason": "finite_guard",
+      "target": 332,
+      "unit": "A_19_032_332"
+    },
+    {
+      "accepted": true,
+      "control_drift": 7.030823654398281e-07,
+      "control_regret": 0.14873380750731954,
+      "local_drift": 2.118145134901868e-08,
+      "local_regret": 0.14873380750731954,
+      "qualified": true,
+      "reason": "finite_guard",
+      "target": 316,
+      "unit": "A_19_032_316"
+    },
+    {
+      "accepted": true,
+      "control_drift": 1.2449033374481057e-06,
+      "control_regret": 0.12982562027611572,
+      "local_drift": 5.052005076326333e-08,
+      "local_regret": 0.12982562027611572,
+      "qualified": true,
+      "reason": "finite_guard",
+      "target": 246,
+      "unit": "A_43_238_246"
+    },
+    {
+      "accepted": false,
+      "control_drift": 3.4996149486734665e-05,
+      "control_regret": 0.12885533573470165,
+      "local_drift": null,
+      "local_regret": null,
+      "qualified": false,
+      "reason": "solver_or_norm_cap",
+      "target": 253,
+      "unit": "A_43_238_253"
+    },
+    {
+      "accepted": false,
+      "control_drift": 6.342512694043152e-05,
+      "control_regret": 0.12931213657323656,
+      "local_drift": null,
+      "local_regret": null,
+      "qualified": false,
+      "reason": "solver_or_norm_cap",
+      "target": 243,
+      "unit": "A_43_238_243"
+    },
+    {
+      "accepted": true,
+      "control_drift": 2.1664602954527436e-07,
+      "control_regret": 0.22973859490761003,
+      "local_drift": 7.747670181181103e-09,
+      "local_regret": 0.22973859490761003,
+      "qualified": true,
+      "reason": "finite_guard",
+      "target": 457,
+      "unit": "B_43_088_457"
+    },
+    {
+      "accepted": false,
+      "control_drift": 1.3530491160077896e-05,
+      "control_regret": 0.2298060327751808,
+      "local_drift": null,
+      "local_regret": null,
+      "qualified": false,
+      "reason": "solver_or_norm_cap",
+      "target": 402,
+      "unit": "B_43_088_402"
+    },
+    {
+      "accepted": false,
+      "control_drift": 5.907513468238439e-06,
+      "control_regret": 0.2251381724442421,
+      "local_drift": null,
+      "local_regret": null,
+      "qualified": false,
+      "reason": "solver_or_norm_cap",
+      "target": 402,
+      "unit": "B_43_144_402"
+    },
+    {
+      "accepted": true,
+      "control_drift": 6.953698193572083e-07,
+      "control_regret": 0.22487936255391738,
+      "local_drift": 3.359329344126252e-08,
+      "local_regret": 0.2259797385188792,
+      "qualified": false,
+      "reason": "finite_guard",
+      "target": 434,
+      "unit": "B_43_152_434"
+    },
+    {
+      "accepted": true,
+      "control_drift": 5.148627163023863e-06,
+      "control_regret": 0.22520442156373652,
+      "local_drift": 1.4942154632713299e-07,
+      "local_regret": 0.22520442156373652,
+      "qualified": true,
+      "reason": "finite_guard",
+      "target": 402,
+      "unit": "B_43_152_402"
+    }
+  ]
+}

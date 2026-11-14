@@ -1,0 +1,23 @@
+{
+  "candidates": 10,
+  "code": {
+    "app/function_local_projection.py": "5a38480135a1a763fb90e49f28262671d745b33f8d652eca1c21239356e0cf34",
+    "tools/probe_function_local_correction.py": "fffb2e823c026a054a00f1a0a2d703101e0a919ab0148c56639a7d0f19751f49"
+  },
+  "identity": "ba756e655725f93626cd811365247f399670103ccb9bc8db7f867b144eb467aa",
+  "lambda_fixed": 1,
+  "norm_cap": 4,
+  "objective": "half_squared_parameter_distance_from_raw_plus_half_P_over_Gfro2_times_squared_other_FIT_gap_change",
+  "parents": {
+    "control": "1273e12e6e3c44ec6a6238a497a32cd25bd205f5ae455d231903c49b7397af23",
+    "coverage": "1a6a64dfd71e2ada45f3c3e069521580108ce7db5a804692733d3be39885ebb8",
+    "crossings": "880655269f69277c4dc3d69e47520a00917abcab142d8c25152bc8259bdadae1",
+    "probe": "32a49fbb371a3637e669df9095026be9fab5e711b5942916f2ae330f53058621",
+    "verified": "1273e12e6e3c44ec6a6238a497a32cd25bd205f5ae455d231903c49b7397af23"
+  },
+  "repairs": 3,
+  "scales": 8,
+  "schema": "function_local_correction.v1",
+  "scope": "accepted344_targets_only",
+  "source_actor_sha256": "69b5254489d224d4b20ac358956e4dd3b9a67a2f214a9aff98045c5def25a536"
+}

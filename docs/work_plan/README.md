@@ -37,8 +37,13 @@ internal-stop improvement. [347](347_MATCHED_DIVERGENCE_REPLAY.md) reproduces
 Both missed actions follow pre-step weights despite optimizer exchange;
 B19's discrepancy starts at33, A43's missed early close at64.32 block coalitions
 show B19 concentrated in twin1 output but A43 distributed across all blocks.
-Next: FIT-only function-locality contrast before actor refinement, not another
-unchanged floating pass. No user decision needed.
+[348](348_FUNCTION_LOCAL_TARGETED_CORRECTION.md) completes ten fixed-target
+locality probes:5 paired-qualified, identical FIT decisions with79.9%..87.6%
+lower collateral RMS gap drift. Four exceed the unchanged motion cap; one
+loses a control improvement and is rejected. Six cold/repeated candidates
+exact, ten identity controls exact; internal held actions unchanged. Next:
+bounded16-step hybrid continuation against345 with original-target selection
+and exact fallback. No actor promotion or unchanged floating pass.
 Per-step single-observation guards now accompany batched guards; checkpoint-only
 detection was insufficient. See [method state](generalization/PROJECT_METHOD_STATE.json)
 and [findings](generalization/FINDINGS_AND_PROGRESS.md) for the exact resume point.

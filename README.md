@@ -47,8 +47,12 @@ reproduces256 transactions/18 checkpoints and8 factorial interventions exactly.
 Both missed improvements follow the pre-step weights, not the exchanged
 optimizer state. B19 avoids a worse short at33; A43 misses a favorable short
 early close at64.32 saved-block coalitions locate the local margin effects.
-Next: FIT-only function-locality contrast, not a fresh floating pass or an
-unqualified actor update.
+[348 function locality](docs/work_plan/348_FUNCTION_LOCAL_TARGETED_CORRECTION.md)
+finds5/10 paired-qualified corrections: identical FIT actions,79.9%..87.6%
+less collateral RMS gap drift. Four variants exceed existing motion limits;
+one loses a control gain and is rejected. Internal held actions are unchanged.
+Next: bounded16-step hybrid continuation with exact original fallback,
+not a fresh floating pass or an unqualified actor update.
 No source actor, inputs or live model have changed. Canonical
 resume state: [method state](docs/work_plan/generalization/PROJECT_METHOD_STATE.json).
 Historical COT/source-clock qualification is separate; these diagnostics do not

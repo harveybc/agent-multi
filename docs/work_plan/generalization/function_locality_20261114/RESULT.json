@@ -1,0 +1,1875 @@
+{
+  "actor_updates": 0,
+  "identity": "ba756e655725f93626cd811365247f399670103ccb9bc8db7f867b144eb467aa",
+  "model_promoted": false,
+  "optimizer_steps": 0,
+  "seconds": 29.176624260027893,
+  "units": [
+    {
+      "assessment": {
+        "metrics": {
+          "cpu": {
+            "action_changes": 1,
+            "cost": 0.09983464346135934,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.149094200512576
+          },
+          "cpu_single": {
+            "action_changes": 1,
+            "cost": 0.09983464612083472,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.149094200512576
+          },
+          "gpu": {
+            "action_changes": 1,
+            "cost": 0.09983464530068675,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.149094200512576
+          },
+          "gpu_single": {
+            "action_changes": 1,
+            "cost": 0.09983464279206752,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.149094200512576
+          },
+          "numpy": {
+            "action_changes": 1,
+            "cost": 0.09983464337766473,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.149094200512576
+          }
+        },
+        "motion": 0.001169362799285845,
+        "original_passed": true,
+        "passed": true
+      },
+      "candidate": {
+        "action": 2,
+        "lower_bound": 0.0004613115722946947,
+        "margin": 7.62939453125e-06,
+        "pairs": [
+          [
+            332,
+            2,
+            0
+          ],
+          [
+            332,
+            2,
+            1
+          ]
+        ],
+        "position": 124,
+        "row": 332
+      },
+      "cold_exact": true,
+      "control": {
+        "metrics": {
+          "cpu": {
+            "action_changes": 1,
+            "cost": 0.09981900604313776,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.149094200512576
+          },
+          "cpu_single": {
+            "action_changes": 1,
+            "cost": 0.09981900669135364,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.149094200512576
+          },
+          "gpu": {
+            "action_changes": 1,
+            "cost": 0.09981900502983027,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.149094200512576
+          },
+          "gpu_single": {
+            "action_changes": 1,
+            "cost": 0.09981900773055005,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.149094200512576
+          },
+          "numpy": {
+            "action_changes": 1,
+            "cost": 0.0998190073933285,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.149094200512576
+          }
+        },
+        "motion": 0.0010396627983589948,
+        "original_passed": true,
+        "passed": true
+      },
+      "control_drift": {
+        "cpu": 9.884159831243995e-07,
+        "cpu_single": 9.883724023299716e-07,
+        "gpu": 9.883878896704238e-07,
+        "gpu_single": 9.883630892428644e-07,
+        "numpy": 9.883277137886848e-07
+      },
+      "control_sha256": "6af486b0f6182de732e478caf5c2b00b85f0a258904ab5286b18fce0b6407a7a",
+      "drift": {
+        "cpu": 1.5197086330801542e-08,
+        "cpu_single": 1.519658577543145e-08,
+        "gpu": 1.5198772310611723e-08,
+        "gpu_single": 1.519930896002846e-08,
+        "numpy": 1.5197773417770763e-08
+      },
+      "fold": "A",
+      "gap_derivative_max_error": 6.661338147750939e-16,
+      "held_internal_train": {
+        "control": {
+          "audit": {
+            "actions_sha256": "1c9b10e63f80e6e22e909a9801fbffa1a44b2b5088b3cab6a2575ae89f6384ec",
+            "cost": 0.09862125305820432,
+            "regret": 0.23591614054132656
+          },
+          "stop": {
+            "actions_sha256": "6359528f10ac7c7b28319f2696673346e1dea210e77d24d8d893aa9300d7aab4",
+            "cost": 0.13851710163429196,
+            "regret": 0.337020206929439
+          }
+        },
+        "local": {
+          "audit": {
+            "actions_sha256": "1c9b10e63f80e6e22e909a9801fbffa1a44b2b5088b3cab6a2575ae89f6384ec",
+            "cost": 0.09862148510940866,
+            "regret": 0.23591614054132656
+          },
+          "stop": {
+            "actions_sha256": "6359528f10ac7c7b28319f2696673346e1dea210e77d24d8d893aa9300d7aab4",
+            "cost": 0.13850892210801635,
+            "regret": 0.337020206929439
+          }
+        }
+      },
+      "identity_control_exact": true,
+      "metric_columns": 3398,
+      "metric_frobenius_squared": 81296.63252614014,
+      "metric_rows": 585,
+      "offset": 32,
+      "qualified": true,
+      "record": {
+        "accepted": true,
+        "reason": "finite_guard",
+        "repairs": [
+          {
+            "iteration": 0,
+            "norm_ratio": 1.230899277340838,
+            "solver": {
+              "constraints": 624,
+              "correction_norm": 0.0010759293553446387,
+              "feasible": true,
+              "iterations": 2,
+              "kkt": {
+                "complementarity": 2.2261378506388763e-15,
+                "dual_violation": 0.0,
+                "stationarity": 1.3322676295501878e-15
+              },
+              "normalized_violation": 6.611442673942078e-16,
+              "original_normalized_violation": 3.3195735193088745e-16,
+              "reason": "Optimization terminated successfully",
+              "reduced_dimensions": 624,
+              "solver_success": true
+            },
+            "trials": [
+              {
+                "metrics": {
+                  "cpu": {
+                    "action_changes": 1,
+                    "cost": 0.09983464346135934,
+                    "lost_optimal": 0,
+                    "passed": true,
+                    "regret": 0.149094200512576
+                  },
+                  "cpu_single": {
+                    "action_changes": 1,
+                    "cost": 0.09983464612083472,
+                    "lost_optimal": 0,
+                    "passed": true,
+                    "regret": 0.149094200512576
+                  },
+                  "gpu": {
+                    "action_changes": 1,
+                    "cost": 0.09983464530068675,
+                    "lost_optimal": 0,
+                    "passed": true,
+                    "regret": 0.149094200512576
+                  },
+                  "gpu_single": {
+                    "action_changes": 1,
+                    "cost": 0.09983464279206752,
+                    "lost_optimal": 0,
+                    "passed": true,
+                    "regret": 0.149094200512576
+                  },
+                  "numpy": {
+                    "action_changes": 1,
+                    "cost": 0.09983464337766473,
+                    "lost_optimal": 0,
+                    "passed": true,
+                    "regret": 0.149094200512576
+                  }
+                },
+                "motion": 0.001169362799285845,
+                "original_passed": true,
+                "passed": true,
+                "scale": 1.0
+              }
+            ]
+          }
+        ]
+      },
+      "repeated_exact": true,
+      "seed": 19,
+      "source_unit": "A_19_032",
+      "target_derivative_max_error": 8.881784197001252e-16,
+      "temperature": 0.4431268891399268,
+      "unit": "A_19_032_332",
+      "witness_sha256": "78006c1ccf07024201065ad99e64a6ff1345bef393e9820ee4d8ee982c24b68a"
+    },
+    {
+      "assessment": {
+        "metrics": {
+          "cpu": {
+            "action_changes": 1,
+            "cost": 0.09983281874274919,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.14873380750731954
+          },
+          "cpu_single": {
+            "action_changes": 1,
+            "cost": 0.09983281780115512,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.14873380750731954
+          },
+          "gpu": {
+            "action_changes": 1,
+            "cost": 0.09983281997487024,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.14873380750731954
+          },
+          "gpu_single": {
+            "action_changes": 1,
+            "cost": 0.09983281646019558,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.14873380750731954
+          },
+          "numpy": {
+            "action_changes": 1,
+            "cost": 0.09983281778927225,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.14873380750731954
+          }
+        },
+        "motion": 0.0012561635964923807,
+        "original_passed": true,
+        "passed": true
+      },
+      "candidate": {
+        "action": 1,
+        "lower_bound": 0.0005141425819145193,
+        "margin": 7.62939453125e-06,
+        "pairs": [
+          [
+            316,
+            1,
+            0
+          ],
+          [
+            316,
+            1,
+            2
+          ]
+        ],
+        "position": 104,
+        "row": 316
+      },
+      "cold_exact": true,
+      "control": {
+        "metrics": {
+          "cpu": {
+            "action_changes": 1,
+            "cost": 0.09981846388143943,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.14873380750731954
+          },
+          "cpu_single": {
+            "action_changes": 1,
+            "cost": 0.09981846486963454,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.14873380750731954
+          },
+          "gpu": {
+            "action_changes": 1,
+            "cost": 0.0998184630108021,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.14873380750731954
+          },
+          "gpu_single": {
+            "action_changes": 1,
+            "cost": 0.09981846521686433,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.14873380750731954
+          },
+          "numpy": {
+            "action_changes": 1,
+            "cost": 0.0998184648020521,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.14873380750731954
+          }
+        },
+        "motion": 0.0011146523500481288,
+        "original_passed": true,
+        "passed": true
+      },
+      "control_drift": {
+        "cpu": 7.030535625158441e-07,
+        "cpu_single": 7.03046735325559e-07,
+        "gpu": 7.030726541544655e-07,
+        "gpu_single": 7.030832113702627e-07,
+        "numpy": 7.030823654398281e-07
+      },
+      "control_sha256": "d76f7b1bec483131088e4183d5845a481d29baffbc7e6f2c0aacf78a0fe7ae9d",
+      "drift": {
+        "cpu": 2.118352325795228e-08,
+        "cpu_single": 2.1181878415380542e-08,
+        "gpu": 2.1188451099859367e-08,
+        "gpu_single": 2.1185813575697803e-08,
+        "numpy": 2.118145134901868e-08
+      },
+      "fold": "A",
+      "gap_derivative_max_error": 6.661338147750939e-16,
+      "held_internal_train": {
+        "control": {
+          "audit": {
+            "actions_sha256": "1c9b10e63f80e6e22e909a9801fbffa1a44b2b5088b3cab6a2575ae89f6384ec",
+            "cost": 0.09862981708583754,
+            "regret": 0.23591614054132656
+          },
+          "stop": {
+            "actions_sha256": "6359528f10ac7c7b28319f2696673346e1dea210e77d24d8d893aa9300d7aab4",
+            "cost": 0.138514891308028,
+            "regret": 0.337020206929439
+          }
+        },
+        "local": {
+          "audit": {
+            "actions_sha256": "1c9b10e63f80e6e22e909a9801fbffa1a44b2b5088b3cab6a2575ae89f6384ec",
+            "cost": 0.09862047044584515,
+            "regret": 0.23591614054132656
+          },
+          "stop": {
+            "actions_sha256": "6359528f10ac7c7b28319f2696673346e1dea210e77d24d8d893aa9300d7aab4",
+            "cost": 0.13851552535088518,
+            "regret": 0.337020206929439
+          }
+        }
+      },
+      "identity_control_exact": true,
+      "metric_columns": 3398,
+      "metric_frobenius_squared": 81293.08168532579,
+      "metric_rows": 585,
+      "offset": 32,
+      "qualified": true,
+      "record": {
+        "accepted": true,
+        "reason": "finite_guard",
+        "repairs": [
+          {
+            "iteration": 0,
+            "norm_ratio": 1.3222675550726972,
+            "solver": {
+              "constraints": 624,
+              "correction_norm": 0.001220019827108003,
+              "feasible": true,
+              "iterations": 2,
+              "kkt": {
+                "complementarity": 7.275498996859966e-16,
+                "dual_violation": 0.0,
+                "stationarity": 1.1102230246251565e-16
+              },
+              "normalized_violation": 0.0,
+              "original_normalized_violation": 7.470751110439064e-17,
+              "reason": "Optimization terminated successfully",
+              "reduced_dimensions": 624,
+              "solver_success": true
+            },
+            "trials": [
+              {
+                "metrics": {
+                  "cpu": {
+                    "action_changes": 1,
+                    "cost": 0.09983281874274919,
+                    "lost_optimal": 0,
+                    "passed": true,
+                    "regret": 0.14873380750731954
+                  },
+                  "cpu_single": {
+                    "action_changes": 1,
+                    "cost": 0.09983281780115512,
+                    "lost_optimal": 0,
+                    "passed": true,
+                    "regret": 0.14873380750731954
+                  },
+                  "gpu": {
+                    "action_changes": 1,
+                    "cost": 0.09983281997487024,
+                    "lost_optimal": 0,
+                    "passed": true,
+                    "regret": 0.14873380750731954
+                  },
+                  "gpu_single": {
+                    "action_changes": 1,
+                    "cost": 0.09983281646019558,
+                    "lost_optimal": 0,
+                    "passed": true,
+                    "regret": 0.14873380750731954
+                  },
+                  "numpy": {
+                    "action_changes": 1,
+                    "cost": 0.09983281778927225,
+                    "lost_optimal": 0,
+                    "passed": true,
+                    "regret": 0.14873380750731954
+                  }
+                },
+                "motion": 0.0012561635964923807,
+                "original_passed": true,
+                "passed": true,
+                "scale": 1.0
+              }
+            ]
+          }
+        ]
+      },
+      "repeated_exact": true,
+      "seed": 19,
+      "source_unit": "A_19_032",
+      "target_derivative_max_error": 8.881784197001252e-16,
+      "temperature": 0.4431268891399268,
+      "unit": "A_19_032_316",
+      "witness_sha256": "78006c1ccf07024201065ad99e64a6ff1345bef393e9820ee4d8ee982c24b68a"
+    },
+    {
+      "assessment": {
+        "metrics": {
+          "cpu": {
+            "action_changes": 1,
+            "cost": 0.09108064761594038,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.12982562027611572
+          },
+          "cpu_single": {
+            "action_changes": 1,
+            "cost": 0.09108064886662509,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.12982562027611572
+          },
+          "gpu": {
+            "action_changes": 1,
+            "cost": 0.09108064788962177,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.12982562027611572
+          },
+          "gpu_single": {
+            "action_changes": 1,
+            "cost": 0.09108064758292592,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.12982562027611572
+          },
+          "numpy": {
+            "action_changes": 1,
+            "cost": 0.0910806490645063,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.12982562027611572
+          }
+        },
+        "motion": 0.0015480308909676277,
+        "original_passed": true,
+        "passed": true
+      },
+      "candidate": {
+        "action": 0,
+        "lower_bound": 0.0007176714276287308,
+        "margin": 7.62939453125e-06,
+        "pairs": [
+          [
+            246,
+            0,
+            1
+          ],
+          [
+            246,
+            0,
+            2
+          ]
+        ],
+        "position": 7,
+        "row": 246
+      },
+      "cold_exact": true,
+      "control": {
+        "metrics": {
+          "cpu": {
+            "action_changes": 1,
+            "cost": 0.09107763197145821,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.12982562027611572
+          },
+          "cpu_single": {
+            "action_changes": 1,
+            "cost": 0.09107763265407082,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.12982562027611572
+          },
+          "gpu": {
+            "action_changes": 1,
+            "cost": 0.09107763390162105,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.12982562027611572
+          },
+          "gpu_single": {
+            "action_changes": 1,
+            "cost": 0.09107763445287459,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.12982562027611572
+          },
+          "numpy": {
+            "action_changes": 1,
+            "cost": 0.09107763314601447,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.12982562027611572
+          }
+        },
+        "motion": 0.0010533307119213373,
+        "original_passed": true,
+        "passed": true
+      },
+      "control_drift": {
+        "cpu": 1.2449048232255525e-06,
+        "cpu_single": 1.2448869289509814e-06,
+        "gpu": 1.2448946477758929e-06,
+        "gpu_single": 1.2449260658878825e-06,
+        "numpy": 1.2449033374481057e-06
+      },
+      "control_sha256": "b0fa472cf171884a2194b9537013aadd04da69ff96dea63013c1c7b2400dbf3e",
+      "drift": {
+        "cpu": 5.052527930640328e-08,
+        "cpu_single": 5.0520489902439634e-08,
+        "gpu": 5.0513656044351956e-08,
+        "gpu_single": 5.0512583637717904e-08,
+        "numpy": 5.052005076326333e-08
+      },
+      "fold": "A",
+      "gap_derivative_max_error": 1.3322676295501878e-15,
+      "held_internal_train": {
+        "control": {
+          "audit": {
+            "actions_sha256": "bac5c5aaed6019e9ed14ca3a1f7f5c043355bece0ffd1452bf521c05622a381a",
+            "cost": 0.10458717488666823,
+            "regret": 0.22729161453088942
+          },
+          "stop": {
+            "actions_sha256": "8a47c5a5822cfcff4c893dd04bf5f12063fc430320ac175762009dd4a406e697",
+            "cost": 0.1359651153438325,
+            "regret": 0.2788375427302596
+          }
+        },
+        "local": {
+          "audit": {
+            "actions_sha256": "bac5c5aaed6019e9ed14ca3a1f7f5c043355bece0ffd1452bf521c05622a381a",
+            "cost": 0.10459006768919536,
+            "regret": 0.22729161453088942
+          },
+          "stop": {
+            "actions_sha256": "8a47c5a5822cfcff4c893dd04bf5f12063fc430320ac175762009dd4a406e697",
+            "cost": 0.135964524029861,
+            "regret": 0.2788375427302596
+          }
+        }
+      },
+      "identity_control_exact": true,
+      "metric_columns": 3398,
+      "metric_frobenius_squared": 84546.28337275374,
+      "metric_rows": 585,
+      "offset": 238,
+      "qualified": true,
+      "record": {
+        "accepted": true,
+        "reason": "finite_guard",
+        "repairs": [
+          {
+            "iteration": 0,
+            "norm_ratio": 1.9913760414885358,
+            "solver": {
+              "constraints": 656,
+              "correction_norm": 0.0016671282538605306,
+              "feasible": true,
+              "iterations": 2,
+              "kkt": {
+                "complementarity": 3.593522760748086e-15,
+                "dual_violation": 0.0,
+                "stationarity": 8.881784197001252e-16
+              },
+              "normalized_violation": 2.1745736038843928e-17,
+              "original_normalized_violation": 0.0,
+              "reason": "Optimization terminated successfully",
+              "reduced_dimensions": 656,
+              "solver_success": true
+            },
+            "trials": [
+              {
+                "metrics": {
+                  "cpu": {
+                    "action_changes": 1,
+                    "cost": 0.09108064761594038,
+                    "lost_optimal": 0,
+                    "passed": true,
+                    "regret": 0.12982562027611572
+                  },
+                  "cpu_single": {
+                    "action_changes": 1,
+                    "cost": 0.09108064886662509,
+                    "lost_optimal": 0,
+                    "passed": true,
+                    "regret": 0.12982562027611572
+                  },
+                  "gpu": {
+                    "action_changes": 1,
+                    "cost": 0.09108064788962177,
+                    "lost_optimal": 0,
+                    "passed": true,
+                    "regret": 0.12982562027611572
+                  },
+                  "gpu_single": {
+                    "action_changes": 1,
+                    "cost": 0.09108064758292592,
+                    "lost_optimal": 0,
+                    "passed": true,
+                    "regret": 0.12982562027611572
+                  },
+                  "numpy": {
+                    "action_changes": 1,
+                    "cost": 0.0910806490645063,
+                    "lost_optimal": 0,
+                    "passed": true,
+                    "regret": 0.12982562027611572
+                  }
+                },
+                "motion": 0.0015480308909676277,
+                "original_passed": true,
+                "passed": true,
+                "scale": 1.0
+              }
+            ]
+          }
+        ]
+      },
+      "repeated_exact": true,
+      "seed": 43,
+      "source_unit": "A_43_238",
+      "target_derivative_max_error": 1.7763568394002505e-15,
+      "temperature": 0.4431268891399268,
+      "unit": "A_43_238_246",
+      "witness_sha256": "4cb7cd1276c910fba331e2efd1dfa3c00931781269fa8873090c638838d46832"
+    },
+    {
+      "assessment": null,
+      "candidate": {
+        "action": 2,
+        "lower_bound": 0.00199391079723458,
+        "margin": 1.2492538189690094e-05,
+        "pairs": [
+          [
+            253,
+            2,
+            0
+          ],
+          [
+            253,
+            2,
+            1
+          ]
+        ],
+        "position": 15,
+        "row": 253
+      },
+      "cold_exact": false,
+      "control": {
+        "metrics": {
+          "cpu": {
+            "action_changes": 1,
+            "cost": 0.09107406944195433,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.12885533573470165
+          },
+          "cpu_single": {
+            "action_changes": 1,
+            "cost": 0.09107406901627076,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.12885533573470165
+          },
+          "gpu": {
+            "action_changes": 1,
+            "cost": 0.09107407042897156,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.12885533573470165
+          },
+          "gpu_single": {
+            "action_changes": 1,
+            "cost": 0.09107406974074149,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.12885533573470165
+          },
+          "numpy": {
+            "action_changes": 1,
+            "cost": 0.09107406937518779,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.12885533573470165
+          }
+        },
+        "motion": 0.0023385711784818285,
+        "original_passed": true,
+        "passed": true
+      },
+      "control_drift": {
+        "cpu": 3.499631742167875e-05,
+        "cpu_single": 3.499603886625076e-05,
+        "gpu": 3.499609092200383e-05,
+        "gpu_single": 3.499614795201063e-05,
+        "numpy": 3.4996149486734665e-05
+      },
+      "control_sha256": "cb18d5e845369c6f5fb2d641530c9f2e8a789c567ad6d170256582f8f095c714",
+      "drift": null,
+      "fold": "A",
+      "gap_derivative_max_error": 1.3322676295501878e-15,
+      "held_internal_train": null,
+      "identity_control_exact": true,
+      "metric_columns": 3398,
+      "metric_frobenius_squared": 84330.91645374842,
+      "metric_rows": 585,
+      "offset": 238,
+      "qualified": false,
+      "record": {
+        "accepted": false,
+        "reason": "solver_or_norm_cap",
+        "repairs": [
+          {
+            "iteration": 0,
+            "norm_ratio": 5.569979944154654,
+            "solver": {
+              "constraints": 656,
+              "correction_norm": 0.004638588709517682,
+              "feasible": true,
+              "iterations": 14,
+              "kkt": {
+                "complementarity": 9.451534493408471e-14,
+                "dual_violation": 0.0,
+                "stationarity": 6.572520305780927e-14
+              },
+              "normalized_violation": 9.89277760798857e-15,
+              "original_normalized_violation": 3.3697811412921982e-15,
+              "reason": "Optimization terminated successfully",
+              "reduced_dimensions": 656,
+              "solver_success": true
+            },
+            "trials": []
+          }
+        ]
+      },
+      "repeated_exact": false,
+      "seed": 43,
+      "source_unit": "A_43_238",
+      "target_derivative_max_error": 1.3322676295501878e-15,
+      "temperature": 0.4431268891399268,
+      "unit": "A_43_238_253",
+      "witness_sha256": "4cb7cd1276c910fba331e2efd1dfa3c00931781269fa8873090c638838d46832"
+    },
+    {
+      "assessment": null,
+      "candidate": {
+        "action": 2,
+        "lower_bound": 0.002227979769206792,
+        "margin": 1.0460957128088921e-05,
+        "pairs": [
+          [
+            243,
+            2,
+            0
+          ],
+          [
+            243,
+            2,
+            1
+          ]
+        ],
+        "position": 4,
+        "row": 243
+      },
+      "cold_exact": false,
+      "control": {
+        "metrics": {
+          "cpu": {
+            "action_changes": 1,
+            "cost": 0.09107286215677732,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.12931213657323656
+          },
+          "cpu_single": {
+            "action_changes": 1,
+            "cost": 0.09107286392437772,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.12931213657323656
+          },
+          "gpu": {
+            "action_changes": 1,
+            "cost": 0.09107286394140532,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.12931213657323656
+          },
+          "gpu_single": {
+            "action_changes": 1,
+            "cost": 0.09107286413168209,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.12931213657323656
+          },
+          "numpy": {
+            "action_changes": 1,
+            "cost": 0.09107286351540081,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.12931213657323656
+          }
+        },
+        "motion": 0.0027657393631970047,
+        "original_passed": true,
+        "passed": true
+      },
+      "control_drift": {
+        "cpu": 6.34250046485228e-05,
+        "cpu_single": 6.342489919328837e-05,
+        "gpu": 6.342566133073613e-05,
+        "gpu_single": 6.342521369204351e-05,
+        "numpy": 6.342512694043152e-05
+      },
+      "control_sha256": "828040b691d01add1e09322e00930b177303c8d25d693a6490c74eb93d3ba95b",
+      "drift": null,
+      "fold": "A",
+      "gap_derivative_max_error": 1.3322676295501878e-15,
+      "held_internal_train": null,
+      "identity_control_exact": true,
+      "metric_columns": 3398,
+      "metric_frobenius_squared": 84393.10791585693,
+      "metric_rows": 585,
+      "offset": 238,
+      "qualified": false,
+      "record": {
+        "accepted": false,
+        "reason": "solver_or_norm_cap",
+        "repairs": [
+          {
+            "iteration": 0,
+            "norm_ratio": 7.895393798075992,
+            "solver": {
+              "constraints": 656,
+              "correction_norm": 0.007040141980964138,
+              "feasible": false,
+              "iterations": 8,
+              "kkt": {
+                "complementarity": 2.763033988480269e-12,
+                "dual_violation": 0.0,
+                "stationarity": 3.6859404417555197e-13
+              },
+              "normalized_violation": 3.4458790002230383e-13,
+              "original_normalized_violation": 1.0356556134488949e-13,
+              "reason": "Positive directional derivative for linesearch",
+              "reduced_dimensions": 656,
+              "solver_success": false
+            },
+            "trials": []
+          }
+        ]
+      },
+      "repeated_exact": false,
+      "seed": 43,
+      "source_unit": "A_43_238",
+      "target_derivative_max_error": 1.7763568394002505e-15,
+      "temperature": 0.4431268891399268,
+      "unit": "A_43_238_243",
+      "witness_sha256": "4cb7cd1276c910fba331e2efd1dfa3c00931781269fa8873090c638838d46832"
+    },
+    {
+      "assessment": {
+        "metrics": {
+          "cpu": {
+            "action_changes": 1,
+            "cost": 0.11491053458317953,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.22973859490761003
+          },
+          "cpu_single": {
+            "action_changes": 1,
+            "cost": 0.11491053438670326,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.22973859490761003
+          },
+          "gpu": {
+            "action_changes": 1,
+            "cost": 0.11491053500498953,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.22973859490761003
+          },
+          "gpu_single": {
+            "action_changes": 1,
+            "cost": 0.11491053498812966,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.22973859490761003
+          },
+          "numpy": {
+            "action_changes": 1,
+            "cost": 0.11491053448423419,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.22973859490761003
+          }
+        },
+        "motion": 0.0010273212876407342,
+        "original_passed": true,
+        "passed": true
+      },
+      "candidate": {
+        "action": 2,
+        "lower_bound": 0.000549318093495802,
+        "margin": 7.62939453125e-06,
+        "pairs": [
+          [
+            457,
+            2,
+            0
+          ],
+          [
+            457,
+            2,
+            1
+          ]
+        ],
+        "position": 291,
+        "row": 457
+      },
+      "cold_exact": true,
+      "control": {
+        "metrics": {
+          "cpu": {
+            "action_changes": 1,
+            "cost": 0.1149046232257227,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.22973859490761003
+          },
+          "cpu_single": {
+            "action_changes": 1,
+            "cost": 0.11490462326309807,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.22973859490761003
+          },
+          "gpu": {
+            "action_changes": 1,
+            "cost": 0.11490462370319915,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.22973859490761003
+          },
+          "gpu_single": {
+            "action_changes": 1,
+            "cost": 0.11490462272024977,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.22973859490761003
+          },
+          "numpy": {
+            "action_changes": 1,
+            "cost": 0.11490462339980219,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.22973859490761003
+          }
+        },
+        "motion": 0.0008780100417910145,
+        "original_passed": true,
+        "passed": true
+      },
+      "control_drift": {
+        "cpu": 2.1663772273948383e-07,
+        "cpu_single": 2.1665294608416304e-07,
+        "gpu": 2.1664070163975773e-07,
+        "gpu_single": 2.1663727204515685e-07,
+        "numpy": 2.1664602954527436e-07
+      },
+      "control_sha256": "842af8735ce85c0a1da6a28e91329bd6d15824e0c5b2f6c17eddf184f1fc369a",
+      "drift": {
+        "cpu": 7.74784391742938e-09,
+        "cpu_single": 7.747518098353435e-09,
+        "gpu": 7.74731105133064e-09,
+        "gpu_single": 7.747485013553499e-09,
+        "numpy": 7.747670181181103e-09
+      },
+      "fold": "B",
+      "gap_derivative_max_error": 1.1102230246251565e-15,
+      "held_internal_train": {
+        "control": {
+          "audit": {
+            "actions_sha256": "61ef2b909dbe614433f7071a276abd742702cb783784a465635ce40772b34069",
+            "cost": 0.11465766741114251,
+            "regret": 0.22318809116421684
+          },
+          "stop": {
+            "actions_sha256": "d2fd12e2c8991c5926b9abbe77b9308d1966e76fd67df9a41a8147058d500733",
+            "cost": 0.10662354798865374,
+            "regret": 0.20575816619381046
+          }
+        },
+        "local": {
+          "audit": {
+            "actions_sha256": "61ef2b909dbe614433f7071a276abd742702cb783784a465635ce40772b34069",
+            "cost": 0.11465566428979293,
+            "regret": 0.22318809116421684
+          },
+          "stop": {
+            "actions_sha256": "d2fd12e2c8991c5926b9abbe77b9308d1966e76fd67df9a41a8147058d500733",
+            "cost": 0.10661950916394854,
+            "regret": 0.20575816619381046
+          }
+        }
+      },
+      "identity_control_exact": true,
+      "metric_columns": 3398,
+      "metric_frobenius_squared": 113557.38491428387,
+      "metric_rows": 1173,
+      "offset": 88,
+      "qualified": true,
+      "record": {
+        "accepted": true,
+        "reason": "finite_guard",
+        "repairs": [
+          {
+            "iteration": 0,
+            "norm_ratio": 1.4611352544177938,
+            "solver": {
+              "constraints": 1034,
+              "correction_norm": 0.001029996854482503,
+              "feasible": true,
+              "iterations": 2,
+              "kkt": {
+                "complementarity": 6.263866557038243e-15,
+                "dual_violation": 0.0,
+                "stationarity": 2.220446049250313e-16
+              },
+              "normalized_violation": 3.5181028474436122e-15,
+              "original_normalized_violation": 1.3594395433667581e-15,
+              "reason": "Optimization terminated successfully",
+              "reduced_dimensions": 1034,
+              "solver_success": true
+            },
+            "trials": [
+              {
+                "metrics": {
+                  "cpu": {
+                    "action_changes": 1,
+                    "cost": 0.11491053458317953,
+                    "lost_optimal": 0,
+                    "passed": true,
+                    "regret": 0.22973859490761003
+                  },
+                  "cpu_single": {
+                    "action_changes": 1,
+                    "cost": 0.11491053438670326,
+                    "lost_optimal": 0,
+                    "passed": true,
+                    "regret": 0.22973859490761003
+                  },
+                  "gpu": {
+                    "action_changes": 1,
+                    "cost": 0.11491053500498953,
+                    "lost_optimal": 0,
+                    "passed": true,
+                    "regret": 0.22973859490761003
+                  },
+                  "gpu_single": {
+                    "action_changes": 1,
+                    "cost": 0.11491053498812966,
+                    "lost_optimal": 0,
+                    "passed": true,
+                    "regret": 0.22973859490761003
+                  },
+                  "numpy": {
+                    "action_changes": 1,
+                    "cost": 0.11491053448423419,
+                    "lost_optimal": 0,
+                    "passed": true,
+                    "regret": 0.22973859490761003
+                  }
+                },
+                "motion": 0.0010273212876407342,
+                "original_passed": true,
+                "passed": true,
+                "scale": 1.0
+              }
+            ]
+          }
+        ]
+      },
+      "repeated_exact": true,
+      "seed": 43,
+      "source_unit": "B_43_088",
+      "target_derivative_max_error": 3.3306690738754696e-16,
+      "temperature": 0.4549046901786281,
+      "unit": "B_43_088_457",
+      "witness_sha256": "4ff3a52e81b357db5aef46481a7119d545218ffc0ea511579179cd22cfada18a"
+    },
+    {
+      "assessment": null,
+      "candidate": {
+        "action": 2,
+        "lower_bound": 0.0016668559649143343,
+        "margin": 7.62939453125e-06,
+        "pairs": [
+          [
+            402,
+            2,
+            0
+          ],
+          [
+            402,
+            2,
+            1
+          ]
+        ],
+        "position": 213,
+        "row": 402
+      },
+      "cold_exact": false,
+      "control": {
+        "metrics": {
+          "cpu": {
+            "action_changes": 1,
+            "cost": 0.11490760973177215,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.2298060327751808
+          },
+          "cpu_single": {
+            "action_changes": 1,
+            "cost": 0.11490761031386185,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.2298060327751808
+          },
+          "gpu": {
+            "action_changes": 1,
+            "cost": 0.11490760971033698,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.2298060327751808
+          },
+          "gpu_single": {
+            "action_changes": 1,
+            "cost": 0.11490760926227056,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.2298060327751808
+          },
+          "numpy": {
+            "action_changes": 1,
+            "cost": 0.11490761003043372,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.2298060327751808
+          }
+        },
+        "motion": 0.00221846217638091,
+        "original_passed": true,
+        "passed": true
+      },
+      "control_drift": {
+        "cpu": 1.3530355058892802e-05,
+        "cpu_single": 1.3530523087596392e-05,
+        "gpu": 1.3530491139137044e-05,
+        "gpu_single": 1.3530450961799339e-05,
+        "numpy": 1.3530491160077896e-05
+      },
+      "control_sha256": "8362f283ccad9bcceeec3e4ead931f9a9fe03a2a8cac876ea37940f61de3a866",
+      "drift": null,
+      "fold": "B",
+      "gap_derivative_max_error": 1.1102230246251565e-15,
+      "held_internal_train": null,
+      "identity_control_exact": true,
+      "metric_columns": 3398,
+      "metric_frobenius_squared": 113323.95978131115,
+      "metric_rows": 1173,
+      "offset": 88,
+      "qualified": false,
+      "record": {
+        "accepted": false,
+        "reason": "solver_or_norm_cap",
+        "repairs": [
+          {
+            "iteration": 0,
+            "norm_ratio": 6.408053929567621,
+            "solver": {
+              "constraints": 1034,
+              "correction_norm": 0.005809610532058066,
+              "feasible": true,
+              "iterations": 2,
+              "kkt": {
+                "complementarity": 3.8727463709315945e-12,
+                "dual_violation": 0.0,
+                "stationarity": 8.881784197001252e-16
+              },
+              "normalized_violation": 3.4345116904247956e-15,
+              "original_normalized_violation": 9.96687816795365e-16,
+              "reason": "Optimization terminated successfully",
+              "reduced_dimensions": 1034,
+              "solver_success": true
+            },
+            "trials": []
+          }
+        ]
+      },
+      "repeated_exact": false,
+      "seed": 43,
+      "source_unit": "B_43_088",
+      "target_derivative_max_error": 1.7763568394002505e-15,
+      "temperature": 0.4549046901786281,
+      "unit": "B_43_088_402",
+      "witness_sha256": "4ff3a52e81b357db5aef46481a7119d545218ffc0ea511579179cd22cfada18a"
+    },
+    {
+      "assessment": null,
+      "candidate": {
+        "action": 2,
+        "lower_bound": 0.0011154577715129447,
+        "margin": 7.62939453125e-06,
+        "pairs": [
+          [
+            402,
+            2,
+            0
+          ],
+          [
+            402,
+            2,
+            1
+          ]
+        ],
+        "position": 213,
+        "row": 402
+      },
+      "cold_exact": false,
+      "control": {
+        "metrics": {
+          "cpu": {
+            "action_changes": 1,
+            "cost": 0.114290357001612,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.2251381724442421
+          },
+          "cpu_single": {
+            "action_changes": 1,
+            "cost": 0.11429035717656147,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.2251381724442421
+          },
+          "gpu": {
+            "action_changes": 1,
+            "cost": 0.11429035608372717,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.2251381724442421
+          },
+          "gpu_single": {
+            "action_changes": 1,
+            "cost": 0.11429035662830389,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.2251381724442421
+          },
+          "numpy": {
+            "action_changes": 1,
+            "cost": 0.11429035662475351,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.2251381724442421
+          }
+        },
+        "motion": 0.001568538365947328,
+        "original_passed": true,
+        "passed": true
+      },
+      "control_drift": {
+        "cpu": 5.907385345184739e-06,
+        "cpu_single": 5.9074843390802765e-06,
+        "gpu": 5.9074073760535385e-06,
+        "gpu_single": 5.907501860757078e-06,
+        "numpy": 5.907513468238439e-06
+      },
+      "control_sha256": "879f579997d5aa9bc0a896d39014a75db0758be1f7d2133d46eb130d555a9262",
+      "drift": null,
+      "fold": "B",
+      "gap_derivative_max_error": 2.220446049250313e-15,
+      "held_internal_train": null,
+      "identity_control_exact": true,
+      "metric_columns": 3398,
+      "metric_frobenius_squared": 115099.32867536398,
+      "metric_rows": 1173,
+      "offset": 144,
+      "qualified": false,
+      "record": {
+        "accepted": false,
+        "reason": "solver_or_norm_cap",
+        "repairs": [
+          {
+            "iteration": 0,
+            "norm_ratio": 4.172543975885771,
+            "solver": {
+              "constraints": 1032,
+              "correction_norm": 0.0038444747329646383,
+              "feasible": true,
+              "iterations": 11,
+              "kkt": {
+                "complementarity": 2.548631352841579e-13,
+                "dual_violation": 0.0,
+                "stationarity": 1.3145040611561853e-13
+              },
+              "normalized_violation": 3.027624303965113e-14,
+              "original_normalized_violation": 5.797569007124928e-15,
+              "reason": "Optimization terminated successfully",
+              "reduced_dimensions": 1032,
+              "solver_success": true
+            },
+            "trials": []
+          }
+        ]
+      },
+      "repeated_exact": false,
+      "seed": 43,
+      "source_unit": "B_43_144",
+      "target_derivative_max_error": 1.3322676295501878e-15,
+      "temperature": 0.4549046901786281,
+      "unit": "B_43_144_402",
+      "witness_sha256": "bc73ea0a81fa1a5a086d762d68433914ea2b08f62f5ca5b6df1c6b971d21bcac"
+    },
+    {
+      "assessment": {
+        "metrics": {
+          "cpu": {
+            "action_changes": 1,
+            "cost": 0.11420959598104768,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.2259797385188792
+          },
+          "cpu_single": {
+            "action_changes": 1,
+            "cost": 0.11420959697553663,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.2259797385188792
+          },
+          "gpu": {
+            "action_changes": 1,
+            "cost": 0.11420959738218132,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.2259797385188792
+          },
+          "gpu_single": {
+            "action_changes": 1,
+            "cost": 0.11420959613445913,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.2259797385188792
+          },
+          "numpy": {
+            "action_changes": 1,
+            "cost": 0.11420959600787378,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.2259797385188792
+          }
+        },
+        "motion": 0.001504723872538061,
+        "original_passed": true,
+        "passed": true
+      },
+      "candidate": {
+        "action": 2,
+        "lower_bound": 0.0006645109293967072,
+        "margin": 7.62939453125e-06,
+        "pairs": [
+          [
+            434,
+            2,
+            0
+          ],
+          [
+            434,
+            2,
+            1
+          ]
+        ],
+        "position": 261,
+        "row": 434
+      },
+      "cold_exact": true,
+      "control": {
+        "metrics": {
+          "cpu": {
+            "action_changes": 2,
+            "cost": 0.11420458510851456,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.22487936255391738
+          },
+          "cpu_single": {
+            "action_changes": 2,
+            "cost": 0.11420458534494896,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.22487936255391738
+          },
+          "gpu": {
+            "action_changes": 2,
+            "cost": 0.11420458514557846,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.22487936255391738
+          },
+          "gpu_single": {
+            "action_changes": 2,
+            "cost": 0.11420458357351622,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.22487936255391738
+          },
+          "numpy": {
+            "action_changes": 2,
+            "cost": 0.11420458458852481,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.22487936255391738
+          }
+        },
+        "motion": 0.001146107263301525,
+        "original_passed": true,
+        "passed": true
+      },
+      "control_drift": {
+        "cpu": 6.953572547804655e-07,
+        "cpu_single": 6.953106934445298e-07,
+        "gpu": 6.953806513687164e-07,
+        "gpu_single": 6.9537036443315e-07,
+        "numpy": 6.953698193572083e-07
+      },
+      "control_sha256": "308334b46a10706496f5cd4e4d5018c17046c756f3f01bb4edd75fa27be14183",
+      "drift": {
+        "cpu": 3.359497235235863e-08,
+        "cpu_single": 3.359349354783071e-08,
+        "gpu": 3.3592964549275035e-08,
+        "gpu_single": 3.359380262491144e-08,
+        "numpy": 3.359329344126252e-08
+      },
+      "fold": "B",
+      "gap_derivative_max_error": 1.9984014443252818e-15,
+      "held_internal_train": {
+        "control": {
+          "audit": {
+            "actions_sha256": "61ef2b909dbe614433f7071a276abd742702cb783784a465635ce40772b34069",
+            "cost": 0.11457592394742694,
+            "regret": 0.22318809116421684
+          },
+          "stop": {
+            "actions_sha256": "b9c0a01aadbc31c90ca1dceff8f03cb1e16f79eb38a0e7e5ba47521c2c9d1f6e",
+            "cost": 0.10665024405116115,
+            "regret": 0.2021927908336252
+          }
+        },
+        "local": {
+          "audit": {
+            "actions_sha256": "61ef2b909dbe614433f7071a276abd742702cb783784a465635ce40772b34069",
+            "cost": 0.11457233191090267,
+            "regret": 0.22318809116421684
+          },
+          "stop": {
+            "actions_sha256": "b9c0a01aadbc31c90ca1dceff8f03cb1e16f79eb38a0e7e5ba47521c2c9d1f6e",
+            "cost": 0.10664029304187828,
+            "regret": 0.2021927908336252
+          }
+        }
+      },
+      "identity_control_exact": true,
+      "metric_columns": 3398,
+      "metric_frobenius_squared": 114705.83432466524,
+      "metric_rows": 1173,
+      "offset": 152,
+      "qualified": false,
+      "record": {
+        "accepted": true,
+        "reason": "finite_guard",
+        "repairs": [
+          {
+            "iteration": 0,
+            "norm_ratio": 2.139129989324886,
+            "solver": {
+              "constraints": 1028,
+              "correction_norm": 0.0017850128308144466,
+              "feasible": true,
+              "iterations": 2,
+              "kkt": {
+                "complementarity": 4.5534761204886795e-14,
+                "dual_violation": 0.0,
+                "stationarity": 2.4424906541753444e-15
+              },
+              "normalized_violation": 6.946778286745139e-16,
+              "original_normalized_violation": 2.190092602763682e-16,
+              "reason": "Optimization terminated successfully",
+              "reduced_dimensions": 1028,
+              "solver_success": true
+            },
+            "trials": [
+              {
+                "metrics": {
+                  "cpu": {
+                    "action_changes": 1,
+                    "cost": 0.11420959598104768,
+                    "lost_optimal": 0,
+                    "passed": true,
+                    "regret": 0.2259797385188792
+                  },
+                  "cpu_single": {
+                    "action_changes": 1,
+                    "cost": 0.11420959697553663,
+                    "lost_optimal": 0,
+                    "passed": true,
+                    "regret": 0.2259797385188792
+                  },
+                  "gpu": {
+                    "action_changes": 1,
+                    "cost": 0.11420959738218132,
+                    "lost_optimal": 0,
+                    "passed": true,
+                    "regret": 0.2259797385188792
+                  },
+                  "gpu_single": {
+                    "action_changes": 1,
+                    "cost": 0.11420959613445913,
+                    "lost_optimal": 0,
+                    "passed": true,
+                    "regret": 0.2259797385188792
+                  },
+                  "numpy": {
+                    "action_changes": 1,
+                    "cost": 0.11420959600787378,
+                    "lost_optimal": 0,
+                    "passed": true,
+                    "regret": 0.2259797385188792
+                  }
+                },
+                "motion": 0.001504723872538061,
+                "original_passed": true,
+                "passed": true,
+                "scale": 1.0
+              }
+            ]
+          }
+        ]
+      },
+      "repeated_exact": true,
+      "seed": 43,
+      "source_unit": "B_43_152",
+      "target_derivative_max_error": 1.1102230246251565e-15,
+      "temperature": 0.4549046901786281,
+      "unit": "B_43_152_434",
+      "witness_sha256": "91a98d309819e3ec727ce2bc2c26026ffbdd2b7606aab5f26cf70c5fa03039da"
+    },
+    {
+      "assessment": {
+        "metrics": {
+          "cpu": {
+            "action_changes": 1,
+            "cost": 0.11420532934101359,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.22520442156373652
+          },
+          "cpu_single": {
+            "action_changes": 1,
+            "cost": 0.11420532865873452,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.22520442156373652
+          },
+          "gpu": {
+            "action_changes": 1,
+            "cost": 0.11420533069849444,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.22520442156373652
+          },
+          "gpu_single": {
+            "action_changes": 1,
+            "cost": 0.11420532827512482,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.22520442156373652
+          },
+          "numpy": {
+            "action_changes": 1,
+            "cost": 0.11420532918414616,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.22520442156373652
+          }
+        },
+        "motion": 0.0027803906103373585,
+        "original_passed": true,
+        "passed": true
+      },
+      "candidate": {
+        "action": 2,
+        "lower_bound": 0.0010171217510204383,
+        "margin": 7.62939453125e-06,
+        "pairs": [
+          [
+            402,
+            2,
+            0
+          ],
+          [
+            402,
+            2,
+            1
+          ]
+        ],
+        "position": 213,
+        "row": 402
+      },
+      "cold_exact": true,
+      "control": {
+        "metrics": {
+          "cpu": {
+            "action_changes": 1,
+            "cost": 0.11420548013911642,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.22520442156373652
+          },
+          "cpu_single": {
+            "action_changes": 1,
+            "cost": 0.11420548062464078,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.22520442156373652
+          },
+          "gpu": {
+            "action_changes": 1,
+            "cost": 0.11420547928568418,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.22520442156373652
+          },
+          "gpu_single": {
+            "action_changes": 1,
+            "cost": 0.11420548071998766,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.22520442156373652
+          },
+          "numpy": {
+            "action_changes": 1,
+            "cost": 0.11420548003672164,
+            "lost_optimal": 0,
+            "passed": true,
+            "regret": 0.22520442156373652
+          }
+        },
+        "motion": 0.0014403744937242665,
+        "original_passed": true,
+        "passed": true
+      },
+      "control_drift": {
+        "cpu": 5.148676121820061e-06,
+        "cpu_single": 5.1486820300536e-06,
+        "gpu": 5.148527317091843e-06,
+        "gpu_single": 5.148690122860519e-06,
+        "numpy": 5.148627163023863e-06
+      },
+      "control_sha256": "464c1479136a4c2c2d89c6dc13c2ab6333604585389719fafdd7f44dcaed36c6",
+      "drift": {
+        "cpu": 1.4942875822466604e-07,
+        "cpu_single": 1.4941632646606798e-07,
+        "gpu": 1.494140928048746e-07,
+        "gpu_single": 1.494156656073802e-07,
+        "numpy": 1.4942154632713299e-07
+      },
+      "fold": "B",
+      "gap_derivative_max_error": 1.9984014443252818e-15,
+      "held_internal_train": {
+        "control": {
+          "audit": {
+            "actions_sha256": "61ef2b909dbe614433f7071a276abd742702cb783784a465635ce40772b34069",
+            "cost": 0.11449928584178265,
+            "regret": 0.22318809116421684
+          },
+          "stop": {
+            "actions_sha256": "b9c0a01aadbc31c90ca1dceff8f03cb1e16f79eb38a0e7e5ba47521c2c9d1f6e",
+            "cost": 0.10662275244850221,
+            "regret": 0.2021927908336252
+          }
+        },
+        "local": {
+          "audit": {
+            "actions_sha256": "61ef2b909dbe614433f7071a276abd742702cb783784a465635ce40772b34069",
+            "cost": 0.11456346360248784,
+            "regret": 0.22318809116421684
+          },
+          "stop": {
+            "actions_sha256": "b9c0a01aadbc31c90ca1dceff8f03cb1e16f79eb38a0e7e5ba47521c2c9d1f6e",
+            "cost": 0.10660963846156371,
+            "regret": 0.2021927908336252
+          }
+        }
+      },
+      "identity_control_exact": true,
+      "metric_columns": 3398,
+      "metric_frobenius_squared": 114565.19901044157,
+      "metric_rows": 1173,
+      "offset": 152,
+      "qualified": true,
+      "record": {
+        "accepted": true,
+        "reason": "finite_guard",
+        "repairs": [
+          {
+            "iteration": 0,
+            "norm_ratio": 3.9526155573689583,
+            "solver": {
+              "constraints": 1028,
+              "correction_norm": 0.0035381054905558114,
+              "feasible": true,
+              "iterations": 6,
+              "kkt": {
+                "complementarity": 1.6771657111500646e-13,
+                "dual_violation": 0.0,
+                "stationarity": 1.199040866595169e-14
+              },
+              "normalized_violation": 8.590298166667286e-16,
+              "original_normalized_violation": 2.5085499455124825e-16,
+              "reason": "Optimization terminated successfully",
+              "reduced_dimensions": 1028,
+              "solver_success": true
+            },
+            "trials": [
+              {
+                "metrics": {
+                  "cpu": {
+                    "action_changes": 1,
+                    "cost": 0.11420532934101359,
+                    "lost_optimal": 0,
+                    "passed": true,
+                    "regret": 0.22520442156373652
+                  },
+                  "cpu_single": {
+                    "action_changes": 1,
+                    "cost": 0.11420532865873452,
+                    "lost_optimal": 0,
+                    "passed": true,
+                    "regret": 0.22520442156373652
+                  },
+                  "gpu": {
+                    "action_changes": 1,
+                    "cost": 0.11420533069849444,
+                    "lost_optimal": 0,
+                    "passed": true,
+                    "regret": 0.22520442156373652
+                  },
+                  "gpu_single": {
+                    "action_changes": 1,
+                    "cost": 0.11420532827512482,
+                    "lost_optimal": 0,
+                    "passed": true,
+                    "regret": 0.22520442156373652
+                  },
+                  "numpy": {
+                    "action_changes": 1,
+                    "cost": 0.11420532918414616,
+                    "lost_optimal": 0,
+                    "passed": true,
+                    "regret": 0.22520442156373652
+                  }
+                },
+                "motion": 0.0027803906103373585,
+                "original_passed": true,
+                "passed": true,
+                "scale": 1.0
+              }
+            ]
+          }
+        ]
+      },
+      "repeated_exact": true,
+      "seed": 43,
+      "source_unit": "B_43_152",
+      "target_derivative_max_error": 1.9984014443252818e-15,
+      "temperature": 0.4549046901786281,
+      "unit": "B_43_152_402",
+      "witness_sha256": "91a98d309819e3ec727ce2bc2c26026ffbdd2b7606aab5f26cf70c5fa03039da"
+    }
+  ]
+}

@@ -1,14 +1,30 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "FUNCTION_LOCALITY_CONTRAST_READY",
+  "current_stage": "FUNCTION_LOCALITY_VERIFIED_BOUNDED_HYBRID_CONTINUATION_NEXT",
   "function_locality_348": {
     "document": "../348_FUNCTION_LOCAL_TARGETED_CORRECTION.md",
-    "status": "TESTED_READY",
+    "status": "COMPLETE_INDEPENDENTLY_VERIFIED",
+    "identity": "ba756e655725f93626cd811365247f399670103ccb9bc8db7f867b144eb467aa",
+    "runtime_commit": "d54377cc",
+    "seconds": 29.176624260027893,
     "fixed_candidates": 10,
     "lambda": 1,
     "tests_passed": 50,
+    "identity_controls_exact": 10,
+    "finite_accepted": 6,
+    "paired_qualified": 5,
+    "rejected_finite": 4,
+    "rejected_worse_paired_regret": 1,
+    "qualified_gap_mse_reduction_pct_range": [95.94184952007414,98.46227387882192],
+    "qualified_gap_rms_reduction_pct_range": [79.85514835019663,87.59949145729063],
+    "qualified_fit_actions_equal_controls_all_five_views": true,
+    "held_actions_equal_controls": true,
+    "cold_exact": 6,
+    "repeated_exact": 6,
+    "jobs_running": 0,
     "actor_updates": 0,
-    "next_action": "Execute frozen344-target locality contrast with exact identity-metric controls, unchanged five-view finite gates and automatic CPU verification. No held-label update selection, larger radius or actor promotion."
+    "model_promoted": false,
+    "next_action": "Implement/test bounded16-step hybrid continuation against saved345 controls from the four334 sources. Original procedure selects target first; use lambda1 local correction only when same target passes all original gates, lower all-five-view collateral drift and no higher paired FIT regret, otherwise exact original fallback. Same four target searches per case, count extra locality compute separately, projected AdamW moments and cold/resume checks. No held-label selection, guard relaxation, actor update or unchanged floating pass. No user decision needed."
   },
   "matched_divergence_replay_347": {
     "document": "../347_MATCHED_DIVERGENCE_REPLAY.md",
@@ -31,7 +47,7 @@
     "jobs_running": 0,
     "actor_updates": 0,
     "model_promoted": false,
-    "next_action": "Design/test bounded function-locality contrast on saved FIT targeted-correction witnesses: reduce collateral FIT action-gap drift while retaining all existing finite guards and actual target improvement. Compare against saved corrections; no held labels in repair construction/selection, no guard relaxation, no actor change or unchanged floating pass. No user choice needed."
+    "next_action": "Complete; function-locality probe348 is independently complete. See function_locality_348 and current_stage."
   },
   "targeted_rescue_retention_346": {
     "document": "../346_TARGETED_RESCUE_RETENTION.md",
