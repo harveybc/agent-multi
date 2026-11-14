@@ -37,3 +37,23 @@ def test_strict_gate_requires_actual_target_and_regret_gain():
     assert not strict_correction(assessment,baseline,{'a':q},0,np.array([True,False,False]))
     assessment['metrics']['a']['regret']=1.
     assert not strict_correction(assessment,baseline,{'a':q},0,np.array([False,True,False]))
+
+
+def test_strict_gate_cannot_drop_a_geometry():
+    q=np.zeros((2,1,3));assessment=dict(passed=True,metrics={'a':dict(regret=.5)})
+    assert not strict_correction(assessment,{'a':dict(regret=1.),'b':dict(regret=1.)},{'a':q},0,np.array([True,False,False]))
+
+
+def test_deterministic_rank_and_single_halfspace_bound():
+    from app.optimal_fit_protection import complete_pair_jacobian
+    h,z,y,q=fixture()
+    with torch.no_grad():
+        for p in h.parameters():p.zero_()
+        for twin in h.twins:twin[0][2].bias.copy_(torch.tensor([2.,1.,0.]))
+    rows,_=correction_candidates(h.state_dict(),z,np.arange(4),y,{'a':q},[],100.,8)
+    assert [r['row'] for r in rows]==[0,1]
+    for r in rows:
+        gaps,jac=complete_pair_jacobian(h.state_dict(),z,r['pairs'])
+        expected=np.max(np.maximum(r['margin']-gaps,0)/np.linalg.norm(jac,axis=1))
+        assert r['lower_bound']==expected
+    assert correction_candidates(h.state_dict(),z,np.arange(4),y,{'a':q},[],1e-8,8)[0]==[]
