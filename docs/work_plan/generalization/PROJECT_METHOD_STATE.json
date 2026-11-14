@@ -1,6 +1,16 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "NATIVE_HEAD_WARM_START_COMPLETE_NO_PROMOTION",
+  "current_stage": "NATIVE_FIT_GRADIENT_DIAGNOSTIC_PREPARED",
+  "native_fit_gradient_328": {
+    "document": "../328_NATIVE_FIT_GRADIENT_CONFLICT.md",
+    "status": "TESTS_PASS_PREPARED",
+    "focused_tests_passed": 17,
+    "planned_observations": 24,
+    "optimizer_steps": 0,
+    "held_rows_evaluated": 0,
+    "model_promoted": false,
+    "next_action": "Test analytic identities and finite-difference restoration, then run FIT-only scoped gradient diagnosis on327 initial/8192/32768 checkpoints. Preserve source299,71 inputs and paused STL."
+  },
   "native_head_warm_start_327": {
     "document": "../327_NATIVE_HEAD_WARM_START.md",
     "status": "COMPLETE_PARTIAL_FIT_PRESERVATION_NO_PROMOTION",
