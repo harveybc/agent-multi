@@ -52,7 +52,7 @@ Their saved checkpoints have no optimizer and cannot silently resume training.
 The next bounded [345 continuation](345_BOUNDED_TARGETED_RESCUE_CONTINUATION.md)
 explicitly defines projected-AdamW moments, sixteen matched attempts per case,
 four targeted searches, exact restart and automatic independent verification.
-It is already implemented and dispatched, not an actor promotion.
+It has completed with3 matched FIT wins and1 tie; no actor promotion.
 
 [All ten results](generalization/targeted_direction_20261114/SUMMARY.csv),
 [verification](generalization/targeted_direction_20261114/VERIFICATION.json),

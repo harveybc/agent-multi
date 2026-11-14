@@ -23,8 +23,13 @@ endpoint switches versus4 in controls; one paired FIT win,one loss,two ties.
 Mean regret remains0.114% worse than control; no training-recipe promotion.
 [343](343_PROTECTION_COMPONENT_TRADEOFF.md) completed64 saved-block exchanges
 twice exactly: none restores missed gains while preserving protections.
-Next bounded task is decision-aware direction construction on fixed FIT states;
-no additional user decision is required. No unchanged floating pass or long fit.
+[344](344_DECISION_TARGETED_DIRECTION.md) completes that direction contrast:
+43 candidates,10 verified corrections in5 witnesses. [345](345_BOUNDED_TARGETED_RESCUE_CONTINUATION.md)
+completes the bounded16-step continuation and automatic verifier:3 FIT wins,
+1 tie,mean regret1.577% lower,5 improved decisions,0 worsened;8 cold checkpoints
+and16 replayed transitions exact. Internal held decisions remain unchanged.
+Next is matched64 retention from saved16 states with no additional targeted
+search budget. No new user choice, unchanged floating pass or actor promotion.
 Per-step single-observation guards now accompany batched guards; checkpoint-only
 detection was insufficient. See [method state](generalization/PROJECT_METHOD_STATE.json)
 and [findings](generalization/FINDINGS_AND_PROGRESS.md) for the exact resume point.

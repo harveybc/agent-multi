@@ -1,16 +1,33 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "BOUNDED_TARGETED_RESCUE_CONTINUATION_READY",
+  "current_stage": "TARGETED_RESCUE_LOCAL_LEARNING_VERIFIED_RETENTION_NEXT",
   "targeted_rescue_continuation_345": {
     "document": "../345_BOUNDED_TARGETED_RESCUE_CONTINUATION.md",
-    "status": "IMPLEMENTED_TESTED_BEFORE_EXECUTION",
+    "status": "COMPLETE_INDEPENDENTLY_VERIFIED_THREE_WINS_ONE_TIE",
+    "identity": "c98043f7715fbf89431b110568ccb5a111ccde9855fac3e014f308536a6d1ba9",
+    "runtime_commit": "7d475072",
+    "seconds": 254.0871953360038,
+    "accepted_updates": 60,
+    "attempted_updates": 64,
+    "targeted_rescues": 5,
+    "cold_exact": 8,
+    "resumed_exact": 16,
+    "paired_fit_wins": 3,
+    "paired_fit_ties": 1,
+    "mean_control_fit_regret": 0.1807311426153737,
+    "mean_treatment_fit_regret": 0.17788034159587512,
+    "relative_fit_regret_reduction_pct": 1.5773712146365249,
+    "fit_decisions_improved": 5,
+    "fit_decisions_worsened": 0,
+    "held_decisions_changed_vs_control": false,
+    "jobs_running": 0,
     "cases": 4,
     "attempts_per_case": 16,
     "targeted_searches_per_case": 4,
     "tests_passed": 73,
     "actor_updates": 0,
     "model_promoted": false,
-    "next_action": "Execute bounded16-step continuation with projected-AdamW semantics and exact saved342 controls; automatically run independent CPU verifier. No long-fit extension or actor promotion."
+    "next_action": "Bounded matched64 retention contrast from these16-step checkpoints, retaining optimizer/RNG and the already-spent total budget of four targeted searches per case. No new target search, radius tuning, held-label choices, actor change or unchanged floating pass. Pin and test a separate continuation before launch; no user decision needed."
   },
   "decision_targeted_direction_344": {
     "document": "../344_DECISION_TARGETED_DIRECTION.md",
@@ -30,7 +47,7 @@
     "actor_updates": 0,
     "optimizer_steps": 0,
     "model_promoted": false,
-    "next_action": "Complete.345 defines a bounded16-step continuation to measure accumulation under explicit projected-AdamW optimizer semantics, followed by automatic independent verification."
+    "next_action": "Complete.345 is also independently complete:3 FIT wins and1 tie, held actions unchanged. See current_stage."
   },
   "protection_component_tradeoff_343": {
     "document": "../343_PROTECTION_COMPONENT_TRADEOFF.md",
@@ -3123,6 +3140,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
+    "344-345 COMPLETE: decision-targeted corrections verified; bounded stateful continuation has3 FIT wins and1 tie,5 improved decisions and0 worsened, mean regret1.57737% lower. Held decisions unchanged. Next matched64 retention from saved16 states with TOTAL four searches already exhausted; no new search, thresholds, actor updates or held-label fitting. Separate pinned continuation required; no user decision needed",
     "341-343 COMPLETE: ten repaired fixed proposals independently verified; four64-step continuations243/256 accepted, zero harmful endpoint switches but paired FIT tradeoff.64 component exchanges repeat exactly and yield no feasible recovery. Next bounded decision-aware direction at saved FIT states with original/optimal-set protections, finite actual-action gates and independent derivatives; no actor changes, held-label fitting, long fit or unchanged floating pass. No user decision required",
     "340 COMPLETE:1024 transactions and8 endpoints exact;10 cold witnesses exact. Six harmful actions arise in raw AdamW, four only after original-anchor protection. Next bounded expanded-FIT target-optimal protection on those fixed proposals before new refinement; no user decision required",
     "339 COMPLETE: 384 finite layer interventions; common cross-host discrete evidence exact. 3/9 harmful FIT changes improve own loss, 4/9 show other-example gradient interference at source, 7/9 have opposing saved AdamW directions. Next first-crossing exact replay to separate actual batch, optimizer, projection and finite nonlinear effects; preserve actor299 and all inputs",

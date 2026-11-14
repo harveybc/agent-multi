@@ -33,8 +33,13 @@ harmful endpoint switches versus4 in controls, but one paired FIT win,one loss
 and two ties. Mean regret is0.114% worse than control, so this is not a promoted
 training recipe. [343](docs/work_plan/343_PROTECTION_COMPONENT_TRADEOFF.md)
 completed64 saved-block exchanges twice exactly; none recovers extra gains
-while preserving the guards. Next is a bounded decision-aware update-direction
-contrast, not layer transplantation or an unchanged floating pass.
+while preserving the guards. [344 targeted directions](docs/work_plan/344_DECISION_TARGETED_DIRECTION.md)
+find10 verified corrections in5/10 fixed witnesses. [345 bounded continuation](docs/work_plan/345_BOUNDED_TARGETED_RESCUE_CONTINUATION.md)
+then achieves3 paired FIT wins and1 tie: mean decision regret1.577% lower,
+5 improved decisions and0 worsened, with8 exact cold endpoints and16 exact
+replayed transitions. Internal held decisions remain unchanged versus controls.
+Next is a separately pinned matched64 retention check using saved optimizer
+states and no additional targeted-search budget, not a fresh floating pass.
 No source actor, inputs or live model have changed. Canonical
 resume state: [method state](docs/work_plan/generalization/PROJECT_METHOD_STATE.json).
 Historical COT/source-clock qualification is separate; these diagnostics do not
