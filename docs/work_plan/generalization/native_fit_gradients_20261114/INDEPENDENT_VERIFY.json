@@ -1,0 +1,13 @@
+{
+  "identity": "7cb718972f3c7786a586bc30a767bb5b4c9fa984bb287fcb8daba965bc67b005",
+  "files_verified": 4,
+  "observations_verified": 24,
+  "manual_numpy_gradient_vectors": 216,
+  "alignment_summaries_verified": 360,
+  "finite_difference_witnesses": 576,
+  "max_gradient_error": 8.534839501805891e-16,
+  "max_loss_error": 2.220446049250313e-16,
+  "max_numpy_directional_error": 4.034506012368273e-08,
+  "source_unchanged": true,
+  "held_rows_evaluated": 0
+}

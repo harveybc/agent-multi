@@ -550,3 +550,28 @@ measured fitting tradeoff, not proof of signal absence or a single culprit.
 Next inspect FIT-only old/new gradient conflict and level/gap contributions
 before changing objectives or replay weights. No new job launched after327;
 preserve299,71 inputs,49 return candidates and paused STL. Full report327.
+
+## F-FIT-GRADIENT-CONFLICT-IS-REAL-BUT-NOT-A-SINGLE-SCALAR-FIX
+
+2026-11-14,328:24 scoped checkpoints, FIT only, CPU1.01s, no updates.
+Independent manual NumPy backpropagation verifies216 gradient vectors,
+360 alignment summaries and576 finite-difference witnesses. Max gradient
+discrepancy8.535e-16, numerical directional error4.035e-8.17 tests pass.
+
+Old/new total and gap gradients conflict in4/4 pairs at both trained
+endpoints for both output-only and full-head scopes. However, full-head
+expanded descent at8192 helps old MSE in4/4, so conflict alone does not
+explain every harmful update. Common-level correction harms old gap error
+through the hidden component in4/4 full-head pairs at both endpoints.
+Output-only does not exhibit that coupling but still fails preservation327.
+
+The initial B19 full head has negative old-gap dot products against BOTH
+expanded level and gap gradients. No nonnegative scalar level weight can
+preserve old-gap MSE to first order there; A19/B43 also require incompatible
+weights. This is a local raw-gradient witness, not a theorem about finite
+AdamW dynamics or discrete regret. Do not claim a loss bug or signal absence.
+
+Next test preservation against actual AdamW proposal/discrete decisions,
+with explicit feasible-learning versus stalled-update accounting, before
+more long fitting. No such successor launched by328. Source299,71 inputs,
+49 return candidates and paused STL stay unchanged. See report328.

@@ -1,0 +1,50 @@
+{
+  "parent": "7cb718972f3c7786a586bc30a767bb5b4c9fa984bb287fcb8daba965bc67b005",
+  "scope": "full_head initial checkpoints; infinitesimal raw gradient only",
+  "loss": "lambda * expanded_level_mse + expanded_gap_mse",
+  "protected": "original_fit_gap_mse",
+  "rows": [
+    {
+      "fold": "A",
+      "seed": 19,
+      "level_coefficient": -4.885273113378611e-05,
+      "gap_coefficient": 0.0007979981819243343,
+      "local_nonincrease_condition": "lambda * level_coefficient + gap_coefficient >= 0; lambda >= 0",
+      "boundary": 16.334771125466226,
+      "relation": "lambda <= boundary",
+      "nonnegative_lambda_feasible": true
+    },
+    {
+      "fold": "A",
+      "seed": 43,
+      "level_coefficient": 0.00046825796254429104,
+      "gap_coefficient": -0.00022953581689525227,
+      "local_nonincrease_condition": "lambda * level_coefficient + gap_coefficient >= 0; lambda >= 0",
+      "boundary": 0.4901909529697345,
+      "relation": "lambda >= boundary",
+      "nonnegative_lambda_feasible": true
+    },
+    {
+      "fold": "B",
+      "seed": 19,
+      "level_coefficient": -0.0005479515412368401,
+      "gap_coefficient": -0.0018850078292132733,
+      "local_nonincrease_condition": "lambda * level_coefficient + gap_coefficient >= 0; lambda >= 0",
+      "boundary": -3.4400995112787167,
+      "relation": "lambda <= boundary",
+      "nonnegative_lambda_feasible": false
+    },
+    {
+      "fold": "B",
+      "seed": 43,
+      "level_coefficient": 2.748121328498389e-05,
+      "gap_coefficient": -0.0011204099583983172,
+      "local_nonincrease_condition": "lambda * level_coefficient + gap_coefficient >= 0; lambda >= 0",
+      "boundary": 40.77003248653962,
+      "relation": "lambda >= boundary",
+      "nonnegative_lambda_feasible": true
+    }
+  ],
+  "common_nonnegative_lambda_feasible": false,
+  "limitation": "Not a proof about finite AdamW updates, discrete regret, or eventual convergence."
+}

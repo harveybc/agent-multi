@@ -1,15 +1,24 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "NATIVE_FIT_GRADIENT_DIAGNOSTIC_PREPARED",
+  "current_stage": "NATIVE_FIT_GRADIENT_DIAGNOSTIC_COMPLETE",
   "native_fit_gradient_328": {
     "document": "../328_NATIVE_FIT_GRADIENT_CONFLICT.md",
-    "status": "TESTS_PASS_PREPARED",
+    "status": "COMPLETE_NUMERICALLY_VERIFIED_NO_PROMOTION",
+    "runtime_commit": "0326c6bc",
+    "identity": "7cb718972f3c7786a586bc30a767bb5b4c9fa984bb287fcb8daba965bc67b005",
     "focused_tests_passed": 17,
-    "planned_observations": 24,
+    "completed_observations": 24,
+    "seconds": 1.0054243300110102,
+    "independent_numpy_gradient_vectors": 216,
+    "independent_alignment_checks": 360,
+    "finite_difference_witnesses": 576,
+    "max_gradient_error": 8.534839501805891e-16,
+    "max_numeric_directional_error": 4.034506012368273e-8,
+    "common_nonnegative_level_weight_preserves_initial_old_gap": false,
     "optimizer_steps": 0,
     "held_rows_evaluated": 0,
     "model_promoted": false,
-    "next_action": "Test analytic identities and finite-difference restoration, then run FIT-only scoped gradient diagnosis on327 initial/8192/32768 checkpoints. Preserve source299,71 inputs and paused STL."
+    "next_action": "Design/test bounded preservation against actual AdamW parameter displacement on FIT, including original decision quality and expanded learning, with explicit stalled-step detection; raw-gradient projection or scalar level reweighting alone does not guarantee preservation. Not implemented/launched; no running jobs in this sequence. Preserve source299,71 inputs and paused STL."
   },
   "native_head_warm_start_327": {
     "document": "../327_NATIVE_HEAD_WARM_START.md",
