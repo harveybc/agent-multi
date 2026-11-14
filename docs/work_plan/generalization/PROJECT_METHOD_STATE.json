@@ -1,9 +1,22 @@
 {
   "schema": "generalization_method.v1",
-  "current_stage": "NATIVE_FIT_COVERAGE_PREPARED",
+  "current_stage": "NATIVE_FIT_COVERAGE_COMPLETE_ORDERING_DIAGNOSIS_NEXT",
   "native_fit_coverage_324": {
     "document": "../324_NATIVE_FIT_COVERAGE.md",
-    "status": "PREPARED_TESTS_PASS",
+    "status": "COMPLETE_NO_CRITIC_OR_ACTOR_PROMOTED",
+    "runtime_commit": "b4c784e7",
+    "identity": "1a6a64dfd71e2ada45f3c3e069521580108ce7db5a804692733d3be39885ebb8",
+    "seconds": 146.1750845599454,
+    "primary_joint_passes": 1,
+    "secondary_joint_passes": 0,
+    "verified_native_records": 533,
+    "verified_endpoints": 8,
+    "verified_seals": 8,
+    "primary_mean_audit_rmse": 0.8881912024229347,
+    "primary_mean_audit_regret": 0.24905539277608152,
+    "control_mean_audit_rmse": 1.099599713034772,
+    "control_mean_audit_regret": 0.23645141399755865,
+    "model_promoted": false,
     "focused_tests_passed": 18,
     "additional_native_anchors": 294,
     "new_fits": 4,
@@ -13,7 +26,7 @@
     "updates": [8192, 32768],
     "actor_updates": 0,
     "encoder_updates": 0,
-    "next_action": "Authenticate old real-target controls, generate annual bounded native labels with same-state witnesses, then run sequential paired head fits and publish all endpoints. No actor promotion or unchanged floating repetition."
+    "next_action": "Frozen-checkpoint same-row decision-error attribution by native state/legality and true action gap: why lower value/gap RMSE worsens greedy regret. Keep audit descriptive, design any loss change on FIT only. Preserve299 and71 inputs; no actor update, unchanged floating or STL resume. No job currently running in this sequence."
   },
   "post_phase2_gene_weight_analysis": {
     "document": "POST_PHASE2_GENE_WEIGHT_ANALYSIS.md",
@@ -2667,7 +2680,8 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
-    "323 complete: all16 paired comparisons improve known-teacher audit RMSE/regret. Next freeze a4x native-label coverage contract and collect existing-TRAIN counterfactuals; keep old stop/audit supports and compare native controls. No actor promotion from artificial targets",
+    "324 complete: real4x coverage reduces value RMSE but worsens mean action regret; only1/4 primary joint passes. Next frozen-checkpoint decision-error attribution before another loss/refinement contrast. No model promoted",
+    "323 complete: known-teacher coverage gains retained as diagnostic evidence, not evidence of trading gains;324 already tested native labels, do not relaunch unchanged",
     "322 complete: independent/restart head training exact; late recovery not consistently better on audit. Maintain full-state resume and measure actual optimizer exposure. Full SAC pipeline not certified by this bounded diagnostic",
     "320 complete: use native twin heads for next calibration; preserve source actor and encoder, no new state-feedback inputs or action-interface changes",
     "311 completed the frozen-weight COT identity diagnostic; no source/live certification from the legacy93h clock. Retsu owns verified publications/vintages and live readers under the new concrete handoff",

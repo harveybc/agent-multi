@@ -1,0 +1,11 @@
+{
+  "identity": "1a6a64dfd71e2ada45f3c3e069521580108ce7db5a804692733d3be39885ebb8",
+  "seals_verified": 8,
+  "endpoints_verified": 8,
+  "native_records_verified": 533,
+  "new_records": 294,
+  "original_labels_embeddings_initialization_exact": true,
+  "temporal_membership_verified": true,
+  "optimizer_contract_verified": true,
+  "decision_rule_independently_reproduced": true
+}

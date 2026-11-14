@@ -1,0 +1,30 @@
+{
+  "batch": 128,
+  "code": {
+    "app/critic_blocked_stopping.py": "05c99e06f302a09d7f2c64e29cb6b176f63b1c5802f5392dd8c80c7f0b3f3724",
+    "app/decision_attribution.py": "75b72b2ef400bde500753f7f2754746e58cf8f7d3f9234c3a10ca8633d77f013",
+    "app/native_fit_coverage.py": "90444306fda6b0d3174e20d8989af0860c738814572a518e9685cc07b6a8331d",
+    "tools/run_native_fit_coverage.py": "0591e508525b205afca0615f4fe54e60b03645436e7bacdcfb201404b6725b5f",
+    "tools/run_teacher_coverage.py": "7cb06f6e826d988fb84fb1b0b5b45ec21d1feeeea55d92a029888b612968e407"
+  },
+  "coverage": "a0b5051bc365d3b57dd5132ae7d95d7288aa59ed0af08bdbf8a8e59fbe55b949",
+  "factor": 4,
+  "gamma": 0.99,
+  "identity": "1a6a64dfd71e2ada45f3c3e069521580108ce7db5a804692733d3be39885ebb8",
+  "labels": "6ce08d4d9150ef3879df9be6330a69ec13b1e3decaeb85dcb9a1a3538f6932e5",
+  "lr": 2.9999999999999997e-05,
+  "previous": "e1d5e7197a8969aa3a65ffa5b2a0af278f74df70d538cce14acba691ddab9c6e",
+  "schema": "native_fit_coverage.v1",
+  "seeds": [
+    19,
+    43
+  ],
+  "source_sha256": "69b5254489d224d4b20ac358956e4dd3b9a67a2f214a9aff98045c5def25a536",
+  "support": "28d6088a92173592f39e221c1c2ab1efc9094e614eeccb11c9ae23cf14878c98",
+  "updates": [
+    8192,
+    32768
+  ],
+  "weight_decay": 0.01,
+  "workers": 2
+}

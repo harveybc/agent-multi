@@ -1,0 +1,57 @@
+{
+  "actor_exact": true,
+  "control_replays": [
+    {
+      "endpoint": "initial",
+      "exact": true,
+      "fold": "A",
+      "seed": 19
+    },
+    {
+      "endpoint": "final",
+      "exact": true,
+      "fold": "A",
+      "seed": 19
+    },
+    {
+      "endpoint": "initial",
+      "exact": true,
+      "fold": "A",
+      "seed": 43
+    },
+    {
+      "endpoint": "final",
+      "exact": true,
+      "fold": "A",
+      "seed": 43
+    },
+    {
+      "endpoint": "initial",
+      "exact": true,
+      "fold": "B",
+      "seed": 19
+    },
+    {
+      "endpoint": "final",
+      "exact": true,
+      "fold": "B",
+      "seed": 19
+    },
+    {
+      "endpoint": "initial",
+      "exact": true,
+      "fold": "B",
+      "seed": 43
+    },
+    {
+      "endpoint": "final",
+      "exact": true,
+      "fold": "B",
+      "seed": 43
+    }
+  ],
+  "new_rows": 294,
+  "original_embeddings_exact": true,
+  "original_targets_exact": true,
+  "source_exact": true
+}

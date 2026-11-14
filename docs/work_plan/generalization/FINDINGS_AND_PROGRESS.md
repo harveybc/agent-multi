@@ -461,3 +461,24 @@ This supports a4x native counterfactual-label contrast next, not promotion,
 new trading-profit claims, or a declaration that weight analysis is exhausted.
 See323 and its full evidence table. Preserve71 inputs,49 return candidates and
 paused STL; native-label queue has not yet been launched.
+
+## F-LOWER-VALUE-ERROR-CAN-WORSEN-NATIVE-ACTION-ORDERING
+
+2026-11-13,324: completed the native-label successor to323.294 new real
+TRAIN anchors,882 additional annual three-action suffixes, four source-year
+witness replays, four new fits and four reused controls. All533 label records,
+eight seals and eight optimizer endpoints independently verified.18 tests pass.
+The automated CPU-label/GPU-fit chain took146.18s with source actor unchanged.
+
+At the same8192 updates,4x FIT improves value RMSE in all four pairs; mean
+1.099600->0.888191. Mean gap RMSE also improves0.746141->0.590720, but action
+regret worsens0.236451->0.249055 and pair accuracy0.516358->0.467283. Only1/4
+passes the joint rule. Longer32768-update fitting gives0/4 joint passes.
+No critic or actor is promoted. Numeric approximation and action selection
+must be diagnosed separately; better RMSE is not sufficient qualification.
+
+Next inspect exact winner switches and native target gaps on fixed checkpoints,
+stratified by state and action legality. Further model/loss design uses FIT,
+not the inspected audit rows. This does not invalidate the known-function
+coverage finding or prove absence of predictive information. Preserve299,
+71 inputs,49 return candidates and paused STL. Full tables and curves in324.
