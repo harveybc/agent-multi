@@ -242,22 +242,25 @@ def run(a):
     seal(a.output,cfg['identity']);progress('COMPLETE',extended=qualified,endpoints=len(results))
 
 
-def plot_curves(output):
+def plot_curves(output,destination=None):
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
     fig,axes=plt.subplots(2,4,figsize=(15,7),sharex='col')
     for col,(fold,seed) in enumerate([(f,s) for f in ('A','B') for s in (19,43)]):
+        max_steps=0
         for objective,color in (('mse','#bb6633'),('cost','#327bb5'),('hybrid','#16856a')):
             curve=read(output/'units'/f'{fold}_{seed}_{objective}'/'CURVE.json');xs=[p['step'] for p in curve]
+            max_steps=max(max_steps,max(xs))
             for row,key in enumerate(('mse','stable_added_regret')):
                 axes[row,col].plot(xs,[p['assessment']['observation']['fit']['gpu'][key] for p in curve],label=objective,color=color)
-                axes[row,col].grid(alpha=.2);axes[row,col].set_xlim(left=0)
+                axes[row,col].grid(alpha=.2)
+        for row in range(2):axes[row,col].set_xlim(0,max_steps)
         axes[0,col].set_title(f'{fold} / {seed}');axes[1,col].set_xlabel('Attempted updates')
     axes[0,0].set_ylabel('Full FIT MSE');axes[1,0].set_ylabel('Stable-added FIT regret')
     mode=read(output/'CONFIG.json').get('optimizer_state','inherited')
     axes[0,0].legend();fig.suptitle(f'Decision loss contrast ({mode} AdamW); source actor unchanged')
-    fig.tight_layout();fig.savefig(output/'CURVES.png',dpi=150);plt.close(fig)
+    fig.tight_layout();fig.savefig(destination or output/'CURVES.png',dpi=150);plt.close(fig)
 
 
 if __name__=='__main__':

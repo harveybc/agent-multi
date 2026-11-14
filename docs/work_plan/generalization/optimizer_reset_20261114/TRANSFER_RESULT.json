@@ -1,0 +1,4417 @@
+{
+  "identity": "d9855861adf340903b34ab8d91bf7cefc8016891d303a679920cf259d4b71353",
+  "model_promoted": false,
+  "optimizer_updates": 0,
+  "scopes": [
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 34
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        }
+      },
+      "fold": "A",
+      "harmful": 0,
+      "helpful": 0,
+      "metrics": {
+        "cpu": {
+          "mse": 0.4115322149504384,
+          "regret": 0.32230104056812914,
+          "stable_regret": 0.32230104056812914
+        },
+        "cpu_single": {
+          "mse": 0.41153221161053005,
+          "regret": 0.32230104056812914,
+          "stable_regret": 0.32230104056812914
+        },
+        "gpu": {
+          "mse": 0.41153221019903224,
+          "regret": 0.32230104056812914,
+          "stable_regret": 0.32230104056812914
+        },
+        "gpu_single": {
+          "mse": 0.41153221402232837,
+          "regret": 0.32230104056812914,
+          "stable_regret": 0.32230104056812914
+        },
+        "numpy": {
+          "mse": 0.41153221823576397,
+          "regret": 0.32230104056812914,
+          "stable_regret": 0.32230104056812914
+        }
+      },
+      "panel": "stop",
+      "rows": 49,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 49,
+      "step": 0,
+      "variant": "start"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 34
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        }
+      },
+      "fold": "A",
+      "harmful": 0,
+      "helpful": 0,
+      "metrics": {
+        "cpu": {
+          "mse": 0.40101626384090905,
+          "regret": 0.32230104056812914,
+          "stable_regret": 0.32230104056812914
+        },
+        "cpu_single": {
+          "mse": 0.4010162793796456,
+          "regret": 0.32230104056812914,
+          "stable_regret": 0.32230104056812914
+        },
+        "gpu": {
+          "mse": 0.4010162669673254,
+          "regret": 0.32230104056812914,
+          "stable_regret": 0.32230104056812914
+        },
+        "gpu_single": {
+          "mse": 0.40101627042577487,
+          "regret": 0.32230104056812914,
+          "stable_regret": 0.32230104056812914
+        },
+        "numpy": {
+          "mse": 0.40101626367546706,
+          "regret": 0.32230104056812914,
+          "stable_regret": 0.32230104056812914
+        }
+      },
+      "panel": "stop",
+      "rows": 49,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 49,
+      "step": 256,
+      "variant": "inherited_mse"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 1,
+          "rows": 34
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        }
+      },
+      "fold": "A",
+      "harmful": 0,
+      "helpful": 1,
+      "metrics": {
+        "cpu": {
+          "mse": 0.41215925366053796,
+          "regret": 0.3123341948048562,
+          "stable_regret": 0.3123341948048562
+        },
+        "cpu_single": {
+          "mse": 0.41215926209560505,
+          "regret": 0.3123341948048562,
+          "stable_regret": 0.3123341948048562
+        },
+        "gpu": {
+          "mse": 0.4121592577393293,
+          "regret": 0.3123341948048562,
+          "stable_regret": 0.3123341948048562
+        },
+        "gpu_single": {
+          "mse": 0.41215925201294396,
+          "regret": 0.3123341948048562,
+          "stable_regret": 0.3123341948048562
+        },
+        "numpy": {
+          "mse": 0.4121592480585587,
+          "regret": 0.3123341948048562,
+          "stable_regret": 0.3123341948048562
+        }
+      },
+      "panel": "stop",
+      "rows": 49,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 49,
+      "step": 256,
+      "variant": "inherited_cost"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 1,
+          "rows": 34
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        }
+      },
+      "fold": "A",
+      "harmful": 0,
+      "helpful": 1,
+      "metrics": {
+        "cpu": {
+          "mse": 0.40204755505483475,
+          "regret": 0.3123341948048562,
+          "stable_regret": 0.3123341948048562
+        },
+        "cpu_single": {
+          "mse": 0.402047560488525,
+          "regret": 0.3123341948048562,
+          "stable_regret": 0.3123341948048562
+        },
+        "gpu": {
+          "mse": 0.40204754903708073,
+          "regret": 0.3123341948048562,
+          "stable_regret": 0.3123341948048562
+        },
+        "gpu_single": {
+          "mse": 0.4020475539630473,
+          "regret": 0.3123341948048562,
+          "stable_regret": 0.3123341948048562
+        },
+        "numpy": {
+          "mse": 0.40204754410195365,
+          "regret": 0.3123341948048562,
+          "stable_regret": 0.3123341948048562
+        }
+      },
+      "panel": "stop",
+      "rows": 49,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 49,
+      "step": 256,
+      "variant": "inherited_hybrid"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 34
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        }
+      },
+      "fold": "A",
+      "harmful": 0,
+      "helpful": 0,
+      "metrics": {
+        "cpu": {
+          "mse": 0.40032860607562215,
+          "regret": 0.32230104056812914,
+          "stable_regret": 0.32230104056812914
+        },
+        "cpu_single": {
+          "mse": 0.40032860500019657,
+          "regret": 0.32230104056812914,
+          "stable_regret": 0.32230104056812914
+        },
+        "gpu": {
+          "mse": 0.4003285926417281,
+          "regret": 0.32230104056812914,
+          "stable_regret": 0.32230104056812914
+        },
+        "gpu_single": {
+          "mse": 0.4003286002521264,
+          "regret": 0.32230104056812914,
+          "stable_regret": 0.32230104056812914
+        },
+        "numpy": {
+          "mse": 0.4003286016856316,
+          "regret": 0.32230104056812914,
+          "stable_regret": 0.32230104056812914
+        }
+      },
+      "panel": "stop",
+      "rows": 49,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 49,
+      "step": 256,
+      "variant": "fresh_mse"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 3,
+          "helpful": 4,
+          "rows": 34
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 1,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 1,
+          "helpful": 0,
+          "rows": 6
+        }
+      },
+      "fold": "A",
+      "harmful": 5,
+      "helpful": 4,
+      "metrics": {
+        "cpu": {
+          "mse": 0.4121070428394956,
+          "regret": 0.337020206929439,
+          "stable_regret": 0.337020206929439
+        },
+        "cpu_single": {
+          "mse": 0.4121070313307467,
+          "regret": 0.337020206929439,
+          "stable_regret": 0.337020206929439
+        },
+        "gpu": {
+          "mse": 0.41210701929652643,
+          "regret": 0.337020206929439,
+          "stable_regret": 0.337020206929439
+        },
+        "gpu_single": {
+          "mse": 0.4121070237990289,
+          "regret": 0.337020206929439,
+          "stable_regret": 0.337020206929439
+        },
+        "numpy": {
+          "mse": 0.41210702516394576,
+          "regret": 0.337020206929439,
+          "stable_regret": 0.337020206929439
+        }
+      },
+      "panel": "stop",
+      "rows": 49,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 49,
+      "step": 1024,
+      "variant": "fresh_cost"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 2,
+          "helpful": 2,
+          "rows": 34
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 1,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 1,
+          "helpful": 0,
+          "rows": 6
+        }
+      },
+      "fold": "A",
+      "harmful": 4,
+      "helpful": 2,
+      "metrics": {
+        "cpu": {
+          "mse": 0.40966739676752606,
+          "regret": 0.33199132953656596,
+          "stable_regret": 0.33199132953656596
+        },
+        "cpu_single": {
+          "mse": 0.4096673866193383,
+          "regret": 0.33199132953656596,
+          "stable_regret": 0.33199132953656596
+        },
+        "gpu": {
+          "mse": 0.4096673762389334,
+          "regret": 0.33199132953656596,
+          "stable_regret": 0.33199132953656596
+        },
+        "gpu_single": {
+          "mse": 0.40966739656535717,
+          "regret": 0.33199132953656596,
+          "stable_regret": 0.33199132953656596
+        },
+        "numpy": {
+          "mse": 0.40966739036522565,
+          "regret": 0.33199132953656596,
+          "stable_regret": 0.33199132953656596
+        }
+      },
+      "panel": "stop",
+      "rows": 49,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 49,
+      "step": 256,
+      "variant": "fresh_cost"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 1,
+          "rows": 34
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        }
+      },
+      "fold": "A",
+      "harmful": 0,
+      "helpful": 1,
+      "metrics": {
+        "cpu": {
+          "mse": 0.4008869169517331,
+          "regret": 0.3123341948048562,
+          "stable_regret": 0.3123341948048562
+        },
+        "cpu_single": {
+          "mse": 0.4008869100114797,
+          "regret": 0.3123341948048562,
+          "stable_regret": 0.3123341948048562
+        },
+        "gpu": {
+          "mse": 0.4008869111660591,
+          "regret": 0.3123341948048562,
+          "stable_regret": 0.3123341948048562
+        },
+        "gpu_single": {
+          "mse": 0.40088691212653454,
+          "regret": 0.3123341948048562,
+          "stable_regret": 0.3123341948048562
+        },
+        "numpy": {
+          "mse": 0.4008869135864043,
+          "regret": 0.3123341948048562,
+          "stable_regret": 0.3123341948048562
+        }
+      },
+      "panel": "stop",
+      "rows": 49,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 49,
+      "step": 256,
+      "variant": "fresh_hybrid"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 38
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 9
+        }
+      },
+      "fold": "A",
+      "harmful": 0,
+      "helpful": 0,
+      "metrics": {
+        "cpu": {
+          "mse": 1.2562461036868344,
+          "regret": 0.22675875048843397,
+          "stable_regret": 0.22675875048843397
+        },
+        "cpu_single": {
+          "mse": 1.256246103471557,
+          "regret": 0.22675875048843397,
+          "stable_regret": 0.22675875048843397
+        },
+        "gpu": {
+          "mse": 1.2562461573478803,
+          "regret": 0.22675875048843397,
+          "stable_regret": 0.22675875048843397
+        },
+        "gpu_single": {
+          "mse": 1.2562461063232213,
+          "regret": 0.22675875048843397,
+          "stable_regret": 0.22675875048843397
+        },
+        "numpy": {
+          "mse": 1.2562460986490018,
+          "regret": 0.22675875048843397,
+          "stable_regret": 0.22675875048843397
+        }
+      },
+      "panel": "audit",
+      "rows": 59,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 59,
+      "step": 0,
+      "variant": "start"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 1,
+          "helpful": 0,
+          "rows": 38
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 1,
+          "helpful": 0,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 9
+        }
+      },
+      "fold": "A",
+      "harmful": 2,
+      "helpful": 0,
+      "metrics": {
+        "cpu": {
+          "mse": 1.1895572891131807,
+          "regret": 0.23276325918375085,
+          "stable_regret": 0.23276325918375085
+        },
+        "cpu_single": {
+          "mse": 1.189557274032293,
+          "regret": 0.23276325918375085,
+          "stable_regret": 0.23276325918375085
+        },
+        "gpu": {
+          "mse": 1.1895572268646681,
+          "regret": 0.23276325918375085,
+          "stable_regret": 0.23276325918375085
+        },
+        "gpu_single": {
+          "mse": 1.189557258326881,
+          "regret": 0.23276325918375085,
+          "stable_regret": 0.23276325918375085
+        },
+        "numpy": {
+          "mse": 1.1895572880539478,
+          "regret": 0.23276325918375085,
+          "stable_regret": 0.23276325918375085
+        }
+      },
+      "panel": "audit",
+      "rows": 59,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 59,
+      "step": 256,
+      "variant": "inherited_mse"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 2,
+          "helpful": 1,
+          "rows": 38
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 9
+        }
+      },
+      "fold": "A",
+      "harmful": 2,
+      "helpful": 1,
+      "metrics": {
+        "cpu": {
+          "mse": 1.260257886510858,
+          "regret": 0.23030060946815956,
+          "stable_regret": 0.23030060946815956
+        },
+        "cpu_single": {
+          "mse": 1.260257888341837,
+          "regret": 0.23030060946815956,
+          "stable_regret": 0.23030060946815956
+        },
+        "gpu": {
+          "mse": 1.260257826591688,
+          "regret": 0.23030060946815956,
+          "stable_regret": 0.23030060946815956
+        },
+        "gpu_single": {
+          "mse": 1.260257856285324,
+          "regret": 0.23030060946815956,
+          "stable_regret": 0.23030060946815956
+        },
+        "numpy": {
+          "mse": 1.2602578671314877,
+          "regret": 0.23030060946815956,
+          "stable_regret": 0.23030060946815956
+        }
+      },
+      "panel": "audit",
+      "rows": 59,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 59,
+      "step": 256,
+      "variant": "inherited_cost"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 1,
+          "helpful": 0,
+          "rows": 38
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 1,
+          "helpful": 0,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 9
+        }
+      },
+      "fold": "A",
+      "harmful": 2,
+      "helpful": 0,
+      "metrics": {
+        "cpu": {
+          "mse": 1.1929957706656262,
+          "regret": 0.23276325918375085,
+          "stable_regret": 0.23276325918375085
+        },
+        "cpu_single": {
+          "mse": 1.1929958229393336,
+          "regret": 0.23276325918375085,
+          "stable_regret": 0.23276325918375085
+        },
+        "gpu": {
+          "mse": 1.1929958785494068,
+          "regret": 0.23276325918375085,
+          "stable_regret": 0.23276325918375085
+        },
+        "gpu_single": {
+          "mse": 1.1929957998414573,
+          "regret": 0.23276325918375085,
+          "stable_regret": 0.23276325918375085
+        },
+        "numpy": {
+          "mse": 1.1929957965260882,
+          "regret": 0.23276325918375085,
+          "stable_regret": 0.23276325918375085
+        }
+      },
+      "panel": "audit",
+      "rows": 59,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 59,
+      "step": 256,
+      "variant": "inherited_hybrid"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 1,
+          "helpful": 0,
+          "rows": 38
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 1,
+          "helpful": 0,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 9
+        }
+      },
+      "fold": "A",
+      "harmful": 2,
+      "helpful": 0,
+      "metrics": {
+        "cpu": {
+          "mse": 1.1827827504054294,
+          "regret": 0.23276325918375085,
+          "stable_regret": 0.23276325918375085
+        },
+        "cpu_single": {
+          "mse": 1.1827827155193347,
+          "regret": 0.23276325918375085,
+          "stable_regret": 0.23276325918375085
+        },
+        "gpu": {
+          "mse": 1.1827828151225597,
+          "regret": 0.23276325918375085,
+          "stable_regret": 0.23276325918375085
+        },
+        "gpu_single": {
+          "mse": 1.1827827423714923,
+          "regret": 0.23276325918375085,
+          "stable_regret": 0.23276325918375085
+        },
+        "numpy": {
+          "mse": 1.1827827481198865,
+          "regret": 0.23276325918375085,
+          "stable_regret": 0.23276325918375085
+        }
+      },
+      "panel": "audit",
+      "rows": 59,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 59,
+      "step": 256,
+      "variant": "fresh_mse"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 4,
+          "helpful": 2,
+          "rows": 38
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 2,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 9
+        }
+      },
+      "fold": "A",
+      "harmful": 4,
+      "helpful": 4,
+      "metrics": {
+        "cpu": {
+          "mse": 1.2511943174309972,
+          "regret": 0.23591614054132656,
+          "stable_regret": 0.23591614054132656
+        },
+        "cpu_single": {
+          "mse": 1.2511943451568572,
+          "regret": 0.23591614054132656,
+          "stable_regret": 0.23591614054132656
+        },
+        "gpu": {
+          "mse": 1.251194224867633,
+          "regret": 0.23591614054132656,
+          "stable_regret": 0.23591614054132656
+        },
+        "gpu_single": {
+          "mse": 1.2511943304272266,
+          "regret": 0.23591614054132656,
+          "stable_regret": 0.23591614054132656
+        },
+        "numpy": {
+          "mse": 1.2511943355233477,
+          "regret": 0.23591614054132656,
+          "stable_regret": 0.23591614054132656
+        }
+      },
+      "panel": "audit",
+      "rows": 59,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 59,
+      "step": 1024,
+      "variant": "fresh_cost"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 1,
+          "helpful": 2,
+          "rows": 38
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 1,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 9
+        }
+      },
+      "fold": "A",
+      "harmful": 1,
+      "helpful": 3,
+      "metrics": {
+        "cpu": {
+          "mse": 1.2538286303630333,
+          "regret": 0.22277960875579786,
+          "stable_regret": 0.22277960875579786
+        },
+        "cpu_single": {
+          "mse": 1.25382861370882,
+          "regret": 0.22277960875579786,
+          "stable_regret": 0.22277960875579786
+        },
+        "gpu": {
+          "mse": 1.2538286878727742,
+          "regret": 0.22277960875579786,
+          "stable_regret": 0.22277960875579786
+        },
+        "gpu_single": {
+          "mse": 1.2538285673106433,
+          "regret": 0.22277960875579786,
+          "stable_regret": 0.22277960875579786
+        },
+        "numpy": {
+          "mse": 1.2538285972114154,
+          "regret": 0.22277960875579786,
+          "stable_regret": 0.22277960875579786
+        }
+      },
+      "panel": "audit",
+      "rows": 59,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 59,
+      "step": 256,
+      "variant": "fresh_cost"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 1,
+          "helpful": 0,
+          "rows": 38
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 1,
+          "helpful": 0,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 9
+        }
+      },
+      "fold": "A",
+      "harmful": 2,
+      "helpful": 0,
+      "metrics": {
+        "cpu": {
+          "mse": 1.1850488297883346,
+          "regret": 0.23276325918375085,
+          "stable_regret": 0.23276325918375085
+        },
+        "cpu_single": {
+          "mse": 1.1850488478828025,
+          "regret": 0.23276325918375085,
+          "stable_regret": 0.23276325918375085
+        },
+        "gpu": {
+          "mse": 1.1850488280010203,
+          "regret": 0.23276325918375085,
+          "stable_regret": 0.23276325918375085
+        },
+        "gpu_single": {
+          "mse": 1.1850487693117029,
+          "regret": 0.23276325918375085,
+          "stable_regret": 0.23276325918375085
+        },
+        "numpy": {
+          "mse": 1.1850488014735014,
+          "regret": 0.23276325918375085,
+          "stable_regret": 0.23276325918375085
+        }
+      },
+      "panel": "audit",
+      "rows": 59,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 59,
+      "step": 256,
+      "variant": "fresh_hybrid"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 34
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        }
+      },
+      "fold": "A",
+      "harmful": 0,
+      "helpful": 0,
+      "metrics": {
+        "cpu": {
+          "mse": 0.40562567518049486,
+          "regret": 0.27296225952033515,
+          "stable_regret": 0.27296225952033515
+        },
+        "cpu_single": {
+          "mse": 0.40562567499608504,
+          "regret": 0.27296225952033515,
+          "stable_regret": 0.27296225952033515
+        },
+        "gpu": {
+          "mse": 0.40562568066953986,
+          "regret": 0.27296225952033515,
+          "stable_regret": 0.27296225952033515
+        },
+        "gpu_single": {
+          "mse": 0.40562566550424967,
+          "regret": 0.27296225952033515,
+          "stable_regret": 0.27296225952033515
+        },
+        "numpy": {
+          "mse": 0.40562567240881914,
+          "regret": 0.27296225952033515,
+          "stable_regret": 0.27296225952033515
+        }
+      },
+      "panel": "stop",
+      "rows": 49,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 49,
+      "step": 0,
+      "variant": "start"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 1,
+          "helpful": 0,
+          "rows": 34
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        }
+      },
+      "fold": "A",
+      "harmful": 1,
+      "helpful": 0,
+      "metrics": {
+        "cpu": {
+          "mse": 0.39139234223610836,
+          "regret": 0.282688349806102,
+          "stable_regret": 0.282688349806102
+        },
+        "cpu_single": {
+          "mse": 0.39139234814296825,
+          "regret": 0.282688349806102,
+          "stable_regret": 0.282688349806102
+        },
+        "gpu": {
+          "mse": 0.3913923460154633,
+          "regret": 0.282688349806102,
+          "stable_regret": 0.282688349806102
+        },
+        "gpu_single": {
+          "mse": 0.3913923515842346,
+          "regret": 0.282688349806102,
+          "stable_regret": 0.282688349806102
+        },
+        "numpy": {
+          "mse": 0.3913923445837398,
+          "regret": 0.282688349806102,
+          "stable_regret": 0.282688349806102
+        }
+      },
+      "panel": "stop",
+      "rows": 49,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 49,
+      "step": 256,
+      "variant": "inherited_mse"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 1,
+          "helpful": 1,
+          "rows": 34
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        }
+      },
+      "fold": "A",
+      "harmful": 1,
+      "helpful": 1,
+      "metrics": {
+        "cpu": {
+          "mse": 0.40552533755251424,
+          "regret": 0.2690158326612361,
+          "stable_regret": 0.2690158326612361
+        },
+        "cpu_single": {
+          "mse": 0.40552534494958364,
+          "regret": 0.2690158326612361,
+          "stable_regret": 0.2690158326612361
+        },
+        "gpu": {
+          "mse": 0.405525334881882,
+          "regret": 0.2690158326612361,
+          "stable_regret": 0.2690158326612361
+        },
+        "gpu_single": {
+          "mse": 0.4055253324711132,
+          "regret": 0.2690158326612361,
+          "stable_regret": 0.2690158326612361
+        },
+        "numpy": {
+          "mse": 0.4055253329478982,
+          "regret": 0.2690158326612361,
+          "stable_regret": 0.2690158326612361
+        }
+      },
+      "panel": "stop",
+      "rows": 49,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 49,
+      "step": 256,
+      "variant": "inherited_cost"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 1,
+          "helpful": 0,
+          "rows": 34
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        }
+      },
+      "fold": "A",
+      "harmful": 1,
+      "helpful": 0,
+      "metrics": {
+        "cpu": {
+          "mse": 0.3917346881905962,
+          "regret": 0.282688349806102,
+          "stable_regret": 0.282688349806102
+        },
+        "cpu_single": {
+          "mse": 0.3917346818996373,
+          "regret": 0.282688349806102,
+          "stable_regret": 0.282688349806102
+        },
+        "gpu": {
+          "mse": 0.3917346761321626,
+          "regret": 0.282688349806102,
+          "stable_regret": 0.282688349806102
+        },
+        "gpu_single": {
+          "mse": 0.39173467751592755,
+          "regret": 0.282688349806102,
+          "stable_regret": 0.282688349806102
+        },
+        "numpy": {
+          "mse": 0.3917346807586827,
+          "regret": 0.282688349806102,
+          "stable_regret": 0.282688349806102
+        }
+      },
+      "panel": "stop",
+      "rows": 49,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 49,
+      "step": 256,
+      "variant": "inherited_hybrid"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 1,
+          "helpful": 0,
+          "rows": 34
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        }
+      },
+      "fold": "A",
+      "harmful": 1,
+      "helpful": 0,
+      "metrics": {
+        "cpu": {
+          "mse": 0.3895594852268743,
+          "regret": 0.282688349806102,
+          "stable_regret": 0.282688349806102
+        },
+        "cpu_single": {
+          "mse": 0.3895594768323413,
+          "regret": 0.282688349806102,
+          "stable_regret": 0.282688349806102
+        },
+        "gpu": {
+          "mse": 0.38955948595520073,
+          "regret": 0.282688349806102,
+          "stable_regret": 0.282688349806102
+        },
+        "gpu_single": {
+          "mse": 0.38955948900273446,
+          "regret": 0.282688349806102,
+          "stable_regret": 0.282688349806102
+        },
+        "numpy": {
+          "mse": 0.38955948365802306,
+          "regret": 0.282688349806102,
+          "stable_regret": 0.282688349806102
+        }
+      },
+      "panel": "stop",
+      "rows": 49,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 49,
+      "step": 256,
+      "variant": "fresh_mse"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 4,
+          "helpful": 4,
+          "rows": 34
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        }
+      },
+      "fold": "A",
+      "harmful": 4,
+      "helpful": 4,
+      "metrics": {
+        "cpu": {
+          "mse": 0.42874428317384866,
+          "regret": 0.28599479690728696,
+          "stable_regret": 0.28599479690728696
+        },
+        "cpu_single": {
+          "mse": 0.42874429030901856,
+          "regret": 0.28599479690728696,
+          "stable_regret": 0.28599479690728696
+        },
+        "gpu": {
+          "mse": 0.4287442925999388,
+          "regret": 0.28599479690728696,
+          "stable_regret": 0.28599479690728696
+        },
+        "gpu_single": {
+          "mse": 0.42874428550078936,
+          "regret": 0.28599479690728696,
+          "stable_regret": 0.28599479690728696
+        },
+        "numpy": {
+          "mse": 0.42874428261015407,
+          "regret": 0.28599479690728696,
+          "stable_regret": 0.28599479690728696
+        }
+      },
+      "panel": "stop",
+      "rows": 49,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 49,
+      "step": 1024,
+      "variant": "fresh_cost"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 1,
+          "helpful": 1,
+          "rows": 34
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        }
+      },
+      "fold": "A",
+      "harmful": 1,
+      "helpful": 1,
+      "metrics": {
+        "cpu": {
+          "mse": 0.40940916144191525,
+          "regret": 0.2690158326612361,
+          "stable_regret": 0.2690158326612361
+        },
+        "cpu_single": {
+          "mse": 0.4094091712643157,
+          "regret": 0.2690158326612361,
+          "stable_regret": 0.2690158326612361
+        },
+        "gpu": {
+          "mse": 0.4094091642751903,
+          "regret": 0.2690158326612361,
+          "stable_regret": 0.2690158326612361
+        },
+        "gpu_single": {
+          "mse": 0.40940916743953515,
+          "regret": 0.2690158326612361,
+          "stable_regret": 0.2690158326612361
+        },
+        "numpy": {
+          "mse": 0.4094091640788072,
+          "regret": 0.2690158326612361,
+          "stable_regret": 0.2690158326612361
+        }
+      },
+      "panel": "stop",
+      "rows": 49,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 49,
+      "step": 256,
+      "variant": "fresh_cost"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 1,
+          "helpful": 0,
+          "rows": 34
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        }
+      },
+      "fold": "A",
+      "harmful": 1,
+      "helpful": 0,
+      "metrics": {
+        "cpu": {
+          "mse": 0.38994586051060226,
+          "regret": 0.282688349806102,
+          "stable_regret": 0.282688349806102
+        },
+        "cpu_single": {
+          "mse": 0.3899458680721186,
+          "regret": 0.282688349806102,
+          "stable_regret": 0.282688349806102
+        },
+        "gpu": {
+          "mse": 0.3899458733355594,
+          "regret": 0.282688349806102,
+          "stable_regret": 0.282688349806102
+        },
+        "gpu_single": {
+          "mse": 0.3899458653008417,
+          "regret": 0.282688349806102,
+          "stable_regret": 0.282688349806102
+        },
+        "numpy": {
+          "mse": 0.3899458726367929,
+          "regret": 0.282688349806102,
+          "stable_regret": 0.282688349806102
+        }
+      },
+      "panel": "stop",
+      "rows": 49,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 49,
+      "step": 256,
+      "variant": "fresh_hybrid"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 38
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 9
+        }
+      },
+      "fold": "A",
+      "harmful": 0,
+      "helpful": 0,
+      "metrics": {
+        "cpu": {
+          "mse": 1.3881635066470326,
+          "regret": 0.23464592057615963,
+          "stable_regret": 0.23464592057615963
+        },
+        "cpu_single": {
+          "mse": 1.3881634578952846,
+          "regret": 0.23464592057615963,
+          "stable_regret": 0.23464592057615963
+        },
+        "gpu": {
+          "mse": 1.3881634431913021,
+          "regret": 0.23464592057615963,
+          "stable_regret": 0.23464592057615963
+        },
+        "gpu_single": {
+          "mse": 1.3881634771619935,
+          "regret": 0.23464592057615963,
+          "stable_regret": 0.23464592057615963
+        },
+        "numpy": {
+          "mse": 1.3881634494088912,
+          "regret": 0.23464592057615963,
+          "stable_regret": 0.23464592057615963
+        }
+      },
+      "panel": "audit",
+      "rows": 59,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 59,
+      "step": 0,
+      "variant": "start"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 1,
+          "rows": 38
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 1,
+          "helpful": 0,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 9
+        }
+      },
+      "fold": "A",
+      "harmful": 1,
+      "helpful": 1,
+      "metrics": {
+        "cpu": {
+          "mse": 1.2939585387337644,
+          "regret": 0.2354805471002901,
+          "stable_regret": 0.2354805471002901
+        },
+        "cpu_single": {
+          "mse": 1.2939585624031278,
+          "regret": 0.2354805471002901,
+          "stable_regret": 0.2354805471002901
+        },
+        "gpu": {
+          "mse": 1.2939584769936003,
+          "regret": 0.2354805471002901,
+          "stable_regret": 0.2354805471002901
+        },
+        "gpu_single": {
+          "mse": 1.2939585017829525,
+          "regret": 0.2354805471002901,
+          "stable_regret": 0.2354805471002901
+        },
+        "numpy": {
+          "mse": 1.293958521192333,
+          "regret": 0.2354805471002901,
+          "stable_regret": 0.2354805471002901
+        }
+      },
+      "panel": "audit",
+      "rows": 59,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 59,
+      "step": 256,
+      "variant": "inherited_mse"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 1,
+          "rows": 38
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 9
+        }
+      },
+      "fold": "A",
+      "harmful": 0,
+      "helpful": 1,
+      "metrics": {
+        "cpu": {
+          "mse": 1.3842077356972549,
+          "regret": 0.22949771706246389,
+          "stable_regret": 0.22949771706246389
+        },
+        "cpu_single": {
+          "mse": 1.3842076947153719,
+          "regret": 0.22949771706246389,
+          "stable_regret": 0.22949771706246389
+        },
+        "gpu": {
+          "mse": 1.3842077007059337,
+          "regret": 0.22949771706246389,
+          "stable_regret": 0.22949771706246389
+        },
+        "gpu_single": {
+          "mse": 1.3842076792885372,
+          "regret": 0.22949771706246389,
+          "stable_regret": 0.22949771706246389
+        },
+        "numpy": {
+          "mse": 1.3842076801409418,
+          "regret": 0.22949771706246389,
+          "stable_regret": 0.22949771706246389
+        }
+      },
+      "panel": "audit",
+      "rows": 59,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 59,
+      "step": 256,
+      "variant": "inherited_cost"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 1,
+          "rows": 38
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 1,
+          "helpful": 0,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 9
+        }
+      },
+      "fold": "A",
+      "harmful": 1,
+      "helpful": 1,
+      "metrics": {
+        "cpu": {
+          "mse": 1.2937937108815665,
+          "regret": 0.2354805471002901,
+          "stable_regret": 0.2354805471002901
+        },
+        "cpu_single": {
+          "mse": 1.2937937017649568,
+          "regret": 0.2354805471002901,
+          "stable_regret": 0.2354805471002901
+        },
+        "gpu": {
+          "mse": 1.2937936444466491,
+          "regret": 0.2354805471002901,
+          "stable_regret": 0.2354805471002901
+        },
+        "gpu_single": {
+          "mse": 1.2937936603422837,
+          "regret": 0.2354805471002901,
+          "stable_regret": 0.2354805471002901
+        },
+        "numpy": {
+          "mse": 1.2937936896984639,
+          "regret": 0.2354805471002901,
+          "stable_regret": 0.2354805471002901
+        }
+      },
+      "panel": "audit",
+      "rows": 59,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 59,
+      "step": 256,
+      "variant": "inherited_hybrid"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 1,
+          "rows": 38
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 1,
+          "helpful": 0,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 9
+        }
+      },
+      "fold": "A",
+      "harmful": 1,
+      "helpful": 1,
+      "metrics": {
+        "cpu": {
+          "mse": 1.2797749408999355,
+          "regret": 0.2354805471002901,
+          "stable_regret": 0.2354805471002901
+        },
+        "cpu_single": {
+          "mse": 1.279774934429207,
+          "regret": 0.2354805471002901,
+          "stable_regret": 0.2354805471002901
+        },
+        "gpu": {
+          "mse": 1.2797750098931082,
+          "regret": 0.2354805471002901,
+          "stable_regret": 0.2354805471002901
+        },
+        "gpu_single": {
+          "mse": 1.2797749810417522,
+          "regret": 0.2354805471002901,
+          "stable_regret": 0.2354805471002901
+        },
+        "numpy": {
+          "mse": 1.279775014427809,
+          "regret": 0.2354805471002901,
+          "stable_regret": 0.2354805471002901
+        }
+      },
+      "panel": "audit",
+      "rows": 59,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 59,
+      "step": 256,
+      "variant": "fresh_mse"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 3,
+          "helpful": 6,
+          "rows": 38
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 2,
+          "helpful": 1,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 1,
+          "rows": 9
+        }
+      },
+      "fold": "A",
+      "harmful": 5,
+      "helpful": 8,
+      "metrics": {
+        "cpu": {
+          "mse": 1.4798834996693713,
+          "regret": 0.22729161453088942,
+          "stable_regret": 0.22729161453088942
+        },
+        "cpu_single": {
+          "mse": 1.4798834258879332,
+          "regret": 0.22729161453088942,
+          "stable_regret": 0.22729161453088942
+        },
+        "gpu": {
+          "mse": 1.4798834682364495,
+          "regret": 0.22729161453088942,
+          "stable_regret": 0.22729161453088942
+        },
+        "gpu_single": {
+          "mse": 1.479883467135889,
+          "regret": 0.22729161453088942,
+          "stable_regret": 0.22729161453088942
+        },
+        "numpy": {
+          "mse": 1.4798834162860677,
+          "regret": 0.22729161453088942,
+          "stable_regret": 0.22729161453088942
+        }
+      },
+      "panel": "audit",
+      "rows": 59,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 59,
+      "step": 1024,
+      "variant": "fresh_cost"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 3,
+          "rows": 38
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 1,
+          "helpful": 0,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 1,
+          "rows": 9
+        }
+      },
+      "fold": "A",
+      "harmful": 1,
+      "helpful": 4,
+      "metrics": {
+        "cpu": {
+          "mse": 1.3968361638747113,
+          "regret": 0.2235265841301403,
+          "stable_regret": 0.2235265841301403
+        },
+        "cpu_single": {
+          "mse": 1.396836124559462,
+          "regret": 0.2235265841301403,
+          "stable_regret": 0.2235265841301403
+        },
+        "gpu": {
+          "mse": 1.3968361609197713,
+          "regret": 0.2235265841301403,
+          "stable_regret": 0.2235265841301403
+        },
+        "gpu_single": {
+          "mse": 1.3968361706131454,
+          "regret": 0.2235265841301403,
+          "stable_regret": 0.2235265841301403
+        },
+        "numpy": {
+          "mse": 1.3968361515391423,
+          "regret": 0.2235265841301403,
+          "stable_regret": 0.2235265841301403
+        }
+      },
+      "panel": "audit",
+      "rows": 59,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 59,
+      "step": 256,
+      "variant": "fresh_cost"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 1,
+          "rows": 38
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 1,
+          "helpful": 0,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 9
+        }
+      },
+      "fold": "A",
+      "harmful": 1,
+      "helpful": 1,
+      "metrics": {
+        "cpu": {
+          "mse": 1.2799800847968688,
+          "regret": 0.2354805471002901,
+          "stable_regret": 0.2354805471002901
+        },
+        "cpu_single": {
+          "mse": 1.279980059436377,
+          "regret": 0.2354805471002901,
+          "stable_regret": 0.2354805471002901
+        },
+        "gpu": {
+          "mse": 1.2799801002280577,
+          "regret": 0.2354805471002901,
+          "stable_regret": 0.2354805471002901
+        },
+        "gpu_single": {
+          "mse": 1.2799800719268692,
+          "regret": 0.2354805471002901,
+          "stable_regret": 0.2354805471002901
+        },
+        "numpy": {
+          "mse": 1.2799800962594323,
+          "regret": 0.2354805471002901,
+          "stable_regret": 0.2354805471002901
+        }
+      },
+      "panel": "audit",
+      "rows": 59,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 59,
+      "step": 256,
+      "variant": "fresh_hybrid"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 32
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 7
+        }
+      },
+      "fold": "B",
+      "harmful": 0,
+      "helpful": 0,
+      "metrics": {
+        "cpu": {
+          "mse": 1.0086664773455623,
+          "regret": 0.24088698341527368,
+          "stable_regret": 0.24088698341527368
+        },
+        "cpu_single": {
+          "mse": 1.0086664463634707,
+          "regret": 0.24088698341527368,
+          "stable_regret": 0.24088698341527368
+        },
+        "gpu": {
+          "mse": 1.0086664518216693,
+          "regret": 0.24088698341527368,
+          "stable_regret": 0.24088698341527368
+        },
+        "gpu_single": {
+          "mse": 1.008666440389271,
+          "regret": 0.24088698341527368,
+          "stable_regret": 0.24088698341527368
+        },
+        "numpy": {
+          "mse": 1.0086664361004232,
+          "regret": 0.24088698341527368,
+          "stable_regret": 0.24088698341527368
+        }
+      },
+      "panel": "stop",
+      "rows": 48,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 48,
+      "step": 0,
+      "variant": "start"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 2,
+          "rows": 32
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 7
+        }
+      },
+      "fold": "B",
+      "harmful": 0,
+      "helpful": 2,
+      "metrics": {
+        "cpu": {
+          "mse": 1.0030235307824285,
+          "regret": 0.2315767236286738,
+          "stable_regret": 0.2315767236286738
+        },
+        "cpu_single": {
+          "mse": 1.0030235715178923,
+          "regret": 0.2315767236286738,
+          "stable_regret": 0.2315767236286738
+        },
+        "gpu": {
+          "mse": 1.0030235278953046,
+          "regret": 0.2315767236286738,
+          "stable_regret": 0.2315767236286738
+        },
+        "gpu_single": {
+          "mse": 1.0030235182290628,
+          "regret": 0.2315767236286738,
+          "stable_regret": 0.2315767236286738
+        },
+        "numpy": {
+          "mse": 1.0030235177331965,
+          "regret": 0.2315767236286738,
+          "stable_regret": 0.2315767236286738
+        }
+      },
+      "panel": "stop",
+      "rows": 48,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 48,
+      "step": 256,
+      "variant": "inherited_mse"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 2,
+          "helpful": 1,
+          "rows": 32
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 7
+        }
+      },
+      "fold": "B",
+      "harmful": 2,
+      "helpful": 1,
+      "metrics": {
+        "cpu": {
+          "mse": 1.0095026228608235,
+          "regret": 0.2509456189210677,
+          "stable_regret": 0.2509456189210677
+        },
+        "cpu_single": {
+          "mse": 1.0095026304755346,
+          "regret": 0.2509456189210677,
+          "stable_regret": 0.2509456189210677
+        },
+        "gpu": {
+          "mse": 1.009502658705287,
+          "regret": 0.2509456189210677,
+          "stable_regret": 0.2509456189210677
+        },
+        "gpu_single": {
+          "mse": 1.0095026528216584,
+          "regret": 0.2509456189210677,
+          "stable_regret": 0.2509456189210677
+        },
+        "numpy": {
+          "mse": 1.0095026444148338,
+          "regret": 0.2509456189210677,
+          "stable_regret": 0.2509456189210677
+        }
+      },
+      "panel": "stop",
+      "rows": 48,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 48,
+      "step": 256,
+      "variant": "inherited_cost"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 1,
+          "rows": 32
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 7
+        }
+      },
+      "fold": "B",
+      "harmful": 0,
+      "helpful": 1,
+      "metrics": {
+        "cpu": {
+          "mse": 1.0034805083910703,
+          "regret": 0.23176406840502686,
+          "stable_regret": 0.23176406840502686
+        },
+        "cpu_single": {
+          "mse": 1.0034804853949018,
+          "regret": 0.23176406840502686,
+          "stable_regret": 0.23176406840502686
+        },
+        "gpu": {
+          "mse": 1.0034804913964601,
+          "regret": 0.23176406840502686,
+          "stable_regret": 0.23176406840502686
+        },
+        "gpu_single": {
+          "mse": 1.0034804771347794,
+          "regret": 0.23176406840502686,
+          "stable_regret": 0.23176406840502686
+        },
+        "numpy": {
+          "mse": 1.0034804948325777,
+          "regret": 0.23176406840502686,
+          "stable_regret": 0.23176406840502686
+        }
+      },
+      "panel": "stop",
+      "rows": 48,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 48,
+      "step": 256,
+      "variant": "inherited_hybrid"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 1,
+          "rows": 32
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 7
+        }
+      },
+      "fold": "B",
+      "harmful": 0,
+      "helpful": 1,
+      "metrics": {
+        "cpu": {
+          "mse": 0.9975902270940732,
+          "regret": 0.23176406840502686,
+          "stable_regret": 0.23176406840502686
+        },
+        "cpu_single": {
+          "mse": 0.9975902233417651,
+          "regret": 0.23176406840502686,
+          "stable_regret": 0.23176406840502686
+        },
+        "gpu": {
+          "mse": 0.9975902134306744,
+          "regret": 0.23176406840502686,
+          "stable_regret": 0.23176406840502686
+        },
+        "gpu_single": {
+          "mse": 0.9975902638249694,
+          "regret": 0.23176406840502686,
+          "stable_regret": 0.23176406840502686
+        },
+        "numpy": {
+          "mse": 0.997590251707072,
+          "regret": 0.23176406840502686,
+          "stable_regret": 0.23176406840502686
+        }
+      },
+      "panel": "stop",
+      "rows": 48,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 48,
+      "step": 256,
+      "variant": "fresh_mse"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 4,
+          "helpful": 5,
+          "rows": 32
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 1,
+          "helpful": 0,
+          "rows": 7
+        }
+      },
+      "fold": "B",
+      "harmful": 5,
+      "helpful": 5,
+      "metrics": {
+        "cpu": {
+          "mse": 1.0051014685372806,
+          "regret": 0.25971941824534617,
+          "stable_regret": 0.25971941824534617
+        },
+        "cpu_single": {
+          "mse": 1.0051014777873017,
+          "regret": 0.25971941824534617,
+          "stable_regret": 0.25971941824534617
+        },
+        "gpu": {
+          "mse": 1.0051014644657004,
+          "regret": 0.25971941824534617,
+          "stable_regret": 0.25971941824534617
+        },
+        "gpu_single": {
+          "mse": 1.0051015036181496,
+          "regret": 0.25971941824534617,
+          "stable_regret": 0.25971941824534617
+        },
+        "numpy": {
+          "mse": 1.005101453605149,
+          "regret": 0.25971941824534617,
+          "stable_regret": 0.25971941824534617
+        }
+      },
+      "panel": "stop",
+      "rows": 48,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 48,
+      "step": 1024,
+      "variant": "fresh_cost"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 3,
+          "helpful": 2,
+          "rows": 32
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 7
+        }
+      },
+      "fold": "B",
+      "harmful": 3,
+      "helpful": 2,
+      "metrics": {
+        "cpu": {
+          "mse": 1.0012270329356194,
+          "regret": 0.2641673457682434,
+          "stable_regret": 0.2641673457682434
+        },
+        "cpu_single": {
+          "mse": 1.0012270224548578,
+          "regret": 0.2641673457682434,
+          "stable_regret": 0.2641673457682434
+        },
+        "gpu": {
+          "mse": 1.0012270139746464,
+          "regret": 0.2641673457682434,
+          "stable_regret": 0.2641673457682434
+        },
+        "gpu_single": {
+          "mse": 1.001227005052467,
+          "regret": 0.2641673457682434,
+          "stable_regret": 0.2641673457682434
+        },
+        "numpy": {
+          "mse": 1.0012270087016144,
+          "regret": 0.2641673457682434,
+          "stable_regret": 0.2641673457682434
+        }
+      },
+      "panel": "stop",
+      "rows": 48,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 48,
+      "step": 256,
+      "variant": "fresh_cost"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 1,
+          "helpful": 1,
+          "rows": 32
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 7
+        }
+      },
+      "fold": "B",
+      "harmful": 1,
+      "helpful": 1,
+      "metrics": {
+        "cpu": {
+          "mse": 0.9964381533581833,
+          "regret": 0.24830963301886244,
+          "stable_regret": 0.24830963301886244
+        },
+        "cpu_single": {
+          "mse": 0.9964381768519198,
+          "regret": 0.24830963301886244,
+          "stable_regret": 0.24830963301886244
+        },
+        "gpu": {
+          "mse": 0.9964382043413695,
+          "regret": 0.24830963301886244,
+          "stable_regret": 0.24830963301886244
+        },
+        "gpu_single": {
+          "mse": 0.9964381595390941,
+          "regret": 0.24830963301886244,
+          "stable_regret": 0.24830963301886244
+        },
+        "numpy": {
+          "mse": 0.9964381850792977,
+          "regret": 0.24830963301886244,
+          "stable_regret": 0.24830963301886244
+        }
+      },
+      "panel": "stop",
+      "rows": 48,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 48,
+      "step": 256,
+      "variant": "fresh_hybrid"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 40
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        }
+      },
+      "fold": "B",
+      "harmful": 0,
+      "helpful": 0,
+      "metrics": {
+        "cpu": {
+          "mse": 0.9072547527016409,
+          "regret": 0.23789469758954854,
+          "stable_regret": 0.23789469758954854
+        },
+        "cpu_single": {
+          "mse": 0.9072547339006525,
+          "regret": 0.23789469758954854,
+          "stable_regret": 0.23789469758954854
+        },
+        "gpu": {
+          "mse": 0.9072547583126206,
+          "regret": 0.23789469758954854,
+          "stable_regret": 0.23789469758954854
+        },
+        "gpu_single": {
+          "mse": 0.9072547543074999,
+          "regret": 0.23789469758954854,
+          "stable_regret": 0.23789469758954854
+        },
+        "numpy": {
+          "mse": 0.9072547204725184,
+          "regret": 0.23789469758954854,
+          "stable_regret": 0.23789469758954854
+        }
+      },
+      "panel": "audit",
+      "rows": 60,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 60,
+      "step": 0,
+      "variant": "start"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 40
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        }
+      },
+      "fold": "B",
+      "harmful": 0,
+      "helpful": 0,
+      "metrics": {
+        "cpu": {
+          "mse": 0.8634158894060323,
+          "regret": 0.23789469758954854,
+          "stable_regret": 0.23789469758954854
+        },
+        "cpu_single": {
+          "mse": 0.8634158758068523,
+          "regret": 0.23789469758954854,
+          "stable_regret": 0.23789469758954854
+        },
+        "gpu": {
+          "mse": 0.8634158714487901,
+          "regret": 0.23789469758954854,
+          "stable_regret": 0.23789469758954854
+        },
+        "gpu_single": {
+          "mse": 0.8634158825386853,
+          "regret": 0.23789469758954854,
+          "stable_regret": 0.23789469758954854
+        },
+        "numpy": {
+          "mse": 0.8634158755770179,
+          "regret": 0.23789469758954854,
+          "stable_regret": 0.23789469758954854
+        }
+      },
+      "panel": "audit",
+      "rows": 60,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 60,
+      "step": 256,
+      "variant": "inherited_mse"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 1,
+          "helpful": 0,
+          "rows": 40
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 1,
+          "rows": 8
+        }
+      },
+      "fold": "B",
+      "harmful": 1,
+      "helpful": 1,
+      "metrics": {
+        "cpu": {
+          "mse": 0.9037885124259222,
+          "regret": 0.23239865876287305,
+          "stable_regret": 0.23239865876287305
+        },
+        "cpu_single": {
+          "mse": 0.9037885066260049,
+          "regret": 0.23239865876287305,
+          "stable_regret": 0.23239865876287305
+        },
+        "gpu": {
+          "mse": 0.9037885191687568,
+          "regret": 0.23239865876287305,
+          "stable_regret": 0.23239865876287305
+        },
+        "gpu_single": {
+          "mse": 0.9037884991646482,
+          "regret": 0.23239865876287305,
+          "stable_regret": 0.23239865876287305
+        },
+        "numpy": {
+          "mse": 0.9037885240272207,
+          "regret": 0.23239865876287305,
+          "stable_regret": 0.23239865876287305
+        }
+      },
+      "panel": "audit",
+      "rows": 60,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 60,
+      "step": 256,
+      "variant": "inherited_cost"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 1,
+          "helpful": 0,
+          "rows": 40
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        }
+      },
+      "fold": "B",
+      "harmful": 1,
+      "helpful": 0,
+      "metrics": {
+        "cpu": {
+          "mse": 0.8632953681013362,
+          "regret": 0.23863942683916622,
+          "stable_regret": 0.23863942683916622
+        },
+        "cpu_single": {
+          "mse": 0.863295382181664,
+          "regret": 0.23863942683916622,
+          "stable_regret": 0.23863942683916622
+        },
+        "gpu": {
+          "mse": 0.8632953818770729,
+          "regret": 0.23863942683916622,
+          "stable_regret": 0.23863942683916622
+        },
+        "gpu_single": {
+          "mse": 0.8632953963818805,
+          "regret": 0.23863942683916622,
+          "stable_regret": 0.23863942683916622
+        },
+        "numpy": {
+          "mse": 0.8632953938101166,
+          "regret": 0.23863942683916622,
+          "stable_regret": 0.23863942683916622
+        }
+      },
+      "panel": "audit",
+      "rows": 60,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 60,
+      "step": 256,
+      "variant": "inherited_hybrid"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 40
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        }
+      },
+      "fold": "B",
+      "harmful": 0,
+      "helpful": 0,
+      "metrics": {
+        "cpu": {
+          "mse": 0.8549959232080443,
+          "regret": 0.23789469758954854,
+          "stable_regret": 0.23789469758954854
+        },
+        "cpu_single": {
+          "mse": 0.8549958873266329,
+          "regret": 0.23789469758954854,
+          "stable_regret": 0.23789469758954854
+        },
+        "gpu": {
+          "mse": 0.8549958414261951,
+          "regret": 0.23789469758954854,
+          "stable_regret": 0.23789469758954854
+        },
+        "gpu_single": {
+          "mse": 0.8549958834585839,
+          "regret": 0.23789469758954854,
+          "stable_regret": 0.23789469758954854
+        },
+        "numpy": {
+          "mse": 0.8549958763899493,
+          "regret": 0.23789469758954854,
+          "stable_regret": 0.23789469758954854
+        }
+      },
+      "panel": "audit",
+      "rows": 60,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 60,
+      "step": 256,
+      "variant": "fresh_mse"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 4,
+          "helpful": 2,
+          "rows": 40
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 1,
+          "helpful": 0,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 1,
+          "rows": 8
+        }
+      },
+      "fold": "B",
+      "harmful": 5,
+      "helpful": 3,
+      "metrics": {
+        "cpu": {
+          "mse": 0.8961351337036407,
+          "regret": 0.2331297337344238,
+          "stable_regret": 0.2331297337344238
+        },
+        "cpu_single": {
+          "mse": 0.896135161976001,
+          "regret": 0.2331297337344238,
+          "stable_regret": 0.2331297337344238
+        },
+        "gpu": {
+          "mse": 0.8961351305502739,
+          "regret": 0.2331297337344238,
+          "stable_regret": 0.2331297337344238
+        },
+        "gpu_single": {
+          "mse": 0.8961351260438336,
+          "regret": 0.2331297337344238,
+          "stable_regret": 0.2331297337344238
+        },
+        "numpy": {
+          "mse": 0.896135130497143,
+          "regret": 0.2331297337344238,
+          "stable_regret": 0.2331297337344238
+        }
+      },
+      "panel": "audit",
+      "rows": 60,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 60,
+      "step": 1024,
+      "variant": "fresh_cost"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 2,
+          "helpful": 0,
+          "rows": 40
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 1,
+          "helpful": 0,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 1,
+          "rows": 8
+        }
+      },
+      "fold": "B",
+      "harmful": 3,
+      "helpful": 1,
+      "metrics": {
+        "cpu": {
+          "mse": 0.8994936703074695,
+          "regret": 0.24364970968732313,
+          "stable_regret": 0.24364970968732313
+        },
+        "cpu_single": {
+          "mse": 0.8994936442489048,
+          "regret": 0.24364970968732313,
+          "stable_regret": 0.24364970968732313
+        },
+        "gpu": {
+          "mse": 0.8994936237708803,
+          "regret": 0.24364970968732313,
+          "stable_regret": 0.24364970968732313
+        },
+        "gpu_single": {
+          "mse": 0.8994936363890221,
+          "regret": 0.24364970968732313,
+          "stable_regret": 0.24364970968732313
+        },
+        "numpy": {
+          "mse": 0.8994936756103659,
+          "regret": 0.24364970968732313,
+          "stable_regret": 0.24364970968732313
+        }
+      },
+      "panel": "audit",
+      "rows": 60,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 60,
+      "step": 256,
+      "variant": "fresh_cost"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 40
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        }
+      },
+      "fold": "B",
+      "harmful": 0,
+      "helpful": 0,
+      "metrics": {
+        "cpu": {
+          "mse": 0.8551749974950932,
+          "regret": 0.23789469758954854,
+          "stable_regret": 0.23789469758954854
+        },
+        "cpu_single": {
+          "mse": 0.855174999135296,
+          "regret": 0.23789469758954854,
+          "stable_regret": 0.23789469758954854
+        },
+        "gpu": {
+          "mse": 0.8551749386702208,
+          "regret": 0.23789469758954854,
+          "stable_regret": 0.23789469758954854
+        },
+        "gpu_single": {
+          "mse": 0.8551749709129565,
+          "regret": 0.23789469758954854,
+          "stable_regret": 0.23789469758954854
+        },
+        "numpy": {
+          "mse": 0.855175001007504,
+          "regret": 0.23789469758954854,
+          "stable_regret": 0.23789469758954854
+        }
+      },
+      "panel": "audit",
+      "rows": 60,
+      "seed": 19,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 60,
+      "step": 256,
+      "variant": "fresh_hybrid"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 32
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 7
+        }
+      },
+      "fold": "B",
+      "harmful": 0,
+      "helpful": 0,
+      "metrics": {
+        "cpu": {
+          "mse": 1.1140500309153083,
+          "regret": 0.21789905225464068,
+          "stable_regret": 0.21789905225464068
+        },
+        "cpu_single": {
+          "mse": 1.1140500221957985,
+          "regret": 0.21789905225464068,
+          "stable_regret": 0.21789905225464068
+        },
+        "gpu": {
+          "mse": 1.1140499422224661,
+          "regret": 0.21789905225464068,
+          "stable_regret": 0.21789905225464068
+        },
+        "gpu_single": {
+          "mse": 1.1140499752161164,
+          "regret": 0.21789905225464068,
+          "stable_regret": 0.21789905225464068
+        },
+        "numpy": {
+          "mse": 1.1140500245150002,
+          "regret": 0.21789905225464068,
+          "stable_regret": 0.21789905225464068
+        }
+      },
+      "panel": "stop",
+      "rows": 48,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 48,
+      "step": 0,
+      "variant": "start"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 1,
+          "helpful": 2,
+          "rows": 32
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 7
+        }
+      },
+      "fold": "B",
+      "harmful": 1,
+      "helpful": 2,
+      "metrics": {
+        "cpu": {
+          "mse": 1.056751602741796,
+          "regret": 0.2167945407470563,
+          "stable_regret": 0.2167945407470563
+        },
+        "cpu_single": {
+          "mse": 1.0567516199991576,
+          "regret": 0.2167945407470563,
+          "stable_regret": 0.2167945407470563
+        },
+        "gpu": {
+          "mse": 1.0567515500839444,
+          "regret": 0.2167945407470563,
+          "stable_regret": 0.2167945407470563
+        },
+        "gpu_single": {
+          "mse": 1.0567516053310966,
+          "regret": 0.2167945407470563,
+          "stable_regret": 0.2167945407470563
+        },
+        "numpy": {
+          "mse": 1.0567515679714827,
+          "regret": 0.2167945407470563,
+          "stable_regret": 0.2167945407470563
+        }
+      },
+      "panel": "stop",
+      "rows": 48,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 48,
+      "step": 256,
+      "variant": "inherited_mse"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 1,
+          "rows": 32
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 7
+        }
+      },
+      "fold": "B",
+      "harmful": 0,
+      "helpful": 1,
+      "metrics": {
+        "cpu": {
+          "mse": 1.1151124718016048,
+          "regret": 0.2093546228380099,
+          "stable_regret": 0.2093546228380099
+        },
+        "cpu_single": {
+          "mse": 1.115112450368714,
+          "regret": 0.2093546228380099,
+          "stable_regret": 0.2093546228380099
+        },
+        "gpu": {
+          "mse": 1.1151124959085446,
+          "regret": 0.2093546228380099,
+          "stable_regret": 0.2093546228380099
+        },
+        "gpu_single": {
+          "mse": 1.115112435667469,
+          "regret": 0.2093546228380099,
+          "stable_regret": 0.2093546228380099
+        },
+        "numpy": {
+          "mse": 1.1151124575799054,
+          "regret": 0.2093546228380099,
+          "stable_regret": 0.2093546228380099
+        }
+      },
+      "panel": "stop",
+      "rows": 48,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 48,
+      "step": 256,
+      "variant": "inherited_cost"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 1,
+          "helpful": 3,
+          "rows": 32
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 7
+        }
+      },
+      "fold": "B",
+      "harmful": 1,
+      "helpful": 3,
+      "metrics": {
+        "cpu": {
+          "mse": 1.0570731919127256,
+          "regret": 0.2082501113304255,
+          "stable_regret": 0.2082501113304255
+        },
+        "cpu_single": {
+          "mse": 1.0570731799260065,
+          "regret": 0.2082501113304255,
+          "stable_regret": 0.2082501113304255
+        },
+        "gpu": {
+          "mse": 1.0570731634396413,
+          "regret": 0.2082501113304255,
+          "stable_regret": 0.2082501113304255
+        },
+        "gpu_single": {
+          "mse": 1.057073166375295,
+          "regret": 0.2082501113304255,
+          "stable_regret": 0.2082501113304255
+        },
+        "numpy": {
+          "mse": 1.0570731873879298,
+          "regret": 0.2082501113304255,
+          "stable_regret": 0.2082501113304255
+        }
+      },
+      "panel": "stop",
+      "rows": 48,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 48,
+      "step": 256,
+      "variant": "inherited_hybrid"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 1,
+          "helpful": 2,
+          "rows": 32
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 7
+        }
+      },
+      "fold": "B",
+      "harmful": 1,
+      "helpful": 2,
+      "metrics": {
+        "cpu": {
+          "mse": 1.055207884414362,
+          "regret": 0.2167945407470563,
+          "stable_regret": 0.2167945407470563
+        },
+        "cpu_single": {
+          "mse": 1.0552078860547804,
+          "regret": 0.2167945407470563,
+          "stable_regret": 0.2167945407470563
+        },
+        "gpu": {
+          "mse": 1.0552079088108417,
+          "regret": 0.2167945407470563,
+          "stable_regret": 0.2167945407470563
+        },
+        "gpu_single": {
+          "mse": 1.055207874967235,
+          "regret": 0.2167945407470563,
+          "stable_regret": 0.2167945407470563
+        },
+        "numpy": {
+          "mse": 1.055207902801867,
+          "regret": 0.2167945407470563,
+          "stable_regret": 0.2167945407470563
+        }
+      },
+      "panel": "stop",
+      "rows": 48,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 48,
+      "step": 256,
+      "variant": "fresh_mse"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 1,
+          "helpful": 3,
+          "rows": 32
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 7
+        }
+      },
+      "fold": "B",
+      "harmful": 1,
+      "helpful": 3,
+      "metrics": {
+        "cpu": {
+          "mse": 1.1365624445733442,
+          "regret": 0.19467653902025614,
+          "stable_regret": 0.19467653902025614
+        },
+        "cpu_single": {
+          "mse": 1.1365624634393967,
+          "regret": 0.19467653902025614,
+          "stable_regret": 0.19467653902025614
+        },
+        "gpu": {
+          "mse": 1.136562421349061,
+          "regret": 0.19467653902025614,
+          "stable_regret": 0.19467653902025614
+        },
+        "gpu_single": {
+          "mse": 1.1365624999399107,
+          "regret": 0.19467653902025614,
+          "stable_regret": 0.19467653902025614
+        },
+        "numpy": {
+          "mse": 1.1365624716055605,
+          "regret": 0.19467653902025614,
+          "stable_regret": 0.19467653902025614
+        }
+      },
+      "panel": "stop",
+      "rows": 48,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 48,
+      "step": 1024,
+      "variant": "fresh_cost"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 1,
+          "helpful": 2,
+          "rows": 32
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 7
+        }
+      },
+      "fold": "B",
+      "harmful": 1,
+      "helpful": 2,
+      "metrics": {
+        "cpu": {
+          "mse": 1.127896938494971,
+          "regret": 0.21142805057398104,
+          "stable_regret": 0.21142805057398104
+        },
+        "cpu_single": {
+          "mse": 1.127896939452236,
+          "regret": 0.21142805057398104,
+          "stable_regret": 0.21142805057398104
+        },
+        "gpu": {
+          "mse": 1.1278969460105934,
+          "regret": 0.21142805057398104,
+          "stable_regret": 0.21142805057398104
+        },
+        "gpu_single": {
+          "mse": 1.1278969588160708,
+          "regret": 0.21142805057398104,
+          "stable_regret": 0.21142805057398104
+        },
+        "numpy": {
+          "mse": 1.1278969518042359,
+          "regret": 0.21142805057398104,
+          "stable_regret": 0.21142805057398104
+        }
+      },
+      "panel": "stop",
+      "rows": 48,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 48,
+      "step": 256,
+      "variant": "fresh_cost"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 1,
+          "helpful": 3,
+          "rows": 32
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 3
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 6
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 7
+        }
+      },
+      "fold": "B",
+      "harmful": 1,
+      "helpful": 3,
+      "metrics": {
+        "cpu": {
+          "mse": 1.0571917626292384,
+          "regret": 0.2082501113304255,
+          "stable_regret": 0.2082501113304255
+        },
+        "cpu_single": {
+          "mse": 1.0571917821802441,
+          "regret": 0.2082501113304255,
+          "stable_regret": 0.2082501113304255
+        },
+        "gpu": {
+          "mse": 1.0571917454694761,
+          "regret": 0.2082501113304255,
+          "stable_regret": 0.2082501113304255
+        },
+        "gpu_single": {
+          "mse": 1.0571917628281324,
+          "regret": 0.2082501113304255,
+          "stable_regret": 0.2082501113304255
+        },
+        "numpy": {
+          "mse": 1.0571917488905882,
+          "regret": 0.2082501113304255,
+          "stable_regret": 0.2082501113304255
+        }
+      },
+      "panel": "stop",
+      "rows": 48,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 48,
+      "step": 256,
+      "variant": "fresh_hybrid"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 40
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        }
+      },
+      "fold": "B",
+      "harmful": 0,
+      "helpful": 0,
+      "metrics": {
+        "cpu": {
+          "mse": 1.0611797696490022,
+          "regret": 0.22586234010261905,
+          "stable_regret": 0.22586234010261905
+        },
+        "cpu_single": {
+          "mse": 1.0611797643974614,
+          "regret": 0.22586234010261905,
+          "stable_regret": 0.22586234010261905
+        },
+        "gpu": {
+          "mse": 1.0611797492543389,
+          "regret": 0.22586234010261905,
+          "stable_regret": 0.22586234010261905
+        },
+        "gpu_single": {
+          "mse": 1.061179761730092,
+          "regret": 0.22586234010261905,
+          "stable_regret": 0.22586234010261905
+        },
+        "numpy": {
+          "mse": 1.0611797975898136,
+          "regret": 0.22586234010261905,
+          "stable_regret": 0.22586234010261905
+        }
+      },
+      "panel": "audit",
+      "rows": 60,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 60,
+      "step": 0,
+      "variant": "start"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 40
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        }
+      },
+      "fold": "B",
+      "harmful": 0,
+      "helpful": 0,
+      "metrics": {
+        "cpu": {
+          "mse": 0.9813272997233866,
+          "regret": 0.22586234010261905,
+          "stable_regret": 0.22586234010261905
+        },
+        "cpu_single": {
+          "mse": 0.981327338773282,
+          "regret": 0.22586234010261905,
+          "stable_regret": 0.22586234010261905
+        },
+        "gpu": {
+          "mse": 0.9813272659032606,
+          "regret": 0.22586234010261905,
+          "stable_regret": 0.22586234010261905
+        },
+        "gpu_single": {
+          "mse": 0.9813273037662198,
+          "regret": 0.22586234010261905,
+          "stable_regret": 0.22586234010261905
+        },
+        "numpy": {
+          "mse": 0.981327297612014,
+          "regret": 0.22586234010261905,
+          "stable_regret": 0.22586234010261905
+        }
+      },
+      "panel": "audit",
+      "rows": 60,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 60,
+      "step": 256,
+      "variant": "inherited_mse"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 40
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        }
+      },
+      "fold": "B",
+      "harmful": 0,
+      "helpful": 0,
+      "metrics": {
+        "cpu": {
+          "mse": 1.0581815232915335,
+          "regret": 0.22586234010261905,
+          "stable_regret": 0.22586234010261905
+        },
+        "cpu_single": {
+          "mse": 1.0581815391489955,
+          "regret": 0.22586234010261905,
+          "stable_regret": 0.22586234010261905
+        },
+        "gpu": {
+          "mse": 1.0581815834362351,
+          "regret": 0.22586234010261905,
+          "stable_regret": 0.22586234010261905
+        },
+        "gpu_single": {
+          "mse": 1.0581815067807039,
+          "regret": 0.22586234010261905,
+          "stable_regret": 0.22586234010261905
+        },
+        "numpy": {
+          "mse": 1.0581815359832916,
+          "regret": 0.22586234010261905,
+          "stable_regret": 0.22586234010261905
+        }
+      },
+      "panel": "audit",
+      "rows": 60,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 60,
+      "step": 256,
+      "variant": "inherited_cost"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 40
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        }
+      },
+      "fold": "B",
+      "harmful": 0,
+      "helpful": 0,
+      "metrics": {
+        "cpu": {
+          "mse": 0.982688856964587,
+          "regret": 0.22586234010261905,
+          "stable_regret": 0.22586234010261905
+        },
+        "cpu_single": {
+          "mse": 0.98268884458582,
+          "regret": 0.22586234010261905,
+          "stable_regret": 0.22586234010261905
+        },
+        "gpu": {
+          "mse": 0.9826888279338131,
+          "regret": 0.22586234010261905,
+          "stable_regret": 0.22586234010261905
+        },
+        "gpu_single": {
+          "mse": 0.9826888247984569,
+          "regret": 0.22586234010261905,
+          "stable_regret": 0.22586234010261905
+        },
+        "numpy": {
+          "mse": 0.9826888466471543,
+          "regret": 0.22586234010261905,
+          "stable_regret": 0.22586234010261905
+        }
+      },
+      "panel": "audit",
+      "rows": 60,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 60,
+      "step": 256,
+      "variant": "inherited_hybrid"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 40
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        }
+      },
+      "fold": "B",
+      "harmful": 0,
+      "helpful": 0,
+      "metrics": {
+        "cpu": {
+          "mse": 0.9808243641000143,
+          "regret": 0.22586234010261905,
+          "stable_regret": 0.22586234010261905
+        },
+        "cpu_single": {
+          "mse": 0.9808243963775327,
+          "regret": 0.22586234010261905,
+          "stable_regret": 0.22586234010261905
+        },
+        "gpu": {
+          "mse": 0.9808243427578099,
+          "regret": 0.22586234010261905,
+          "stable_regret": 0.22586234010261905
+        },
+        "gpu_single": {
+          "mse": 0.9808243784020861,
+          "regret": 0.22586234010261905,
+          "stable_regret": 0.22586234010261905
+        },
+        "numpy": {
+          "mse": 0.9808243980310232,
+          "regret": 0.22586234010261905,
+          "stable_regret": 0.22586234010261905
+        }
+      },
+      "panel": "audit",
+      "rows": 60,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 60,
+      "step": 256,
+      "variant": "fresh_mse"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 2,
+          "helpful": 3,
+          "rows": 40
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        }
+      },
+      "fold": "B",
+      "harmful": 2,
+      "helpful": 3,
+      "metrics": {
+        "cpu": {
+          "mse": 1.0626233336404143,
+          "regret": 0.21720960628956465,
+          "stable_regret": 0.21720960628956465
+        },
+        "cpu_single": {
+          "mse": 1.062623326487165,
+          "regret": 0.21720960628956465,
+          "stable_regret": 0.21720960628956465
+        },
+        "gpu": {
+          "mse": 1.0626233139937706,
+          "regret": 0.21720960628956465,
+          "stable_regret": 0.21720960628956465
+        },
+        "gpu_single": {
+          "mse": 1.062623304881385,
+          "regret": 0.21720960628956465,
+          "stable_regret": 0.21720960628956465
+        },
+        "numpy": {
+          "mse": 1.0626233431626846,
+          "regret": 0.21720960628956465,
+          "stable_regret": 0.21720960628956465
+        }
+      },
+      "panel": "audit",
+      "rows": 60,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 60,
+      "step": 1024,
+      "variant": "fresh_cost"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 1,
+          "helpful": 1,
+          "rows": 40
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        }
+      },
+      "fold": "B",
+      "harmful": 1,
+      "helpful": 1,
+      "metrics": {
+        "cpu": {
+          "mse": 1.0600410686035076,
+          "regret": 0.21929728365229997,
+          "stable_regret": 0.21929728365229997
+        },
+        "cpu_single": {
+          "mse": 1.0600410233606712,
+          "regret": 0.21929728365229997,
+          "stable_regret": 0.21929728365229997
+        },
+        "gpu": {
+          "mse": 1.060041055435618,
+          "regret": 0.21929728365229997,
+          "stable_regret": 0.21929728365229997
+        },
+        "gpu_single": {
+          "mse": 1.0600410652615142,
+          "regret": 0.21929728365229997,
+          "stable_regret": 0.21929728365229997
+        },
+        "numpy": {
+          "mse": 1.060041056959943,
+          "regret": 0.21929728365229997,
+          "stable_regret": 0.21929728365229997
+        }
+      },
+      "panel": "audit",
+      "rows": 60,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 60,
+      "step": 256,
+      "variant": "fresh_cost"
+    },
+    {
+      "by_kind": {
+        "flat_both_allowed": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 40
+        },
+        "flat_restricted": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 4
+        },
+        "open_long": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        },
+        "open_short": {
+          "harmful": 0,
+          "helpful": 0,
+          "rows": 8
+        }
+      },
+      "fold": "B",
+      "harmful": 0,
+      "helpful": 0,
+      "metrics": {
+        "cpu": {
+          "mse": 0.9819223949491613,
+          "regret": 0.22586234010261905,
+          "stable_regret": 0.22586234010261905
+        },
+        "cpu_single": {
+          "mse": 0.9819223819913241,
+          "regret": 0.22586234010261905,
+          "stable_regret": 0.22586234010261905
+        },
+        "gpu": {
+          "mse": 0.9819224195995301,
+          "regret": 0.22586234010261905,
+          "stable_regret": 0.22586234010261905
+        },
+        "gpu_single": {
+          "mse": 0.9819224053451838,
+          "regret": 0.22586234010261905,
+          "stable_regret": 0.22586234010261905
+        },
+        "numpy": {
+          "mse": 0.9819224044602612,
+          "regret": 0.22586234010261905,
+          "stable_regret": 0.22586234010261905
+        }
+      },
+      "panel": "audit",
+      "rows": 60,
+      "seed": 43,
+      "stable_geometry_disagreements": 0,
+      "stable_rows": 60,
+      "step": 256,
+      "variant": "fresh_hybrid"
+    }
+  ],
+  "starting_masks": [
+    {
+      "fold": "A",
+      "indices": [
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        173,
+        175,
+        179,
+        180,
+        182,
+        183,
+        185,
+        187,
+        189,
+        191,
+        192
+      ],
+      "panel": "stop",
+      "seed": 19,
+      "stable": 49,
+      "total": 49
+    },
+    {
+      "fold": "A",
+      "indices": [
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        195,
+        196,
+        197,
+        198,
+        199,
+        200,
+        201,
+        202,
+        203,
+        204,
+        205,
+        206,
+        207,
+        208,
+        209,
+        210,
+        211,
+        212,
+        213,
+        214,
+        215,
+        216
+      ],
+      "panel": "audit",
+      "seed": 19,
+      "stable": 59,
+      "total": 59
+    },
+    {
+      "fold": "A",
+      "indices": [
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        173,
+        175,
+        179,
+        180,
+        182,
+        183,
+        185,
+        187,
+        189,
+        191,
+        192
+      ],
+      "panel": "stop",
+      "seed": 43,
+      "stable": 49,
+      "total": 49
+    },
+    {
+      "fold": "A",
+      "indices": [
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        195,
+        196,
+        197,
+        198,
+        199,
+        200,
+        201,
+        202,
+        203,
+        204,
+        205,
+        206,
+        207,
+        208,
+        209,
+        210,
+        211,
+        212,
+        213,
+        214,
+        215,
+        216
+      ],
+      "panel": "audit",
+      "seed": 43,
+      "stable": 59,
+      "total": 59
+    },
+    {
+      "fold": "B",
+      "indices": [
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        197,
+        199,
+        201,
+        202,
+        204,
+        205,
+        206,
+        208,
+        209,
+        210,
+        211
+      ],
+      "panel": "stop",
+      "seed": 19,
+      "stable": 48,
+      "total": 48
+    },
+    {
+      "fold": "B",
+      "indices": [
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        136,
+        137,
+        138,
+        139,
+        140,
+        141,
+        142,
+        143,
+        144,
+        145,
+        146,
+        147,
+        148,
+        149,
+        150,
+        217,
+        218,
+        219,
+        220,
+        221,
+        222,
+        223,
+        224,
+        225,
+        226,
+        227,
+        228,
+        229,
+        230,
+        231,
+        232,
+        233,
+        234,
+        235,
+        236,
+        237,
+        238
+      ],
+      "panel": "audit",
+      "seed": 19,
+      "stable": 60,
+      "total": 60
+    },
+    {
+      "fold": "B",
+      "indices": [
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        197,
+        199,
+        201,
+        202,
+        204,
+        205,
+        206,
+        208,
+        209,
+        210,
+        211
+      ],
+      "panel": "stop",
+      "seed": 43,
+      "stable": 48,
+      "total": 48
+    },
+    {
+      "fold": "B",
+      "indices": [
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        136,
+        137,
+        138,
+        139,
+        140,
+        141,
+        142,
+        143,
+        144,
+        145,
+        146,
+        147,
+        148,
+        149,
+        150,
+        217,
+        218,
+        219,
+        220,
+        221,
+        222,
+        223,
+        224,
+        225,
+        226,
+        227,
+        228,
+        229,
+        230,
+        231,
+        232,
+        233,
+        234,
+        235,
+        236,
+        237,
+        238
+      ],
+      "panel": "audit",
+      "seed": 43,
+      "stable": 60,
+      "total": 60
+    }
+  ]
+}

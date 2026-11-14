@@ -1,0 +1,404 @@
+{
+  "identity": "7603f573875f72abf0cad6e4166b6a3328c21915819f903245fa65b6b486b41e",
+  "verified_starting_masks": [
+    {
+      "unit": "A_19_cost",
+      "stable_added_rows": 147,
+      "exact_mask": true
+    },
+    {
+      "unit": "A_19_hybrid",
+      "stable_added_rows": 147,
+      "exact_mask": true
+    },
+    {
+      "unit": "A_19_mse",
+      "stable_added_rows": 147,
+      "exact_mask": true
+    },
+    {
+      "unit": "A_43_cost",
+      "stable_added_rows": 147,
+      "exact_mask": true
+    },
+    {
+      "unit": "A_43_hybrid",
+      "stable_added_rows": 147,
+      "exact_mask": true
+    },
+    {
+      "unit": "A_43_mse",
+      "stable_added_rows": 147,
+      "exact_mask": true
+    },
+    {
+      "unit": "B_19_cost",
+      "stable_added_rows": 294,
+      "exact_mask": true
+    },
+    {
+      "unit": "B_19_hybrid",
+      "stable_added_rows": 294,
+      "exact_mask": true
+    },
+    {
+      "unit": "B_19_mse",
+      "stable_added_rows": 294,
+      "exact_mask": true
+    },
+    {
+      "unit": "B_43_cost",
+      "stable_added_rows": 294,
+      "exact_mask": true
+    },
+    {
+      "unit": "B_43_hybrid",
+      "stable_added_rows": 294,
+      "exact_mask": true
+    },
+    {
+      "unit": "B_43_mse",
+      "stable_added_rows": 294,
+      "exact_mask": true
+    }
+  ],
+  "endpoints": [
+    {
+      "unit": "A_19_cost",
+      "step": 1024,
+      "stable_added_rows": 147,
+      "geometry_disagreements": 0,
+      "disagreements": [],
+      "before_regret": 0.3008565344168452,
+      "after_regret": 0.20844085176911345,
+      "helpful": 24,
+      "harmful": 1,
+      "regret_change": -0.09241568264773177
+    },
+    {
+      "unit": "A_19_cost",
+      "step": 256,
+      "stable_added_rows": 147,
+      "geometry_disagreements": 0,
+      "disagreements": [],
+      "before_regret": 0.3008565344168452,
+      "after_regret": 0.26623328754795267,
+      "helpful": 11,
+      "harmful": 0,
+      "regret_change": -0.03462324686889256
+    },
+    {
+      "unit": "A_19_cost",
+      "step": 64,
+      "stable_added_rows": 147,
+      "geometry_disagreements": 0,
+      "disagreements": [],
+      "before_regret": 0.3008565344168452,
+      "after_regret": 0.2889330396704314,
+      "helpful": 4,
+      "harmful": 0,
+      "regret_change": -0.011923494746413849
+    },
+    {
+      "unit": "A_19_hybrid",
+      "step": 256,
+      "stable_added_rows": 147,
+      "geometry_disagreements": 0,
+      "disagreements": [],
+      "before_regret": 0.3008565344168452,
+      "after_regret": 0.2948935781840634,
+      "helpful": 6,
+      "harmful": 3,
+      "regret_change": -0.00596295623278182
+    },
+    {
+      "unit": "A_19_hybrid",
+      "step": 64,
+      "stable_added_rows": 147,
+      "geometry_disagreements": 0,
+      "disagreements": [],
+      "before_regret": 0.3008565344168452,
+      "after_regret": 0.2942660717990406,
+      "helpful": 3,
+      "harmful": 1,
+      "regret_change": -0.006590462617804649
+    },
+    {
+      "unit": "A_19_mse",
+      "step": 256,
+      "stable_added_rows": 147,
+      "geometry_disagreements": 0,
+      "disagreements": [],
+      "before_regret": 0.3008565344168452,
+      "after_regret": 0.29863305829646175,
+      "helpful": 6,
+      "harmful": 4,
+      "regret_change": -0.0022234761203834825
+    },
+    {
+      "unit": "A_19_mse",
+      "step": 64,
+      "stable_added_rows": 147,
+      "geometry_disagreements": 0,
+      "disagreements": [],
+      "before_regret": 0.3008565344168452,
+      "after_regret": 0.30716024591647906,
+      "helpful": 0,
+      "harmful": 2,
+      "regret_change": 0.0063037114996338465
+    },
+    {
+      "unit": "A_43_cost",
+      "step": 1024,
+      "stable_added_rows": 147,
+      "geometry_disagreements": 0,
+      "disagreements": [],
+      "before_regret": 0.2975148240637453,
+      "after_regret": 0.1886522270396614,
+      "helpful": 37,
+      "harmful": 4,
+      "regret_change": -0.10886259702408392
+    },
+    {
+      "unit": "A_43_cost",
+      "step": 256,
+      "stable_added_rows": 147,
+      "geometry_disagreements": 0,
+      "disagreements": [],
+      "before_regret": 0.2975148240637453,
+      "after_regret": 0.24298653359740247,
+      "helpful": 19,
+      "harmful": 1,
+      "regret_change": -0.05452829046634286
+    },
+    {
+      "unit": "A_43_cost",
+      "step": 64,
+      "stable_added_rows": 147,
+      "geometry_disagreements": 0,
+      "disagreements": [],
+      "before_regret": 0.2975148240637453,
+      "after_regret": 0.28723131372203037,
+      "helpful": 5,
+      "harmful": 2,
+      "regret_change": -0.010283510341714961
+    },
+    {
+      "unit": "A_43_hybrid",
+      "step": 256,
+      "stable_added_rows": 147,
+      "geometry_disagreements": 0,
+      "disagreements": [],
+      "before_regret": 0.2975148240637453,
+      "after_regret": 0.2787766182164129,
+      "helpful": 9,
+      "harmful": 1,
+      "regret_change": -0.018738205847332424
+    },
+    {
+      "unit": "A_43_hybrid",
+      "step": 64,
+      "stable_added_rows": 147,
+      "geometry_disagreements": 0,
+      "disagreements": [],
+      "before_regret": 0.2975148240637453,
+      "after_regret": 0.2912798662629346,
+      "helpful": 2,
+      "harmful": 0,
+      "regret_change": -0.006234957800810708
+    },
+    {
+      "unit": "A_43_mse",
+      "step": 256,
+      "stable_added_rows": 147,
+      "geometry_disagreements": 0,
+      "disagreements": [],
+      "before_regret": 0.2975148240637453,
+      "after_regret": 0.28449895353446947,
+      "helpful": 6,
+      "harmful": 1,
+      "regret_change": -0.013015870529275903
+    },
+    {
+      "unit": "A_43_mse",
+      "step": 64,
+      "stable_added_rows": 147,
+      "geometry_disagreements": 0,
+      "disagreements": [],
+      "before_regret": 0.2975148240637453,
+      "after_regret": 0.2941214254660721,
+      "helpful": 1,
+      "harmful": 0,
+      "regret_change": -0.003393398597673235
+    },
+    {
+      "unit": "B_19_cost",
+      "step": 1024,
+      "stable_added_rows": 294,
+      "geometry_disagreements": 0,
+      "disagreements": [],
+      "before_regret": 0.29963880876343046,
+      "after_regret": 0.2526958541744162,
+      "helpful": 31,
+      "harmful": 9,
+      "regret_change": -0.04694295458901419
+    },
+    {
+      "unit": "B_19_cost",
+      "step": 256,
+      "stable_added_rows": 294,
+      "geometry_disagreements": 0,
+      "disagreements": [],
+      "before_regret": 0.29963880876343046,
+      "after_regret": 0.2870182230129586,
+      "helpful": 8,
+      "harmful": 3,
+      "regret_change": -0.012620585750471865
+    },
+    {
+      "unit": "B_19_cost",
+      "step": 64,
+      "stable_added_rows": 294,
+      "geometry_disagreements": 0,
+      "disagreements": [],
+      "before_regret": 0.29963880876343046,
+      "after_regret": 0.29646574836028994,
+      "helpful": 5,
+      "harmful": 3,
+      "regret_change": -0.0031730604031405007
+    },
+    {
+      "unit": "B_19_hybrid",
+      "step": 256,
+      "stable_added_rows": 294,
+      "geometry_disagreements": 0,
+      "disagreements": [],
+      "before_regret": 0.29963880876343046,
+      "after_regret": 0.29921864436500667,
+      "helpful": 4,
+      "harmful": 3,
+      "regret_change": -0.0004201643984237644
+    },
+    {
+      "unit": "B_19_hybrid",
+      "step": 64,
+      "stable_added_rows": 294,
+      "geometry_disagreements": 0,
+      "disagreements": [],
+      "before_regret": 0.29963880876343046,
+      "after_regret": 0.2999602204225203,
+      "helpful": 1,
+      "harmful": 2,
+      "regret_change": 0.0003214116590898225
+    },
+    {
+      "unit": "B_19_mse",
+      "step": 256,
+      "stable_added_rows": 294,
+      "geometry_disagreements": 0,
+      "disagreements": [],
+      "before_regret": 0.29963880876343046,
+      "after_regret": 0.3044794651136211,
+      "helpful": 2,
+      "harmful": 6,
+      "regret_change": 0.004840656350190664
+    },
+    {
+      "unit": "B_19_mse",
+      "step": 64,
+      "stable_added_rows": 294,
+      "geometry_disagreements": 0,
+      "disagreements": [],
+      "before_regret": 0.29963880876343046,
+      "after_regret": 0.2998718882631944,
+      "helpful": 1,
+      "harmful": 1,
+      "regret_change": 0.00023307949976396754
+    },
+    {
+      "unit": "B_43_cost",
+      "step": 1024,
+      "stable_added_rows": 294,
+      "geometry_disagreements": 0,
+      "disagreements": [],
+      "before_regret": 0.3264450388611589,
+      "after_regret": 0.3047049422941579,
+      "helpful": 19,
+      "harmful": 7,
+      "regret_change": -0.021740096567000943
+    },
+    {
+      "unit": "B_43_cost",
+      "step": 256,
+      "stable_added_rows": 294,
+      "geometry_disagreements": 0,
+      "disagreements": [],
+      "before_regret": 0.3264450388611589,
+      "after_regret": 0.3109843749857887,
+      "helpful": 13,
+      "harmful": 5,
+      "regret_change": -0.015460663875370245
+    },
+    {
+      "unit": "B_43_cost",
+      "step": 64,
+      "stable_added_rows": 294,
+      "geometry_disagreements": 0,
+      "disagreements": [],
+      "before_regret": 0.3264450388611589,
+      "after_regret": 0.326535839925583,
+      "helpful": 5,
+      "harmful": 5,
+      "regret_change": 9.080106442413473e-05
+    },
+    {
+      "unit": "B_43_hybrid",
+      "step": 256,
+      "stable_added_rows": 294,
+      "geometry_disagreements": 0,
+      "disagreements": [],
+      "before_regret": 0.3264450388611589,
+      "after_regret": 0.32870754809883995,
+      "helpful": 2,
+      "harmful": 3,
+      "regret_change": 0.0022625092376810604
+    },
+    {
+      "unit": "B_43_hybrid",
+      "step": 64,
+      "stable_added_rows": 294,
+      "geometry_disagreements": 0,
+      "disagreements": [],
+      "before_regret": 0.3264450388611589,
+      "after_regret": 0.32799814781937586,
+      "helpful": 1,
+      "harmful": 2,
+      "regret_change": 0.0015531089582170026
+    },
+    {
+      "unit": "B_43_mse",
+      "step": 256,
+      "stable_added_rows": 294,
+      "geometry_disagreements": 0,
+      "disagreements": [],
+      "before_regret": 0.3264450388611589,
+      "after_regret": 0.3246832314902873,
+      "helpful": 4,
+      "harmful": 3,
+      "regret_change": -0.0017618073708715312
+    },
+    {
+      "unit": "B_43_mse",
+      "step": 64,
+      "stable_added_rows": 294,
+      "geometry_disagreements": 0,
+      "disagreements": [],
+      "before_regret": 0.3264450388611589,
+      "after_regret": 0.3298152234382969,
+      "helpful": 0,
+      "harmful": 2,
+      "regret_change": 0.0033701845771380193
+    }
+  ],
+  "total_geometry_disagreements": 0
+}

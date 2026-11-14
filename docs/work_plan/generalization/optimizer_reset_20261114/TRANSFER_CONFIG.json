@@ -1,0 +1,16 @@
+{
+  "identity": "d9855861adf340903b34ab8d91bf7cefc8016891d303a679920cf259d4b71353",
+  "optimizer_updates": 0,
+  "parents": {
+    "coverage": "1a6a64dfd71e2ada45f3c3e069521580108ce7db5a804692733d3be39885ebb8",
+    "fresh": "7603f573875f72abf0cad6e4166b6a3328c21915819f903245fa65b6b486b41e",
+    "inherited": "926ec6e1223981000f734ae407d67a55338de3b10c2fb562d0ac7feffb646301",
+    "probe": "32a49fbb371a3637e669df9095026be9fab5e711b5942916f2ae330f53058621"
+  },
+  "schema": "decision_cost_transfer_audit.v1",
+  "scope": "TRAIN-only stop/audit labels; pretrained encoder saw whole TRAIN",
+  "script_sha256": "6c5dc81ab977e0580022a4d7f63d9e4dde92a5dcc715acc83c978bd193f90bdb",
+  "selection": false,
+  "test_read": false,
+  "validation_read": false
+}

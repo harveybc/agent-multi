@@ -1,0 +1,386 @@
+{
+  "cost": {
+    "backends": {
+      "cpu": {
+        "passed": true,
+        "rows": [
+          {
+            "accepted": 253,
+            "after": 0.26623328754795267,
+            "before": 0.3008565344168452,
+            "control": 0.28534000674751364,
+            "fold": "A",
+            "robust": true,
+            "seed": 19
+          },
+          {
+            "accepted": 256,
+            "after": 0.24298653359740247,
+            "before": 0.2975148240637453,
+            "control": 0.2934747124975284,
+            "fold": "A",
+            "robust": true,
+            "seed": 43
+          },
+          {
+            "accepted": 234,
+            "after": 0.2870182230129586,
+            "before": 0.29963880876343046,
+            "control": 0.29816790531239273,
+            "fold": "B",
+            "robust": true,
+            "seed": 19
+          },
+          {
+            "accepted": 221,
+            "after": 0.3109843749857887,
+            "before": 0.3264450388611589,
+            "control": 0.3289135955277956,
+            "fold": "B",
+            "robust": true,
+            "seed": 43
+          }
+        ]
+      },
+      "gpu": {
+        "passed": true,
+        "rows": [
+          {
+            "accepted": 253,
+            "after": 0.26623328754795267,
+            "before": 0.3008565344168452,
+            "control": 0.28534000674751364,
+            "fold": "A",
+            "robust": true,
+            "seed": 19
+          },
+          {
+            "accepted": 256,
+            "after": 0.24298653359740247,
+            "before": 0.2975148240637453,
+            "control": 0.2934747124975284,
+            "fold": "A",
+            "robust": true,
+            "seed": 43
+          },
+          {
+            "accepted": 234,
+            "after": 0.2870182230129586,
+            "before": 0.29963880876343046,
+            "control": 0.29816790531239273,
+            "fold": "B",
+            "robust": true,
+            "seed": 19
+          },
+          {
+            "accepted": 221,
+            "after": 0.3109843749857887,
+            "before": 0.3264450388611589,
+            "control": 0.3289135955277956,
+            "fold": "B",
+            "robust": true,
+            "seed": 43
+          }
+        ]
+      },
+      "numpy": {
+        "passed": true,
+        "rows": [
+          {
+            "accepted": 253,
+            "after": 0.26623328754795267,
+            "before": 0.3008565344168452,
+            "control": 0.28534000674751364,
+            "fold": "A",
+            "robust": true,
+            "seed": 19
+          },
+          {
+            "accepted": 256,
+            "after": 0.24298653359740247,
+            "before": 0.2975148240637453,
+            "control": 0.2934747124975284,
+            "fold": "A",
+            "robust": true,
+            "seed": 43
+          },
+          {
+            "accepted": 234,
+            "after": 0.2870182230129586,
+            "before": 0.29963880876343046,
+            "control": 0.29816790531239273,
+            "fold": "B",
+            "robust": true,
+            "seed": 19
+          },
+          {
+            "accepted": 221,
+            "after": 0.3109843749857887,
+            "before": 0.3264450388611589,
+            "control": 0.3289135955277956,
+            "fold": "B",
+            "robust": true,
+            "seed": 43
+          }
+        ]
+      }
+    },
+    "passed": true
+  },
+  "hybrid": {
+    "backends": {
+      "cpu": {
+        "passed": false,
+        "rows": [
+          {
+            "accepted": 246,
+            "after": 0.2948935781840634,
+            "before": 0.3008565344168452,
+            "control": 0.29204312488897555,
+            "fold": "A",
+            "robust": true,
+            "seed": 19
+          },
+          {
+            "accepted": 256,
+            "after": 0.2787766182164129,
+            "before": 0.2975148240637453,
+            "control": 0.2805627939325894,
+            "fold": "A",
+            "robust": true,
+            "seed": 43
+          },
+          {
+            "accepted": 250,
+            "after": 0.29921864436500667,
+            "before": 0.29963880876343046,
+            "control": 0.2998333064187145,
+            "fold": "B",
+            "robust": true,
+            "seed": 19
+          },
+          {
+            "accepted": 246,
+            "after": 0.32870754809883995,
+            "before": 0.3264450388611589,
+            "control": 0.3307269519086419,
+            "fold": "B",
+            "robust": true,
+            "seed": 43
+          }
+        ]
+      },
+      "gpu": {
+        "passed": false,
+        "rows": [
+          {
+            "accepted": 246,
+            "after": 0.2948935781840634,
+            "before": 0.3008565344168452,
+            "control": 0.29204312488897555,
+            "fold": "A",
+            "robust": true,
+            "seed": 19
+          },
+          {
+            "accepted": 256,
+            "after": 0.2787766182164129,
+            "before": 0.2975148240637453,
+            "control": 0.2805627939325894,
+            "fold": "A",
+            "robust": true,
+            "seed": 43
+          },
+          {
+            "accepted": 250,
+            "after": 0.29921864436500667,
+            "before": 0.29963880876343046,
+            "control": 0.2998333064187145,
+            "fold": "B",
+            "robust": true,
+            "seed": 19
+          },
+          {
+            "accepted": 246,
+            "after": 0.32870754809883995,
+            "before": 0.3264450388611589,
+            "control": 0.3307269519086419,
+            "fold": "B",
+            "robust": true,
+            "seed": 43
+          }
+        ]
+      },
+      "numpy": {
+        "passed": false,
+        "rows": [
+          {
+            "accepted": 246,
+            "after": 0.2948935781840634,
+            "before": 0.3008565344168452,
+            "control": 0.29204312488897555,
+            "fold": "A",
+            "robust": true,
+            "seed": 19
+          },
+          {
+            "accepted": 256,
+            "after": 0.2787766182164129,
+            "before": 0.2975148240637453,
+            "control": 0.2805627939325894,
+            "fold": "A",
+            "robust": true,
+            "seed": 43
+          },
+          {
+            "accepted": 250,
+            "after": 0.29921864436500667,
+            "before": 0.29963880876343046,
+            "control": 0.2998333064187145,
+            "fold": "B",
+            "robust": true,
+            "seed": 19
+          },
+          {
+            "accepted": 246,
+            "after": 0.32870754809883995,
+            "before": 0.3264450388611589,
+            "control": 0.3307269519086419,
+            "fold": "B",
+            "robust": true,
+            "seed": 43
+          }
+        ]
+      }
+    },
+    "passed": false
+  },
+  "mse": {
+    "backends": {
+      "cpu": {
+        "passed": false,
+        "rows": [
+          {
+            "accepted": 253,
+            "after": 0.29863305829646175,
+            "before": 0.3008565344168452,
+            "control": 0.29863305829646175,
+            "fold": "A",
+            "robust": true,
+            "seed": 19
+          },
+          {
+            "accepted": 256,
+            "after": 0.28449895353446947,
+            "before": 0.2975148240637453,
+            "control": 0.2876867414539481,
+            "fold": "A",
+            "robust": true,
+            "seed": 43
+          },
+          {
+            "accepted": 256,
+            "after": 0.3044794651136211,
+            "before": 0.29963880876343046,
+            "control": 0.30282690257622946,
+            "fold": "B",
+            "robust": true,
+            "seed": 19
+          },
+          {
+            "accepted": 248,
+            "after": 0.3246832314902873,
+            "before": 0.3264450388611589,
+            "control": 0.32799814781937586,
+            "fold": "B",
+            "robust": true,
+            "seed": 43
+          }
+        ]
+      },
+      "gpu": {
+        "passed": false,
+        "rows": [
+          {
+            "accepted": 253,
+            "after": 0.29863305829646175,
+            "before": 0.3008565344168452,
+            "control": 0.29863305829646175,
+            "fold": "A",
+            "robust": true,
+            "seed": 19
+          },
+          {
+            "accepted": 256,
+            "after": 0.28449895353446947,
+            "before": 0.2975148240637453,
+            "control": 0.2876867414539481,
+            "fold": "A",
+            "robust": true,
+            "seed": 43
+          },
+          {
+            "accepted": 256,
+            "after": 0.3044794651136211,
+            "before": 0.29963880876343046,
+            "control": 0.30282690257622946,
+            "fold": "B",
+            "robust": true,
+            "seed": 19
+          },
+          {
+            "accepted": 248,
+            "after": 0.3246832314902873,
+            "before": 0.3264450388611589,
+            "control": 0.32799814781937586,
+            "fold": "B",
+            "robust": true,
+            "seed": 43
+          }
+        ]
+      },
+      "numpy": {
+        "passed": false,
+        "rows": [
+          {
+            "accepted": 253,
+            "after": 0.29863305829646175,
+            "before": 0.3008565344168452,
+            "control": 0.29863305829646175,
+            "fold": "A",
+            "robust": true,
+            "seed": 19
+          },
+          {
+            "accepted": 256,
+            "after": 0.28449895353446947,
+            "before": 0.2975148240637453,
+            "control": 0.2876867414539481,
+            "fold": "A",
+            "robust": true,
+            "seed": 43
+          },
+          {
+            "accepted": 256,
+            "after": 0.3044794651136211,
+            "before": 0.29963880876343046,
+            "control": 0.30282690257622946,
+            "fold": "B",
+            "robust": true,
+            "seed": 19
+          },
+          {
+            "accepted": 248,
+            "after": 0.3246832314902873,
+            "before": 0.3264450388611589,
+            "control": 0.32799814781937586,
+            "fold": "B",
+            "robust": true,
+            "seed": 43
+          }
+        ]
+      }
+    },
+    "passed": false
+  }
+}

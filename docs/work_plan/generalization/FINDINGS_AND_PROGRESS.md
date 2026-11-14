@@ -664,3 +664,27 @@ is not the old row66 numerical stabilization counted as learning. All12 fits
 inherit identical MSE AdamW state;334 tests fresh versus inherited moments
 without changing weights, inputs or batches. This is a hypothesis to test,
 not evidence that AdamW alone caused the remaining decision regression.
+
+## F-RESETTING-MSE-MOMENTS-HELPS-COST-LEARNING-NOT-ALL-TRANSFER
+
+2026-11-14,334: exact same head weights, supports, schedules and protection;
+reset only AdamW moments and step count.12 short fits, four cost-only
+continuations automatically admitted,502.74s,0 restarts. At matched256 steps,
+cost-only stable-added FIT regret improves in4/4 versus inherited333 state;
+mean .301474->.276806 (8.1826%). At1024 it reaches.238623, a longer budget,
+not an equal-budget treatment effect. MSE/hybrid reset do not pass the gate.
+
+28 cold endpoint replays and36 resumed steps exact; independent NumPy metrics
+within1.111e-16;0 protected-action and0 stable-added geometry failures. Late
+B43 stalls after step457 (395 accepted/1024), so preservation still limits
+learning. No guard was relaxed. Cost-only worsens absolute value MSE, and
+internal TRAIN stop/audit transfer is mixed (.269353/.228387 versus starting
+.263512/.231290).64 transfer scopes independently reproduced within4.441e-16.
+This is not an actor/trading improvement or a universal optimizer-reset rule.
+
+Source299 actor,71 inputs,28 groups and49 cumulative return candidates unchanged.
+Next separate rank-preserving value calibration from decision learning before
+any actor update. Report334 includes the corrected full1024 plot: its original
+axis clipped the continuation at256; saved numerical results were correct and
+the sealed original was not rewritten.52 focused tests pass, including the
+new plot regression. No successor training is running after this completed chain.

@@ -1,4 +1,5 @@
 from copy import deepcopy
+import json
 import numpy as np
 import pytest
 import torch
@@ -87,3 +88,27 @@ def test_optimizer_reset_changes_only_optimizer_and_preserves_inherited_mode():
     with pytest.raises(ValueError):initialize_optimizer(head,state,3e-5,.01,'unknown')
     fit_step(head,fresh,z,y)
     assert {int(v['step']) for v in fresh.state.values()}=={1}
+
+
+def test_plot_keeps_extended_objective_visible_and_can_write_outside_sealed_root(tmp_path,monkeypatch):
+    import matplotlib
+    matplotlib.use('Agg')
+    from matplotlib.figure import Figure
+    from tools.run_decision_cost_contrast import plot_curves
+    root=tmp_path/'sealed';root.mkdir()
+    (root/'CONFIG.json').write_text(json.dumps(dict(optimizer_state='fresh')))
+    for fold in ('A','B'):
+        for seed in (19,43):
+            for loss in ('mse','cost','hybrid'):
+                out=root/'units'/f'{fold}_{seed}_{loss}';out.mkdir(parents=True)
+                steps=[0,256,1024] if loss=='cost' else [0,256]
+                curve=[dict(step=s,assessment=dict(observation=dict(fit=dict(gpu=dict(mse=1.,stable_added_regret=.2))))) for s in steps]
+                (out/'CURVE.json').write_text(json.dumps(curve))
+    seen=[]
+    def save(fig,path,**kwargs):
+        seen.append(path)
+        assert all(ax.get_xlim()[1]>=1024 for ax in fig.axes)
+        assert all(any(line.get_xdata()[-1]==1024 for line in ax.lines) for ax in fig.axes)
+    monkeypatch.setattr(Figure,'savefig',save)
+    dest=tmp_path/'corrected.png';plot_curves(root,dest)
+    assert seen==[dest] and not (root/'CURVES.png').exists()

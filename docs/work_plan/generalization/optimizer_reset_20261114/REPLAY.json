@@ -1,0 +1,58 @@
+{
+  "cold_endpoints_exact": 28,
+  "mse_control_comparisons": [
+    {
+      "current": {
+        "mse": 0.37161920327610565,
+        "regret": 0.22407943961108848
+      },
+      "fold": "A",
+      "prior331": {
+        "mse": 0.37639867020220263,
+        "regret": 0.22407943961108848
+      },
+      "same_metrics": false,
+      "seed": 19
+    },
+    {
+      "current": {
+        "mse": 0.3807704752447162,
+        "regret": 0.21339643264183933
+      },
+      "fold": "A",
+      "prior331": {
+        "mse": 0.38958745242917986,
+        "regret": 0.21578727358144834
+      },
+      "same_metrics": false,
+      "seed": 43
+    },
+    {
+      "current": {
+        "mse": 0.34245598623307866,
+        "regret": 0.23267094518668024
+      },
+      "fold": "B",
+      "prior331": {
+        "mse": 0.3476583003785774,
+        "regret": 0.23143152328363653
+      },
+      "same_metrics": false,
+      "seed": 19
+    },
+    {
+      "current": {
+        "mse": 0.42891505988224204,
+        "regret": 0.24612837789000477
+      },
+      "fold": "B",
+      "prior331": {
+        "mse": 0.42933735667391765,
+        "regret": 0.24861456513682118
+      },
+      "same_metrics": false,
+      "seed": 43
+    }
+  ],
+  "resumed_transitions_exact": 36
+}

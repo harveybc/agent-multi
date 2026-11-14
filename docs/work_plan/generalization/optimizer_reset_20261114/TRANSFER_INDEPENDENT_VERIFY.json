@@ -1,0 +1,8 @@
+{
+  "identity": "d9855861adf340903b34ab8d91bf7cefc8016891d303a679920cf259d4b71353",
+  "scopes_verified": 64,
+  "manual_numpy_max_error": 4.440892098500626e-16,
+  "fit_overlap": 0,
+  "optimizer_updates": 0,
+  "scope": "descriptive TRAIN-only panels; encoder pretrained on whole TRAIN"
+}
