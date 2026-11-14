@@ -575,3 +575,29 @@ Next test preservation against actual AdamW proposal/discrete decisions,
 with explicit feasible-learning versus stalled-update accounting, before
 more long fitting. No such successor launched by328. Source299,71 inputs,
 49 return candidates and paused STL stay unchanged. See report328.
+
+## F-SCALAR-ADAMW-PROTECTION-STALLS-AND-CAN-BE-NUMERICALLY-FRAGILE
+
+2026-11-14,329: four matched full-head fits with real AdamW proposal
+backtracking and transactional rejection; four unprotected327 controls reused.
+All131072 proposals executed, no restarts;798.58s,18 tests. Independent
+verification checked9633792 retained FIT action decisions with zero GPU-ledger
+guard violations. Eight native-GPU checkpoint action replays and12 resumed
+transitions were exact. This is reproducible device-specific behavior.
+
+Only1416 proposals accepted (907 full,509 reduced);98.9197% rejected.
+All four fits had long stalled intervals. Protected mean original-FIT regret
+0.007054 improves initial0.008043, but expanded FIT barely changes from
+0.232719 to0.231349. Only A43/B19 pass the joint rule,2/4 at both endpoints.
+Preservation without sufficient new learning is not a general repair.
+
+CPU NumPy64 and PyTorch32 violate the same guard at A19/32768 and B43/8192.
+At A19 the native GPU regret0.000419 becomes0.002115/0.009149; initial limit
+0.000886. Tiny Q differences near decision boundaries change meaningful
+actions. Record CPU portability as FAILED, not approximate success, despite
+small value errors and exact GPU replay. Source actor/model299 unchanged.
+
+Next test whether direction-adjusted actual proposals with numerical margin
+robustness admit nonzero FIT learning, before another long run. Do not merely
+shrink the same direction indefinitely. No successor launched;71 inputs,
+49 cumulative return candidates and paused STL unchanged. See report329.

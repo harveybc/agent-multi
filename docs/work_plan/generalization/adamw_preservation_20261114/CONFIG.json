@@ -1,0 +1,38 @@
+{
+  "accepted_damping": "retain_proposed_moments",
+  "batch": 128,
+  "code": {
+    "app/adamw_decision_preservation.py": "236f32f27d8d345700c4e422f40736426b08d5eade7ed8e1b10c181b5d39dcbe",
+    "app/native_head_warm_start.py": "e4468b47c12921709cd1030207ab71c67d6433d19bcf193af32bcb198bf1f452",
+    "tools/run_adamw_decision_preservation.py": "edc49a8d4b8c0602e12e2af258ad0767a292deffce1e7c2beef6b22ae6a0aef3",
+    "tools/run_teacher_coverage.py": "7cb06f6e826d988fb84fb1b0b5b45ec21d1feeeea55d92a029888b612968e407"
+  },
+  "coverage": "1a6a64dfd71e2ada45f3c3e069521580108ce7db5a804692733d3be39885ebb8",
+  "identity": "995c5a1f3b21bf729134b08ab429030e5844447fc7f6570db0efc41dd41e92e4",
+  "lr": 2.9999999999999997e-05,
+  "previous": "e1d5e7197a8969aa3a65ffa5b2a0af278f74df70d538cce14acba691ddab9c6e",
+  "rejection": "rollback_parameters_and_optimizer; advance_batch",
+  "scales": [
+    1.0,
+    0.5,
+    0.25,
+    0.125,
+    0.0625,
+    0.03125,
+    0.015625,
+    0.0078125
+  ],
+  "schema": "actual_adamw_preservation.v1",
+  "seeds": [
+    19,
+    43
+  ],
+  "source_sha256": "69b5254489d224d4b20ac358956e4dd3b9a67a2f214a9aff98045c5def25a536",
+  "tolerance": 1e-08,
+  "updates": [
+    8192,
+    32768
+  ],
+  "warm": "435f400b6dd83a85120a6252eb6b8a0a4fb6a86477d2a9bf7f163371168a1bdd",
+  "weight_decay": 0.01
+}

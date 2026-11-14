@@ -1,0 +1,299 @@
+{
+  "identity": "995c5a1f3b21bf729134b08ab429030e5844447fc7f6570db0efc41dd41e92e4",
+  "seals_verified": 5,
+  "proposals_verified": 131072,
+  "retained_action_decisions_verified": 9633792,
+  "accepted_updates": 1416,
+  "endpoints_verified": 8,
+  "metric_scopes_verified": 64,
+  "numpy_rmse_max_error": 3.1326247607044166e-07,
+  "guard_violations": 0,
+  "source_unchanged": true,
+  "exact_control_replays": 12,
+  "largest_retained_regret_minus_allowed_limit": -9.999999999940612e-09,
+  "cpu_portability": [
+    {
+      "fold": "A",
+      "seed": 19,
+      "step": 8192,
+      "implementation": "numpy_float64",
+      "action_disagreements": 0,
+      "cpu_regret": 0.0004185835549685765,
+      "gpu_regret": 0.0004185835549685765,
+      "guard_passed": true,
+      "changed_fit_offsets": [],
+      "q_values_at_changed_rows": [],
+      "expected_actions": [],
+      "actual_actions": []
+    },
+    {
+      "fold": "A",
+      "seed": 19,
+      "step": 8192,
+      "implementation": "torch_float32",
+      "action_disagreements": 0,
+      "cpu_regret": 0.0004185835549685765,
+      "gpu_regret": 0.0004185835549685765,
+      "guard_passed": true,
+      "changed_fit_offsets": [],
+      "q_values_at_changed_rows": [],
+      "expected_actions": [],
+      "actual_actions": []
+    },
+    {
+      "fold": "A",
+      "seed": 19,
+      "step": 32768,
+      "implementation": "numpy_float64",
+      "action_disagreements": 1,
+      "cpu_regret": 0.0021145173084168435,
+      "gpu_regret": 0.0004185835549685765,
+      "guard_passed": false,
+      "changed_fit_offsets": [
+        17
+      ],
+      "q_values_at_changed_rows": [
+        [
+          -0.40002089423350334,
+          -0.5724433431317328,
+          -0.4000209387397138
+        ]
+      ],
+      "expected_actions": [
+        2
+      ],
+      "actual_actions": [
+        0
+      ]
+    },
+    {
+      "fold": "A",
+      "seed": 19,
+      "step": 32768,
+      "implementation": "torch_float32",
+      "action_disagreements": 2,
+      "cpu_regret": 0.009149125845366703,
+      "gpu_regret": 0.0004185835549685765,
+      "guard_passed": false,
+      "changed_fit_offsets": [
+        4,
+        17
+      ],
+      "q_values_at_changed_rows": [
+        [
+          1.8967070579528809,
+          1.8967067003250122,
+          1.5938130617141724
+        ],
+        [
+          -0.40002086758613586,
+          -0.5724433660507202,
+          -0.4000209867954254
+        ]
+      ],
+      "expected_actions": [
+        1,
+        2
+      ],
+      "actual_actions": [
+        0,
+        0
+      ]
+    },
+    {
+      "fold": "A",
+      "seed": 43,
+      "step": 8192,
+      "implementation": "numpy_float64",
+      "action_disagreements": 0,
+      "cpu_regret": 8.886996394894964e-05,
+      "gpu_regret": 8.886996394894964e-05,
+      "guard_passed": true,
+      "changed_fit_offsets": [],
+      "q_values_at_changed_rows": [],
+      "expected_actions": [],
+      "actual_actions": []
+    },
+    {
+      "fold": "A",
+      "seed": 43,
+      "step": 8192,
+      "implementation": "torch_float32",
+      "action_disagreements": 0,
+      "cpu_regret": 8.886996394894964e-05,
+      "gpu_regret": 8.886996394894964e-05,
+      "guard_passed": true,
+      "changed_fit_offsets": [],
+      "q_values_at_changed_rows": [],
+      "expected_actions": [],
+      "actual_actions": []
+    },
+    {
+      "fold": "A",
+      "seed": 43,
+      "step": 32768,
+      "implementation": "numpy_float64",
+      "action_disagreements": 0,
+      "cpu_regret": 8.886996394894964e-05,
+      "gpu_regret": 8.886996394894964e-05,
+      "guard_passed": true,
+      "changed_fit_offsets": [],
+      "q_values_at_changed_rows": [],
+      "expected_actions": [],
+      "actual_actions": []
+    },
+    {
+      "fold": "A",
+      "seed": 43,
+      "step": 32768,
+      "implementation": "torch_float32",
+      "action_disagreements": 0,
+      "cpu_regret": 8.886996394894964e-05,
+      "gpu_regret": 8.886996394894964e-05,
+      "guard_passed": true,
+      "changed_fit_offsets": [],
+      "q_values_at_changed_rows": [],
+      "expected_actions": [],
+      "actual_actions": []
+    },
+    {
+      "fold": "B",
+      "seed": 19,
+      "step": 8192,
+      "implementation": "numpy_float64",
+      "action_disagreements": 0,
+      "cpu_regret": 0.01724538540585776,
+      "gpu_regret": 0.01724538540585776,
+      "guard_passed": true,
+      "changed_fit_offsets": [],
+      "q_values_at_changed_rows": [],
+      "expected_actions": [],
+      "actual_actions": []
+    },
+    {
+      "fold": "B",
+      "seed": 19,
+      "step": 8192,
+      "implementation": "torch_float32",
+      "action_disagreements": 0,
+      "cpu_regret": 0.01724538540585776,
+      "gpu_regret": 0.01724538540585776,
+      "guard_passed": true,
+      "changed_fit_offsets": [],
+      "q_values_at_changed_rows": [],
+      "expected_actions": [],
+      "actual_actions": []
+    },
+    {
+      "fold": "B",
+      "seed": 19,
+      "step": 32768,
+      "implementation": "numpy_float64",
+      "action_disagreements": 0,
+      "cpu_regret": 0.01724538540585776,
+      "gpu_regret": 0.01724538540585776,
+      "guard_passed": true,
+      "changed_fit_offsets": [],
+      "q_values_at_changed_rows": [],
+      "expected_actions": [],
+      "actual_actions": []
+    },
+    {
+      "fold": "B",
+      "seed": 19,
+      "step": 32768,
+      "implementation": "torch_float32",
+      "action_disagreements": 0,
+      "cpu_regret": 0.01724538540585776,
+      "gpu_regret": 0.01724538540585776,
+      "guard_passed": true,
+      "changed_fit_offsets": [],
+      "q_values_at_changed_rows": [],
+      "expected_actions": [],
+      "actual_actions": []
+    },
+    {
+      "fold": "B",
+      "seed": 43,
+      "step": 8192,
+      "implementation": "numpy_float64",
+      "action_disagreements": 1,
+      "cpu_regret": 0.012330275837444902,
+      "gpu_regret": 0.010463817089157106,
+      "guard_passed": false,
+      "changed_fit_offsets": [
+        66
+      ],
+      "q_values_at_changed_rows": [
+        [
+          -0.22840680320179008,
+          -0.16370079406567978,
+          -0.1637008073860751
+        ]
+      ],
+      "expected_actions": [
+        2
+      ],
+      "actual_actions": [
+        1
+      ]
+    },
+    {
+      "fold": "B",
+      "seed": 43,
+      "step": 8192,
+      "implementation": "torch_float32",
+      "action_disagreements": 1,
+      "cpu_regret": 0.012330275837444902,
+      "gpu_regret": 0.010463817089157106,
+      "guard_passed": false,
+      "changed_fit_offsets": [
+        66
+      ],
+      "q_values_at_changed_rows": [
+        [
+          -0.22840678691864014,
+          -0.16370081901550293,
+          -0.1637008786201477
+        ]
+      ],
+      "expected_actions": [
+        2
+      ],
+      "actual_actions": [
+        1
+      ]
+    },
+    {
+      "fold": "B",
+      "seed": 43,
+      "step": 32768,
+      "implementation": "numpy_float64",
+      "action_disagreements": 0,
+      "cpu_regret": 0.010463817089157106,
+      "gpu_regret": 0.010463817089157106,
+      "guard_passed": true,
+      "changed_fit_offsets": [],
+      "q_values_at_changed_rows": [],
+      "expected_actions": [],
+      "actual_actions": []
+    },
+    {
+      "fold": "B",
+      "seed": 43,
+      "step": 32768,
+      "implementation": "torch_float32",
+      "action_disagreements": 0,
+      "cpu_regret": 0.010463817089157106,
+      "gpu_regret": 0.010463817089157106,
+      "guard_passed": true,
+      "changed_fit_offsets": [],
+      "q_values_at_changed_rows": [],
+      "expected_actions": [],
+      "actual_actions": []
+    }
+  ],
+  "numpy_cpu_regret_max_difference": 0.001866458748287796,
+  "strict_cpu_portability_passed": false,
+  "cpu_guard_violations": 4
+}
