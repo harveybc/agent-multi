@@ -2,6 +2,10 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "audit_modular_architecture.py": {
+   "purpose": "CPU-only preserved selected299 probe parity, per-group/core/head construction and one fixture SAC update with cold reload; no trading fitness or DEAP launch",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "architecture search"
+  },
   "run_g3_contrast.py": {
    "purpose": "GPU-consuming sequential real-only versus90/10 joint synthetic native replay contrast; pinned inputs, epoch recovery, full real evaluation and matched optimizer budget; no automatic promotion",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "generalization"

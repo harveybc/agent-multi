@@ -11,6 +11,15 @@ and execution-policy plugins loaded from entry points.
 
 ## Status
 
+**Architecture preparation (2026-11-15):**
+[356 modular consumption](docs/work_plan/356_MODULAR_ARCHITECTURE_CONSUMPTION.md)
+verified192 genes through1,171 requests/419 constructed configurations;
+32 cases also passed a fixture SAC update and exact reload.134 tests pass,
+9 GPU-only cases skipped. Same-host old/new baseline logits are exact; the
+saved cross-run probe residual is documented separately. Next is training-loop
+gene/ledger integration, not a DEAP launch yet. The real-only G3 control finished
+40 epochs without improving the preserved checkpoint;90/10 augmentation is running.
+
 **Current data contrast (2026-11-14):**
 [355 G3 conditional joint pilot](docs/work_plan/355_G3_CONDITIONAL_JOINT_PILOT.md)
 qualified24,639 synthetic TRAIN rows and rebuilt all71 selected inputs. The

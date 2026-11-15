@@ -1,8 +1,21 @@
 {
   "schema": "generalization_method.v1",
+  "architecture_consumption_356": {
+    "document": "../356_MODULAR_ARCHITECTURE_CONSUMPTION.md",
+    "status": "MODULAR_CONSTRUCTORS_AND_V2_GENES_VERIFIED_TRAINING_LOOP_INTEGRATION_NEXT",
+    "genes": 192, "requests": 1171, "constructed_configurations": 419,
+    "fixture_update_reload_cases": 32, "tests_passed": 134, "gpu_tests_skipped": 9,
+    "same_host_baseline_logits_exact": true, "exported_probe_logits_exact": false,
+    "exported_probe_max_abs_error": 0.0000011920928955078125,
+    "exported_probe_actions_exact": true,
+    "receipt_sha256": "d9f75fac8906e3f246d5979d6c67f4559b5c555d897559cbfd18d5730d8df076",
+    "next_action": "Integrate and verify replay/update/stopping/training-loop genes with full candidate lineage. Adjudicate ongoing G3 separately before paired component search; preserve299, no live work or STL."
+  },
   "g3_conditional_contrast_355": {
     "document": "../355_G3_CONDITIONAL_JOINT_PILOT.md",
-    "status": "GENERATOR_QUALIFIED_CONTROL_RUNNING_AUGMENTATION_CHAINED",
+    "status": "CONTROL_COMPLETE_40_EPOCHS_AUGMENTATION_RUNNING",
+    "control_best_epoch": 0,
+    "control_epochs": 40,
     "generation_identity": "f6d167c6a8ae7827f9d19ea5016d40094e348aa99efef1b1a5e4e713dd7c5252",
     "training_identity": "6eb265d3fc39231a089c2fb571ef5fecc14a8e0967c870680559828404be9069",
     "synthetic_rows": 24639,
@@ -3366,7 +3379,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
-    "CURRENT355 supersedes354: generator qualified; real-only GPU control running and90/10 augmentation chained at exact matching update budget. Collect/verify full real accounts, replay fractions, checkpoints and plots. Keep299/71inputs intact, no live or STL changes. No new owner decision required.",
+    "CURRENT355/356: real-only control completed40 epochs without beating299;90/10 augmentation running at matched budget. Modular constructors and192-gene contract verified. Next training-loop/ledger integration while G3 completes, then adjudicate G3 before staged DEAP. Keep299/71inputs intact; no live work, STL or new owner decision required.",
     "CURRENT354 supersedes historical queue instructions: owner approved353 data experiments.71 original TRAIN producers replayed, future/prefix tests exact. Next joint TRAIN-only G3 generator qualification and matched90/10 training, not another unchanged floating or critic variant.59,997 pre2020 jointly finite primitive rows are an UNADMITTED candidate, not a completed longer-history comparison. Keep299 and all71 inputs unchanged; STL paused; live belongs to Satoshi. No owner decision required.",
     "CURRENT352 SUPERSEDES all historical next-step entries below:351 closes phase2 with111 verified final neighbors, no qualifying move.352 verifies18 construction genes/54 phenotypes, ledger176 events. Next implement per-component builders and actual training consumption/ledger gates then staged DEAP. No old simple architecture substitution, live trading, STL, periodic-refit or repeated floating. No owner decision required.",
     "CURRENT350: finite actor-head utility trial, eight accepted updates or64 attempts per seed19/43. Use largest TRAIN FIT fold and fixed349 procedure. Complete native accounts and cold verification, then export qualified changed actor or retain299 and close refinement; no automatic critic extension.",

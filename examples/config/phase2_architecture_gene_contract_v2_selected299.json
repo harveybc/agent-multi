@@ -1,0 +1,1821 @@
+{
+  "fixed": {
+    "agent_state": "none",
+    "attention": "causal_patch_with_positional_encoding",
+    "features": 71,
+    "groups": 28,
+    "normalization": "fixed_train",
+    "outputs": "NOP_BUY_SELL_CLOSE_OPPOSITE_V1",
+    "stride_rows": 2,
+    "window_observations": 13
+  },
+  "genes": [
+    {
+      "kind": "choice",
+      "path": "architecture.head_width",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.actor_head_width",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.temporal_attention.patch_len",
+      "values": [
+        1,
+        3,
+        5,
+        7
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.temporal_attention.embedding",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.temporal_attention.heads",
+      "values": [
+        1,
+        2,
+        4
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.temporal_attention.feedforward",
+      "values": [
+        8,
+        16,
+        32,
+        64
+      ]
+    },
+    {
+      "bounds": [
+        0.0,
+        0.5
+      ],
+      "kind": "linear",
+      "path": "architecture.temporal_attention.gate_init"
+    },
+    {
+      "bounds": [
+        1e-06,
+        0.001
+      ],
+      "kind": "log10",
+      "path": "learning_rate"
+    },
+    {
+      "bounds": [
+        0.95,
+        0.9995
+      ],
+      "kind": "linear",
+      "path": "gamma"
+    },
+    {
+      "bounds": [
+        0.0001,
+        0.02
+      ],
+      "kind": "log10",
+      "path": "tau"
+    },
+    {
+      "kind": "choice",
+      "path": "weight_decay",
+      "values": [
+        0.0,
+        1e-06,
+        1e-05,
+        0.0001,
+        0.001,
+        0.01
+      ]
+    },
+    {
+      "bounds": [
+        0.3,
+        0.9
+      ],
+      "kind": "linear",
+      "path": "entropy_fraction"
+    },
+    {
+      "bounds": [
+        0.001,
+        1.0
+      ],
+      "kind": "log10",
+      "path": "alpha"
+    },
+    {
+      "bounds": [
+        0.0,
+        0.3
+      ],
+      "kind": "linear",
+      "path": "critic_regularization.p"
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.0.width",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.0.blocks",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.0.kind",
+      "values": [
+        "tcn",
+        "pointwise"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.0.kernel",
+      "values": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.0.dilation_base",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.0.activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.1.width",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.1.blocks",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.1.kind",
+      "values": [
+        "tcn",
+        "pointwise"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.1.kernel",
+      "values": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.1.dilation_base",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.1.activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.2.width",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.2.blocks",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.2.kind",
+      "values": [
+        "tcn",
+        "pointwise"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.2.kernel",
+      "values": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.2.dilation_base",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.2.activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.3.width",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.3.blocks",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.3.kind",
+      "values": [
+        "tcn",
+        "pointwise"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.3.kernel",
+      "values": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.3.dilation_base",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.3.activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.4.width",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.4.blocks",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.4.kind",
+      "values": [
+        "tcn",
+        "pointwise"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.4.kernel",
+      "values": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.4.dilation_base",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.4.activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.5.width",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.5.blocks",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.5.kind",
+      "values": [
+        "tcn",
+        "pointwise"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.5.kernel",
+      "values": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.5.dilation_base",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.5.activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.6.width",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.6.blocks",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.6.kind",
+      "values": [
+        "tcn",
+        "pointwise"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.6.kernel",
+      "values": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.6.dilation_base",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.6.activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.7.width",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.7.blocks",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.7.kind",
+      "values": [
+        "tcn",
+        "pointwise"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.7.kernel",
+      "values": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.7.dilation_base",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.7.activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.8.width",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.8.blocks",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.8.kind",
+      "values": [
+        "tcn",
+        "pointwise"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.8.kernel",
+      "values": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.8.dilation_base",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.8.activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.9.width",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.9.blocks",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.9.kind",
+      "values": [
+        "tcn",
+        "pointwise"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.9.kernel",
+      "values": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.9.dilation_base",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.9.activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.10.width",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.10.blocks",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.10.kind",
+      "values": [
+        "tcn",
+        "pointwise"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.10.kernel",
+      "values": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.10.dilation_base",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.10.activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.11.width",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.11.blocks",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.11.kind",
+      "values": [
+        "tcn",
+        "pointwise"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.11.kernel",
+      "values": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.11.dilation_base",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.11.activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.12.width",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.12.blocks",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.12.kind",
+      "values": [
+        "tcn",
+        "pointwise"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.12.kernel",
+      "values": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.12.dilation_base",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.12.activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.13.width",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.13.blocks",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.13.kind",
+      "values": [
+        "tcn",
+        "pointwise"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.13.kernel",
+      "values": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.13.dilation_base",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.13.activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.14.width",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.14.blocks",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.14.kind",
+      "values": [
+        "tcn",
+        "pointwise"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.14.kernel",
+      "values": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.14.dilation_base",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.14.activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.15.width",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.15.blocks",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.15.kind",
+      "values": [
+        "tcn",
+        "pointwise"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.15.kernel",
+      "values": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.15.dilation_base",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.15.activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.16.width",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.16.blocks",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.16.kind",
+      "values": [
+        "tcn",
+        "pointwise"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.16.kernel",
+      "values": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.16.dilation_base",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.16.activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.17.width",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.17.blocks",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.17.kind",
+      "values": [
+        "tcn",
+        "pointwise"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.17.kernel",
+      "values": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.17.dilation_base",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.17.activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.18.width",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.18.blocks",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.18.kind",
+      "values": [
+        "tcn",
+        "pointwise"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.18.kernel",
+      "values": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.18.dilation_base",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.18.activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.19.width",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.19.blocks",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.19.kind",
+      "values": [
+        "tcn",
+        "pointwise"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.19.kernel",
+      "values": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.19.dilation_base",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.19.activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.20.width",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.20.blocks",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.20.kind",
+      "values": [
+        "tcn",
+        "pointwise"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.20.kernel",
+      "values": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.20.dilation_base",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.20.activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.21.width",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.21.blocks",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.21.kind",
+      "values": [
+        "tcn",
+        "pointwise"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.21.kernel",
+      "values": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.21.dilation_base",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.21.activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.22.width",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.22.blocks",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.22.kind",
+      "values": [
+        "tcn",
+        "pointwise"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.22.kernel",
+      "values": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.22.dilation_base",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.22.activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.23.width",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.23.blocks",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.23.kind",
+      "values": [
+        "tcn",
+        "pointwise"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.23.kernel",
+      "values": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.23.dilation_base",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.23.activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.24.width",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.24.blocks",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.24.kind",
+      "values": [
+        "tcn",
+        "pointwise"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.24.kernel",
+      "values": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.24.dilation_base",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.24.activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.25.width",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.25.blocks",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.25.kind",
+      "values": [
+        "tcn",
+        "pointwise"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.25.kernel",
+      "values": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.25.dilation_base",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.25.activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.26.width",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.26.blocks",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.26.kind",
+      "values": [
+        "tcn",
+        "pointwise"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.26.kernel",
+      "values": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.26.dilation_base",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.26.activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.27.width",
+      "values": [
+        4,
+        8,
+        16,
+        32
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.27.blocks",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.27.kind",
+      "values": [
+        "tcn",
+        "pointwise"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.27.kernel",
+      "values": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.27.dilation_base",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.group_configs.27.activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.core_config.width",
+      "values": [
+        8,
+        16,
+        32,
+        64
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.core_config.blocks",
+      "values": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.core_config.kind",
+      "values": [
+        "tcn",
+        "pointwise"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.core_config.kernel",
+      "values": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.core_config.dilation_base",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.core_config.activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.head_depth",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.head_activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.actor_head_depth",
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "choice",
+      "path": "architecture.actor_head_activation",
+      "values": [
+        "silu",
+        "relu",
+        "gelu",
+        "tanh"
+      ]
+    }
+  ],
+  "group_order": [
+    "inv.raw",
+    "inv.volatility",
+    "inv.momentum",
+    "calendar",
+    "px.logret",
+    "px.range",
+    "px.er",
+    "px.hours_since_session_open",
+    "cdl",
+    "dly.us10y",
+    "cot.eur",
+    "fac.fx_f1",
+    "ev",
+    "act",
+    "ssa/BidClose",
+    "wavelet/log_close",
+    "wavelet/logret_1",
+    "hilbert/logret_1",
+    "hilbert/log_close",
+    "strength/fx.usd_strength.ret_1",
+    "strength/fx.eur_strength.ret_1",
+    "kalman/log_close",
+    "gmm/logret_1+rv_24+log_range",
+    "px.close_loc/px.close_loc_1",
+    "px.close_loc/px.close_loc_4",
+    "px.close_loc/px.close_loc_12",
+    "px.close_loc/px.close_loc_24",
+    "px.close_loc/px.close_loc_48"
+  ],
+  "recipe_identity": "recipe_b5fb7bcdfa1dbec8",
+  "schema": "architecture_gene_contract.v2",
+  "shadowed_shared_paths": [
+    "architecture.branch_blocks",
+    "architecture.branch_width",
+    "architecture.core_blocks",
+    "architecture.core_width"
+  ],
+  "status": "CONSUMPTION_PREFLIGHT_NOT_SEARCH",
+  "unsupported": [
+    "independent encoder topologies per actor/critic",
+    "normalization alternatives",
+    "arbitrary non-geometric dilation genes",
+    "training-loop genes",
+    "strategy changes"
+  ]
+}

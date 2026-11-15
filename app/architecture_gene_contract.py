@@ -12,7 +12,7 @@ from app.rl_subset import digest
 def value_at(config, path):
     value = config
     for key in path.split('.'):
-        value = value[key]
+        value = value[_path_key(value, key)]
     return value
 
 
@@ -20,8 +20,16 @@ def set_at(config, path, value):
     parts = path.split('.')
     node = config
     for key in parts[:-1]:
-        node = node[key]
-    node[parts[-1]] = value
+        node = node[_path_key(node, key)]
+    node[_path_key(node, parts[-1])] = value
+
+
+def _path_key(node, key):
+    if isinstance(node, list):
+        if not key.isdigit() or str(int(key)) != key or int(key) >= len(node):
+            raise ValueError('GENE_LIST_INDEX')
+        return int(key)
+    return key
 
 
 def validate_space(space):

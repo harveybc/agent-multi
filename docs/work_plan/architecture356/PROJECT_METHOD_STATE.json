@@ -1,0 +1,12 @@
+{
+  "initiative": "architecture356",
+  "current_stage": "S12_ALPHA_ACCEPTANCE",
+  "method": "portable test-led-data-centric-development; repository method absent",
+  "traceability": "../356_MODULAR_ARCHITECTURE_CONSUMPTION.md",
+  "completed_design_stages": ["discovery", "requirements", "use_cases", "acceptance", "architecture", "system_tests", "components", "integration_tests", "unit_tests"],
+  "accepted_requirements": ["A1 same-host parity; exported probe discrepancy recorded", "A2", "A3", "A4", "A5", "A6 fixture-update scope", "A7"],
+  "evidence": {"system_update_cases": 32, "genes": 192, "decode_requests": 1171, "constructed_configurations": 419, "tests_passed": 134, "gpu_tests_skipped": 9, "scoped_ruff": "PASS", "receipt_sha256": "d9f75fac8906e3f246d5979d6c67f4559b5c555d897559cbfd18d5730d8df076"},
+  "next_allowed_actions": ["training-loop consumption gates and candidate ledger integration", "evaluate G3 on completion", "paired component DEAP only after preceding gates"],
+  "blocked_actions": ["modify running G3", "live trading work", "claim new fitness from constructor tests", "launch DEAP before training-path gates"],
+  "history": [{"event": "design frozen before implementation", "date": "2026-11-15"}, {"event": "32 system witnesses and 85 CPU/native tests passed; old-new same-host exact, exported probe residual disclosed", "date": "2026-11-15"}, {"event": "V2 active-gene decoder and 1171 requests/419 constructors verified; 134 tests pass", "date": "2026-11-15"}]
+}

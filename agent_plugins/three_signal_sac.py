@@ -10,6 +10,7 @@ from torchrl.objectives.utils import ValueEstimators
 
 from agent_plugins.double_tcn_probe import DoubleTCNExtractor
 from agent_plugins.discrete_curve_sac import CurveSAC
+from agent_plugins.temporal_stage_config import activation
 from agent_plugins.sac_critic_regularization import (regularization_config, module_mode,
     RegularizedDiscreteSACLoss, sync_target_statistics, PositionBatchNorm)
 
@@ -22,8 +23,13 @@ class ThreeLogits(nn.Module):
         transport_shape=(shape[0]*(2 if architecture.get('long_context') is not None else 1),shape[1])
         space = gym.spaces.Dict({'features':gym.spaces.Box(-np.inf,np.inf,transport_shape,np.float32)})
         head_width = architecture.pop('head_width', 8)
+        head_depth = architecture.pop('head_depth', 1)
+        head_activation = architecture.pop('head_activation', 'silu')
         if type(head_width) is not int or head_width < 1:
             raise ValueError('THREE_SIGNAL_HEAD_WIDTH')
+        if type(head_depth) is not int or head_depth < 1:
+            raise ValueError('THREE_SIGNAL_HEAD_DEPTH')
+        activation(head_activation)
         config = regularization_config(critic_regularization or {'kind':'none'})
         self.core_first_batchnorm = config['kind'] == 'core_first_batchnorm'
         if config['kind'] == 'core_dropout':
@@ -31,7 +37,11 @@ class ThreeLogits(nn.Module):
         self.encoder = DoubleTCNExtractor(space, recipe, **architecture)
         # TorchRL expands parameters in registration order. Keep the common
         # head before optional BN parameters so its initial weights stay paired.
-        self.head = nn.Sequential(nn.Linear(self.encoder.features_dim,head_width), nn.SiLU(), nn.Linear(head_width,3))
+        layers = []
+        for i in range(head_depth):
+            layers.extend([nn.Linear(self.encoder.features_dim if i==0 else head_width,head_width),
+                           activation(head_activation)])
+        self.head = nn.Sequential(*layers, nn.Linear(head_width,3))
         self.regularizer = nn.Identity()
         if config['kind'] == 'head_dropout':
             self.regularizer = nn.Dropout(config['p'])
@@ -74,7 +84,10 @@ class ThreeSignalSAC(CurveSAC):
             self.effective['target_bn_statistics'] = 'hard_copy_each_update'
         shared_architecture = dict(architecture or {})
         actor_head_width = shared_architecture.pop('actor_head_width', None)
+        actor_overrides = {key:shared_architecture.pop('actor_'+key)
+                           for key in ('head_depth','head_activation') if 'actor_'+key in shared_architecture}
         actor_architecture = dict(shared_architecture)
+        actor_architecture.update(actor_overrides)
         if actor_head_width is not None:
             if type(actor_head_width) is not int or actor_head_width < 1:
                 raise ValueError('THREE_SIGNAL_ACTOR_HEAD_WIDTH')
