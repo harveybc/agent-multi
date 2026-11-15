@@ -13,11 +13,14 @@ and execution-policy plugins loaded from entry points.
 
 **Training reliability (2026-11-15):**
 [357 full-SAC diagnosis](docs/work_plan/357_FULL_SAC_TRAINING_RELIABILITY.md)
-is running on three GPU workers, seeds7/19/43. All three initial full accounts
-reproduce selected299 exactly. Each finite queue collects real TRAIN replay,
-qualifies exact updates/cold restart, then runs five paired role-LR arms.
-The read-only collector builds the final paired table automatically. This is
-bounded fixed-replay diagnosis, not full online convergence or phase2 closure.
+completed15 fixed-replay arms; none preserved selected299's performance.
+[359 long online continuation](docs/work_plan/359_LONG_ONLINE_LR_CONTINUATION.md)
+is running on three GPU workers, seeds7/19/43: control, actor LR/10 and all LR/10
+sequentially per seed. All three initial native accounts reproduce the baseline
+returns/trades exactly; named grouped optimizer cold loads are exact. Minimum100
+complete epochs,maximum2000,patience20,min_delta1e-8,eligible validation selection
+from epoch0.43 focused tests pass. Per-epoch curves/weight evidence, recovery and
+read-only aggregation are automatic. No phase2 closure or model promotion yet.
 
 **Owner priority correction (2026-11-15):** phase2 is OPEN until training
 reproducibility and robustness are qualified. The completed frozen-neighborhood
@@ -38,7 +41,7 @@ gene/ledger integration, not a DEAP launch yet. The real-only G3 control finishe
 **Current data contrast (2026-11-14):**
 [355 G3 conditional joint pilot](docs/work_plan/355_G3_CONDITIONAL_JOINT_PILOT.md)
 qualified24,639 synthetic TRAIN rows and rebuilt all71 selected inputs. The
-real-only GPU control is running;90/10 augmentation follows automatically with
+real-only control finished40 epochs;90/10 augmentation is running with
 the same update budget.50 focused tests pass. Original selected299 replay is
 exact; no new trading improvement or model promotion is claimed. STL remains
 paused. This supersedes older next-step entries below.

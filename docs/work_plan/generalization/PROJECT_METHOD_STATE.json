@@ -1,5 +1,29 @@
 {
   "schema": "generalization_method.v1",
+  "long_online_continuation_359": {
+    "document": "../359_LONG_ONLINE_LR_CONTINUATION.md",
+    "status": "RUNNING_THREE_WORKERS_NINE_SEQUENTIAL_RUNS",
+    "worker_revision": "a5a0e50d",
+    "runtime_archive_sha256": "76105b037cd55362eab97790744ad4856c80f64f46b63e5d697526b512c36ca6",
+    "seeds": [7,19,43],
+    "arms_per_seed": ["control","actor_lr01","all_lr01"],
+    "minimum_epochs": 100,
+    "max_epochs": 2000,
+    "patience": 20,
+    "min_delta": 1e-8,
+    "monitor": "eligible validation return per week; epoch0 retained",
+    "features": 71,
+    "groups": 28,
+    "focused_tests_passed": 43,
+    "initial_native_returns_trades_exact_all_three": true,
+    "grouped_optimizer_cold_exact_all_three": true,
+    "persistent_services_enabled": true,
+    "g3_unchanged": true,
+    "phase2_closed": false,
+    "deap_released": false,
+    "promoted": false,
+    "next_action": "Automatic sequential continuation on each worker; collect epoch-aligned account, optimizer and weight evidence. Compare paired within-seed trajectories, selected and last checkpoints before deciding recovery versus delayed destruction."
+  },
   "action_specialists_option_358": {
     "document": "../358_ACTION_SPECIALISTS_COMPARISON.md",
     "status": "PLAN_ONLY_AFTER_TRAINING_RELIABILITY",
@@ -24,7 +48,7 @@
   },
   "full_sac_reliability_357": {
     "document": "../357_FULL_SAC_TRAINING_RELIABILITY.md",
-    "status": "COMPLETE_15_ARMS_VERIFIED_LONG_TRAINING_NOT_YET_RUN",
+    "status": "COMPLETE_15_ARMS_VERIFIED_LONG_CONTINUATION_RUNNING_359",
     "completed_arms": 15,
     "same_device_replay_gates_passed": 3,
     "stop_reason": "FIXED_512_UPDATE_BUDGET_NOT_EARLY_STOPPING",
@@ -41,7 +65,7 @@
     "phase2_closed": false,
     "deap_released": false,
     "scope": "Fixed full-TRAIN native replay with full network updates, not full online convergence",
-    "next_action": "Implement paired long online continuation and epoch-aligned weight diagnostics; not launched yet. Conditional small training-DEAP is an owner-approved option after evaluator qualification, not the broad architecture campaign. Preserve299; no phase2 closure."
+    "next_action": "Paired long online continuation359 is running with epoch-aligned weight diagnostics. Conditional small training-DEAP remains an option, not the broad architecture campaign. Preserve299; no phase2 closure."
   },
   "training_reliability_gate_20261115": {
     "document": "../351_PHASE2_EXIT_AND_ARCHITECTURE_SEARCH.md",
@@ -120,7 +144,7 @@
     "stl_owner_paused": true,
     "recommendation": "Account for open data experiments before expensive DEAP: current71 producer/joint-history compatibility, then qualified matched G3 augmentation. Architecture implementation preparation can continue. Do not infer complete research from local351 closure or restart owner-paused STL."
   },
-  "current_stage": "PHASE2_OPEN_BOUNDED_DIAGNOSIS_COMPLETE_LONG_CONTINUATION_REQUIRED",
+  "current_stage": "PHASE2_OPEN_LONG_ONLINE_LR_CONTINUATION_359_RUNNING",
   "architecture_gene_preflight_352": {
     "document": "../352_ARCHITECTURE_GENE_PREFLIGHT.md",
     "status": "CONSTRUCTION_VERIFIED_NOT_TRAINING_OR_DEAP",

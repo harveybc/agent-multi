@@ -92,3 +92,19 @@ whether lower LR permits recovery, delays destruction or prevents meaningful
 learning. Do not decide from the best seed alone or mean TRAIN compensating
 validation decline. No phase2 closure, specialist launch or broad DEAP follows
 automatically. The conditional small training-DEAP option remains available.
+
+## Launch Receipt
+
+Launched2026-11-15 at19:57UTC from code `a5a0e50d`; identical runtime archive
+SHA256 `76105b037cd55362eab97790744ad4856c80f64f46b63e5d697526b512c36ca6`
+on all three workers. Worker and collector services enabled; no new worker
+restarts at launch. Original G3 service remains active without runtime changes.
+
+Initial native accounts on all three devices: TRAIN return16.05822355000215%,
+745 trades; validation return18.369945750000117%,207 trades,Sharpe2.690712133251012.
+These are reproduced source results, NOT improvements from the new training.
+All three grouped optimizer cold-load checks passed with their intended rates.
+The first epochs are collecting real transitions and applying online updates.
+First-epoch timings are not yet complete; the observer will calculate measured
+minutes/epoch and ETA to the minimum budget automatically, not a claimed time
+to convergence. Queue completion depends on the actual stopping epochs.
