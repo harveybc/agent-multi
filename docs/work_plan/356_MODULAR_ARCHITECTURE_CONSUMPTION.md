@@ -1,5 +1,12 @@
 # Modular Architecture Consumption
 
+Priority correction2026-11-15: the owner requires training reproducibility and
+robustness before overall phase2 closure or DEAP. The next-action statements
+below describe the earlier architecture sequence and are superseded by the
+[351 training gate](351_PHASE2_EXIT_AND_ARCHITECTURE_SEARCH.md). Constructor,
+gene-consumption and fixture-update results remain valid, but do not qualify
+full training. No new campaign is launched by this correction.
+
 Continuation of352 while355 G3 remains running on its pinned runtime. No live
 work, STL, input selection change, new trading rule or DEAP launch in this step.
 

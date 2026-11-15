@@ -11,6 +11,13 @@ and execution-policy plugins loaded from entry points.
 
 ## Status
 
+**Owner priority correction (2026-11-15):** phase2 is OPEN until training
+reproducibility and robustness are qualified. The completed frozen-neighborhood
+selection remains valid only for its pinned checkpoint, not as phase2 closure.
+No DEAP campaign is authorized by constructor/gene tests. Diagnose training
+first; see the superseding gate in
+[351](docs/work_plan/351_PHASE2_EXIT_AND_ARCHITECTURE_SEARCH.md).
+
 **Architecture preparation (2026-11-15):**
 [356 modular consumption](docs/work_plan/356_MODULAR_ARCHITECTURE_CONSUMPTION.md)
 verified192 genes through1,171 requests/419 constructed configurations;

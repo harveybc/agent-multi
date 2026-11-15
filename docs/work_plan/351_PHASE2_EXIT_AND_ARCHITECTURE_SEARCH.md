@@ -1,5 +1,38 @@
 # Phase 2 Exit And Architecture Search
 
+## Superseding Owner Gate: 2026-11-15
+
+Phase2 is OPEN. The completed111-neighbor certificate below remains evidence
+about the frozen selected299 checkpoint, not permission to close the whole
+selection phase or launch DEAP. Historical closure wording below is superseded.
+Preserve its71 inputs,28 groups, checkpoints and cumulative return inventory.
+
+Priority is training reproducibility and robustness, before further search:
+
+1. Reconcile existing training/replay diagnoses before scheduling new work.
+   Reuse authenticated witnesses; do not repeat the closed critic microvariant
+   sequence or mistake its bounded transaction results for full-run robustness.
+2. Verify paired continuation from identical COMPLETE training state (online
+   and target networks, optimizers, temperature, replay, RNG, environment and
+   counters). Locate the first divergence if present. Checkpoint inference
+   parity alone does not satisfy this gate.
+3. Diagnose deterioration around the retained good checkpoint using matched
+   observations, Q/TD/entropy/gradient and module-weight changes, and account
+   actions. Separate exact replay from robustness across independent seeds.
+4. Test measured causal hypotheses with paired, bounded interventions. Freeze
+   data/window/strategy and predeclare budgets, metrics and acceptance criteria
+   before results. Do not invent a learning-rate defect without evidence.
+5. Qualify the resulting training recipe across seeds and report variability,
+   activity and both TRAIN/validation trajectories, not just a lucky maximum.
+   Then assess whether changed training requires another identified selection
+   pass. No claim of an identical optimum across seeds is required.
+
+DEAP release and overall phase2 closure remain false until the evidence is
+reviewed against those declared criteria. Architecture356 stays prepared, not
+promoted. This documentation change does not stop or alter the pinned G3 job;
+its findings are supplementary and cannot by themselves satisfy this gate.
+Live work belongs to the other lane; STL remains paused.
+
 2026-11-14. Owner correction supersedes the recent-data/retraining next step
 in349/350. Musashi owns offline phase2 completion and subsequent architecture
 and training optimization. Satoshi owns live trading. No live deployment,
