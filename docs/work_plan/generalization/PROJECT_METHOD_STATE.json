@@ -1,5 +1,16 @@
 {
   "schema": "generalization_method.v1",
+  "action_specialists_option_358": {
+    "document": "../358_ACTION_SPECIALISTS_COMPARISON.md",
+    "status": "PLAN_ONLY_AFTER_TRAINING_RELIABILITY",
+    "features": 71,
+    "roles": ["open_buy", "open_sell", "close_buy", "close_sell"],
+    "nop": "Explicit calibrated abstention; separate learned head optional after target specification",
+    "zigzag_role": "TRAIN hindsight target/reward/oracle only; never input",
+    "lineage": "Separate expert-guided comparison, not silently relabeled pure SAC",
+    "launched": false,
+    "next_action": "Keep training reliability first; authenticate123/124 artifacts and freeze role/NOP/interface definitions before ideal-report tests and matched specialist comparison."
+  },
   "conditional_training_diagnostic_deap": {
     "document": "../357_FULL_SAC_TRAINING_RELIABILITY.md",
     "status": "PLANNED_CONDITIONAL_NOT_LAUNCHED",
