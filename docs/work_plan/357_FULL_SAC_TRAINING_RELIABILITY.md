@@ -1,5 +1,28 @@
 # Full SAC Training Reliability: Bounded First Diagnosis
 
+## Mandatory Reporting Clarification
+
+All15 arms completed512 optimizer updates by FIXED_UPDATE_BUDGET, not patience.
+There were zero online training epochs: one frozen collection traversed all
+TRAIN, followed by minibatch updates on fixed replay. Batch128 gives65,536
+sampled transitions, not65,536 distinct observations. Full accounts were
+evaluated only at updates0/64/256/512. Lines connecting those four points are
+visual guides, not observations between evaluations. This experiment cannot
+exclude recovery after longer training or qualify a low-LR convergence recipe.
+
+Every future status/table must state: run type, completed/max epochs (when
+applicable), optimizer updates, evaluation cadence, early-stopping enabled,
+monitor metric, min_delta, warmup, patience current/limit, selected epoch and
+stop reason (budget/patience/error/manual/running). Mark inapplicable fields as
+such, never infer epochs from replay draws. Show the final checkpoint separately
+from the selected best checkpoint. Preserve the complete curve, including the
+early transient, and align weight/function diagnostics to the same step index.
+
+Next long-training design must give the reduced-LR arms enough predeclared
+budget, retain best checkpoints throughout and report patience explicitly.
+The short357 results identify sensitivity only; they do not reject late recovery.
+No long run is launched by this reporting correction.
+
 Owner priority2026-11-15: phase2 stays OPEN; no DEAP or live work. Preserve
 selected299,71 inputs,28 groups, full2020-2023 TRAIN and2024 validation,
 window13/stride2, fixed TRAIN scaler and the native business engine. STL stays
