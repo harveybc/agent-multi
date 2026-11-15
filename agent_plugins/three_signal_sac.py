@@ -13,6 +13,7 @@ from agent_plugins.discrete_curve_sac import CurveSAC
 from agent_plugins.temporal_stage_config import activation
 from agent_plugins.sac_critic_regularization import (regularization_config, module_mode,
     RegularizedDiscreteSACLoss, sync_target_statistics, PositionBatchNorm)
+from app.optimizer_layout import optimizer_layout, restore_optimizer_layout
 
 
 class ThreeLogits(nn.Module):
@@ -152,6 +153,7 @@ class ThreeSignalSAC(CurveSAC):
     def save(self, path):
         torch.save(dict(codec='NOP_BUY_SELL_CLOSE_OPPOSITE_V1',loss=self.loss.state_dict(),
             optimizer=self.optimizer.state_dict(),recipe_identity=self.recipe['identity'],
+            optimizer_parameter_names=optimizer_layout(self),
             effective=self.effective,
             trainability={n:p.requires_grad for n,p in self.loss.named_parameters()}),path)
 
@@ -167,7 +169,11 @@ class ThreeSignalSAC(CurveSAC):
             if (set(trainability)!=set(params) or
                     any(type(v) is not bool for v in trainability.values())):
                 raise ValueError('THREE_SIGNAL_TRAINABILITY')
-        self.loss.load_state_dict(state['loss']); self.optimizer.load_state_dict(state['optimizer'])
+        if 'optimizer_parameter_names' in state:
+            restore_optimizer_layout(self,state['optimizer_parameter_names'],state['optimizer'])
+        else:
+            self.optimizer.load_state_dict(state['optimizer'])
+        self.loss.load_state_dict(state['loss'])
         # Freezing can change attention dispatch even in inference mode. Restore
         # it as part of the checkpoint, not just as a training preference.
         if trainability is not None:
