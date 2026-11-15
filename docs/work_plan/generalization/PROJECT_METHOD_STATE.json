@@ -1,5 +1,28 @@
 {
   "schema": "generalization_method.v1",
+  "g3_producer_qualification_354": {
+    "document": "../354_G3_PRODUCER_QUALIFICATION.md",
+    "status": "REAL_TRAIN_PRODUCERS_QUALIFIED_G3_NOT_TRAINED",
+    "identity": "2e56dee24f12699662ad52185c7e34d45d704d140eea3467b3f2c9299539b006",
+    "history_identity": "9d17b0cec97c8064b3e181cb19d42cbce973b35e2e122db7aecdfbeb6ce65576",
+    "columns_replayed": 71,
+    "columns_bit_exact": 65,
+    "maximum_absolute_error": 9.947598300641403e-14,
+    "train_rows": 24895,
+    "complete_input_windows": 24026,
+    "prefix_cuts": [1024,8192],
+    "prefix_and_future_perturbation_bit_exact": true,
+    "tests_passed": 19,
+    "candidate_pre2020_joint_rows": 59997,
+    "candidate_history_columns": 17,
+    "candidate_history_admitted": false,
+    "synthetic_rows_generated": 0,
+    "optimizer_steps": 0,
+    "jobs_running": 0,
+    "training_released": false,
+    "stl_resumed": false,
+    "next_action": "Implement and qualify joint TRAIN-only G3 generation using the now-replayed71 producer adapter; specify episode boundaries, original OOF activity mapping or refit scopes, macro availability and endogenous cross-asset relationships. Then matched real-only versus90/10 augmentation with identical optimizer budget/initial state/seeds and unchanged real validation. No in-sample activity fallback, no arbitrary jitter, no live substitute. Pre2020 finite primitive coverage is a separate unadmitted history candidate. No owner decision needed."
+  },
   "research_scope_reconciliation_353": {
     "document": "../353_SELECTION_RESEARCH_RECONCILIATION.md",
     "status": "INVENTORY_REVIEWED_NO_NEW_EXPERIMENT_LAUNCH",
@@ -11,7 +34,7 @@
     "stl_owner_paused": true,
     "recommendation": "Account for open data experiments before expensive DEAP: current71 producer/joint-history compatibility, then qualified matched G3 augmentation. Architecture implementation preparation can continue. Do not infer complete research from local351 closure or restart owner-paused STL."
   },
-  "current_stage": "PHASE2_CLOSED_ARCHITECTURE_GENE_PREFLIGHT_COMPLETE_BUILDERS_AND_TRAINING_GATES_NEXT",
+  "current_stage": "G3_REAL_PRODUCERS_QUALIFIED_JOINT_GENERATION_NEXT",
   "architecture_gene_preflight_352": {
     "document": "../352_ARCHITECTURE_GENE_PREFLIGHT.md",
     "status": "CONSTRUCTION_VERIFIED_NOT_TRAINING_OR_DEAP",
@@ -3321,6 +3344,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
+    "CURRENT354 supersedes historical queue instructions: owner approved353 data experiments.71 original TRAIN producers replayed, future/prefix tests exact. Next joint TRAIN-only G3 generator qualification and matched90/10 training, not another unchanged floating or critic variant.59,997 pre2020 jointly finite primitive rows are an UNADMITTED candidate, not a completed longer-history comparison. Keep299 and all71 inputs unchanged; STL paused; live belongs to Satoshi. No owner decision required.",
     "CURRENT352 SUPERSEDES all historical next-step entries below:351 closes phase2 with111 verified final neighbors, no qualifying move.352 verifies18 construction genes/54 phenotypes, ledger176 events. Next implement per-component builders and actual training consumption/ledger gates then staged DEAP. No old simple architecture substitution, live trading, STL, periodic-refit or repeated floating. No owner decision required.",
     "CURRENT350: finite actor-head utility trial, eight accepted updates or64 attempts per seed19/43. Use largest TRAIN FIT fold and fixed349 procedure. Complete native accounts and cold verification, then export qualified changed actor or retain299 and close refinement; no automatic critic extension.",
     "CURRENT ORDER supersedes historical next-step text below: complete349 once, apply its fixed choice rule, then ONE bounded actor-utility trial and close critic diagnostics. Export and one phase2 round only if actual trading qualifies; otherwise preserve299 and do not repeat unchanged floating. See finite_exit_plan_349.",

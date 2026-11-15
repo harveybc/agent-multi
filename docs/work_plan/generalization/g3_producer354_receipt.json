@@ -1,0 +1,173 @@
+{
+  "activity_predictors": [
+    {
+      "lag_rows": 0,
+      "name": "cal.utc_dow_cos@0",
+      "source": "calendar"
+    },
+    {
+      "lag_rows": 1,
+      "name": "cal.utc_dow_cos@1",
+      "source": "calendar"
+    },
+    {
+      "lag_rows": 120,
+      "name": "cal.utc_dow_cos@120",
+      "source": "calendar"
+    },
+    {
+      "lag_rows": 24,
+      "name": "cal.utc_dow_sin@24",
+      "source": "calendar"
+    },
+    {
+      "lag_rows": 48,
+      "name": "cal.utc_dow_sin@48",
+      "source": "calendar"
+    },
+    {
+      "lag_rows": 48,
+      "name": "dly.dax.ret_5d@48",
+      "source": "dax"
+    },
+    {
+      "lag_rows": 48,
+      "name": "dly.spx.ret_1d@48",
+      "source": "spx"
+    },
+    {
+      "lag_rows": 0,
+      "name": "dow_cos@0",
+      "source": "calendar"
+    },
+    {
+      "lag_rows": 1,
+      "name": "dow_cos@1",
+      "source": "calendar"
+    },
+    {
+      "lag_rows": 120,
+      "name": "dow_cos@120",
+      "source": "calendar"
+    },
+    {
+      "lag_rows": 48,
+      "name": "dow_sin@48",
+      "source": "calendar"
+    },
+    {
+      "lag_rows": 8,
+      "name": "ev.tokyo_fix.hours_since@8",
+      "source": "calendar"
+    },
+    {
+      "lag_rows": 8,
+      "name": "ev.tokyo_fix.hours_to@8",
+      "source": "calendar"
+    },
+    {
+      "lag_rows": 2,
+      "name": "px.hours_since_session_open@2",
+      "source": "calendar"
+    }
+  ],
+  "actual_learned_scope": {
+    "diag_window": [
+      "2020-01-01",
+      "2023-01-01"
+    ],
+    "exclude": [],
+    "fit_window": [
+      "2020-01-01",
+      "2023-07-01"
+    ],
+    "kind": "consumer",
+    "name": "consumer",
+    "note": "consumers: fit 2020-01-01 .. 2023-07-01 by availability; the inner block 2023 S2, 2024 and TEST are never fitted on"
+  },
+  "baseline_bit_exact": 65,
+  "baseline_failures": [],
+  "baseline_passed": 71,
+  "elapsed_seconds": 16.646598643041216,
+  "external_columns_not_replayed": [],
+  "identity": "2e56dee24f12699662ad52185c7e34d45d704d140eea3467b3f2c9299539b006",
+  "joint_generator_qualified": false,
+  "max_absolute_error": 9.947598300641403e-14,
+  "optimizer_steps": 0,
+  "prefix_checks": {
+    "1024": {
+      "positive_control_changed": true,
+      "prefix": {
+        "bit_exact": 71,
+        "passed": 71
+      },
+      "suffix_perturbation": {
+        "bit_exact": 71,
+        "passed": 71
+      }
+    },
+    "8192": {
+      "positive_control_changed": true,
+      "prefix": {
+        "bit_exact": 71,
+        "passed": 71
+      },
+      "suffix_perturbation": {
+        "bit_exact": 71,
+        "passed": 71
+      }
+    }
+  },
+  "primitive_dependencies": [
+    "ADMITTED_TIMESTAMPS",
+    "AUDUSD_CLOSE",
+    "CLOSURES",
+    "DAX_RELEASES",
+    "EURGBP_CLOSE",
+    "EURJPY_CLOSE",
+    "EURUSD_BID_OHLC",
+    "EUR_COT_RELEASES",
+    "FROZEN_ACTIVITY_OOF",
+    "FROZEN_FACTOR",
+    "FROZEN_GMM",
+    "FROZEN_KALMAN",
+    "GBPUSD_CLOSE",
+    "SPX_RELEASES",
+    "TZ_DATABASE",
+    "US10Y_RELEASES",
+    "USDCHF_CLOSE",
+    "USDJPY_CLOSE"
+  ],
+  "real_history_extended": false,
+  "receipt_files": {
+    "BASELINE_PARITY.json": "269eebf23d7e04b23f9e1e6f90c5a20149a5476e8f33b9fe9101d9d59b33ad47",
+    "COVERAGE.json": "b3caeaa889da234511280ea168e7ff414a59c28c1a62e7f36844887fdf249463",
+    "DEPENDENCIES.json": "ab799cb340fae68cddaf21d70c71ec968162ba18de4601e6a6128d5a833cb592",
+    "PREFIX_PARITY.json": "219536326a6f6dcf807264c0d1e80d8b5a9746ac8cfa6044fcb40be3bd40c7a6",
+    "RESULT.json": "1fd6317a735831345f2b900b6938c1af5126c23ae6ec79dd1de5ab19f93f98d6",
+    "SPEC.json": "a37df7503445d0eddff3207b08e6f9f5c424d4f64fef1b8dd309472f15d95813"
+  },
+  "replayed_columns": 71,
+  "schema": "g3_producer_public_receipt.v1",
+  "scope": "Numerical replay on original TRAIN under frozen states and legacy publication rules; not source/live certification",
+  "selected_columns": 71,
+  "status": "ALL_PRODUCERS_QUALIFIED",
+  "synthetic_rows_generated": 0,
+  "train_coverage": {
+    "end": "2023-12-29 20:00:00+00:00",
+    "finite_rows": {
+      "count": 24122,
+      "first": "2020-01-16 17:00:00+00:00",
+      "last": "2023-12-29 20:00:00+00:00"
+    },
+    "finite_windows": {
+      "count": 24026,
+      "first": "2020-01-17 17:00:00+00:00",
+      "last": "2023-12-29 20:00:00+00:00"
+    },
+    "rows": 24895,
+    "start": "2020-01-02 00:00:00+00:00",
+    "window_support_sha256": "a2d39e43987417595beabbcedf102f8065c62fa5634cddf3589c68ff07044327"
+  },
+  "training_released": false
+}

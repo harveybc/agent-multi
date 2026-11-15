@@ -2,14 +2,23 @@
 
 ## Execution Update: 2026-11-14
 
+Owner approved the data-experiment continuation in353. Current step:
+[354 G3 producer qualification](354_G3_PRODUCER_QUALIFICATION.md), executed:
+71/71 original TRAIN inputs reproduced, both temporal perturbation checks exact,
+19 focused tests.59,997 jointly finite pre2020 primitive rows identified as an
+unadmitted history candidate. Next: joint synthetic generation qualification,
+then matched real-only/90-10 augmentation training. No synthetic training or
+longer-history comparison has run; STL remains paused. This ordering takes
+precedence over the older352 architecture-search next step below.
+
 Scope clarification after owner review: [353](353_SELECTION_RESEARCH_RECONCILIATION.md)
 reconciles the broader research backlog.351 closes ONLY local frozen selection;
 synthetic augmentation G3 was not trained, extended joint-history comparisons
 are not established complete, MMD remains untested, and STL remains owner-paused.
 Do not report the entire selection/generalization program as finished.
 
-Owner correction: [351](351_PHASE2_EXIT_AND_ARCHITECTURE_SEARCH.md) is the
-current execution order.350 retained299 and closed critic/actor micro-refinement.
+Earlier closure: [351](351_PHASE2_EXIT_AND_ARCHITECTURE_SEARCH.md) records the
+completed selection order.350 retained299 and closed critic/actor micro-refinement.
 Musashi now owns a bounded phase2 final-neighborhood closure, then component-wise
 architecture/training optimization with complete candidate gene/metric lineage.
 Satoshi owns live trading. Recent-data/retraining is not the next task here.
