@@ -1,5 +1,23 @@
 {
   "schema": "generalization_method.v1",
+  "full_sac_reliability_357": {
+    "document": "../357_FULL_SAC_TRAINING_RELIABILITY.md",
+    "status": "THREE_GPU_WORKERS_COLLECTING_FULL_REAL_TRAIN",
+    "worker_revision": "eaa90f22",
+    "seeds": [7,19,43],
+    "arms_per_seed": 5,
+    "updates_per_arm": 512,
+    "batch_size": 128,
+    "features": 71,
+    "groups": 28,
+    "initial_accounts_exact_all_three": true,
+    "source_support": "28d6088a92173592f39e221c1c2ab1efc9094e614eeccb11c9ae23cf14878c98",
+    "persistent_services_enabled": true,
+    "phase2_closed": false,
+    "deap_released": false,
+    "scope": "Fixed full-TRAIN native replay with full network updates, not full online convergence",
+    "next_action": "Workers automatically qualify original/grouped updates and cold restart before five paired LR arms; read-only fleet collector verifies and aggregates. Diagnose measured effects before specifying full online follow-up; never auto-promote or repeat the historical head-only sequence."
+  },
   "training_reliability_gate_20261115": {
     "document": "../351_PHASE2_EXIT_AND_ARCHITECTURE_SEARCH.md",
     "status": "REQUIRED_NOT_YET_QUALIFIED",
@@ -77,7 +95,7 @@
     "stl_owner_paused": true,
     "recommendation": "Account for open data experiments before expensive DEAP: current71 producer/joint-history compatibility, then qualified matched G3 augmentation. Architecture implementation preparation can continue. Do not infer complete research from local351 closure or restart owner-paused STL."
   },
-  "current_stage": "PHASE2_OPEN_TRAINING_RELIABILITY_REQUIRED",
+  "current_stage": "PHASE2_OPEN_FULL_SAC_RELIABILITY_DIAGNOSIS_RUNNING",
   "architecture_gene_preflight_352": {
     "document": "../352_ARCHITECTURE_GENE_PREFLIGHT.md",
     "status": "CONSTRUCTION_VERIFIED_NOT_TRAINING_OR_DEAP",

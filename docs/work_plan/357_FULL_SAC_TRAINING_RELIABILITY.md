@@ -69,3 +69,44 @@ Next after this bounded evidence: identify whether divergence exists, or whether
 the identical optimizer consistently damages actions. Then define the smallest
 full online paired continuation test justified by the measured effects. A lower
 LR that merely freezes the model is not a successful learning correction.
+
+## Deployment Evidence
+
+Pinned worker revision:eaa90f22. Three persistent services are active on the
+RTX5090(seed7), RTX4090(seed19) and RTX4070(seed43). Each queue owns its output,
+lock, immutable source export and32-update recovery checkpoint. User lingering
+and boot enablement are verified on all three. Worker memory is capped at5GiB;
+Torch/BLAS threads are bounded to avoid competing with existing work. G3 is
+running separately on its original runtime and was not stopped or modified.
+
+All three INITIAL accounts reproduced the preserved baseline exactly:
+
+| Metric | TRAIN | Validation |
+|---|---:|---:|
+| Return % |16.05822355000215|18.369945750000117|
+| Sharpe |0.7819691259276358|2.690712133251012|
+| Trades |745|207|
+| Orders/week |3.5645933014354068|3.8333333333333335|
+
+Identical support SHA256 on all workers:
+`28d6088a92173592f39e221c1c2ab1efc9094e614eeccb11c9ae23cf14878c98`.
+This is an inference/account control, NOT a repeated-training success.
+Actual batch size is128, inherited unchanged from the current training design.
+
+Output root on each worker: `full-sac357-20261115/seed_<seed>` under the
+external experiment directory. `SPEC.json` binds code/data/model identities;
+`DATA.json` authenticates the full native TRAIN transition set;
+`QUALIFICATION.json` gates interventions; arm `HISTORY.json`, checkpoints and
+`RESULT.json` retain updates, weights, losses and full account metrics.
+The read-only collector checks checkpoint hashes and common experiment identity
+and emits `aggregate/REPORT.md` and `RESULT.json` only after all three finish.
+Missing, failed or mismatched results cannot mark the fleet complete.
+
+Current status: full TRAIN collection running, no intervention result yet.
+Original-versus-grouped update parity and cold-resume tests passed on CPU;
+on-device qualification runs automatically after each full collection.
+
+Verification:47 focused CPU tests passed, including existing native/recovery
+tests and new negative collector tests (missing worker, mixed code identity,
+duplicate seed); scoped Ruff passed. The collector's final completion flag is
+written only AFTER common-contract validation and result publication.

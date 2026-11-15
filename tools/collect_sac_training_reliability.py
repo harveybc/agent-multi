@@ -35,6 +35,8 @@ print(json.dumps(dict(result=r,spec=s,qualification=q,verified=ok,progress=load(
 
 
 def collect(fleet,output):
+    if len(fleet['workers'])!=3 or {e['seed'] for e in fleet['workers']}!={7,19,43}:
+        raise ValueError('FLEET_REQUIRES_THREE_DISTINCT_SEEDS')
     output.mkdir(parents=True,exist_ok=True);entries=[];pairs=[]
     for entry in fleet['workers']:
         try:r=fetch(entry)
@@ -52,7 +54,7 @@ def collect(fleet,output):
                     sharpe=m['sharpe'],trades=m['trades'],orders_per_week=m['orders_per_week'])
             pairs.append(row)
     complete=len(entries)==3 and all(e['verified'] for e in entries)
-    write(output/'STATUS.json',dict(at=now(),complete=complete,workers=entries,promoted=False,deap_released=False))
+    write(output/'STATUS.json',dict(at=now(),complete=False,workers=entries,promoted=False,deap_released=False))
     if complete:
         specs=[read(output/(str(e['seed'])+'.json'))['spec'] for e in entries]
         for key in ('source','manifest','parent','code','design','effective','arms','updates_per_arm','trainability'):
@@ -67,6 +69,7 @@ def collect(fleet,output):
             v=p['VALIDATION'];lines.append(f"|{p['seed']}|{p['arm']}|{p['TRAIN']['return_pct']:.6f}|{v['return_pct']:.6f}|{v['delta_return_pct']:.6f}|{v['trades']}|")
         lines+=['','No model promotion, phase2 closure or DEAP release. Compare changes to the preserved baseline as well as control; merely reducing drift is not learning.']
         (output/'REPORT.md').write_text('\n'.join(lines)+'\n')
+        write(output/'STATUS.json',dict(at=now(),complete=True,workers=entries,promoted=False,deap_released=False))
     return complete
 
 

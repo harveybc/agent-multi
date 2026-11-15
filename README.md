@@ -11,6 +11,14 @@ and execution-policy plugins loaded from entry points.
 
 ## Status
 
+**Training reliability (2026-11-15):**
+[357 full-SAC diagnosis](docs/work_plan/357_FULL_SAC_TRAINING_RELIABILITY.md)
+is running on three GPU workers, seeds7/19/43. All three initial full accounts
+reproduce selected299 exactly. Each finite queue collects real TRAIN replay,
+qualifies exact updates/cold restart, then runs five paired role-LR arms.
+The read-only collector builds the final paired table automatically. This is
+bounded fixed-replay diagnosis, not full online convergence or phase2 closure.
+
 **Owner priority correction (2026-11-15):** phase2 is OPEN until training
 reproducibility and robustness are qualified. The completed frozen-neighborhood
 selection remains valid only for its pinned checkpoint, not as phase2 closure.
