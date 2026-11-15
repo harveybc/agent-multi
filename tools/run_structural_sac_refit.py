@@ -482,7 +482,7 @@ def migrate_warmup(args):
         print(json.dumps(dict(identity=spec['identity'],**spec['warmup_migration'])),flush=True)
 
 
-def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe):
+def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe, replay_factory=None):
     output.mkdir(parents=True,exist_ok=True)
     rng = np.random.default_rng(seed)
     backend=design.get('replay_backend','memory')
@@ -492,6 +492,8 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
              else LazyTensorStorage(design['replay_size'],device='cpu'))
     replay = TensorDictReplayBuffer(storage=storage,
                                    batch_size=design['batch_size'])
+    if replay_factory is not None:
+        replay = replay_factory(replay)
     start_epoch = design.get('monitor_start_epoch',1)
     select_early = design.get('select_during_warmup',False)
     stopping = EpochPatience(design['patience'],design['min_delta'],design.get('monitor_mode','mean'),start_epoch,select_early)
@@ -529,9 +531,11 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
         if int(p.name.split('_')[1].split('.')[0]) > state['epoch']:
             shutil.rmtree(p)
     for epoch in range(state['epoch']+1,design['max_epochs']+1):
-        if stopping.bad >= stopping.patience:
+        if stopping.bad >= stopping.patience and not design.get('matched_budget',False):
             break
         start = time.monotonic(); env = env_factory(); obs = env.reset()
+        if hasattr(replay,'start_epoch'):
+            replay.start_epoch()
         last_loss = None; decisions = 0
         while not env.finished:
             step = state['steps']+1
@@ -576,6 +580,8 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
         row = dict(epoch=epoch,steps=state['steps'],updates=state['updates'],decisions=decisions,
             training_seconds=training_seconds,evaluation_seconds=time.monotonic()-start-training_seconds,
             metrics=metrics,monitor=verdict,shadow_monitors=shadow_verdicts,finished_at=now(),last_update=last_loss or {})
+        if hasattr(replay,'receipt'):
+            row['replay_mixture'] = replay.receipt()
         if verdict['improved']:
             bundle = output/'bundles'/('epoch_%04d' % epoch)
             if bundle.exists():
@@ -607,7 +613,7 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
             render_diagnostics(state['history'],output/'diagnostics',design)
         write(output/'PROGRESS.json',dict(identity=identity,stage='EPOCH_COMPLETE',**row))
         print(json.dumps(dict(epoch=epoch,seed=seed,monitor=verdict,seconds=row['epoch_seconds'])),flush=True)
-        if verdict['stop']:
+        if verdict['stop'] and not design.get('matched_budget',False):
             break
     if state['best_bundle'] is None:
         write(output/'TRAINING.json',dict(identity=identity,epochs=state['epoch'],
@@ -617,7 +623,7 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
         render_diagnostics(state['history'],output/'diagnostics',design)
     model.load(output/state['best_bundle']['relative_path']/'model.pt')
     write(output/'TRAINING.json',dict(identity=identity,epochs=state['epoch'],steps=state['steps'],
-        stop_reason='patience' if stopping.bad>=stopping.patience else 'epoch_budget',
+        stop_reason='matched_budget' if design.get('matched_budget',False) else ('patience' if stopping.bad>=stopping.patience else 'epoch_budget'),
         best=state['best_bundle'],best_score=stopping.best,restored_best=True))
     return state
 

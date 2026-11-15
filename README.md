@@ -11,6 +11,14 @@ and execution-policy plugins loaded from entry points.
 
 ## Status
 
+**Current data contrast (2026-11-14):**
+[355 G3 conditional joint pilot](docs/work_plan/355_G3_CONDITIONAL_JOINT_PILOT.md)
+qualified24,639 synthetic TRAIN rows and rebuilt all71 selected inputs. The
+real-only GPU control is running;90/10 augmentation follows automatically with
+the same update budget.50 focused tests pass. Original selected299 replay is
+exact; no new trading improvement or model promotion is claimed. STL remains
+paused. This supersedes older next-step entries below.
+
 **Main phase2 lane (2026-11-14):** selected71 actor299,28 groups and all49
 cumulative return candidates are preserved; STL remains paused. The
 [336 witness audit](docs/work_plan/336_STALLED_PROPOSAL_SOLVER_CONTRAST.md)

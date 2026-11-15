@@ -1,5 +1,27 @@
 {
   "schema": "generalization_method.v1",
+  "g3_conditional_contrast_355": {
+    "document": "../355_G3_CONDITIONAL_JOINT_PILOT.md",
+    "status": "GENERATOR_QUALIFIED_CONTROL_RUNNING_AUGMENTATION_CHAINED",
+    "generation_identity": "f6d167c6a8ae7827f9d19ea5016d40094e348aa99efef1b1a5e4e713dd7c5252",
+    "training_identity": "6eb265d3fc39231a089c2fb571ef5fecc14a8e0967c870680559828404be9069",
+    "synthetic_rows": 24639,
+    "synthetic_complete_windows": 24052,
+    "selected_features": 71,
+    "groups": 28,
+    "focused_tests_passed": 50,
+    "original_cpu_accounts_exact": true,
+    "generator_distribution_passed": true,
+    "synthetic_feature_prefix_exact": true,
+    "gpu": "RTX5090",
+    "queue": ["real_only", "real90_synthetic10"],
+    "budget": "control validation patience20 then identical epochs/updates for augmentation",
+    "initialization": "same selected299 weights and optimizer; full online trainability in both arms",
+    "resume": "persistent user service; epoch checkpoint includes both replay stores and RNG",
+    "model_promoted": false,
+    "stl_resumed": false,
+    "next_action": "Collect matched full real accounts and actual replay fractions after both arms. Preserve299 unless a separately verified improvement qualifies. No automatic new sweep or live change. Longer-history candidate remains unadmitted."
+  },
   "g3_producer_qualification_354": {
     "document": "../354_G3_PRODUCER_QUALIFICATION.md",
     "status": "REAL_TRAIN_PRODUCERS_QUALIFIED_G3_NOT_TRAINED",
@@ -34,7 +56,7 @@
     "stl_owner_paused": true,
     "recommendation": "Account for open data experiments before expensive DEAP: current71 producer/joint-history compatibility, then qualified matched G3 augmentation. Architecture implementation preparation can continue. Do not infer complete research from local351 closure or restart owner-paused STL."
   },
-  "current_stage": "G3_REAL_PRODUCERS_QUALIFIED_JOINT_GENERATION_NEXT",
+  "current_stage": "G3_CONDITIONAL_JOINT_MATCHED_TRAINING_RUNNING",
   "architecture_gene_preflight_352": {
     "document": "../352_ARCHITECTURE_GENE_PREFLIGHT.md",
     "status": "CONSTRUCTION_VERIFIED_NOT_TRAINING_OR_DEAP",
@@ -3344,6 +3366,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
+    "CURRENT355 supersedes354: generator qualified; real-only GPU control running and90/10 augmentation chained at exact matching update budget. Collect/verify full real accounts, replay fractions, checkpoints and plots. Keep299/71inputs intact, no live or STL changes. No new owner decision required.",
     "CURRENT354 supersedes historical queue instructions: owner approved353 data experiments.71 original TRAIN producers replayed, future/prefix tests exact. Next joint TRAIN-only G3 generator qualification and matched90/10 training, not another unchanged floating or critic variant.59,997 pre2020 jointly finite primitive rows are an UNADMITTED candidate, not a completed longer-history comparison. Keep299 and all71 inputs unchanged; STL paused; live belongs to Satoshi. No owner decision required.",
     "CURRENT352 SUPERSEDES all historical next-step entries below:351 closes phase2 with111 verified final neighbors, no qualifying move.352 verifies18 construction genes/54 phenotypes, ledger176 events. Next implement per-component builders and actual training consumption/ledger gates then staged DEAP. No old simple architecture substitution, live trading, STL, periodic-refit or repeated floating. No owner decision required.",
     "CURRENT350: finite actor-head utility trial, eight accepted updates or64 attempts per seed19/43. Use largest TRAIN FIT fold and fixed349 procedure. Complete native accounts and cold verification, then export qualified changed actor or retain299 and close refinement; no automatic critic extension.",

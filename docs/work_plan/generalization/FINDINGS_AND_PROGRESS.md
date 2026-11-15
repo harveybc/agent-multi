@@ -731,3 +731,18 @@ after attempt457,329 finite guard and238 solver feasibility, none due to the
 norm cap. Next compare a higher-accuracy direction solve on the exact rejected
 proposals without changing tolerances, before another long fit. No successor
 worker is running after335's completed collection/verification.
+
+## G3 Conditional Joint Generation Qualified; Training Started
+
+2026-11-14,355: sample seven FX innovations jointly conditional on original
+released macro/calendar TRAIN context, rather than injecting independent noise
+into selected features.24,639 generated rows;71 features rebuilt,24,052 complete
+synthetic windows. Frozen quarterly distribution envelopes pass, cold/prefix
+generation and derived-feature prefix checks exact. Native accounting error
+at most2.55e-11 USD. This is augmentation, not new observed data or live input.
+
+Original299 real accounts reproduce exactly:TRAIN16.05822355000215%,745 trades;
+VALIDATION18.369945750000117%,207 trades.50 focused tests pass. RTX5090 control
+starts a persistent sequential real-only then90/10 replay contrast, with matched
+updates, separate native accounts and exact sample-count recovery. No new
+trading result is available yet and no model is promoted. STL stays paused.
