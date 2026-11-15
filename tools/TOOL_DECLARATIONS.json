@@ -2,6 +2,14 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "collect_sac_training_reliability.py": {
+   "purpose": "Read-only three-worker reliability collector with seed/contract/checkpoint verification and paired endpoint table; no model promotion",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "training reliability"
+  },
+  "run_sac_training_reliability.py": {
+   "purpose": "Finite full-SAC TRAIN replay qualification, cold restart and paired role learning-rate interventions; complete native evaluation, no automatic promotion or DEAP",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "training reliability"
+  },
   "audit_modular_architecture.py": {
    "purpose": "CPU-only preserved selected299 probe parity, per-group/core/head construction and one fixture SAC update with cold reload; no trading fitness or DEAP launch",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "architecture search"
