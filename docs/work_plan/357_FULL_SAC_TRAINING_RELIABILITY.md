@@ -1,5 +1,41 @@
 # Full SAC Training Reliability: Bounded First Diagnosis
 
+## Conditional Diagnostic DEAP Option
+
+Owner direction2026-11-15: keep a targeted DEAP search among the options for
+repairing unstable training if weight/function diagnostics and paired longer
+continuations do not isolate a sufficient correction. This is NOT the broad
+192-gene architecture campaign, and it does not require pretending training
+robustness is already solved. No search is launched by this plan update.
+
+The evaluator must first reproduce identical-state executions and quantify
+seed variation. Search is then allowed to investigate robustness; unexplained
+implementation nondeterminism must not be hidden in a genetic fitness score.
+The357 same-device fixed-replay gates passed, but full online continuation
+qualification remains a separate requirement.
+
+First candidate dimensions, subject to measured evidence: actor and critic
+learning rates independently and their ratio. Avoid redundant ratio genes if
+the two rates already encode it. Target-update tau and update-to-data ratio
+are secondary hypotheses, not identified defects. Temperature LR is lower
+priority because its isolated357 reduction did not help. Do not initially
+change inputs, windows, topology, strategy or data support in this search.
+
+Before dispatch, freeze a small versioned space, log-scaled LR decoding, actual
+optimizer-consumption tests, budgets and the exact objective/constraints.
+Evaluate every candidate on paired seeds with identical declared stopping
+rules and sufficiently long training budgets for smaller learning rates.
+Report all epoch curves, selected and last checkpoints, TRAIN/validation
+performance, activity and variability; do not optimize the luckiest seed or
+isolated best spike. A nearly frozen actor retaining its source performance
+does not establish successful learning. Repeat finalists on additional seeds.
+Keep refinement-from-checkpoint distinct from training-from-scratch claims.
+
+Persist genotype, decoded/effective values, seeds, budgets and component-weight
+diagnostics for every candidate, including failures. Use the weight evidence
+to interpret candidate effects, not as a substitute for evaluations. This
+conditional diagnostic option leaves overall phase2 OPEN and broad DEAP closed.
+
 ## Mandatory Reporting Clarification
 
 All15 arms completed512 optimizer updates by FIXED_UPDATE_BUDGET, not patience.
