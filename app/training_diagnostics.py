@@ -60,7 +60,7 @@ def render_diagnostics(history, directory, design, best_epoch=None):
             ax.axvspan(.5, min(warmup, epochs[-1])+.5, color='#dddddd', alpha=.45, label='Warmup')
         if best_epoch is not None:
             ax.axvline(best_epoch, color='#b23445', linestyle='--', linewidth=1, label='Selected checkpoint')
-        ax.set_xlim(.5, max(epochs)+.5); ax.set_xlabel('Epoch'); ax.grid(alpha=.2)
+        ax.set_xlim(min(epochs)-.5, max(epochs)+.5); ax.set_xlabel('Epoch'); ax.grid(alpha=.2)
 
     def save(fig, name):
         FigureCanvasAgg(fig)
@@ -107,7 +107,7 @@ def render_diagnostics(history, directory, design, best_epoch=None):
         axes[5].plot(epochs,gap,color='#bb4958'); axes[5].set_title('TRAIN - VAL return/week'); decorate(axes[5])
         fig.suptitle('Optimizer diagnostics | last-update snapshots, not epoch averages')
         save(fig,'OPTIMIZER_DIAGNOSTICS.png'); files.append('OPTIMIZER_DIAGNOSTICS.png')
-    result=dict(epochs=len(rows),best_epoch=best_epoch,
+    result=dict(epochs=sum(e>0 for e in epochs),evaluation_points=len(rows),best_epoch=best_epoch,
         history_sha256=hashlib.sha256(json.dumps(history,sort_keys=True).encode()).hexdigest(),
         source='existing full TRAIN/VALIDATION evaluations; no additional inference',
         warmup=warmup,select_during_warmup=design.get('select_during_warmup',False),

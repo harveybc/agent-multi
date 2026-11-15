@@ -10,6 +10,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg
 
 from app.frozen_recipe_inputs import file_sha
 from tools.run_discrete_curve_probe import read, write
+from app.training_diagnostics import render_diagnostics
 
 
 ARMS=('control','actor_lr01','critic_lr01','alpha_lr01','all_lr01')
@@ -84,7 +85,24 @@ def render(source,output):
     return stops
 
 
+def render_epoch_run(root,output):
+    history=read(root/'HISTORY.json');zero=read(root/'EPOCH_ZERO.json')
+    training=read(root/'TRAINING.json');design=read(root/'DESIGN.json')
+    score=zero['metrics']['VALIDATION']['return_per_week']
+    initial=dict(epoch=0,steps=0,updates=0,metrics=zero['metrics'],
+        monitor=dict(score=score,best=score,bad=0,improved=True))
+    selected=int(training['best']['path'].removeprefix('epoch_'))
+    render_diagnostics([initial,*history],output,design,best_epoch=selected)
+    write(output/'STOPPING.json',dict(completed_epochs=training['epochs'],max_epochs=design['max_epochs'],
+        updates=history[-1]['updates'],stop_reason=training['stop_reason'],selected_epoch=selected,
+        last_epoch=history[-1]['epoch'],patience_current=history[-1]['monitor']['bad'],
+        patience_limit=design['patience'],monitor_mode=design['monitor_mode'],min_delta=design['min_delta'],
+        monitor_start_epoch=design['monitor_start_epoch'],select_during_warmup=design['select_during_warmup']))
+
+
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--source',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--epoch-root',type=Path)
     a=p.parse_args();print(json.dumps(dict(runs=len(render(a.source,a.output)),output=str(a.output))))
+    if a.epoch_root:render_epoch_run(a.epoch_root,a.output/'G3_CONTROL_EPOCHS')
