@@ -20,12 +20,15 @@ def stage_config(raw, *, width, blocks, kind='tcn'):
         raise ValueError('TEMPORAL_STAGE_FIELDS')
     raw = copy.deepcopy(raw)
     kind = raw.get('kind', kind)
-    if kind not in ('tcn', 'pointwise'):
+    if kind not in ('tcn', 'pointwise', 'dense'):
         raise ValueError('TEMPORAL_STAGE_KIND')
     width, blocks = raw.get('width', width), raw.get('blocks', blocks)
     kernel = raw.get('kernel', 3 if kind == 'tcn' else 1)
-    if any(type(x) is not int or x < 1 for x in (width, blocks, kernel)):
+    if (any(type(x) is not int or x < 1 for x in (width, kernel))
+            or type(blocks) is not int or blocks < (0 if kind == 'dense' else 1)):
         raise ValueError('TEMPORAL_STAGE_DIMENSION')
+    if kind == 'dense' and (blocks != 0 or kernel != 1):
+        raise ValueError('TEMPORAL_DENSE_DIMENSION')
     if kind == 'pointwise' and kernel != 1:
         raise ValueError('TEMPORAL_POINTWISE_KERNEL')
     dilation_base = raw.get('dilation_base', 2)

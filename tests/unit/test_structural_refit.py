@@ -10,6 +10,32 @@ from app.structural_refit import EpochPatience, export_bundle, load_bundle, capt
 from tests.unit.test_discrete_curve_native import curve_env  # noqa: F401
 
 
+@pytest.mark.parametrize('allow', [False, True])
+def test_inactive_epoch_zero_is_never_selected(tmp_path, request, allow):
+    from app.three_signal_learning import synthetic_env
+    from tools.run_structural_sac_refit import fit_epochs
+    torch.set_num_threads(1)
+    r = probe_recipe(); base = request.getfixturevalue('curve_env')
+    factory = lambda: synthetic_env(r, base.risk_config, 101, 1, .99)[0]
+    probe = factory().inputs.windows[30:34].copy()
+    def assess(model):
+        return {p: dict(return_per_week=0., orders_per_week=0.) for p in ('TRAIN', 'VALIDATION')}
+    d = dict(replay_size=64, batch_size=8, warmup=8, update_every=4,
+             max_epochs=1, patience=20, min_delta=1e-8, monitor_mode='validation',
+             monitor_start_epoch=20, select_during_warmup=True, require_activity=True,
+             initialize_epoch_zero=True, allow_ineligible_epoch_zero=allow)
+    model = ThreeSignalSAC(r, seed=7)
+    if not allow:
+        with pytest.raises(ValueError, match='EPOCH_ZERO_ACTIVITY'):
+            fit_epochs(model, factory, assess, d, 7, tmp_path/'run', 'test-id', probe)
+    else:
+        state = fit_epochs(model, factory, assess, d, 7, tmp_path/'run', 'test-id', probe)
+        assert state['updates'] > 0 and state['epoch'] == 1
+        assert state['best_bundle'] is None and state['stopping']['best'] is None
+        state = fit_epochs(model, factory, assess, dict(d, max_epochs=2), 7, tmp_path/'run', 'test-id', probe)
+        assert state['epoch'] == 2 and state['best_bundle'] is None
+
+
 def selected_round_fixture():
     from app.rl_subset import digest
     r=split_recipe()

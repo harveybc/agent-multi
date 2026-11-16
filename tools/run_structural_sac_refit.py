@@ -528,10 +528,11 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
             monitor.__dict__.update(state['shadows'][mode])
     elif design.get('initialize_epoch_zero',False):
         metrics=assess(model)
-        if not all(metrics[p]['orders_per_week']>2 for p in ('TRAIN','VALIDATION')):
+        eligible = all(metrics[p]['orders_per_week']>2 for p in ('TRAIN','VALIDATION'))
+        if not eligible and not design.get('allow_ineligible_epoch_zero', False):
             raise ValueError('EPOCH_ZERO_ACTIVITY')
         for monitor in [stopping,*shadows.values()]:
-            monitor.observe(metrics['TRAIN']['return_per_week'],metrics['VALIDATION']['return_per_week'])
+            monitor.observe(metrics['TRAIN']['return_per_week'],metrics['VALIDATION']['return_per_week'], eligible)
             monitor.epoch=0
         bundle=output/'bundles'/'epoch_0000'
         if bundle.exists():
@@ -543,9 +544,9 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
                          model_sha256=file_sha(bundle/'model.pt'),reload_exact=True)
         else:
             receipt=export_bundle(bundle,model,probe,dict(epoch=0,score=stopping.best,run_identity=identity,seed=seed))
-        state.update(best_bundle=dict(relative_path=str(bundle.relative_to(output)),**receipt),
+        state.update(best_bundle=dict(relative_path=str(bundle.relative_to(output)),**receipt) if eligible else None,
                      stopping=vars(stopping).copy(),shadows={k:vars(m).copy() for k,m in shadows.items()})
-        write(output/'EPOCH_ZERO.json',dict(identity=identity,metrics=metrics,best_bundle=state['best_bundle']))
+        write(output/'EPOCH_ZERO.json',dict(identity=identity,metrics=metrics,best_bundle=state['best_bundle'], eligible=eligible))
     scheduler = None
     if design.get('actor_plateau') is not None:
         from app.actor_plateau import ActorPlateau

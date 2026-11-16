@@ -1,8 +1,25 @@
 {
   "schema": "generalization_method.v1",
+  "branch_capacity_364": {
+    "document": "../364_BRANCH_DEPTH_DENSE_CONTRAST.md",
+    "status": "CPU_QUALIFIED_362_SEALED_AND_PAUSED_PREPARING_DEPLOYMENT",
+    "arms": ["A", "D", "control"],
+    "seed": 7,
+    "actor_parameters": {"control": 30733, "A": 20301, "D": 9869},
+    "trainable_parameters": {"control": 92200, "A": 60904, "D": 29608},
+    "focused_tests_passed": 54,
+    "all71_retained": true,
+    "sealed362_epochs_by_seed": {"7": 77, "19": 96, "43": 48},
+    "fixed_lr_all_roles": 3e-6,
+    "minimum_epochs": 100,
+    "max_epochs": 2000,
+    "patience": 20,
+    "promoted": false,
+    "next_action": "Deploy immutable A/D/control pilot; verify native control and learning progress. Resume each362 service only after authenticated364 completion. No automatic winner promotion or deletion; replicate any advantage before replacing the base."
+  },
   "component_capacity_363": {
     "document": "../363_COMPONENT_CAPACITY_DIAGNOSIS.md",
-    "status": "ARCHIVED_PANEL_COMPLETE_FIRST_LR_READONLY_SUPERVISOR_ACTIVE",
+    "status": "ARCHIVED_PANEL_COMPLETE_FOLLOWUP_PAUSED_WITH_362_FOR_364",
     "followup_runtime_revision": "6e6c490b",
     "first_copied_lr_points": {"seed": 19, "epochs": [93, 94, 95], "drop_epoch": 94},
     "summary": "capacity363_summary.json",
@@ -24,7 +41,7 @@
   },
   "sealed_plateau_continuation_362": {
     "document": "../362_SEALED_PLATEAU_CONTINUATION.md",
-    "status": "RUNNING_THREE_QUALIFIED_FULL_STATE_CONTINUATIONS",
+    "status": "FULL_RECOVERIES_SEALED_PAUSED_FOR_OWNER_APPROVED_364",
     "runtime_revision": "f16593da0dc8e892b4f3ec5961f60a2e8eced6ee",
     "runtime_archive_sha256": "22599373c0f3569df1101840677089a0aa79211b338d77053c89dbb7ffffad52",
     "source_epochs_by_seed": {"7": 69, "19": 86, "43": 43},
@@ -233,7 +250,7 @@
     "stl_owner_paused": true,
     "recommendation": "Account for open data experiments before expensive DEAP: current71 producer/joint-history compatibility, then qualified matched G3 augmentation. Architecture implementation preparation can continue. Do not infer complete research from local351 closure or restart owner-paused STL."
   },
-  "current_stage": "PHASE2_OPEN_LONG_ONLINE_LR_CONTINUATION_359_RUNNING",
+  "current_stage": "PHASE2_OPEN_BRANCH_CAPACITY_364_PRIORITY_PILOT",
   "architecture_gene_preflight_352": {
     "document": "../352_ARCHITECTURE_GENE_PREFLIGHT.md",
     "status": "CONSTRUCTION_VERIFIED_NOT_TRAINING_OR_DEAP",
@@ -3543,6 +3560,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
+    "CURRENT364 supersedes running362 instructions: owner prioritizes A one-block branches and D Dense-per-timestamp branches with unchanged core, attention, all71 inputs and strategy. CPU54 checks pass.362 full states sealed at77/96/48 and services paused. Deploy paired seed7 fixedLR3e-6 pilot with matched control, per-epoch weights/native accounts; automatically resume362 after verified terminal364 result. No live work, STL, broad DEAP, phase2 closure or model promotion.",
     "CURRENT363 complements362 without modifying it: archived9-point CPU capacity panel complete,864 restored interventions and288 identity controls. First-LR followup uses explicit before/drop/after epochs on identical512 TRAIN rows. No width selected from ranks, no new training, no synthetic generation. Preserve all71 inputs and frozen299. Historical extension inventory is complete but all71 pre2020 start is not yet verified.",
     "CURRENT362 SUPERSEDES all historical running/closure/search instructions below: owner approved sealed resume with actor-only plateau. All3 source accounts and four real sampled updates reproduced exactly on original GPUs. New paired queues run plateau first then equal-budget fixed control from epochs69/86/43.359 services suspended, not failed training. Preserve299/71inputs/28groups; phase2 remains open, broad DEAP unreleased, STL paused, no live work. Collect full-support functional/action traces from existing per-epoch inference; no duplicated TRAIN evaluation.",
     "CURRENT360/359 SUPERSEDES historical closure/search instructions below: training reliability remains REQUIRED.360 completed20 copied checkpoints,12 actor swaps,16 frozen-policy accounts and a device-dispatch witness. All three359 queues remain unchanged with minimum100 epochs. Preserve299/71inputs/28groups, no phase2 closure or broad DEAP. Next paired long trajectories and bounded TRAIN-only objective/collection alignment design, not another unchanged critic/feature sweep. G3 both arms finished40 epochs and retained epoch0. SNR belongs to Retsu; no live work or STL resume.",

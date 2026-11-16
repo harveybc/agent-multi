@@ -42,6 +42,7 @@ class DoubleTCNExtractor(BaseFeaturesExtractor):
                   kind='tcn' if kind=='conv' else 'pointwise')
                  for raw,kind in zip(group_configs,groups['kinds'])]
         core = stage_config(core_config, width=core_width, blocks=core_blocks)
+        require(core['kind'] != 'dense', 'DENSE_BRANCH_ONLY')
         core_width = core['width']
         super().__init__(observation_space, self.shape[0] * core_width)
         self.resolved_architecture = dict(groups=specs, core=core, fusion_activation=fusion_activation,
@@ -54,8 +55,9 @@ class DoubleTCNExtractor(BaseFeaturesExtractor):
             self.register_buffer(f'indices_{i}', torch.tensor(indices, dtype=torch.long))
             self.branches.append(nn.Sequential(
                 CausalConv1d(len(indices), spec['width'], 1),
-                *[ResidualTCN(spec['width'], d, spec['kernel'], activation_name=spec['activation'])
-                  for d in spec['dilations']]))
+                *([activation(spec['activation'])] if spec['kind'] == 'dense' else
+                  [ResidualTCN(spec['width'], d, spec['kernel'], activation_name=spec['activation'])
+                   for d in spec['dilations']])))
         self.fusion = CausalConv1d(sum(s['width'] for s in specs), core_width, 1)
         self.core = nn.Sequential(*[ResidualTCN(core_width, d, core['kernel'], dropout=core_dropout,
                                     activation_name=core['activation']) for d in core['dilations']])
