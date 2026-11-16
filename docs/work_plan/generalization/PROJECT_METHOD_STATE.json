@@ -1,5 +1,25 @@
 {
   "schema": "generalization_method.v1",
+  "component_capacity_363": {
+    "document": "../363_COMPONENT_CAPACITY_DIAGNOSIS.md",
+    "status": "ARCHIVED_NINE_POINT_PANEL_COMPLETE_FIRST_LR_FOLLOWUP_PREPARED",
+    "summary": "capacity363_summary.json",
+    "checkpoints": 9,
+    "actor_critic_profiles": 27,
+    "fixed_real_train_windows": 512,
+    "windows_per_train_year": 128,
+    "component_interventions": 864,
+    "full_rank_identity_controls": 288,
+    "all_restorations_exact": true,
+    "extracted_role_outputs_exact": true,
+    "focused_tests": 9,
+    "optimizer_steps": 0,
+    "optimal_width_inferred": false,
+    "required_data_years_inferred": false,
+    "all71_pre2020_start_established": false,
+    "synthetic_generation_launched": false,
+    "next_action": "One read-only CPU panel at before/at/after first362 LR reduction per seed. Inspect concentration and functional sensitivity before proposing one bounded capacity contrast. Do not repeat predictor phase1 history grid or launch VAE-GAN; all71 extended history still requires producer/calendar scope qualification."
+  },
   "sealed_plateau_continuation_362": {
     "document": "../362_SEALED_PLATEAU_CONTINUATION.md",
     "status": "RUNNING_THREE_QUALIFIED_FULL_STATE_CONTINUATIONS",
@@ -3521,6 +3541,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
+    "CURRENT363 complements362 without modifying it: archived9-point CPU capacity panel complete,864 restored interventions and288 identity controls. First-LR followup uses explicit before/drop/after epochs on identical512 TRAIN rows. No width selected from ranks, no new training, no synthetic generation. Preserve all71 inputs and frozen299. Historical extension inventory is complete but all71 pre2020 start is not yet verified.",
     "CURRENT362 SUPERSEDES all historical running/closure/search instructions below: owner approved sealed resume with actor-only plateau. All3 source accounts and four real sampled updates reproduced exactly on original GPUs. New paired queues run plateau first then equal-budget fixed control from epochs69/86/43.359 services suspended, not failed training. Preserve299/71inputs/28groups; phase2 remains open, broad DEAP unreleased, STL paused, no live work. Collect full-support functional/action traces from existing per-epoch inference; no duplicated TRAIN evaluation.",
     "CURRENT360/359 SUPERSEDES historical closure/search instructions below: training reliability remains REQUIRED.360 completed20 copied checkpoints,12 actor swaps,16 frozen-policy accounts and a device-dispatch witness. All three359 queues remain unchanged with minimum100 epochs. Preserve299/71inputs/28groups, no phase2 closure or broad DEAP. Next paired long trajectories and bounded TRAIN-only objective/collection alignment design, not another unchanged critic/feature sweep. G3 both arms finished40 epochs and retained epoch0. SNR belongs to Retsu; no live work or STL resume.",
     "CURRENT355/356: real-only control completed40 epochs without beating299;90/10 augmentation running at matched budget. Modular constructors and192-gene contract verified. Next training-loop/ledger integration while G3 completes, then adjudicate G3 before staged DEAP. Keep299/71inputs intact; no live work, STL or new owner decision required.",
