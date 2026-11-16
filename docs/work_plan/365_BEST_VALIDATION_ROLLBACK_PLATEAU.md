@@ -90,3 +90,27 @@ historical evidence remain intact. The source and all71 inputs remain unchanged.
 
 Native scheduler semantics reference:
 [PyTorch ReduceLROnPlateau](https://docs.pytorch.org/docs/stable/generated/torch.optim.lr_scheduler.ReduceLROnPlateau.html).
+
+## Priority Restart Executed
+
+Immutable revision `be882da7c710dad2251691d07b131d0149ddcf6d`, archive SHA256
+`0bfb69809602c8a75b2198b1b5603a881a856ed80e6976abbe0e8dadf0ae6633`.
+A/RTX5090, D/RTX4090 and original-control/RTX4070 all run epoch1 with nonzero
+optimizer updates. Their source accounts exactly match364 epoch0, including
+control TRAIN+16.05822355000215%, VAL+18.369945750000117%,745/207 trades.
+All three cold model/optimizer reloads pass. Starting role rates are
+actor=critic=temperature=3e-6. Only actor LR is reduced, retaining the prior role
+scope; all coupled SAC parameters/moments restore together.
+
+Additional read-only CPU probes used copies of the three actual365 epoch0
+checkpoints. Two successive restorations each (six total), after controlled
+parameter/moment corruption, recover exact weights, moments and logits while
+retaining cumulative halved rates and leaving RNG unchanged. No production
+checkpoint was mutated and these probes took zero training steps. They validate
+restoration mechanics, not trading improvement or a naturally triggered event.
+
+Persistent services restart after a host reboot from complete epoch recovery.
+Observer refresh180s records last metrics, continuation metrics, scheduler and
+rollback events separately. Neither364 nor362 will resume automatically. All
+historical checkpoints remain available. Performance comparison is running;
+no improvement or convergence claim is made at launch.
