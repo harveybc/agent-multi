@@ -5,6 +5,17 @@
     "status": "COPIED_CHECKPOINT_DIAGNOSIS_COMPLETE_RUNNING359_UNCHANGED",
     "checkpoints": 20,
     "actor_component_swaps": 12,
+    "adjacent_epoch_followup": {
+      "seed": 43,
+      "epochs": [40, 41],
+      "native_cpu_returns_exact": true,
+      "actor_encoder_step_relative_l2": 0.00659936739142751,
+      "actor_head_step_relative_l2": 0.010544618696891115,
+      "validation_changed_signals": 53,
+      "validation_valid_windows": 6208,
+      "validation_return_pct": [1.8248179999996137, -2.023858100000398],
+      "scope": "Read-only function/weight sensitivity, not checkpoint or threshold selection"
+    },
     "frozen_collection_accounts": 16,
     "cpu_native_accounts_matching": 19,
     "cpu_exception": "control48: original GPU replay exact; seven CPU/default-GPU action differences. Disabling attention fastpath on both yields zero action differences and equal accounts.",

@@ -161,3 +161,50 @@ Commands are exposed by `tools/analyze_online_transients.py`,
 The analysis-run helper digest predates only the later nonfinite-alpha rejection
 test; no measured finite-alpha calculation changed. Tests verify actor-only swaps,
 common-Q invariance, invalid probe rejection and categorical sampling boundaries.
+
+## Follow-Up: Adjacent Epochs, 2026-11-16 14:36 UTC
+
+Read-only comparison of all-LR/seed43 epochs40 and41, with native full-account
+CPU replay exactly matching both original producer returns. Authenticated weights:
+
+- epoch40: `40731e99d10169208f587010707dfae9d7cb43c9a8137ecdfaadb13cfd68c176`
+- epoch41: `2912f2c4a2ea6022a63f00e48c0fa44d7d520df8faaffa83dc62eeefc63611e8`
+
+Actual adjacent-state L2 displacement, divided by the epoch40 component norm:
+actor encoder0.65994%, actor head1.05446%, critic encoder0.47805%, critic
+head1.43757%. These are NOT percentages of parameters that changed, and are
+different from the cumulative distance-to-initial curves above.
+
+| Measurement | Epoch40 | Epoch41 |
+|---|---:|---:|
+| TRAIN return % |47.407461|53.041004|
+| Validation return % |1.824818|-2.023858|
+| Validation trades |181|193|
+| Validation SL exits |65|74|
+| Validation TP exits |81|83|
+| Validation agent closes |7|9|
+
+Full-window comparison:207/24026 valid TRAIN signals change, and53/6208 valid
+validation signals change. Median prior winning-logit margin on changed rows:
+0.0683394 TRAIN,0.0442581 validation. These are decision changes from different
+trained weights, not the same-checkpoint floating-point device issue above.
+The number of changed actions versus initial on the small128-row TRAIN probe
+is14 at BOTH epochs: equal counts do not prove equal decisions or a stable policy.
+
+Interpretation: small relative weight motion can cross decision boundaries and
+alter subsequent account trajectories. This supports tracking action margins,
+changed actionable signals and account outcomes alongside norms; it does not
+justify fitting a rejection threshold on validation or blaming each extra SL on
+one isolated feature. TRAIN rises while validation falls, so numerical optimization
+progress and generalization are different here.
+
+The control now reaches82 epochs: fixed128-row probe mean absolute Q2.42259
+(1.99642 at48), twin disagreement0.18744 (0.14963 at48), and epoch-mean gradient
+norm2.02904 (0.84412 at48). Actor/critic head cumulative relative displacement
+1.17337/1.57311; validation-28.44227%. No numerical explosion is established by
+these numbers. The continued movement and worsening validation do not support a
+claim that this arm has already settled at a stable useful solution.
+
+No training, backend setting, threshold, checkpoint selection or queue changed.
+Next compare late and early *functional* changes, not weight norms alone, under
+the existing359 protocol and bounded objective-alignment plan.
