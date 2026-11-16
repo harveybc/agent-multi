@@ -2,6 +2,18 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "collect_sealed_plateau.py": {
+   "purpose": "Read-only monitoring of source-qualified sealed scheduler/control continuation queues and measured epoch timings",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "training reliability"
+  },
+  "seal_sac_recovery.py": {
+   "purpose": "Authenticate and pin a complete rolling SAC recovery generation without changing the producer",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "training reliability"
+  },
+  "run_sealed_plateau_continuation.py": {
+   "purpose": "Original-device full-state recovery qualification followed by actor-only plateau and equal-budget fixed-LR continuation from a sealed checkpoint",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "experiment_runner", "owner": "training reliability"
+  },
   "probe_checkpoint_device_parity.py": {
    "purpose": "Read-only sealed-checkpoint replay on CPU or original GPU with exported logits and native account evidence; no training or live mutation",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "training reliability"

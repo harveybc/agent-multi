@@ -546,13 +546,26 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
         state.update(best_bundle=dict(relative_path=str(bundle.relative_to(output)),**receipt),
                      stopping=vars(stopping).copy(),shadows={k:vars(m).copy() for k,m in shadows.items()})
         write(output/'EPOCH_ZERO.json',dict(identity=identity,metrics=metrics,best_bundle=state['best_bundle']))
+    scheduler = None
+    if design.get('actor_plateau') is not None:
+        from app.actor_plateau import ActorPlateau
+        scheduler = ActorPlateau(model.optimizer, stopping.best, stopping.patience,
+            design['fork_epoch'], design['actor_plateau'])
+        if 'actor_plateau' in state:
+            scheduler.load_state_dict(state['actor_plateau'])
+        elif state['epoch'] != design['fork_epoch']:
+            raise ValueError('MISSING_PLATEAU_RECOVERY')
+    def allowed_stop(epoch):
+        return (patience_can_stop(design,epoch,stopping.bad,stopping.patience)
+                and (scheduler is None or epoch >= scheduler.earliest_stop()))
     # Anything newer than the atomic pointer is an interrupted, uncommitted epoch.
     for p in (output/'recovery').glob('epoch_*') if (output/'recovery').exists() else []:
         if int(p.name.split('_')[1].split('.')[0]) > state['epoch']:
             shutil.rmtree(p)
     for epoch in range(state['epoch']+1,design['max_epochs']+1):
-        if patience_can_stop(design,state['epoch'],stopping.bad,stopping.patience):
+        if allowed_stop(state['epoch']):
             break
+        rates_used = [float(g['lr']) for g in model.optimizer.param_groups]
         start = time.monotonic(); env = env_factory(); obs = env.reset()
         if hasattr(replay,'start_epoch'):
             replay.start_epoch()
@@ -613,6 +626,11 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
             from app.training_forensics import tree_digest
             if tree_digest(hook_rng)!=tree_digest(capture_rng(rng)):
                 raise ValueError('EPOCH_HOOK_MUTATED_RNG')
+        if scheduler is not None:
+            row['actor_plateau'] = scheduler.observe(metrics['VALIDATION']['return_per_week'], eligible, epoch)
+            row['learning_rates_used'] = rates_used
+            state['actor_plateau'] = scheduler.state_dict()
+            row['patience_stop_deferred'] = bool(verdict['stop'] and not allowed_stop(epoch))
         if hasattr(replay,'receipt'):
             row['replay_mixture'] = replay.receipt()
         if verdict['improved']:
@@ -646,7 +664,7 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
             render_fit_diagnostics(state,output,design)
         write(output/'PROGRESS.json',dict(identity=identity,stage='EPOCH_COMPLETE',**row))
         print(json.dumps(dict(epoch=epoch,seed=seed,monitor=verdict,seconds=row['epoch_seconds'])),flush=True)
-        if patience_can_stop(design,epoch,stopping.bad,stopping.patience):
+        if allowed_stop(epoch):
             break
     if state['best_bundle'] is None:
         write(output/'TRAINING.json',dict(identity=identity,epochs=state['epoch'],
