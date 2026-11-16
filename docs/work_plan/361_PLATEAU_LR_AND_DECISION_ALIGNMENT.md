@@ -49,7 +49,7 @@ Provisional settings, not optimized values or claims of best configuration:
 |---|---|---|
 | metric | existing full validation return/week, mode=max | same selection objective; no second evaluation |
 | factor |0.5| moderate reduction rather than immediately dividing by10 |
-| patience |8|8 tolerated nonimproving observations; native torch reduces on9th |
+| patience |ceil(early_stopping_patience /3) =7|owner's patience/3 rule;7 tolerated nonimproving observations, native torch reduces on8th |
 | threshold_mode / threshold |abs /1e-8| honor tiny improvements; avoid relative thresholds on signed returns |
 | cooldown |5 observations| time to observe the changed rate |
 | actor minimum LR |1e-7| explicit bounded floor |
@@ -73,7 +73,7 @@ margin crossings, per-group effective LR and actual optimizer-update counts.
 | Requirement | Required evidence |
 |---|---|
 | Correct parameter reached | exact actor LR change and unchanged critic/temperature rates after a plateau |
-| Patience semantics | synthetic signed traces,1e-8 absolute threshold,8 versus9 misses, improvement reset |
+| Patience semantics | derive max(1,ceil(early_stopping_patience /3)); synthetic signed traces,1e-8 absolute threshold,7 versus8 misses for patience20, improvement reset |
 | No premature training stop | reduction buys its declared observation window without changing best checkpoint or exceeding hard budget |
 | Warmup/activity | warmup does not overwrite baseline; zero-order metrics cannot reset best; NaN/inf rejected |
 | Full-state resume | optimizer + scheduler best/bad/cooldown/last_epoch + stopping + RNG + replay yield identical LR/event sequence after restart |

@@ -3,6 +3,9 @@
   "plateau_lr_option_361": {
     "document": "../361_PLATEAU_LR_AND_DECISION_ALIGNMENT.md",
     "status": "PROPOSED_CONTRAST_AND_TEST_DESIGN_NOT_LAUNCHED",
+    "scheduler_patience_rule": "max(1,ceil(early_stopping_patience /3))",
+    "scheduler_patience_at_es20": 7,
+    "native_torch_reduction_after_nonimproving_observations": 8,
     "approved_analysis": "weight displacement to margin/action changes and replayed native account outcomes",
     "first_proposed_scope": "actor-only scheduler versus fixed LR; critic and temperature rates unchanged",
     "current359_modified": false,
