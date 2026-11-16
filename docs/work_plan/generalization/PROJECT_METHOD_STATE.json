@@ -1,14 +1,34 @@
 {
   "schema": "generalization_method.v1",
+  "best_validation_rollback_365": {
+    "document": "../365_BEST_VALIDATION_ROLLBACK_PLATEAU.md",
+    "status": "45_TESTS_PASS_364_SEALED_PAUSED_DEPLOYING_PRIORITY_RESTART",
+    "owner_priority": "Restart A D and control now with corrected common scheduler",
+    "source": "same299 named retained tensor and Adam transfer as364; fresh replay seed7",
+    "sealed364_epochs": {"A": 8, "D": 18, "control": 3},
+    "patience_misses": 10,
+    "early_stopping_patience": 20,
+    "native_torch_patience": 9,
+    "min_delta": 1e-8,
+    "factor": 0.5,
+    "cooldown": 0,
+    "monitor": "eligible validation return per week only",
+    "restore": "actor twin critics targets temperature and Adam moments",
+    "preserve": "current reduced rates replay RNG global counters and patience",
+    "minimum_epochs_after_actual_drop": 10,
+    "old362_automatic_resume": false,
+    "promotion": false,
+    "next_action": "Start immutable365 A/D/control in parallel, verify original epoch0 accounts and effective three-group rates. Collect restored-best event receipts and native trajectories; no old scheduler auto-resume, live, STL, broad DEAP or phase2 closure."
+  },
   "branch_capacity_364": {
     "document": "../364_BRANCH_DEPTH_DENSE_CONTRAST.md",
-    "status": "THREE_QUALIFIED_GPU_ARMS_TRAINING_EPOCH1",
+    "status": "SEALED_AND_SUSPENDED_FOR_OWNER_PRIORITY_365_RESTART",
     "runtime_revision": "7002f85649f677755df7b7bdc8c18ce538da9fe9",
     "runtime_archive_sha256": "48a393473b76f59b33d710d0482cc4ba079482ffc509b2d84e89c07e84a68ba9",
     "native_control_epoch0_exact": true,
     "all_initial_cold_optimizer_reloads_exact": true,
     "initial_activity_eligible_all_three": true,
-    "automatic_resume362_after_verified_completion": true,
+    "automatic_resume362_after_verified_completion": false,
     "arms": ["A", "D", "control"],
     "seed": 7,
     "actor_parameters": {"control": 30733, "A": 20301, "D": 9869},
@@ -21,7 +41,7 @@
     "max_epochs": 2000,
     "patience": 20,
     "promoted": false,
-    "next_action": "Collect native epoch trajectories and weight diagnostics from running A/D/control. First epoch underway on all three GPUs with optimizer updates verified. Resume each362 service only after authenticated364 completion. No automatic winner promotion or deletion; replicate any advantage before replacing the base."
+    "next_action": "Preserve incomplete fixedLR evidence and full seals8/18/3. Owner superseded automatic362 resumption with immediate365 restart; do not restart364 or362 automatically."
   },
   "component_capacity_363": {
     "document": "../363_COMPONENT_CAPACITY_DIAGNOSIS.md",
@@ -256,7 +276,7 @@
     "stl_owner_paused": true,
     "recommendation": "Account for open data experiments before expensive DEAP: current71 producer/joint-history compatibility, then qualified matched G3 augmentation. Architecture implementation preparation can continue. Do not infer complete research from local351 closure or restart owner-paused STL."
   },
-  "current_stage": "PHASE2_OPEN_BRANCH_CAPACITY_364_PRIORITY_PILOT",
+  "current_stage": "PHASE2_OPEN_BEST_VALIDATION_ROLLBACK_365_PRIORITY_RESTART",
   "architecture_gene_preflight_352": {
     "document": "../352_ARCHITECTURE_GENE_PREFLIGHT.md",
     "status": "CONSTRUCTION_VERIFIED_NOT_TRAINING_OR_DEAP",
@@ -3566,6 +3586,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
+    "CURRENT365 overrides automatic364/362 queue instructions. Owner ordered immediate restart with restore-best-validation on every actual actor LR drop and patienceES/2.45 focused tests pass;364 full seals8/18/3 preserved and all its services disabled. Restart A/D/control from common299-derived initial states, fresh replay seed7, same data and new scheduler. Restore all SAC parameters/moments, keep recent replay/RNG and global patience; after10 misses reduce and protect10 new epochs; do not extend at floor or when stop already due. No old scheduler automatic resume.",
     "CURRENT364 supersedes running362 instructions: A on RTX5090, D on RTX4090 and matched control on RTX4070 now learning epoch1. Same seed7, all71 inputs, LR3e-6, full retained tensor/Adam transfer.54 tests pass; native control and all cold optimizer reloads exact.362 full states sealed at77/96/48 and services paused. Observe per-epoch weights/native accounts; automatically resume362 after verified terminal364 result. No live work, STL, broad DEAP, phase2 closure or model promotion.",
     "CURRENT363 complements362 without modifying it: archived9-point CPU capacity panel complete,864 restored interventions and288 identity controls. First-LR followup uses explicit before/drop/after epochs on identical512 TRAIN rows. No width selected from ranks, no new training, no synthetic generation. Preserve all71 inputs and frozen299. Historical extension inventory is complete but all71 pre2020 start is not yet verified.",
     "CURRENT362 SUPERSEDES all historical running/closure/search instructions below: owner approved sealed resume with actor-only plateau. All3 source accounts and four real sampled updates reproduced exactly on original GPUs. New paired queues run plateau first then equal-budget fixed control from epochs69/86/43.359 services suspended, not failed training. Preserve299/71inputs/28groups; phase2 remains open, broad DEAP unreleased, STL paused, no live work. Collect full-support functional/action traces from existing per-epoch inference; no duplicated TRAIN evaluation.",

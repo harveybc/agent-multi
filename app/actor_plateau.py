@@ -8,8 +8,15 @@ import torch
 class ActorPlateau:
     def __init__(self, optimizer, best, patience, origin_epoch, config):
         expected = {'factor', 'threshold', 'cooldown', 'min_actor_lr', 'post_reduction_epochs'}
-        if set(config) != expected or len(optimizer.param_groups) != 3 or not math.isfinite(best):
+        optional = {'exact_patience_divisor', 'restore_best', 'stop_before_reduce'}
+        if (not expected <= set(config) or set(config)-expected-optional
+                or len(optimizer.param_groups) != 3 or not math.isfinite(best)):
             raise ValueError('ACTOR_PLATEAU_CONFIG')
+        divisor = config.get('exact_patience_divisor')
+        if divisor is not None and (type(divisor) is not int or divisor < 1):
+            raise ValueError('ACTOR_PLATEAU_DIVISOR')
+        if any(type(config[k]) is not bool for k in ('restore_best','stop_before_reduce') if k in config):
+            raise ValueError('ACTOR_PLATEAU_FLAGS')
         if type(patience) is not int or patience < 1 or type(origin_epoch) is not int or origin_epoch < 0:
             raise ValueError('ACTOR_PLATEAU_COUNTER')
         if not 0 < config['factor'] < 1 or not 0 < config['min_actor_lr'] <= optimizer.param_groups[0]['lr']:
@@ -25,7 +32,8 @@ class ActorPlateau:
         self.origin_epoch = origin_epoch
         self.last_epoch = origin_epoch
         self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='max',
-            factor=config['factor'], patience=math.ceil(patience/3), threshold=config['threshold'],
+            factor=config['factor'], patience=(math.ceil(patience/3) if divisor is None
+                else max(1, math.ceil(patience/divisor))-1), threshold=config['threshold'],
             threshold_mode='abs', cooldown=config['cooldown'],
             min_lr=[config['min_actor_lr'], *self.fixed_rates], eps=0.)
         self.scheduler.best = best

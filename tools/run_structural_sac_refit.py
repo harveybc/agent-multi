@@ -628,7 +628,24 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
             if tree_digest(hook_rng)!=tree_digest(capture_rng(rng)):
                 raise ValueError('EPOCH_HOOK_MUTATED_RNG')
         if scheduler is not None:
-            row['actor_plateau'] = scheduler.observe(metrics['VALIDATION']['return_per_week'], eligible, epoch)
+            if scheduler.config.get('stop_before_reduce', False) and allowed_stop(epoch):
+                row['actor_plateau'] = dict(epoch=epoch, reduced=False, skipped_for_early_stop=True,
+                    before=rates_used, after=rates_used)
+                scheduler.last_epoch = epoch
+            else:
+                row['actor_plateau'] = scheduler.observe(metrics['VALIDATION']['return_per_week'], eligible, epoch)
+            if row['actor_plateau']['reduced'] and scheduler.config.get('restore_best', False):
+                from app.best_plateau_rollback import restore_validation_best
+                hook_rng = capture_rng(rng); replay_count = len(replay)
+                rollback_state = dict(state, epoch=epoch, stopping=vars(stopping).copy())
+                row['best_rollback'] = restore_validation_best(model, output, rollback_state,
+                                                               row['actor_plateau']['after'])
+                best_epoch = row['best_rollback']['restored_epoch']
+                row['continuation_metrics'] = (read(output/'EPOCH_ZERO.json')['metrics'] if best_epoch == 0
+                    else next(h['metrics'] for h in state['history'] if h['epoch'] == best_epoch))
+                from app.training_forensics import tree_digest
+                if len(replay) != replay_count or tree_digest(hook_rng) != tree_digest(capture_rng(rng)):
+                    raise ValueError('ROLLBACK_MUTATED_REPLAY_OR_RNG')
             row['learning_rates_used'] = rates_used
             state['actor_plateau'] = scheduler.state_dict()
             row['patience_stop_deferred'] = bool(verdict['stop'] and not allowed_stop(epoch))

@@ -7,10 +7,11 @@ import numpy as np
 import torch
 
 from app.branch_capacity_contrast import reduce_model
+from app.best_plateau_rollback import ROLLBACK_PLATEAU
 from app.frozen_recipe_inputs import file_sha
 from app.g3_replay import JointReplay
 from app.rl_subset import digest, support_hash
-from app.sac_training_reliability import weight_diagnostics
+from app.sac_training_reliability import weight_diagnostics, split_optimizer
 from app.selected_input_market import market_for
 from app.structural_refit import verify_files, export_bundle, load_bundle
 from app.three_signal_learning import environment
@@ -37,12 +38,21 @@ def run(a):
         source, _ = load_bundle(a.bundle, 'cuda')
         model, transfer = reduce_model(source, a.arm, a.seed)
         del source
+        lr_policy = getattr(a, 'lr_policy', 'fixed')
+        if lr_policy == 'restore_best_halves':
+            split_optimizer(model, dict(actor=1., critic=1., temperature=1.))
+        elif lr_policy != 'fixed':
+            raise ValueError('CAPACITY_LR_POLICY')
         recipe = model.recipe
         if recipe['list']['n'] != 71 or set(recipe['split']['periods']) != {'TRAIN', 'VALIDATION'}:
             raise ValueError('CAPACITY_RECIPE_CHANGED')
         design = long_design(parent['design'])
         design.update(allow_ineligible_epoch_zero=True)
-        binding = dict(schema='branch_capacity364.v1', arm=a.arm, seed=a.seed,
+        if lr_policy == 'restore_best_halves':
+            design.update(allow_ineligible_epoch_zero=False, fork_epoch=0,
+                          actor_plateau=ROLLBACK_PLATEAU)
+        binding = dict(schema='branch_capacity364.v1' if lr_policy == 'fixed' else 'branch_rollback365.v1',
+            lr_policy=lr_policy, arm=a.arm, seed=a.seed,
             source=SOURCE, support=SUPPORT, manifest=file_sha(a.bundle/'MANIFEST.json'),
             parent=file_sha(a.parent/'SPEC.json'), code=code_identity(), design=design,
             effective=model.effective, transfer=transfer,
@@ -142,6 +152,7 @@ if __name__ == '__main__':
         p.add_argument('--'+name, type=Path, required=True)
     p.add_argument('--seed', type=int, choices=(7,), default=7)
     p.add_argument('--arm', choices=('A', 'D', 'control'), required=True)
+    p.add_argument('--lr-policy', choices=('fixed','restore_best_halves'), default='fixed')
     a = p.parse_args()
     try:
         run(a)
