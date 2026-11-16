@@ -2,7 +2,9 @@
   "schema": "generalization_method.v1",
   "component_capacity_363": {
     "document": "../363_COMPONENT_CAPACITY_DIAGNOSIS.md",
-    "status": "ARCHIVED_NINE_POINT_PANEL_COMPLETE_FIRST_LR_FOLLOWUP_PREPARED",
+    "status": "ARCHIVED_PANEL_COMPLETE_FIRST_LR_READONLY_SUPERVISOR_ACTIVE",
+    "followup_runtime_revision": "6e6c490b",
+    "first_copied_lr_points": {"seed": 19, "epochs": [93, 94, 95], "drop_epoch": 94},
     "summary": "capacity363_summary.json",
     "checkpoints": 9,
     "actor_critic_profiles": 27,

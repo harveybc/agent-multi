@@ -113,3 +113,10 @@ new LR. Copy authenticated weights/history and use the same512 TRAIN probes.
 The optional explicit epoch manifest prevents silently substituting latest/best.
 Read-only CPU supervisor waits for all three, then runs one nine-point panel and
 report. No GPU interruption, retraining, parameter change or model promotion.
+
+Supervisor enabled2026-11-16 with pinned runtime6e6c490b. Its first collection
+authenticated seed19 epochs93/94/95 (first actual LR drop94). The other workers
+had not yet completed their drop panels at this check; it polls every180 seconds
+and exits after the single report. Raw tables/plots and the complete71-column
+dependency CSV are retained outside git. No request to Retsu to build a generator
+has been issued; that expensive lane remains conditional on this diagnosis.
