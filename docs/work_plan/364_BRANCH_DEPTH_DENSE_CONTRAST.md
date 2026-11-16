@@ -77,3 +77,28 @@ Every retained tensor and moment matches in all three real-source transfers.
 The362 full recoveries were sealed at epochs77/96/48 for seeds7/19/43 before
 their services were stopped. Their original run directories remain intact.
 The363 followup observer is paused with362, not discarded.
+
+## Deployed / First Learning Verified
+
+Immutable runtime `7002f85649f677755df7b7bdc8c18ce538da9fe9`, archive SHA256
+`48a393473b76f59b33d710d0482cc4ba079482ffc509b2d84e89c07e84a68ba9`.
+All three input/support identities and cold model/optimizer loads passed.
+All three services are active, zero restarts; nonzero SAC updates observed.
+The automated queue authenticates terminal result files before resuming362;
+read-only collection every180s also restores the362/363 observers afterward.
+
+These are **initial epoch0 accounts before new learning**, not experiment winners:
+
+| Arm / GPU | TRAIN return | VAL return | TRAIN / VAL trades |
+| --- | ---: | ---: | ---: |
+| control / RTX4070 | +16.058224% | +18.369946% | 745 / 207 |
+| A / RTX5090 | -24.317470% | +0.264061% | 1664 / 329 |
+| D / RTX4090 | -43.175657% | -3.361762% | 2035 / 410 |
+
+Control exactly reproduces the historical reference. Reduced architectures do
+not preserve the source function despite exact surviving weights; their initial
+account changes are measured explicitly. All three satisfy initial activity.
+Training curves, absolute selected performance and improvement relative to each
+own epoch0 must be reported separately. A favorable relative recovery alone
+does not establish superiority over control. CPU tests and launch are complete;
+the training comparison is running, not complete.

@@ -2,7 +2,13 @@
   "schema": "generalization_method.v1",
   "branch_capacity_364": {
     "document": "../364_BRANCH_DEPTH_DENSE_CONTRAST.md",
-    "status": "CPU_QUALIFIED_362_SEALED_AND_PAUSED_PREPARING_DEPLOYMENT",
+    "status": "THREE_QUALIFIED_GPU_ARMS_TRAINING_EPOCH1",
+    "runtime_revision": "7002f85649f677755df7b7bdc8c18ce538da9fe9",
+    "runtime_archive_sha256": "48a393473b76f59b33d710d0482cc4ba079482ffc509b2d84e89c07e84a68ba9",
+    "native_control_epoch0_exact": true,
+    "all_initial_cold_optimizer_reloads_exact": true,
+    "initial_activity_eligible_all_three": true,
+    "automatic_resume362_after_verified_completion": true,
     "arms": ["A", "D", "control"],
     "seed": 7,
     "actor_parameters": {"control": 30733, "A": 20301, "D": 9869},
@@ -15,7 +21,7 @@
     "max_epochs": 2000,
     "patience": 20,
     "promoted": false,
-    "next_action": "Deploy immutable A/D/control pilot; verify native control and learning progress. Resume each362 service only after authenticated364 completion. No automatic winner promotion or deletion; replicate any advantage before replacing the base."
+    "next_action": "Collect native epoch trajectories and weight diagnostics from running A/D/control. First epoch underway on all three GPUs with optimizer updates verified. Resume each362 service only after authenticated364 completion. No automatic winner promotion or deletion; replicate any advantage before replacing the base."
   },
   "component_capacity_363": {
     "document": "../363_COMPONENT_CAPACITY_DIAGNOSIS.md",
@@ -3560,7 +3566,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
-    "CURRENT364 supersedes running362 instructions: owner prioritizes A one-block branches and D Dense-per-timestamp branches with unchanged core, attention, all71 inputs and strategy. CPU54 checks pass.362 full states sealed at77/96/48 and services paused. Deploy paired seed7 fixedLR3e-6 pilot with matched control, per-epoch weights/native accounts; automatically resume362 after verified terminal364 result. No live work, STL, broad DEAP, phase2 closure or model promotion.",
+    "CURRENT364 supersedes running362 instructions: A on RTX5090, D on RTX4090 and matched control on RTX4070 now learning epoch1. Same seed7, all71 inputs, LR3e-6, full retained tensor/Adam transfer.54 tests pass; native control and all cold optimizer reloads exact.362 full states sealed at77/96/48 and services paused. Observe per-epoch weights/native accounts; automatically resume362 after verified terminal364 result. No live work, STL, broad DEAP, phase2 closure or model promotion.",
     "CURRENT363 complements362 without modifying it: archived9-point CPU capacity panel complete,864 restored interventions and288 identity controls. First-LR followup uses explicit before/drop/after epochs on identical512 TRAIN rows. No width selected from ranks, no new training, no synthetic generation. Preserve all71 inputs and frozen299. Historical extension inventory is complete but all71 pre2020 start is not yet verified.",
     "CURRENT362 SUPERSEDES all historical running/closure/search instructions below: owner approved sealed resume with actor-only plateau. All3 source accounts and four real sampled updates reproduced exactly on original GPUs. New paired queues run plateau first then equal-budget fixed control from epochs69/86/43.359 services suspended, not failed training. Preserve299/71inputs/28groups; phase2 remains open, broad DEAP unreleased, STL paused, no live work. Collect full-support functional/action traces from existing per-epoch inference; no duplicated TRAIN evaluation.",
     "CURRENT360/359 SUPERSEDES historical closure/search instructions below: training reliability remains REQUIRED.360 completed20 copied checkpoints,12 actor swaps,16 frozen-policy accounts and a device-dispatch witness. All three359 queues remain unchanged with minimum100 epochs. Preserve299/71inputs/28groups, no phase2 closure or broad DEAP. Next paired long trajectories and bounded TRAIN-only objective/collection alignment design, not another unchanged critic/feature sweep. G3 both arms finished40 epochs and retained epoch0. SNR belongs to Retsu; no live work or STL resume.",
