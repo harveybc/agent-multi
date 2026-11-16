@@ -1,5 +1,24 @@
 {
   "schema": "generalization_method.v1",
+  "online_transient_forensics_360": {
+    "document": "../360_ONLINE_TRANSIENT_RESULTS.md",
+    "status": "COPIED_CHECKPOINT_DIAGNOSIS_COMPLETE_RUNNING359_UNCHANGED",
+    "checkpoints": 20,
+    "actor_component_swaps": 12,
+    "frozen_collection_accounts": 16,
+    "cpu_native_accounts_matching": 19,
+    "cpu_exception": "control48: original GPU replay exact; seven CPU/default-GPU action differences. Disabling attention fastpath on both yields zero action differences and equal accounts.",
+    "initial_train_actor_critic_disagreement": 0.8984375,
+    "initial_greedy_train_return_pct": 16.05822355000215,
+    "initial_sampled_train_return_range_pct": [-49.845, -43.825],
+    "initial_greedy_validation_return_pct": 18.369945750000117,
+    "initial_sampled_validation_return_range_pct": [-21.962, -10.470],
+    "cause_status": "Measured objective/execution mismatch and early encoder drift; no unique proven cause of convergence failure",
+    "phase2_closed": false,
+    "deap_released": false,
+    "promoted": false,
+    "next_action": "Complete359 minimum100-epoch paired continuation without changing its runtime. Preserve299. Predeclare bounded TRAIN-only sampled/greedy value-target and action-ranking diagnostic before any entropy/collection intervention; fix future replay dispatch contract without rewriting old evidence."
+  },
   "long_online_continuation_359": {
     "document": "../359_LONG_ONLINE_LR_CONTINUATION.md",
     "status": "RUNNING_THREE_WORKERS_NINE_SEQUENTIAL_RUNS",
@@ -88,9 +107,13 @@
   },
   "g3_conditional_contrast_355": {
     "document": "../355_G3_CONDITIONAL_JOINT_PILOT.md",
-    "status": "CONTROL_COMPLETE_40_EPOCHS_AUGMENTATION_RUNNING",
+    "status": "MATCHED_CONTRAST_COMPLETE_BOTH_SELECT_EPOCH0",
     "control_best_epoch": 0,
     "control_epochs": 40,
+    "augmentation_best_epoch": 0,
+    "augmentation_epochs": 40,
+    "last_control_train_validation_return_pct": [462.7072074500284, -21.17106524999719],
+    "last_augmentation_train_validation_return_pct": [514.5329373000333, -22.077415249997486],
     "generation_identity": "f6d167c6a8ae7827f9d19ea5016d40094e348aa99efef1b1a5e4e713dd7c5252",
     "training_identity": "6eb265d3fc39231a089c2fb571ef5fecc14a8e0967c870680559828404be9069",
     "synthetic_rows": 24639,
@@ -108,7 +131,7 @@
     "resume": "persistent user service; epoch checkpoint includes both replay stores and RNG",
     "model_promoted": false,
     "stl_resumed": false,
-    "next_action": "Collect matched full real accounts and actual replay fractions after both arms. Preserve299 unless a separately verified improvement qualifies. No automatic new sweep or live change. Longer-history candidate remains unadmitted."
+    "next_action": "Preserve299: completed matched augmentation did not improve selected checkpoint. Training reliability359/360 takes precedence. No automatic new synthetic sweep or live change; longer-history candidate remains unadmitted."
   },
   "g3_producer_qualification_354": {
     "document": "../354_G3_PRODUCER_QUALIFICATION.md",
@@ -3454,6 +3477,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
+    "CURRENT360/359 SUPERSEDES historical closure/search instructions below: training reliability remains REQUIRED.360 completed20 copied checkpoints,12 actor swaps,16 frozen-policy accounts and a device-dispatch witness. All three359 queues remain unchanged with minimum100 epochs. Preserve299/71inputs/28groups, no phase2 closure or broad DEAP. Next paired long trajectories and bounded TRAIN-only objective/collection alignment design, not another unchanged critic/feature sweep. G3 both arms finished40 epochs and retained epoch0. SNR belongs to Retsu; no live work or STL resume.",
     "CURRENT355/356: real-only control completed40 epochs without beating299;90/10 augmentation running at matched budget. Modular constructors and192-gene contract verified. Next training-loop/ledger integration while G3 completes, then adjudicate G3 before staged DEAP. Keep299/71inputs intact; no live work, STL or new owner decision required.",
     "CURRENT354 supersedes historical queue instructions: owner approved353 data experiments.71 original TRAIN producers replayed, future/prefix tests exact. Next joint TRAIN-only G3 generator qualification and matched90/10 training, not another unchanged floating or critic variant.59,997 pre2020 jointly finite primitive rows are an UNADMITTED candidate, not a completed longer-history comparison. Keep299 and all71 inputs unchanged; STL paused; live belongs to Satoshi. No owner decision required.",
     "CURRENT352 SUPERSEDES all historical next-step entries below:351 closes phase2 with111 verified final neighbors, no qualifying move.352 verifies18 construction genes/54 phenotypes, ledger176 events. Next implement per-component builders and actual training consumption/ledger gates then staged DEAP. No old simple architecture substitution, live trading, STL, periodic-refit or repeated floating. No owner decision required.",
