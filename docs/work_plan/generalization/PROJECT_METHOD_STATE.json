@@ -1,5 +1,13 @@
 {
   "schema": "generalization_method.v1",
+  "plateau_lr_option_361": {
+    "document": "../361_PLATEAU_LR_AND_DECISION_ALIGNMENT.md",
+    "status": "PROPOSED_CONTRAST_AND_TEST_DESIGN_NOT_LAUNCHED",
+    "approved_analysis": "weight displacement to margin/action changes and replayed native account outcomes",
+    "first_proposed_scope": "actor-only scheduler versus fixed LR; critic and temperature rates unchanged",
+    "current359_modified": false,
+    "next_action": "Continue bounded TRAIN decision-alignment diagnostic, then implement and test scheduler/stop/recovery contract before a pinned matched experiment. Reuse per-epoch metrics, no duplicated evaluation."
+  },
   "online_transient_forensics_360": {
     "document": "../360_ONLINE_TRANSIENT_RESULTS.md",
     "status": "COPIED_CHECKPOINT_DIAGNOSIS_COMPLETE_RUNNING359_UNCHANGED",
