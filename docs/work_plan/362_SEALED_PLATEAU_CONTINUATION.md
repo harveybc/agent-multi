@@ -55,3 +55,29 @@ Full-policy changes/KL/margins are recorded from the SAME logits used for the
 single per-epoch native evaluation. Detailed action/position/command/trade traces
 are saved at fork+1,+8,+9, before and after the earliest possible LR reduction.
 No second per-epoch TRAIN account is run for this instrumentation.
+
+## Launch Qualification
+
+Checked2026-11-16 15:47 UTC. All three workers passed exact native TRAIN/VAL
+account reproduction and repeated four sampled SAC updates from full recovery,
+including identical losses, model/optimizer hashes and final random states.
+All three are advancing steps and updates, not merely loading weights.
+
+| Seed | GPU class | Sealed epoch | Running epoch | Stage |
+|---|---|---:|---:|---|
+|7|5090|69|70|actor-only plateau continuation|
+|19|4090|86|87|actor-only plateau continuation|
+|43|4070|43|44|actor-only plateau continuation|
+
+Pinned runtime revision: `f16593da0dc8e892b4f3ec5961f60a2e8eced6ee`.
+Archive SHA256: `22599373c0f3569df1101840677089a0aa79211b338d77053c89dbb7ffffad52`.
+Private fleet configuration and systemd worker/observer units are outside git.
+Observer refreshes every180 seconds, reports source metrics explicitly as source
+until a new epoch completes, and does not promote models. Fixed-LR controls are
+queued automatically after each plateau arm, with identical additional epochs.
+
+First new completed epochs expected about14-30 minutes from launch, based on
+prior measured timings, not a campaign completion estimate. First LR reduction
+requires eight new nonimproving eligible-or-counted observations; improvements
+delay it. Full matched completion depends on reductions and stopping, and can
+take days. No new trading improvement is claimed at launch.

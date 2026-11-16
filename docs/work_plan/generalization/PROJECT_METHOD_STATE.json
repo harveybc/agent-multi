@@ -1,15 +1,37 @@
 {
   "schema": "generalization_method.v1",
+  "sealed_plateau_continuation_362": {
+    "document": "../362_SEALED_PLATEAU_CONTINUATION.md",
+    "status": "RUNNING_THREE_QUALIFIED_FULL_STATE_CONTINUATIONS",
+    "runtime_revision": "f16593da0dc8e892b4f3ec5961f60a2e8eced6ee",
+    "runtime_archive_sha256": "22599373c0f3569df1101840677089a0aa79211b338d77053c89dbb7ffffad52",
+    "source_epochs_by_seed": {"7": 69, "19": 86, "43": 43},
+    "native_accounts_exact_all_three": true,
+    "next_four_sampled_updates_exact_all_three": true,
+    "full_regression_tests": 47,
+    "additional_focused_checks": 7,
+    "scheduler_patience": 7,
+    "scheduler_factor": 0.5,
+    "scheduler_cooldown": 5,
+    "scheduler_actor_min_lr": 1e-7,
+    "min_delta": 1e-8,
+    "minimum_epochs_after_actual_reduction": 20,
+    "queue": "actor-only plateau then equal-epoch fixed LR from identical full source state",
+    "phase2_closed": false,
+    "deap_released": false,
+    "promoted": false,
+    "next_action": "Collect automatic matched continuations and full-support weight/margin/action diagnostics. Preserve299 and sealed359 states; do not restart359 or change runtime. No live work or STL resume."
+  },
   "plateau_lr_option_361": {
     "document": "../361_PLATEAU_LR_AND_DECISION_ALIGNMENT.md",
-    "status": "PROPOSED_CONTRAST_AND_TEST_DESIGN_NOT_LAUNCHED",
+    "status": "IMPLEMENTED_QUALIFIED_AND_RUNNING_AS_362",
     "scheduler_patience_rule": "max(1,ceil(early_stopping_patience /3))",
     "scheduler_patience_at_es20": 7,
     "native_torch_reduction_after_nonimproving_observations": 8,
     "approved_analysis": "weight displacement to margin/action changes and replayed native account outcomes",
     "first_proposed_scope": "actor-only scheduler versus fixed LR; critic and temperature rates unchanged",
     "current359_modified": false,
-    "next_action": "Continue bounded TRAIN decision-alignment diagnostic, then implement and test scheduler/stop/recovery contract before a pinned matched experiment. Reuse per-epoch metrics, no duplicated evaluation."
+    "next_action": "Follow362. Scheduler, stop coordination and full-state recovery tested; original359 code unchanged and services explicitly suspended after sealing."
   },
   "online_transient_forensics_360": {
     "document": "../360_ONLINE_TRANSIENT_RESULTS.md",
@@ -43,7 +65,7 @@
   },
   "long_online_continuation_359": {
     "document": "../359_LONG_ONLINE_LR_CONTINUATION.md",
-    "status": "RUNNING_THREE_WORKERS_NINE_SEQUENTIAL_RUNS",
+    "status": "SUSPENDED_AFTER_SEAL_FOR_OWNER_APPROVED_362",
     "worker_revision": "a5a0e50d",
     "runtime_archive_sha256": "76105b037cd55362eab97790744ad4856c80f64f46b63e5d697526b512c36ca6",
     "seeds": [7,19,43],
@@ -58,12 +80,12 @@
     "focused_tests_passed": 43,
     "initial_native_returns_trades_exact_all_three": true,
     "grouped_optimizer_cold_exact_all_three": true,
-    "persistent_services_enabled": true,
+    "persistent_services_enabled": false,
     "g3_unchanged": true,
     "phase2_closed": false,
     "deap_released": false,
     "promoted": false,
-    "next_action": "Automatic sequential continuation on each worker; collect epoch-aligned account, optimizer and weight evidence. Compare paired within-seed trajectories, selected and last checkpoints before deciding recovery versus delayed destruction."
+    "next_action": "Preserve original artifacts and runtime. Full states at69/86/43 are sealed independently;362 supersedes the running queue. Do not automatically restart359."
   },
   "action_specialists_option_358": {
     "document": "../358_ACTION_SPECIALISTS_COMPARISON.md",
@@ -3499,6 +3521,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
+    "CURRENT362 SUPERSEDES all historical running/closure/search instructions below: owner approved sealed resume with actor-only plateau. All3 source accounts and four real sampled updates reproduced exactly on original GPUs. New paired queues run plateau first then equal-budget fixed control from epochs69/86/43.359 services suspended, not failed training. Preserve299/71inputs/28groups; phase2 remains open, broad DEAP unreleased, STL paused, no live work. Collect full-support functional/action traces from existing per-epoch inference; no duplicated TRAIN evaluation.",
     "CURRENT360/359 SUPERSEDES historical closure/search instructions below: training reliability remains REQUIRED.360 completed20 copied checkpoints,12 actor swaps,16 frozen-policy accounts and a device-dispatch witness. All three359 queues remain unchanged with minimum100 epochs. Preserve299/71inputs/28groups, no phase2 closure or broad DEAP. Next paired long trajectories and bounded TRAIN-only objective/collection alignment design, not another unchanged critic/feature sweep. G3 both arms finished40 epochs and retained epoch0. SNR belongs to Retsu; no live work or STL resume.",
     "CURRENT355/356: real-only control completed40 epochs without beating299;90/10 augmentation running at matched budget. Modular constructors and192-gene contract verified. Next training-loop/ledger integration while G3 completes, then adjudicate G3 before staged DEAP. Keep299/71inputs intact; no live work, STL or new owner decision required.",
     "CURRENT354 supersedes historical queue instructions: owner approved353 data experiments.71 original TRAIN producers replayed, future/prefix tests exact. Next joint TRAIN-only G3 generator qualification and matched90/10 training, not another unchanged floating or critic variant.59,997 pre2020 jointly finite primitive rows are an UNADMITTED candidate, not a completed longer-history comparison. Keep299 and all71 inputs unchanged; STL paused; live belongs to Satoshi. No owner decision required.",

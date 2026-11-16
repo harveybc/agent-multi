@@ -3,7 +3,9 @@
 2026-11-16. Owner approved continuing360's weight -> margin -> action -> native
 account diagnosis and asked whether ReduceLROnPlateau could help. This document
 records a proposed isolated scheduler experiment, NOT an executed training result.
-Current359 workers and their frozen queues remain unchanged.
+Update2026-11-16: implemented and qualified in [362](362_SEALED_PLATEAU_CONTINUATION.md).
+The original359 runtime is unchanged; its services were explicitly suspended after
+independent full-state sealing. Three new matched continuation queues are running.
 
 ## Rationale
 
