@@ -818,3 +818,15 @@ are resource-priority pauses, not terminal scientific verdicts. CPU observer
 refreshed all four histories without errors after a startup identity race.
 Next priority remains372 fresh-network data-quantity training, not yet launched.
 See [373](../373_POST_RESTART_RECOVERY.md) for metrics, recovery scope and ETA.
+
+## Matched-update history comparison374 running
+
+42 tests passed, including exact interrupted/uninterrupted tiny native
+training and Adam parity. Both seeds passed real four-store CPU preflights;
+the first two arms passed GPU cold reload, same-seed recipe-independent fresh
+initialization and exact manual input parity. Two enabled queues start48months
+seed7 and6months seed19, then complete all four histories each automatically.
+100 update-bearing complete TRAIN passes per arm,6006 updates/pass, after one
+collection-only pass. Same71 inputs, full13xstride2 window, fixed architecture;
+gradient budget matched, interactions/sample reuse explicitly not matched.
+No neural result or promotion yet. See [374](../374_MATCHED_HISTORY_TRAINING.md).

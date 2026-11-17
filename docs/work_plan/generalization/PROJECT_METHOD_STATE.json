@@ -2,7 +2,11 @@
   "schema": "generalization_method.v1",
   "matched_history_training_374": {
     "document": "../374_MATCHED_HISTORY_TRAINING.md",
-    "status": "IMPLEMENTED_CPU_PREFLIGHT_PASSED_DEPLOYMENT_IN_PROGRESS",
+    "status": "TWO_GPU_QUEUES_ENABLED_RUNNING_CPU_AND_GPU_QUALIFICATION_PASSED",
+    "runtime_revision": "8f5e9472",
+    "runtime_code_identity": "dcd519d96b2ac7ae36146efdae727f9690db79fcd94ee0e65670d7cb7343feb0",
+    "first_active_months_by_seed": {"7":48,"19":6},
+    "initial_worker_restarts": 0,
     "tests_passed": 42,
     "months": [6,12,24,48],
     "seeds": [7,19],
@@ -10,7 +14,7 @@
     "budget": "One collection-only complete TRAIN pass, then100 passes with6006 updates each; fixed original3e-5 LR; no early truncation",
     "monitor": "Activity-eligible balanced_min best and endpoint reported separately",
     "matched_axes": "Gradient steps and batch size; environment interactions and sample reuse explicitly differ",
-    "next_action": "Deploy pinned runtime, authenticate transferred stores and complete GPU cold-reload gates, then sequential per-device queues. Preserve365/367 and no live work."
+    "next_action": "Two finite GPU queues automatically run all four histories per seed. Inspect first update-bearing epochs for timing; compare endpoints and selected checkpoints after fixed budgets. Preserve365/367; no live work or promotion."
   },
   "post_restart_recovery_373": {
     "document": "../373_POST_RESTART_RECOVERY.md",
@@ -22,7 +26,7 @@
     "completed_predecessor_autostarts_disabled": true,
     "observer_refreshed_collection_errors": 0,
     "checkpoint_scope": "Completed-epoch model/optimizer, replay, RNG and monitor/scheduler state; interrupted partial epoch repeated",
-    "next_action": "Continue active arms automatically; implement and qualify fresh-network matched-update372 runner for freed devices. New data-quantity neural training is not launched. No live work."
+    "next_action": "Superseded by374 deployment:365/367 continue and two freed devices now execute the fresh-network history queues. Paused367/368 remain preserved. No live work."
   },
   "subset_producer_rebuild_372": {
     "document": "../372_SUBSET_PRODUCER_REBUILD.md",
@@ -35,8 +39,8 @@
     "producer_fit_scope_negative_controls": true,
     "reload_exact": true,
     "constant_column_12_month": "kf.lc.level_minus_close retained; fitted observation noise at numerical boundary",
-    "neural_training_launched": false,
-    "next_action": "Implement fresh-network matched-update learning-curve runner over verified372 recipes; qualify initialization/input parity before dispatch to idle devices. Never load full-history champion weights for shorter-history arms."
+    "neural_training_launched": true,
+    "next_action": "374 is executing fresh-network matched-update learning curves over these verified recipes, never loading full-history champion weights."
   },
   "nested_history_preflight_371": {
     "document": "../371_NESTED_HISTORY_PREFLIGHT.md",

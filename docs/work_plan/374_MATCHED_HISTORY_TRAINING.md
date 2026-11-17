@@ -53,3 +53,24 @@ Deployment uses two queues, each traversing all four histories so hardware is
 not uniquely assigned to a dataset size. Seed7 order48/6/24/12; seed19 order
 6/48/12/24. Failed units stop their queue rather than being silently counted as
 valid experiments. No neural performance result is claimed by this preflight.
+
+## Deployment receipt
+
+Runtime8f5e9472 deployed2026-11-17 at19:51 UTC. Both sequential services are
+enabled and running with zero initial restarts, one on each freed device.
+Seed7 starts48 months; seed19 starts6 months. Both passed GPU fresh-parameter
+pairing against their48-month recipe reference, empty Adam, exact input parity
+and cold bundle reload. Separate CPU preflights passed all four stores for both
+seeds on the execution host before launch.
+
+The first6-month collection pass completed2780 decisions without gradient
+updates in31.11s, as required. This is replay warmup, not a performance result
+or a timing estimate for an update-bearing epoch. The48-month collection pass
+was advancing when checked. Detailed deployment receipts, configurations,
+unit logs, recovery, native metrics and plots reside in the private campaign
+root. The existing365 control and367 strict runs remain active and unmodified.
+
+No trained model has been promoted. The next automatic actions are100
+update-bearing passes for each admitted arm, followed by the next history in
+its pinned per-device queue. Final comparisons must use both seeds and report
+endpoint alongside selected-best behavior and exposure/sample-reuse counts.
