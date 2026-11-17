@@ -27,13 +27,14 @@ def batch():
 
 
 @pytest.mark.parametrize('arm,blocks', [('control', 2), ('A', 1), ('D', 0)])
-def test_transfer_layout_causal_dense_and_cold_update(tmp_path, arm, blocks):
+@pytest.mark.parametrize('learning_rate', [3e-6, 3e-5])
+def test_transfer_layout_causal_dense_and_cold_update(tmp_path, arm, blocks, learning_rate):
     torch.set_num_threads(1)
     source = ThreeSignalSAC(grouped_recipe(), critic_regularization={'kind': 'core_dropout', 'p': .1})
     b = batch()
     source.update(b)
     before = tree_digest(source.loss.state_dict())
-    model, receipt = reduce_model(source, arm, 7)
+    model, receipt = reduce_model(source, arm, 7, learning_rate=learning_rate)
     assert before == tree_digest(source.loss.state_dict())
     assert receipt['all_retained_tensors_exact'] and receipt['optimizer_moments_exact']
     e = model.actor_net.encoder
@@ -43,7 +44,8 @@ def test_transfer_layout_causal_dense_and_cold_update(tmp_path, arm, blocks):
     for n, p in model.loss.named_parameters():
         assert torch.equal(p, source_params[n])
         assert tree_digest(model.optimizer.state.get(p, {})) == tree_digest(source.optimizer.state.get(source_params[n], {}))
-    assert all(g['lr'] == 3e-6 for g in model.optimizer.param_groups)
+    assert all(g['lr'] == learning_rate for g in model.optimizer.param_groups)
+    assert model.effective['learning_rate'] == receipt['optimizer_lr'] == learning_rate
     x = b['features']
     if arm == 'D':
         branch = e.branches[0]

@@ -1,4 +1,4 @@
-"""Actor-only LR scheduling, with explicit resumed-run observation budget."""
+"""Actor-only (default) or all-role LR scheduling with a recovery budget."""
 from copy import deepcopy
 import math
 
@@ -8,7 +8,7 @@ import torch
 class ActorPlateau:
     def __init__(self, optimizer, best, patience, origin_epoch, config):
         expected = {'factor', 'threshold', 'cooldown', 'min_actor_lr', 'post_reduction_epochs'}
-        optional = {'exact_patience_divisor', 'restore_best', 'stop_before_reduce'}
+        optional = {'exact_patience_divisor', 'restore_best', 'stop_before_reduce', 'scope'}
         if (not expected <= set(config) or set(config)-expected-optional
                 or len(optimizer.param_groups) != 3 or not math.isfinite(best)):
             raise ValueError('ACTOR_PLATEAU_CONFIG')
@@ -27,7 +27,13 @@ class ActorPlateau:
             raise ValueError('ACTOR_PLATEAU_BUDGET')
         self.optimizer = optimizer
         self.config = deepcopy(config)
-        self.fixed_rates = [float(g['lr']) for g in optimizer.param_groups[1:]]
+        self.scope = config.get('scope', 'actor')
+        if self.scope not in ('actor', 'all'):
+            raise ValueError('ACTOR_PLATEAU_SCOPE')
+        other_rates = [float(g['lr']) for g in optimizer.param_groups[1:]]
+        self.fixed_rates = other_rates if self.scope == 'actor' else []
+        if self.scope == 'all' and any(lr < config['min_actor_lr'] for lr in other_rates):
+            raise ValueError('ACTOR_PLATEAU_RATE')
         self.last_reduction = None
         self.origin_epoch = origin_epoch
         self.last_epoch = origin_epoch
@@ -35,18 +41,22 @@ class ActorPlateau:
             factor=config['factor'], patience=(math.ceil(patience/3) if divisor is None
                 else max(1, math.ceil(patience/divisor))-1), threshold=config['threshold'],
             threshold_mode='abs', cooldown=config['cooldown'],
-            min_lr=[config['min_actor_lr'], *self.fixed_rates], eps=0.)
+            min_lr=([config['min_actor_lr']]*3 if self.scope == 'all'
+                    else [config['min_actor_lr'], *self.fixed_rates]),
+            eps=1e-16 if self.scope == 'all' else 0.)
         self.scheduler.best = best
 
     def observe(self, score, eligible, epoch):
         if not math.isfinite(score) or type(eligible) is not bool or epoch != self.last_epoch+1:
             raise ValueError('ACTOR_PLATEAU_OBSERVATION')
         before = [float(g['lr']) for g in self.optimizer.param_groups]
-        if before[1:] != self.fixed_rates:
+        if self.scope == 'actor' and before[1:] != self.fixed_rates:
             raise ValueError('ACTOR_PLATEAU_OTHER_ROLE_CHANGED')
+        if self.scope == 'all' and before != self.scheduler.get_last_lr():
+            raise ValueError('ACTOR_PLATEAU_EXTERNAL_RATE_CHANGE')
         self.scheduler.step(score if eligible else -math.inf)
         after = [float(g['lr']) for g in self.optimizer.param_groups]
-        if after[1:] != self.fixed_rates:
+        if self.scope == 'actor' and after[1:] != self.fixed_rates:
             raise ValueError('ACTOR_PLATEAU_MUTATED_OTHER_ROLE')
         reduced = after[0] < before[0]
         if reduced:

@@ -19,7 +19,7 @@
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "training reliability"
   },
   "run_branch_capacity_contrast.py": {
-   "purpose": "Resumable paired branch SAC pilot with exact retained-state transfer, fixed LR or opt-in best-validation rollback plateau, full data and native accounts; no promotion",
+   "purpose": "Resumable branch SAC pilot and opt-in preserved champion80 refinement, exact retained-state transfer, shared monitor and rollback plateau, full data and native accounts; no promotion",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "experiment_runner", "owner": "training reliability"
   },
   "report_component_capacity.py": {

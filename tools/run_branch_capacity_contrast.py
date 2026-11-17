@@ -1,6 +1,8 @@
 """Resumable selected299 branch A/D/control pilot, no live or automatic promotion."""
 import argparse
+from copy import deepcopy
 import fcntl
+import math
 from pathlib import Path
 
 import numpy as np
@@ -22,8 +24,30 @@ from tools.run_sac_training_reliability import reseed, code_identity, atomic_sav
 from tools.run_structural_sac_refit import fit_epochs, assess_full
 
 
+def refinement_design(base, original_lr, rates):
+    if (len(rates) != 3 or not math.isfinite(original_lr) or original_lr <= 0
+            or any(not math.isclose(lr, original_lr, rel_tol=1e-12, abs_tol=0.)
+                   for lr in rates)):
+        raise ValueError('REFINEMENT_START_LR')
+    d = deepcopy(base)
+    d.update(patience=80, minimum_epochs=100, max_epochs=2000, min_delta=1e-8,
+        monitor_start_epoch=20, select_during_warmup=True,
+        monitor_mode='balanced_min', shared_monitor_decision=True,
+        monitor='balanced_min_full_accounts_return_per_week',
+        actor_plateau=dict(factor=.2, threshold=1e-8, cooldown=0,
+            min_actor_lr=original_lr/625, post_reduction_epochs=20,
+            exact_patience_divisor=4, restore_best=True, stop_before_reduce=True,
+            scope='all'))
+    return d
+
+
 def run(a):
     monitor_policy = getattr(a, 'monitor_policy', 'validation')
+    refinement = getattr(a, 'refinement_profile', 'none')
+    if (refinement not in ('none', 'champion80') or
+            (refinement == 'champion80' and (a.arm != 'control'
+             or a.lr_policy != 'restore_best_halves' or monitor_policy != 'balanced_min'))):
+        raise ValueError('REFINEMENT_PROFILE_CONFIGURATION')
     if (monitor_policy not in ('validation', 'balanced_min', 'champion_nonregression')
             or (monitor_policy != 'validation' and
                 (a.arm != 'control' or a.lr_policy != 'restore_best_halves'))
@@ -42,7 +66,9 @@ def run(a):
         if file_sha(a.bundle/'model.pt') != SOURCE:
             raise ValueError('CAPACITY_SOURCE_CHANGED')
         source, _ = load_bundle(a.bundle, 'cuda')
-        model, transfer = reduce_model(source, a.arm, a.seed)
+        original_lr = source.effective['learning_rate']
+        model, transfer = reduce_model(source, a.arm, a.seed,
+            learning_rate=original_lr if refinement == 'champion80' else 3e-6)
         del source
         lr_policy = getattr(a, 'lr_policy', 'fixed')
         if lr_policy == 'restore_best_halves':
@@ -60,6 +86,9 @@ def run(a):
         if monitor_policy != 'validation':
             design.update(monitor_mode=monitor_policy, shared_monitor_decision=True,
                           monitor=monitor_policy + '_full_accounts_return_per_week')
+        if refinement == 'champion80':
+            design = refinement_design(design, original_lr,
+                                       [g['lr'] for g in model.optimizer.param_groups])
         binding = dict(schema='branch_capacity364.v1' if lr_policy == 'fixed' else 'branch_rollback365.v1',
             lr_policy=lr_policy, arm=a.arm, seed=a.seed,
             source=SOURCE, support=SUPPORT, manifest=file_sha(a.bundle/'MANIFEST.json'),
@@ -68,6 +97,9 @@ def run(a):
             hardware=torch.cuda.get_device_name(), torch=torch.__version__)
         if monitor_policy != 'validation':
             binding.update(schema='monitor_contrast367.v1', monitor_policy=monitor_policy)
+        if refinement == 'champion80':
+            binding.update(schema='champion_refinement368.v1', refinement_profile=refinement,
+                           source_learning_rate=original_lr, initialization='preserve_all')
         binding['identity'] = digest(binding)
         identity = binding['identity']
         if (a.output/'SPEC.json').exists() and read(a.output/'SPEC.json') != binding:
@@ -166,6 +198,7 @@ if __name__ == '__main__':
     p.add_argument('--lr-policy', choices=('fixed','restore_best_halves'), default='fixed')
     p.add_argument('--monitor-policy', choices=('validation','balanced_min','champion_nonregression'),
                    default='validation')
+    p.add_argument('--refinement-profile', choices=('none','champion80'), default='none')
     a = p.parse_args()
     try:
         run(a)

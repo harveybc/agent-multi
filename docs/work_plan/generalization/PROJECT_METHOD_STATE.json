@@ -1,5 +1,20 @@
 {
   "schema": "generalization_method.v1",
+  "preserved_champion_refinement_368": {
+    "document": "../368_PRESERVED_CHAMPION_FINE_TUNING.md",
+    "status": "IMPLEMENTED_UNIT_AND_NATIVE_RECOVERY_TESTS_PASSED_PREPARING_DEPLOYMENT",
+    "owner_latest_amendment": "Use original LR, NOT original/10",
+    "source": "selected299;71inputs28groups;preserve all model weights and named Adam moments",
+    "source_validation_return_pct": 18.369945750000117,
+    "initial_lr_all_roles": 3e-5,
+    "scheduler": {"patience_misses":20,"factor":0.2,"floor":4.8e-8,"scope":"all","restore_champion":true},
+    "training_budget": {"minimum_epochs":100,"maximum_epochs":2000,"patience":80,"min_delta":1e-8},
+    "monitor": "balanced_min shared accepted champion; native return/week with activity >2/week both periods",
+    "head_reset": false,
+    "other_runs_interrupted": false,
+    "promotion": false,
+    "next_action": "Qualify exact original source account replay and launch pinned resumable fine-tuning on free GPU; preserve365/367. Report actual updates and measured timing. No phase2 closure or broad DEAP."
+  },
   "balanced_champion_monitor_367": {
     "document": "../367_BALANCED_CHAMPION_MONITOR_CONTRAST.md",
     "status": "TWO_PINNED_ENABLED_QUEUES_WAITING_FOR_365_COMPLETION",

@@ -757,3 +757,20 @@ VALIDATION18.369945750000117%,207 trades.50 focused tests pass. RTX5090 control
 starts a persistent sequential real-only then90/10 replay contrast, with matched
 updates, separate native accounts and exact sample-count recovery. No new
 trading result is available yet and no model is promoted. STL stays paused.
+
+# 368: Preserved champion refinement (owner priority)
+
+The owner amended the initial LR before any launch: use original3e-5, not
+original/10. New opt-in profile retains all selected299 weights and named Adam
+moments, with ES80 and full-state champion restore after20 misses followed by
+LR/5 in all three roles. Floor4.8e-8; minimum100 and maximum2000 epochs.
+Source account validation+18.36994575% is a baseline, not a new result.
+Critic-head reset evidence must not be reinterpreted as attention-head reset.
+This contrast intentionally preserves trained critics; initialization changes
+need a separate contrast. Existing365/367 pinned runtimes remain unchanged.
+
+New scheduler tests exposed and corrected all-role resume comparing reduced
+rates with obsolete fixed-role metadata, and a rounding-only fifth LR drop.
+Native reduced-budget interrupted and uninterrupted trajectories now match
+exactly for balanced and nonregression monitors with all-role rollback.
+See [368](../368_PRESERVED_CHAMPION_FINE_TUNING.md).

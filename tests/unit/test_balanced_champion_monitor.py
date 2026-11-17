@@ -63,7 +63,8 @@ def test_legacy_shadow_modes_remain_stable_for_old_recoveries():
 
 
 @pytest.mark.parametrize('mode', ['balanced_min', 'champion_nonregression'])
-def test_native_integrated_rejected_val_record_rollback_restart(tmp_path, request, mode):
+@pytest.mark.parametrize('scope', ['actor', 'all'])
+def test_native_integrated_rejected_val_record_rollback_restart(tmp_path, request, mode, scope):
     import torch
     from agent_plugins.three_signal_sac import ThreeSignalSAC
     from app.g3_replay import JointReplay
@@ -91,7 +92,7 @@ def test_native_integrated_rejected_val_record_rollback_restart(tmp_path, reques
     design = dict(replay_size=64, batch_size=16, warmup=16, update_every=4, max_epochs=8,
         minimum_epochs=0, patience=4, min_delta=1e-8, monitor_mode=mode, shared_monitor_decision=True,
         monitor_start_epoch=1, initialize_epoch_zero=True, fork_epoch=0,
-        actor_plateau=dict(CONFIG, post_reduction_epochs=2), replay_backend='memmap')
+        actor_plateau=dict(CONFIG, post_reduction_epochs=2, scope=scope), replay_backend='memmap')
     probe = factory().inputs.windows[30:34].copy()
     kwargs = dict(replay_factory=lambda real: JointReplay(real, None, 16, 207))
     a = fit_epochs(model(), factory, assessor(True), design, 7, tmp_path/'a', 'same', probe, **kwargs)
@@ -102,6 +103,8 @@ def test_native_integrated_rejected_val_record_rollback_restart(tmp_path, reques
     assert a['actor_plateau'] == b['actor_plateau']
     assert a['stopping']['best'] == a['actor_plateau']['scheduler']['best'] == 1.
     assert a['history'][1]['best_rollback']['restored_epoch'] == 0
+    rates = a['history'][1]['actor_plateau']['after']
+    assert (rates[0] == rates[1] == rates[2]) == (scope == 'all')
     assert [h['mean_update'] for h in a['history']] == [h['mean_update'] for h in b['history']]
     for name in ('model.pt', 'learning.pt'):
         left = torch.load(tmp_path/'a'/'recovery'/'epoch_0004'/name, weights_only=False)

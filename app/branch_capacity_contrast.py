@@ -1,5 +1,6 @@
 """Paired branch reductions with named, exact retained SAC/Adam state transfer."""
 from copy import deepcopy
+import math
 
 import torch
 
@@ -7,11 +8,13 @@ from app.structural_refit import build_model
 from app.training_forensics import tree_digest
 
 
-def reduce_model(source, arm, seed):
+def reduce_model(source, arm, seed, learning_rate=3e-6):
     if arm not in ('control', 'A', 'D'):
         raise ValueError('CAPACITY_ARM')
+    if not math.isfinite(learning_rate) or learning_rate <= 0:
+        raise ValueError('CAPACITY_LEARNING_RATE')
     effective = deepcopy(source.effective)
-    effective['learning_rate'] = 3e-6
+    effective['learning_rate'] = learning_rate
     architecture = effective['architecture']
     if architecture.get('group_configs') is not None:
         raise ValueError('CAPACITY_EXPECTED_UNIFORM_SOURCE_BRANCHES')
@@ -38,7 +41,7 @@ def reduce_model(source, arm, seed):
     if len(source.optimizer.param_groups) != 1:
         raise ValueError('CAPACITY_SOURCE_OPTIMIZER_LAYOUT')
     options = {k: deepcopy(v) for k, v in source.optimizer.param_groups[0].items() if k != 'params'}
-    options['lr'] = 3e-6
+    options['lr'] = learning_rate
     model.optimizer = torch.optim.AdamW([dict(params=list(new_params.values()), **options)])
     for name, p in new_params.items():
         old_p = old_params[name]
@@ -55,5 +58,5 @@ def reduce_model(source, arm, seed):
         actor_parameters=sum(p.numel() for p in model.actor_net.parameters()),
         trainable_parameters=sum(p.numel() for p in model.loss.parameters() if p.requires_grad),
         resolved=model.actor_net.encoder.resolved_architecture,
-        optimizer_lr=3e-6, source_state_sha256=tree_digest(old))
+        optimizer_lr=learning_rate, source_state_sha256=tree_digest(old))
     return model, receipt
