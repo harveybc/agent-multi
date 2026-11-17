@@ -788,3 +788,13 @@ claim a clean six-month-versus-four-year data-quantity experiment. Separate
 fresh subset-fitted producers/scalers from frozen-representation augmentation.
 Next: bounded automated observation plus the nested-history fit-boundary gate;
 no phase2 closure, synthetic training or broad DEAP has been launched.
+
+## Nested-history preflight371
+
+CPU preflight measured6/12/24/48-month supports with all71 inputs and full
+window:2781/5892/11842/24026 scored windows, common6208 validation windows.
+Eight columns depend on learned producers; activity/Kalman/GMM fitting scope
+starts2020 and must not be represented as training solely on a shorter suffix.
+Factor needs separate fit provenance.20 combined tests pass; no GPU changes.
+Next: scope-safe producer reconstruction, subset-only scalers and fresh neural
+initialization. See [371](../371_NESTED_HISTORY_PREFLIGHT.md).

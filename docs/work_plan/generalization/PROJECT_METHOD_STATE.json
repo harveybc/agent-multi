@@ -1,5 +1,17 @@
 {
   "schema": "generalization_method.v1",
+  "nested_history_preflight_371": {
+    "document": "../371_NESTED_HISTORY_PREFLIGHT.md",
+    "status": "CPU_PREFLIGHT_EXECUTED_PRODUCER_REFITS_NEXT",
+    "tests_passed_combined_370_371": 20,
+    "columns": 71,
+    "groups": 28,
+    "current_store_train_windows_by_months": {"6": 2781, "12": 5892, "24": 11842, "48": 24026},
+    "common_validation_windows": 6208,
+    "learned_upstream_columns": 8,
+    "training_launched": false,
+    "next_action": "Recover factor fit scope and refit activity/Kalman/GMM and factor as required inside each subset; activity labels cross-fit and horizon-purged; then subset fixed scaler and fresh networks. No removal of columns or reuse of four-year learned state as a six-month pipeline."
+  },
   "prioritized_training_diagnosis_370": {
     "document": "../370_PRIORITIZED_TRAINING_DIAGNOSIS.md",
     "status": "CPU_FIRST_PASS_COMPLETE_BOUNDED_OBSERVER_ENABLED_ACTIVE",
@@ -3687,6 +3699,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
+    "CURRENT371: nested support preflight executed,20 combined tests pass; current71-store valid windows2781/5892/11842/24026 for6/12/24/48months and common6208 validation windows. Eight learned producer columns require scope-safe rebuilding; factor scope must be recovered separately. All71 inputs preserved, no learning-curve training dispatched. Next producer refits, subset scalers and fresh model initialization;370 observer and existing GPU runs remain active.",
     "CURRENT370 supersedes obsolete queue-status text below:365 control,367 two first arms and368 are currently training. Preserve them. CPU evidence-first observer is enabled/active,21 tests pass, all71 columns and four histories authenticated, four plots generated with zero collection errors.369 COMPLETE_REPAIR_NOT_QUALIFIED: do not repeat unchanged calibration. Next implement/test per-subset producer/scaler fit boundaries for nested6/12/24/48-month curve, distinguishing full-history-pretrained representation from actual data-quantity effects. No synthetic training, broad DEAP, live or phase2 closure.",
     "CURRENT367: owner accepts balanced-min versus strict champion monitor contrast.55 tests pass including native full recovery; descriptive historical replay complete. Two pinned enabled sequential queues (seeds7/19, reversed policy order) are active WAITING_PREDECESSOR, zero restarts; start automatically after365 finishes on assigned devices, using identical original299 control with71 inputs. One shared acceptance event drives patience scheduler and rollback. Do not interrupt365 or imply queued experiments are training.366 critic-alignment diagnosis remains separate and open.",
     "CURRENT366 complements unchanged running365: CPU15-checkpoint diagnosis complete with120 account simulations and16 focused tests. Seven restoration digests and all15 account returns/trade counts exact; one initial D CPU signal differs but was calendar-refused. Keep trained source299. Next bounded TRAIN-only diagnosis distinguishes sampled versus greedy continuation targets/rankings and external position cases. Do not silently add state inputs, activity bonuses, new heads or use diagnostic hybrids as selected candidates.",
