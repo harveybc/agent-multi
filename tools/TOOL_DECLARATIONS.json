@@ -2,6 +2,14 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "run_monitor_policy_queue.py": {
+   "purpose": "Pinned sequential paired monitor-policy training after authenticated predecessor and idle-device admission; no source interruption or promotion",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "experiment_runner", "owner": "training reliability"
+  },
+  "replay_monitor_histories.py": {
+   "purpose": "Descriptive five-policy shadow replay on sealed native account histories; no training or candidate promotion",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "training reliability"
+  },
   "report_rollback_activity.py": {
    "purpose": "Render completed366 copied-checkpoint diagnostic metrics and plots without selecting candidates",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "training reliability"

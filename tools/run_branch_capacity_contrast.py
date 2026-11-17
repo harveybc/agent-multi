@@ -23,6 +23,12 @@ from tools.run_structural_sac_refit import fit_epochs, assess_full
 
 
 def run(a):
+    monitor_policy = getattr(a, 'monitor_policy', 'validation')
+    if (monitor_policy not in ('validation', 'balanced_min', 'champion_nonregression')
+            or (monitor_policy != 'validation' and
+                (a.arm != 'control' or a.lr_policy != 'restore_best_halves'))
+            or (monitor_policy == 'validation' and a.seed != 7)):
+        raise ValueError('MONITOR_CONTRAST_CONFIGURATION')
     a.output.mkdir(parents=True, exist_ok=True)
     with (a.output/'worker.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -51,12 +57,17 @@ def run(a):
         if lr_policy == 'restore_best_halves':
             design.update(allow_ineligible_epoch_zero=False, fork_epoch=0,
                           actor_plateau=ROLLBACK_PLATEAU)
+        if monitor_policy != 'validation':
+            design.update(monitor_mode=monitor_policy, shared_monitor_decision=True,
+                          monitor=monitor_policy + '_full_accounts_return_per_week')
         binding = dict(schema='branch_capacity364.v1' if lr_policy == 'fixed' else 'branch_rollback365.v1',
             lr_policy=lr_policy, arm=a.arm, seed=a.seed,
             source=SOURCE, support=SUPPORT, manifest=file_sha(a.bundle/'MANIFEST.json'),
             parent=file_sha(a.parent/'SPEC.json'), code=code_identity(), design=design,
             effective=model.effective, transfer=transfer,
             hardware=torch.cuda.get_device_name(), torch=torch.__version__)
+        if monitor_policy != 'validation':
+            binding.update(schema='monitor_contrast367.v1', monitor_policy=monitor_policy)
         binding['identity'] = digest(binding)
         identity = binding['identity']
         if (a.output/'SPEC.json').exists() and read(a.output/'SPEC.json') != binding:
@@ -150,9 +161,11 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
     for name in ('parent', 'bundle', 'output'):
         p.add_argument('--'+name, type=Path, required=True)
-    p.add_argument('--seed', type=int, choices=(7,), default=7)
+    p.add_argument('--seed', type=int, choices=(7,19), default=7)
     p.add_argument('--arm', choices=('A', 'D', 'control'), required=True)
     p.add_argument('--lr-policy', choices=('fixed','restore_best_halves'), default='fixed')
+    p.add_argument('--monitor-policy', choices=('validation','balanced_min','champion_nonregression'),
+                   default='validation')
     a = p.parse_args()
     try:
         run(a)

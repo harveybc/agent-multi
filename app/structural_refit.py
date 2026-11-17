@@ -17,11 +17,12 @@ from tools.run_discrete_curve_probe import write
 
 class EpochPatience:
     MODES = ('mean', 'validation', 'mean_no_regression')
+    SHARED_MODES = ('balanced_min', 'champion_nonregression')
 
     def __init__(self, patience=20, min_delta=1e-8, mode='mean', start_epoch=1,
                  select_during_warmup=False):
         if (type(patience) is not int or patience < 1 or not np.isfinite(min_delta)
-                or min_delta < 0 or mode not in self.MODES
+                or min_delta < 0 or mode not in self.MODES + self.SHARED_MODES
                 or type(start_epoch) is not int or start_epoch < 1):
             raise ValueError('EPOCH_STOPPING_CONFIG')
         self.patience, self.min_delta, self.mode = patience, min_delta, mode
@@ -36,7 +37,8 @@ class EpochPatience:
             raise ValueError('EPOCH_MONITOR_NOT_FINITE')
         train, validation = float(train), float(validation)
         mean = .5 * train + .5 * validation
-        score = validation if self.mode == 'validation' else mean
+        score = (min(train, validation) if self.mode == 'balanced_min' else
+                 validation if self.mode in ('validation', 'champion_nonregression') else mean)
         self.epoch += 1
         previous = dict(previous_train=self.previous_train,
                         previous_validation=self.previous_validation,previous_mean=self.previous_mean)
@@ -47,6 +49,9 @@ class EpochPatience:
         rejections = []
         if not eligible:
             rejections.append('ACTIVITY_INELIGIBLE')
+        if (self.mode == 'champion_nonregression' and self.best_train is not None
+                and train < self.best_train):
+            rejections.append('TRAIN_BELOW_CHAMPION')
         if self.mode == 'mean_no_regression' and self.previous_mean is not None:
             for value, old, name in ((train,self.previous_train,'TRAIN'),
                                      (validation,self.previous_validation,'VALIDATION'),

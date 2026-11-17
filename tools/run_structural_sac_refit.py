@@ -502,6 +502,10 @@ def render_fit_diagnostics(state,output,design):
 
 def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe, replay_factory=None,
                epoch_hook=None):
+    shared = design.get('shared_monitor_decision', False)
+    if (type(shared) is not bool or
+            shared != (design.get('monitor_mode') in EpochPatience.SHARED_MODES)):
+        raise ValueError('SHARED_MONITOR_CONTRACT')
     patience_can_stop(design,0,0,design['patience'])
     output.mkdir(parents=True,exist_ok=True)
     rng = np.random.default_rng(seed)
@@ -633,7 +637,11 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
                     before=rates_used, after=rates_used)
                 scheduler.last_epoch = epoch
             else:
-                row['actor_plateau'] = scheduler.observe(metrics['VALIDATION']['return_per_week'], eligible, epoch)
+                score = verdict['score'] if shared else metrics['VALIDATION']['return_per_week']
+                accepted = bool(verdict['improved']) if shared else eligible
+                row['actor_plateau'] = scheduler.observe(score, accepted, epoch)
+                if shared and scheduler.scheduler.best != stopping.best:
+                    raise ValueError('SCHEDULER_CHAMPION_DIVERGENCE')
             if row['actor_plateau']['reduced'] and scheduler.config.get('restore_best', False):
                 from app.best_plateau_rollback import restore_validation_best
                 hook_rng = capture_rng(rng); replay_count = len(replay)
@@ -658,7 +666,7 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
             receipt = export_bundle(bundle,model,probe,dict(epoch=epoch,score=verdict['score'],
                 run_identity=identity,seed=seed))
             state['best_bundle'] = dict(relative_path=str(bundle.relative_to(output)),**receipt)
-        if select_early and epoch >= start_epoch and eligible:
+        if select_early and epoch >= start_epoch and eligible and not shared:
             late = state.get('best_after_warmup')
             if late is None or verdict['score'] > late['score'] + design['min_delta']:
                 bundle = output/'bundles'/('epoch_%04d' % epoch)

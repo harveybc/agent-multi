@@ -1,5 +1,20 @@
 {
   "schema": "generalization_method.v1",
+  "balanced_champion_monitor_367": {
+    "document": "../367_BALANCED_CHAMPION_MONITOR_CONTRAST.md",
+    "status": "QUALIFIED_PREPARING_PINNED_SUCCESSOR_QUEUES",
+    "tests_passed": 55,
+    "historical_replay": "monitor367_historical_replay.json",
+    "modes": ["balanced_min", "champion_nonregression"],
+    "shared_decision": "checkpoint patience scheduler and rollback",
+    "source": "selected299 original control71 features28groups; identical source weights and named Adam transfer; paired fresh replay per seed",
+    "seeds": [7,19],
+    "policies_per_seed": 2,
+    "training_budget": {"minimum_epochs":100,"maximum_epochs":2000,"patience":20,"min_delta":1e-8},
+    "current365_modified": false,
+    "promotion": false,
+    "next_action": "Deploy pinned sequential queues after respective365 completion, GPU idle/memory admission and authenticated source checks. Report queued versus training explicitly. Keep367 monitor contrast separate from366 critic alignment diagnosis; no live/STL/DEAP or phase2 closure."
+  },
   "rollback_activity_366": {
     "document": "../366_ROLLBACK_ACTIVITY_DIAGNOSIS.md",
     "status": "READ_ONLY_CPU_DIAGNOSIS_COMPLETE_365_UNCHANGED",
@@ -302,7 +317,7 @@
     "stl_owner_paused": true,
     "recommendation": "Account for open data experiments before expensive DEAP: current71 producer/joint-history compatibility, then qualified matched G3 augmentation. Architecture implementation preparation can continue. Do not infer complete research from local351 closure or restart owner-paused STL."
   },
-  "current_stage": "PHASE2_OPEN_BEST_VALIDATION_ROLLBACK_365_PRIORITY_RESTART",
+  "current_stage": "PHASE2_OPEN_365_RUNNING_367_MONITOR_CONTRAST_QUALIFIED",
   "architecture_gene_preflight_352": {
     "document": "../352_ARCHITECTURE_GENE_PREFLIGHT.md",
     "status": "CONSTRUCTION_VERIFIED_NOT_TRAINING_OR_DEAP",
@@ -3612,6 +3627,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
+    "CURRENT367: owner accepts balanced-min versus strict champion monitor contrast.55 tests pass including native full recovery; descriptive historical replay complete. Deploy two paired sequential queues (seeds7/19, reversed policy order) after365 finishes on assigned devices; use identical original299 control with71 inputs. One shared acceptance event drives patience scheduler and rollback. Do not interrupt365 or imply queued experiments are training.366 critic-alignment diagnosis remains separate and open.",
     "CURRENT366 complements unchanged running365: CPU15-checkpoint diagnosis complete with120 account simulations and16 focused tests. Seven restoration digests and all15 account returns/trade counts exact; one initial D CPU signal differs but was calendar-refused. Keep trained source299. Next bounded TRAIN-only diagnosis distinguishes sampled versus greedy continuation targets/rankings and external position cases. Do not silently add state inputs, activity bonuses, new heads or use diagnostic hybrids as selected candidates.",
     "CURRENT365 overrides automatic364/362 queue instructions. All3 priority restarts now running from common299-derived initial states, fresh replay seed7, same data and new scheduler.45 tests and6 real-checkpoint CPU probes pass; native initial accounts and cold optimizer states exact.364 full seals8/18/3 preserved; old services disabled. Restore all SAC parameters/moments on actual actor LR drops, keep recent replay/RNG and global patience; after10 misses reduce and protect10 new epochs; do not extend at floor or when stop already due. Await real learning outcomes, no promotion and no old scheduler automatic resume.",
     "CURRENT364 supersedes running362 instructions: A on RTX5090, D on RTX4090 and matched control on RTX4070 now learning epoch1. Same seed7, all71 inputs, LR3e-6, full retained tensor/Adam transfer.54 tests pass; native control and all cold optimizer reloads exact.362 full states sealed at77/96/48 and services paused. Observe per-epoch weights/native accounts; automatically resume362 after verified terminal364 result. No live work, STL, broad DEAP, phase2 closure or model promotion.",
