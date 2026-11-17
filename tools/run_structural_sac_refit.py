@@ -572,6 +572,13 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
             break
         rates_used = [float(g['lr']) for g in model.optimizer.param_groups]
         start = time.monotonic(); env = env_factory(); obs = env.reset()
+        matched_quota = design.get('matched_updates_per_epoch')
+        if matched_quota is not None:
+            from app.nested_history_training import updates_at_decision
+            expected_decisions = int(np.count_nonzero(env.valid[env.bar:env.engine.last]))
+            updates_at_decision(1, expected_decisions, matched_quota)
+            if epoch <= design['matched_collection_epochs']:
+                matched_quota = 0
         if hasattr(replay,'start_epoch'):
             replay.start_epoch()
         last_loss = None; decisions = 0; loss_sums={}; epoch_updates=0
@@ -585,7 +592,10 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
             nxt,reward,done,duration = env.step(action)
             replay.extend(transition(obs,action,nxt,reward,done,duration))
             obs = nxt; state['steps'] = step; decisions += 1
-            if step >= design['warmup'] and step % design['update_every'] == 0:
+            update_count = (updates_at_decision(decisions, expected_decisions, matched_quota)
+                            if matched_quota is not None else
+                            int(step >= design['warmup'] and step % design['update_every'] == 0))
+            for _ in range(update_count):
                 last_loss = model.update(replay.sample().to(model.device)); state['updates'] += 1
                 epoch_updates+=1
                 for k,v in last_loss.items():loss_sums[k]=loss_sums.get(k,0.)+v
@@ -598,6 +608,8 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
                     max_epochs=design['max_epochs'],minimum_epochs=design.get('minimum_epochs',0),
                     patience_limit=stopping.patience,monitor_mode=stopping.mode,
                     selected_epoch=None if state['best_bundle'] is None else int(state['best_bundle']['path'].split('_')[-1])))
+        if matched_quota is not None and (decisions != expected_decisions or epoch_updates != matched_quota):
+            raise ValueError('MATCHED_UPDATE_BUDGET')
         training_seconds = time.monotonic()-start
         if design.get('head_only',False):
             from app.selected_warm_start import verify_frozen
@@ -624,6 +636,7 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
             training_seconds=training_seconds,evaluation_seconds=time.monotonic()-start-training_seconds,
             metrics=metrics,monitor=verdict,shadow_monitors=shadow_verdicts,finished_at=now(),last_update=last_loss or {})
         row['mean_update']={k:v/epoch_updates for k,v in loss_sums.items()} if epoch_updates else {}
+        row['epoch_updates']=epoch_updates
         row['patience_stop_deferred']=bool(verdict['stop'] and epoch<design.get('minimum_epochs',0))
         if epoch_hook is not None:
             hook_rng=capture_rng(rng)
@@ -694,7 +707,8 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
             break
     if state['best_bundle'] is None:
         write(output/'TRAINING.json',dict(identity=identity,epochs=state['epoch'],
-            steps=state['steps'],stop_reason='epoch_budget_before_monitor',restored_best=False))
+            steps=state['steps'],stop_reason=('matched_budget_no_eligible_checkpoint'
+                if design.get('matched_budget',False) else 'epoch_budget_before_monitor'),restored_best=False))
         return state
     if design.get('diagnostics',False):
         render_fit_diagnostics(state,output,design)

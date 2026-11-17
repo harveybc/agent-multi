@@ -1,5 +1,17 @@
 {
   "schema": "generalization_method.v1",
+  "matched_history_training_374": {
+    "document": "../374_MATCHED_HISTORY_TRAINING.md",
+    "status": "IMPLEMENTED_CPU_PREFLIGHT_PASSED_DEPLOYMENT_IN_PROGRESS",
+    "tests_passed": 42,
+    "months": [6,12,24,48],
+    "seeds": [7,19],
+    "initialization": "Fresh actor, twin critics, targets, Adam and replay; source architecture only",
+    "budget": "One collection-only complete TRAIN pass, then100 passes with6006 updates each; fixed original3e-5 LR; no early truncation",
+    "monitor": "Activity-eligible balanced_min best and endpoint reported separately",
+    "matched_axes": "Gradient steps and batch size; environment interactions and sample reuse explicitly differ",
+    "next_action": "Deploy pinned runtime, authenticate transferred stores and complete GPU cold-reload gates, then sequential per-device queues. Preserve365/367 and no live work."
+  },
   "post_restart_recovery_373": {
     "document": "../373_POST_RESTART_RECOVERY.md",
     "status": "TWO_WORKERS_CONTINUE_TWO_PAUSED_RECOVERY_HASHES_VERIFIED",
