@@ -97,3 +97,26 @@ These are two paired stochastic replications, not four independent architecture
 searches. Source actor/critic/Adam weights are identical before each run; fresh
 replay and random streams are paired within a seed. No new fit is claimed until
 the queue reports TRAINING and the worker emits its qualification/progress.
+
+## Deployment Receipt
+
+Verified2026-11-17 02:14 UTC (2026-11-16 local date): both new queue services
+enabled, active, zero restarts, state `WAITING_PREDECESSOR`, no failure receipt.
+Both original365 predecessor services remain active with zero restarts. The
+4070 original control also continues outside these new queues.
+
+Pinned runtime revision: `672535cb`.
+Archive SHA256: `84c4bcf184016f94c1fa8096478f367fcd7ade8268bedb1d6775751285d8c856`.
+Python source identity, independently verified on both devices:
+`b638adcd34309642ae0058d90c24a8e3ce866fcfb54701b85695295b968013e9`.
+
+| Device | Seed | Queue config SHA256 | Initial state |
+|---|---:|---|---|
+| RTX5090 |7|`4ecee9103f2e9c18941fabba3c08e9635b957e74570688b18cea5cf4ed424688`|WAITING_PREDECESSOR|
+| RTX4090 |19|`ec93720835c35e355404cac0b9c497f37230e1f546cc0a12200a669f7eb459bc`|WAITING_PREDECESSOR|
+
+Private operator fleet manifest: `/var/tmp/monitor367-deploy/FLEET.json`.
+Each worker writes `QUEUE_STATUS.json`, per-policy `PROGRESS.json`, full
+recoveries, selected bundles, epoch weight snapshots, diagnostics and RESULT.
+New training results do not exist yet. No further owner approval is required
+to start after the authenticated predecessor/resource gates pass.
