@@ -798,3 +798,13 @@ starts2020 and must not be represented as training solely on a shorter suffix.
 Factor needs separate fit provenance.20 combined tests pass; no GPU changes.
 Next: scope-safe producer reconstruction, subset-only scalers and fresh neural
 initialization. See [371](../371_NESTED_HISTORY_PREFLIGHT.md).
+
+## Subset producer rebuilding372 complete
+
+All four6/12/24/48-month stores rebuilt with fresh factor/activity/Kalman/GMM
+and subset-only fixed scalers. All71 inputs28groups retained; validation dates
+match exactly across arms.26 combined tests pass, real excluded-data fit tests
+and producer reloads pass.12-month Kalman residual becomes numerically constant
+at its fitted noise boundary; retained and recorded, not silently removed.
+Source299 and ongoingGPU runs untouched. Next: fresh-network learning-curve
+runner and paired initialization checks. See [372](../372_SUBSET_PRODUCER_REBUILD.md).
