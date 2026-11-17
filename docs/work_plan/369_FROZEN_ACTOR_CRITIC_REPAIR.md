@@ -68,3 +68,30 @@ forks, paired-action labels, fresh/retained head calibration with exact frozen
 actor and encoder checks, KL acceptance, complete Adam/weight restoration on
 rejection, native actor-head gradients, and cached evidence tamper rejection.
 Correctness lint passed. No running training process was modified.
+
+## Deployment
+
+Enabled CPU service is executing from pinned runtime `81bcbe36`. Archive SHA256:
+`d1d622e42c2cbd9db185ccda6e0fd68e69fc4a09395d3093ddfcc1162ea5e5ab`.
+Code identity:
+`9294dd093f3564a33c0b14a7b3b8b79ff7a9d6bf0e1a2fc8c4be7a111ac35b5b`.
+Run identity:
+`fa6eeef64a2bd8ce29aa27adfedf4efd09f217dcb4fdb6c6ddeafa275251c2dd`.
+
+Admission verified18GiB host available RAM. Worker uses no CUDA, one numerical
+thread, CPU quota100%, memory high/max4/5GiB and low scheduling priority. No GPU
+worker was stopped. Enabled service retries failures with60s delay, maximum
+three starts/hour; cached native rows and completed calibration arms are
+authenticated before reuse. An interrupted calibration arm restarts its finite
+4096 updates from the source; it never silently resumes incomplete weights.
+
+The frozen panel has exactly64 anchors:4 per year and each of4 state kinds,
+all2020-2023 represented.48 FIT and16 monitor anchors. Initial observation:
+12 anchors complete, no failure or restart, about0.93GB worker memory. Panel
+time estimate from measured units was about5 minutes remaining; calibration
+runtime is not yet measured. This is execution evidence, not a repair result.
+
+Private runtime results: `frozen-critic-repair369-20261117`; service definition
+in the private `critic369-deploy` directory. Outputs include authenticated panel
+rows, same-input fork witnesses, BASELINE, calibration curves/models, DECISION,
+conditional actor accounts, CSV and `CRITIC_FIT_MONITOR.png`, ending in DONE.

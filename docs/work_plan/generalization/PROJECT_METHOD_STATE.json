@@ -2,11 +2,19 @@
   "schema": "generalization_method.v1",
   "frozen_critic_repair_369": {
     "document": "../369_FROZEN_ACTOR_CRITIC_REPAIR.md",
-    "status": "IMPLEMENTED_TESTING_BEFORE_CPU_DEPLOYMENT",
+    "status": "CPU_SERVICE_RUNNING_REAL_TRAIN_COUNTERFACTUALS",
+    "runtime_revision": "81bcbe36",
+    "runtime_archive_sha256": "d1d622e42c2cbd9db185ccda6e0fd68e69fc4a09395d3093ddfcc1162ea5e5ab",
+    "runtime_code_identity": "9294dd093f3564a33c0b14a7b3b8b79ff7a9d6bf0e1a2fc8c4be7a111ac35b5b",
+    "run_identity": "fa6eeef64a2bd8ce29aa27adfedf4efd09f217dcb4fdb6c6ddeafa275251c2dd",
+    "tests_passed": 27,
+    "frozen_panel_anchors": 64,
+    "initial_verified_completed_anchors": 12,
+    "initial_worker_restarts": 0,
     "source": "selected299;71 inputs;28 groups; frozen actor and representation",
     "panel": "real TRAIN four state strata, up to4/year/kind; greedy and four stochastic continuations per action; FIT2020-22 and monitor2023 purged windows",
     "calibration": "retained/fresh critic heads x greedy/soft targets x seeds7/19;4096 updates; same FIT batches; only endpoint qualification",
-    "next_action": "Validate then launch CPU-only persistent sequential panel, calibration and conditional free/KL32 actor head probes. If no soft-target arm passes both seeds, end with explicit nonqualification; no actor update or automatic new search. Keep365/367/368 GPUs unchanged."
+    "next_action": "Already enabled/running: finish real TRAIN panel, then eight calibrations and conditional free/KL32 actor probes automatically. Collect DONE, DECISION, per-state metrics and PNG; diagnose nonqualification rather than automatically restarting an unchanged search. Keep GPU campaigns unchanged."
   },
   "preserved_champion_refinement_368": {
     "document": "../368_PRESERVED_CHAMPION_FINE_TUNING.md",
