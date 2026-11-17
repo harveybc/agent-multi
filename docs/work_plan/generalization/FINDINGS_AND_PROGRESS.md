@@ -774,3 +774,17 @@ rates with obsolete fixed-role metadata, and a rounding-only fifth LR drop.
 Native reduced-budget interrupted and uninterrupted trajectories now match
 exactly for balanced and nonregression monitors with all-role rollback.
 See [368](../368_PRESERVED_CHAMPION_FINE_TUNING.md).
+
+# Prioritized diagnosis370: CPU first pass
+
+Owner prioritizes cheap evidence and data quantity before synthetic generation.
+All four active GPU runs remain unchanged; CPU inventory and history collection
+completed with zero errors,71 columns,24026 TRAIN/6208 validation windows and no
+TRAIN constants.369 ended REPAIR_NOT_QUALIFIED and is not repeated. Evidence and
+limitations: `../370_PRIORITIZED_TRAINING_DIAGNOSIS.md`.
+
+Important design confound: a four-year pretrained encoder cannot be reused to
+claim a clean six-month-versus-four-year data-quantity experiment. Separate
+fresh subset-fitted producers/scalers from frozen-representation augmentation.
+Next: bounded automated observation plus the nested-history fit-boundary gate;
+no phase2 closure, synthetic training or broad DEAP has been launched.

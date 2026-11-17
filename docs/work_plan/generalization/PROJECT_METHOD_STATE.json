@@ -1,8 +1,18 @@
 {
   "schema": "generalization_method.v1",
+  "prioritized_training_diagnosis_370": {
+    "document": "../370_PRIORITIZED_TRAINING_DIAGNOSIS.md",
+    "status": "CPU_FIRST_PASS_COMPLETE_ZERO_COLLECTION_ERRORS_DEPLOYING_BOUNDED_OBSERVER",
+    "tests_passed": 13,
+    "input_inventory": "71 selected inputs; 24026 TRAIN and6208 validation valid windows; zero TRAIN-constant columns",
+    "read_only_first_pass": "Four active histories copied and authenticated; four training/validation plots;369 nonqualification retained",
+    "owner_order": "Cheap diagnostics first; keep useful existing GPU runs; data-quantity curve before synthetic training",
+    "worker_policy": "No interruption, no duplicate evaluations; CPU read-only snapshots and data inventory",
+    "next_action": "Deploy bounded observer; then implement nested-history train-only producer/scaler boundaries before any learning-curve GPU dispatch. Existing four GPU workers continue unchanged. No new expensive campaign yet."
+  },
   "frozen_critic_repair_369": {
     "document": "../369_FROZEN_ACTOR_CRITIC_REPAIR.md",
-    "status": "CPU_SERVICE_RUNNING_REAL_TRAIN_COUNTERFACTUALS",
+    "status": "COMPLETE_REPAIR_NOT_QUALIFIED",
     "runtime_revision": "81bcbe36",
     "runtime_archive_sha256": "d1d622e42c2cbd9db185ccda6e0fd68e69fc4a09395d3093ddfcc1162ea5e5ab",
     "runtime_code_identity": "9294dd093f3564a33c0b14a7b3b8b79ff7a9d6bf0e1a2fc8c4be7a111ac35b5b",
@@ -14,7 +24,7 @@
     "source": "selected299;71 inputs;28 groups; frozen actor and representation",
     "panel": "real TRAIN four state strata, up to4/year/kind; greedy and four stochastic continuations per action; FIT2020-22 and monitor2023 purged windows",
     "calibration": "retained/fresh critic heads x greedy/soft targets x seeds7/19;4096 updates; same FIT batches; only endpoint qualification",
-    "next_action": "Already enabled/running: finish real TRAIN panel, then eight calibrations and conditional free/KL32 actor probes automatically. Collect DONE, DECISION, per-state metrics and PNG; diagnose nonqualification rather than automatically restarting an unchanged search. Keep GPU campaigns unchanged."
+    "next_action": "Complete: REPAIR_NOT_QUALIFIED. No actor probe was authorized by the gate. Reuse panel and calibration results in370; do not repeat unchanged search. Keep GPU campaigns unchanged."
   },
   "preserved_champion_refinement_368": {
     "document": "../368_PRESERVED_CHAMPION_FINE_TUNING.md",
@@ -362,7 +372,7 @@
     "stl_owner_paused": true,
     "recommendation": "Account for open data experiments before expensive DEAP: current71 producer/joint-history compatibility, then qualified matched G3 augmentation. Architecture implementation preparation can continue. Do not infer complete research from local351 closure or restart owner-paused STL."
   },
-  "current_stage": "PHASE2_OPEN_365_RUNNING_367_MONITOR_CONTRAST_AUTOMATICALLY_QUEUED",
+  "current_stage": "PHASE2_OPEN_370_PRIORITY_DIAGNOSTICS_365_367_368_PRESERVED",
   "architecture_gene_preflight_352": {
     "document": "../352_ARCHITECTURE_GENE_PREFLIGHT.md",
     "status": "CONSTRUCTION_VERIFIED_NOT_TRAINING_OR_DEAP",
