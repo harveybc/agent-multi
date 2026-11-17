@@ -1,5 +1,23 @@
 {
   "schema": "generalization_method.v1",
+  "rollback_activity_366": {
+    "document": "../366_ROLLBACK_ACTIVITY_DIAGNOSIS.md",
+    "status": "READ_ONLY_CPU_DIAGNOSIS_COMPLETE_365_UNCHANGED",
+    "summary": "rollback366_summary.json",
+    "copied_checkpoints": 15,
+    "component_and_identity_interventions": 21,
+    "native_train_validation_replay_pairs": 60,
+    "rollback_target_digests_exact": 7,
+    "native_return_and_trade_parity": "15/15 exact",
+    "strict_signal_parity": "14/15; D epoch0 one extra CPU BUY refused before operational start; no account impact",
+    "tests_passed": 16,
+    "source_preserved": "selected299 all71 inputs and28groups",
+    "findings": "Latest365 policies concentrate97-98percent validation NOP. Frozen categorical collection has much worse native accounts than greedy. Whole actor restoration exact; component-only restoration does not recover good source. Actor-only LR reduction does not constrain changing critic; full restore also resets entropy temperature.",
+    "root_cause_proven": false,
+    "training_modified": false,
+    "promotion": false,
+    "next_action": "Keep365 running. Diagnose sampled-versus-greedy continuation critic ranking from authenticated full recovery on matched TRAIN origins before another training change; analyze flat/open-position cases externally, never add state input silently. Resolve the one initial D device-logit discrepancy. Phase2 open, no broad DEAP, STL or live work."
+  },
   "best_validation_rollback_365": {
     "document": "../365_BEST_VALIDATION_ROLLBACK_PLATEAU.md",
     "status": "THREE_GPU_PRIORITY_RESTARTS_RUNNING_QUALIFIED",
@@ -26,7 +44,7 @@
     "minimum_epochs_after_actual_drop": 10,
     "old362_automatic_resume": false,
     "promotion": false,
-    "next_action": "Observe running365 A/D/control and first naturally triggered rollback events. All initial accounts and three-group rates verified; per-device learning underway.45 tests and6 real-checkpoint CPU rollback probes pass. Collect restored-best receipts and native trajectories; no old scheduler auto-resume, live, STL, broad DEAP or phase2 closure."
+    "next_action": "Observed7 natural rollback receipts: exact restored weights.366 read-only diagnosis complete, no365 runtime change. Current checkpoints again lose activity; follow actor/critic objective alignment rather than assuming rollback failure. No old scheduler auto-resume, live, STL, broad DEAP or phase2 closure."
   },
   "branch_capacity_364": {
     "document": "../364_BRANCH_DEPTH_DENSE_CONTRAST.md",
@@ -3594,6 +3612,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
+    "CURRENT366 complements unchanged running365: CPU15-checkpoint diagnosis complete with120 account simulations and16 focused tests. Seven restoration digests and all15 account returns/trade counts exact; one initial D CPU signal differs but was calendar-refused. Keep trained source299. Next bounded TRAIN-only diagnosis distinguishes sampled versus greedy continuation targets/rankings and external position cases. Do not silently add state inputs, activity bonuses, new heads or use diagnostic hybrids as selected candidates.",
     "CURRENT365 overrides automatic364/362 queue instructions. All3 priority restarts now running from common299-derived initial states, fresh replay seed7, same data and new scheduler.45 tests and6 real-checkpoint CPU probes pass; native initial accounts and cold optimizer states exact.364 full seals8/18/3 preserved; old services disabled. Restore all SAC parameters/moments on actual actor LR drops, keep recent replay/RNG and global patience; after10 misses reduce and protect10 new epochs; do not extend at floor or when stop already due. Await real learning outcomes, no promotion and no old scheduler automatic resume.",
     "CURRENT364 supersedes running362 instructions: A on RTX5090, D on RTX4090 and matched control on RTX4070 now learning epoch1. Same seed7, all71 inputs, LR3e-6, full retained tensor/Adam transfer.54 tests pass; native control and all cold optimizer reloads exact.362 full states sealed at77/96/48 and services paused. Observe per-epoch weights/native accounts; automatically resume362 after verified terminal364 result. No live work, STL, broad DEAP, phase2 closure or model promotion.",
     "CURRENT363 complements362 without modifying it: archived9-point CPU capacity panel complete,864 restored interventions and288 identity controls. First-LR followup uses explicit before/drop/after epochs on identical512 TRAIN rows. No width selected from ranks, no new training, no synthetic generation. Preserve all71 inputs and frozen299. Historical extension inventory is complete but all71 pre2020 start is not yet verified.",
