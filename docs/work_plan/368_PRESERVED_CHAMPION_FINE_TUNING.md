@@ -55,4 +55,31 @@ Correctness lint passed on all six changed Python files.
 The first test run exposed an all-role resume metadata mismatch and a
 rounding-only fifth reduction. Both were corrected before deployment; old
 actor-only behavior remains covered and the pinned365/367 runtimes are unchanged.
-Qualification and deployment receipts will be appended after their checks run.
+
+Pinned runtime `ea59a964`, archive SHA256
+`a86293256b1007503c1178d5e44e569e521a066e04c9e7f3dea7e3e18f418cf3`;
+Python-code identity
+`d65705139fbc3f2c01be358bf742b09e66527f833d60a37e343c1b14594fff94`.
+Run identity
+`0c9ef06f6471523f4a8a3ee7ae2af728f9c3c9a6f29ea3d3e024a0dae5686606`.
+
+An enabled persistent worker started on the otherwise idle RTX5070Ti Laptop.
+The assigned device had no compute worker and host available RAM exceeded8GB.
+Existing training workers were not interrupted. Worker memory high/max limits
+are4/5GiB; CPU quota200%, numerical libraries one thread. Restart on failure
+resumes epoch recovery; three starts/hour limit prevents a runaway failure loop.
+Linger is enabled, so no interactive session is required.
+
+Cold model and optimizer reload matched exactly; input shape13x71, all three
+initial role LRs `2.9999999999999997e-05`. Native epoch-zero qualification:
+
+| Period | Return % | Trades | Orders/week | Sharpe |
+|---|---:|---:|---:|---:|
+| TRAIN | 16.05822355000215 | 745 | 3.5645933014354068 | 0.7819691259276358 |
+| VALIDATION | 18.369945750000117 | 207 | 3.8333333333333335 | 2.690712133251012 |
+
+These are reproduced source results, not improvement from fine-tuning. The
+first epoch started after qualification. Runtime output lives in the private
+`champion-refinement368-20261117` run directory; deployment, service and copied
+qualification receipts are in the operator's private `refinement368-deploy`
+directory. No host identifiers or credentials are part of this report.

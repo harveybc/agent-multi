@@ -2,7 +2,14 @@
   "schema": "generalization_method.v1",
   "preserved_champion_refinement_368": {
     "document": "../368_PRESERVED_CHAMPION_FINE_TUNING.md",
-    "status": "IMPLEMENTED_UNIT_AND_NATIVE_RECOVERY_TESTS_PASSED_PREPARING_DEPLOYMENT",
+    "status": "PINNED_ENABLED_SERVICE_RUNNING_INITIAL_ACCOUNTS_EXACT",
+    "runtime_revision": "ea59a964",
+    "runtime_archive_sha256": "a86293256b1007503c1178d5e44e569e521a066e04c9e7f3dea7e3e18f418cf3",
+    "runtime_code_identity": "d65705139fbc3f2c01be358bf742b09e66527f833d60a37e343c1b14594fff94",
+    "run_identity": "0c9ef06f6471523f4a8a3ee7ae2af728f9c3c9a6f29ea3d3e024a0dae5686606",
+    "focused_tests_passed": 39,
+    "cold_optimizer_exact": true,
+    "native_epoch_zero_accounts_exact": true,
     "owner_latest_amendment": "Use original LR, NOT original/10",
     "source": "selected299;71inputs28groups;preserve all model weights and named Adam moments",
     "source_validation_return_pct": 18.369945750000117,
@@ -13,7 +20,7 @@
     "head_reset": false,
     "other_runs_interrupted": false,
     "promotion": false,
-    "next_action": "Qualify exact original source account replay and launch pinned resumable fine-tuning on free GPU; preserve365/367. Report actual updates and measured timing. No phase2 closure or broad DEAP."
+    "next_action": "Enabled service automatically trains and resumes to stopping rule. Observe progress, native full accounts, role learning rates and full rollback receipts; compare with frozen selected299 and367 without claiming an isolated factor effect. Preserve365/367. No phase2 closure or broad DEAP."
   },
   "balanced_champion_monitor_367": {
     "document": "../367_BALANCED_CHAMPION_MONITOR_CONTRAST.md",
