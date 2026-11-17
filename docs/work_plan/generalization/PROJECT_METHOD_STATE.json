@@ -2,13 +2,18 @@
   "schema": "generalization_method.v1",
   "prioritized_training_diagnosis_370": {
     "document": "../370_PRIORITIZED_TRAINING_DIAGNOSIS.md",
-    "status": "CPU_FIRST_PASS_COMPLETE_ZERO_COLLECTION_ERRORS_DEPLOYING_BOUNDED_OBSERVER",
+    "status": "CPU_FIRST_PASS_COMPLETE_BOUNDED_OBSERVER_ENABLED_ACTIVE",
+    "runtime_revision": "21a23c90",
+    "combined_tests_passed": 21,
+    "verified_plots": 4,
+    "verified_collection_errors": 0,
+    "worker_restarts": 0,
     "tests_passed": 13,
     "input_inventory": "71 selected inputs; 24026 TRAIN and6208 validation valid windows; zero TRAIN-constant columns",
     "read_only_first_pass": "Four active histories copied and authenticated; four training/validation plots;369 nonqualification retained",
     "owner_order": "Cheap diagnostics first; keep useful existing GPU runs; data-quantity curve before synthetic training",
     "worker_policy": "No interruption, no duplicate evaluations; CPU read-only snapshots and data inventory",
-    "next_action": "Deploy bounded observer; then implement nested-history train-only producer/scaler boundaries before any learning-curve GPU dispatch. Existing four GPU workers continue unchanged. No new expensive campaign yet."
+    "next_action": "Observer enabled and running every30minutes for at most72h. Next engineering action: implement nested-history train-only producer/scaler boundaries before any learning-curve GPU dispatch. Existing four GPU workers continue unchanged. No new expensive campaign yet."
   },
   "frozen_critic_repair_369": {
     "document": "../369_FROZEN_ACTOR_CRITIC_REPAIR.md",
@@ -3682,6 +3687,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
+    "CURRENT370 supersedes obsolete queue-status text below:365 control,367 two first arms and368 are currently training. Preserve them. CPU evidence-first observer is enabled/active,21 tests pass, all71 columns and four histories authenticated, four plots generated with zero collection errors.369 COMPLETE_REPAIR_NOT_QUALIFIED: do not repeat unchanged calibration. Next implement/test per-subset producer/scaler fit boundaries for nested6/12/24/48-month curve, distinguishing full-history-pretrained representation from actual data-quantity effects. No synthetic training, broad DEAP, live or phase2 closure.",
     "CURRENT367: owner accepts balanced-min versus strict champion monitor contrast.55 tests pass including native full recovery; descriptive historical replay complete. Two pinned enabled sequential queues (seeds7/19, reversed policy order) are active WAITING_PREDECESSOR, zero restarts; start automatically after365 finishes on assigned devices, using identical original299 control with71 inputs. One shared acceptance event drives patience scheduler and rollback. Do not interrupt365 or imply queued experiments are training.366 critic-alignment diagnosis remains separate and open.",
     "CURRENT366 complements unchanged running365: CPU15-checkpoint diagnosis complete with120 account simulations and16 focused tests. Seven restoration digests and all15 account returns/trade counts exact; one initial D CPU signal differs but was calendar-refused. Keep trained source299. Next bounded TRAIN-only diagnosis distinguishes sampled versus greedy continuation targets/rankings and external position cases. Do not silently add state inputs, activity bonuses, new heads or use diagnostic hybrids as selected candidates.",
     "CURRENT365 overrides automatic364/362 queue instructions. All3 priority restarts now running from common299-derived initial states, fresh replay seed7, same data and new scheduler.45 tests and6 real-checkpoint CPU probes pass; native initial accounts and cold optimizer states exact.364 full seals8/18/3 preserved; old services disabled. Restore all SAC parameters/moments on actual actor LR drops, keep recent replay/RNG and global patience; after10 misses reduce and protect10 new epochs; do not extend at floor or when stop already due. Await real learning outcomes, no promotion and no old scheduler automatic resume.",

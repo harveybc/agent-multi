@@ -90,3 +90,10 @@ These are latest completed epochs, not newly selected champions or final
 outcomes. Updates per collected decision are approximately0.244-0.249; this
 does NOT measure unique historical data, minibatch reuse, or independent
 samples. The observer produces plots without rerunning account evaluation.
+
+Deployment: pinned runtime21a23c90, enabled user service with lingering already
+enabled. Verified active with zero restarts, four PNGs and no collection errors.
+CPU capped at one core, low priority, memory high4G/max5G; no GPU requested.
+Combined370/369 regression tests:21 passed. Poll30minutes; stop after72hours or
+all four observed arms terminal. Existing GPU supervisors continue their own
+queues; observing an arm ending does not cancel its queued successor.
