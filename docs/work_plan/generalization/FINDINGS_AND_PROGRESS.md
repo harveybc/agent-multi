@@ -808,3 +808,13 @@ and producer reloads pass.12-month Kalman residual becomes numerically constant
 at its fitted noise boundary; retained and recorded, not silently removed.
 Source299 and ongoingGPU runs untouched. Next: fresh-network learning-curve
 runner and paired initialization checks. See [372](../372_SUBSET_PRODUCER_REBUILD.md).
+
+## Post-restart allocation373
+
+All four atomic recovery manifests and their files passed SHA256 checks after
+owner maintenance. Continue strict367 and control365; pause balanced367 at17
+and refinement368 at49 with autorun disabled and artifacts preserved. These
+are resource-priority pauses, not terminal scientific verdicts. CPU observer
+refreshed all four histories without errors after a startup identity race.
+Next priority remains372 fresh-network data-quantity training, not yet launched.
+See [373](../373_POST_RESTART_RECOVERY.md) for metrics, recovery scope and ETA.

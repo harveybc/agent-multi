@@ -1,5 +1,17 @@
 {
   "schema": "generalization_method.v1",
+  "post_restart_recovery_373": {
+    "document": "../373_POST_RESTART_RECOVERY.md",
+    "status": "TWO_WORKERS_CONTINUE_TWO_PAUSED_RECOVERY_HASHES_VERIFIED",
+    "committed_epochs": {"strict367": 66, "control365": 52, "balanced367": 17, "refinement368": 49},
+    "active_runs": ["strict367", "control365"],
+    "paused_runs": ["balanced367", "refinement368"],
+    "paused_parent_services_disabled": true,
+    "completed_predecessor_autostarts_disabled": true,
+    "observer_refreshed_collection_errors": 0,
+    "checkpoint_scope": "Completed-epoch model/optimizer, replay, RNG and monitor/scheduler state; interrupted partial epoch repeated",
+    "next_action": "Continue active arms automatically; implement and qualify fresh-network matched-update372 runner for freed devices. New data-quantity neural training is not launched. No live work."
+  },
   "subset_producer_rebuild_372": {
     "document": "../372_SUBSET_PRODUCER_REBUILD.md",
     "status": "FOUR_REBUILT_STORES_AND_SCALERS_VERIFIED_CPU_COMPLETE",
@@ -39,7 +51,7 @@
     "read_only_first_pass": "Four active histories copied and authenticated; four training/validation plots;369 nonqualification retained",
     "owner_order": "Cheap diagnostics first; keep useful existing GPU runs; data-quantity curve before synthetic training",
     "worker_policy": "No interruption, no duplicate evaluations; CPU read-only snapshots and data inventory",
-    "next_action": "Observer enabled and running every30minutes for at most72h. Next engineering action: implement nested-history train-only producer/scaler boundaries before any learning-curve GPU dispatch. Existing four GPU workers continue unchanged. No new expensive campaign yet."
+    "next_action": "Observer remains enabled with bounded30-minute polling. After maintenance373, only strict367 and control365 remain active; balanced367 and refinement368 are intentionally paused. Producer rebuilding372 is complete; next is the qualified fresh-network runner."
   },
   "frozen_critic_repair_369": {
     "document": "../369_FROZEN_ACTOR_CRITIC_REPAIR.md",
@@ -59,7 +71,7 @@
   },
   "preserved_champion_refinement_368": {
     "document": "../368_PRESERVED_CHAMPION_FINE_TUNING.md",
-    "status": "PINNED_ENABLED_SERVICE_RUNNING_INITIAL_ACCOUNTS_EXACT",
+    "status": "PAUSED_AFTER_MAINTENANCE373_CHECKPOINT49_VERIFIED_AUTOSTART_DISABLED",
     "runtime_revision": "ea59a964",
     "runtime_archive_sha256": "a86293256b1007503c1178d5e44e569e521a066e04c9e7f3dea7e3e18f418cf3",
     "runtime_code_identity": "d65705139fbc3f2c01be358bf742b09e66527f833d60a37e343c1b14594fff94",
@@ -79,7 +91,7 @@
     "head_reset": false,
     "other_runs_interrupted": false,
     "promotion": false,
-    "next_action": "Enabled service automatically trains and resumes to stopping rule. Observe progress, native full accounts, role learning rates and full rollback receipts; compare with frozen selected299 and367 without claiming an isolated factor effect. Preserve365/367. No phase2 closure or broad DEAP."
+    "next_action": "Preserve verified epoch49 recovery while data-quantity work takes priority. Disabled service must not auto-resume during reboot. This incomplete arm is not a definitive rejection. See373."
   },
   "balanced_champion_monitor_367": {
     "document": "../367_BALANCED_CHAMPION_MONITOR_CONTRAST.md",
