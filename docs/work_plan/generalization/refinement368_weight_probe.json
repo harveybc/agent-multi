@@ -1,0 +1,123 @@
+{
+  "restore_digest_verified": true,
+  "probe_shape": [
+    128,
+    13,
+    71
+  ],
+  "source_to_probe_logit_max_abs": 9.059906005859375e-06,
+  "results": [
+    {
+      "epoch": 0,
+      "flips": 0,
+      "alpha": 0.005312912631779909,
+      "actor_counts": [
+        116,
+        4,
+        8
+      ],
+      "critic_counts": [
+        2,
+        29,
+        97
+      ],
+      "probability": [
+        0.7413675785064697,
+        0.10668212920427322,
+        0.15195024013519287
+      ],
+      "q_adv": [
+        0.0,
+        0.10717319697141647,
+        0.13855832815170288
+      ],
+      "logit_margin_median": 1.9738951921463013,
+      "sell_up_pressure_current": 0.9375,
+      "sell_up_pressure_at_original_actor": 0.9375
+    },
+    {
+      "epoch": 20,
+      "flips": 42,
+      "alpha": 0.029043635353446007,
+      "actor_counts": [
+        86,
+        17,
+        25
+      ],
+      "critic_counts": [
+        73,
+        28,
+        27
+      ],
+      "probability": [
+        0.5686947107315063,
+        0.2018478959798813,
+        0.22945734858512878
+      ],
+      "q_adv": [
+        0.0,
+        -0.0448305681347847,
+        -0.07202580571174622
+      ],
+      "logit_margin_median": 0.9566272497177124,
+      "sell_up_pressure_current": 0.5546875,
+      "sell_up_pressure_at_original_actor": 0.3515625
+    },
+    {
+      "epoch": 21,
+      "flips": 113,
+      "alpha": 0.0054324921220541,
+      "actor_counts": [
+        3,
+        20,
+        105
+      ],
+      "critic_counts": [
+        27,
+        38,
+        63
+      ],
+      "probability": [
+        0.06858591735363007,
+        0.19527512788772583,
+        0.7361389398574829
+      ],
+      "q_adv": [
+        0.0,
+        -0.0007495454046875238,
+        0.009928960353136063
+      ],
+      "logit_margin_median": 2.7550253868103027,
+      "sell_up_pressure_current": 0.4140625,
+      "sell_up_pressure_at_original_actor": 0.7734375
+    },
+    {
+      "epoch": 25,
+      "flips": 16,
+      "alpha": 0.005034841597080231,
+      "actor_counts": [
+        103,
+        9,
+        16
+      ],
+      "critic_counts": [
+        87,
+        17,
+        24
+      ],
+      "probability": [
+        0.654674232006073,
+        0.12823693454265594,
+        0.21708881855010986
+      ],
+      "q_adv": [
+        0.0,
+        -0.011889085173606873,
+        -0.008940374478697777
+      ],
+      "logit_margin_median": 1.4197238683700562,
+      "sell_up_pressure_current": 0.484375,
+      "sell_up_pressure_at_original_actor": 0.59375
+    }
+  ]
+}

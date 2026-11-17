@@ -83,3 +83,48 @@ first epoch started after qualification. Runtime output lives in the private
 `champion-refinement368-20261117` run directory; deployment, service and copied
 qualification receipts are in the operator's private `refinement368-deploy`
 directory. No host identifiers or credentials are part of this report.
+
+## Read-Only Weight And Objective Probe
+
+After the first natural rollback at epoch20, copied snapshots20,21,25 were
+authenticated against their history SHA256 values. CPU inference used the same
+128 TRAIN windows (13x71), with no updates or changes to the running workers.
+Evidence: [probe](generalization/refinement368_weight_probe.json).
+
+The epoch20 snapshot is **before** rollback. The receipt's post-rollback full
+weight digest equals the original source exactly. CPU versus saved GPU source
+logits differ by at most9.06e-6; do not claim bitwise cross-device logits.
+
+| State | Actor NOP/BUY/SELL on128 TRAIN windows | Twin-min Q argmax NOP/BUY/SELL | Action changes from source |
+|---|---|---|---:|
+| Source / restored champion | 116/4/8 | 2/29/97 | 0 |
+| Epoch20 before rollback | 86/17/25 | 73/28/27 | 42 |
+| Epoch21 after one continuation epoch | 3/20/105 | 27/38/63 | 113 |
+| Epoch25 | 103/9/16 | 87/17/24 | 16 |
+
+For the source, the analytic gradient of the categorical SAC actor objective
+with respect to logits points toward increasing SELL in120/128 windows.
+This is an instantaneous fixed-Q logit-space diagnostic, not a claim that every
+network parameter update has that effect or that SELL is economically correct.
+Source mean Q advantage SELL-minus-NOP is0.13856 against alpha0.005313.
+
+At epoch21, relative L2 weight displacement from source is9.26% actor core,
+9.90% actor fusion,11.00% actor head and11.35% critic head, yet88.28% of probe
+actions changed. Across the full validation support, SELL is5877/6207 signals
+(94.68%), not a percentage of executed orders. Native returns are TRAIN-77.33%,
+VALIDATION-21.48%. This is substantial functional drift, not proof of a single
+bad layer, insufficient model capacity or an invalid source checkpoint.
+
+The evidence narrows the diagnosis: the good deployed actor and its restored
+critics are not aligned in these states, and the current actor objective can
+push away from that actor immediately. Full rollback also restores temperature
+and Adam moments while retaining the newer replay, so replay/critic/temperature
+interaction remains a competing explanation. Epoch25 partly recovers the probe
+actions but native VALIDATION remains-12.57%; matching actions on128 windows is
+not enough to establish account recovery.
+
+Next diagnostic: freeze the source actor, assess critic action ranking against
+realized own-policy TRAIN continuations on matched replay, and compare before
+and after critic-only calibration before another joint update. No blind actor
+or attention reset and no new causal conclusion from weight magnitudes alone.
+Current training continues unchanged; this probe does not promote a candidate.

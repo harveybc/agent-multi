@@ -10,6 +10,8 @@
     "focused_tests_passed": 39,
     "cold_optimizer_exact": true,
     "native_epoch_zero_accounts_exact": true,
+    "readonly_weight_probe": "refinement368_weight_probe.json",
+    "weight_probe_findings": "Source actor NOP116/128 versus twin-min critic SELL97/128; analytic SAC logit objective increases SELL120/128. After exact epoch20 rollback, epoch21 changes113/128 actions and emits SELL94.68percent of full validation signals. Root cause not isolated; diagnose TRAIN critic ranking and replay interaction with frozen actor.",
     "owner_latest_amendment": "Use original LR, NOT original/10",
     "source": "selected299;71inputs28groups;preserve all model weights and named Adam moments",
     "source_validation_return_pct": 18.369945750000117,
