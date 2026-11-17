@@ -6,6 +6,8 @@
     "runtime_revision": "8f5e9472",
     "runtime_code_identity": "dcd519d96b2ac7ae36146efdae727f9690db79fcd94ee0e65670d7cb7343feb0",
     "first_active_months_by_seed": {"7":48,"19":6},
+    "verified_devices_by_seed": {"7":"5070Ti","19":"5090"},
+    "physical_device_pinning": "Private service environments use physical identifiers; running workers preserved",
     "initial_worker_restarts": 0,
     "tests_passed": 42,
     "months": [6,12,24,48],

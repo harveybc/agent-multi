@@ -70,6 +70,13 @@ was advancing when checked. Detailed deployment receipts, configurations,
 unit logs, recovery, native metrics and plots reside in the private campaign
 root. The existing365 control and367 strict runs remain active and unmodified.
 
+Physical-device check: CUDA integer enumeration differed from management-tool
+indices. Seed7/48months is on the5070Ti; seed19/6months is on the5090. Both
+valid runs are retained because each device will run all four histories. Unit
+environments are now pinned to physical device identifiers for future starts,
+without restarting either worker. The hardware recorded in SPEC is authoritative,
+not the informal service-name suffix. Private identifiers are not published.
+
 No trained model has been promoted. The next automatic actions are100
 update-bearing passes for each admitted arm, followed by the next history in
 its pinned per-device queue. Final comparisons must use both seeds and report
