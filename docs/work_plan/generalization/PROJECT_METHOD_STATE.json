@@ -1,5 +1,13 @@
 {
   "schema": "generalization_method.v1",
+  "frozen_critic_repair_369": {
+    "document": "../369_FROZEN_ACTOR_CRITIC_REPAIR.md",
+    "status": "IMPLEMENTED_TESTING_BEFORE_CPU_DEPLOYMENT",
+    "source": "selected299;71 inputs;28 groups; frozen actor and representation",
+    "panel": "real TRAIN four state strata, up to4/year/kind; greedy and four stochastic continuations per action; FIT2020-22 and monitor2023 purged windows",
+    "calibration": "retained/fresh critic heads x greedy/soft targets x seeds7/19;4096 updates; same FIT batches; only endpoint qualification",
+    "next_action": "Validate then launch CPU-only persistent sequential panel, calibration and conditional free/KL32 actor head probes. If no soft-target arm passes both seeds, end with explicit nonqualification; no actor update or automatic new search. Keep365/367/368 GPUs unchanged."
+  },
   "preserved_champion_refinement_368": {
     "document": "../368_PRESERVED_CHAMPION_FINE_TUNING.md",
     "status": "PINNED_ENABLED_SERVICE_RUNNING_INITIAL_ACCOUNTS_EXACT",
