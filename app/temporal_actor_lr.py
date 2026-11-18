@@ -12,6 +12,18 @@ def named_moments(model):
     return {names[id(p)]:deepcopy(s) for p,s in model.optimizer.state.items()}
 
 
+def foreign_gpu_pids(pids, executable_for_pid, allowed_executables):
+    """Only exact operator-declared desktop executables may coexist with a worker."""
+    blocked=[]
+    for pid in pids:
+        try:
+            executable=executable_for_pid(pid)
+        except FileNotFoundError:
+            continue  # The enumerated process exited.
+        if executable not in allowed_executables:blocked.append(pid)
+    return blocked
+
+
 def split_temporal_optimizer(model, factor):
     if not math.isfinite(factor) or not 0 < factor <= 1:
         raise ValueError('TEMPORAL_LR_FACTOR')

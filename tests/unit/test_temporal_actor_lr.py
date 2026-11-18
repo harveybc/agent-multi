@@ -113,3 +113,10 @@ def test_continuation_design_is_fixed_budget_not_validation_stopping():
     assert d['matched_budget'] and d['matched_updates_per_epoch']==6006
     assert 'actor_plateau' not in d
     assert source['design']['max_epochs']==101
+
+
+def test_gpu_admission_allows_only_exact_declared_desktop_executable():
+    from app.temporal_actor_lr import foreign_gpu_pids
+    executables={1:'/desktop/browser',2:'/env/python',3:'/other/browser'}
+    assert foreign_gpu_pids([1,2,3],executables.__getitem__,['/desktop/browser'])==[2,3]
+    assert foreign_gpu_pids([1],executables.__getitem__,[])==[1]

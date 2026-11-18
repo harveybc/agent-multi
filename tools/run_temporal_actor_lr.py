@@ -2,6 +2,7 @@
 import argparse
 from copy import deepcopy
 import fcntl
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -14,17 +15,34 @@ from torchrl.data import TensorDictReplayBuffer, LazyTensorStorage
 from app.frozen_recipe_inputs import file_sha
 from app.rl_subset import digest
 from app.structural_refit import build_model, verify_files, load_recovery, EpochPatience
-from app.temporal_actor_lr import split_temporal_optimizer, named_moments
+from app.temporal_actor_lr import split_temporal_optimizer, named_moments, foreign_gpu_pids
 from app.sac_training_reliability import weight_diagnostics
 from app.three_signal_learning import environment
 from app.training_forensics import tree_digest, rng_state
 from tools.run_discrete_curve_probe import configure, read, write, now
-from tools.run_nested_history_training import market_for, input_parity, admission
+from tools.run_nested_history_training import market_for, input_parity
 from tools.run_sac_training_reliability import code_identity, atomic_save
 from tools.run_structural_sac_refit import fit_epochs, assess_full
 
 
 ARMS={'control':1.,'temporal_lr_div5':.2}
+
+
+def admission(c):
+    gpu=os.environ.get('CUDA_VISIBLE_DEVICES','')
+    if not gpu.startswith('GPU-') or ',' in gpu:raise ValueError('TEMPORAL_PHYSICAL_GPU_REQUIRED')
+    raw=subprocess.check_output(['nvidia-smi','--id='+gpu,'--query-compute-apps=pid',
+        '--format=csv,noheader,nounits'],text=True)
+    pids=[int(line.strip()) for line in raw.splitlines() if line.strip().isdigit()]
+    blocked=foreign_gpu_pids(pids,lambda pid:str(Path('/proc',str(pid),'exe').resolve(strict=True)),
+        c.get('allowed_gpu_process_executables',[]))
+    if blocked:return 'GPU_BUSY'
+    free=int(subprocess.check_output(['nvidia-smi','--id='+gpu,'--query-gpu=memory.free',
+        '--format=csv,noheader,nounits'],text=True).strip())*1024**2
+    if free<c['minimum_gpu_free_bytes']:return 'GPU_MEMORY_PRESSURE'
+    available=next(int(s.split()[1])*1024 for s in Path('/proc/meminfo').read_text().splitlines()
+        if s.startswith('MemAvailable:'))
+    return 'HOST_MEMORY_PRESSURE' if available<c['minimum_available_bytes'] else None
 
 
 def authenticate(c):
@@ -146,7 +164,7 @@ def qualify(c,device):
 
 
 def worker(c,name):
-    configure(19);torch.backends.cudnn.allow_tf32=False
+    torch.backends.cudnn.allow_tf32=False
     if not torch.cuda.is_available():raise ValueError('TEMPORAL_GPU_REQUIRED')
     spec,_,_=authenticate(c);root,identity=prepare(c,name)
     lock=(root/'worker.lock').open('a');fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
