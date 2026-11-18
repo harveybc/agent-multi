@@ -1,5 +1,15 @@
 {
   "schema": "generalization_method.v1",
+  "temporal_actor_lr_376": {
+    "status": "IMPLEMENTED_CPU_TESTS_PASSED_PREPARING_GPU_QUALIFICATION",
+    "document": "../376_TEMPORAL_ACTOR_LR_CONTRAST.md",
+    "tests_passed": 25,
+    "source": "374 six-month seed19 fixed-budget epoch101; complete replay/Adam/RNG, not validation-selected epoch4",
+    "contrast": "Two20-pass full-state continuations; control3e-5 vs actor attention/core6e-6, other parameters3e-5;120120 updates per arm",
+    "scope": "Recovery after overfitting, not prevention; existing2024 descriptive only; no promotion",
+    "gpu_admission_repair": "Idle374 supervisor restarted with physical identifier; bounded guard waits for other supervisor idle boundary, without worker interruption",
+    "next_action": "Authenticate copied recovery, CPU preflight, same-device cold paired updates and finite sequential queue on free device. Preserve374 and367."
+  },
   "weight_interventions_375": {
     "status": "OFFLINE_COMPLETE_NO_PROMOTION",
     "document": "../375_WEIGHT_INTERVENTIONS.md",
@@ -438,7 +448,7 @@
     "stl_owner_paused": true,
     "recommendation": "Account for open data experiments before expensive DEAP: current71 producer/joint-history compatibility, then qualified matched G3 augmentation. Architecture implementation preparation can continue. Do not infer complete research from local351 closure or restart owner-paused STL."
   },
-  "current_stage": "PHASE2_OPEN_370_PRIORITY_DIAGNOSTICS_365_367_368_PRESERVED",
+  "current_stage": "PHASE2_OPEN_374_HISTORY_CURVES_AND_376_TEMPORAL_LR_DIAGNOSIS",
   "architecture_gene_preflight_352": {
     "document": "../352_ARCHITECTURE_GENE_PREFLIGHT.md",
     "status": "CONSTRUCTION_VERIFIED_NOT_TRAINING_OR_DEAP",
@@ -3748,6 +3758,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
+    "CURRENT376 supersedes historical launch instructions: repair idle374 physical GPU admission without interrupting active workers; preserve active374/367. Qualified full-state paired continuation on free GPU: six-month seed19 epoch101 fixed-budget anchor,20passes per arm,control vs actor attention/core LR divided by5. Native data and replay retained; endpoint primary, activity confound explicit, no promotion. Older declarations below are historical.",
     "CURRENT372: four subset stores and scalers rebuilt and verified;26 combined tests pass;71 inputs28groups unchanged; validation supports identical6208 windows. Scope perturbation/refit controls and save/reload exact. Twelve-month Kalman column is naturally constant and retained. Existing GPU runs unchanged. Next fresh-network paired initialization/matched-update runner, then idle-device dispatch; no new neural training yet.",
     "CURRENT371: nested support preflight executed,20 combined tests pass; current71-store valid windows2781/5892/11842/24026 for6/12/24/48months and common6208 validation windows. Eight learned producer columns require scope-safe rebuilding; factor scope must be recovered separately. All71 inputs preserved, no learning-curve training dispatched. Next producer refits, subset scalers and fresh model initialization;370 observer and existing GPU runs remain active.",
     "CURRENT370 supersedes obsolete queue-status text below:365 control,367 two first arms and368 are currently training. Preserve them. CPU evidence-first observer is enabled/active,21 tests pass, all71 columns and four histories authenticated, four plots generated with zero collection errors.369 COMPLETE_REPAIR_NOT_QUALIFIED: do not repeat unchanged calibration. Next implement/test per-subset producer/scaler fit boundaries for nested6/12/24/48-month curve, distinguishing full-history-pretrained representation from actual data-quantity effects. No synthetic training, broad DEAP, live or phase2 closure.",
