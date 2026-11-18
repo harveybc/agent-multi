@@ -1,5 +1,10 @@
 {
   "schema": "generalization_method.v1",
+  "weight_interventions_375": {
+    "status": "OFFLINE_COMPLETE_NO_PROMOTION",
+    "document": "../375_WEIGHT_INTERVENTIONS.md",
+    "next_action": "Preserve374; confirm temporal actor drift with a paired train-only anchor and an activity-matched comparator before changing training."
+  },
   "matched_history_training_374": {
     "document": "../374_MATCHED_HISTORY_TRAINING.md",
     "status": "TWO_GPU_QUEUES_ENABLED_RUNNING_CPU_AND_GPU_QUALIFICATION_PASSED",

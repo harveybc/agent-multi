@@ -830,3 +830,9 @@ seed7 and6months seed19, then complete all four histories each automatically.
 collection-only pass. Same71 inputs, full13xstride2 window, fixed architecture;
 gradient budget matched, interactions/sample reuse explicitly not matched.
 No neural result or promotion yet. See [374](../374_MATCHED_HISTORY_TRAINING.md).
+
+375: At equal epoch60, reverting actor attention or core individually reduces
+validation loss in both inspected arms. Reverting both is not additive and
+neither hybrid is profitable. Head-only rollback and weight averaging have
+opposite effects across arms. Fixed post-fusion attention diagnostic labeling.
+See [measured interventions and limitations](../375_WEIGHT_INTERVENTIONS.md).

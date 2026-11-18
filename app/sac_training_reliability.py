@@ -79,6 +79,8 @@ def signatures(state):
 
 def module_key(name):
     r = role(name)
+    if '.encoder.post_fusion.' in name:
+        return r + '.attention'
     if '.encoder.branches.' in name:
         return r + '.branch.' + name.split('.encoder.branches.')[1].split('.')[0]
     for component in ('fusion', 'core', 'attention', 'head'):
