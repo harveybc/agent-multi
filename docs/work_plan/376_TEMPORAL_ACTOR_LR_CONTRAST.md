@@ -55,5 +55,28 @@ no child worker. Neither active training worker is interrupted.
 
 ## Execution
 
-Implementation, focused CPU tests and same-device qualification precede GPU
-training. Runtime configurations and data stay outside this public repository.
+At2026-11-18T21:37Z the finite GPU queue is running the control at epoch102
+(first of20 additional passes). The treatment follows automatically.
+Runtime revision:c4f28a64; code identity:
+`8c14613b1a42debbbf244a81eb31387c97c14911a87372f5194da34ac3b688d8`.
+
+-51 focused tests passed; correctness lint passed.
+-All71 inputs retained:2781 valid TRAIN windows and6208 validation windows.
+-Full-state fork preserves model tensors, named Adam moments, replay and RNG.
+-Both forks reproduce source native accounts exactly on the new device:
+ TRAIN+349.3972773%,748 trades; validation-56.4827730%,1471 trades.
+-Four successive sampled updates reproduce exactly after cold reload for
+ each arm; grouped factor1 control is identical to the original optimizer.
+-25 parameter tensors (actor attention/core) receive the treatment factor;
+598 others retain their rates. No target/critic/head reset.
+-One initial admission attempt stopped before qualification because the
+ desktop browser appeared as a GPU compute client. A narrowly declared exact
+ executable exception plus GPU/RAM memory floors corrected this; other
+ compute clients remain disallowed. No experiment results were produced by
+ that stopped launch.
+
+Both374 devices and367 continue; the idle supervisor correction is verified
+by real worker progress, not just service status. The guard for the other
+parent remains armed until its idle boundary. Runtime configuration, device
+identifiers, source copies, qualifications and recovery stay outside the public
+repository. Source+18.37% model is not replaced and phase2 remains open.

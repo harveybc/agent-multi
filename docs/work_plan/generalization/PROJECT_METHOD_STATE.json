@@ -1,14 +1,18 @@
 {
   "schema": "generalization_method.v1",
   "temporal_actor_lr_376": {
-    "status": "IMPLEMENTED_CPU_TESTS_PASSED_PREPARING_GPU_QUALIFICATION",
+    "status": "GPU_QUALIFIED_CONTROL_RUNNING_TREATMENT_SEQUENCED",
     "document": "../376_TEMPORAL_ACTOR_LR_CONTRAST.md",
-    "tests_passed": 25,
+    "tests_passed": 51,
+    "runtime_revision": "c4f28a64",
+    "code_identity": "8c14613b1a42debbbf244a81eb31387c97c14911a87372f5194da34ac3b688d8",
+    "qualification": "Both source native accounts exact; named moments/replay/RNG exact;four cold sampled updates exact per arm;unit-factor grouping preserves original control updates",
+    "last_verified_stage": "control epoch102 with actual gradient updates; treatment queued;374 both devices and367 continue",
     "source": "374 six-month seed19 fixed-budget epoch101; complete replay/Adam/RNG, not validation-selected epoch4",
     "contrast": "Two20-pass full-state continuations; control3e-5 vs actor attention/core6e-6, other parameters3e-5;120120 updates per arm",
     "scope": "Recovery after overfitting, not prevention; existing2024 descriptive only; no promotion",
     "gpu_admission_repair": "Idle374 supervisor restarted with physical identifier; bounded guard waits for other supervisor idle boundary, without worker interruption",
-    "next_action": "Authenticate copied recovery, CPU preflight, same-device cold paired updates and finite sequential queue on free device. Preserve374 and367."
+    "next_action": "Enabled pinned queue completes control20passes then treatment20passes and endpoint summary, with atomic full-state recovery and weight diagnostics each epoch. Inspect net/trade and activity confounding; no promotion. Preserve374/367; no broad DEAP, floating restart or live work."
   },
   "weight_interventions_375": {
     "status": "OFFLINE_COMPLETE_NO_PROMOTION",
