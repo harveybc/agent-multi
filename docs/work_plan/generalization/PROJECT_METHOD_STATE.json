@@ -1,5 +1,12 @@
 {
   "schema": "generalization_method.v1",
+  "direct_economic_roles_385": {
+    "document": "../385_DIRECT_ROLE_RESULTS.md",
+    "status": "COMPLETE_NO_PROMOTION",
+    "source_return_pct": 3.0863546000002136,
+    "direct_return_pct": -44.93589834999583,
+    "next_action": "Paired expected-advantage vs argmax-class opener on identical samples with incumbent closer. No external model, floating or live change."
+  },
   "supervised_roles_384": {
     "document": "../384_ROLE_PROBE_RESULTS.md",
     "status": "FOUR_GPU_FITS_AND_CPU_REPLAY_COMPLETE_NO_PROMOTION",
