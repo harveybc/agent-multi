@@ -1,5 +1,12 @@
 {
   "schema": "generalization_method.v1",
+  "segment_behavior_388": {
+    "document": "../388_SEGMENT_BUSINESS_GATE.md",
+    "status": "PRICE_BEHAVIOR_SCREEN_COMPLETE",
+    "supported_cells_per_seed": 316,
+    "stress_pairs": 1441,
+    "trained": false
+  },
   "pivot_segment_387": {
     "document": "../387_PIVOT_SEGMENT_GENERATOR.md",
     "status": "COHORTS_GENERATED_NATIVE_REPLAY_PASSED",
