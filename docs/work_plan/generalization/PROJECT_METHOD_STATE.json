@@ -1,5 +1,12 @@
 {
   "schema": "generalization_method.v1",
+  "prefold_upstream_383": {
+    "document": "../383_PREFOLD_UPSTREAM_INVENTORY.md",
+    "status": "INVENTORY_COMPLETE_NO_VERIFIED_PREFOLD_REUSE",
+    "matching_recipe_copies": 233,
+    "date_eligible": 0,
+    "next_action": "Strict historical comparison requires fold-local discovery and upstream rebuild; exact-current-checkpoint comparison requires prospective observations. No GPU replay with the 299 weights on earlier folds."
+  },
   "short_factorial_382": {
     "document": "../382_SHORT_FACTORIAL_RESULTS.md",
     "status": "COMPLETE_NO_PROMOTION",
