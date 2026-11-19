@@ -30,3 +30,25 @@ evidence while the paired learning-rate treatment and history curves finish.
 Each run uses its first available completed snapshot as reference;376's first
 post-fork epoch is102, not the pre-fork101. Cross-arm intervention conclusions
 belong to376, which preserves the common101 anchor.
+
+## First execution
+
+Completed2026-11-19T00:03Z:17 checkpoints across four available runs, four
+plots, zero collection errors. The fifth configured run is the queued376
+treatment and is explicitly WAITING_FOR_FIRST_COMPLETED_EPOCH, not a failure.
+Five focused tests and correctness lint pass. Enabled CPU-only service:
+75% of one core quota,3GiB memory cap, hourly refresh,96-hour maximum.
+Observed first-pass CPU time about11.3 seconds and memory about692MiB.
+
+Illustrative descriptive findings on256 fixed TRAIN windows per run:
+
+| Run | Epochs | Critic/actor disagreement | Validation return |
+|---|---|---|---|
+| six months,seed19 |20 to101|23.0% to7.8%|-25.98% to-56.48%|
+|48months,seed19|9|66.0%;median top-two probability margin0.0058|-22.38%|
+|376 control|102 to108|10.2% to10.9%;8.2% action changes|-55.56% to-55.36%|
+
+Greater actor/critic agreement on TRAIN is not evidence of out-of-sample
+utility. Small probability margins in the early48-month run warrant tracking
+decision sensitivity, but do not establish the cause of later divergence.
+No training policy or checkpoint was changed from this descriptive reading.

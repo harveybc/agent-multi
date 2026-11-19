@@ -2,11 +2,14 @@
   "schema": "generalization_method.v1",
   "cpu_component_observer_377": {
     "document": "../377_CPU_COMPONENT_OBSERVER.md",
-    "status": "IMPLEMENTED_TESTED_PREPARING_BOUNDED_CPU_QUEUE",
+    "status": "FIRST_PASS_COMPLETE_HOURLY_CPU_SERVICE_ENABLED",
     "tests_passed": 5,
+    "runtime_revision": "533996ca",
+    "code_identity": "87a1933dd53120a2c93165bb11f6121ed8be06c2e6d5ef9c81501b911636074e",
+    "first_pass": "17 checkpoints,4 plots,zero errors;fifth configured run is376 treatment waiting for first completed epoch",
     "scope": "Non-governing descriptive weights plus fixed256 TRAIN probes; first/multiples20/latest snapshots, existing account metrics only",
     "resources": "One capped CPU process, GPU hidden; all four training GPU workers preserved",
-    "next_action": "Authenticate current374 and376 snapshots, generate component/decision/return curves; refresh hourly at most96h. No training, selection, promotion or live changes."
+    "next_action": "Enabled bounded hourly observer incorporates completed374/376 checkpoints and emits curves plus component/policy tables. Runtime75percent of one CPU core,3GiB RAM cap. No training, selection, promotion or live changes."
   },
   "temporal_actor_lr_376": {
     "status": "GPU_QUALIFIED_CONTROL_RUNNING_TREATMENT_SEQUENCED",
