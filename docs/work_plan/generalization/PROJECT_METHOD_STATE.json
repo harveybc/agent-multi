@@ -1,5 +1,13 @@
 {
   "schema": "generalization_method.v1",
+  "short_target_381": {
+    "document": "../381_SHORT_TARGET_RESULTS.md",
+    "status": "COMPLETE_DEVELOPMENT_DIAGNOSIS_NO_PROMOTION",
+    "unique_short_states": 177,
+    "wrong_close_with_terminal_scalar_target": 29,
+    "also_wrong_with_original_target": 25,
+    "next_action": "Chronological 2x2 development-only contrast of reachable exposure vs artificial pairs and source vs scalar targets; no threshold tuning, GPU or floating."
+  },
   "close_attribution_380": {
     "document": "../380_CLOSE_ATTRIBUTION.md",
     "status": "COMPLETE_NATIVE_ACCOUNT_DELTA_RECONCILED",
