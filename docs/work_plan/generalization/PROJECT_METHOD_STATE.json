@@ -1,5 +1,11 @@
 {
   "schema": "generalization_method.v1",
+  "supervised_roles_384": {
+    "document": "../384_ROLE_PROBE_RESULTS.md",
+    "status": "FOUR_GPU_FITS_AND_CPU_REPLAY_COMPLETE_NO_PROMOTION",
+    "horizon_hours": 6,
+    "next_action": "Check economic-advantage uncertainty calibration and thin close-buy exposure before any paired account arbiter test; no floating or live change."
+  },
   "prefold_upstream_383": {
     "document": "../383_PREFOLD_UPSTREAM_INVENTORY.md",
     "status": "INVENTORY_COMPLETE_NO_VERIFIED_PREFOLD_REUSE",
