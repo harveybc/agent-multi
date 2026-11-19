@@ -1,5 +1,13 @@
 {
   "schema": "generalization_method.v1",
+  "role_surface_gate_379": {
+    "document": "../379_CLOSE_SURFACE_RESULTS.md",
+    "status": "COMPLETE_NO_PROMOTION",
+    "reserved_states": 432,
+    "paired_regret_delta_R": -0.035691617042855533,
+    "result_sha256": "82b0113230186d61356d0dd9ecf80e3f64510c22988a036e39aa0b675926a68d",
+    "next_action": "Attribute account delta with matched continuations before any new SAC or floating pass."
+  },
   "role_conflict_gate_378": {
     "document": "../378_ROLE_CONFLICT_GATE.md",
     "status": "NATIVE_PANEL_COMPLETE_SCALAR_CLOSER_NOT_SUFFICIENT",
