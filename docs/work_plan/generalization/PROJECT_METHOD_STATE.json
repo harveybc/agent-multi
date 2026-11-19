@@ -1,5 +1,12 @@
 {
   "schema": "generalization_method.v1",
+  "pivot_segment_387": {
+    "document": "../387_PIVOT_SEGMENT_GENERATOR.md",
+    "status": "COHORTS_GENERATED_NATIVE_REPLAY_PASSED",
+    "fused_windows": [24052, 48104, 96208],
+    "training_comparison_complete": false,
+    "promoted": false
+  },
   "conditional_advantage_386": {
     "document": "../386_EXPECTED_ADVANTAGE_RESULTS.md",
     "status": "COMPLETE_NO_PROMOTION",
