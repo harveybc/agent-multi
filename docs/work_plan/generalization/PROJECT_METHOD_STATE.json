@@ -1,5 +1,13 @@
 {
   "schema": "generalization_method.v1",
+  "cpu_component_observer_377": {
+    "document": "../377_CPU_COMPONENT_OBSERVER.md",
+    "status": "IMPLEMENTED_TESTED_PREPARING_BOUNDED_CPU_QUEUE",
+    "tests_passed": 5,
+    "scope": "Non-governing descriptive weights plus fixed256 TRAIN probes; first/multiples20/latest snapshots, existing account metrics only",
+    "resources": "One capped CPU process, GPU hidden; all four training GPU workers preserved",
+    "next_action": "Authenticate current374 and376 snapshots, generate component/decision/return curves; refresh hourly at most96h. No training, selection, promotion or live changes."
+  },
   "temporal_actor_lr_376": {
     "status": "GPU_QUALIFIED_CONTROL_RUNNING_TREATMENT_SEQUENCED",
     "document": "../376_TEMPORAL_ACTOR_LR_CONTRAST.md",
@@ -3762,6 +3770,7 @@
   "results": "../204_GENERALIZATION_DIAGNOSIS_RESULTS.md",
   "g2_design": "../205_AUTOMATED_MULTISCALE_CONTRAST.md",
   "next_allowed_actions": [
+    "CURRENT377: use spare CPU for bounded hourly authenticated checkpoint/policy diagnostics of374/376. Preserve every active training worker and their budgets. Use first/multiples20/latest epoch selection, fixed TRAIN-only probe, component drift and matrix stable rank with explicit non-causal interpretation. No extra fit merely to occupy VRAM.",
     "CURRENT376 supersedes historical launch instructions: repair idle374 physical GPU admission without interrupting active workers; preserve active374/367. Qualified full-state paired continuation on free GPU: six-month seed19 epoch101 fixed-budget anchor,20passes per arm,control vs actor attention/core LR divided by5. Native data and replay retained; endpoint primary, activity confound explicit, no promotion. Older declarations below are historical.",
     "CURRENT372: four subset stores and scalers rebuilt and verified;26 combined tests pass;71 inputs28groups unchanged; validation supports identical6208 windows. Scope perturbation/refit controls and save/reload exact. Twelve-month Kalman column is naturally constant and retained. Existing GPU runs unchanged. Next fresh-network paired initialization/matched-update runner, then idle-device dispatch; no new neural training yet.",
     "CURRENT371: nested support preflight executed,20 combined tests pass; current71-store valid windows2781/5892/11842/24026 for6/12/24/48months and common6208 validation windows. Eight learned producer columns require scope-safe rebuilding; factor scope must be recovered separately. All71 inputs preserved, no learning-curve training dispatched. Next producer refits, subset scalers and fresh model initialization;370 observer and existing GPU runs remain active.",

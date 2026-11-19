@@ -2,6 +2,10 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "observe_component_drift.py": {
+   "purpose": "Bounded CPU-only authenticated component spectra, weight drift and fixed-TRAIN policy probes on existing checkpoints; no training or promotion",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "training reliability"
+  },
   "run_temporal_actor_lr.py": {
    "purpose": "Authenticated paired full-state temporal actor LR continuation, exact cold recovery qualification and finite queue; no promotion or live execution",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "experiment_runner", "owner": "training reliability"
