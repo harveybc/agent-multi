@@ -1,5 +1,11 @@
 {
   "schema": "generalization_method.v1",
+  "role_conflict_gate_378": {
+    "document": "../378_ROLE_CONFLICT_GATE.md",
+    "status": "NATIVE_PANEL_COMPLETE_SCALAR_CLOSER_NOT_SUFFICIENT",
+    "evidence": "16 prior forks reproduced;256 new origins;reserved material same-side conflicts long3/34 short5/33. Ideal isolated exit did not pass account continuation.",
+    "next_action": "Validate position-conditioned account continuation surfaces, then paired SAC and sensitivity only on acceptance. No floating, DEAP or state feedback."
+  },
   "cpu_component_observer_377": {
     "document": "../377_CPU_COMPONENT_OBSERVER.md",
     "status": "FIRST_PASS_COMPLETE_HOURLY_CPU_SERVICE_ENABLED",
