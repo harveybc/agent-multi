@@ -1,5 +1,15 @@
 {
   "schema": "generalization_method.v1",
+  "close_attribution_380": {
+    "document": "../380_CLOSE_ATTRIBUTION.md",
+    "status": "COMPLETE_NATIVE_ACCOUNT_DELTA_RECONCILED",
+    "events": 104,
+    "distinct_positions": 76,
+    "current_order_usd": -253.1512349999956,
+    "later_trades_usd": 31.29965999997859,
+    "delta_usd": -221.85157499999877,
+    "next_action": "Development-only short CLOSE target and continuation diagnosis before any policy change."
+  },
   "role_surface_gate_379": {
     "document": "../379_CLOSE_SURFACE_RESULTS.md",
     "status": "COMPLETE_NO_PROMOTION",
