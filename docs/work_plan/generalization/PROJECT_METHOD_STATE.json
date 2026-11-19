@@ -1,5 +1,15 @@
 {
   "schema": "generalization_method.v1",
+  "matched_augmentation_389": {
+    "document": "../389_MATCHED_AUGMENTATION.md",
+    "status": "PRIMARY_FOUR_ARMS_DISPATCHED",
+    "years_added": [0,4,8,16],
+    "seeds": [7,19],
+    "full_real_epochs_per_arm": 80,
+    "synthetic_decisions_per_path": 24051,
+    "trainable_parameters": 16431,
+    "promoted": false
+  },
   "segment_behavior_388": {
     "document": "../388_SEGMENT_BUSINESS_GATE.md",
     "status": "PRICE_BEHAVIOR_SCREEN_COMPLETE",
