@@ -1,5 +1,13 @@
 {
   "schema": "generalization_method.v1",
+  "conditional_advantage_386": {
+    "document": "../386_EXPECTED_ADVANTAGE_RESULTS.md",
+    "status": "COMPLETE_NO_PROMOTION",
+    "primary_seed": 19,
+    "source_return_pct": 3.0863546000002136,
+    "primary_return_pct": -23.64832284999795,
+    "next_action": "Before training another opener, test on chronological internal blocks whether a fitted uncertainty or abstention rule can distinguish profitable extra entries from harmful ones versus an unconditional abstain baseline. No new floating or live promotion."
+  },
   "direct_economic_roles_385": {
     "document": "../385_DIRECT_ROLE_RESULTS.md",
     "status": "COMPLETE_NO_PROMOTION",
