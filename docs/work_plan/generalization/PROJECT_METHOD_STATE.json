@@ -1,5 +1,12 @@
 {
   "schema": "generalization_method.v1",
+  "short_factorial_382": {
+    "document": "../382_SHORT_FACTORIAL_RESULTS.md",
+    "status": "COMPLETE_NO_PROMOTION",
+    "examples_per_fit": 397,
+    "paired_evaluation_ticks": 247,
+    "next_action": "Verify pre-fold upstream checkpoints before a matched source-label population replication. Keep incumbent; no floating."
+  },
   "short_target_381": {
     "document": "../381_SHORT_TARGET_RESULTS.md",
     "status": "COMPLETE_DEVELOPMENT_DIAGNOSIS_NO_PROMOTION",
