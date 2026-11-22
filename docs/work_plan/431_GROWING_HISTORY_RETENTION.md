@@ -155,3 +155,21 @@ No son 12 replicas independientes. No adoptar esta regla de reparacion;
 este contraste no descarta intervenciones diferentes. CSV por oferta y
 RESULTS.json bajo /var/tmp/role433-repair-audit. Reproductor:
 tools/role433_audit.py (mismo entorno y alias por variable que el 431).
+
+### 434: seleccion de checkpoints sin reentrenar
+
+Comando: `PYTHONPATH=. python tools/role434_campaign.py` en el entorno de
+431, con ROLE431_SSH_TARGET definido. Dos colas remotas y una local puntuan
+las celdas en sus dispositivos originales. CPU comprueba la alineacion del
+monitor y, despues de sellar ambas selecciones, evalua los bloques reservados
+y la cuenta H2 final. Sin Dragon, 2024 ni cambio automatico de pesos en vivo.
+En el brazo sin reparacion, comparar padre, campeon y estados previos a
+restauraciones, no todas las epocas. Se exige admisibilidad en los mismos
+pisos de 432 y reproduccion del puntaje protegido del campeon original.
+
+Menor MSE frente a mayor ventaja gestionada en el monitor, con cupo semanal
+por horizonte: 15/18 etapas eligieron pesos diferentes. En las seis etapas
+finales cambiaron las seis elecciones; solo dos mejoraron el retorno H2,
+ninguna cuenta B fue positiva y 0/6 superaron la regla de integracion.
+Se detuvo antes de entrenar otro scheduler. Referencia:
+`/var/tmp/role434-monitor/{PROTOCOL,DONE}.json` y seis comparaciones por celda.
