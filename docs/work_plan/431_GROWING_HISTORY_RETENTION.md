@@ -200,3 +200,47 @@ retirar solo el requisito EV positivo. Ninguna cuenta positiva con o sin el
 filtro. Se rechazan estas dos sondas, no toda la representacion ni todos los
 modelos posibles. Evidencia por celda en /var/tmp/role435-within-week y
 /var/tmp/role436-gate-replay. Dragon sigue fuera de esta campana.
+
+### 437-438: atribucion SELL y contraste del cierre en cuenta
+
+Sonda no lineal congelada de 435, H2 2022 y H2 2023, semillas 7, 19 y 43.
+437 usa exactamente el cupo semanal por horizonte; control: esperanza de
+una seleccion uniforme con igual numero de ofertas por semana y horizonte.
+No son operaciones independientes ni una politica ejecutable de top semanal.
+En 2023 se reutiliza el ledger 411; en 2022 se repite cada entrada con y sin
+cierre aprendido. La suma de los componentes reproduce cada etiqueta con
+error maximo inferior a 1e-12 pb. Se reproducen los cuatro promedios por
+horizonte de cada semilla y los totales tanto de 435 como de su control.
+
+SELL 12 h, medias por oferta en pb, promediando las tres semillas:
+
+|H2|Ofertas elegidas/semilla|Bruto hasta barreras|Cambio bruto por cierre|Costes|Continuacion vs esperar|Total vs esperar|Control al azar|
+|---|---:|---:|---:|---:|---:|---:|---:|
+|2022|231|-1,15|-0,22|-2,48|+0,47|-3,38|-3,49|
+|2023|206|+14,91|-10,43|-2,98|+0,20|+1,70|-2,66|
+
+438 usa las ofertas causales de la cuenta 435, no el cupo retrospectivo.
+Solo se inhibe el cierre voluntario; se mantienen barreras, salidas obligatorias,
+costes y restriccion de una posicion. Antes y despues del contraste se
+reproduce la cuenta original exactamente. Retornos porcentuales y operaciones:
+
+|H2|Semilla|Gestionado|Barreras|Operaciones gestionado / barreras|
+|---|---:|---:|---:|---:|
+|2022|7|-10,07|-9,52|452 / 277|
+|2022|19|-10,22|-4,81|424 / 262|
+|2022|43|-11,30|-8,42|443 / 262|
+|2023|7|-7,53|-10,56|136 / 95|
+|2023|19|-7,75|-7,09|156 / 102|
+|2023|43|-7,01|-11,07|144 / 106|
+
+No adoptar ninguno. El bruto de las entradas explica el cambio de signo de
+12 h entre cohortes; el cierre amortigua esa mejora, no la origina. El
+efecto por oferta no se traslada directamente a cuenta: cambian los ticks
+en los que vuelve a haber plaza. Proximo diagnostico: emparejar aperturas
+comunes y contabilizar aparte entradas desbloqueadas y desplazadas.
+
+Reproductores CPU: `tools/role437_sell_attribution.py` y
+`tools/role438_close_control.py`, en ese orden, con el entorno de 435 y
+`PYTHONPATH=.:tools`. Resultados completos:
+`/var/tmp/role437-sell-attribution/DONE.json` (24 celdas) y
+`/var/tmp/role438-close-control/DONE.json` (seis pares de cuentas).
