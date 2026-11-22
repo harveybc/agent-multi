@@ -244,3 +244,28 @@ Reproductores CPU: `tools/role437_sell_attribution.py` y
 `PYTHONPATH=.:tools`. Resultados completos:
 `/var/tmp/role437-sell-attribution/DONE.json` (24 celdas) y
 `/var/tmp/role438-close-control/DONE.json` (seis pares de cuentas).
+
+### 439: que operaciones explican la diferencia de cuenta
+
+Reproductor CPU: `tools/role439_trade_overlap.py`, mismo entorno que 438.
+Las doce cuentas deben coincidir exactamente con 438; emparejar entradas SELL
+por barra absoluta y verificar precio de entrada, SL y TP para las comunes.
+Diferencia de retorno en puntos porcentuales, gestionado menos barreras. La
+contribucion de las exclusivas de barreras es el negativo de su neto.
+
+|H2|Semilla|Comunes / solo gestionado / solo barreras|Comunes|Solo gestionado|Solo barreras|Total|
+|---|---:|---|---:|---:|---:|---:|
+|2022|7|266 / 186 / 11|+3,94|-5,05|+0,56|-0,55|
+|2022|19|247 / 177 / 15|-0,52|-4,20|-0,70|-5,42|
+|2022|43|249 / 194 / 13|+0,52|-3,51|+0,11|-2,88|
+|2023|7|89 / 47 / 6|+2,54|+0,65|-0,15|+3,03|
+|2023|19|91 / 65 / 11|-2,18|-1,29|+2,81|-0,67|
+|2023|43|99 / 45 / 7|+2,85|-0,16|+1,37|+4,06|
+
+Antes de redondear, las tres columnas explican la diferencia de retorno con
+error inferior a 1e-8 puntos por par. La parte comun incluye diferencias en
+el tamano de posicion debidas al balance disponible. Una operacion exclusiva
+no es necesariamente la reapertura inmediata tras el primer cierre diferente.
+No extrapolar a BUY, a 2024 o al resultado de introducir un tiempo de espera.
+Detalle por barra en `/var/tmp/role439-trade-overlap/{year}-{seed}.json`;
+resumen verificable en `DONE.json` del mismo directorio. No se promueven pesos.

@@ -10,8 +10,7 @@ from role421_sell_value import score
 OUT = Path('/var/tmp/role438-close-control')
 
 
-def cell(key):
-    year, seed = key
+def replay_pair(year, seed):
     tag = f'{year}-{seed}'
     base.torch.set_num_threads(1)
     with np.load(base.DEST/'market.npz') as bank:
@@ -33,11 +32,19 @@ def cell(key):
 
     active = replay()
     assert active == base.read(SRC/f'{tag}.json')['nonlinear']['account']
+    managed_trades = [tr.copy() for tr in pn.e.trades]
     with patch.object(pn,'close',lambda eng,k,j: 0):
         passive = replay()
+    barrier_trades = [tr.copy() for tr in pn.e.trades]
     assert replay()==active
     row = dict(year=year,seed=seed,managed=active,barriers=passive)
-    atomic(OUT/f'{tag}.json',row)
+    return row,managed_trades,barrier_trades,pn.e.cfg.capital
+
+
+def cell(key):
+    year,seed=key
+    row,*_ = replay_pair(year,seed)
+    atomic(OUT/f'{year}-{seed}.json',row)
     return row
 
 
