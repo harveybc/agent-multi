@@ -92,3 +92,32 @@ Ejecucion: `tools/role431_campaign.py` con `ROLE431_SSH_TARGET`; contrato
 y resultados bajo `/var/tmp/role431-growing`. Dos GPU remotas y una local
 entrenan pares completos; el coordinador evalua checkpoints en CPU en
 paralelo. Sin uso de 2024, promocion automatica, DEAP ni live trading.
+
+## 432: retencion obligatoria y reparacion de pesos por etapa
+
+El 431 midio retencion, no la impuso. Para 432 ambos brazos heredan el mismo
+campeon progresivo de los primeros seis meses y siguen el mismo curriculum.
+Comparten minibatches, actualizaciones, inicializacion de AdamW, monitor y
+politica de parada. Al entrar en cada etapa se puntua al padre en TODOS los
+prefijos anteriores usando todas sus filas de ajuste elegibles, no solo las
+filas del primer semestre. Puntuacion: media en pb de la ventaja gestionada
+del decil seleccionado por semana y horizonte, ponderada por numero de ofertas.
+Los bloques reservados no fijan pisos. Se permite 1e-9 pb por redondeo.
+No es una garantia sobre retorno de cuenta, cada operacion ni cada iteracion
+exploratoria. Los campeones de etapa, en cambio, se verifican antes de guardar.
+
+Un candidato que mejora MSE pero pierde cualquier piso no reinicia paciencia;
+el rollback restaura al mejor admisible o al padre. A la salida de la etapa
+se toma el rechazado de menor MSE, si existe, y se prueba devolver 50% o
+100% del desplazamiento de una sola capa (oculta o salida, incluido sesgo)
+hacia su padre. En control se mide sin adoptar. En tratamiento se admite
+solo el hibrido de mejor MSE que supere el campeon admisible y mantenga los
+pisos. Las recetas son fijas; no se consulta H2 para intervenir. Al cambiar
+de etapa se reinicia AdamW en ambos brazos. Comparar efectos en los prefijos,
+bloques reservados y cuentas H2 contra el control; una correccion aceptada
+por el monitor no prueba que haya beneficio fuera de muestra. Si los cuatro
+hibridos fallan no se asume que la causa sea el extractor.
+
+Coordinador: tools/role432_campaign.py, trabajador: tools/role432_guard.py.
+Evidencia local: /var/tmp/role432-prefix-repair. Seis pares repartidos entre
+tres GPU; retener padres, hijos, sustituciones, pisos, curvas y replays.
