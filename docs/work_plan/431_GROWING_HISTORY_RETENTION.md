@@ -1,6 +1,6 @@
 # 431. Historia creciente y conservacion de comportamientos
 
-Estado: orden de investigacion aprobado, sin ejecucion. Sigue al diagnostico
+Estado: primera comparacion lanzada el 2026-11-22. Sigue al diagnostico
 430 del [checkpoint 429](429_SPECIALIST_CHECKPOINT.md). No reabre floating,
 DEAP ni live. En 429 hubo mas pares corregidos que perjudicados en 6/6 celdas,
 pero 0/6 cuentas rentables. Por eso el criterio final es economico, no solo ordinal.
@@ -63,3 +63,32 @@ replicacion entre semillas/cohortes. Probar restauracion y elegibilidad del
 padre. Paralelizar pares independientes por GPU; las etapas de un mismo hijo
 son secuenciales. Evaluar los checkpoints en CPU al producirse. Publicar
 curvas, matriz de retencion, exposiciones y dictamen incluso si es negativo.
+
+## Primera ejecucion
+
+Seis pares de cabezas shared8, sin modificar el encoder retrospectivo de 429.
+Ambos brazos usan la perdida original de severidad (no la intervencion rechazada
+en 429). Escala comun de etiquetas del primer prefijo. Los ultimos 28 dias
+de cada semestre de fit se reservan para auditoria; guardia inicial de 72 h
+y purga por fin de la etiqueta. El monitor no pertenece a esos bloques.
+No es una prueba de un encoder reentrenado causalmente en cada prefijo.
+
+Cada epoca muestrea tantos ejemplos como filas del fit completo en ambos
+brazos; el brazo incremental repite permutaciones del prefijo cuando hace
+falta. Mismos pasos y tamanos de lote entre brazos. Cada etapa reinicia AdamW
+a 3e-4 en ambos, conserva como candidato los pesos anteriores, y termina
+para ambos al primer agotamiento de paciencia o en la epoca 2000. Los pesos
+previos a cada rollback tambien se conservan. Se reanuda por etapa completa.
+
+CPU mide ventaja a cupo fijo por semana/horizonte en bloques anteriores;
+la cuenta secuencial se evalua en H2 al terminar, no por cada bloque de
+retencion. El filtro exploratorio registrado exige en las seis parejas
+superar control y cero en retorno y ventaja, superar azar a igual cupo,
+mas de dos operaciones por semana y no perder ventaja agregada respecto
+al control en ningun bloque anterior. Ese ultimo contraste entre brazos
+no reemplaza medir olvido entre checkpoints de un mismo brazo.
+
+Ejecucion: `tools/role431_campaign.py` con `ROLE431_SSH_TARGET`; contrato
+y resultados bajo `/var/tmp/role431-growing`. Dos GPU remotas y una local
+entrenan pares completos; el coordinador evalua checkpoints en CPU en
+paralelo. Sin uso de 2024, promocion automatica, DEAP ni live trading.
