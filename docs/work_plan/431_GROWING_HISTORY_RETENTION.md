@@ -390,3 +390,50 @@ No es una nueva validacion independiente. Evidencias:
 0/6 positivas. No promover la conmutacion ni usar estas semanas para elegir
 otro umbral. Este resultado se refiere al readout lineal sobre el encoder
 congelado, no a todos los especialistas ni a todo refit semanal.
+
+### 447: segmentos disjuntos y monitor de retencion acumulativa
+
+Contraste prospectivo del monitor del abridor SELL shared8, no de la cuenta
+multiespecialista completa. Encoder fijo, mismos datos purgados de 431,
+3 o 5 semestres segun cohorte. Un solo entrenamiento del primer semestre
+por semilla/cohorte. Despues cada brazo hereda su campeon, momentos AdamW
+y el LR de ese checkpoint. Se recalcula el valor del padre (epoca cero);
+se reinician solo los contadores de etapa. Cada epoca visita una vez todas
+las filas del semestre actual en minibatches de hasta 512. Ninguna fila
+anterior entra en loss, replay o gradiente. Ambos brazos muestrean en el
+mismo orden hasta donde ambos entrenan.
+
+Desempeno P: ventaja gestionada media en pb de las ofertas SELL del decil
+alto por semana y horizonte (no retorno porcentual de cuenta). Primer
+semestre P(val). Control siempre P(val); intervencion desde el segundo:
+0,5 P(val) + 0,5 media por semestre de P(modelo actual en cada semestre
+anterior de fit). No incluye el semestre que se entrena. El monitor decide
+campeon, parada y restauracion antes de reducir LR. Gracia LR 20, paciencia
+20, factor 1/5, piso 4,8e-7; ES cuenta desde epoca 100, paciencia 80,
+umbral 1e-8 y maximo 2000. Los bloques de auditoria por semestre no entran
+en ningun monitor. Evaluacion de cuenta H2 separada, sin acceder a 2024.
+
+|H2|Semilla|Retorno solo val / mixto (%)|Trades val / mixto|Epoca campeona final val / mixto|
+|---|---:|---:|---:|---:|
+|2022|7|-20,98 / -17,23|513 / 532|13 / 0|
+|2022|19|-19,79 / -16,45|527 / 529|42 / 2|
+|2022|43|-13,00 / -12,86|500 / 503|0 / 0|
+|2023|7|-3,20 / -3,16|144 / 145|44 / 0|
+|2023|19|-4,24 / -3,92|136 / 123|11 / 8|
+|2023|43|-7,22 / -7,26|256 / 258|0 / 0|
+
+Todas las 42 etapas/brazos (contando una sola vez las seis primeras
+compartidas) pararon por paciencia: 179-253 epocas y 88 restauraciones por
+LR en total. Al comparar hijo vs su propio padre, en cada bloque anterior
+reservado por separado: control 7 mejoras / 20 empates / 12 retrocesos;
+mixto 7 / 25 / 7, tolerancia 1e-8 pb. Peor retroceso -4,49 vs -2,13 pb.
+En cuatro de seis ultimas etapas mixtas quedo el padre, no un hijo nuevo.
+Retener mas no demuestra convergencia, no regresion por bloque ni beneficio
+operativo. No promover.
+
+Ejecutar `tools/role447_campaign.py` con el entorno y alias de 431;
+dos carriles en Gamma, uno en Omega, Dragon reservado. Registro por epoca,
+padre de etapa elegible, pesos y AdamW por campeon, y recibos en
+`/var/tmp/role447-segment-only`. La fuente del monitor es la sonda de
+ventaja relativa; un contraste de monitor basado en retorno de cuenta
+completo seria una prueba distinta.
