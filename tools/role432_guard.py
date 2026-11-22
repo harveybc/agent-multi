@@ -12,7 +12,7 @@ def legal(score,floor):
     return bool(np.all(np.asarray(score)>=np.asarray(floor)-1e-9))
 
 
-def run(path,sha):
+def run(path,sha,*,last_stage=None,capture=None):
     assert hashlib.file_digest(path.open('rb'),'sha256').hexdigest()==sha
     torch.set_num_threads(1);torch.use_deterministic_algorithms(True)
     torch.backends.cuda.matmul.allow_tf32=False
@@ -40,7 +40,7 @@ def run(path,sha):
     @torch.inference_mode()
     def mse(n):return float((w.heads(n(v))[-1]-t).square().mean())
     previous=[[],[]]
-    for s in range(1,int(sem.max())+1):
+    for s in range(1,(int(sem.max()) if last_stage is None else last_stage)+1):
         dest=path.with_suffix(f'.s{s}.pt')
         if dest.exists():
             old=torch.load(dest,map_location='cpu',weights_only=False);assert old['sha']==sha
@@ -78,6 +78,8 @@ def run(path,sha):
             if epoch==1 or epoch%100==0:print(path.stem,s,epoch,bad,flush=True)
             if max(bad)>=80:break
         repair=None
+        if capture is not None:
+            capture(s,rejected[1],champs[1])
         # Diagnose both arms identically, adopt only in treatment at the boundary.
         for j,r in enumerate(rejected):
             if r is None:continue

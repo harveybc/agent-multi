@@ -130,3 +130,28 @@ y 50% en 24 meses). Las otras cinco parejas dieron igual retorno final entre
 brazos. H2 2023/7: control -2,0774%, reparado -2,2840%. Ninguna cuenta positiva.
 No promover. Esto demuestra reparabilidad local bajo MSE y pisos, no mejora
 economica generalizable ni que la capa oculta explique toda la inestabilidad.
+
+### 433: auditoria de las 12 reparaciones elegibles
+
+La salida original no guardo los tensores de cada hijo rechazado. Se repitieron
+solo las seis etapas necesarias en las GPU originales, sin cambiar datums,
+politica ni semilla. Se exigio igualdad de historiales, registros de hibridos
+y tensores del campeon de tratamiento antes de auditar. Sin H2 ni seleccion
+posterior. Para cada hibrido se midio el decil semanal por horizonte en los
+bloques reservados disponibles hasta la etapa (incluido el recien agregado).
+Delta en pb de ventaja gestionada, ponderada por cantidad de ofertas.
+
+|Referencia en la misma etapa y trayectoria|Mejor/igual/peor|Delta mediana pb|
+|---|---|---:|
+|Candidato rechazado sin editar|3/3/6|-0,004|
+|Padre heredado|6/2/4|+0,016|
+|Mejor admisible antes de editar|0/0/12|-0,173|
+
+De las dos adoptadas (2023/7), la de 18 meses sustituyo 14 ofertas frente
+al mejor admisible. Entrantes/salientes: -4,109/-2,978 pb; impacto medio
+sobre el decil entero -0,049 pb. La de 24 meses sustituyo 11:
+-9,000/-7,963 pb; impacto -0,025 pb. Son ofertas solapadas, no trades.
+No son 12 replicas independientes. No adoptar esta regla de reparacion;
+este contraste no descarta intervenciones diferentes. CSV por oferta y
+RESULTS.json bajo /var/tmp/role433-repair-audit. Reproductor:
+tools/role433_audit.py (mismo entorno y alias por variable que el 431).
