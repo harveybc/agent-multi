@@ -121,3 +121,12 @@ hibridos fallan no se asume que la causa sea el extractor.
 Coordinador: tools/role432_campaign.py, trabajador: tools/role432_guard.py.
 Evidencia local: /var/tmp/role432-prefix-repair. Seis pares repartidos entre
 tres GPU; retener padres, hijos, sustituciones, pisos, curvas y replays.
+
+Resultado 432: seis parejas terminadas, 18 ampliaciones por brazo. Ocho
+ampliaciones generaron un candidato rechazado para ablacion. En tratamiento,
+12 de 32 hibridos respetaron todos los pisos y dos fueron adoptados al cierre
+de etapa (ambos 2023/7, capa oculta: retornar 100% hacia el padre en 18 meses
+y 50% en 24 meses). Las otras cinco parejas dieron igual retorno final entre
+brazos. H2 2023/7: control -2,0774%, reparado -2,2840%. Ninguna cuenta positiva.
+No promover. Esto demuestra reparabilidad local bajo MSE y pisos, no mejora
+economica generalizable ni que la capa oculta explique toda la inestabilidad.
