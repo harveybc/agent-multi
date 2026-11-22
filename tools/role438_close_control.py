@@ -10,7 +10,7 @@ from role421_sell_value import score
 OUT = Path('/var/tmp/role438-close-control')
 
 
-def replay_pair(year, seed):
+def prepare_replay(year, seed):
     tag = f'{year}-{seed}'
     base.torch.set_num_threads(1)
     with np.load(base.DEST/'market.npz') as bank:
@@ -30,6 +30,12 @@ def replay_pair(year, seed):
     def replay():
         return score(p,pn,dates,ix,y,jul,ts,True)['account']
 
+    return pn,replay
+
+
+def replay_pair(year, seed):
+    tag = f'{year}-{seed}'
+    pn,replay = prepare_replay(year,seed)
     active = replay()
     assert active == base.read(SRC/f'{tag}.json')['nonlinear']['account']
     managed_trades = [tr.copy() for tr in pn.e.trades]

@@ -269,3 +269,66 @@ no es necesariamente la reapertura inmediata tras el primer cierre diferente.
 No extrapolar a BUY, a 2024 o al resultado de introducir un tiempo de espera.
 Detalle por barra en `/var/tmp/role439-trade-overlap/{year}-{seed}.json`;
 resumen verificable en `DONE.json` del mismo directorio. No se promueven pesos.
+
+### 440-442: primera reapertura y control de actividad
+
+Dentro de cada posicion compartida cerrada antes por el agente, clasificar
+las ventas exclusivas hasta la salida por barreras inclusive: primera y
+siguientes. El resto se contabiliza aparte. El neto de las tres categorias
+reproduce la atribucion 439. Esto no entrega al controlador la barra de salida.
+
+Intervenciones sobre cuenta completa sin reentrenar: 440 omite la siguiente
+senal SELL elegible de la misma semana tras un cierre voluntario. 441 omite
+solo la primera oferta si la posicion virtual mantenida a barreras sigue
+ocupada al decidir; avanza con el motor nativo y no usa barras futuras.
+Se mantienen todos los cierres del agente. Ninguna de las doce cuentas
+intervenidas resulto positiva. Resultados H2 de retorno (%):
+
+|Ano|Semilla|Primera reapertura retrospectiva: n / aporte (pp)|Original|Veto siguiente|Veto con posicion virtual|
+|---|---:|---|---:|---:|---:|
+|2022|7|82 / -2,13|-10,07|-10,95|-13,00|
+|2022|19|85 / -3,23|-10,22|-9,94|-8,77|
+|2022|43|85 / -5,30|-11,30|-8,87|-10,62|
+|2023|7|29 / -1,14|-7,53|-5,83|-6,69|
+|2023|19|26 / -0,96|-7,75|-3,92|-6,73|
+|2023|43|26 / -1,71|-7,01|-6,82|-6,80|
+
+442: 32 mascaras de azar x 5 tasas de veto x 6 celdas. Por replica se escoge
+la tasa con cuenta de trades mas cercana sin mirar retornos; se excluyen
+desajustes mayores al 5%. Se publica el numero util, retorno mediano y
+fraccion de controles superados por cada brazo. Es un diagnostico retrospectivo
+de actividad, no un test independiente ni una igualacion de exposicion monetaria.
+La secuencia reproducible es `bash tools/run_440_441.sh` (440, 441 y 442);
+cada etapa comprueba la referencia y solo continua si pasa. 442 guarda progreso
+por bloque y termina en `/var/tmp/role442-activity-placebo/DONE.json`;
+no promueve ninguna regla ni modifica live.
+
+442 completo: de las 32 replicas por celda, 10-20 controles comparables
+para 440 y 15-24 para 441. 440 supera la mediana
+del control en 3/6 celdas y 441 en 2/6. No adoptar un veto general.
+
+### 443: refit semanal del abridor lineal
+
+Ultima etapa de `bash tools/run_440_441.sh`. Reconstruye el ridge lineal
+435 y comprueba puntajes y cuenta antes de actualizar. Conserva el encoder,
+normalizacion, intercepto H1, regla de elegibilidad y cierre. Cada lunes solo
+incorpora semanas anteriores de H2: se comprueba que toda etiqueta y el
+cierre forzoso semanal preceden al corte; se actualizan las ecuaciones de
+ridge con centrado por semana y penalizacion 0,01 por observacion. Control
+negativo con igual numero de filas y desfase circular de etiquetas en cada
+semana incorporada. No es un reentrenamiento del encoder. No accede a 2024.
+
+|H2|Semilla|Congelado %|Semanal %|Desfasado %|Trades del refit en todo H2|
+|---|---:|---:|---:|---:|---:|
+|2022|7|-6,42|-8,50|-10,67|288|
+|2022|19|-13,59|-9,14|-10,70|314|
+|2022|43|-8,25|-7,79|-11,44|298|
+|2023|7|-6,54|-8,15|-5,79|144|
+|2023|19|-9,56|-7,80|-8,00|160|
+|2023|43|-7,64|-5,48|-6,94|150|
+
+El refit mejora la cuenta congelada en 4/6, pero por oferta mejora en las
+tres semillas de 2022 y empeora en las tres de 2023. Ninguna cuenta semanal
+positiva; sin integracion, ni entrada a floating o DEAP por este resultado.
+Ultima semana: 2400 filas incorporadas para 2022, 2166 para 2023.
+Evidencia por celda y exposicion semanal en `/var/tmp/role443-weekly-refit`.
