@@ -27,7 +27,7 @@ class ResidualTCN(nn.Module):
 class DoubleTCNExtractor(BaseFeaturesExtractor):
     def __init__(self, observation_space, recipe, branch_width=8, core_width=16,
                  branch_blocks=2, core_blocks=2, temporal_attention=None, core_dropout=0.,long_context=None,
-                 group_configs=None, core_config=None, fusion_activation='silu'):
+                 group_configs=None, core_config=None, fusion_activation='silu', fixed_fusion_offset=False):
         validate_recipe(recipe)
         self.shape = (recipe['tensor']['window']['observations'], recipe['list']['n'])
         self.transport_shape=(self.shape[0]*(2 if long_context is not None else 1),self.shape[1])
@@ -59,6 +59,8 @@ class DoubleTCNExtractor(BaseFeaturesExtractor):
                   [ResidualTCN(spec['width'], d, spec['kernel'], activation_name=spec['activation'])
                    for d in spec['dilations']])))
         self.fusion = CausalConv1d(sum(s['width'] for s in specs), core_width, 1)
+        if fixed_fusion_offset:
+            self.register_buffer('fixed_fusion_offset', torch.zeros(core_width, self.shape[0]))
         self.core = nn.Sequential(*[ResidualTCN(core_width, d, core['kernel'], dropout=core_dropout,
                                     activation_name=core['activation']) for d in core['dilations']])
         self.post_fusion = nn.Identity()
@@ -88,7 +90,10 @@ class DoubleTCNExtractor(BaseFeaturesExtractor):
         x = x.transpose(1, 2)
         grouped = [branch(x.index_select(1, getattr(self, f'indices_{i}')))
                    for i, branch in enumerate(self.branches)]
-        x = self.fusion_activation(self.fusion(torch.cat(grouped, dim=1)))
+        x = self.fusion(torch.cat(grouped, dim=1))
+        if hasattr(self, 'fixed_fusion_offset'):
+            x = x + self.fixed_fusion_offset
+        x = self.fusion_activation(x)
         if extra is not None: x=x+extra
         x = self.post_fusion(x)
         if core_first_norm is None:

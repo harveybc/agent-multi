@@ -1,0 +1,19 @@
+[Unit]
+Description=Paired-role quartet evaluation on a single real historical account (CPU)
+After=role404-coordinator.service
+
+[Service]
+WorkingDirectory=/var/tmp/sac399-series/runtime
+Environment=PYTHONPATH=.:/var/tmp/selector-024-20261104
+Environment=STRATEGY_ENGINE_ROOT=/var/tmp/sac70-warm-v3-20261108/engine
+Environment=CUDA_VISIBLE_DEVICES=
+Environment=OPENBLAS_NUM_THREADS=1
+Environment=OMP_NUM_THREADS=1
+Environment=MKL_NUM_THREADS=1
+ExecStart=/var/tmp/discrete-sac-probe-venv/bin/python -m tools.role404_account
+MemoryMax=4G
+Nice=10
+Restart=on-abnormal
+
+[Install]
+WantedBy=default.target

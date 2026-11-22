@@ -1,0 +1,305 @@
+{
+  "gpu": "NVIDIA GeForce RTX 5090",
+  "torch": "2.13.0+cu130",
+  "batch": 128,
+  "groups": 22,
+  "update_every": 4,
+  "obs_shape": [
+    13,
+    61
+  ],
+  "model": "5b14e9f64f2fd296df2d0df6c6fdeffe0e16cb2e6e9715233caf400d44447c25",
+  "params": 75112,
+  "trainable": 16431,
+  "natural": [
+    {
+      "n": 160,
+      "seconds": 4.221324431000539,
+      "parts": {
+        "action": 1.2892518250118883,
+        "env": 0.006170483989990316,
+        "insert": 0.047732210987305734,
+        "sample_and_transfer": 0.021016638009314192,
+        "update": 2.857133266003075
+      }
+    },
+    {
+      "n": 160,
+      "seconds": 4.39121396200062,
+      "parts": {
+        "action": 1.2990935420202732,
+        "env": 0.004761958989547566,
+        "insert": 0.047136447006778326,
+        "sample_and_transfer": 0.02070363198436098,
+        "update": 3.019499326001096
+      }
+    },
+    {
+      "n": 160,
+      "seconds": 4.398451723998733,
+      "parts": {
+        "action": 1.3007587599968247,
+        "env": 0.006528633995912969,
+        "insert": 0.04744108903105371,
+        "sample_and_transfer": 0.021191046991589246,
+        "update": 3.0225135689834133
+      }
+    }
+  ],
+  "fenced": [
+    {
+      "n": 128,
+      "seconds": 3.4154660520034668,
+      "parts": {
+        "action": 1.0340575860209356,
+        "env": 0.0058133839738729876,
+        "insert": 0.0386957340160734,
+        "sample_and_transfer": 0.021681508998881327,
+        "update": 2.3152131799906783
+      }
+    },
+    {
+      "n": 128,
+      "seconds": 3.4118725580010505,
+      "parts": {
+        "action": 1.0347281620270223,
+        "env": 0.0060984059746260755,
+        "insert": 0.03848391398059903,
+        "sample_and_transfer": 0.021660074020473985,
+        "update": 2.310897433995706
+      }
+    }
+  ],
+  "batch_bytes": 816640,
+  "update_16": {
+    "total": 1.238795167999342,
+    "parts": {
+      "loss_forward": 1.0591453200031538,
+      "backward": 0.07809611298944219,
+      "clip": 0.009832657990045846,
+      "adamw": 0.008548090005206177,
+      "soft_target": 0.06825381701128208
+    }
+  },
+  "binding_192_actions": {
+    "False": [
+      1.5392449600003602,
+      1.5235691349989793
+    ],
+    "True": [
+      1.1989723020014935,
+      1.1995456780023233
+    ]
+  },
+  "binding_matched_draws": 192,
+  "ops_2_updates": {
+    "self_cpu_time_total": [
+      [
+        "cudaLaunchKernel",
+        10530,
+        27644.9
+      ],
+      [
+        "aten::cudnn_convolution",
+        1102,
+        12768.4
+      ],
+      [
+        "aten::add",
+        1278,
+        7908.1
+      ],
+      [
+        "aten::convolution",
+        1840,
+        7247.6
+      ],
+      [
+        "aten::fill_",
+        3676,
+        6023.4
+      ],
+      [
+        "aten::empty",
+        2004,
+        5448.8
+      ],
+      [
+        "aten::copy_",
+        1928,
+        5027.6
+      ],
+      [
+        "aten::_convolution",
+        1150,
+        4817.0
+      ],
+      [
+        "aten::silu",
+        940,
+        4615.1
+      ],
+      [
+        "aten::reshape",
+        2924,
+        3969.4
+      ],
+      [
+        "aten::constant_pad_nd",
+        1176,
+        3759.9
+      ],
+      [
+        "Activity Buffer Request",
+        4,
+        3636.1
+      ],
+      [
+        "aten::movedim",
+        2126,
+        3355.4
+      ],
+      [
+        "aten::view",
+        3576,
+        2826.2
+      ],
+      [
+        "aten::unsqueeze",
+        3180,
+        2244.8
+      ]
+    ],
+    "self_device_time_total": [
+      [
+        "aten::bmm",
+        118,
+        5382.8
+      ],
+      [
+        "aten::cudnn_convolution",
+        1102,
+        4458.1
+      ],
+      [
+        "void cutlass::Kernel2<cutlass_80_simt_sgemm_128x32_8x5_nt_align1>(cutlass_80_simt_sgemm_128x32_8x5_nt_align1::Params)",
+        18,
+        4353.4
+      ],
+      [
+        "aten::fill_",
+        3676,
+        2565.1
+      ],
+      [
+        "void at::native::vectorized_elementwise_kernel<4, at::native::FillFunctor<float>, std::array<char*, 1ul> >(int, at::native::FillFunctor<float>, std::array<char*, 1ul>)",
+        3466,
+        2529.9
+      ],
+      [
+        "void implicit_convolve_sgemm<float, float, int, 1024, 5, 5, 3, 3, 3, 1, false, false, true>(int, int, int, float const*, int, float*, float const*, kernel_conv_params, unsigned long long, int, float, float, int, float const*, float const*, bool, bool, int, int)",
+        800,
+        2122.3
+      ],
+      [
+        "aten::copy_",
+        1928,
+        2118.6
+      ],
+      [
+        "void implicit_convolve_sgemm<float, float, int, 1024, 5, 5, 3, 3, 3, 1, false, false, false>(int, int, int, float const*, int, float*, float const*, kernel_conv_params, unsigned long long, int, float, float, int, float const*, float const*, bool, bool, int, int)",
+        736,
+        1906.2
+      ],
+      [
+        "void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}>(at::TensorIteratorBase&, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1} const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1}>(at::TensorIteratorBase&, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#7}::operator()() const::{lambda(float)#1} const&)::{lambda(int)#1})",
+        1548,
+        1784.8
+      ],
+      [
+        "void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1})",
+        1244,
+        1435.4
+      ],
+      [
+        "aten::add",
+        1278,
+        1310.5
+      ],
+      [
+        "Optimizer.step#AdamW.step",
+        2,
+        1265.4
+      ],
+      [
+        "aten::silu",
+        940,
+        1074.9
+      ],
+      [
+        "void at::native::vectorized_elementwise_kernel<4, at::native::(anonymous namespace)::silu_kernel(at::TensorIteratorBase&)::{lambda()#1}::operator()() const::{lambda()#2}::operator()() const::{lambda(float)#1}, std::array<char*, 2ul> >(int, at::native::(anonymous namespace)::silu_kernel(at::TensorIteratorBase&)::{lambda()#1}::operator()() const::{lambda()#2}::operator()() const::{lambda(float)#1}, std::array<char*, 2ul>)",
+        940,
+        1074.9
+      ],
+      [
+        "aten::native_layer_norm",
+        32,
+        788.3
+      ]
+    ]
+  },
+  "dispatch_abba": [
+    {
+      "mode": true,
+      "seconds": 1.6361030500011111,
+      "losses": {
+        "actor": 0.29243239760398865,
+        "critic": 0.01981288194656372,
+        "gradient_norm": 0.11823759973049164,
+        "alpha": 0.005312912631779909,
+        "target_entropy": 0.6591674089431763
+      },
+      "logit_delta": 0.0,
+      "weight_delta": 0.0
+    },
+    {
+      "mode": false,
+      "seconds": 1.2467001510012778,
+      "losses": {
+        "actor": 0.292432963848114,
+        "critic": 0.01981292851269245,
+        "gradient_norm": 0.11823806911706924,
+        "alpha": 0.005312912631779909,
+        "target_entropy": 0.6591674089431763
+      },
+      "logit_delta": 9.298324584960938e-06,
+      "weight_delta": 1.1920928955078125e-07
+    },
+    {
+      "mode": false,
+      "seconds": 1.245229030999326,
+      "losses": {
+        "actor": 0.292432963848114,
+        "critic": 0.01981292851269245,
+        "gradient_norm": 0.11823806911706924,
+        "alpha": 0.005312912631779909,
+        "target_entropy": 0.6591674089431763
+      },
+      "logit_delta": 9.298324584960938e-06,
+      "weight_delta": 1.1920928955078125e-07
+    },
+    {
+      "mode": true,
+      "seconds": 1.2383467469990137,
+      "losses": {
+        "actor": 0.29243239760398865,
+        "critic": 0.01981288194656372,
+        "gradient_norm": 0.11823759973049164,
+        "alpha": 0.005312912631779909,
+        "target_entropy": 0.6591674089431763
+      },
+      "logit_delta": 0.0,
+      "weight_delta": 0.0
+    }
+  ]
+}

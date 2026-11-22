@@ -591,7 +591,10 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
                     action = int(model.distribution(tensor_observation(obs,model.device)).sample()[0])
             nxt,reward,done,duration = env.step(action)
             replay.extend(transition(obs,action,nxt,reward,done,duration))
-            obs = nxt; state['steps'] = step; decisions += 1
+            # The replay successor belongs to the acting account. A collector
+            # alternating independent accounts may act from a different row next.
+            obs = env.collection_observation() if hasattr(env,'collection_observation') else nxt
+            state['steps'] = step; decisions += 1
             update_count = (updates_at_decision(decisions, expected_decisions, matched_quota)
                             if matched_quota is not None else
                             int(step >= design['warmup'] and step % design['update_every'] == 0))
@@ -604,6 +607,7 @@ def fit_epochs(model, env_factory, assess, design, seed, output, identity, probe
                     completed_epochs=state['epoch'],steps=step,updates=state['updates'],
                     decisions_this_epoch=decisions,epoch_seconds=time.monotonic()-start,
                     native_bar=int(env.bar),last_native_bar=int(env.engine.last),
+                    **({'collection':env.coverage()} if hasattr(env,'collection_observation') else {}),
                     bad=stopping.bad,best=stopping.best,loss=last_loss,
                     max_epochs=design['max_epochs'],minimum_epochs=design.get('minimum_epochs',0),
                     patience_limit=stopping.patience,monitor_mode=stopping.mode,

@@ -1,0 +1,13 @@
+{
+  "exact_metrics_losses_and_budget": true,
+  "differences": [],
+  "control_seconds": 1256.8751529130004,
+  "epoch_seconds": 632.021323246001,
+  "cache_setup_seconds": 9.002382467999269,
+  "epoch_and_cache_setup_seconds": 641.0237057140002,
+  "speedup_with_setup": 1.960731158160583,
+  "speedup_epoch_only": 1.9886594117708087,
+  "paired_updates": 16,
+  "pass_gate": true,
+  "promote_model": false
+}

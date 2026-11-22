@@ -1,0 +1,35 @@
+{
+  "windows": 384,
+  "setup_seconds": 0.20294844399904832,
+  "bytes_per_window": 832,
+  "runs": [
+    {
+      "cached": false,
+      "seconds": 3.2585228540010576,
+      "max_normalized_logit_delta": 0.0,
+      "mismatches": 0,
+      "argmax_mismatches": 0
+    },
+    {
+      "cached": true,
+      "seconds": 1.4585675720009021,
+      "max_normalized_logit_delta": 0.0,
+      "mismatches": 0,
+      "argmax_mismatches": 0
+    },
+    {
+      "cached": true,
+      "seconds": 1.3268893429994932,
+      "max_normalized_logit_delta": 0.0,
+      "mismatches": 0,
+      "argmax_mismatches": 0
+    },
+    {
+      "cached": false,
+      "seconds": 3.1632640050011105,
+      "max_normalized_logit_delta": 0.0,
+      "mismatches": 0,
+      "argmax_mismatches": 0
+    }
+  ]
+}

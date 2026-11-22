@@ -1,0 +1,217 @@
+{
+  "checkpoints": [
+    {
+      "decisions": 6207,
+      "epoch": 0,
+      "sell_Q_top_all": 5692,
+      "sell_Q_top_at_sell": 38,
+      "sell_net": 26.788079999989016,
+      "sell_net_other": -151.31481999999937,
+      "sell_net_when_Q_top": 178.1028999999884,
+      "sells": 43,
+      "sha256": "5b14e9f64f2fd296df2d0df6c6fdeffe0e16cb2e6e9715233caf400d44447c25",
+      "total_net": -105.46501000000717,
+      "trades": 52
+    },
+    {
+      "decisions": 6207,
+      "epoch": 3,
+      "sell_Q_top_all": 978,
+      "sell_Q_top_at_sell": 117,
+      "sell_net": -28.630315000000607,
+      "sell_net_other": 122.63988500000995,
+      "sell_net_when_Q_top": -151.27020000001065,
+      "sells": 162,
+      "sha256": "61a53dae29eedf6d12820d987db09e5ba3205c185cd3c8cb6c56c1515628c18f",
+      "total_net": -925.7800849999185,
+      "trades": 265
+    },
+    {
+      "decisions": 6207,
+      "epoch": 4,
+      "sell_Q_top_all": 297,
+      "sell_Q_top_at_sell": 10,
+      "sell_net": -108.59231000000204,
+      "sell_net_other": 57.649880000005176,
+      "sell_net_when_Q_top": -166.24219000000724,
+      "sells": 29,
+      "sha256": "5bba340d169f4eb83009c13ce3f9b3a16fa5d6018bf3d75e120fdbe1c9d7c0dc",
+      "total_net": -1290.212479999791,
+      "trades": 319
+    },
+    {
+      "decisions": 6207,
+      "epoch": 17,
+      "sell_Q_top_all": 5121,
+      "sell_Q_top_at_sell": 641,
+      "sell_net": -2940.5710349998612,
+      "sell_net_other": -500.41723499998386,
+      "sell_net_when_Q_top": -2440.1537999998777,
+      "sells": 737,
+      "sha256": "d66a65512cf074b0ba6e69fd41bd1038e18f919dea3e66b03e410606a30a90db",
+      "total_net": -3568.079324999787,
+      "trades": 901
+    },
+    {
+      "decisions": 6207,
+      "epoch": 20,
+      "sell_Q_top_all": 5266,
+      "sell_Q_top_at_sell": 515,
+      "sell_net": -2171.2966049999613,
+      "sell_net_other": -283.9762600000051,
+      "sell_net_when_Q_top": -1887.320344999956,
+      "sells": 630,
+      "sha256": "fec145ec685633ce2c9b28c1466a17105525a967383d074c450ec28f153b9495",
+      "total_net": -2323.5556849999357,
+      "trades": 659
+    },
+    {
+      "decisions": 6207,
+      "epoch": 21,
+      "sell_Q_top_all": 1163,
+      "sell_Q_top_at_sell": 147,
+      "sell_net": -1795.8614399999888,
+      "sell_net_other": -1732.3685049999817,
+      "sell_net_when_Q_top": -63.49293500000672,
+      "sells": 594,
+      "sha256": "6be5d5eda49a22dbaf6ef57cebb8117a05799803ee46c98c1a3a88ac5084848b",
+      "total_net": -1862.0630999999867,
+      "trades": 614
+    }
+  ],
+  "history": [
+    {
+      "epoch": 1,
+      "sell_net": 79.60570500001008,
+      "sells": 20,
+      "trades": 24
+    },
+    {
+      "epoch": 2,
+      "sell_net": 211.27172500000736,
+      "sells": 21,
+      "trades": 51
+    },
+    {
+      "epoch": 3,
+      "sell_net": -28.630315000000625,
+      "sells": 162,
+      "trades": 265
+    },
+    {
+      "epoch": 4,
+      "sell_net": -108.59231000000206,
+      "sells": 29,
+      "trades": 319
+    },
+    {
+      "epoch": 5,
+      "sell_net": 146.78811499999574,
+      "sells": 36,
+      "trades": 401
+    },
+    {
+      "epoch": 6,
+      "sell_net": -113.84154999999454,
+      "sells": 28,
+      "trades": 494
+    },
+    {
+      "epoch": 7,
+      "sell_net": -149.55881999999627,
+      "sells": 12,
+      "trades": 585
+    },
+    {
+      "epoch": 8,
+      "sell_net": -122.52300999998688,
+      "sells": 28,
+      "trades": 640
+    },
+    {
+      "epoch": 9,
+      "sell_net": -79.01065499993595,
+      "sells": 92,
+      "trades": 698
+    },
+    {
+      "epoch": 10,
+      "sell_net": -476.0084499999229,
+      "sells": 193,
+      "trades": 606
+    },
+    {
+      "epoch": 11,
+      "sell_net": -1860.284674999944,
+      "sells": 426,
+      "trades": 599
+    },
+    {
+      "epoch": 12,
+      "sell_net": -1522.4981599999494,
+      "sells": 286,
+      "trades": 349
+    },
+    {
+      "epoch": 13,
+      "sell_net": -1339.4806449999512,
+      "sells": 316,
+      "trades": 429
+    },
+    {
+      "epoch": 14,
+      "sell_net": -1114.6340199999129,
+      "sells": 300,
+      "trades": 319
+    },
+    {
+      "epoch": 15,
+      "sell_net": -1548.137844999821,
+      "sells": 590,
+      "trades": 826
+    },
+    {
+      "epoch": 16,
+      "sell_net": -2076.9188499997117,
+      "sells": 721,
+      "trades": 1072
+    },
+    {
+      "epoch": 17,
+      "sell_net": -2940.5710349998617,
+      "sells": 737,
+      "trades": 901
+    },
+    {
+      "epoch": 18,
+      "sell_net": -2572.1513549998745,
+      "sells": 684,
+      "trades": 776
+    },
+    {
+      "epoch": 19,
+      "sell_net": -2084.083809999934,
+      "sells": 636,
+      "trades": 651
+    },
+    {
+      "epoch": 20,
+      "sell_net": -2171.2966049999613,
+      "sells": 630,
+      "trades": 659
+    },
+    {
+      "epoch": 21,
+      "sell_net": -1795.8614399999888,
+      "sells": 594,
+      "trades": 614
+    },
+    {
+      "epoch": 22,
+      "sell_net": -1882.9139249999644,
+      "sells": 605,
+      "trades": 619
+    }
+  ],
+  "observational": true
+}

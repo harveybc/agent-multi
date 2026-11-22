@@ -2,6 +2,18 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "history397.py": {
+   "purpose": "Build and verify the observed four-year H1 prefix with recorded BID repairs and declared holiday exclusions",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "training reliability"
+  },
+  "account397.py": {
+   "purpose": "Replay the frozen policy through one eight-year historical account without training",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "training reliability"
+  },
+  "train_history397.py": {
+   "purpose": "CPU parity preflight or operator-invoked single-account discrete SAC historical pilot",
+   "lifecycle": "experimental", "mutability": "mutating", "authority_class": "experiment_runner", "owner": "training reliability"
+  },
   "observe_component_drift.py": {
    "purpose": "Bounded CPU-only authenticated component spectra, weight drift and fixed-TRAIN policy probes on existing checkpoints; no training or promotion",
    "lifecycle": "experimental", "mutability": "mutating", "authority_class": "evidence_producer", "owner": "training reliability"

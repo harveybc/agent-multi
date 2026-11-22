@@ -1,0 +1,13 @@
+[Unit]
+Description=Four independent action specialists, matched historical advantage and classification queue
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/var/tmp/sac399-series/runtime
+ExecStart=/usr/bin/python3 -u -m tools.role404_queue
+Restart=on-abnormal
+RestartSec=15
+
+[Install]
+WantedBy=default.target

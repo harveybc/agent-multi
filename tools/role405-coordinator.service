@@ -1,0 +1,13 @@
+[Unit]
+Description=Role 405 validation-best AdamW rollback queue
+After=network-online.target
+
+[Service]
+WorkingDirectory=/var/tmp/role405-runtime
+Environment=ROLE_RUN=405
+ExecStart=/usr/bin/python3 -u -m tools.role404_queue
+Restart=on-abnormal
+RestartSec=15
+
+[Install]
+WantedBy=default.target

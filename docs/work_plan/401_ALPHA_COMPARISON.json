@@ -1,0 +1,193 @@
+{
+  "adaptive": [
+    {
+      "alpha": 0.005312912631779909,
+      "coverage": {
+        "0": 46487,
+        "1": 388,
+        "2": 1754
+      },
+      "entropy": 0.6011018891801166,
+      "epoch": 1,
+      "validation_net_pct": 2.5074285500001863,
+      "validation_trades": 82
+    },
+    {
+      "alpha": 0.005312912631779909,
+      "coverage": {
+        "0": 45146,
+        "1": 1559,
+        "2": 1924
+      },
+      "entropy": 0.7577952337459152,
+      "epoch": 2,
+      "validation_net_pct": -4.178812699999689,
+      "validation_trades": 111
+    },
+    {
+      "alpha": 0.005312912631779909,
+      "coverage": {
+        "0": 42282,
+        "1": 2875,
+        "2": 3472
+      },
+      "entropy": 0.7895532763998219,
+      "epoch": 3,
+      "validation_net_pct": -4.824350349999841,
+      "validation_trades": 172
+    },
+    {
+      "alpha": 0.0038038045167922974,
+      "coverage": {
+        "0": 28483,
+        "1": 12905,
+        "2": 7241
+      },
+      "entropy": 0.8576946354002858,
+      "epoch": 4,
+      "validation_net_pct": -31.667278299997136,
+      "validation_trades": 708
+    },
+    {
+      "alpha": 0.003937046509236097,
+      "coverage": {
+        "0": 739,
+        "1": 47864,
+        "2": 26
+      },
+      "entropy": 0.03363641796956767,
+      "epoch": 5,
+      "validation_net_pct": -34.022489699997564,
+      "validation_trades": 640
+    },
+    {
+      "alpha": 0.005783251952379942,
+      "coverage": {
+        "0": 61,
+        "1": 48568
+      },
+      "entropy": 0.0004845745778135739,
+      "epoch": 6,
+      "validation_net_pct": -34.310548499997594,
+      "validation_trades": 641
+    },
+    {
+      "alpha": 0.008239040151238441,
+      "coverage": {
+        "0": 55,
+        "1": 48574
+      },
+      "entropy": 0.00020946241913966402,
+      "epoch": 7,
+      "validation_net_pct": -34.310548499997594,
+      "validation_trades": 641
+    },
+    {
+      "alpha": 0.011377754621207714,
+      "coverage": {
+        "0": 37,
+        "1": 48592
+      },
+      "entropy": 4.049127151832135e-05,
+      "epoch": 8,
+      "validation_net_pct": -34.310548499997594,
+      "validation_trades": 641
+    }
+  ],
+  "fixed": [
+    {
+      "alpha": 0.005312912631779909,
+      "coverage": {
+        "0": 46487,
+        "1": 388,
+        "2": 1754
+      },
+      "entropy": 0.6011018891801166,
+      "epoch": 1,
+      "validation_net_pct": 2.5074285500001863,
+      "validation_trades": 82
+    },
+    {
+      "alpha": 0.005312912631779909,
+      "coverage": {
+        "0": 45146,
+        "1": 1559,
+        "2": 1924
+      },
+      "entropy": 0.7577952337459152,
+      "epoch": 2,
+      "validation_net_pct": -4.178812699999689,
+      "validation_trades": 111
+    },
+    {
+      "alpha": 0.005312912631779909,
+      "coverage": {
+        "0": 42282,
+        "1": 2875,
+        "2": 3472
+      },
+      "entropy": 0.7895532763998219,
+      "epoch": 3,
+      "validation_net_pct": -4.824350349999841,
+      "validation_trades": 172
+    },
+    {
+      "alpha": 0.005312912631779909,
+      "coverage": {
+        "0": 23241,
+        "1": 18372,
+        "2": 7016
+      },
+      "entropy": 0.9275574806472566,
+      "epoch": 4,
+      "validation_net_pct": -30.74062644999592,
+      "validation_trades": 757
+    },
+    {
+      "alpha": 0.005312912631779909,
+      "coverage": {
+        "0": 775,
+        "1": 47838,
+        "2": 16
+      },
+      "entropy": 0.08390120832755173,
+      "epoch": 5,
+      "validation_net_pct": -34.60572249999747,
+      "validation_trades": 640
+    },
+    {
+      "alpha": 0.005312912631779909,
+      "coverage": {
+        "0": 36549,
+        "1": 12080
+      },
+      "entropy": 0.34202743088409865,
+      "epoch": 6,
+      "validation_net_pct": -7.550439199999018,
+      "validation_trades": 173
+    },
+    {
+      "alpha": 0.005312912631779909,
+      "coverage": {
+        "0": 47408,
+        "1": 1221
+      },
+      "entropy": 0.0916914341919322,
+      "epoch": 7,
+      "validation_net_pct": -1.2172662999999193,
+      "validation_trades": 14
+    },
+    {
+      "alpha": 0.005312912631779909,
+      "coverage": {
+        "0": 48540,
+        "1": 89
+      },
+      "entropy": 0.001042646310908774,
+      "epoch": 8,
+      "validation_net_pct": 0.0,
+      "validation_trades": 0
+    }
+  ],
+  "promoted": false
+}

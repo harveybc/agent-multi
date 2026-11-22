@@ -1,0 +1,19 @@
+[Unit]
+Description=CPU account evaluation of validation-best LR rollback role quartets
+
+[Service]
+WorkingDirectory=/var/tmp/role405-runtime
+Environment=ROLE_RUN=405
+Environment=PYTHONPATH=.:/var/tmp/sac399-series/runtime:/var/tmp/selector-024-20261104
+Environment=STRATEGY_ENGINE_ROOT=/var/tmp/sac70-warm-v3-20261108/engine
+Environment=CUDA_VISIBLE_DEVICES=
+Environment=OPENBLAS_NUM_THREADS=1
+Environment=OMP_NUM_THREADS=1
+Environment=MKL_NUM_THREADS=1
+ExecStart=/var/tmp/discrete-sac-probe-venv/bin/python -m tools.role404_account
+MemoryMax=4G
+Nice=10
+Restart=on-abnormal
+
+[Install]
+WantedBy=default.target

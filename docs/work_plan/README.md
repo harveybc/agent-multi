@@ -1,5 +1,10 @@
 # Adaptive Multi-Asset Trading Work Plan
 
+## Specialist campaign checkpoint: 2026-11-22
+
+[429: results, assignments and paired OPEN_SELL ranking gate](429_SPECIALIST_CHECKPOINT.md).
+Scoped to the specialist research lane; neither production nor the frozen 351 result changes.
+
 ## Execution Update: 2026-11-14
 
 Owner approved the data-experiment continuation in353. Current step:

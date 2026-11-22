@@ -1,0 +1,20 @@
+{
+  "bytes": 202300800,
+  "max_deltas": {
+    "actor": 0.0,
+    "alpha": 0.0,
+    "critic": 0.0,
+    "grad": 0.0,
+    "logits": 0.0,
+    "loss_alpha": 0.0,
+    "state": 0.0,
+    "target_q": 0.0,
+    "twin_q": 0.0
+  },
+  "model_sha256": "5b14e9f64f2fd296df2d0df6c6fdeffe0e16cb2e6e9715233caf400d44447c25",
+  "non_governing": true,
+  "paired_updates": 16,
+  "rows": 48630,
+  "scope": "TRAIN only",
+  "setup_seconds": 9.002382467999269
+}

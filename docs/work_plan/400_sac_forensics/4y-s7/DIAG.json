@@ -1,0 +1,390 @@
+{
+  "arm": "4y-s7",
+  "early": "epoch_0006",
+  "late": "epoch_0032",
+  "rows": 6207,
+  "hashes": {
+    "early": "579c7a0cd21b8133a1a68b0a12d0b586fac2b05696cb81a5f63551b507ed3933",
+    "late": "ec6deac540d659b8f82b3b849252ece18fce1cf899dd006e57728fce6a0a32fe"
+  },
+  "late_modules_head_core_attention": {
+    "000": {
+      "return_pct": 14.275913450000807,
+      "trades": 204,
+      "signals": {
+        "0": 5586,
+        "1": 120,
+        "2": 501
+      },
+      "mean_signal_entropy": 0.344670057153838,
+      "buy": {
+        "trades": 50,
+        "wins": 27,
+        "net_profit_usd": 154.64427000004483
+      },
+      "sell": {
+        "trades": 154,
+        "wins": 94,
+        "net_profit_usd": 1272.9470750000198
+      },
+      "costs": {
+        "spread_usd": 216.365595,
+        "commission_usd": 353.91762,
+        "slippage_usd": 199.92651,
+        "financing_usd": -9.990355
+      },
+      "close_reasons": {
+        "AGENT_CLOSE": 15,
+        "TP": 106,
+        "SL": 65,
+        "FORCED_FLAT": 18
+      },
+      "mean_probs": [
+        0.8241052868026085,
+        0.03762928202603467,
+        0.13826542997994648
+      ],
+      "median_nop_margin": 2.5601701736450195,
+      "gross": 2187.8107150000646
+    },
+    "001": {
+      "return_pct": 2.7332934500007284,
+      "trades": 160,
+      "signals": {
+        "0": 5824,
+        "1": 168,
+        "2": 215
+      },
+      "mean_signal_entropy": 0.015411561569025943,
+      "buy": {
+        "trades": 83,
+        "wins": 40,
+        "net_profit_usd": -273.7996799999537
+      },
+      "sell": {
+        "trades": 77,
+        "wins": 47,
+        "net_profit_usd": 547.1290250000234
+      },
+      "costs": {
+        "spread_usd": 161.27668,
+        "commission_usd": 258.97144,
+        "slippage_usd": 155.28650000000002,
+        "financing_usd": 24.341755
+      },
+      "close_reasons": {
+        "AGENT_CLOSE": 17,
+        "TP": 76,
+        "SL": 60,
+        "FORCED_FLAT": 7
+      },
+      "mean_probs": [
+        0.9375651659032254,
+        0.02759565990526894,
+        0.03483917539145105
+      ],
+      "median_nop_margin": 28.196012496948242,
+      "gross": 873.2057200000696
+    },
+    "010": {
+      "return_pct": 2.7803190000001816,
+      "trades": 72,
+      "signals": {
+        "0": 6057,
+        "1": 52,
+        "2": 98
+      },
+      "mean_signal_entropy": 0.14857873632858315,
+      "buy": {
+        "trades": 24,
+        "wins": 14,
+        "net_profit_usd": 61.04611000000902
+      },
+      "sell": {
+        "trades": 48,
+        "wins": 29,
+        "net_profit_usd": 216.98579000000643
+      },
+      "costs": {
+        "spread_usd": 66.91473500000001,
+        "commission_usd": 114.28347,
+        "slippage_usd": 67.72236000000001,
+        "financing_usd": -0.48253000000000057
+      },
+      "close_reasons": {
+        "AGENT_CLOSE": 3,
+        "TP": 39,
+        "SL": 28,
+        "FORCED_FLAT": 2
+      },
+      "mean_probs": [
+        0.9398969153279149,
+        0.014208010380047069,
+        0.0458950750477867
+      ],
+      "median_nop_margin": 4.5022664070129395,
+      "gross": 526.4699350000154
+    },
+    "011": {
+      "return_pct": 1.2090453500008334,
+      "trades": 147,
+      "signals": {
+        "0": 5912,
+        "1": 151,
+        "2": 144
+      },
+      "mean_signal_entropy": 0.011503181944316345,
+      "buy": {
+        "trades": 77,
+        "wins": 40,
+        "net_profit_usd": -194.23375999993334
+      },
+      "sell": {
+        "trades": 70,
+        "wins": 41,
+        "net_profit_usd": 315.1382950000126
+      },
+      "costs": {
+        "spread_usd": 126.52545500000001,
+        "commission_usd": 226.07473,
+        "slippage_usd": 138.14781000000002,
+        "financing_usd": 20.747485
+      },
+      "close_reasons": {
+        "AGENT_CLOSE": 11,
+        "TP": 72,
+        "SL": 60,
+        "FORCED_FLAT": 4
+      },
+      "mean_probs": [
+        0.9523376354534786,
+        0.024382576829537952,
+        0.023279788133702087
+      ],
+      "median_nop_margin": 35.94158935546875,
+      "gross": 632.4000150000792
+    },
+    "100": {
+      "return_pct": 9.577158350000463,
+      "trades": 108,
+      "signals": {
+        "0": 5965,
+        "1": 62,
+        "2": 180
+      },
+      "mean_signal_entropy": 0.14450592363645542,
+      "buy": {
+        "trades": 32,
+        "wins": 17,
+        "net_profit_usd": 36.378160000028615
+      },
+      "sell": {
+        "trades": 76,
+        "wins": 50,
+        "net_profit_usd": 921.3376750000127
+      },
+      "costs": {
+        "spread_usd": 115.45452,
+        "commission_usd": 179.34217,
+        "slippage_usd": 98.10006000000001,
+        "financing_usd": -16.253675
+      },
+      "close_reasons": {
+        "AGENT_CLOSE": 6,
+        "TP": 63,
+        "SL": 35,
+        "FORCED_FLAT": 4
+      },
+      "mean_probs": [
+        0.9282984561190379,
+        0.013085441722182102,
+        0.05861610084089233
+      ],
+      "median_nop_margin": 4.68703556060791,
+      "gross": 1334.3589100000413
+    },
+    "101": {
+      "return_pct": 7.437153100000633,
+      "trades": 83,
+      "signals": {
+        "0": 6044,
+        "1": 55,
+        "2": 108
+      },
+      "mean_signal_entropy": 0.004536309613756215,
+      "buy": {
+        "trades": 30,
+        "wins": 16,
+        "net_profit_usd": 28.479780000027535
+      },
+      "sell": {
+        "trades": 53,
+        "wins": 36,
+        "net_profit_usd": 715.2355300000336
+      },
+      "costs": {
+        "spread_usd": 91.684005,
+        "commission_usd": 137.7936,
+        "slippage_usd": 74.08064,
+        "financing_usd": -10.06787
+      },
+      "close_reasons": {
+        "AGENT_CLOSE": 5,
+        "TP": 50,
+        "SL": 26,
+        "FORCED_FLAT": 2
+      },
+      "mean_probs": [
+        0.9739068102339387,
+        0.008592767244453582,
+        0.017500422619384635
+      ],
+      "median_nop_margin": 50.31187438964844,
+      "gross": 1037.205685000061
+    },
+    "110": {
+      "return_pct": -1.6040646499998001,
+      "trades": 27,
+      "signals": {
+        "0": 6169,
+        "1": 15,
+        "2": 23
+      },
+      "mean_signal_entropy": 0.020477263324054897,
+      "buy": {
+        "trades": 13,
+        "wins": 7,
+        "net_profit_usd": -89.07701999999166
+      },
+      "sell": {
+        "trades": 14,
+        "wins": 7,
+        "net_profit_usd": -71.32944499998695
+      },
+      "costs": {
+        "spread_usd": 24.955515000000002,
+        "commission_usd": 40.68414,
+        "slippage_usd": 27.31481,
+        "financing_usd": -0.693205
+      },
+      "close_reasons": {
+        "AGENT_CLOSE": 2,
+        "TP": 11,
+        "SL": 13,
+        "FORCED_FLAT": 1
+      },
+      "mean_probs": [
+        0.9898297298981075,
+        0.0033298325306585553,
+        0.006840438496893038
+      ],
+      "median_nop_margin": 9.946043014526367,
+      "gross": -68.14520499997863
+    },
+    "111": {
+      "return_pct": -3.3242980499997064,
+      "trades": 104,
+      "signals": {
+        "0": 6022,
+        "1": 53,
+        "2": 132
+      },
+      "mean_signal_entropy": 0.005190705953141521,
+      "buy": {
+        "trades": 32,
+        "wins": 16,
+        "net_profit_usd": -187.86057999998155
+      },
+      "sell": {
+        "trades": 72,
+        "wins": 38,
+        "net_profit_usd": -144.56922499999175
+      },
+      "costs": {
+        "spread_usd": 91.652815,
+        "commission_usd": 158.75762,
+        "slippage_usd": 101.45709000000001,
+        "financing_usd": -7.625185
+      },
+      "close_reasons": {
+        "AGENT_CLOSE": 6,
+        "TP": 49,
+        "SL": 47,
+        "FORCED_FLAT": 2
+      },
+      "mean_probs": [
+        0.9697907121536832,
+        0.008585144305437263,
+        0.021624143747576506
+      ],
+      "median_nop_margin": 65.8927230834961,
+      "gross": 11.812535000026713
+    }
+  },
+  "replay": {
+    "n": 65536,
+    "actions": [
+      60884,
+      2001,
+      2651
+    ],
+    "nonzero": 10990,
+    "max_abs_reward": 1.9747557640075684,
+    "alpha": 0.005312912631779909,
+    "log_alpha_trainable": false
+  },
+  "early_late_q": {
+    "epoch_0006": {
+      "q": [
+        -0.17855453491210938,
+        -0.20956997573375702,
+        -0.20528820157051086
+      ],
+      "td_target": -0.1636355221271515,
+      "p_nop": 0.8208532333374023,
+      "q_argmax": [
+        111,
+        6,
+        11
+      ],
+      "target_twins": [
+        [
+          -0.17797744274139404,
+          -0.19707557559013367,
+          -0.19919094443321228
+        ],
+        [
+          -0.17753100395202637,
+          -0.2054155468940735,
+          -0.19908155500888824
+        ]
+      ]
+    },
+    "epoch_0032": {
+      "q": [
+        -0.5457106828689575,
+        -0.8076081871986389,
+        -0.9579219818115234
+      ],
+      "td_target": -0.522258460521698,
+      "p_nop": 0.9125633239746094,
+      "q_argmax": [
+        113,
+        9,
+        6
+      ],
+      "target_twins": [
+        [
+          -0.5331405401229858,
+          -0.6958417296409607,
+          -0.5897737741470337
+        ],
+        [
+          -0.5270389318466187,
+          -0.7613130807876587,
+          -0.9607372283935547
+        ]
+      ]
+    }
+  }
+}
