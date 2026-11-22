@@ -13,7 +13,7 @@ def week(t):
     return (t//DAY+3)//7
 
 
-def cell(key):
+def cell(key, audit=None, observe_update=None, account_check=None):
     year,seed = key
     tag = f'{year}-{seed}'
     base.torch.set_num_threads(1)
@@ -50,6 +50,11 @@ def cell(key):
     cal = (dates<jul)&(end<jul)
     intercept = (y[cal]-frozen[ix[cal]]).mean(0)
     dynamic,placebo = frozen.copy(),frozen.copy()
+    if audit is not None:
+        initial_rhs = rhs.copy()
+        initial_system = gram+.01*n*identity
+        initial_center = sums/n
+        geometry,labels_only = frozen.copy(),frozen.copy()
     shifted = rhs.copy()
     seen = set()
     exposures = []
@@ -59,6 +64,10 @@ def cell(key):
     rng = np.random.default_rng(443)
     for w in np.unique(clock[ts>=jul]):
         boundary = (int(w)*7-3)*DAY
+        if observe_update is not None:
+            previous_coef = np.linalg.solve(gram+.01*n*identity,rhs)
+            previous_center = sums/n
+            incorporated = []
         for old in sorted(set(source_week[(dates>=jul)&(source_week<w)])-seen):
             ii = np.flatnonzero(source_week==old)
             if dates[ii].min()<jul or maturity[ii].max()>=boundary:
@@ -74,9 +83,22 @@ def cell(key):
             shifted += dx.T@np.roll(dy,rng.integers(1,len(ii)),axis=0)
             n += len(ii)
             sums += f.sum(0)
+            if observe_update is not None:
+                incorporated.append(ii)
         rows = (clock==w)&(ts>=jul)
         dynamic[rows] = predict(rows,rhs)
+        if observe_update is not None and incorporated:
+            held_week = np.flatnonzero((source_week==w)&(dates>=jul))
+            for label,block in [('new_fit',ii) for ii in incorporated]+[('next',held_week)]:
+                if len(block):
+                    assert label=='next' or maturity[block].max()<boundary
+                    old_p = (u[ix[block]]-previous_center)@previous_coef
+                    new_p = predict(ix[block],rhs)
+                    observe_update(int(w),label,dates[block],y[block],old_p,new_p)
         placebo[rows] = predict(rows,shifted)
+        if audit is not None:
+            geometry[rows] = predict(rows,initial_rhs)
+            labels_only[rows] = (u[rows]-initial_center)@np.linalg.solve(initial_system,rhs)
         exposures.append(dict(week=int(w),added=n-len(x)))
     assert exposures[0]['added']==0 and exposures[-1]['added']>0
     arms = {k:score(p+intercept,pn,dates,ix,y,jul,ts,True) for k,p in
@@ -84,6 +106,19 @@ def cell(key):
     ref = base.read(SRC/f'{tag}.json')['linear']
     assert arms['frozen']['account']==ref['account'] and abs(arms['frozen']['bp']-ref['bp'])<1e-7
     result = dict(year=year,seed=seed,arms=arms,updates=exposures)
+    if account_check is not None:
+        assert result==base.read(OUT/f'{tag}.json')
+        return account_check(key,pn,dates,ix,y,jul,ts,maturity,frozen+intercept,dynamic+intercept,result)
+    if audit is not None:
+        assert result==base.read(OUT/f'{tag}.json')
+        held = dates>=jul
+        return audit(key,pn,ix[held],dates[held],y[held],result,
+                     {k:(v+intercept)[ix[held]] for k,v in
+                      [('frozen',frozen),('weekly',dynamic),('geometry',geometry),
+                       ('labels',labels_only),('shifted',placebo)]})
+    if observe_update is not None:
+        assert result==base.read(OUT/f'{tag}.json')
+        return result
     atomic(OUT/f'{tag}.json',result)
     return result
 

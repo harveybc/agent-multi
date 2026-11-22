@@ -332,3 +332,61 @@ tres semillas de 2022 y empeora en las tres de 2023. Ninguna cuenta semanal
 positiva; sin integracion, ni entrada a floating o DEAP por este resultado.
 Ultima semana: 2400 filas incorporadas para 2022, 2166 para 2023.
 Evidencia por celda y exposicion semanal en `/var/tmp/role443-weekly-refit`.
+
+### 444-446: por que cambia la ventaja del refit semanal
+
+Reproductor secuencial: `bash tools/run_444_446.sh`. Cada prueba reproduce
+las tres ramas y las exposiciones de 443 exactamente, sin sobrescribir sus
+recibos. Solo SELL en H2 2022/23, tres semillas por calendario, misma cuota
+por semana y horizonte. Las ofertas se solapan, no son operaciones de cuenta.
+
+444: entrantes y salientes identificadas por origen y horizonte. La diferencia
+de sus etiquetas reconcilia el cambio de ventaja a cupo fijo. En cada fila
+del resumen se agregan las tres semillas. Cambio medio por oferta del decil
+(pb); las dos ultimas columnas son medias solo sobre las ofertas sustituidas:
+
+|H2|3h|6h|12h|24h|Cambio total|Entrantes|Salientes|
+|---|---:|---:|---:|---:|---:|---:|---:|
+|2022|+0,48|+2,85|+1,20|+0,76|+1,32|-2,09|-5,45|
+|2023|-0,98|-1,23|-1,73|-0,12|-1,01|-5,96|-0,03|
+
+1093 de 2772 y 422 de 2472 ofertas sustituidas respectivamente. Omitiendo
+una semana cada vez, el cambio de ventaja queda entre +0,92 y +1,56 en
+2022 y entre -1,19 y -0,75 en 2023; no es un intervalo de confianza.
+En 2023 la diferencia corresponde a -0,60 pb brutos hasta barreras, -0,41
+por el cierre, +0,02 de costes y -0,02 de continuacion. En 12 h se cambian
+108 ofertas con +3,11 pb por otras con -6,78 pb. El replay comprueba cada
+oferta modificada contra la suma de sus componentes.
+
+Factorial del ridge: actualizar solo la matriz regularizada de entradas y
+su centrado, solo el producto entradas x etiquetas, ambos o ninguno.
+Promediando las dos ordenaciones, el cambio atribuible a las etiquetas es
++1,09 / -0,83 pb (2022 / 2023) y el de las entradas +0,23 / -0,19.
+Es una descomposicion del algoritmo; no identifica una causa macroeconomica.
+
+445: comparar justo antes/despues de cada actualizacion, primero en el bloque
+recien incorporado y luego en el siguiente bloque puntuado. Sin cambiar cuota.
+2022 (25 actualizaciones por semilla): +11,30 / +0,89 pb; 2023 (24):
++5,63 / -0,07 pb. En 2023 el efecto posterior fue -0,51 / -0,18 / +0,49
+por semilla. La fuerte ganancia dentro de muestra no se conservo.
+
+446: prueba de cuenta sin ajustar umbrales. Dos politicas virtuales puntuan
+las mismas ofertas. Antes de cada semana se usa el refit solo si su suma de
+ventajas incrementales en semanas H2 ya maduras es positiva; si no, se usa
+el abridor congelado. El cierre, costes y cupo de posiciones no cambian.
+No es una nueva validacion independiente. Evidencias:
+`/var/tmp/role444-weekly-swaps`, `/var/tmp/role445-weekly-transfer`,
+`/var/tmp/role446-transfer-gate`.
+
+|H2|Semilla|Semanas con refit / evaluadas|Retorno %|Operaciones SELL|Ventaja pb|
+|---|---:|---|---:|---:|---:|
+|2022|7|18/27|-9,26|304|-2,67|
+|2022|19|24/27|-8,62|314|-2,99|
+|2022|43|24/27|-7,69|298|-2,20|
+|2023|7|4/25|-6,47|157|-0,48|
+|2023|19|10/25|-10,92|163|-1,07|
+|2023|43|9/25|-7,07|157|-1,01|
+
+0/6 positivas. No promover la conmutacion ni usar estas semanas para elegir
+otro umbral. Este resultado se refiere al readout lineal sobre el encoder
+congelado, no a todos los especialistas ni a todo refit semanal.
