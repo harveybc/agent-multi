@@ -173,3 +173,30 @@ finales cambiaron las seis elecciones; solo dos mejoraron el retorno H2,
 ninguna cuenta B fue positiva y 0/6 superaron la regla de integracion.
 Se detuvo antes de entrenar otro scheduler. Referencia:
 `/var/tmp/role434-monitor/{PROTOCOL,DONE}.json` y seis comparaciones por celda.
+
+### 435-436: sonda dentro de semana y efecto del filtro de apertura
+
+Secuencia reproducible: `bash tools/run_434_436.sh` con ROLE431_SSH_TARGET
+configurado. Si 434 no califica ninguna celda, ajustar las sondas en tres
+carriles GPU independientes, cada uno con dos cohortes/semillas. CPU prepara
+los datos y reproduce las cuentas al recibir cada resultado. Si ninguna
+sonda califica en las seis celdas, ejecutar automaticamente la ablacion
+436 en CPU. No hay seleccion por H2, promocion ni espera de aprobacion.
+
+Soporte de ajuste 432, representacion congelada; centrar X y ventaja
+gestionada dentro de semana solo en TRAIN. Ridge 0,01 por observacion,
+lineal o ampliada con 256 cosenos aleatorios fijos. Inferencia sin centrar
+por semana futura; interceptos por horizonte en H1 purgado. Control nulo
+por desplazamiento circular de etiquetas TRAIN por semana, control positivo
+de recuperacion de un eje conocido en ajuste (no de prediccion financiera).
+
+|Sonda|Supera azar / etiqueta desplazada en ventaja a cupo fijo|Ventaja absoluta positiva|Retorno mediano H2 / trades|Sin filtro de EV: retorno mediano / trades|
+|---|---|---|---|---|
+|Lineal|5 de 6 / 5 de 6|0 de 6|-7,95% / 264,5|-8,13% / 267,5|
+|No lineal|5 de 6 / 5 de 6|0 de 6|-8,91% / 290|-8,91% / 290|
+
+Tres de seis cuentas lineales y seis de seis no lineales fueron identicas al
+retirar solo el requisito EV positivo. Ninguna cuenta positiva con o sin el
+filtro. Se rechazan estas dos sondas, no toda la representacion ni todos los
+modelos posibles. Evidencia por celda en /var/tmp/role435-within-week y
+/var/tmp/role436-gate-replay. Dragon sigue fuera de esta campana.
