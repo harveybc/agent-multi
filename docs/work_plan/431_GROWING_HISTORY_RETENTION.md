@@ -437,3 +437,7 @@ padre de etapa elegible, pesos y AdamW por campeon, y recibos en
 `/var/tmp/role447-segment-only`. La fuente del monitor es la sonda de
 ventaja relativa; un contraste de monitor basado en retorno de cuenta
 completo seria una prueba distinta.
+
+Continuacion: [448, entrenamiento temporal completo y retorno de cuenta
+4+1](448_FULL_TEMPORAL_SEGMENTS.md). No confundir los resultados de 447 con
+el entrenamiento de esta nueva campana.
