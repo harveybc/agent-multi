@@ -108,3 +108,23 @@ Siguiente diagnostico propuesto, sin nuevo entrenamiento: descomponer el
 cambio del decil en ofertas entrantes y salientes y cuantificar la magnitud
 de las diferencias netas en los pares corregidos/perjudicados, especialmente
 cerca del umbral de seleccion. No atribuir causalidad a una capa por su norma.
+
+### 430: atribucion terminada
+
+Flujo completo: `bash tools/run_429_430.sh` (ROLE429_SSH_TARGET requerido
+solo para entrenar). Reutiliza la terminacion del 429. Tres trabajadores CPU
+y una comprobacion CUDA en paralelo. Las seis diferencias de ventaja se
+reconciliaron con el 429; ninguna oferta del decil cambio entre dispositivos.
+
+|H2/semilla|Ofertas sustituidas|Entrantes pb|Salientes pb|Delta sobre el decil completo pb|
+|---|---:|---:|---:|---:|
+|2022/7|312|-2,66|-3,69|+0,35|
+|2022/19|217|-6,56|-4,86|-0,40|
+|2022/43|293|-7,55|-3,71|-1,22|
+|2023/7|151|-2,40|-3,59|+0,22|
+|2023/19|42|+1,39|+0,26|+0,06|
+|2023/43|324|-2,89|-0,86|-0,80|
+
+El ranking incorpora ofertas con ventaja media negativa frente a esperar en
+5/6 celdas. La sustitucion mejora el decil en 3/6, no justifica integracion.
+Evidencia: /var/tmp/role430-sell-swaps/RESULTS.json y ledgers por oferta.
