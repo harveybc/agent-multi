@@ -1,5 +1,6 @@
 """Figures and first descending zero crossings; no extrapolation or smoothing."""
 import sys
+import json
 from pathlib import Path
 import matplotlib
 matplotlib.use('Agg')
@@ -27,6 +28,7 @@ def save(fig,root,name):
 def figures(root):
     s=pd.read_csv(root/'sweep.csv.gz'); n=pd.read_csv(root/'noise.csv.gz')
     ctrl=pd.read_csv(root/'controls.csv'); thresholds=[]
+    paid=not (root/'policy.json').exists() or json.loads((root/'policy.json').read_text())['costs']
     for metric,title,ylabel,scale in [
         ('return_pct','Beneficio neto frente al ruido de las predicciones estacionales','Beneficio neto (USD)',100),
         ('sharpe','Sharpe frente al ruido de las predicciones estacionales','Sharpe anualizado',1)]:
@@ -51,7 +53,8 @@ def figures(root):
             ax.set(title=str(year),xlabel='MAE esperado / MAE de persistencia',ylabel=ylabel)
             ax.grid(axis='y',alpha=.2)
         axes[0].legend(frameon=False,fontsize=8)
-        fig.supxlabel('Media y percentiles 10–90 de 64 semillas · EURUSD horario real · cuenta inicial: 10.000 USD · costes incluidos',fontsize=9)
+        regime='costes incluidos' if paid else 'sin costes'
+        fig.supxlabel(f'Media y percentiles 10–90 de {s.seed.nunique()} semillas · EURUSD horario real · cuenta inicial: 10.000 USD · {regime}',fontsize=9)
         save(fig,root,metric)
     th=pd.DataFrame(thresholds,columns=['year','arm','lo','hi','cross','mc025','mc975','bootstrap_crossed'])
     th.to_csv(root/'thresholds.csv',index=False)
@@ -59,7 +62,8 @@ def figures(root):
     out=th.merge(naive,on='year');out=out[(out.arm=='both')|((out.arm=='short')==(out.h<=5))]
     out['mae_at_cross']=out['naive']*out['cross'];out.to_csv(root/'absolute_thresholds.csv',index=False)
     fig,axes=plt.subplots(1,2,figsize=(11,4.5),constrained_layout=True,sharey=True)
-    norm=TwoSlopeNorm(vmin=s.groupby(['year','short','long']).return_pct.mean().min(),vcenter=0,vmax=100)
+    means=s.groupby(['year','short','long']).return_pct.mean()
+    norm=TwoSlopeNorm(vmin=min(-1,means.min()),vcenter=0,vmax=max(100,means.max()))
     for (year,d),ax in zip(s.groupby('year'),axes):
         tab=d.groupby(['short','long']).return_pct.mean().unstack()
         x=tab.columns.to_numpy();y=tab.index.to_numpy();v=tab.to_numpy()

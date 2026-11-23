@@ -1,0 +1,112 @@
+[
+  {
+    "year": 2024,
+    "model": "frozen",
+    "support": "all_archived_origins",
+    "sharpe": 0.7518902683011933,
+    "trades": 1109,
+    "buy": 446,
+    "wins": 365,
+    "wins_buy": 170,
+    "return_pct": 11.973678959862166,
+    "dd_close_pct": 10.7001964362187,
+    "reasons": {
+      "sl": 683,
+      "tp": 319,
+      "sl_dual": 32,
+      "calendar": 25,
+      "early_sl": 50
+    },
+    "wait_decisions": 0,
+    "early_harmful": 14,
+    "early_vs_hold_usd": 609.2071868818554,
+    "costs_usd": {
+      "spread_usd": 0.0,
+      "slippage_usd": 0.0,
+      "commission_usd": 0.0,
+      "swap_usd": 0.0
+    }
+  },
+  {
+    "year": 2024,
+    "model": "frozen",
+    "support": "label_support",
+    "sharpe": 0.10635572204273482,
+    "trades": 399,
+    "buy": 206,
+    "wins": 136,
+    "wins_buy": 75,
+    "return_pct": 0.6113257156325158,
+    "dd_close_pct": 8.964346383374588,
+    "reasons": {
+      "tp": 127,
+      "sl_dual": 11,
+      "sl": 245,
+      "early_sl": 16
+    },
+    "wait_decisions": 0,
+    "early_harmful": 8,
+    "early_vs_hold_usd": 41.86946520664724,
+    "costs_usd": {
+      "spread_usd": 0.0,
+      "slippage_usd": 0.0,
+      "commission_usd": 0.0,
+      "swap_usd": 0.0
+    }
+  },
+  {
+    "year": 2024,
+    "model": "tuned",
+    "support": "all_archived_origins",
+    "sharpe": 1.9228662637651404,
+    "trades": 905,
+    "buy": 499,
+    "wins": 235,
+    "wins_buy": 135,
+    "return_pct": 45.55855408598723,
+    "dd_close_pct": 8.556326209372267,
+    "reasons": {
+      "sl": 625,
+      "early_sl": 50,
+      "tp": 182,
+      "sl_dual": 18,
+      "calendar": 30
+    },
+    "wait_decisions": 0,
+    "early_harmful": 16,
+    "early_vs_hold_usd": 54.84965739725831,
+    "costs_usd": {
+      "spread_usd": 0.0,
+      "slippage_usd": 0.0,
+      "commission_usd": 0.0,
+      "swap_usd": 0.0
+    }
+  },
+  {
+    "year": 2024,
+    "model": "tuned",
+    "support": "label_support",
+    "sharpe": 1.3380387636451154,
+    "trades": 329,
+    "buy": 189,
+    "wins": 84,
+    "wins_buy": 48,
+    "return_pct": 14.866204235373193,
+    "dd_close_pct": 8.322581032746823,
+    "reasons": {
+      "sl": 234,
+      "tp": 77,
+      "sl_dual": 6,
+      "early_sl": 12
+    },
+    "wait_decisions": 0,
+    "early_harmful": 5,
+    "early_vs_hold_usd": -26.593342925364453,
+    "costs_usd": {
+      "spread_usd": 0.0,
+      "slippage_usd": 0.0,
+      "commission_usd": 0.0,
+      "swap_usd": 0.0
+    }
+  }
+]

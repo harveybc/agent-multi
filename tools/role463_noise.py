@@ -72,21 +72,27 @@ def run(t,o,hi,lo,c,atr,gate,deadline,spread,roll,sig,fees,tp_mult=.9,sl_mult=1.
 
 def main(a):
     a.out.mkdir(exist_ok=True,parents=True)
-    data=load(a.src,a.bars,DEFAULT);t,o,hi,lo,c,atr,ds,dp,gate,dead=data
+    policy=DEFAULT.copy()
+    if a.locked:policy.update(json.loads(a.locked.read_text())[a.champion]['effective'])
+    params=[policy[k] for k in ('tp_mult','sl_mult','dd_floor','min_rr','full_rr','size_power')]
+    data=load(a.src,a.bars,policy);t,o,hi,lo,c,atr,ds,dp,gate,dead=data
     prof=json.loads(a.recipe.read_text())['business']['evaluation_and_policy']['profile']
     spr,roll=cost_arrays(t,json.loads((a.bars/'closures.json').read_text()),prof)
     fees=np.array([prof[k] for k in ('slippage_market','slippage_stop','limit_through')]+
                   [prof[k]/prof['lot_units'] for k in ('commission_per_lot_side','swap_long_per_lot','swap_short_per_lot')])
+    if a.free:
+        spr=spr*0;fees=fees*0
+    accounts=[]
     rows=[];checks=[];noise=[];controls=[];matched=[];real=np.load(a.real)
     for year in (2023,2024):
         m=(t>=pd.Timestamp(str(year),tz='UTC').value)&(t<pd.Timestamp(str(year+1),tz='UTC').value)
         cols=[np.ascontiguousarray(col[m]) for col in (t,o,hi,lo,c,atr,gate,dead,spr,roll)]
         truth=ds[m].copy();naive=np.nanmean(abs(truth),axis=0)
         def evaluate(pred,check=False):
-            val=list(run(*cols,np.ascontiguousarray(pred),fees));val[0]-=100
+            val=list(run(*cols,np.ascontiguousarray(pred),fees,*params));val[0]-=100
             if check:
                 d=list(data);d[6]=ds.copy();d[6][m]=pred
-                v,_=simulate(d,(None,None),DEFAULT,year,'bridge','sl_only',(prof,spr,roll))
+                v,_=simulate(d,(None,None),policy,year,'bridge','sl_only',None if a.free else (prof,spr,roll))
                 np.testing.assert_allclose(val[:5],[v[k] for k in ('return_pct','dd_close_pct','trades','buy','wins')],rtol=0,atol=1e-7)
                 checks.append([year,*val[:5]])
             return val
@@ -99,7 +105,16 @@ def main(a):
             for mode in ('frozen','tuned'):
                 pred=np.full(truth.shape,np.nan)
                 ix=np.searchsorted(t[m]+NS,real['ts']);assert np.array_equal((t[m]+NS)[ix],real['ts'])
-                pred[ix]=real[mode];pred[~np.isfinite(truth)]=np.nan
+                pred[ix]=real[mode]
+                if a.locked:
+                    assert np.isfinite(pred[ix]).all() and len(ix)==len(np.unique(ix))
+                    for tag,x in [('all_archived_origins',pred),('label_support',np.where(np.isfinite(truth),pred,np.nan))]:
+                        d=list(data);d[6]=np.full_like(ds,np.nan);d[6][m]=x
+                        v,book=simulate(d,(None,None),policy,year,'bridge','sl_only',None if a.free else (prof,spr,roll))
+                        r=evaluate(x,True)
+                        accounts.append(dict(year=year,model=mode,support=tag,sharpe=r[-1],**v))
+                        pd.DataFrame(book).to_csv(a.out/f'{mode}-{tag}.csv.gz',index=False)
+                pred[~np.isfinite(truth)]=np.nan
                 assert np.array_equal(np.isfinite(pred),np.isfinite(truth))
                 control(mode,pred)
                 for part,sl in [('short',slice(0,5)),('long',slice(5,8))]:
@@ -131,9 +146,14 @@ def main(a):
     pd.DataFrame(controls,columns=['year','control',*metric,*[f'mae_{h}' for h in H],*[f'naive_{h}' for h in H]]).to_csv(a.out/'controls.csv',index=False)
     pd.DataFrame(matched,columns=['year','seed','model',*metric]).to_csv(a.out/'matched.csv',index=False)
     (a.out/'reference_checks.json').write_text(json.dumps(checks,indent=2)+'\n')
+    if a.locked:
+        (a.out/'policy.json').write_text(json.dumps(dict(champion=a.champion,costs=not a.free,policy=policy),indent=2)+'\n')
+        (a.out/'accounts.json').write_text(json.dumps(accounts,indent=2)+'\n')
 
 
 if __name__=='__main__':
     p=argparse.ArgumentParser()
     for k in ('src','bars','recipe','real','out'):p.add_argument(k,type=Path)
+    p.add_argument('--locked',type=Path);p.add_argument('--champion',choices=['cost','free'],default='cost')
+    p.add_argument('--free',action='store_true')
     p.add_argument('--seeds',type=int,default=64);main(p.parse_args())

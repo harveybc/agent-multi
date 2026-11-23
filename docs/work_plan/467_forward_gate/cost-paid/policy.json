@@ -1,0 +1,24 @@
+{
+  "champion": "cost",
+  "costs": true,
+  "policy": {
+    "first_long": 6,
+    "atr_window": 24,
+    "bins": [
+      0.5,
+      1.5
+    ],
+    "min_cell": 30,
+    "favorable_q": 0.5,
+    "adverse_q": 0.5,
+    "tp_mult": 0.8802948778599688,
+    "sl_mult": 2.0291088806006936,
+    "dd_floor": 0.6693405898999146,
+    "min_rr": 0.8536643067979943,
+    "full_rr": 2.3190303041358056,
+    "size_power": 0.5508891469804196,
+    "reversal_atr": 0.25,
+    "wait_atr": 0.05,
+    "early_margin_atr": 0.0
+  }
+}
