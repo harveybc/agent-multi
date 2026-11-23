@@ -286,3 +286,34 @@ cierre vs protecciones del broker desde esas mismas posiciones.
 Codigo: `tools/role453_sell_audit.py`; detalle:
 `/var/tmp/role453-sell-audit/{trades.csv,isolated.csv,DONE.json}`.
 No se ajustaron umbrales con 2024 ni se promovio una politica.
+
+### 454: CLOSE frente a HOLD desde el mismo fill
+
+Cuenta diagnostica cruzada 43/3 de 453, solo OPEN_SELL 12 h, validacion
+2024. Se reprodujeron las 676 operaciones y la cuenta. Para cada entrada
+que permanecio abierta tras su primera barra se bifurco el motor con la
+posicion ya ejecutada. Una rama conserva CLOSE y la otra nunca pide cierre:
+el broker conserva SL, TP, costes, financiacion y cierre obligatorio.
+Los 117 cierres no tempranos coincidieron con HOLD. En los 559 cierres
+tempranos se verificaron hora, precio, unidades, SL, TP y coste de entrada.
+
+|Salida con HOLD|Pares|CLOSE mejor / peor|Neto CLOSE menos HOLD (USD)|
+|---|---:|---:|---:|
+|SL|277|277 / 0|+9.780,48|
+|TP|192|0 / 192|-10.980,29|
+|Cierre obligatorio|90|36 / 54|-407,48|
+|Total|559|313 / 246|-1.607,30|
+
+Mediana del diferencial +12,64 USD, pero media -2,88 USD. Es una suma
+de contrafactuales por posicion, no el retorno de una cuenta.
+En otro replay secuencial con las mismas 1.504 senales y solo una posicion
+simultanea, desactivar CLOSE cambio las ventas de 676 a 283, retorno de
+-20,73% a -2,10%, DD de 21,41% a 9,83% y Sharpe de -3,31 a -0,20.
+No implica desactivar CLOSE en el campeon emparejado: el diagnostico
+corresponde a una combinacion cruzada, y ninguna cuenta quedo rentable.
+Para el siguiente contraste usar el diferencial economico CLOSE-HOLD,
+no la fraccion de aciertos, y verificar en politicas emparejadas antes de
+cambiar el entrenamiento o el umbral de cierre.
+
+Reproduccion CPU: `tools/role454_paired_hold.py`; filas y resumen en
+`/var/tmp/role454-paired-hold/{paired.csv,DONE.json}`.
