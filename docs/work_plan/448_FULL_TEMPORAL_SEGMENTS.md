@@ -76,3 +76,38 @@ la distribucion empirica de scores, que decide tanto admision como ranking.
 No atribuir esa diferencia a olvido de los pesos. Contraste recomendado:
 fijar pesos y comparar referencias antigua/nueva, luego fijar la referencia
 y comparar pesos; verificar por barra los cambios de elegibilidad y horizonte.
+
+### 449: cruce de politica sin reentrenamiento
+
+Tres semillas x dos monitores x siete cambios de semestre = 42 transiciones
+de la misma validacion 2024, no 42 replicas de mercado. Cruce de las dos
+redes con las dos tablas empiricas de puntuacion (tabla del padre en su
+semestre, tabla del hijo en el nuevo). Un quinto replay usa el padre con su
+propia tabla medida en el nuevo semestre para verificar tambien epoca cero.
+Reproducidos exactamente los diccionarios de cuenta del padre, hijo y epoca
+cero y los cuatro percentiles originales en todos los casos. La preparacion
+de la red se hace fuera de inference_mode, como en el productor 448.
+
+|Semilla 7, paso 7 a 8: retorno % / ventas|Padre completo|Solo tabla nueva|Solo pesos nuevos|Hijo completo|
+|---|---:|---:|---:|---:|
+|Mixto|+2,10 / 99|-3,92 / 209|+2,10 / 99|-3,92 / 209|
+|Validacion|+1,51 / 98|-4,02 / 205|+0,74 / 76|-2,99 / 175|
+
+En el mixto hay 239 barras recien habilitadas, 0 deshabilitadas y 0 cambios
+de horizonte entre barras habilitadas en ambas configuraciones. En cuenta:
+118 entradas nuevas y 8 anteriores desplazadas, emparejando por barra de
+apertura; algunas propuestas no son ejecutables con una posicion abierta.
+25/42 transiciones conservaron los tensores de pesos; en 4 de esas 25
+cambio el retorno al recalibrar. En la ultima etapa de las semillas 19 y 43
+el cruce no cambia el retorno en ninguno de los dos brazos; este hallazgo no
+explica por si solo su escasa actividad. En todas las transiciones, promediando
+el efecto marginal de cada factor en ambos ordenes y tomando luego su valor
+absoluto: 1,20 puntos porcentuales por tabla y 0,58 por pesos.
+
+Reproductor: `tools/run_449.py` en el entorno de 448, con el mismo alias
+remoto. `/var/tmp/role449-cross/DONE.json` contiene los cinco replays y
+conteos por transicion. Las 45 tablas ordenadas por horizonte se guardan en
+`/var/tmp/role449-cross/policies-{seed}/` con SHA del checkpoint de 448 y
+manifiesto fuente. Se valida que al recargar cada tabla las pujas de 2024
+sean identicas barra por barra. Restaurar la pareja (pesos, tabla); recalibrar
+es una intervencion distinta y no implica promocion automatica.
