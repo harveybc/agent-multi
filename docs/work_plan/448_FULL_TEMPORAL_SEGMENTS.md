@@ -219,3 +219,37 @@ cuentas guardadas, incluidos los conteos:
 
 El efecto depende del emparejamiento. No atribuir el incremento a mejores
 pesos de forma aislada ni intercambiar tablas entre checkpoints.
+
+### 452: contraste archivado, semillas 19 y 43
+
+Sin reentrenar: brazo de validacion 450, ocho campeones por semilla y
+las siete transiciones adyacentes, cuatro cuentas por transicion. Gamma
+5090 para 19, Omega 4070 para 43; mismas GPU que en entrenamiento.
+Las 28 diagonales reprodujeron los diccionarios contables completos.
+Diez transiciones no cambiaron ni pesos ni tabla; no se cuentan como
+replicas. Resultados en las cuatro que cambiaron ambos, retorno % sobre
+validacion 2024 (entre parentesis, ventas):
+
+|Semilla / semestre de destino|Padre|Solo tabla nueva|Solo pesos nuevos|Ambos nuevos|
+|---|---:|---:|---:|---:|
+|19 / 4|+0,491 (10)|+0,491 (10)|+0,593 (3)|+0,593 (3)|
+|43 / 3|+1,953 (13)|-20,732 (676)|-0,633 (5)|+1,992 (36)|
+|43 / 6|+1,992 (36)|+0,117 (8)|+0,754 (89)|+2,042 (13)|
+|43 / 7|+2,042 (13)|+0,754 (89)|-0,053 (10)|+2,980 (41)|
+
+En las tres transiciones de 43 los dos cruces fueron peores que ambas
+parejas originales. En 19 la tabla no cambio las metricas agregadas
+para ninguno de los dos juegos de pesos. No es una replica directa
+de 451: ninguno de estos campeones originales cumple >2 ventas/semana.
+
+En los ocho historiales por semilla (excluyendo epoca cero) hubo 1.432
+evaluaciones cada una, no muestras independientes. Para 19, 163 pasaron
+actividad y 589 fueron positivas; ninguna cumplio ambas (mejor activa:
+-3,0132%, 115 ventas). Para 43, 190 pasaron actividad y 1.106 fueron
+positivas; ninguna cumplio ambas (mejor activa: -0,1960%, 168 ventas).
+Un selector posterior sobre estas epocas no puede devolver un candidato
+activo y rentable. Esto no prueba que reentrenar con otra trayectoria sea
+inutil. No se promociona ningun modelo.
+
+Reproduccion: `tools/role451_cross.py 19` o `43`, con el dispositivo y el
+entorno determinista de 450. Cuentas completas en `/var/tmp/role452-cross/`.
