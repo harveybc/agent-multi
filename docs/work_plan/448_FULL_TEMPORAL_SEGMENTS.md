@@ -186,3 +186,36 @@ compara las cuentas por semestre e indica si se supero realmente al padre;
 los PNG muestran retorno de validacion, retorno de bloques anteriores y
 actividad por epoca. Conservar un padre elegible no demuestra aprendizaje
 ni retencion del rendimiento de TRAIN; no autoriza promocion.
+
+### Resultado 451 y atribucion
+
+Semilla 7, OPEN_SELL. Los tres semestres terminaron por paciencia en epoca
+179, con una restauracion por semestre. En validacion 2024:
+
+|Semestre|Epoca elegida|Retorno %|Ventas / ganadas|Ventas/semana|Sharpe|DD %|
+|---|---:|---:|---:|---:|---:|---:|
+|6|0|+1,0245|313 / 112|5,91|0,196|4,89|
+|7|22|+1,0412|127 / 51|2,40|0,249|4,57|
+|8|0|+1,0412|127 / 51|2,40|0,249|4,57|
+
+El control 450 final tenia +1,5586%, 56 ventas y 1,06/semana. La regla
+451 conserva el piso, no maximiza el retorno sin restricciones. La mejora
+frente al padre elegible es +0,01666 puntos porcentuales (USD 1,67 sobre
+10.000); no es evidencia de mejora reproducible. En el cierre de etapa 8
+los siete paneles de TRAIN anteriores dan retornos negativos, entre -23,02%
+y -1,35%. No se promociona.
+
+Con `tools/role451_cross.py` se cruzaron los pesos y las referencias
+congeladas de los campeones 6 y 7, con las mismas 4.899 decisiones
+disponibles de validacion. Las dos diagonales reprodujeron exactamente las
+cuentas guardadas, incluidos los conteos:
+
+|Pesos|Tabla|Retorno %|Ventas|
+|---|---|---:|---:|
+|6|6|+1,0245|313|
+|6|7|-0,1426|148|
+|7|6|-4,0308|271|
+|7|7|+1,0412|127|
+
+El efecto depende del emparejamiento. No atribuir el incremento a mejores
+pesos de forma aislada ni intercambiar tablas entre checkpoints.
