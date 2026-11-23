@@ -142,3 +142,27 @@ El coordinador distribuye tres semillas sobre las GPU originales, recoge
 resultados y genera curvas y `COMPARISON.json`. Evidencia local:
 `/var/tmp/role450-full-policy/run-{7,19,43}`; los recibos `*-entry.json`
 separan la cuenta heredada de la candidata recalibrada en la epoca cero.
+
+### Resultado 450
+
+33,36 minutos de protocolo a comparacion. Las 42 etapas entrenadas despues
+del semestre comun pararon por paciencia en la epoca 179. Los seis campeones
+de la ultima etapa fueron padres de epoca cero sin recalibracion adoptada.
+Retornos sobre la validacion 2024, no rendimientos live:
+
+|Semilla|Monitor|448 %|450 %|Ventas / ganadas|Ventas/semana|Sharpe|DD %|
+|---|---|---:|---:|---:|---:|---:|---:|
+|7|Validacion|-2,99|+1,56|56 / 21|1,06|0,61|1,92|
+|7|Mixto|-3,92|+1,13|57 / 21|1,08|0,40|2,40|
+|19|Validacion|+0,59|+0,59|3 / 1|0,06|0,78|0,17|
+|19|Mixto|+0,49|+0,49|10 / 5|0,19|0,64|0,27|
+|43|Validacion|-0,01|+2,98|41 / 21|0,77|1,09|1,29|
+|43|Mixto|+0,06|+1,76|14 / 7|0,26|0,80|0,66|
+
+Cuatro mejoras y dos empates contra 448. Ningun campeon final positivo y
+con mas de dos ventas por semana. La semilla 7 validacion si mantuvo un
+campeon intermedio de +1,025%, 313 ventas, Sharpe 0,196 (etapas 3 a 5;
+no son replicas). En la transicion a etapa 6 la sola recalibracion paso a
++1,376% con 50 ventas y fue aceptada; luego el campeon entrenado alcanzo
++1,559% con 56 ventas. El selector exigia al menos una operacion, no el
+piso de actividad de la calificacion final. No se promueve el intermedio.
