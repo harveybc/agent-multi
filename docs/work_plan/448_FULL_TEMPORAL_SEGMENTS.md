@@ -253,3 +253,36 @@ inutil. No se promociona ningun modelo.
 
 Reproduccion: `tools/role451_cross.py 19` o `43`, con el dispositivo y el
 entorno determinista de 450. Cuentas completas en `/var/tmp/role452-cross/`.
+
+### 453: las 13 y 676 ventas, semilla 43
+
+Reproduccion diagnostica 2024 con pesos del semestre 2 fijos. La tabla
+3 pertenece a otro checkpoint; esta combinacion cruzada no es el campeon
+emparejado del semestre 3. En 4.899 ventanas se cruzaron por separado
+el umbral efectivo max(0, percentil 90) y el rango empirico usado en la
+subasta. Las dos cuentas originales coinciden con 452; cambiar solo
+el rango no modifica ninguna de las dos cuentas.
+
+|Umbral 12 h|Tabla de rangos|Senales|Ventas / ganadas|Retorno %|DD %|
+|---:|---|---:|---:|---:|---:|
+|0,03987317|2 o 3|25|13 / 7|+1,953|1,156|
+|0|2 o 3|1.504|676 / 212|-20,732|21,410|
+
+Ninguna senal de 3, 6 o 24 h supero el umbral. Las 25 originales siguieron
+admitidas; se incorporaron 1.479 de 12 h. Simulando cada apertura sola,
+con el mismo capital inicial y el mismo cerrador, las nuevas tuvieron
+451 ganancias y -3,107 USD netos de media; la correlacion de Spearman
+entre rango y neto fue -0,00149. Las 25 originales aisladas tambien
+perdieron en promedio (-2,886 USD). No sumar esos escenarios solapados
+como si fueran una cuenta ni inferir una capacidad predictiva general.
+
+En las cuentas secuenciales hubo cinco aperturas comunes. Las 671
+exclusivas del umbral nuevo aportaron -2.245,12 USD y las cinco comunes
++171,97 USD. Las 676 sumaron -163,74 USD brutos y -2.073,16 netos;
+559 cierres tempranos sumaron -4.267,15 netos. Este desglose por salida
+no mide si HOLD habria sido mejor. Antes de tocar el cerrador, comparar
+cierre vs protecciones del broker desde esas mismas posiciones.
+
+Codigo: `tools/role453_sell_audit.py`; detalle:
+`/var/tmp/role453-sell-audit/{trades.csv,isolated.csv,DONE.json}`.
+No se ajustaron umbrales con 2024 ni se promovio una politica.
