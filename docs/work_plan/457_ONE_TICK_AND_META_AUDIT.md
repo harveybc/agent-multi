@@ -127,3 +127,5 @@ gradiente, inputs de posicion y donde entran, salidas/acciones, regularizacion
 efectiva, lotes y pasos reales, LR inicial/heredado/final, reglas de gracia,
 paciencia y restauracion, epoca campeona y de parada, y controles con los
 mismos datos. En replay marcar expresamente "sin entrenamiento neuronal".
+
+Continuacion: [458, reentrenamiento completo y doble trayectoria en plateau](458_FULL_TRAIN_PLATEAU.md).
