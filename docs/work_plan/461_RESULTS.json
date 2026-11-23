@@ -1,0 +1,443 @@
+{
+  "parameters": {
+    "first_long": 6,
+    "atr_window": 24,
+    "bins": [
+      0.5,
+      1.5
+    ],
+    "min_cell": 30,
+    "favorable_q": 0.5,
+    "adverse_q": 0.5,
+    "tp_mult": 0.9,
+    "sl_mult": 1.0,
+    "dd_floor": 0.5,
+    "min_rr": 1.0,
+    "full_rr": 3.0,
+    "size_power": 1.0,
+    "reversal_atr": 0.25,
+    "wait_atr": 0.05
+  },
+  "beta": [
+    0.4343564707573151,
+    0.47790245227363226,
+    0.5018627508150835,
+    0.5160334528931559,
+    0.5289860241261203,
+    0.5421940130475226,
+    0.5694494594555763,
+    0.3787239118559064
+  ],
+  "panels": {
+    "2023-price_oracle-1": {
+      "trades": 347,
+      "buy": 186,
+      "wins": 159,
+      "wins_buy": 86,
+      "return_pct": 299.39147419735343,
+      "dd_close_pct": 2.325578322770172,
+      "reasons": {
+        "sl": 141,
+        "tp": 75,
+        "early_pivot": 39,
+        "early_sl": 87,
+        "sl_dual": 5
+      },
+      "wait_decisions": 41,
+      "early_harmful": 40,
+      "early_vs_hold_usd": -8587.259921718527
+    },
+    "2023-persistence-1": {
+      "trades": 0,
+      "buy": 0,
+      "wins": 0,
+      "wins_buy": 0,
+      "return_pct": 0.0,
+      "dd_close_pct": 0.0,
+      "reasons": {},
+      "wait_decisions": 0,
+      "early_harmful": 0,
+      "early_vs_hold_usd": 0
+    },
+    "2023-bridge-0": {
+      "trades": 281,
+      "buy": 145,
+      "wins": 72,
+      "wins_buy": 35,
+      "return_pct": 90.10683946129836,
+      "dd_close_pct": 7.906072037206446,
+      "reasons": {
+        "sl": 203,
+        "tp": 71,
+        "sl_dual": 6,
+        "calendar": 1
+      },
+      "wait_decisions": 0,
+      "early_harmful": 0,
+      "early_vs_hold_usd": 0
+    },
+    "2023-bridge-1": {
+      "trades": 441,
+      "buy": 244,
+      "wins": 199,
+      "wins_buy": 109,
+      "return_pct": 153.8852117089255,
+      "dd_close_pct": 2.8300522000248574,
+      "reasons": {
+        "early_sl": 141,
+        "sl": 185,
+        "early_pivot": 42,
+        "tp": 66,
+        "sl_dual": 7
+      },
+      "wait_decisions": 76,
+      "early_harmful": 48,
+      "early_vs_hold_usd": 466.5352595060474
+    },
+    "2023-bridge-sl_only": {
+      "trades": 391,
+      "buy": 215,
+      "wins": 162,
+      "wins_buy": 88,
+      "return_pct": 157.0757768328844,
+      "dd_close_pct": 3.721145883219934,
+      "reasons": {
+        "early_sl": 141,
+        "sl": 174,
+        "tp": 69,
+        "sl_dual": 7
+      },
+      "wait_decisions": 0,
+      "early_harmful": 32,
+      "early_vs_hold_usd": 2122.557288405207
+    },
+    "2023-bridge-pivot_only": {
+      "trades": 340,
+      "buy": 181,
+      "wins": 108,
+      "wins_buy": 56,
+      "return_pct": 84.95468597592877,
+      "dd_close_pct": 4.861313834288838,
+      "reasons": {
+        "sl": 222,
+        "early_pivot": 44,
+        "tp": 67,
+        "sl_dual": 7
+      },
+      "wait_decisions": 69,
+      "early_harmful": 18,
+      "early_vs_hold_usd": -1614.3823621329736
+    },
+    "2023-bridge-immediate": {
+      "trades": 474,
+      "buy": 258,
+      "wins": 213,
+      "wins_buy": 115,
+      "return_pct": 114.17899673682635,
+      "dd_close_pct": 2.907146151525153,
+      "reasons": {
+        "early_sl": 143,
+        "early_pivot": 66,
+        "tp": 66,
+        "sl": 192,
+        "sl_dual": 7
+      },
+      "wait_decisions": 0,
+      "early_harmful": 52,
+      "early_vs_hold_usd": -1684.0752609824956
+    },
+    "2023-calibrated-0": {
+      "trades": 198,
+      "buy": 96,
+      "wins": 98,
+      "wins_buy": 51,
+      "return_pct": 26.185228283054762,
+      "dd_close_pct": 3.588848248881138,
+      "reasons": {
+        "tp": 97,
+        "sl": 88,
+        "sl_dual": 12,
+        "tp_gap": 1
+      },
+      "wait_decisions": 0,
+      "early_harmful": 0,
+      "early_vs_hold_usd": 0
+    },
+    "2023-calibrated-1": {
+      "trades": 242,
+      "buy": 127,
+      "wins": 126,
+      "wins_buy": 68,
+      "return_pct": 30.376540533432838,
+      "dd_close_pct": 2.9747182398034977,
+      "reasons": {
+        "early_pivot": 48,
+        "tp": 83,
+        "early_sl": 23,
+        "sl": 77,
+        "sl_dual": 10,
+        "tp_gap": 1
+      },
+      "wait_decisions": 48,
+      "early_harmful": 42,
+      "early_vs_hold_usd": -821.6956761107471
+    },
+    "2023-calibrated-sl_only": {
+      "trades": 209,
+      "buy": 105,
+      "wins": 106,
+      "wins_buy": 54,
+      "return_pct": 30.564559369159095,
+      "dd_close_pct": 2.2035902021214415,
+      "reasons": {
+        "tp": 93,
+        "early_sl": 29,
+        "sl": 77,
+        "sl_dual": 9,
+        "tp_gap": 1
+      },
+      "wait_decisions": 0,
+      "early_harmful": 11,
+      "early_vs_hold_usd": 89.0585496756467
+    },
+    "2023-calibrated-pivot_only": {
+      "trades": 231,
+      "buy": 119,
+      "wins": 120,
+      "wins_buy": 65,
+      "return_pct": 28.346754205606462,
+      "dd_close_pct": 3.9767295327252206,
+      "reasons": {
+        "early_pivot": 44,
+        "tp": 88,
+        "sl": 87,
+        "sl_dual": 11,
+        "tp_gap": 1
+      },
+      "wait_decisions": 43,
+      "early_harmful": 30,
+      "early_vs_hold_usd": -466.31169300387694
+    },
+    "2023-calibrated-immediate": {
+      "trades": 259,
+      "buy": 134,
+      "wins": 123,
+      "wins_buy": 64,
+      "return_pct": 25.000355782249926,
+      "dd_close_pct": 3.658173953252708,
+      "reasons": {
+        "early_pivot": 61,
+        "tp": 82,
+        "sl": 79,
+        "early_sl": 26,
+        "sl_dual": 10,
+        "tp_gap": 1
+      },
+      "wait_decisions": 0,
+      "early_harmful": 54,
+      "early_vs_hold_usd": -1343.580929290734
+    },
+    "2024-price_oracle-1": {
+      "trades": 355,
+      "buy": 179,
+      "wins": 161,
+      "wins_buy": 82,
+      "return_pct": 218.18793727001045,
+      "dd_close_pct": 2.1004138802842243,
+      "reasons": {
+        "sl": 164,
+        "tp": 71,
+        "early_sl": 72,
+        "early_pivot": 44,
+        "sl_dual": 4
+      },
+      "wait_decisions": 65,
+      "early_harmful": 34,
+      "early_vs_hold_usd": -1774.7914308859067
+    },
+    "2024-persistence-1": {
+      "trades": 0,
+      "buy": 0,
+      "wins": 0,
+      "wins_buy": 0,
+      "return_pct": 0.0,
+      "dd_close_pct": 0.0,
+      "reasons": {},
+      "wait_decisions": 0,
+      "early_harmful": 0,
+      "early_vs_hold_usd": 0
+    },
+    "2024-bridge-0": {
+      "trades": 295,
+      "buy": 161,
+      "wins": 69,
+      "wins_buy": 37,
+      "return_pct": 64.04420932881239,
+      "dd_close_pct": 4.825553544053641,
+      "reasons": {
+        "sl": 224,
+        "tp": 69,
+        "sl_dual": 2
+      },
+      "wait_decisions": 0,
+      "early_harmful": 0,
+      "early_vs_hold_usd": 0
+    },
+    "2024-bridge-1": {
+      "trades": 492,
+      "buy": 275,
+      "wins": 203,
+      "wins_buy": 103,
+      "return_pct": 84.07725923176818,
+      "dd_close_pct": 2.6954685431903047,
+      "reasons": {
+        "sl": 224,
+        "tp": 65,
+        "early_sl": 163,
+        "early_pivot": 38,
+        "sl_dual": 2
+      },
+      "wait_decisions": 85,
+      "early_harmful": 50,
+      "early_vs_hold_usd": -825.939481318105
+    },
+    "2024-bridge-sl_only": {
+      "trades": 431,
+      "buy": 244,
+      "wins": 170,
+      "wins_buy": 90,
+      "return_pct": 95.59375134903256,
+      "dd_close_pct": 3.008612007371647,
+      "reasons": {
+        "sl": 205,
+        "tp": 67,
+        "early_sl": 157,
+        "sl_dual": 2
+      },
+      "wait_decisions": 0,
+      "early_harmful": 32,
+      "early_vs_hold_usd": 1665.2468051260446
+    },
+    "2024-bridge-pivot_only": {
+      "trades": 352,
+      "buy": 189,
+      "wins": 111,
+      "wins_buy": 54,
+      "return_pct": 55.375417042595764,
+      "dd_close_pct": 4.451616891901455,
+      "reasons": {
+        "sl": 237,
+        "tp": 66,
+        "early_pivot": 47,
+        "sl_dual": 2
+      },
+      "wait_decisions": 92,
+      "early_harmful": 21,
+      "early_vs_hold_usd": -2287.6163612025875
+    },
+    "2024-bridge-immediate": {
+      "trades": 531,
+      "buy": 293,
+      "wins": 221,
+      "wins_buy": 117,
+      "return_pct": 71.50578615787018,
+      "dd_close_pct": 3.0963756327395897,
+      "reasons": {
+        "sl": 234,
+        "tp": 67,
+        "early_sl": 165,
+        "early_pivot": 63,
+        "sl_dual": 2
+      },
+      "wait_decisions": 0,
+      "early_harmful": 57,
+      "early_vs_hold_usd": -1880.0964233100215
+    },
+    "2024-calibrated-0": {
+      "trades": 236,
+      "buy": 119,
+      "wins": 107,
+      "wins_buy": 54,
+      "return_pct": 21.1907078637698,
+      "dd_close_pct": 4.335903437684141,
+      "reasons": {
+        "tp": 107,
+        "sl": 116,
+        "sl_dual": 13
+      },
+      "wait_decisions": 0,
+      "early_harmful": 0,
+      "early_vs_hold_usd": 0
+    },
+    "2024-calibrated-1": {
+      "trades": 290,
+      "buy": 148,
+      "wins": 136,
+      "wins_buy": 72,
+      "return_pct": 26.067101455914155,
+      "dd_close_pct": 3.7317101204173753,
+      "reasons": {
+        "tp": 102,
+        "early_pivot": 48,
+        "sl": 92,
+        "early_sl": 37,
+        "sl_dual": 11
+      },
+      "wait_decisions": 69,
+      "early_harmful": 46,
+      "early_vs_hold_usd": -776.4421244439101
+    },
+    "2024-calibrated-sl_only": {
+      "trades": 260,
+      "buy": 131,
+      "wins": 121,
+      "wins_buy": 64,
+      "return_pct": 24.6963240152126,
+      "dd_close_pct": 3.6285835974346092,
+      "reasons": {
+        "tp": 106,
+        "early_sl": 46,
+        "sl": 97,
+        "sl_dual": 11
+      },
+      "wait_decisions": 0,
+      "early_harmful": 20,
+      "early_vs_hold_usd": -135.77819106951898
+    },
+    "2024-calibrated-pivot_only": {
+      "trades": 271,
+      "buy": 137,
+      "wins": 128,
+      "wins_buy": 66,
+      "return_pct": 25.021715816664212,
+      "dd_close_pct": 4.067555983281168,
+      "reasons": {
+        "tp": 102,
+        "early_pivot": 51,
+        "sl": 105,
+        "sl_dual": 13
+      },
+      "wait_decisions": 69,
+      "early_harmful": 31,
+      "early_vs_hold_usd": -429.64280612373705
+    },
+    "2024-calibrated-immediate": {
+      "trades": 304,
+      "buy": 156,
+      "wins": 137,
+      "wins_buy": 70,
+      "return_pct": 23.22437908472612,
+      "dd_close_pct": 3.2707214971109067,
+      "reasons": {
+        "tp": 102,
+        "early_pivot": 65,
+        "sl": 89,
+        "early_sl": 36,
+        "sl_dual": 12
+      },
+      "wait_decisions": 0,
+      "early_harmful": 54,
+      "early_vs_hold_usd": -1061.8156488917484
+    }
+  }
+}
