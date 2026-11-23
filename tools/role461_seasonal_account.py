@@ -15,9 +15,16 @@ DEFAULT = dict(first_long=6, atr_window=24, bins=[0.5, 1.5], min_cell=30,
                reversal_atr=0.25, wait_atr=0.05)
 
 
-def load(root, bars_dir, p):
+def load(root, bars_dir, p, prefix=None):
     b = pd.read_parquet(bars_dir/'bars.parquet')
     b = b[(b.timestamp.dt.year >= 2020) & (b.available_at.dt.year < 2025)].copy()
+    if prefix is not None:
+        old=pd.read_parquet(prefix/'OHLC.parquet').rename(columns=dict(
+            OPEN='BidOpen',HIGH='BidHigh',LOW='BidLow',CLOSE='BidClose'))
+        old=old[(old.index.year>=2018)&(old.index.year<2020)].copy()
+        old['timestamp']=old.index
+        old['available_at']=old.index+pd.Timedelta(hours=1)
+        b=pd.concat([old,b],ignore_index=True)
     t = pd.DatetimeIndex(b.timestamp).as_unit('ns').asi8
     assert np.all(np.diff(t)>0) and np.array_equal(t+NS, pd.DatetimeIndex(b.available_at).as_unit('ns').asi8)
     o,hi,lo,c = b[['BidOpen','BidHigh','BidLow','BidClose']].to_numpy().T
@@ -43,7 +50,7 @@ def load(root, bars_dir, p):
             np.testing.assert_allclose(ds[rows,k],s['seasonal'][si[dest]]-s['seasonal'][si[rows]],atol=1e-8)
             dp[rows,k]=c[dest]-c[rows]
     gate=np.zeros(len(t),bool);deadline=np.zeros(len(t),dtype='int64')
-    closures=json.loads((bars_dir/'closures.json').read_text())
+    closures=json.loads(((prefix/'CLOSURES.json') if prefix is not None else (bars_dir/'closures.json')).read_text())
     for (_,op),(end,_) in zip(closures,closures[1:]):
         start=pd.Timestamp(op).value; flat=pd.Timestamp(end).value-12*NS
         active=(t>=start+12*NS)&(t<flat)

@@ -1,0 +1,22 @@
+{
+  "strategy": "bridge-sl_only",
+  "long_hours": [6, 24, 48],
+  "train_years": [2019, 2020, 2021, 2022],
+  "validation_year": 2023,
+  "report_year": 2024,
+  "fitness": "mean annual daily-equity Sharpe, equal weight per TRAIN year",
+  "monitor": "validation Sharpe of TRAIN champion",
+  "population": 20, "min_generations": 200, "max_generations": 500,
+  "patience": 30, "min_delta": 1e-8, "seeds": [7, 19, 43],
+  "crossover_probability": 0.85, "sbx_eta": 12, "mutation_eta": 16,
+  "per_gene_mutation": 0.22, "immigrants": 2, "elite": 1, "tournament": 3,
+  "genes": {
+    "atr_window": {"kind": "choice", "values": [12, 24, 48, 96], "baseline": 24},
+    "tp_mult": {"kind": "linear", "range": [0.4, 1.5], "baseline": 0.9},
+    "sl_mult": {"kind": "linear", "range": [0.5, 2.5], "baseline": 1},
+    "dd_floor": {"kind": "log", "range": [0.1, 2], "baseline": 0.5},
+    "min_rr": {"kind": "linear", "range": [0.5, 2], "baseline": 1},
+    "full_rr": {"kind": "linear", "range": [2.01, 10], "baseline": 3},
+    "size_power": {"kind": "log", "range": [0.5, 3], "baseline": 1}
+  }
+}

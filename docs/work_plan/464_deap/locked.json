@@ -1,0 +1,72 @@
+{
+  "cost": {
+    "gen": 10,
+    "effective": {
+      "atr_window": 24,
+      "tp_mult": 0.8802948778599688,
+      "sl_mult": 2.0291088806006936,
+      "dd_floor": 0.6693405898999146,
+      "min_rr": 0.8536643067979943,
+      "full_rr": 2.3190303041358056,
+      "size_power": 0.5508891469804196
+    },
+    "train": 3.626852183556424,
+    "val": {
+      "ret": 151.27031564322934,
+      "dd": 3.478797531904443,
+      "orders": 207,
+      "buy": 113,
+      "wins": 116,
+      "sharpe": 5.21670398501097
+    },
+    "seed": 7,
+    "last_generation": 200,
+    "distinct": 3618,
+    "wait": 190,
+    "stop": "patience",
+    "distinct_values": {
+      "atr_window": 4,
+      "tp_mult": 1952,
+      "sl_mult": 2034,
+      "dd_floor": 2060,
+      "min_rr": 2019,
+      "full_rr": 2007,
+      "size_power": 2085
+    }
+  },
+  "free": {
+    "gen": 6,
+    "effective": {
+      "atr_window": 48,
+      "tp_mult": 0.8090823070533538,
+      "sl_mult": 1.7326679785159809,
+      "dd_floor": 0.3362750840673332,
+      "min_rr": 0.9932349216687989,
+      "full_rr": 3.082193924973451,
+      "size_power": 0.5317239458180834
+    },
+    "train": 4.5934344925980675,
+    "val": {
+      "ret": 155.64371871001603,
+      "dd": 3.019885614370499,
+      "orders": 340,
+      "buy": 173,
+      "wins": 157,
+      "sharpe": 5.773447542529793
+    },
+    "seed": 43,
+    "last_generation": 200,
+    "distinct": 3616,
+    "wait": 194,
+    "stop": "patience",
+    "distinct_values": {
+      "atr_window": 4,
+      "tp_mult": 1950,
+      "sl_mult": 1952,
+      "dd_floor": 1899,
+      "min_rr": 2031,
+      "full_rr": 2112,
+      "size_power": 2085
+    }
+  }
+}

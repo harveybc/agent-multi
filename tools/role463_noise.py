@@ -12,7 +12,7 @@ PANEL='bridge-sl_only'
 
 
 @njit
-def run(t,o,hi,lo,c,atr,gate,deadline,spread,roll,sig,fees):
+def run(t,o,hi,lo,c,atr,gate,deadline,spread,roll,sig,fees,tp_mult=.9,sl_mult=1.,floor=.5,min_rr=1.,full_rr=3.,power=1.):
     market,stops,through,comm,swapb,swaps=fees
     side=0;balance=10000.;peak=balance;dd=0.;trades=0;buys=0;wins=0
     en=sl=tp=u=0.;start=flat=0;day=-1;daily=np.empty(len(t)+1);nd=1;daily[0]=balance
@@ -36,14 +36,14 @@ def run(t,o,hi,lo,c,atr,gate,deadline,spread,roll,sig,fees):
                 for k in range(5,8):
                     v=s*sig[prev,k];top=max(top,v);draw=max(draw,top-v)
                     if v>last and (k==7 or v>=s*sig[prev,k+1]):
-                        gain=.9*v;risk=max(draw,.5*atr[prev]);score=gain/risk
+                        gain=tp_mult*v;risk=sl_mult*max(draw,floor*atr[prev]);score=gain/risk
                         if score>sb:sb=score;st=gain;ss=risk
                     last=v
                 if sb>best:second=best;best=sb;td=st;sd=ss;direction=s
                 else:second=sb
-            if best>1 and abs(second-best)>1e-8+1e-5*best:
+            if best>min_rr and abs(second-best)>1e-8+1e-5*best:
                 side=direction;en=o[i]+(spread[i] if side>0 else 0.)+side*market
-                sl=en-side*sd;tp=en+side*td;u=balance*.1*min(1.,(best-1.)/2)*50/en
+                sl=en-side*sd;tp=en+side*td;u=balance*.1*min(1.,(best-min_rr)/(full_rr-min_rr))**power*50/en
                 start=i;flat=deadline[i];buys+=int(side==1)
         if side and not done:
             a=spread[i] if side<0 else 0.;ex=o[i]+a
