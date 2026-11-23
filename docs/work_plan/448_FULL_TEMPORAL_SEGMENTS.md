@@ -353,6 +353,9 @@ CLOSE dio 2,40 ventas/semana, DD 4,57%, Sharpe 0,249; con HOLD dio
 cerrador como control. No se promueve: se reutilizo el mismo periodo
 de validacion, hay solapamiento y no se verifico retencion en TRAIN.
 
+Auditoria posterior de parametros efectivos, pesos y contraste de un tick:
+[informe 457](457_ONE_TICK_AND_META_AUDIT.md).
+
 Ejecutor: `tools/role455_matched_close.py {7,19,43}` (una semilla por
 invocacion). Salidas: `/var/tmp/role455-matched-close/<semilla>/DONE.json`
 y `pairs.csv`; el catalogo permite resolver aliases de checkpoints.

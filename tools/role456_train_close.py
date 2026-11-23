@@ -2,6 +2,7 @@
 import gzip
 import json
 import time
+import sys
 from pathlib import Path
 
 import cloudpickle
@@ -31,13 +32,16 @@ def fit(past):
 
 
 @torch.inference_mode()
-def main():
+def main(one_tick=False):
     torch.set_num_threads(1);torch.use_deterministic_algorithms(True)
     torch.backends.cuda.matmul.allow_tf32=False;torch.backends.cudnn.allow_tf32=False
     torch.backends.cuda.enable_flash_sdp(False);torch.backends.cuda.enable_mem_efficient_sdp(False)
     root=Path('/var/tmp/role448-temporal-4plus1')
     run=Path('/var/tmp/role451-activity/run-7')
-    out=Path('/var/tmp/role456-train-close');out.mkdir(exist_ok=True)
+    out=Path('/var/tmp/role457-one-tick' if one_tick else '/var/tmp/role456-train-close');out.mkdir(exist_ok=True)
+    if one_tick:
+        from tools.role457_veto import Trial
+        trial=Trial()
     read=lambda p:json.loads(p.read_text())
     spec=read(root/'7.json')
     for n,k in [('7.npz','inputs'),('7.sim.gz','sim'),('recipe.json','recipe'),('arch.json','arch')]:
@@ -61,7 +65,9 @@ def main():
             native=panel.close;features={}
             def capture(e,b,j):
                 cmd=native(e,b,j)
-                if cmd:features[e.pos.entry_bar]=context(e,b,j)
+                if cmd:
+                    features[e.pos.entry_bar]=context(e,b,j)
+                    if one_tick:trial.capture(e,b,j,native,features[e.pos.entry_bar])
                 return cmd
             panel.close=capture
             try:base=panel.account(scores)
@@ -87,6 +93,8 @@ def main():
                      avoided_harm=-sum(min(v,0) for v in dropped),lost_protection=sum(max(v,0) for v in dropped),
                      seconds=time.monotonic()-start)
             rows.append(row)
+            if one_tick:
+                trial.finish(s,panel,scores,pairs,predict,features,row,spec['blocks'][str(s)]['end'])
             for r in pairs:
                 risk=r['units']*abs(r['price']-r['sl'])
                 assert risk>0 and np.datetime64(r['hold_exit'][:19],'ns').astype('int64')<spec['blocks'][str(s)]['end']
@@ -95,4 +103,4 @@ def main():
     emit(out/'DONE.json',dict(stages=rows,checkpoint=file_sha(run/'s7-validation.pt'),promoted=False))
 
 
-if __name__=='__main__':main()
+if __name__=='__main__':main(sys.argv[1:]==['--one-tick'])
