@@ -1,5 +1,6 @@
 """Oracle account strategy search. No noise and no learned predictions."""
 import argparse
+import csv
 import gzip
 import json
 import math
@@ -64,6 +65,7 @@ def prepare(a,cfg):
         fast=evaluate(par,yr,paid)
         np.testing.assert_allclose([fast[k] for k in ('ret','dd','orders','buy','wins')],
                [v[k] for k in ('return_pct','dd_close_pct','trades','buy','wins')],atol=1e-7,rtol=0)
+        return v
     return evaluate,reference,counts
 
 
@@ -114,9 +116,40 @@ def search(cfg,ev,paid,seed,out):
     return champ
 
 
+def side_report(out,cfg,winners,reference,panels):
+    rows=[]
+    for name in panels:
+        par=tuple(winners[name]['effective'][k] if name!='baseline' else s['baseline']
+                  for k,s in cfg['genes'].items())
+        for arm,annual in panels[name].items():
+            train=np.zeros(5,dtype=int)
+            def add(period,counts):
+                total,buy,sell,bw,sw=map(int,counts)
+                pct=lambda x,n:100*x/n if n else None
+                rows.append(dict(profile=name,execution=arm,period=period,orders=total,
+                    buys=buy,sells=sell,buy_wins=bw,sell_wins=sw,wins=bw+sw,
+                    win_pct=pct(bw+sw,total),buy_pct=pct(buy,total),sell_pct=pct(sell,total),
+                    buy_win_pct=pct(bw,buy),sell_win_pct=pct(sw,sell)))
+            for yr,rec in annual.items():
+                v=reference(par,int(yr),arm=='cost')
+                n,b,w,bw=(v[k] for k in ('trades','buy','wins','wins_buy'))
+                assert (n,b,w)==(rec['orders'],rec['buy'],rec['wins'])
+                counts=np.array([n,b,n-b,bw,w-bw])
+                assert 0<=bw<=b and 0<=w-bw<=n-b
+                add(yr,counts)
+                if int(yr) in cfg['train_years']:train+=counts
+            add('TRAIN',train)
+    with (out/'side_report.csv').open('w',newline='') as f:
+        writer=csv.DictWriter(f,fieldnames=list(rows[0]),lineterminator='\n');writer.writeheader();writer.writerows(rows)
+
+
 def main(a):
     cfg=json.loads(a.config.read_text());a.out.mkdir(parents=True,exist_ok=True)
     ev,ref,counts=prepare(a,cfg);genes=cfg['genes']
+    if a.side_report_only:
+        side_report(a.out,cfg,json.loads((a.out/'locked.json').read_text()),ref,
+                    json.loads((a.out/'results.json').read_text())['panels'])
+        return
     baseline=tuple(s['baseline'] for s in genes.values())
     checks={}
     for paid in (False,True):
@@ -142,9 +175,11 @@ def main(a):
             ref(p,2024,paid)
             report[name][arm]={y:ev(p,y,paid) for y in cfg['train_years']+[2023,2024]}
     (a.out/'results.json').write_text(json.dumps(dict(counts=counts,runs=runs,panels=report,gene_checks=checks),indent=2)+'\n')
+    side_report(a.out,cfg,winners,ref,report)
 
 
 if __name__=='__main__':
     ap=argparse.ArgumentParser()
     for k in ('src','bars','prefix','recipe','config','out'):ap.add_argument(k,type=Path)
+    ap.add_argument('--side-report-only',action='store_true')
     main(ap.parse_args())
