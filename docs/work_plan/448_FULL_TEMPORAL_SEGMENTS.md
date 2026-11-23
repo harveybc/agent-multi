@@ -356,3 +356,36 @@ de validacion, hay solapamiento y no se verifico retencion en TRAIN.
 Ejecutor: `tools/role455_matched_close.py {7,19,43}` (una semilla por
 invocacion). Salidas: `/var/tmp/role455-matched-close/<semilla>/DONE.json`
 y `pairs.csv`; el catalogo permite resolver aliases de checkpoints.
+
+### 456: veto de cierre ajustado por semestres de TRAIN
+
+Campeon 451 semilla 7 congelado. En 18.899 ventanas de 2020-2023 hubo 894
+cierres con contrafactual. Se reprodujeron las siete cuentas previas guardadas.
+Se uso S1 para iniciar el ajuste; cada semestre siguiente se evaluo antes
+de anadir sus pares al ajuste. El objetivo es (neto CLOSE - neto HOLD) / riesgo
+inicial en USD. Ridge de penalizacion 1, con centrado y escala de bloques
+anteriores, sin barrido. Entradas al solicitar cierre: PnL en unidades de
+riesgo al precio de liquidacion, ratio TP/SL inicial, edad de la posicion,
+tiempo disponible hasta el cierre obligatorio y horizonte. Si el diferencial
+estimado es negativo se mantiene la posicion hasta su proteccion o fin de
+sesion, sin sucesivas solicitudes. No modifica las entradas de la red.
+
+|Semestre|Pares|Retorno base %|Con veto %|Solo protecciones %|
+|---|---:|---:|---:|---:|
+|2020 H1|128|-5,14|calibracion|-4,86|
+|2020 H2|38|-3,81|-4,28|-4,75|
+|2021 H1|14|-1,35|-1,62|+0,38|
+|2021 H2|16|-2,39|-3,82|-4,09|
+|2022 H1|142|-9,28|-8,30|-6,13|
+|2022 H2|470|-23,02|-20,47|-19,03|
+|2023 H1|68|-9,56|-9,63|-6,74|
+|2023 H2|18|+0,71|+1,09|+1,07|
+
+De los 766 pares evaluables, la regla habria vetado 211 cierres de la
+politica base: evita USD 2.700,94 de dano pero pierde USD 2.996,06 de
+proteccion (neto incremental -295,12). En cuentas secuenciales, con nuevas
+entradas y tamanos resultantes, mejora solo 3/7. No se promueve ni se
+elige un umbral con 2024. Orden cronologico para el veto, no evaluacion
+independiente de toda la red: el abridor congelado ya vio TRAIN y se
+eligio con validacion. S6 aporta 470/894 pares; no tratarlos como replicas
+independientes. Ejecutor: `tools/role456_train_close.py`.
