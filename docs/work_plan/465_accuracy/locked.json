@@ -1,0 +1,119 @@
+{
+  "refined": false,
+  "effective": {
+    "atr_window": 24,
+    "tp_mult": 0.8802948778599688,
+    "sl_mult": 2.0291088806006936,
+    "dd_floor": 0.6693405898999146,
+    "min_rr": 0.8536643067979943,
+    "full_rr": 2.3190303041358056,
+    "size_power": 0.5508891469804196
+  },
+  "search_runs": [
+    {
+      "gen": 0,
+      "effective": {
+        "atr_window": 24,
+        "tp_mult": 0.8802948778599688,
+        "sl_mult": 2.0291088806006936,
+        "dd_floor": 0.6693405898999146,
+        "min_rr": 0.8536643067979943,
+        "full_rr": 2.3190303041358056,
+        "size_power": 0.5508891469804196
+      },
+      "train": 0.5205479452054794,
+      "val": {
+        "ret": 151.27031564322934,
+        "dd": 3.478797531904443,
+        "orders": 207,
+        "buy": 113,
+        "wins": 116,
+        "sharpe": 5.21670398501097
+      },
+      "seed": 7,
+      "last_generation": 200,
+      "distinct": 3626,
+      "wait": 200,
+      "stop": "patience",
+      "distinct_values": {
+        "atr_window": 4,
+        "tp_mult": 1968,
+        "sl_mult": 2059,
+        "dd_floor": 1991,
+        "min_rr": 2060,
+        "full_rr": 2059,
+        "size_power": 2097
+      }
+    },
+    {
+      "gen": 0,
+      "effective": {
+        "atr_window": 24,
+        "tp_mult": 0.8802948778599688,
+        "sl_mult": 2.0291088806006936,
+        "dd_floor": 0.6693405898999146,
+        "min_rr": 0.8536643067979943,
+        "full_rr": 2.3190303041358056,
+        "size_power": 0.5508891469804196
+      },
+      "train": 0.5205479452054794,
+      "val": {
+        "ret": 151.27031564322934,
+        "dd": 3.478797531904443,
+        "orders": 207,
+        "buy": 113,
+        "wins": 116,
+        "sharpe": 5.21670398501097
+      },
+      "seed": 19,
+      "last_generation": 200,
+      "distinct": 3627,
+      "wait": 200,
+      "stop": "patience",
+      "distinct_values": {
+        "atr_window": 4,
+        "tp_mult": 1882,
+        "sl_mult": 2051,
+        "dd_floor": 1903,
+        "min_rr": 2097,
+        "full_rr": 2109,
+        "size_power": 2064
+      }
+    },
+    {
+      "gen": 0,
+      "effective": {
+        "atr_window": 24,
+        "tp_mult": 0.8802948778599688,
+        "sl_mult": 2.0291088806006936,
+        "dd_floor": 0.6693405898999146,
+        "min_rr": 0.8536643067979943,
+        "full_rr": 2.3190303041358056,
+        "size_power": 0.5508891469804196
+      },
+      "train": 0.5205479452054794,
+      "val": {
+        "ret": 151.27031564322934,
+        "dd": 3.478797531904443,
+        "orders": 207,
+        "buy": 113,
+        "wins": 116,
+        "sharpe": 5.21670398501097
+      },
+      "seed": 43,
+      "last_generation": 200,
+      "distinct": 3623,
+      "wait": 200,
+      "stop": "patience",
+      "distinct_values": {
+        "atr_window": 4,
+        "tp_mult": 1979,
+        "sl_mult": 2186,
+        "dd_floor": 1914,
+        "min_rr": 2034,
+        "full_rr": 1940,
+        "size_power": 2103
+      }
+    }
+  ]
+}

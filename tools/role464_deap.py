@@ -58,24 +58,27 @@ def prepare(a,cfg):
         ret,dd,orders,buy,wins,sh=run(*yearly[yr,w,paid],*others)
         return dict(ret=ret-100,dd=dd,orders=int(orders),buy=int(buy),wins=int(wins),
                     sharpe=float(sh) if np.isfinite(sh) else -1e6)
-    def reference(par,yr,paid):
+    def reference(par,yr,paid,with_book=False):
         named=dict(zip(cfg['genes'],par)); yy=data.copy();yy[5]=windows[par[0]]
-        v,_=simulate(yy,(None,None),dict(DEFAULT,**named),yr,'bridge','sl_only',
+        v,book=simulate(yy,(None,None),dict(DEFAULT,**named),yr,'bridge','sl_only',
                      (profile,spread,roll) if paid else None)
         fast=evaluate(par,yr,paid)
         np.testing.assert_allclose([fast[k] for k in ('ret','dd','orders','buy','wins')],
                [v[k] for k in ('return_pct','dd_close_pct','trades','buy','wins')],atol=1e-7,rtol=0)
-        return v
+        return (v,book) if with_book else v
     return evaluate,reference,counts
 
 
-def search(cfg,ev,paid,seed,out):
+def search(cfg,ev,paid,seed,out,*,score_fn=None,warm=False):
     random.seed(seed); specs=list(cfg['genes'].values()); n=len(specs)
     actual=lambda ind:tuple(decode(s,x) for s,x in zip(specs,ind,strict=True))
     toolbox=base.Toolbox()
     toolbox.register('individual',tools.initRepeat,creator.Strategy464,random.random,n=n)
     pop=[toolbox.individual() for _ in range(cfg['population'])]
     pop[0][:]=[encode(s,s['baseline']) for s in specs]
+    if warm:
+        for ind in pop[1:len(pop)//2+1]:
+            ind[:]=[min(1.,max(0.,random.gauss(x,.055))) for x in pop[0]]
     cache={};mon={};best=-math.inf;counter=0;champ=None;history=[]
     dest=out/f'{"cost" if paid else "free"}-{seed}';dest.mkdir(exist_ok=True)
     with gzip.open(dest/'candidates.jsonl.gz','wt') as stream:
@@ -84,14 +87,14 @@ def search(cfg,ev,paid,seed,out):
                 p=actual(ind)
                 if p not in cache:
                     metrics=[ev(p,y,paid) for y in cfg['train_years']]
-                    score=float(np.mean([v['sharpe'] for v in metrics]))
+                    score=score_fn(metrics,False) if score_fn else float(np.mean([v['sharpe'] for v in metrics]))
                     cache[p]=len(cache),score
                     stream.write(json.dumps(dict(id=cache[p][0],first_gen=gen,genome=list(ind),
                         effective=dict(zip(cfg['genes'],p)),train_by_year=metrics,fitness=score))+'\n')
                 ind.fitness.values=(cache[p][1],)
             leader=tools.selBest(pop,1)[0];p=actual(leader)
             if p not in mon:mon[p]=ev(p,cfg['validation_year'],paid)
-            val=mon[p]['sharpe'];score=leader.fitness.values[0]
+            val=score_fn([mon[p]],True) if score_fn else mon[p]['sharpe'];score=leader.fitness.values[0]
             if val>best+cfg['min_delta']:
                 best=val;counter=0
                 champ=dict(gen=gen,effective=dict(zip(cfg['genes'],p)),train=score,val=mon[p],seed=seed)
