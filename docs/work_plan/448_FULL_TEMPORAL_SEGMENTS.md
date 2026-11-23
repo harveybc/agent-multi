@@ -51,3 +51,28 @@ el mismo directorio contiene `PREFLIGHT.json` con identidad de GPU, paridad
 de las cinco cuentas nativas y norma de gradiente y desplazamiento por grupo.
 Los informes de Gamma se recogen en Omega cada 15 segundos. DONE a nivel de
 campana solo despues de reunir los dos brazos finales de las tres semillas.
+
+## Resultado final
+
+Ocho semestres, seis campeones finales y 45 graficas de etapa; unos 29,5
+minutos entre el primer PREFLIGHT y DONE. Las 45 etapas/brazos terminaron
+en la epoca 179 por paciencia (primera parada posible). Resultados de
+campeones restaurados en la misma cuenta anual 2024, solo SELL:
+
+|Semilla|Monitor|Retorno %|Trades|Ganadas|Sharpe|DD %|Epoca campeona final|
+|---|---|---:|---:|---:|---:|---:|---:|
+|7|Validacion|-2,988|175|65|-0,51|6,06|39|
+|7|Mixto|-3,915|209|72|-0,65|8,01|0|
+|19|Validacion|+0,593|3|1|0,78|0,17|0|
+|19|Mixto|+0,491|10|5|0,64|0,27|0|
+|43|Validacion|-0,013|10|4|-0,01|0,69|0|
+|43|Mixto|+0,056|1|1|0,90|0,10|0|
+
+0/6 con retorno positivo y mas de dos operaciones por semana a la vez.
+En semilla 7, mixto, los campeones s6 y s7 tienen pesos identicos tensor
+por tensor. Su retorno 2024 pasa de +2,098% (99 operaciones) a -3,915%
+(209). Ya ocurre en la epoca cero de s7: cambia el semestre usado para
+la distribucion empirica de scores, que decide tanto admision como ranking.
+No atribuir esa diferencia a olvido de los pesos. Contraste recomendado:
+fijar pesos y comparar referencias antigua/nueva, luego fijar la referencia
+y comparar pesos; verificar por barra los cambios de elegibilidad y horizonte.
