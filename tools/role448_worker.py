@@ -41,7 +41,7 @@ def bids(p,reference):
     return np.where(eligible,ranks,0)
 
 
-def run(root,seed):
+def run(root,seed,policy_output=None):
     torch.set_num_threads(1);torch.use_deterministic_algorithms(True)
     torch.backends.cudnn.allow_tf32=False;torch.backends.cuda.matmul.allow_tf32=False
     torch.backends.cuda.enable_flash_sdp(False);torch.backends.cuda.enable_mem_efficient_sdp(False)
@@ -51,7 +51,8 @@ def run(root,seed):
     spec=json.loads(manifest.read_text())
     for file,k in [(f'{seed}.npz','inputs'),(f'{seed}.sim.gz','sim'),('recipe.json','recipe'),('arch.json','arch')]:
         assert file_sha(root/file)==spec[k]
-    dest=root/f'run-{seed}';dest.mkdir(exist_ok=True)
+    src=root/f'run-{seed}'
+    dest=(policy_output if policy_output else root)/f'run-{seed}';dest.mkdir(exist_ok=True)
     recipe,arch=[json.loads((root/k).read_text()) for k in ('recipe.json','arch.json')]
     with np.load(root/f'{seed}.npz') as d:
         x=[torch.from_numpy(d[f'x{s}']).cuda() for s in range(9)]
@@ -89,11 +90,11 @@ def run(root,seed):
                                     total=sum(p.numel() for p in net.parameters()),native_parity=5))
 
     @torch.inference_mode()
-    def measure(s):
+    def measure(s,table=None):
         net.eval()
         def pred(b):
             return torch.cat([heads(net(a))[-1] for a in x[b].split(512)]).cpu().numpy()
-        reference=pred(s)
+        reference=pred(s) if table is None else table
         def acct(b):
             pn=panels[2020+b//2][0]
             scores=np.zeros_like(pn.raw)
@@ -101,7 +102,23 @@ def run(root,seed):
             a=pn.account(scores)
             assert a['buy']==0 and np.isfinite(a['ret'])
             return a
-        return acct(8),[acct(b) for b in range(s)],np.quantile(reference,.9,axis=0).tolist()
+        return acct(8),[acct(b) for b in range(s)],np.quantile(reference,.9,axis=0).tolist(),reference
+
+    load=lambda p:torch.load(p,weights_only=False,map_location='cpu')
+    if policy_output:
+        original=src/'s0-common.pt'
+        d=load(original)
+        assert d['sig']==sig
+        restore(d['champ'])
+        with np.load(Path('/var/tmp/role449-cross')/f'policies-{seed}'/'s0-common.npz') as f:
+            assert str(f['weight_file_sha'])==file_sha(original) and str(f['source_manifest'])==sig
+            reference=f['reference'].copy()
+        v,_,q,_=measure(0,reference)
+        previous=json.loads((src/'s0-common.json').read_text())
+        assert v==previous['val'] and q==previous['cut']
+        d['champ']['reference']=reference
+        save(d,dest/'s0-common.pt')
+        emit(dest/'s0-common.json',dict(**previous,source='448_reused_exact'))
 
     for s in range(8):
         # Keep only labelled rows of this one block in the optimizer view.
@@ -111,7 +128,6 @@ def run(root,seed):
         for arm in (('common',) if s==0 else ('validation','retention')):
             name=f's{s}-{arm}'
             dst=dest/f'{name}.pt';resume=dest/f'{name}.resume'
-            load=lambda p:torch.load(p,weights_only=False,map_location='cpu')
             if dst.exists():
                 assert load(dst)['sig']==sig
                 continue
@@ -123,8 +139,22 @@ def run(root,seed):
                 r=load(resume);assert r['sig']==sig
                 restore(r['current']);ch=r['champ'];hist=r['hist'];best=r['best'];ep=r['ep'];bad=r['bad'];miss=r['miss'];active=r['active']
             else:
-                v,p,q=measure(s);best=metric(v,p);active=v['trades']>0
-                ep=bad=miss=0;ch=state();hist=[dict(epoch=0,val=v,prior=p,metric=best,cut=q,lr=opt.param_groups[0]['lr'])]
+                v,p,q,ref=measure(s,parent['reference'] if policy_output else None)
+                best=metric(v,p);active=v['trades']>0
+                ep=bad=miss=0;ch=state()
+                if policy_output:
+                    previous=json.loads((dest/f's{s-1}-{"common" if s==1 else arm}.json').read_text())
+                    assert v==previous['val'] and p[:-1]==previous['prior'] and q==previous['cut']
+                    ch['reference']=ref
+                    v1,p1,q1,r1=measure(s)
+                    recal=metric(v1,p1)
+                    won=v1['trades']>0 and (not active or recal>best+1e-8)
+                    emit(dest/f'{name}-entry.json',dict(parent=v,parent_prior=p,parent_metric=best,
+                         recal=v1,recal_prior=p1,recal_metric=recal,recal_adopted=won))
+                    if won:
+                        v,p,q,best,active=v1,p1,q1,recal,True
+                        ch['reference']=np.sort(r1,axis=0)
+                hist=[dict(epoch=0,val=v,prior=p,metric=best,cut=q,lr=opt.param_groups[0]['lr'])]
             for epoch in range(len(hist),2001):
                 start=time.monotonic()
                 net.train()
@@ -133,12 +163,17 @@ def run(root,seed):
                     opt.zero_grad(set_to_none=True);out=severity(net(tx[k]),ty[k])
                     assert torch.isfinite(out)
                     out.backward();opt.step()
-                v,p,q=measure(s);value=metric(v,p)
+                v,p,q,ref=measure(s);value=metric(v,p)
                 improved=v['trades']>0 and (not active or value>best+1e-8)
-                if improved:ch=state();best=value;ep=epoch;bad=0;active=True
+                if improved:
+                    ch=state();best=value;ep=epoch;bad=0;active=True
+                    if policy_output:ch['reference']=np.sort(ref,axis=0)
                 elif epoch>=100:bad+=1
                 miss,rate=plateau.observe(epoch,improved,miss,opt.param_groups[0]['lr'],bad>=80)
                 if rate is not None:plateau.restore(net,opt,ch['weights'],ch['optimizer'],rate)
+                if rate is not None and policy_output:
+                    restored_v,restored_p,_,_=measure(s,ch['reference'])
+                    assert restored_v==hist[ep]['val'] and restored_p==hist[ep]['prior']
                 row=dict(epoch=epoch,val=v,prior=p,metric=value,cut=q,best=ep,patience=bad,
                          lr=opt.param_groups[0]['lr'],rollback=rate is not None,seconds=time.monotonic()-start)
                 hist.append(row)
@@ -147,8 +182,9 @@ def run(root,seed):
                 if epoch%10==0:
                     save(dict(sig=sig,current=state(),champ=ch,hist=hist,best=best,ep=ep,bad=bad,miss=miss,active=active),resume)
             restore(ch)
-            v,p,q=measure(s)
+            v,p,q,_=measure(s,ch.get('reference'))
             assert metric(v,p)==best
+            if policy_output:assert v==hist[ep]['val'] and p==hist[ep]['prior']
             save(dict(sig=sig,champ=ch,best=ep,history=hist,active=active),dst)
             emit(dest/f'{name}.json',dict(epochs=len(hist)-1,best=ep,val=v,prior=p,metric=best,cut=q,active=active,
                                          stop='patience' if bad>=80 else 'cap',rows=len(tx)))
@@ -156,4 +192,4 @@ def run(root,seed):
     emit(dest/'DONE.json',dict(seed=seed,stages=8,promoted=False))
 
 
-if __name__=='__main__':run(Path(sys.argv[1]),int(sys.argv[2]))
+if __name__=='__main__':run(Path(sys.argv[1]),int(sys.argv[2]),Path(sys.argv[3]) if len(sys.argv)>3 else None)

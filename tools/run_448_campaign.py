@@ -20,17 +20,19 @@ def run(args):
     sp.run(args,check=True)
 
 
-def launch(seed,device,remote):
+def launch(seed,device,remote,policy_output=None):
     work=REMOTE if remote else ROOT
-    unit=f'role448-s{seed}'
+    unit=f'role{450 if policy_output else 448}-s{seed}'
+    worker=str(policy_output/'role448_worker.py') if policy_output else 'tools/role448_worker.py'
     args=['systemd-run','--user',f'--unit={unit}','--collect',f'--working-directory={work}',
           '--setenv=PYTHONPATH=.:tools',f'--setenv=CUDA_VISIBLE_DEVICES={device}',
           '--setenv=CUBLAS_WORKSPACE_CONFIG=:4096:8','--setenv=OPENBLAS_NUM_THREADS=1','--setenv=OMP_NUM_THREADS=1',
-          PY,'-W','ignore::UserWarning','tools/role448_worker.py',str(OUT),str(seed)]
+          PY,'-W','ignore::UserWarning',worker,str(OUT),str(seed)]
+    if policy_output:args.append(str(policy_output))
     def cmd(a):
         return ['ssh','-o','ConnectTimeout=8',HOST,shlex.join(a)] if remote else a
     query=cmd(['systemctl','--user','is-active',unit])
-    dest=OUT/f'run-{seed}'
+    dest=(policy_output or OUT)/f'run-{seed}'
     dest.mkdir(exist_ok=True)
     if not (dest/'DONE.json').exists() and sp.call(query,stdout=sp.DEVNULL)!=0:
         run(cmd(args))
@@ -58,13 +60,17 @@ def main():
     with ThreadPoolExecutor(3) as pool:
         fs=[pool.submit(launch,*p) for p in [(7,1,True),(19,0,True),(43,0,False)]]
         done=[f.result() for f in fs]
+    summarize(OUT,done)
+
+
+def summarize(output,done):
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
     import torch
     summary=[]
     for seed in done:
-        root=OUT/f'run-{seed}'
+        root=output/f'run-{seed}'
         for path in sorted(root.glob('s*.pt')):
             d=torch.load(path,map_location='cpu',weights_only=False)
             hist=d['history'];fig,ax=plt.subplots()
@@ -74,7 +80,7 @@ def main():
             ax.set(xlabel='Epoch',ylabel='Net return (%)');ax.legend();fig.tight_layout()
             fig.savefig(path.with_suffix('.png'));plt.close(fig)
         summary.append({arm:json.loads((root/f's7-{arm}.json').read_text()) for arm in ('validation','retention')}|dict(seed=seed))
-    atomic(OUT/'DONE.json',dict(cells=summary,promoted=False))
+    atomic(output/'DONE.json',dict(cells=summary,promoted=False))
 
 
 if __name__=='__main__':main()

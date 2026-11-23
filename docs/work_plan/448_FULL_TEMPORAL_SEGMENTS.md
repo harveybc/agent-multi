@@ -111,3 +111,34 @@ conteos por transicion. Las 45 tablas ordenadas por horizonte se guardan en
 manifiesto fuente. Se valida que al recargar cada tabla las pujas de 2024
 sean identicas barra por barra. Restaurar la pareja (pesos, tabla); recalibrar
 es una intervencion distinta y no implica promocion automatica.
+
+### 450: entrenar heredando la politica completa
+
+Contraste con el resultado archivado de 448. Misma muestra, orden de
+minibatches, niveles de LR, optimizador, reglas de actividad y dos monitores.
+El primer semestre es identico por construccion: se importa el checkpoint
+comun de 448 con AdamW y se verifica el SHA contra la tabla completa de 449.
+El replay debe reproducir su cuenta 2024 y los cuatro cortes exactos.
+Los siete semestres siguientes si se entrenan por separado en ambos brazos.
+
+1. En epoca cero, cargar pesos, momentos, LR y tabla empirica del campeon.
+   Exigir igualdad de la cuenta de validacion, de todos los bloques de
+   retencion ya evaluados y de los cortes de admision. Con un bloque de
+   retencion adicional la metrica mixta puede cambiar aunque el padre sea
+   identico; comparar sobre los mismos bloques de la etapa entrante.
+2. Sin tocar pesos, estimar otra tabla en el nuevo semestre. Registrar ambas
+   cuentas. Aceptar la recalibracion solo si califica y supera al padre en
+   la metrica vigente por mas de 1e-8; en empate conservar el padre.
+3. Continuar el entrenamiento del semestre actual como en 448. Cuando gane
+   un hijo conservar juntos sus pesos, AdamW y tabla completa. No buscar
+   varias tablas por hijo. En cada restauracion por LR verificar que la
+   politica recupera los resultados del campeon antes del proximo gradiente.
+4. Al final, comparar cada campeon con 448 por semilla y monitor. Separar
+   mejora de retorno y cumplimiento de retorno positivo con mas de dos
+   operaciones por semana. No promover automaticamente ni pasar a floating.
+
+Ejecucion: `tools/run_450_campaign.py` con el mismo entorno y alias que 448.
+El coordinador distribuye tres semillas sobre las GPU originales, recoge
+resultados y genera curvas y `COMPARISON.json`. Evidencia local:
+`/var/tmp/role450-full-policy/run-{7,19,43}`; los recibos `*-entry.json`
+separan la cuenta heredada de la candidata recalibrada en la epoca cero.
