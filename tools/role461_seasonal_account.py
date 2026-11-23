@@ -110,16 +110,33 @@ def exit_signal(side,cur,sl,tp,path,atr,p):
     return 'early_pivot'
 
 
-def hit(side,o,hi,lo,sl,tp):
+def hit(side,o,hi,lo,sl,tp,through=0.):
     if side*(o-sl)<=0:return 'sl_gap',o
     if side*(o-tp)>=0:return 'tp_gap',o
-    stop=(lo<=sl if side==1 else hi>=sl);take=(hi>=tp if side==1 else lo<=tp)
+    stop=(lo<=sl if side==1 else hi>=sl);take=(hi>=tp+through if side==1 else lo<=tp-through)
     if stop:return ('sl_dual' if take else 'sl'),sl
     if take:return 'tp',tp
     return None
 
 
-def simulate(data,cal,p,year,mode,early):
+def cost_arrays(t,closures,profile):
+    spread=np.full(len(t),np.nan); roll=np.zeros(len(t))
+    for (_,op),(end,_) in zip(closures,closures[1:]):
+        start=pd.Timestamp(op).value; stop=pd.Timestamp(end).value
+        a,b=np.searchsorted(t,[start,stop])
+        hours=(t[a:b]-start)/NS
+        for low,high,value in profile['spread_schedule']:
+            spread[a:b][(hours%24>=low)&(hours%24<high)]=value
+        spread[a:b][hours<1]=profile['weekly_open_spread']
+        for j,r in enumerate(range(start+24*NS,stop,24*NS),1):
+            k=np.searchsorted(t,r)
+            if a<=k<b:
+                roll[k]+=3 if j==profile['triple_swap_rollover_index'] else 1
+    assert np.isfinite(spread).all() and (spread>=0).all()
+    return spread,np.cumsum(roll)
+
+
+def simulate(data,cal,p,year,mode,early,costs=None):
     t,o,hi,lo,c,atr,ds,dp,gate,deadline=data
     beta,table=cal
     if mode=='calibrated':path=ds*beta
@@ -127,53 +144,75 @@ def simulate(data,cal,p,year,mode,early):
     elif mode=='persistence':path=ds*0
     else:path=ds
     idx=np.flatnonzero((t>=pd.Timestamp(str(year),tz='UTC').value)&(t<pd.Timestamp(str(year+1),tz='UTC').value))
+    if costs is None:
+        spread=roll=np.zeros(len(t));market=stop_slip=through=commission=swap_buy=swap_sell=0.
+    else:
+        profile,spread,roll=costs
+        market,stop_slip,through=(profile[k] for k in ('slippage_market','slippage_stop','limit_through'))
+        commission=profile['commission_per_lot_side']/profile['lot_units']
+        swap_buy,swap_sell=(profile[k]/profile['lot_units'] for k in ('swap_long_per_lot','swap_short_per_lot'))
+    def slip(reason):
+        return stop_slip if reason.startswith('sl') else (0. if reason.startswith('tp') else market)
+    def liquidation(k,s):
+        return spread[k] if s<0 else 0.
+    def financing(start,end,s,u):
+        return (roll[end]-roll[start])*(swap_buy if s>0 else swap_sell)*u
     bal=10000.;equity=[bal];log=[];pos=None;waits=0
     def finish(reason,px):
         nonlocal bal,pos
         s,en,sl,tp,units,flat,rec=pos
-        pnl=s*(px-en)*units;bal+=pnl
+        start=rec['entry_index'];swap=financing(start,i,s,units)
+        comm=2*units*commission; slip_cost=units*(market+slip(reason))
+        spread_cost=units*(spread[start] if s>0 else spread[i])
+        px-=s*slip(reason)
+        pnl=s*(px-en)*units-comm+swap;bal+=pnl
         rec.update(exit_index=int(i),exit_time=str(pd.Timestamp(t[i],tz='UTC')),exit_price=px,
-                   reason=reason,pnl=pnl)
+                   reason=reason,pnl=pnl,spread_usd=spread_cost,slippage_usd=slip_cost,
+                   commission_usd=comm,swap_usd=swap)
         # Same position without discretionary close, through original barriers/deadline.
         if reason.startswith('early_'):
             for j in range(i,idx[-1]+1):
-                if t[j]>=flat:later=o[j];break
-                h=hit(s,o[j],hi[j],lo[j],sl,tp)
-                if h:later=h[1];break
-            else:later=c[idx[-1]]
-            rec['early_minus_hold']=s*(px-later)*units
+                add=liquidation(j,s)
+                if t[j]>=flat:later=o[j]+add-s*market;break
+                h=hit(s,o[j]+add,hi[j]+add,lo[j]+add,sl,tp,through)
+                if h:later=h[1]-s*slip(h[0]);break
+            else:later=c[idx[-1]]+liquidation(idx[-1],s)-s*market
+            rec['early_minus_hold']=s*(px-later)*units+swap-financing(start,j,s,units)
         log.append(rec);pos=None
     for i in idx:
         prev=i-1;fresh=prev>=0 and t[i]-t[prev]==NS
         existing=pos is not None
         if pos:
             side,en,sl,tp,units,flat,_=pos
+            ex=o[i]+liquidation(i,side)
             if t[i]>=flat:
                 assert t[i]==flat, 'missing forced fill'
-                finish('calendar',o[i])
-            elif side*(o[i]-sl)<=0:finish('sl_gap',o[i])
-            elif side*(o[i]-tp)>=0:finish('tp_gap',o[i])
+                finish('calendar',ex)
+            elif side*(ex-sl)<=0:finish('sl_gap',ex)
+            elif side*(ex-tp)>=0:finish('tp_gap',ex)
             elif early and fresh:
-                reason=exit_signal(side,c[prev],sl,tp,path[prev],atr[prev],p)
+                reason=exit_signal(side,c[prev]+liquidation(prev,side),sl,tp,path[prev],atr[prev],p)
                 if reason=='wait' and early=='immediate':reason='early_pivot'
                 if reason=='wait' and early!='sl_only':waits+=1
                 elif reason in ('early_pivot','early_sl'):
                     if early!='sl_only' or reason=='early_sl':
-                        if early!='pivot_only' or reason=='early_pivot':finish(reason,o[i])
+                        if early!='pivot_only' or reason=='early_pivot':finish(reason,ex)
         if not existing and gate[i] and fresh:
             choice=entry(path[prev],ds[prev],atr[prev],table if mode=='calibrated' else None,p)
             if choice:
                 side,dist,risk,q,h=choice
-                en=o[i];sl=en-side*risk;tp=en+side*dist
+                en=o[i]+(spread[i] if side>0 else 0)+side*market;sl=en-side*risk;tp=en+side*dist
                 units=bal*0.1*q*50/en
                 rec=dict(entry_index=int(i),entry_time=str(pd.Timestamp(t[i],tz='UTC')),side=side,
                          entry_price=en,sl=sl,tp=tp,q=q,h=h,units=units)
                 pos=(side,en,sl,tp,units,deadline[i],rec)
         if pos:
             side,en,sl,tp,units,_,_=pos
-            h=hit(side,o[i],hi[i],lo[i],sl,tp)
+            add=liquidation(i,side)
+            h=hit(side,o[i]+add,hi[i]+add,lo[i]+add,sl,tp,through)
             if h:finish(*h)
-        equity.append(bal if not pos else bal+pos[0]*(c[i]-pos[1])*pos[4])
+        equity.append(bal if not pos else bal+pos[0]*(c[i]+liquidation(i,pos[0])-pos[1])*pos[4]
+                      -commission*pos[4]+financing(pos[-1]['entry_index'],i,pos[0],pos[4]))
     assert pos is None and abs(bal-10000-sum(r['pnl'] for r in log))<1e-6
     e=np.asarray(equity);why=Counter(r['reason'] for r in log)
     cf=[r['early_minus_hold'] for r in log if 'early_minus_hold' in r]
@@ -181,24 +220,33 @@ def simulate(data,cal,p,year,mode,early):
                 wins_buy=int(sum(r['side']==1 and r['pnl']>0 for r in log)),
                 return_pct=(bal/10000-1)*100,dd_close_pct=max(1-e/np.maximum.accumulate(e))*100,
                 reasons=dict(why),wait_decisions=waits,early_harmful=int(sum(x<0 for x in cf)),
-                early_vs_hold_usd=sum(cf)),log
+                early_vs_hold_usd=sum(cf),
+                costs_usd={key:sum(r[key] for r in log) for key in
+                           ('spread_usd','slippage_usd','commission_usd','swap_usd')}),log
 
 
 def main():
     ap=argparse.ArgumentParser(description=__doc__)
     for k in ('source','bars','out'):ap.add_argument(k,type=Path)
     ap.add_argument('--config',type=Path)
+    ap.add_argument('--cost-recipe',type=Path)
     a=ap.parse_args();p=DEFAULT.copy()
     if a.config:
         cfg=json.loads(a.config.read_text());assert set(cfg)<=set(p);p.update(cfg)
     assert p['full_rr']>p['min_rr']>=0 and p['dd_floor']>0 and p['size_power']>0
     a.out.mkdir(parents=True,exist_ok=True);data=load(a.source,a.bars,p);cal=calibrate(data,p)
     report=dict(parameters=p,beta=cal[0].tolist(),panels={})
+    costs=None
+    if a.cost_recipe:
+        profile=json.loads(a.cost_recipe.read_text())['business']['evaluation_and_policy']['profile']
+        assert profile['entry_delay_bars']==0
+        costs=(profile,*cost_arrays(data[0],json.loads((a.bars/'closures.json').read_text()),profile))
+        report['execution_profile']=profile
     for year in (2023,2024):
         for mode in ('price_oracle','persistence','bridge','calibrated'):
             for early in ((False,True,'sl_only','pivot_only','immediate') if mode in ('bridge','calibrated') else (True,)):
                 label=int(early) if isinstance(early,bool) else early
-                key=f'{year}-{mode}-{label}';report['panels'][key],log=simulate(data,cal,p,year,mode,early)
+                key=f'{year}-{mode}-{label}';report['panels'][key],log=simulate(data,cal,p,year,mode,early,costs)
                 pd.DataFrame(log).to_csv(a.out/(key+'.csv'),index=False)
     (a.out/'REPORT.json').write_text(json.dumps(report,indent=2)+'\n')
 

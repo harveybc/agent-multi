@@ -1,0 +1,638 @@
+{
+  "parameters": {
+    "first_long": 24,
+    "atr_window": 24,
+    "bins": [
+      0.5,
+      1.5
+    ],
+    "min_cell": 30,
+    "favorable_q": 0.5,
+    "adverse_q": 0.5,
+    "tp_mult": 0.9,
+    "sl_mult": 1.0,
+    "dd_floor": 0.5,
+    "min_rr": 1.0,
+    "full_rr": 3.0,
+    "size_power": 1.0,
+    "reversal_atr": 0.25,
+    "wait_atr": 0.05
+  },
+  "beta": [
+    0.4343564707573151,
+    0.47790245227363226,
+    0.5018627508150835,
+    0.5160334528931559,
+    0.5289860241261203,
+    0.5421940130475226,
+    0.5694494594555763,
+    0.3787239118559064
+  ],
+  "panels": {
+    "2023-price_oracle-1": {
+      "trades": 402,
+      "buy": 218,
+      "wins": 139,
+      "wins_buy": 70,
+      "return_pct": 118.68898270525384,
+      "dd_close_pct": 3.809418581199686,
+      "reasons": {
+        "sl": 198,
+        "tp": 53,
+        "early_sl": 114,
+        "early_pivot": 35,
+        "sl_dual": 2
+      },
+      "wait_decisions": 44,
+      "early_harmful": 37,
+      "early_vs_hold_usd": -4768.0087701884695,
+      "costs_usd": {
+        "spread_usd": 1426.8271605957104,
+        "slippage_usd": 1434.9458001051696,
+        "commission_usd": 1907.3232652725248,
+        "swap_usd": -78.06338155639752
+      }
+    },
+    "2023-persistence-1": {
+      "trades": 0,
+      "buy": 0,
+      "wins": 0,
+      "wins_buy": 0,
+      "return_pct": 0.0,
+      "dd_close_pct": 0.0,
+      "reasons": {},
+      "wait_decisions": 0,
+      "early_harmful": 0,
+      "early_vs_hold_usd": 0,
+      "costs_usd": {
+        "spread_usd": 0,
+        "slippage_usd": 0,
+        "commission_usd": 0,
+        "swap_usd": 0
+      }
+    },
+    "2023-bridge-0": {
+      "trades": 313,
+      "buy": 177,
+      "wins": 63,
+      "wins_buy": 31,
+      "return_pct": 20.195035704649243,
+      "dd_close_pct": 11.61734706980907,
+      "reasons": {
+        "sl": 244,
+        "tp": 61,
+        "sl_dual": 5,
+        "sl_gap": 1,
+        "calendar": 2
+      },
+      "wait_decisions": 0,
+      "early_harmful": 0,
+      "early_vs_hold_usd": 0,
+      "costs_usd": {
+        "spread_usd": 549.3509176662051,
+        "slippage_usd": 883.3917365901724,
+        "commission_usd": 1013.3314537435226,
+        "swap_usd": -91.91675803274792
+      }
+    },
+    "2023-bridge-1": {
+      "trades": 510,
+      "buy": 295,
+      "wins": 178,
+      "wins_buy": 99,
+      "return_pct": 11.114305938153546,
+      "dd_close_pct": 7.487937408667311,
+      "reasons": {
+        "sl": 249,
+        "early_sl": 180,
+        "early_pivot": 37,
+        "tp": 38,
+        "sl_dual": 5,
+        "tp_gap": 1
+      },
+      "wait_decisions": 62,
+      "early_harmful": 48,
+      "early_vs_hold_usd": 2339.8697702801637,
+      "costs_usd": {
+        "spread_usd": 1266.1845575611994,
+        "slippage_usd": 1337.2103541732104,
+        "commission_usd": 1737.0877259280717,
+        "swap_usd": -53.139395883691556
+      }
+    },
+    "2023-bridge-sl_only": {
+      "trades": 463,
+      "buy": 264,
+      "wins": 150,
+      "wins_buy": 80,
+      "return_pct": 25.25197033869755,
+      "dd_close_pct": 8.710287968135876,
+      "reasons": {
+        "sl": 236,
+        "early_sl": 177,
+        "tp": 44,
+        "sl_dual": 5,
+        "tp_gap": 1
+      },
+      "wait_decisions": 0,
+      "early_harmful": 36,
+      "early_vs_hold_usd": 3432.10790838706,
+      "costs_usd": {
+        "spread_usd": 1154.0744093883645,
+        "slippage_usd": 1270.9355363766895,
+        "commission_usd": 1641.445903499427,
+        "swap_usd": -70.92125458653662
+      }
+    },
+    "2023-bridge-pivot_only": {
+      "trades": 375,
+      "buy": 213,
+      "wins": 99,
+      "wins_buy": 52,
+      "return_pct": 8.29008809744607,
+      "dd_close_pct": 10.51630970423062,
+      "reasons": {
+        "sl": 268,
+        "early_pivot": 44,
+        "tp": 56,
+        "sl_dual": 6,
+        "sl_gap": 1
+      },
+      "wait_decisions": 69,
+      "early_harmful": 15,
+      "early_vs_hold_usd": -379.40809930384,
+      "costs_usd": {
+        "spread_usd": 764.2318746339035,
+        "slippage_usd": 1039.9263146678284,
+        "commission_usd": 1214.1470717657762,
+        "swap_usd": -61.828230108742495
+      }
+    },
+    "2023-bridge-immediate": {
+      "trades": 541,
+      "buy": 306,
+      "wins": 185,
+      "wins_buy": 100,
+      "return_pct": -2.3688892374701953,
+      "dd_close_pct": 12.329056427854768,
+      "reasons": {
+        "sl": 256,
+        "early_sl": 185,
+        "early_pivot": 55,
+        "tp": 39,
+        "sl_dual": 5,
+        "tp_gap": 1
+      },
+      "wait_decisions": 0,
+      "early_harmful": 51,
+      "early_vs_hold_usd": 1081.0380261399469,
+      "costs_usd": {
+        "spread_usd": 1294.9954737507483,
+        "slippage_usd": 1307.3772346587034,
+        "commission_usd": 1711.7718054528352,
+        "swap_usd": -47.33547372264417
+      }
+    },
+    "2023-calibrated-0": {
+      "trades": 83,
+      "buy": 49,
+      "wins": 48,
+      "wins_buy": 30,
+      "return_pct": 11.736782845299976,
+      "dd_close_pct": 2.4515613931693436,
+      "reasons": {
+        "tp": 47,
+        "sl": 34,
+        "sl_dual": 1,
+        "tp_gap": 1
+      },
+      "wait_decisions": 0,
+      "early_harmful": 0,
+      "early_vs_hold_usd": 0,
+      "costs_usd": {
+        "spread_usd": 37.76146687396369,
+        "slippage_usd": 46.760951879195616,
+        "commission_usd": 77.10583252778034,
+        "swap_usd": -11.29245871610718
+      }
+    },
+    "2023-calibrated-1": {
+      "trades": 111,
+      "buy": 68,
+      "wins": 63,
+      "wins_buy": 40,
+      "return_pct": 9.996449184708345,
+      "dd_close_pct": 1.8586007596382847,
+      "reasons": {
+        "early_pivot": 47,
+        "tp": 31,
+        "sl": 21,
+        "early_sl": 11,
+        "sl_dual": 1
+      },
+      "wait_decisions": 51,
+      "early_harmful": 35,
+      "early_vs_hold_usd": -808.9717931378526,
+      "costs_usd": {
+        "spread_usd": 64.68065076737778,
+        "slippage_usd": 56.84406163062972,
+        "commission_usd": 98.43511784264435,
+        "swap_usd": -5.683909142854198
+      }
+    },
+    "2023-calibrated-sl_only": {
+      "trades": 88,
+      "buy": 52,
+      "wins": 49,
+      "wins_buy": 30,
+      "return_pct": 10.651054144168693,
+      "dd_close_pct": 2.191926586147541,
+      "reasons": {
+        "tp": 41,
+        "sl": 28,
+        "early_sl": 18,
+        "tp_gap": 1
+      },
+      "wait_decisions": 0,
+      "early_harmful": 9,
+      "early_vs_hold_usd": -121.38192111564906,
+      "costs_usd": {
+        "spread_usd": 40.16761770282796,
+        "slippage_usd": 47.90154378707351,
+        "commission_usd": 80.29598392169515,
+        "swap_usd": -11.185912927592174
+      }
+    },
+    "2023-calibrated-pivot_only": {
+      "trades": 109,
+      "buy": 67,
+      "wins": 63,
+      "wins_buy": 40,
+      "return_pct": 8.980438998992103,
+      "dd_close_pct": 2.902576851267613,
+      "reasons": {
+        "early_pivot": 47,
+        "tp": 34,
+        "sl": 27,
+        "sl_dual": 1
+      },
+      "wait_decisions": 53,
+      "early_harmful": 30,
+      "early_vs_hold_usd": -817.4958374261181,
+      "costs_usd": {
+        "spread_usd": 63.04713707905062,
+        "slippage_usd": 57.18305637836963,
+        "commission_usd": 96.17559855726657,
+        "swap_usd": -7.987358250155558
+      }
+    },
+    "2023-calibrated-immediate": {
+      "trades": 123,
+      "buy": 75,
+      "wins": 56,
+      "wins_buy": 36,
+      "return_pct": 6.031167296332751,
+      "dd_close_pct": 1.8874415502548314,
+      "reasons": {
+        "early_pivot": 62,
+        "tp": 27,
+        "sl": 21,
+        "early_sl": 12,
+        "sl_dual": 1
+      },
+      "wait_decisions": 0,
+      "early_harmful": 49,
+      "early_vs_hold_usd": -1324.1740776553236,
+      "costs_usd": {
+        "spread_usd": 70.5983938567629,
+        "slippage_usd": 59.51571812393548,
+        "commission_usd": 101.61546640482631,
+        "swap_usd": -4.16420730553367
+      }
+    },
+    "2024-price_oracle-1": {
+      "trades": 433,
+      "buy": 237,
+      "wins": 138,
+      "wins_buy": 72,
+      "return_pct": 58.776704453454464,
+      "dd_close_pct": 3.363447153166166,
+      "reasons": {
+        "sl": 227,
+        "early_sl": 125,
+        "sl_dual": 3,
+        "tp": 35,
+        "early_pivot": 43
+      },
+      "wait_decisions": 72,
+      "early_harmful": 43,
+      "early_vs_hold_usd": -1739.9166104296044,
+      "costs_usd": {
+        "spread_usd": 1187.6010727223006,
+        "slippage_usd": 1210.9859941843074,
+        "commission_usd": 1566.02720438983,
+        "swap_usd": -64.48189453792148
+      }
+    },
+    "2024-persistence-1": {
+      "trades": 0,
+      "buy": 0,
+      "wins": 0,
+      "wins_buy": 0,
+      "return_pct": 0.0,
+      "dd_close_pct": 0.0,
+      "reasons": {},
+      "wait_decisions": 0,
+      "early_harmful": 0,
+      "early_vs_hold_usd": 0,
+      "costs_usd": {
+        "spread_usd": 0,
+        "slippage_usd": 0,
+        "commission_usd": 0,
+        "swap_usd": 0
+      }
+    },
+    "2024-bridge-0": {
+      "trades": 335,
+      "buy": 190,
+      "wins": 53,
+      "wins_buy": 29,
+      "return_pct": 4.898505049915292,
+      "dd_close_pct": 9.032159747273226,
+      "reasons": {
+        "sl": 280,
+        "tp": 53,
+        "sl_dual": 2
+      },
+      "wait_decisions": 0,
+      "early_harmful": 0,
+      "early_vs_hold_usd": 0,
+      "costs_usd": {
+        "spread_usd": 595.7052282000622,
+        "slippage_usd": 916.1663989324103,
+        "commission_usd": 1028.1214035062378,
+        "swap_usd": -74.0516733882495
+      }
+    },
+    "2024-bridge-1": {
+      "trades": 567,
+      "buy": 320,
+      "wins": 166,
+      "wins_buy": 88,
+      "return_pct": -18.788341612153637,
+      "dd_close_pct": 20.071853496431313,
+      "reasons": {
+        "sl": 316,
+        "early_sl": 177,
+        "early_pivot": 36,
+        "tp": 36,
+        "sl_dual": 2
+      },
+      "wait_decisions": 81,
+      "early_harmful": 40,
+      "early_vs_hold_usd": 245.66665519666472,
+      "costs_usd": {
+        "spread_usd": 1191.4520737043117,
+        "slippage_usd": 1222.6741125900012,
+        "commission_usd": 1537.7728525251184,
+        "swap_usd": -39.66850505909229
+      }
+    },
+    "2024-bridge-sl_only": {
+      "trades": 507,
+      "buy": 287,
+      "wins": 140,
+      "wins_buy": 74,
+      "return_pct": -4.459119236748688,
+      "dd_close_pct": 10.537731690447261,
+      "reasons": {
+        "sl": 291,
+        "early_sl": 172,
+        "tp": 41,
+        "tp_gap": 1,
+        "sl_dual": 2
+      },
+      "wait_decisions": 0,
+      "early_harmful": 25,
+      "early_vs_hold_usd": 1915.1586112119185,
+      "costs_usd": {
+        "spread_usd": 1116.2886446286147,
+        "slippage_usd": 1192.7401182483902,
+        "commission_usd": 1496.5016324384314,
+        "swap_usd": -51.56408325390774
+      }
+    },
+    "2024-bridge-pivot_only": {
+      "trades": 404,
+      "buy": 228,
+      "wins": 84,
+      "wins_buy": 42,
+      "return_pct": -17.939249291335525,
+      "dd_close_pct": 19.38306370344074,
+      "reasons": {
+        "sl": 315,
+        "early_pivot": 43,
+        "tp": 44,
+        "sl_dual": 2
+      },
+      "wait_decisions": 85,
+      "early_harmful": 23,
+      "early_vs_hold_usd": -2472.4466132219673,
+      "costs_usd": {
+        "spread_usd": 714.4072371303162,
+        "slippage_usd": 957.9169365267653,
+        "commission_usd": 1086.067705432374,
+        "swap_usd": -47.55163936777512
+      }
+    },
+    "2024-bridge-immediate": {
+      "trades": 616,
+      "buy": 345,
+      "wins": 180,
+      "wins_buy": 97,
+      "return_pct": -25.791342734788948,
+      "dd_close_pct": 26.431856808358667,
+      "reasons": {
+        "sl": 323,
+        "early_sl": 186,
+        "early_pivot": 69,
+        "tp": 36,
+        "sl_dual": 2
+      },
+      "wait_decisions": 0,
+      "early_harmful": 47,
+      "early_vs_hold_usd": -572.5896005671128,
+      "costs_usd": {
+        "spread_usd": 1282.4145907452917,
+        "slippage_usd": 1240.3459667638876,
+        "commission_usd": 1585.8329975525223,
+        "swap_usd": -26.07419346967203
+      }
+    },
+    "2024-calibrated-0": {
+      "trades": 100,
+      "buy": 55,
+      "wins": 50,
+      "wins_buy": 27,
+      "return_pct": 3.4317038753135742,
+      "dd_close_pct": 3.3011238515898267,
+      "reasons": {
+        "tp": 48,
+        "sl": 49,
+        "sl_dual": 1,
+        "tp_gap": 2
+      },
+      "wait_decisions": 0,
+      "early_harmful": 0,
+      "early_vs_hold_usd": 0,
+      "costs_usd": {
+        "spread_usd": 53.671263744017104,
+        "slippage_usd": 58.823221162957985,
+        "commission_usd": 89.65639465646021,
+        "swap_usd": -12.101334478579258
+      }
+    },
+    "2024-calibrated-1": {
+      "trades": 139,
+      "buy": 83,
+      "wins": 59,
+      "wins_buy": 37,
+      "return_pct": 3.69319251929785,
+      "dd_close_pct": 2.4380380430263804,
+      "reasons": {
+        "tp": 26,
+        "sl": 21,
+        "early_pivot": 59,
+        "early_sl": 30,
+        "sl_dual": 1,
+        "tp_gap": 2
+      },
+      "wait_decisions": 83,
+      "early_harmful": 46,
+      "early_vs_hold_usd": -354.5496144978311,
+      "costs_usd": {
+        "spread_usd": 90.96688950301568,
+        "slippage_usd": 70.65475409987462,
+        "commission_usd": 123.31331203470174,
+        "swap_usd": -13.947357106184239
+      }
+    },
+    "2024-calibrated-sl_only": {
+      "trades": 118,
+      "buy": 68,
+      "wins": 50,
+      "wins_buy": 29,
+      "return_pct": 4.035161368625384,
+      "dd_close_pct": 2.927540291773756,
+      "reasons": {
+        "tp": 41,
+        "sl": 34,
+        "early_sl": 40,
+        "sl_dual": 1,
+        "tp_gap": 2
+      },
+      "wait_decisions": 0,
+      "early_harmful": 17,
+      "early_vs_hold_usd": -23.736490012507073,
+      "costs_usd": {
+        "spread_usd": 72.66500477310797,
+        "slippage_usd": 62.03668598817963,
+        "commission_usd": 106.59940193007854,
+        "swap_usd": -15.358329831269176
+      }
+    },
+    "2024-calibrated-pivot_only": {
+      "trades": 126,
+      "buy": 73,
+      "wins": 58,
+      "wins_buy": 36,
+      "return_pct": 3.0445481449969503,
+      "dd_close_pct": 2.4168490429764655,
+      "reasons": {
+        "tp": 28,
+        "sl": 34,
+        "early_pivot": 61,
+        "sl_dual": 1,
+        "tp_gap": 2
+      },
+      "wait_decisions": 79,
+      "early_harmful": 37,
+      "early_vs_hold_usd": -348.1163887786193,
+      "costs_usd": {
+        "spread_usd": 74.88354115434753,
+        "slippage_usd": 67.9929997166896,
+        "commission_usd": 108.41262211488319,
+        "swap_usd": -11.237094228714342
+      }
+    },
+    "2024-calibrated-immediate": {
+      "trades": 155,
+      "buy": 94,
+      "wins": 46,
+      "wins_buy": 27,
+      "return_pct": -0.8826907674761242,
+      "dd_close_pct": 3.5179283277169016,
+      "reasons": {
+        "tp": 20,
+        "sl": 19,
+        "early_pivot": 84,
+        "early_sl": 29,
+        "sl_dual": 1,
+        "tp_gap": 2
+      },
+      "wait_decisions": 0,
+      "early_harmful": 63,
+      "early_vs_hold_usd": -897.3125523327267,
+      "costs_usd": {
+        "spread_usd": 95.63356089191628,
+        "slippage_usd": 74.02235703087923,
+        "commission_usd": 127.62547348093084,
+        "swap_usd": -9.553092764665065
+      }
+    }
+  },
+  "execution_profile": {
+    "commission_per_lot_side": 3.5,
+    "entry_delay_bars": 0,
+    "limit_through": 0.0001,
+    "lot_units": 100000.0,
+    "slippage_market": 2e-05,
+    "slippage_stop": 5e-05,
+    "spread_schedule": [
+      [
+        0,
+        1,
+        0.0003
+      ],
+      [
+        1,
+        3,
+        0.0001
+      ],
+      [
+        3,
+        9,
+        6e-05
+      ],
+      [
+        9,
+        21,
+        3e-05
+      ],
+      [
+        21,
+        23,
+        6e-05
+      ],
+      [
+        23,
+        24,
+        0.00015
+      ]
+    ],
+    "swap_long_per_lot": -7.0,
+    "swap_short_per_lot": 2.5,
+    "triple_swap_rollover_index": 3,
+    "weekly_open_spread": 0.0003
+  }
+}
