@@ -20,15 +20,16 @@ def run(args):
     sp.run(args,check=True)
 
 
-def launch(seed,device,remote,policy_output=None):
+def launch(seed,device,remote,policy_output=None,activity_trial=False):
     work=REMOTE if remote else ROOT
-    unit=f'role{450 if policy_output else 448}-s{seed}'
+    unit=f'role{451 if activity_trial else 450 if policy_output else 448}-s{seed}'
     worker=str(policy_output/'role448_worker.py') if policy_output else 'tools/role448_worker.py'
     args=['systemd-run','--user',f'--unit={unit}','--collect',f'--working-directory={work}',
           '--setenv=PYTHONPATH=.:tools',f'--setenv=CUDA_VISIBLE_DEVICES={device}',
           '--setenv=CUBLAS_WORKSPACE_CONFIG=:4096:8','--setenv=OPENBLAS_NUM_THREADS=1','--setenv=OMP_NUM_THREADS=1',
           PY,'-W','ignore::UserWarning',worker,str(OUT),str(seed)]
     if policy_output:args.append(str(policy_output))
+    if activity_trial:args.append('--activity-trial')
     def cmd(a):
         return ['ssh','-o','ConnectTimeout=8',HOST,shlex.join(a)] if remote else a
     query=cmd(['systemctl','--user','is-active',unit])

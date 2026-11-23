@@ -166,3 +166,23 @@ no son replicas). En la transicion a etapa 6 la sola recalibracion paso a
 +1,376% con 50 ventas y fue aceptada; luego el campeon entrenado alcanzo
 +1,559% con 56 ventas. El selector exigia al menos una operacion, no el
 piso de actividad de la calificacion final. No se promueve el intermedio.
+
+### 451: elegibilidad por actividad antes de elegir al campeon
+
+Contraste dirigido en el primer punto conocido de fallo: semilla 7, monitor
+de validacion, padre exacto de 450 al final del semestre 5. Solo se reentrenan
+los semestres 6, 7 y 8; no es una replicacion desde cero. La regla exige
+ventas > 2 x semanas del panel completo (107 o mas en 53 semanas, promedio
+anual, no minimo por semana). Entre elegibles gana el mayor retorno con
+mejora > 1e-8. No se premia el volumen ni se fuerza ninguna apertura.
+Se aplica tanto a la recalibracion de epoca cero como a cada epoca; se
+verifican las cuentas del campeon tras las restauraciones. La paciencia,
+el calendario de LR, los minibatches y las ventanas son los de 450.
+
+Ejecutor: `tools/run_451_activity.py`. El protocolo sella el SHA del padre.
+El primer testigo exige reproducir las cuentas de 313 y 50 ventas de 450
+antes de entrenar. La salida de cierre en `/var/tmp/role451-activity/DONE.json`
+compara las cuentas por semestre e indica si se supero realmente al padre;
+los PNG muestran retorno de validacion, retorno de bloques anteriores y
+actividad por epoca. Conservar un padre elegible no demuestra aprendizaje
+ni retencion del rendimiento de TRAIN; no autoriza promocion.

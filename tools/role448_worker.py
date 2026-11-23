@@ -41,7 +41,11 @@ def bids(p,reference):
     return np.where(eligible,ranks,0)
 
 
-def run(root,seed,policy_output=None):
+def run(root,seed,policy_output=None,activity_trial=False):
+    if activity_trial:
+        assert seed==7 and policy_output is not None
+    def eligible(v):
+        return v['trades']>2*v['weeks'] if activity_trial else v['trades']>0
     torch.set_num_threads(1);torch.use_deterministic_algorithms(True)
     torch.backends.cudnn.allow_tf32=False;torch.backends.cuda.matmul.allow_tf32=False
     torch.backends.cuda.enable_flash_sdp(False);torch.backends.cuda.enable_mem_efficient_sdp(False)
@@ -105,7 +109,7 @@ def run(root,seed,policy_output=None):
         return acct(8),[acct(b) for b in range(s)],np.quantile(reference,.9,axis=0).tolist(),reference
 
     load=lambda p:torch.load(p,weights_only=False,map_location='cpu')
-    if policy_output:
+    if policy_output and not activity_trial:
         original=src/'s0-common.pt'
         d=load(original)
         assert d['sig']==sig
@@ -120,12 +124,12 @@ def run(root,seed,policy_output=None):
         save(d,dest/'s0-common.pt')
         emit(dest/'s0-common.json',dict(**previous,source='448_reused_exact'))
 
-    for s in range(8):
+    for s in range(5 if activity_trial else 0,8):
         # Keep only labelled rows of this one block in the optimizer view.
         valid=torch.isfinite(y[s]).all(1)
         tx,ty=x[s][valid],y[s][valid]/scale
         assert len(tx)==spec['blocks'][str(s)]['labelled']
-        for arm in (('common',) if s==0 else ('validation','retention')):
+        for arm in (('validation',) if activity_trial else ('common',) if s==0 else ('validation','retention')):
             name=f's{s}-{arm}'
             dst=dest/f'{name}.pt';resume=dest/f'{name}.resume'
             if dst.exists():
@@ -140,7 +144,8 @@ def run(root,seed,policy_output=None):
                 restore(r['current']);ch=r['champ'];hist=r['hist'];best=r['best'];ep=r['ep'];bad=r['bad'];miss=r['miss'];active=r['active']
             else:
                 v,p,q,ref=measure(s,parent['reference'] if policy_output else None)
-                best=metric(v,p);active=v['trades']>0
+                best=metric(v,p);active=eligible(v)
+                if activity_trial:assert active and best>0
                 ep=bad=miss=0;ch=state()
                 if policy_output:
                     previous=json.loads((dest/f's{s-1}-{"common" if s==1 else arm}.json').read_text())
@@ -148,7 +153,10 @@ def run(root,seed,policy_output=None):
                     ch['reference']=ref
                     v1,p1,q1,r1=measure(s)
                     recal=metric(v1,p1)
-                    won=v1['trades']>0 and (not active or recal>best+1e-8)
+                    won=eligible(v1) and (not active or recal>best+1e-8)
+                    if activity_trial and s==5:
+                        witness=json.loads((policy_output/'control-entry.json').read_text())
+                        assert v==witness['parent'] and v1==witness['recal'] and not won and witness['recal_adopted']
                     emit(dest/f'{name}-entry.json',dict(parent=v,parent_prior=p,parent_metric=best,
                          recal=v1,recal_prior=p1,recal_metric=recal,recal_adopted=won))
                     if won:
@@ -164,7 +172,7 @@ def run(root,seed,policy_output=None):
                     assert torch.isfinite(out)
                     out.backward();opt.step()
                 v,p,q,ref=measure(s);value=metric(v,p)
-                improved=v['trades']>0 and (not active or value>best+1e-8)
+                improved=eligible(v) and (not active or value>best+1e-8)
                 if improved:
                     ch=state();best=value;ep=epoch;bad=0;active=True
                     if policy_output:ch['reference']=np.sort(ref,axis=0)
@@ -174,6 +182,7 @@ def run(root,seed,policy_output=None):
                 if rate is not None and policy_output:
                     restored_v,restored_p,_,_=measure(s,ch['reference'])
                     assert restored_v==hist[ep]['val'] and restored_p==hist[ep]['prior']
+                    if activity_trial:assert eligible(restored_v)
                 row=dict(epoch=epoch,val=v,prior=p,metric=value,cut=q,best=ep,patience=bad,
                          lr=opt.param_groups[0]['lr'],rollback=rate is not None,seconds=time.monotonic()-start)
                 hist.append(row)
@@ -184,12 +193,14 @@ def run(root,seed,policy_output=None):
             restore(ch)
             v,p,q,_=measure(s,ch.get('reference'))
             assert metric(v,p)==best
+            if activity_trial:assert eligible(v)
             if policy_output:assert v==hist[ep]['val'] and p==hist[ep]['prior']
             save(dict(sig=sig,champ=ch,best=ep,history=hist,active=active),dst)
             emit(dest/f'{name}.json',dict(epochs=len(hist)-1,best=ep,val=v,prior=p,metric=best,cut=q,active=active,
                                          stop='patience' if bad>=80 else 'cap',rows=len(tx)))
             resume.unlink(missing_ok=True)
-    emit(dest/'DONE.json',dict(seed=seed,stages=8,promoted=False))
+    emit(dest/'DONE.json',dict(seed=seed,stages=3 if activity_trial else 8,promoted=False))
 
 
-if __name__=='__main__':run(Path(sys.argv[1]),int(sys.argv[2]),Path(sys.argv[3]) if len(sys.argv)>3 else None)
+if __name__=='__main__':run(Path(sys.argv[1]),int(sys.argv[2]),Path(sys.argv[3]) if len(sys.argv)>3 else None,
+                           sys.argv[4:]==['--activity-trial'])
