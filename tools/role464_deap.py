@@ -32,7 +32,7 @@ def encode(spec,value):
     return (math.log(value/lo)/math.log(hi/lo) if spec['kind']=='log' else (value-lo)/(hi-lo))
 
 
-def prepare(a,cfg):
+def prepare(a,cfg,with_market=False):
     data=list(load(a.src,a.bars,DEFAULT,a.prefix))
     t,o,hi,lo,cl,atr,ds,dp,gate,dead=data
     profile=json.loads(a.recipe.read_text())['business']['evaluation_and_policy']['profile']
@@ -66,6 +66,7 @@ def prepare(a,cfg):
         np.testing.assert_allclose([fast[k] for k in ('ret','dd','orders','buy','wins')],
                [v[k] for k in ('return_pct','dd_close_pct','trades','buy','wins')],atol=1e-7,rtol=0)
         return (v,book) if with_book else v
+    if with_market:return evaluate,reference,counts,(data,windows,profile,spread,roll)
     return evaluate,reference,counts
 
 

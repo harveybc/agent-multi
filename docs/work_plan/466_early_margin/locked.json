@@ -1,0 +1,11 @@
+{
+  "train_leader": 0.15,
+  "adopted": false,
+  "selected": 0.0,
+  "diagnostics": [
+    -0.5,
+    0.0,
+    0.5
+  ],
+  "train_feasible": 18
+}

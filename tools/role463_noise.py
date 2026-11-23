@@ -12,7 +12,7 @@ PANEL='bridge-sl_only'
 
 
 @njit
-def run(t,o,hi,lo,c,atr,gate,deadline,spread,roll,sig,fees,tp_mult=.9,sl_mult=1.,floor=.5,min_rr=1.,full_rr=3.,power=1.):
+def run(t,o,hi,lo,c,atr,gate,deadline,spread,roll,sig,fees,tp_mult=.9,sl_mult=1.,floor=.5,min_rr=1.,full_rr=3.,power=1.,early_margin_atr=0.):
     market,stops,through,comm,swapb,swaps=fees
     side=0;balance=10000.;peak=balance;dd=0.;trades=0;buys=0;wins=0
     en=sl=tp=u=0.;start=flat=0;day=-1;daily=np.empty(len(t)+1);nd=1;daily[0]=balance
@@ -25,9 +25,11 @@ def run(t,o,hi,lo,c,atr,gate,deadline,spread,roll,sig,fees,tp_mult=.9,sl_mult=1.
             elif side*(ex-tp)>=0:done=True;px=ex
             elif fresh:
                 cur=c[prev]+(spread[prev] if side<0 else 0.)
+                threshold=side*(sl-cur)
+                threshold+=min(early_margin_atr*atr[prev],max(-threshold,0.))
                 for k in range(8):
                     v=side*sig[prev,k]
-                    if v<=side*(sl-cur):done=True;px=ex-side*market;break
+                    if v<=threshold:done=True;px=ex-side*market;break
                     if v>=side*(tp-cur):break
         if not existing and fresh and gate[i] and atr[prev]>0 and np.all(np.isfinite(sig[prev,5:])):
             best=0.;second=0.;direction=0;td=sd=0.

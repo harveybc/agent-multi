@@ -12,7 +12,7 @@ NS = 3600 * 10**9
 DEFAULT = dict(first_long=6, atr_window=24, bins=[0.5, 1.5], min_cell=30,
                favorable_q=0.5, adverse_q=0.5, tp_mult=0.9, sl_mult=1.0,
                dd_floor=0.5, min_rr=1.0, full_rr=3.0, size_power=1.0,
-               reversal_atr=0.25, wait_atr=0.05)
+               reversal_atr=0.25, wait_atr=0.05, early_margin_atr=0.)
 
 
 def load(root, bars_dir, p, prefix=None):
@@ -108,6 +108,7 @@ def exit_signal(side,cur,sl,tp,path,atr,p):
     vals=side*path[np.isfinite(path)]
     if not len(vals):return None
     stop=side*(sl-cur);target=side*(tp-cur)
+    stop+=min(p.get('early_margin_atr',0.)*atr,max(-stop,0.))
     for v in vals:
         if v<=stop:return 'early_sl'
         if v>=target:return None
