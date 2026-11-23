@@ -19,7 +19,7 @@ def tally(rows):
     return dict(n=len(rows),helped=int((delta>tol).sum()),hurt=int((delta < -tol).sum()),
                 tied=int((abs(delta)<=tol).sum()),early=sum(r['early_net'] for r in rows),
                 hold=sum(r['hold_net'] for r in rows),delta=float(delta.sum()),
-                median=float(np.median(delta)),protected=float(delta[delta>tol].sum()),
+                median=float(np.median(delta)) if len(delta) else None,protected=float(delta[delta>tol].sum()),
                 sacrificed=float(-delta[delta < -tol].sum()))
 
 
@@ -42,7 +42,15 @@ def main():
     for t,r in zip(reference,ledger):
         assert (t['entry_bar_abs']-1,str(t['entry_time']),str(t['exit_time']),t['exit_reason'],
                 t['gross_usd'],t['net_usd'])==(int(r['bar']),r['entry'],r['exit'],r['reason'],float(r['gross']),float(r['net']))
-    e.reset();counter={};pairs=[]
+    result,pairs=paired_hold(panel,scores,horizon,actual,reference)
+    assert len(pairs)==archive['exits']['EARLY']==559
+    result.update(seed=43,policy='g3r3 crossed diagnostic')
+    csv_rows(out/'paired.csv',pairs)
+    tmp=out/'result.tmp';tmp.write_text(json.dumps(result,indent=2,allow_nan=False));tmp.replace(out/'DONE.json')
+
+
+def paired_hold(panel,scores,horizon,actual,reference):
+    e=panel.e;e.reset();counter={};pairs=[]
     # Fork after every surviving fill, not just those known to close early.
     # Market arrays are read-only during execution; mutable position/account state is copied.
     for b in range(e.first,e.last):
@@ -79,18 +87,18 @@ def main():
                   price=t['entry_price'],sl=t['stop_loss'],tp=t['take_profit'],
                   early_exit=str(early['exit_time']),hold_exit=str(t['exit_time']),hold_reason=t['exit_reason'],
                   early_net=early['net_usd'],hold_net=t['net_usd'],delta_usd=early['net_usd']-t['net_usd']))
-    assert len(pairs)==archive['exits']['EARLY']==559
+    assert len(pairs)==sum(t['exit_reason']=='EARLY' for t in reference)
     # Separate account-level counterfactual: later entries and sizes can change.
     panel.close=lambda engine,b,j:0
-    alternative=panel.account(scores)
+    try:alternative=panel.account(scores)
+    finally:del panel.close
     assert all(t['exit_reason'] in ('SL','TP','TIME') for t in panel.e.trades)
     assert abs(alternative['net_usd']-sum(t['net_usd'] for t in panel.e.trades))<1e-6
-    result=dict(seed=43,policy='g3r3 crossed diagnostic',factual=actual,broker_only=alternative,
+    result=dict(factual=actual,broker_only=alternative,
                 broker_only_exits=dict(Counter(t['exit_reason'] for t in panel.e.trades)),
                 pairs=tally(pairs),by_hold_reason={k:tally([p for p in pairs if p['hold_reason']==k])
                 for k in sorted({p['hold_reason'] for p in pairs})},parity_trades=len(reference))
-    csv_rows(out/'paired.csv',pairs)
-    tmp=out/'result.tmp';tmp.write_text(json.dumps(result,indent=2,allow_nan=False));tmp.replace(out/'DONE.json')
+    return result,pairs
 
 
 if __name__=='__main__':main()

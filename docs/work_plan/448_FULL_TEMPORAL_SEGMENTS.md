@@ -317,3 +317,42 @@ cambiar el entrenamiento o el umbral de cierre.
 
 Reproduccion CPU: `tools/role454_paired_hold.py`; filas y resumen en
 `/var/tmp/role454-paired-hold/{paired.csv,DONE.json}`.
+
+### 455: CLOSE vs HOLD en campeones emparejados
+
+Validacion 2024. Los 45 checkpoints de 450 (dos monitores con primer
+semestre comun, tres semillas) y cuatro de 451 usan sus propios pesos y
+referencia. Son 13 secuencias distintas de decisiones SELL por semilla
+en total (6 + 2 + 5); las herencias no cuentan como replicas. Las 49
+cuentas con CLOSE coinciden exactamente con sus archivos. En cada secuencia
+se verifico el ledger y se hicieron los dos contrafactuales de 454.
+Semestres numerados desde 1. USD = CLOSE menos HOLD en posiciones pareadas;
+las dos ultimas columnas son retornos de cuentas secuenciales completas.
+
+|Semilla|Checkpoint representativo|Ventas|Cierres tempranos|Delta pares USD|CLOSE %|HOLD %|
+|---:|---|---:|---:|---:|---:|---:|
+|7|450 comun S1|83|53|+587,49|+0,945|-4,213|
+|7|450 val S3 / 451 padre|313|190|-683,01|+1,025|+0,928|
+|7|450 mixto S5|74|35|+23,65|+1,142|+0,341|
+|7|450 mixto final|57|31|+111,78|+1,133|+0,897|
+|7|450 val final|56|31|+289,51|+1,559|+0,399|
+|7|451 activo final|127|64|+745,21|+1,041|-1,762|
+|19|450 comun S1 / mixto final|10|8|-159,90|+0,491|+1,389|
+|19|450 val final|3|2|-48,40|+0,593|+1,075|
+|43|450 val S2|13|7|+58,68|+1,953|+0,863|
+|43|450 val S3|36|23|+182,69|+1,992|+0,836|
+|43|450 mixto final|14|8|+104,23|+1,762|+0,205|
+|43|450 val S6|13|7|+81,78|+2,042|+0,708|
+|43|450 val final|41|27|+24,51|+2,980|-0,149|
+
+Activo 451: 46 SL evitados (+1.646,04 USD), 17 recuperaciones hasta TP
+interrumpidas (-898,41), un cierre obligatorio (-2,42). La cuenta con
+CLOSE dio 2,40 ventas/semana, DD 4,57%, Sharpe 0,249; con HOLD dio
+93 ventas, 1,75/semana, DD 6,02%, Sharpe -0,360. La mejora por cuenta
+(+280,27 USD) no es la suma de los pares (+745,21 USD). Se mantiene el
+cerrador como control. No se promueve: se reutilizo el mismo periodo
+de validacion, hay solapamiento y no se verifico retencion en TRAIN.
+
+Ejecutor: `tools/role455_matched_close.py {7,19,43}` (una semilla por
+invocacion). Salidas: `/var/tmp/role455-matched-close/<semilla>/DONE.json`
+y `pairs.csv`; el catalogo permite resolver aliases de checkpoints.
