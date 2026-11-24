@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import numpy as np
 import pandas as pd
+from numba import njit
 from tools.role461_seasonal_account import DEFAULT, NS, cost_arrays, load
 from tools.role471_net_selector import outcomes
 
@@ -56,6 +57,28 @@ def first_close(scores):
     return int(hits[0]) if len(hits) else None
 
 
+@njit
+def versus_wait(owner, passive_advantage, close):
+    """Realized CLOSE minus the first policy exit strictly after this decision."""
+    label=passive_advantage.copy()
+    following=np.full(len(label),-1,np.int64)
+    next_exit=-1
+    for j in range(len(label)-1,-1,-1):
+        if j==len(label)-1 or owner[j]!=owner[j+1]:
+            next_exit=-1
+        if next_exit!=-1:
+            label[j]-=passive_advantage[next_exit]
+            following[j]=next_exit
+        if close[j]:
+            next_exit=j
+    return label,following
+
+
+def predict(x,model):
+    n=len(model['coef'])
+    return (x[:,:n]-model['mean'])/model['scale']@model['coef']+model['offset']
+
+
 def main(a):
     cfg=json.loads((a.prev/'locked.json').read_text())['context']['effective']
     tm,sm=cfg['tp_atr_sqrt_h'],cfg['sl_atr_sqrt_h']
@@ -69,27 +92,48 @@ def main(a):
     ii=np.searchsorted(t,ts);np.testing.assert_array_equal(t[ii],ts)
     pred=np.full((len(t),8),np.nan);pred[ii-1]=d['x']
     np.testing.assert_array_equal(t[ii-1]+NS,ts)
-    n=len(NAMES)+1;gram=np.zeros((n,n));cross=np.zeros(n)
+    n=len(NAMES)+1;gram=np.zeros((n,n));cross=np.zeros((2,n))
+    arms=[('state',len(STATE)),('seasonal',len(NAMES))]
+    sequential=a.target=='continuation'
+    blocks=[];latest=-1
     models={};manifest={}
     for yr in range(2019,2023):
         left,right=(pd.Timestamp(str(v),tz='UTC').value for v in (yr,yr+1))
         ix=ii[(ts>=left)&(ts<right)&gate[ii]&(flat[ii]<right)&(atr[ii-1]>0)]
         total=active=0;unique=set()
-        for ids in np.array_split(ix,(len(ix)+95)//96):
-            net,end=outcomes(ids,t,o,hi,lo,atr,flat,spread,roll,fees,tm,sm)
-            assert t[end.max()]<right
-            ix6=np.repeat(ids,6);ks=np.tile(np.arange(6),len(ids))
-            owner,j,x,y,cnt=candidates(ix6,ks,data,spread,roll,fees,pred,tm,sm,
-                                        np.repeat(net,6,axis=0),np.repeat(end,6,axis=0))
-            unique.update(j.tolist());total+=len(j);active+=int((cnt>0).sum())
-            z=np.column_stack([np.ones(len(x)),x]);weight=1/cnt[owner]
-            gram+=z.T@(weight[:,None]*z);cross+=z.T@(weight*y)
+        week=(t[ix]-pd.Timestamp('1970-01-05',tz='UTC').value)//(168*NS) if sequential else np.zeros(len(ix),int)
+        for wk in np.unique(week):
+            batch=ix[week==wk]
+            assert latest<t[batch[0]]
+            prior=[fit((gram,cross[b]),w) if sequential and gram[0,0]>0 else None for b,(_,w) in enumerate(arms)]
+            log=dict(year=yr,block=int(wk),prior_latest_exit_ns=int(latest),start_ns=int(t[batch[0]]),
+                     ticks=0,state_deferred_exit=0,seasonal_deferred_exit=0)
+            for ids in np.array_split(batch,(len(batch)+95)//96):
+                net,end=outcomes(ids,t,o,hi,lo,atr,flat,spread,roll,fees,tm,sm)
+                assert t[end.max()]<right
+                latest=max(latest,t[end.max()])
+                ix6=np.repeat(ids,6);ks=np.tile(np.arange(6),len(ids))
+                owner,j,x,y,cnt=candidates(ix6,ks,data,spread,roll,fees,pred,tm,sm,
+                                            np.repeat(net,6,axis=0),np.repeat(end,6,axis=0))
+                unique.update(j.tolist());total+=len(j);active+=int((cnt>0).sum())
+                z=np.column_stack([np.ones(len(x)),x]);weight=1/cnt[owner]
+                gram+=z.T@(weight[:,None]*z)
+                log['ticks']+=len(j)
+                for b,(arm,_) in enumerate(arms):
+                    target=y
+                    if prior[b] is not None:
+                        target,next_exit=versus_wait(owner,y,predict(x,prior[b])>0)
+                        log[arm+'_deferred_exit']+=int((next_exit>=0).sum())
+                    cross[b]+=z.T@(weight*target)
+            blocks.append(dict(log,last_exit_ns=int(latest)))
         manifest[yr]=dict(origins=len(ix),positions=len(ix)*6,with_decisions=active,position_ticks=total,
                           distinct_decision_bars=len(unique),label_cutoff_exclusive_ns=int(right))
-        models[yr+1]={arm:fit((gram,cross),w) for arm,w in [('state',len(STATE)),('seasonal',len(NAMES))]}
+        models[yr+1]={arm:fit((gram,cross[b]),w) for b,(arm,w) in enumerate(arms)}
     a.out.mkdir(parents=True,exist_ok=True)
     (a.out/'weights.json').write_text(json.dumps(models,indent=2)+'\n')
     (a.out/'train_counts.json').write_text(json.dumps(manifest,indent=2)+'\n')
+    if sequential:
+        pd.DataFrame(blocks).to_csv(a.out/'weekly_provenance.csv',index=False)
     archived=pd.read_csv(a.exit_dir/'alternatives.csv.gz').groupby('entry_ns')
     baseline=pd.read_csv(a.exit_dir/'positions.csv.gz')
     holds=baseline.query('arm=="hold"')
@@ -107,13 +151,14 @@ def main(a):
             np.testing.assert_array_equal(t[j],old.tick_ns)
             np.testing.assert_allclose(y*money_r,old.minus_hold,atol=1e-8)
         for arm,m in models[min(2023,r.fold)].items():
-            w=len(m['coef']);scores=(x[:,:w]-m['mean'])/m['scale']@m['coef']+m['offset']
+            scores=predict(x,m)
             at=first_close(scores);delta=0. if at is None else float(y[at]*money_r)
             records.append(dict(fold=r.fold,arm=arm,entry_ns=r.entry_ns,side=r.side,hold_reason=r.hold_reason,
                 early=at is not None,exit_ns=r.exit_ns if at is None else t[j[at]],usd=r.usd+delta,
                 delta_usd=delta,regret_usd=r.regret_usd-delta))
+            target,_=versus_wait(np.zeros(len(j),np.int64),y,scores>0) if sequential else (y,None)
             signed.extend(dict(fold=r.fold,arm=arm,entry_ns=r.entry_ns,tick_ns=t[b],estimate_R=v,label_R=u)
-                          for b,v,u in zip(j,scores,y))
+                          for b,v,u in zip(j,scores,target))
     df=pd.DataFrame(records);df.to_csv(a.out/'positions.csv.gz',index=False)
     pd.DataFrame(signed).to_csv(a.out/'scores.csv.gz',index=False)
     allrows=pd.concat([df,baseline[baseline.arm.isin(['hold','clock_half','clock_first'])]])
@@ -140,4 +185,5 @@ def main(a):
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for key in ('src','bars','prefix','signals','prev','exit_dir','out'):p.add_argument(key,type=Path)
+    p.add_argument('--target',choices=['passive','continuation'],default='passive')
     main(p.parse_args())

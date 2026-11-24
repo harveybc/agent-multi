@@ -1,0 +1,34 @@
+{
+  "2019": {
+    "origins": 3587,
+    "positions": 21522,
+    "with_decisions": 21135,
+    "position_ticks": 585539,
+    "distinct_decision_bars": 3537,
+    "label_cutoff_exclusive_ns": 1577836800000000000
+  },
+  "2020": {
+    "origins": 3538,
+    "positions": 21228,
+    "with_decisions": 20904,
+    "position_ticks": 585703,
+    "distinct_decision_bars": 3488,
+    "label_cutoff_exclusive_ns": 1609459200000000000
+  },
+  "2021": {
+    "origins": 3726,
+    "positions": 22356,
+    "with_decisions": 21991,
+    "position_ticks": 624390,
+    "distinct_decision_bars": 3673,
+    "label_cutoff_exclusive_ns": 1640995200000000000
+  },
+  "2022": {
+    "origins": 3580,
+    "positions": 21480,
+    "with_decisions": 21114,
+    "position_ticks": 583466,
+    "distinct_decision_bars": 3530,
+    "label_cutoff_exclusive_ns": 1672531200000000000
+  }
+}
