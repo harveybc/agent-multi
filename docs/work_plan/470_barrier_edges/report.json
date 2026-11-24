@@ -1,0 +1,31 @@
+{
+  "opportunities": 3516,
+  "proposals": 2836,
+  "purged": 142,
+  "unmatched": 105,
+  "reference_fills": 375,
+  "contrasts": [
+    {
+      "control": "mirror",
+      "n": 2694,
+      "months": 12,
+      "positive_months": 7,
+      "mean_usd": 8.323361999330402,
+      "monthly_bootstrap_95": [
+        -7.461398949208275,
+        25.10547038119212
+      ]
+    },
+    {
+      "control": "other_time",
+      "n": 2589,
+      "months": 12,
+      "positive_months": 7,
+      "mean_usd": -1.722269921166696,
+      "monthly_bootstrap_95": [
+        -14.040272460916023,
+        10.137728452907314
+      ]
+    }
+  ]
+}
