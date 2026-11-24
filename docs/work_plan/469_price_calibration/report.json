@@ -1,0 +1,110 @@
+{
+  "global_beta": -0.0020762033624196177,
+  "beta": [
+    [
+      0.1211191106114613,
+      0.1158636885226109,
+      0.11157284110090293,
+      0.11042432201544353,
+      0.10391877091285516,
+      0.11890167661006697,
+      0.059061112149637426,
+      0.12363179137910618
+    ],
+    [
+      0.0542586597387552,
+      0.07255419234952998,
+      0.07014446343290222,
+      0.07060142925585368,
+      0.0386194751440134,
+      0.02746999574456024,
+      -0.08163952643091024,
+      -0.10274245798529091
+    ]
+  ],
+  "fit_counts": [
+    [
+      8103,
+      7551,
+      7802,
+      7900,
+      8139,
+      7906,
+      4882,
+      3319
+    ],
+    [
+      6328,
+      6880,
+      6629,
+      6531,
+      6292,
+      6525,
+      7338,
+      4067
+    ]
+  ],
+  "accounts": {
+    "direct": {
+      "trades": 420,
+      "buy": 216,
+      "wins": 150,
+      "wins_buy": 77,
+      "return_pct": -19.115727665458802,
+      "dd_close_pct": 34.17600875852875,
+      "reasons": {
+        "tp": 109,
+        "early_sl": 20,
+        "calendar": 41,
+        "sl_dual": 3,
+        "sl": 246,
+        "tp_gap": 1
+      },
+      "wait_decisions": 0,
+      "early_harmful": 10,
+      "early_vs_hold_usd": -52.09314589634269,
+      "costs_usd": {
+        "spread_usd": 522.620570289883,
+        "slippage_usd": 776.0727223247899,
+        "commission_usd": 993.4043981587271,
+        "swap_usd": -216.22788689747966
+      }
+    },
+    "global_scale": {
+      "trades": 0,
+      "buy": 0,
+      "wins": 0,
+      "wins_buy": 0,
+      "return_pct": 0.0,
+      "dd_close_pct": 0.0,
+      "reasons": {},
+      "wait_decisions": 0,
+      "early_harmful": 0,
+      "early_vs_hold_usd": 0,
+      "costs_usd": {
+        "spread_usd": 0,
+        "slippage_usd": 0,
+        "commission_usd": 0,
+        "swap_usd": 0
+      }
+    },
+    "by_sign_horizon": {
+      "trades": 0,
+      "buy": 0,
+      "wins": 0,
+      "wins_buy": 0,
+      "return_pct": 0.0,
+      "dd_close_pct": 0.0,
+      "reasons": {},
+      "wait_decisions": 0,
+      "early_harmful": 0,
+      "early_vs_hold_usd": 0,
+      "costs_usd": {
+        "spread_usd": 0,
+        "slippage_usd": 0,
+        "commission_usd": 0,
+        "swap_usd": 0
+      }
+    }
+  }
+}
