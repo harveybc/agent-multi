@@ -1,0 +1,753 @@
+{
+  "rows": {
+    "2019": 3587,
+    "2020": 3538,
+    "2021": 3726,
+    "2022": 3580,
+    "20231": 1863,
+    "20232": 1653
+  },
+  "reference_checks": 972,
+  "panels": {
+    "context": {
+      "fixed": {
+        "2020": {
+          "ret": -14.614137828102727,
+          "dd_realized": 30.776098186547063,
+          "orders": 94,
+          "wins": 53,
+          "by_action": [
+            5,
+            20,
+            39,
+            0,
+            4,
+            26
+          ],
+          "wins_by_action": [
+            5,
+            11,
+            21,
+            0,
+            2,
+            14
+          ]
+        },
+        "2021": {
+          "ret": 0.6550424801376664,
+          "dd_realized": 10.240598918263933,
+          "orders": 77,
+          "wins": 32,
+          "by_action": [
+            0,
+            5,
+            38,
+            0,
+            2,
+            32
+          ],
+          "wins_by_action": [
+            0,
+            3,
+            11,
+            0,
+            0,
+            18
+          ]
+        },
+        "2022": {
+          "ret": 9.423086196772786,
+          "dd_realized": 6.882205284898979,
+          "orders": 91,
+          "wins": 41,
+          "by_action": [
+            0,
+            63,
+            10,
+            4,
+            0,
+            14
+          ],
+          "wins_by_action": [
+            0,
+            28,
+            5,
+            1,
+            0,
+            7
+          ]
+        },
+        "20231": {
+          "ret": 2.6185828204552877,
+          "dd_realized": 8.22484628170127,
+          "orders": 44,
+          "wins": 23,
+          "by_action": [
+            0,
+            2,
+            5,
+            0,
+            1,
+            36
+          ],
+          "wins_by_action": [
+            0,
+            1,
+            1,
+            0,
+            1,
+            20
+          ]
+        },
+        "20232": {
+          "ret": 2.5569493592689128,
+          "dd_realized": 8.489230133689373,
+          "orders": 41,
+          "wins": 23,
+          "by_action": [
+            0,
+            1,
+            1,
+            0,
+            0,
+            39
+          ],
+          "wins_by_action": [
+            0,
+            0,
+            1,
+            0,
+            0,
+            22
+          ]
+        }
+      },
+      "deap": {
+        "2020": {
+          "ret": -7.381254931876612,
+          "dd_realized": 32.45381054105982,
+          "orders": 88,
+          "wins": 45,
+          "by_action": [
+            19,
+            40,
+            2,
+            1,
+            3,
+            23
+          ],
+          "wins_by_action": [
+            11,
+            20,
+            1,
+            1,
+            2,
+            10
+          ]
+        },
+        "2021": {
+          "ret": 10.741272899577595,
+          "dd_realized": 8.39556957518688,
+          "orders": 63,
+          "wins": 30,
+          "by_action": [
+            0,
+            5,
+            29,
+            0,
+            1,
+            28
+          ],
+          "wins_by_action": [
+            0,
+            0,
+            14,
+            0,
+            0,
+            16
+          ]
+        },
+        "2022": {
+          "ret": 7.857310891754025,
+          "dd_realized": 5.901450635729577,
+          "orders": 60,
+          "wins": 30,
+          "by_action": [
+            0,
+            0,
+            42,
+            0,
+            0,
+            18
+          ],
+          "wins_by_action": [
+            0,
+            0,
+            19,
+            0,
+            0,
+            11
+          ]
+        },
+        "20231": {
+          "ret": -1.6984674673697384,
+          "dd_realized": 17.165686622329655,
+          "orders": 31,
+          "wins": 14,
+          "by_action": [
+            0,
+            0,
+            5,
+            0,
+            2,
+            24
+          ],
+          "wins_by_action": [
+            0,
+            0,
+            2,
+            0,
+            0,
+            12
+          ]
+        },
+        "20232": {
+          "ret": 12.766398359396959,
+          "dd_realized": 5.1260219084259155,
+          "orders": 29,
+          "wins": 19,
+          "by_action": [
+            0,
+            0,
+            1,
+            0,
+            2,
+            26
+          ],
+          "wins_by_action": [
+            0,
+            0,
+            1,
+            0,
+            2,
+            16
+          ]
+        }
+      }
+    },
+    "seasonal": {
+      "fixed": {
+        "2020": {
+          "ret": -30.760233740191183,
+          "dd_realized": 42.449258336723425,
+          "orders": 102,
+          "wins": 46,
+          "by_action": [
+            7,
+            17,
+            34,
+            6,
+            10,
+            28
+          ],
+          "wins_by_action": [
+            5,
+            6,
+            17,
+            3,
+            4,
+            11
+          ]
+        },
+        "2021": {
+          "ret": 6.483881075235743,
+          "dd_realized": 15.994771040064293,
+          "orders": 91,
+          "wins": 45,
+          "by_action": [
+            5,
+            5,
+            23,
+            2,
+            5,
+            51
+          ],
+          "wins_by_action": [
+            3,
+            2,
+            8,
+            0,
+            3,
+            29
+          ]
+        },
+        "2022": {
+          "ret": -42.85721066328312,
+          "dd_realized": 57.393049880070194,
+          "orders": 94,
+          "wins": 40,
+          "by_action": [
+            0,
+            15,
+            20,
+            7,
+            0,
+            52
+          ],
+          "wins_by_action": [
+            0,
+            5,
+            9,
+            3,
+            0,
+            23
+          ]
+        },
+        "20231": {
+          "ret": -14.5195220768058,
+          "dd_realized": 20.17550219869525,
+          "orders": 50,
+          "wins": 22,
+          "by_action": [
+            0,
+            4,
+            13,
+            2,
+            2,
+            29
+          ],
+          "wins_by_action": [
+            0,
+            2,
+            3,
+            1,
+            2,
+            14
+          ]
+        },
+        "20232": {
+          "ret": -3.4406942454502314,
+          "dd_realized": 10.190463113873927,
+          "orders": 51,
+          "wins": 25,
+          "by_action": [
+            0,
+            3,
+            2,
+            5,
+            2,
+            39
+          ],
+          "wins_by_action": [
+            0,
+            2,
+            0,
+            1,
+            1,
+            21
+          ]
+        }
+      },
+      "deap": {
+        "2020": {
+          "ret": 3.8315944598644336,
+          "dd_realized": 25.066476210513034,
+          "orders": 90,
+          "wins": 48,
+          "by_action": [
+            15,
+            14,
+            29,
+            4,
+            6,
+            22
+          ],
+          "wins_by_action": [
+            13,
+            3,
+            15,
+            3,
+            4,
+            10
+          ]
+        },
+        "2021": {
+          "ret": 19.873724064959404,
+          "dd_realized": 4.3280486800957085,
+          "orders": 87,
+          "wins": 48,
+          "by_action": [
+            4,
+            11,
+            15,
+            8,
+            19,
+            30
+          ],
+          "wins_by_action": [
+            1,
+            5,
+            8,
+            8,
+            9,
+            17
+          ]
+        },
+        "2022": {
+          "ret": -2.2738988792021217,
+          "dd_realized": 26.14645745738414,
+          "orders": 71,
+          "wins": 35,
+          "by_action": [
+            0,
+            0,
+            24,
+            0,
+            2,
+            45
+          ],
+          "wins_by_action": [
+            0,
+            0,
+            10,
+            0,
+            0,
+            25
+          ]
+        },
+        "20231": {
+          "ret": -6.168322013059495,
+          "dd_realized": 13.271988231656195,
+          "orders": 40,
+          "wins": 20,
+          "by_action": [
+            0,
+            0,
+            10,
+            1,
+            7,
+            22
+          ],
+          "wins_by_action": [
+            0,
+            0,
+            3,
+            1,
+            4,
+            12
+          ]
+        },
+        "20232": {
+          "ret": -10.608437595615527,
+          "dd_realized": 14.100904685563997,
+          "orders": 38,
+          "wins": 18,
+          "by_action": [
+            0,
+            1,
+            3,
+            4,
+            6,
+            24
+          ],
+          "wins_by_action": [
+            0,
+            0,
+            0,
+            2,
+            4,
+            12
+          ]
+        }
+      }
+    }
+  },
+  "runs": {
+    "context": [
+      {
+        "gen": 0,
+        "effective": {
+          "tp_atr_sqrt_h": 1.5,
+          "sl_atr_sqrt_h": 1.5,
+          "min_edge_bp": 2.9291581286658346,
+          "direction_margin_bp": 5.74423710258671,
+          "saturation_bp": 10.844841292232976,
+          "size_power": 2.3986083476097426
+        },
+        "train": 3.7391096198183362,
+        "val": {
+          "ret": -1.6984674673697384,
+          "dd_realized": 17.165686622329655,
+          "orders": 31,
+          "wins": 14,
+          "by_action": [
+            0,
+            0,
+            5,
+            0,
+            2,
+            24
+          ],
+          "wins_by_action": [
+            0,
+            0,
+            2,
+            0,
+            0,
+            12
+          ]
+        },
+        "seed": 7,
+        "last_generation": 200,
+        "distinct": 3383,
+        "wait": 200,
+        "stop": "patience",
+        "distinct_values": {
+          "tp_atr_sqrt_h": 3,
+          "sl_atr_sqrt_h": 3,
+          "min_edge_bp": 1800,
+          "direction_margin_bp": 2131,
+          "saturation_bp": 1915,
+          "size_power": 1995
+        }
+      },
+      {
+        "gen": 10,
+        "effective": {
+          "tp_atr_sqrt_h": 0.5,
+          "sl_atr_sqrt_h": 0.5,
+          "min_edge_bp": 2.368436116071978,
+          "direction_margin_bp": 1.5429140909850905,
+          "saturation_bp": 14.559289444479877,
+          "size_power": 2.9792365425202565
+        },
+        "train": 12.216409520202802,
+        "val": {
+          "ret": -0.007903087534828046,
+          "dd_realized": 0.015323141800915874,
+          "orders": 9,
+          "wins": 5,
+          "by_action": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            9
+          ],
+          "wins_by_action": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            5
+          ]
+        },
+        "seed": 19,
+        "last_generation": 200,
+        "distinct": 3404,
+        "wait": 190,
+        "stop": "patience",
+        "distinct_values": {
+          "tp_atr_sqrt_h": 3,
+          "sl_atr_sqrt_h": 3,
+          "min_edge_bp": 1891,
+          "direction_margin_bp": 2134,
+          "saturation_bp": 1922,
+          "size_power": 2029
+        }
+      },
+      {
+        "gen": 12,
+        "effective": {
+          "tp_atr_sqrt_h": 1,
+          "sl_atr_sqrt_h": 0.5,
+          "min_edge_bp": 5.613754936800129,
+          "direction_margin_bp": 4.656055401827146,
+          "saturation_bp": 18.38231842584131,
+          "size_power": 2.1785660267709672
+        },
+        "train": 10.214316844429655,
+        "val": {
+          "ret": 0.0024647168667684127,
+          "dd_realized": 0.023058110829454748,
+          "orders": 6,
+          "wins": 2,
+          "by_action": [
+            0,
+            0,
+            2,
+            0,
+            0,
+            4
+          ],
+          "wins_by_action": [
+            0,
+            0,
+            1,
+            0,
+            0,
+            1
+          ]
+        },
+        "seed": 43,
+        "last_generation": 200,
+        "distinct": 3361,
+        "wait": 188,
+        "stop": "patience",
+        "distinct_values": {
+          "tp_atr_sqrt_h": 3,
+          "sl_atr_sqrt_h": 3,
+          "min_edge_bp": 1723,
+          "direction_margin_bp": 2122,
+          "saturation_bp": 1808,
+          "size_power": 1820
+        }
+      }
+    ],
+    "seasonal": [
+      {
+        "gen": 23,
+        "effective": {
+          "tp_atr_sqrt_h": 0.5,
+          "sl_atr_sqrt_h": 1.5,
+          "min_edge_bp": 8.08344878575333,
+          "direction_margin_bp": 7.861148991136801,
+          "saturation_bp": 21.043252740323407,
+          "size_power": 2.9210731683579443
+        },
+        "train": 13.576011955846576,
+        "val": {
+          "ret": -8.235194973527356,
+          "dd_realized": 17.929212956325035,
+          "orders": 54,
+          "wins": 32,
+          "by_action": [
+            0,
+            0,
+            13,
+            0,
+            15,
+            26
+          ],
+          "wins_by_action": [
+            0,
+            0,
+            6,
+            0,
+            8,
+            18
+          ]
+        },
+        "seed": 7,
+        "last_generation": 200,
+        "distinct": 3401,
+        "wait": 177,
+        "stop": "patience",
+        "distinct_values": {
+          "tp_atr_sqrt_h": 3,
+          "sl_atr_sqrt_h": 3,
+          "min_edge_bp": 1885,
+          "direction_margin_bp": 2036,
+          "saturation_bp": 2026,
+          "size_power": 2061
+        }
+      },
+      {
+        "gen": 0,
+        "effective": {
+          "tp_atr_sqrt_h": 0.5,
+          "sl_atr_sqrt_h": 1.5,
+          "min_edge_bp": 8.70043719451856,
+          "direction_margin_bp": 9.554020412715666,
+          "saturation_bp": 15.742629522051349,
+          "size_power": 1.6947496065613488
+        },
+        "train": 11.001460997400025,
+        "val": {
+          "ret": -10.374418503643625,
+          "dd_realized": 20.89536187204596,
+          "orders": 54,
+          "wins": 34,
+          "by_action": [
+            0,
+            0,
+            11,
+            0,
+            16,
+            27
+          ],
+          "wins_by_action": [
+            0,
+            0,
+            6,
+            0,
+            9,
+            19
+          ]
+        },
+        "seed": 19,
+        "last_generation": 200,
+        "distinct": 3377,
+        "wait": 200,
+        "stop": "patience",
+        "distinct_values": {
+          "tp_atr_sqrt_h": 3,
+          "sl_atr_sqrt_h": 3,
+          "min_edge_bp": 1825,
+          "direction_margin_bp": 1977,
+          "saturation_bp": 1945,
+          "size_power": 2074
+        }
+      },
+      {
+        "gen": 1,
+        "effective": {
+          "tp_atr_sqrt_h": 1,
+          "sl_atr_sqrt_h": 1.5,
+          "min_edge_bp": 5.723262759430721,
+          "direction_margin_bp": 1.7618810428468956,
+          "saturation_bp": 30.910478119501843,
+          "size_power": 2.173828172573128
+        },
+        "train": 7.143806548540572,
+        "val": {
+          "ret": -6.168322013059495,
+          "dd_realized": 13.271988231656195,
+          "orders": 40,
+          "wins": 20,
+          "by_action": [
+            0,
+            0,
+            10,
+            1,
+            7,
+            22
+          ],
+          "wins_by_action": [
+            0,
+            0,
+            3,
+            1,
+            4,
+            12
+          ]
+        },
+        "seed": 43,
+        "last_generation": 200,
+        "distinct": 3400,
+        "wait": 199,
+        "stop": "patience",
+        "distinct_values": {
+          "tp_atr_sqrt_h": 3,
+          "sl_atr_sqrt_h": 3,
+          "min_edge_bp": 1990,
+          "direction_margin_bp": 1947,
+          "saturation_bp": 2004,
+          "size_power": 2067
+        }
+      }
+    ]
+  }
+}

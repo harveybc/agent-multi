@@ -1,0 +1,96 @@
+{
+  "context": {
+    "gen": 0,
+    "effective": {
+      "tp_atr_sqrt_h": 1.5,
+      "sl_atr_sqrt_h": 1.5,
+      "min_edge_bp": 2.9291581286658346,
+      "direction_margin_bp": 5.74423710258671,
+      "saturation_bp": 10.844841292232976,
+      "size_power": 2.3986083476097426
+    },
+    "train": 3.7391096198183362,
+    "val": {
+      "ret": -1.6984674673697384,
+      "dd_realized": 17.165686622329655,
+      "orders": 31,
+      "wins": 14,
+      "by_action": [
+        0,
+        0,
+        5,
+        0,
+        2,
+        24
+      ],
+      "wins_by_action": [
+        0,
+        0,
+        2,
+        0,
+        0,
+        12
+      ]
+    },
+    "seed": 7,
+    "last_generation": 200,
+    "distinct": 3383,
+    "wait": 200,
+    "stop": "patience",
+    "distinct_values": {
+      "tp_atr_sqrt_h": 3,
+      "sl_atr_sqrt_h": 3,
+      "min_edge_bp": 1800,
+      "direction_margin_bp": 2131,
+      "saturation_bp": 1915,
+      "size_power": 1995
+    }
+  },
+  "seasonal": {
+    "gen": 1,
+    "effective": {
+      "tp_atr_sqrt_h": 1,
+      "sl_atr_sqrt_h": 1.5,
+      "min_edge_bp": 5.723262759430721,
+      "direction_margin_bp": 1.7618810428468956,
+      "saturation_bp": 30.910478119501843,
+      "size_power": 2.173828172573128
+    },
+    "train": 7.143806548540572,
+    "val": {
+      "ret": -6.168322013059495,
+      "dd_realized": 13.271988231656195,
+      "orders": 40,
+      "wins": 20,
+      "by_action": [
+        0,
+        0,
+        10,
+        1,
+        7,
+        22
+      ],
+      "wins_by_action": [
+        0,
+        0,
+        3,
+        1,
+        4,
+        12
+      ]
+    },
+    "seed": 43,
+    "last_generation": 200,
+    "distinct": 3400,
+    "wait": 199,
+    "stop": "patience",
+    "distinct_values": {
+      "tp_atr_sqrt_h": 3,
+      "sl_atr_sqrt_h": 3,
+      "min_edge_bp": 1990,
+      "direction_margin_bp": 1947,
+      "saturation_bp": 2004,
+      "size_power": 2067
+    }
+  }
+}
