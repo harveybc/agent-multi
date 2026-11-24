@@ -1,0 +1,54 @@
+{
+  "fixed": {
+    "trades": 415,
+    "buy": 234,
+    "wins": 146,
+    "wins_buy": 85,
+    "return_pct": -9.23902145373533,
+    "dd_close_pct": 23.354212184914612,
+    "reasons": {
+      "tp": 109,
+      "calendar": 37,
+      "sl": 243,
+      "early_sl": 19,
+      "sl_dual": 4,
+      "tp_gap": 1,
+      "sl_gap": 2
+    },
+    "wait_decisions": 0,
+    "early_harmful": 7,
+    "early_vs_hold_usd": -35.90820456387354,
+    "costs_usd": {
+      "spread_usd": 616.3524911701156,
+      "slippage_usd": 852.9184821887884,
+      "commission_usd": 1101.288623722441,
+      "swap_usd": -242.57972636076886
+    }
+  },
+  "weekly": {
+    "trades": 415,
+    "buy": 234,
+    "wins": 146,
+    "wins_buy": 85,
+    "return_pct": -9.232740875418754,
+    "dd_close_pct": 23.34613501625601,
+    "reasons": {
+      "tp": 109,
+      "calendar": 37,
+      "sl": 243,
+      "early_sl": 19,
+      "sl_dual": 4,
+      "tp_gap": 1,
+      "sl_gap": 2
+    },
+    "wait_decisions": 0,
+    "early_harmful": 7,
+    "early_vs_hold_usd": -36.82480881421961,
+    "costs_usd": {
+      "spread_usd": 616.3732424510661,
+      "slippage_usd": 852.9694777724138,
+      "commission_usd": 1101.3735452041221,
+      "swap_usd": -242.92612246692514
+    }
+  }
+}
