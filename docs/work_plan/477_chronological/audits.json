@@ -1,0 +1,98 @@
+[
+  {
+    "year": 2020,
+    "start": "2016-01-01 00:00:00+00:00",
+    "monitor": "2019-07-01 00:00:00+00:00",
+    "last_fit_close": "2019-06-30 23:00:00+00:00",
+    "eval_start": "2020-01-01 00:00:00+00:00",
+    "last_eval_close": "2020-12-31 06:00:00+00:00",
+    "fit_bars": 21581,
+    "windows": 18169,
+    "prefix_checks": [
+      {
+        "last_bar": "2019-07-02 08:00:00+00:00",
+        "max_abs": 0.0
+      },
+      {
+        "last_bar": "2020-01-21 09:00:00+00:00",
+        "max_abs": 0.0
+      }
+    ],
+    "parity_checked_rows": 23718,
+    "parity_failures": {},
+    "audit": "ea26b2aa580bce3b515c7c0d64ca80443950852ff3221d567bafa9e8b8c5ab4f",
+    "batch": "e49b23a74cbec8d131841381afebabdb5b6c5241490495041902d681f7eef171"
+  },
+  {
+    "year": 2021,
+    "start": "2017-01-01 00:00:00+00:00",
+    "monitor": "2020-07-01 00:00:00+00:00",
+    "last_fit_close": "2020-06-30 23:00:00+00:00",
+    "eval_start": "2021-01-01 00:00:00+00:00",
+    "last_eval_close": "2021-12-31 07:00:00+00:00",
+    "fit_bars": 21534,
+    "windows": 18177,
+    "prefix_checks": [
+      {
+        "last_bar": "2020-06-30 23:00:00+00:00",
+        "max_abs": 0.0
+      },
+      {
+        "last_bar": "2021-01-05 09:00:00+00:00",
+        "max_abs": 0.0
+      }
+    ],
+    "parity_checked_rows": 23738,
+    "parity_failures": {},
+    "audit": "7471b5f85e7cfd1f2bc9f33dd12e097e5c87b9755e924f5434e9a5ae649ce305",
+    "batch": "2192ea44545a29e53993dc6aed7d14d74d3849f01ca0aacf0920298ff6a3b9e2"
+  },
+  {
+    "year": 2022,
+    "start": "2018-01-01 00:00:00+00:00",
+    "monitor": "2021-07-01 00:00:00+00:00",
+    "last_fit_close": "2021-06-30 23:00:00+00:00",
+    "eval_start": "2022-01-01 00:00:00+00:00",
+    "last_eval_close": "2022-12-30 09:00:00+00:00",
+    "fit_bars": 21561,
+    "windows": 18071,
+    "prefix_checks": [
+      {
+        "last_bar": "2021-06-30 23:00:00+00:00",
+        "max_abs": 0.0
+      },
+      {
+        "last_bar": "2022-01-04 09:00:00+00:00",
+        "max_abs": 0.0
+      }
+    ],
+    "parity_checked_rows": 23584,
+    "parity_failures": {},
+    "audit": "8fa2b2fb67019915b368c78c96c5e2fbf06459be9a77111222a33c239260dc12",
+    "batch": "4449836201bcd5e7a77fc4cc4834b6eba59539f49952ae62a9728dc6e34805ef"
+  },
+  {
+    "year": 2023,
+    "start": "2019-01-01 00:00:00+00:00",
+    "monitor": "2022-07-01 00:00:00+00:00",
+    "last_fit_close": "2022-06-30 23:00:00+00:00",
+    "eval_start": "2023-01-01 00:00:00+00:00",
+    "last_eval_close": "2023-12-29 08:00:00+00:00",
+    "fit_bars": 21682,
+    "windows": 17947,
+    "prefix_checks": [
+      {
+        "last_bar": "2022-06-30 23:00:00+00:00",
+        "max_abs": 0.0
+      },
+      {
+        "last_bar": "2023-01-03 18:00:00+00:00",
+        "max_abs": 0.0
+      }
+    ],
+    "parity_checked_rows": 23460,
+    "parity_failures": {},
+    "audit": "a8ecd5866d3d248c752026dac7e2d89e4c2c8af46c5cf1f7608ea7391b50d225",
+    "batch": "05fc0e415039e3be13502321106d1ea5738fe6125ce14e6bb0e3da9fd011aaa7"
+  }
+]

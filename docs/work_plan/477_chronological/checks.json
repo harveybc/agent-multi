@@ -1,0 +1,214 @@
+{
+  "2020": {
+    "business_origins": 18169,
+    "gate_violations": 0,
+    "labels": {
+      "1": {
+        "rows": 16512,
+        "max_abs": 0.0
+      },
+      "2": {
+        "rows": 16512,
+        "max_abs": 0.0
+      },
+      "3": {
+        "rows": 16512,
+        "max_abs": 0.0
+      },
+      "4": {
+        "rows": 16512,
+        "max_abs": 0.0
+      },
+      "5": {
+        "rows": 16512,
+        "max_abs": 0.0
+      },
+      "6": {
+        "rows": 16512,
+        "max_abs": 0.0
+      },
+      "24": {
+        "rows": 5908,
+        "max_abs": 0.0
+      },
+      "48": {
+        "rows": 5908,
+        "max_abs": 0.0
+      }
+    },
+    "stl_sample_max_abs": 1.302214169829341e-10,
+    "null_context": {
+      "return_pct": 23.154787171463653,
+      "realized_dd_pct": 27.986140023799734,
+      "buy": 74,
+      "sell": 29,
+      "buy_wins": 43,
+      "sell_wins": 17,
+      "early": 0,
+      "early_minus_hold_usd": -9.89239801185704e-11,
+      "fit_origins": 1787,
+      "eval_origins": 3538
+    }
+  },
+  "2021": {
+    "business_origins": 18177,
+    "gate_violations": 0,
+    "labels": {
+      "1": {
+        "rows": 16604,
+        "max_abs": 0.0
+      },
+      "2": {
+        "rows": 16604,
+        "max_abs": 0.0
+      },
+      "3": {
+        "rows": 16604,
+        "max_abs": 0.0
+      },
+      "4": {
+        "rows": 16604,
+        "max_abs": 0.0
+      },
+      "5": {
+        "rows": 16604,
+        "max_abs": 0.0
+      },
+      "6": {
+        "rows": 16604,
+        "max_abs": 0.0
+      },
+      "24": {
+        "rows": 5963,
+        "max_abs": 0.0
+      },
+      "48": {
+        "rows": 5963,
+        "max_abs": 0.0
+      }
+    },
+    "stl_sample_max_abs": 8.885358985036285e-11,
+    "null_context": {
+      "return_pct": -11.266808109122522,
+      "realized_dd_pct": 18.39201357763871,
+      "buy": 52,
+      "sell": 66,
+      "buy_wins": 19,
+      "sell_wins": 36,
+      "early": 0,
+      "early_minus_hold_usd": -4.0704217774134577e-11,
+      "fit_origins": 1867,
+      "eval_origins": 3726
+    }
+  },
+  "2022": {
+    "business_origins": 18071,
+    "gate_violations": 0,
+    "labels": {
+      "1": {
+        "rows": 16510,
+        "max_abs": 0.0
+      },
+      "2": {
+        "rows": 16510,
+        "max_abs": 0.0
+      },
+      "3": {
+        "rows": 16510,
+        "max_abs": 0.0
+      },
+      "4": {
+        "rows": 16510,
+        "max_abs": 0.0
+      },
+      "5": {
+        "rows": 16510,
+        "max_abs": 0.0
+      },
+      "6": {
+        "rows": 16510,
+        "max_abs": 0.0
+      },
+      "24": {
+        "rows": 5943,
+        "max_abs": 0.0
+      },
+      "48": {
+        "rows": 5943,
+        "max_abs": 0.0
+      }
+    },
+    "stl_sample_max_abs": 1.8735868065333783e-10,
+    "null_context": {
+      "return_pct": 0.6668250648628486,
+      "realized_dd_pct": 34.54250957631345,
+      "buy": 0,
+      "sell": 250,
+      "buy_wins": 0,
+      "sell_wins": 124,
+      "early": 0,
+      "early_minus_hold_usd": 2.904001483727825e-10,
+      "fit_origins": 1887,
+      "eval_origins": 3580
+    }
+  },
+  "2023": {
+    "business_origins": 17947,
+    "gate_violations": 0,
+    "labels": {
+      "1": {
+        "rows": 16389,
+        "max_abs": 0.0
+      },
+      "2": {
+        "rows": 16389,
+        "max_abs": 0.0
+      },
+      "3": {
+        "rows": 16389,
+        "max_abs": 0.0
+      },
+      "4": {
+        "rows": 16389,
+        "max_abs": 0.0
+      },
+      "5": {
+        "rows": 16389,
+        "max_abs": 0.0
+      },
+      "6": {
+        "rows": 16389,
+        "max_abs": 0.0
+      },
+      "24": {
+        "rows": 5885,
+        "max_abs": 0.0
+      },
+      "48": {
+        "rows": 5885,
+        "max_abs": 0.0
+      }
+    },
+    "stl_sample_max_abs": 2.098837778921614e-10,
+    "null_context": {
+      "return_pct": -18.078020246779303,
+      "realized_dd_pct": 27.252177348016037,
+      "buy": 51,
+      "sell": 50,
+      "buy_wins": 20,
+      "sell_wins": 24,
+      "early": 0,
+      "early_minus_hold_usd": -6.278177977492305e-11,
+      "fit_origins": 1872,
+      "eval_origins": 3516
+    }
+  },
+  "sources": {
+    "producer_spec": "a37df7503445d0eddff3207b08e6f9f5c424d4f64fef1b8dd309472f15d95813",
+    "verified_python_files": 820,
+    "history_receipt": "272e838e173b7d96c85e525db30dae805d8bb7bd151e93c269a64506025073d1",
+    "bars": "c80847bb149c7af1ad50e42301b5cd70608e6c37702ce8cc6a7b9eb70f36d2ca",
+    "labels": "127570c36929529c0ef914d28a9e0219696e5b52f111733dc8871b52f9c25743",
+    "stl": "4463ad32034dc7fec23bf922c9f1691ac048ea5912b5b6b3e25b2b84601f99f0"
+  }
+}
