@@ -13,14 +13,15 @@ from tools.role470_barriers import probe
 
 
 @njit
-def outcomes(ii,t,o,hi,lo,atr,dead,spread,roll,fees,tm,sm):
+def outcomes(ii,t,o,hi,lo,atr,dead,spread,roll,fees,tm,sm,horizons=(6,24,48)):
     market,stop,through,comm,swapb,swaps=fees
     n=len(ii)
-    net=np.zeros((n,6));end=np.zeros((n,6),np.int64)
+    nh=len(horizons)
+    net=np.zeros((n,2*nh));end=np.zeros((n,2*nh),np.int64)
     for z,i in enumerate(ii):
-        for k in range(6):
-            side=1 if k<3 else -1
-            width=atr[i-1]*np.sqrt((6,24,48)[k%3])
+        for k in range(2*nh):
+            side=1 if k<nh else -1
+            width=atr[i-1]*np.sqrt(horizons[k%nh])
             en=o[i]+(spread[i] if side>0 else 0.)+side*market
             tp=en+side*width*tm;sl=en-side*width*sm
             for j in range(i,len(t)):

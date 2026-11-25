@@ -10,7 +10,7 @@ from tools.role471_net_selector import account, audit_book, outcomes
 from tools.role473_exit_value import compare_position
 
 
-def evaluate(ts, pred, year, hist, market, bundle):
+def opportunity_panel(ts, pred, year, hist, market, bundle):
     bounds = [pd.Timestamp(s,tz='UTC') for s in
               (f'{year-1}-07-01',f'{year}-01-01',f'{year+1}-01-01')]
     if not (np.diff(ts)>0).all() or not np.isfinite(pred).all() or pred.shape!=(len(ts),8):
@@ -48,10 +48,18 @@ def evaluate(ts, pred, year, hist, market, bundle):
     basic=np.column_stack([np.sin(theta),np.cos(theta),np.sin(day),np.cos(day),
            (dead[idx]-t[idx])/NS,p,p*p,spread[idx]/atr[idx-1],fees[0]/atr[idx-1]])
     signals=pred[eligible]/atr[idx-1,None]
-    pnl,ends=outcomes(idx,t,o,hi,lo,atr,dead,spread,roll,fees,1.,1.)
-    if t[ends[train]].max()>=bounds[1].value:raise ValueError('selector label crosses boundary')
     data=(t,o,hi,lo,c,atr,None,None,gate,dead)
     paths=np.full((len(t),8),np.nan);paths[idx0-1]=pred
+    return idx,train,basic,signals,data,(prof,spread,roll),fees,paths
+
+
+def evaluate(ts, pred, year, hist, market, bundle):
+    idx,train,basic,signals,data,costs,fees,paths=opportunity_panel(ts,pred,year,hist,market,bundle)
+    t,o,hi,lo,c,atr,_,_,_,dead=data
+    prof,spread,roll=costs
+    test=~train
+    pnl,ends=outcomes(idx,t,o,hi,lo,atr,dead,spread,roll,fees,1.,1.)
+    if t[ends[train]].max()>=pd.Timestamp(str(year),tz='UTC').value:raise ValueError('selector label crosses boundary')
     result={}; ledger=[];exits=[]
     for name,features in [('context',basic),('seasonal',np.column_stack([basic,signals,abs(signals)]))]:
         xx=features[train];m=xx.mean(0);s=xx.std(0);s[s<1e-10]=1.

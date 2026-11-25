@@ -1,0 +1,42 @@
+[
+  {
+    "year": 2020,
+    "hashes": {
+      "short": "8f27808ef375ada9b45e982aa30cdf0d0b1b32499857900d473e04bdec93dd7f",
+      "long": "de1bd64bb3eee10b54a1324b8e95ce70181fa60dec536a88117d2f945da65f99"
+    },
+    "engine_checks": 144,
+    "verified_fills": 206,
+    "neutral": 0
+  },
+  {
+    "year": 2021,
+    "hashes": {
+      "short": "dc22437ae66f11ab2b1ae6f0af7b895ad34466e8ec9900c86774b8b9fc582fda",
+      "long": "4c48ed9371d12a737982e014605609ff196d1a29fb8264829acef8b7437ce11e"
+    },
+    "engine_checks": 144,
+    "verified_fills": 226,
+    "neutral": 0
+  },
+  {
+    "year": 2022,
+    "hashes": {
+      "short": "872d7b19442a7f99419907dd00342597dce09ad094afbe689ef5c91335097b53",
+      "long": "f758acf2147d62c6bebd44cc7344a8f36678e839c9eabc4cf66874b5b7d13255"
+    },
+    "engine_checks": 144,
+    "verified_fills": 454,
+    "neutral": 0
+  },
+  {
+    "year": 2023,
+    "hashes": {
+      "short": "5a81d9b397cf585fd38ee8a3db4d328b1df5fc67c014ad112756eaa97297fe08",
+      "long": "d15b06960b0acd258c3d28dcb7d620dd935d2ac8da3f2edb432c791db030649a"
+    },
+    "engine_checks": 144,
+    "verified_fills": 214,
+    "neutral": 0
+  }
+]
