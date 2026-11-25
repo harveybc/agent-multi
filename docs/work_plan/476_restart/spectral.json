@@ -1,0 +1,113 @@
+{
+  "cuts": [
+    {
+      "bar_start": "2016-07-01T08:00:00+00:00",
+      "families": {
+        "wv": {
+          "channels": 10,
+          "archived_error": 0.0,
+          "truncated_error": 0.0,
+          "suffix_error": 0.0,
+          "current_bar_effect": 1.0668625324997745
+        },
+        "ssa": {
+          "channels": 2,
+          "archived_error": 3.197442310920451e-14,
+          "truncated_error": 0.0,
+          "suffix_error": 0.0,
+          "current_bar_effect": 9.521219043002475
+        },
+        "hb": {
+          "channels": 3,
+          "archived_error": 0.0,
+          "truncated_error": 0.0,
+          "suffix_error": 0.0,
+          "current_bar_effect": 0.9947850928485682
+        }
+      }
+    },
+    {
+      "bar_start": "2017-06-30T18:00:00+00:00",
+      "families": {
+        "wv": {
+          "channels": 10,
+          "archived_error": 0.0,
+          "truncated_error": 0.0,
+          "suffix_error": 0.0,
+          "current_bar_effect": 2.4272717408233486
+        },
+        "ssa": {
+          "channels": 2,
+          "archived_error": 1.9539925233402755e-14,
+          "truncated_error": 0.0,
+          "suffix_error": 0.0,
+          "current_bar_effect": 27.82806901570499
+        },
+        "hb": {
+          "channels": 3,
+          "archived_error": 0.0,
+          "truncated_error": 0.0,
+          "suffix_error": 0.0,
+          "current_bar_effect": 0.7874395664257465
+        }
+      }
+    },
+    {
+      "bar_start": "2018-06-29T02:00:00+00:00",
+      "families": {
+        "wv": {
+          "channels": 10,
+          "archived_error": 0.0,
+          "truncated_error": 0.0,
+          "suffix_error": 0.0,
+          "current_bar_effect": 1.6893507648745167
+        },
+        "ssa": {
+          "channels": 2,
+          "archived_error": 1.7763568394002505e-14,
+          "truncated_error": 0.0,
+          "suffix_error": 0.0,
+          "current_bar_effect": 20.295685258836677
+        },
+        "hb": {
+          "channels": 3,
+          "archived_error": 0.0,
+          "truncated_error": 0.0,
+          "suffix_error": 0.0,
+          "current_bar_effect": 0.14319199519193537
+        }
+      }
+    },
+    {
+      "bar_start": "2019-07-01T11:00:00+00:00",
+      "families": {
+        "wv": {
+          "channels": 10,
+          "archived_error": 0.0,
+          "truncated_error": 0.0,
+          "suffix_error": 0.0,
+          "current_bar_effect": 2.484771090531577
+        },
+        "ssa": {
+          "channels": 2,
+          "archived_error": 3.552713678800501e-14,
+          "truncated_error": 0.0,
+          "suffix_error": 0.0,
+          "current_bar_effect": 105.83899363926899
+        },
+        "hb": {
+          "channels": 3,
+          "archived_error": 5.655198531684391e-16,
+          "truncated_error": 5.655198531684391e-16,
+          "suffix_error": 0.0,
+          "current_bar_effect": 0.6764242808951293
+        }
+      }
+    }
+  ],
+  "producer_sha256": {
+    "layer1_pool_h1.py": "5ba7b1d7c3d735cd5ece4ef62d018e990736cb3bb1913f38e863811705369906",
+    "layer2_pool_h1.py": "634bc044a49a9d39adee5d10685efe615e7249486a1ccd56e33e9c1c44930881",
+    "lib/native_wavelet.py": "774c3e85293d6680ce43f753e7ccbcfa90618549b85131410382a41ea0f00475"
+  }
+}

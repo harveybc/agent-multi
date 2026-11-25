@@ -1,0 +1,111 @@
+{
+  "years": {
+    "2016": {
+      "windows": 3718,
+      "differing": 0,
+      "max_abs": 0.0
+    },
+    "2017": {
+      "windows": 3686,
+      "differing": 0,
+      "max_abs": 0.0
+    },
+    "2018": {
+      "windows": 3640,
+      "differing": 0,
+      "max_abs": 0.0
+    },
+    "2019": {
+      "windows": 3587,
+      "differing": 0,
+      "max_abs": 0.0
+    },
+    "2020": {
+      "windows": 3538,
+      "differing": 0,
+      "max_abs": 0.0
+    },
+    "2021": {
+      "windows": 3726,
+      "differing": 0,
+      "max_abs": 0.0
+    },
+    "2022": {
+      "windows": 3580,
+      "differing": 0,
+      "max_abs": 0.0
+    },
+    "2023": {
+      "windows": 3516,
+      "differing": 0,
+      "max_abs": 0.0
+    }
+  },
+  "scaler_fit": [
+    "2020-01-01",
+    "2024-01-01"
+  ],
+  "learned_inputs": {
+    "kf.lc.level_minus_close": {
+      "applies_to": [
+        "kalman",
+        "gmm",
+        "hmm",
+        "fracdiff"
+      ],
+      "end_exclusive": "2024-01-01 00:00:00+00:00",
+      "rows": 24895,
+      "start": "2020-01-01 00:00:00+00:00"
+    },
+    "rg.gmm.p0": {
+      "applies_to": [
+        "kalman",
+        "gmm",
+        "hmm",
+        "fracdiff"
+      ],
+      "end_exclusive": "2024-01-01 00:00:00+00:00",
+      "rows": 24895,
+      "start": "2020-01-01 00:00:00+00:00"
+    },
+    "rg.gmm.p1": {
+      "applies_to": [
+        "kalman",
+        "gmm",
+        "hmm",
+        "fracdiff"
+      ],
+      "end_exclusive": "2024-01-01 00:00:00+00:00",
+      "rows": 24895,
+      "start": "2020-01-01 00:00:00+00:00"
+    },
+    "rg.gmm.p2": {
+      "applies_to": [
+        "kalman",
+        "gmm",
+        "hmm",
+        "fracdiff"
+      ],
+      "end_exclusive": "2024-01-01 00:00:00+00:00",
+      "rows": 24895,
+      "start": "2020-01-01 00:00:00+00:00"
+    },
+    "rg.gmm.entropy": {
+      "applies_to": [
+        "kalman",
+        "gmm",
+        "hmm",
+        "fracdiff"
+      ],
+      "end_exclusive": "2024-01-01 00:00:00+00:00",
+      "rows": 24895,
+      "start": "2020-01-01 00:00:00+00:00"
+    }
+  },
+  "sha256": {
+    "recipe": "96a5fb87d843d49f80274aff90e68de9de955101d99823e8f2b5b227f01d3021",
+    "archive": "2332a651607f413ecb8c82271256e2417711068d9ea27d771fbfbd4dee594a9c",
+    "prefix": "5291bdf75e1a66e2db45e86e7cfd729a49a78473085173d70c5ba70e408eb0b1",
+    "store": "cd0eb8d20c0d0888f7814cda410557a79a927e5cc125e9de5c15dbe073d2f543"
+  }
+}
