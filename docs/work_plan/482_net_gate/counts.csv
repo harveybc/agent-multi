@@ -1,0 +1,17 @@
+year,arm,variant,origins,side_ties
+2020,context,control,3538,0
+2020,context,no_vol_side,3538,0
+2020,seasonal,control,3538,0
+2020,seasonal,no_vol_side,3538,0
+2021,context,control,3726,0
+2021,context,no_vol_side,3726,0
+2021,seasonal,control,3726,0
+2021,seasonal,no_vol_side,3726,0
+2022,context,control,3580,0
+2022,context,no_vol_side,3580,0
+2022,seasonal,control,3580,0
+2022,seasonal,no_vol_side,3580,0
+2023,context,control,3516,0
+2023,context,no_vol_side,3516,0
+2023,seasonal,control,3516,0
+2023,seasonal,no_vol_side,3516,0

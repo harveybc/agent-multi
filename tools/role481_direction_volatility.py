@@ -11,7 +11,7 @@ from tools.role478_direction import LIVE_H, load
 from tools.role479_gross_cost import estimate_cost, fill_components, known_friction, lock_direction, ridge
 
 
-def evaluate(a, year, reference, ledgers):
+def evaluate(a, year, reference, ledgers, observe=None):
     ts, pred, _ = load(a.root, year)
     idx, fit, basic, sig, data, costs, fees, _ = opportunity_panel(ts, pred, year, a.hist, a.market, a.bundle)
     t, op, hi, lo, close, atr, _, _, _, dead = data
@@ -37,6 +37,8 @@ def evaluate(a, year, reference, ledgers):
             ret, dd, n, wins = account(*arr,*genes[2:])
             book, verified = audit_book(arr,genes,t)
             np.testing.assert_allclose(verified,ret,atol=1e-8)
+            if observe is not None:
+                observe(year,arm,variant,t[idx[ev]],direction,net,pnl[ev])
             if variant == 'control':
                 key = (year, arm, 'gross_side_then_cost')
                 archived = ledgers.loc[key].reset_index(drop=True)
