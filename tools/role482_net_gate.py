@@ -8,11 +8,16 @@ import pandas as pd
 from tools.role481_direction_volatility import evaluate, LIVE_H
 
 
-def proposals(ts, direction, net, pnl, book):
+def side_horizon(direction, net):
     b, s = direction[:,:3].max(1), direction[:,3:].max(1)
     rows = np.flatnonzero(b != s)
     offset = 3*(s[rows] > b[rows]).astype(int)
     k = offset + net[rows[:,None],offset[:,None]+np.arange(3)].argmax(1)
+    return rows,k
+
+
+def proposals(ts, direction, net, pnl, book):
+    rows,k=side_horizon(direction,net)
     ts = ts[rows]
     score = net[rows,k]
     actual = pnl[rows,k]
@@ -44,7 +49,7 @@ def run(a):
     archived=pd.read_csv(a.previous/'books.csv.gz').set_index(keys).sort_index()
     frames=[]
     counts=[]
-    def observe(year,arm,variant,ts,direction,net,pnl):
+    def observe(year,arm,variant,ts,direction,net,pnl,_ends):
         df=proposals(ts,direction,net,pnl,archived.loc[(year,arm,variant)])
         frames.append(df.assign(year=year,arm=arm,variant=variant))
         counts.append(dict(year=year,arm=arm,variant=variant,origins=len(ts),side_ties=len(ts)-len(df)))

@@ -38,7 +38,7 @@ def evaluate(a, year, reference, ledgers, observe=None):
             book, verified = audit_book(arr,genes,t)
             np.testing.assert_allclose(verified,ret,atol=1e-8)
             if observe is not None:
-                observe(year,arm,variant,t[idx[ev]],direction,net,pnl[ev])
+                observe(year,arm,variant,t[idx[ev]],direction,net,pnl[ev],t[end[ev]])
             if variant == 'control':
                 key = (year, arm, 'gross_side_then_cost')
                 archived = ledgers.loc[key].reset_index(drop=True)
