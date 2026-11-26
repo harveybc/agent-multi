@@ -1,0 +1,17 @@
+year,arm,variant,any_scale_buy,best_gross_buy,positive_net_buy,buy_executed
+2020,context,control,3200,3143,2941,79
+2020,context,no_vol_side,2042,1474,1299,76
+2020,seasonal,control,3319,3030,2931,91
+2020,seasonal,no_vol_side,2609,1962,1811,72
+2021,context,control,1434,1260,1083,44
+2021,context,no_vol_side,3726,3726,1088,51
+2021,seasonal,control,1725,1374,1305,43
+2021,seasonal,no_vol_side,3286,2966,1346,58
+2022,context,control,195,89,31,1
+2022,context,no_vol_side,2126,1426,28,1
+2022,seasonal,control,495,198,164,2
+2022,seasonal,no_vol_side,2405,1910,196,7
+2023,context,control,2465,156,81,3
+2023,context,no_vol_side,2876,1780,923,51
+2023,seasonal,control,2027,577,542,8
+2023,seasonal,no_vol_side,2337,1761,1201,56

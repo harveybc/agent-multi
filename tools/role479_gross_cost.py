@@ -36,6 +36,21 @@ def lock_direction(gross,net):
     return out
 
 
+def fill_components(rows,idx,data,costs,end,pnl):
+    atr=data[5]
+    friction=np.empty((len(rows),6));gross=np.empty_like(friction)
+    for j,r in enumerate(rows):
+        i=idx[r]
+        for k,h in enumerate(LIVE_H*2):
+            w=atr[i-1]*np.sqrt(h)
+            ref=probe(i,1 if k<3 else -1,w,w,1.,h,data,costs)
+            if ref['end']!=end[r,k] or abs(ref['usd']-pnl[r,k])>1e-8:
+                raise ValueError('fill or PnL disagrees')
+            gross[j,k]=ref['gross_same_fills_usd'];friction[j,k]=ref['friction_usd']
+    np.testing.assert_allclose(gross-friction,pnl[rows],atol=1e-8)
+    return gross,friction
+
+
 def one(a,y):
     ts,pred,hashes=load(a.root,y); folder=a.root/str(y)
     idx,fit,basic,sig,data,costs,fees,_=opportunity_panel(ts,pred,y,a.hist,a.market,a.bundle)
@@ -45,20 +60,8 @@ def one(a,y):
     if t[end[fit]].max()>=pd.Timestamp(str(y),tz='UTC').value:raise ValueError('uncleared calibration positions')
     market,_,_,commission,_,_=fees
     known=known_friction(spread[idx],market,commission)
-    def decompose(rows):
-        friction=np.empty((len(rows),6));gross=np.empty_like(friction)
-        for j,r in enumerate(rows):
-            i=idx[r]
-            for k,h in enumerate(LIVE_H*2):
-                w=atr[i-1]*np.sqrt(h)
-                ref=probe(i,1 if k<3 else -1,w,w,1.,h,data,costs)
-                if ref['end']!=end[r,k] or abs(ref['usd']-pnl[r,k])>1e-8:
-                    raise ValueError('fill or PnL disagrees')
-                gross[j,k]=ref['gross_same_fills_usd'];friction[j,k]=ref['friction_usd']
-        np.testing.assert_allclose(gross-friction,pnl[rows],atol=1e-8)
-        return gross,friction
     tr=np.flatnonzero(fit);ev=np.flatnonzero(~fit);ii=idx[ev]
-    gross,friction=decompose(tr)
+    gross,friction=fill_components(tr,idx,data,costs,end,pnl)
     factors=np.where(np.arange(6)<3, o[idx[tr],None]+spread[idx[tr],None]+market,
                      o[idx[tr],None]-market)/5e4
     residual=friction*factors-known[tr]
@@ -95,7 +98,7 @@ def one(a,y):
                 origins=len(ii),fitted=len(tr)))
             books.extend(dict(year=y,arm=arm,variant=variant,**r) for r in book)
     # Realized evaluation costs are accessed only after all decisions are made.
-    _,real_cost=decompose(ev)
+    _,real_cost=fill_components(ev,idx,data,costs,end,pnl)
     for k,h in enumerate(LIVE_H*2):
         models.append(dict(year=y,h=h,side='buy' if k<3 else 'sell',
             mean_residual_price_fit=residual[:,k].mean(),mean_predicted_bp=costs_hat[:,k].mean(),
