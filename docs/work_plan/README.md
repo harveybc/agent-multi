@@ -1,5 +1,12 @@
 # Adaptive Multi-Asset Trading Work Plan
 
+## Research checkpoint: 2026-11-26
+
+[487: experiments 431–486, numerical results and ordered branch backlog](487_MASTER_PLAN_CHECKPOINT.md).
+Current research handoff: qualify a subsequent data panel and freeze a prospective
+pause-budget comparison in parallel. No strategy promotion, new DEAP or live
+execution is authorized by these results. Earlier execution updates below are historical.
+
 ## Specialist campaign checkpoint: 2026-11-22
 
 [429: results, assignments and paired OPEN_SELL ranking gate](429_SPECIALIST_CHECKPOINT.md).
