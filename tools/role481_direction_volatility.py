@@ -11,7 +11,7 @@ from tools.role478_direction import LIVE_H, load
 from tools.role479_gross_cost import estimate_cost, fill_components, known_friction, lock_direction, ridge
 
 
-def evaluate(a, year, reference, ledgers, observe=None):
+def evaluate(a, year, reference, ledgers, observe=None, on_calibration=None):
     ts, pred, _ = load(a.root, year)
     idx, fit, basic, sig, data, costs, fees, _ = opportunity_panel(ts, pred, year, a.hist, a.market, a.bundle)
     t, op, hi, lo, close, atr, _, _, _, dead = data
@@ -19,6 +19,8 @@ def evaluate(a, year, reference, ledgers, observe=None):
     pnl, end = outcomes(idx, t, op, hi, lo, atr, dead, spread, roll, fees, 1., 1.)
     tr, ev = np.flatnonzero(fit), np.flatnonzero(~fit)
     assert t[end[tr]].max() < pd.Timestamp(str(year), tz='UTC').value <= t[idx[ev]].min()
+    if on_calibration is not None:
+        on_calibration(year,t[idx[tr]],t[end[tr,:3]],dead[idx[ev]])
     train_g, friction = fill_components(tr, idx, data, costs, end, pnl)
     known = known_friction(spread[idx], fees[0], fees[3])
     factor = np.where(np.arange(6)<3, op[idx[tr], None]+spread[idx[tr], None]+fees[0],

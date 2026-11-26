@@ -9,7 +9,7 @@ from tools.role481_direction_volatility import LIVE_H, evaluate
 from tools.role482_net_gate import side_horizon
 
 
-def replay(ts, rows, actions, net, pnl, ends, gate, *, sell_gate=None):
+def replay(ts, rows, actions, net, pnl, ends, gate, *, sell_gate=None, rejected_buy=None):
     sell_gate = gate if sell_gate is None else sell_gate
     balance = peak = 10000.
     dd = 0.
@@ -17,7 +17,12 @@ def replay(ts, rows, actions, net, pnl, ends, gate, *, sell_gate=None):
     trades = []
     for r,k in zip(rows,actions):
         side_gate = gate if k<3 else sell_gate
-        if ts[r] <= occupied_until or (side_gate and net[r,k] <= 0):
+        if ts[r] <= occupied_until:
+            continue
+        if side_gate and net[r,k] <= 0:
+            if k<3 and rejected_buy is not None:
+                occupied_until = rejected_buy(r,k)
+                assert occupied_until >= ts[r]
             continue
         occupied_until = int(ends[r,k])
         assert occupied_until >= ts[r]
