@@ -18,3 +18,14 @@ def test_zero_score_trade_can_displace_positive_trade_through_exit_bar():
     assert all(x['q']==1. for x in on+off)
     assert (ret_on,dd_on)==pytest.approx((4.03,0.))
     assert (ret_off,dd_off)==pytest.approx((-.01,1.))
+
+
+@pytest.mark.parametrize('buy_gate,sell_gate,entries', [
+    (True,True,[12,13]),(False,True,[10,13]),(True,False,[11,13]),(False,False,[10,13])])
+def test_side_specific_gate_shares_single_slot(buy_gate,sell_gate,entries):
+    ts=np.arange(10,14)
+    k=np.array([0,3,3,0])
+    scores=np.tile(np.array([0.,-2,3,5])[:,None],(1,6))
+    exits=np.tile(np.array([12,12,12,13])[:,None],(1,6))
+    trades,_,_=replay(ts,np.arange(4),k,scores,scores,exits,buy_gate,sell_gate=sell_gate)
+    assert [trade['entry_ns'] for trade in trades]==entries
