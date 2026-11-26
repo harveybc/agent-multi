@@ -1,0 +1,5 @@
+split,benchmark,informative,negative,median_cos
+fit,MC_soft_including_first_entropy,48,15,0.3680331612634198
+fit,greedy_continuation_cash,36,17,0.15146044455589866
+monitor,MC_soft_including_first_entropy,16,10,-0.1457029336302148
+monitor,greedy_continuation_cash,12,9,-0.43508330981480214
