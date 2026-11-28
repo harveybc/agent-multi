@@ -1,0 +1,50 @@
+[
+  {
+    "year": 2021,
+    "seed": 7,
+    "role": 1,
+    "n": 9,
+    "weeks": 2,
+    "train_index_sha256": "d4c3ddfda837b3d610384f1f0ff1ddb41e4f16a2a82d3037c6db6301fd12b576"
+  },
+  {
+    "year": 2022,
+    "seed": 7,
+    "role": 1,
+    "n": 9,
+    "weeks": 2,
+    "train_index_sha256": "5a95b9e577c532fb9b6916e9e401485e32cd89419c56247032a3f1b8982ef796"
+  },
+  {
+    "year": 2021,
+    "seed": 19,
+    "role": 1,
+    "n": 9,
+    "weeks": 2,
+    "train_index_sha256": "aa59b102dbd5b9e8d743f6e438b9a9b8f80ea9f727c2eec3b9dac939a1ba9c20"
+  },
+  {
+    "year": 2022,
+    "seed": 19,
+    "role": 1,
+    "n": 9,
+    "weeks": 2,
+    "train_index_sha256": "414d48f73e79c918ec85940c53f4adf5535aeeaf63d5e3dbcd991015e507b2b3"
+  },
+  {
+    "year": 2021,
+    "seed": 41,
+    "role": 1,
+    "n": 9,
+    "weeks": 2,
+    "train_index_sha256": "7923df601e890fa470ff81f514cffc104a926931b036d30e35314e58941f5fc2"
+  },
+  {
+    "year": 2022,
+    "seed": 41,
+    "role": 1,
+    "n": 9,
+    "weeks": 2,
+    "train_index_sha256": "f46601d4e657c71e859244c064274b290ba3eff99700302fe96743089fdd172f"
+  }
+]

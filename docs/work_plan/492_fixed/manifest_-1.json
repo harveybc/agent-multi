@@ -1,0 +1,62 @@
+[
+  {
+    "year": 2021,
+    "seed": 7,
+    "role": -1,
+    "n": 155,
+    "weeks": 21,
+    "train_index_sha256": "ad52cd119c58c12e0ea4b3a23e8ba45add0808d42f1e43cb1ed244e6345a9026",
+    "checkpoint": "r-1_2021_7.joblib",
+    "sha256": "e11c93c55a5b7498940ac4b7c0ae9d54d8c781e62c442427ad8f9abd66c1e4b8"
+  },
+  {
+    "year": 2022,
+    "seed": 7,
+    "role": -1,
+    "n": 155,
+    "weeks": 21,
+    "train_index_sha256": "3c2a28a4018da75022936cf52d4dcb790aa1487bddef474fd8b34deb78c283ee",
+    "checkpoint": "r-1_2022_7.joblib",
+    "sha256": "d35fff98cf247595ed6cd8c98676458091078b0f4bd8f470a1363a301bb43a65"
+  },
+  {
+    "year": 2021,
+    "seed": 19,
+    "role": -1,
+    "n": 155,
+    "weeks": 21,
+    "train_index_sha256": "b218b91bb98a010c807871c4ab44bcf6ca6b1acc32e966634dbc4df436bca765",
+    "checkpoint": "r-1_2021_19.joblib",
+    "sha256": "b7ff67489009c4ab314377be1e67eaeef665bdf2bfe37090eebf99c309ce8142"
+  },
+  {
+    "year": 2022,
+    "seed": 19,
+    "role": -1,
+    "n": 155,
+    "weeks": 21,
+    "train_index_sha256": "b713d359eecd2b8c14fbc1578560becaa1adafbf2fe5704bd912fc5de041e182",
+    "checkpoint": "r-1_2022_19.joblib",
+    "sha256": "c2ad2ca38bb10653a8bafebe2056c64327c80244fe4d3dfe8fa226c8421ad7d7"
+  },
+  {
+    "year": 2021,
+    "seed": 41,
+    "role": -1,
+    "n": 155,
+    "weeks": 21,
+    "train_index_sha256": "cf412db22d4f7f3540439a4c40eaf4d4ee65c116c5f8d72fd35dddd1a6b3b334",
+    "checkpoint": "r-1_2021_41.joblib",
+    "sha256": "c886e24e6237554eec58d9835a446900b19b145af0bc489215fd0ef6ec2a98b9"
+  },
+  {
+    "year": 2022,
+    "seed": 41,
+    "role": -1,
+    "n": 155,
+    "weeks": 21,
+    "train_index_sha256": "cc9e044d364501ffb1ccf24867e91ab5afb464a1b2c62e6c2f7a58c015744c88",
+    "checkpoint": "r-1_2022_41.joblib",
+    "sha256": "3b7f89720ec263d6ecd31e87c958cc0df5730707b11d3e77e918ee9d2fc07334"
+  }
+]
